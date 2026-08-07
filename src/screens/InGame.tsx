@@ -1,4 +1,10 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
+import {
+  toStudioHandCard,
+  type OwnedCreator,
+  type RegisteredCharacter,
+} from '../game/characters'
+import { createInitialStudioSlots, type StudioSlot } from '../game/studioSlots'
 import { CreatorPanel } from './CreatorPanel'
 import { DashboardPanel } from './DashboardPanel'
 import { EquipmentPanel } from './EquipmentPanel'
@@ -14,9 +20,25 @@ export type GameTab =
 const TAB_TITLES: Record<GameTab, string> = {
   dashboard: 'DASHBOARD',
   creator: 'CREATOR',
-  schedule: 'SCHEDULE',
+  schedule: 'STUDIO',
   equipment: 'EQUIPMENT',
   settings: 'SETTINGS',
+}
+
+const SPEED_OPTIONS = ['1x', '2x', '3x'] as const
+type SpeedOption = (typeof SPEED_OPTIONS)[number]
+
+function formatGameClock(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  return {
+    date: `${year}.${month}.${day}`,
+    time: `${hours}:${minutes}:${seconds}`,
+  }
 }
 
 function IconBack() {
@@ -102,18 +124,38 @@ function IconSettings() {
 const TABS: { id: GameTab; label: string; icon: ReactNode }[] = [
   { id: 'dashboard', label: 'DASHBOARD', icon: <IconDashboard /> },
   { id: 'creator', label: 'CREATOR', icon: <IconCreator /> },
-  { id: 'schedule', label: 'SCHEDULE', icon: <IconSchedule /> },
+  { id: 'schedule', label: 'STUDIO', icon: <IconSchedule /> },
   { id: 'equipment', label: 'EQUIPMENT', icon: <IconEquipment /> },
   { id: 'settings', label: 'SETTINGS', icon: <IconSettings /> },
 ]
 
 type InGameProps = {
+  registeredCharacters: RegisteredCharacter[]
+  ownedCreators: OwnedCreator[]
+  onScout: (character: RegisteredCharacter) => void
   onBack: () => void
   onStartBroadcast: () => void
 }
 
-export function InGame({ onBack, onStartBroadcast }: InGameProps) {
+export function InGame({
+  registeredCharacters,
+  ownedCreators,
+  onScout,
+  onBack,
+  onStartBroadcast,
+}: InGameProps) {
   const [tab, setTab] = useState<GameTab>('dashboard')
+  const [speed, setSpeed] = useState<SpeedOption>('1x')
+  const [now, setNow] = useState(() => new Date())
+  const [studioSlots, setStudioSlots] = useState<StudioSlot[]>(() => createInitialStudioSlots())
+  const handCards = ownedCreators.map(toStudioHandCard)
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 1000)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  const clock = formatGameClock(now)
 
   return (
     <main className="game-stage fixed inset-0 grid h-dvh grid-rows-[auto_1fr_auto] overflow-hidden">
@@ -128,8 +170,38 @@ export function InGame({ onBack, onStartBroadcast }: InGameProps) {
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="game-panel rounded-xl px-4 py-2 text-right">
+        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+          <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4">
+            <p className="game-stat-label">년월 · 시간</p>
+            <p className="mt-0.5 text-xs font-semibold tabular-nums text-slate-100 sm:text-sm">
+              <span>{clock.date}</span>
+              <span className="mx-1.5 text-slate-600">|</span>
+              <span className="text-cyan-300">{clock.time}</span>
+            </p>
+          </div>
+
+          <div className="game-panel rounded-xl px-2.5 py-2 sm:px-3">
+            <p className="game-stat-label mb-1 px-0.5">배속</p>
+            <div className="flex gap-1">
+              {SPEED_OPTIONS.map((option) => {
+                const isActive = speed === option
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setSpeed(option)}
+                    className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
+                      isActive ? 'game-btn-primary' : 'game-btn'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4">
             <p className="game-stat-label">자산</p>
             <p className="text-sm font-bold text-amber-400">₩12,500,000</p>
           </div>
@@ -145,13 +217,27 @@ export function InGame({ onBack, onStartBroadcast }: InGameProps) {
         </div>
       </header>
 
-      <section className={`z-10 min-h-0 overflow-auto ${tab === 'dashboard' ? 'p-4' : 'p-6'}`}>
+      <section
+        className={`z-10 min-h-0 ${
+          tab === 'dashboard' || tab === 'schedule' || tab === 'creator'
+            ? 'overflow-hidden p-3 sm:p-4'
+            : 'overflow-auto p-6'
+        }`}
+      >
         {tab === 'dashboard' ? (
-          <DashboardPanel onStartBroadcast={onStartBroadcast} />
+          <DashboardPanel slots={studioSlots} onStartBroadcast={onStartBroadcast} />
         ) : tab === 'creator' ? (
-          <CreatorPanel />
+          <CreatorPanel
+            ownedCreators={ownedCreators}
+            registeredCharacters={registeredCharacters}
+            onScout={onScout}
+          />
         ) : tab === 'schedule' ? (
-          <SchedulePanel />
+          <SchedulePanel
+            slots={studioSlots}
+            handCards={handCards}
+            onSlotsChange={setStudioSlots}
+          />
         ) : tab === 'equipment' ? (
           <EquipmentPanel />
         ) : (

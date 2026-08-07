@@ -1,9 +1,21 @@
 import { useEffect, useId, useRef, useState, type DragEvent, type FormEvent, type ReactNode, type RefObject } from 'react'
+import { EventManagePanel } from '../events/EventManagePanel'
+import {
+  CHARACTER_EVENT_SLOTS,
+  emptyCharacterEventLinks,
+  revokeEvents,
+  type CharacterEventLinks,
+  type CharacterEventSlotKey,
+  type GameEvent,
+} from '../events/types'
+import type { RegisteredCharacter } from '../game/characters'
 
-type EditorTab = 'character'
+type EditorTab = 'character' | 'notification' | 'event'
 type CharacterView = 'list' | 'add'
 
 type EditorScreenProps = {
+  registeredCharacters: RegisteredCharacter[]
+  onRegisterCharacter: (payload: AddCharacterPayload) => void
   onBack: () => void
 }
 
@@ -26,9 +38,22 @@ function formatFileSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-export function EditorScreen({ onBack }: EditorScreenProps) {
+export function EditorScreen({
+  registeredCharacters,
+  onRegisterCharacter,
+  onBack,
+}: EditorScreenProps) {
   const [tab, setTab] = useState<EditorTab>('character')
   const [characterView, setCharacterView] = useState<CharacterView>('list')
+  const [events, setEvents] = useState<GameEvent[]>([])
+  const eventsRef = useRef(events)
+  eventsRef.current = events
+
+  useEffect(() => {
+    return () => {
+      revokeEvents(eventsRef.current)
+    }
+  }, [])
 
   return (
     <main className="game-stage fixed inset-0 grid h-dvh grid-rows-[auto_1fr] overflow-hidden">
@@ -57,6 +82,24 @@ export function EditorScreen({ onBack }: EditorScreenProps) {
           >
             캐릭터 관리
           </button>
+          <button
+            type="button"
+            onClick={() => setTab('notification')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'notification' ? 'is-active' : ''
+            }`}
+          >
+            알림설정
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('event')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'event' ? 'is-active' : ''
+            }`}
+          >
+            이벤트 관리
+          </button>
         </aside>
 
         <section className="relative z-10 min-h-0 overflow-auto p-6">
@@ -67,7 +110,7 @@ export function EditorScreen({ onBack }: EditorScreenProps) {
                   <div>
                     <h2 className="text-lg font-semibold text-slate-100">캐릭터 관리</h2>
                     <p className="mt-2 text-sm text-slate-400">
-                      캐릭터 편집 기능을 여기에 구성합니다.
+                      등록된 캐릭터는 인게임 스카우트 목록에 등장합니다. ({registeredCharacters.length}명)
                     </p>
                   </div>
                   <button
@@ -79,13 +122,68 @@ export function EditorScreen({ onBack }: EditorScreenProps) {
                     캐릭터 추가
                   </button>
                 </div>
+
+                {registeredCharacters.length === 0 ? (
+                  <p className="mt-8 text-center text-sm text-slate-500">
+                    아직 등록된 캐릭터가 없습니다.
+                  </p>
+                ) : (
+                  <ul className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {registeredCharacters.map((character) => (
+                      <li
+                        key={character.id}
+                        className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 px-3 py-3"
+                      >
+                        <div
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-sm font-bold text-slate-950 ${character.avatarTone}`}
+                        >
+                          {character.name.slice(0, 1)}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-slate-100">
+                            {character.name}
+                          </p>
+                          <p className="truncate text-xs text-slate-500">
+                            {character.grade}급 · {character.concept}
+                            {character.age ? ` · ${character.age}세` : ''}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             ) : (
               <AddCharacterPanel
+                events={events}
                 onCancel={() => setCharacterView('list')}
-                onSubmit={() => setCharacterView('list')}
+                onSubmit={(payload) => {
+                  onRegisterCharacter(payload)
+                  setCharacterView('list')
+                }}
               />
             )
+          ) : tab === 'notification' ? (
+            <div className="game-panel rounded-2xl p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="game-kicker">NOTIFICATION</p>
+                  <h2 className="mt-1 text-lg font-semibold text-slate-100">알림설정</h2>
+                  <p className="mt-2 text-sm text-slate-400">
+                    게임 내 알림·이벤트 문구와 조건을 여기에서 구성합니다.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="game-btn-primary shrink-0 rounded-xl px-4 py-2 text-sm"
+                >
+                  <span aria-hidden>＋</span>
+                  알림 추가
+                </button>
+              </div>
+            </div>
+          ) : tab === 'event' ? (
+            <EventManagePanel events={events} onEventsChange={setEvents} />
           ) : null}
         </section>
       </div>
@@ -100,19 +198,23 @@ type MediaItem = {
   keys: string[]
 }
 
-type AddCharacterPayload = {
+export type AddCharacterPayload = {
   name: string
   age: string
   job: string
   bust: string
   weight: string
+  characterIconId: string | null
+  characterIllustrationId: string | null
   profileImageId: string | null
   profileVideoId: string | null
+  eventLinks: CharacterEventLinks
   images: Array<{ id: string; file: File; keys: string[] }>
   videos: Array<{ id: string; file: File; keys: string[] }>
 }
 
 type AddCharacterPanelProps = {
+  events: GameEvent[]
   onCancel: () => void
   onSubmit: (payload: AddCharacterPayload) => void
 }
@@ -120,7 +222,7 @@ type AddCharacterPanelProps = {
 const fieldClassName =
   'mt-2 w-full rounded-xl border border-white/10 bg-black/25 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-indigo-400/40'
 
-function AddCharacterPanel({ onCancel, onSubmit }: AddCharacterPanelProps) {
+function AddCharacterPanel({ events, onCancel, onSubmit }: AddCharacterPanelProps) {
   const imageInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
 
@@ -129,8 +231,11 @@ function AddCharacterPanel({ onCancel, onSubmit }: AddCharacterPanelProps) {
   const [job, setJob] = useState('')
   const [bust, setBust] = useState('')
   const [weight, setWeight] = useState('')
+  const [eventLinks, setEventLinks] = useState<CharacterEventLinks>(() => emptyCharacterEventLinks())
 
   const [images, setImages] = useState<MediaItem[]>([])
+  const [characterIconId, setCharacterIconId] = useState<string | null>(null)
+  const [characterIllustrationId, setCharacterIllustrationId] = useState<string | null>(null)
   const [profileImageId, setProfileImageId] = useState<string | null>(null)
   const [imageDragging, setImageDragging] = useState(false)
   const [imageError, setImageError] = useState<string | null>(null)
@@ -141,6 +246,27 @@ function AddCharacterPanel({ onCancel, onSubmit }: AddCharacterPanelProps) {
   const [videoDragging, setVideoDragging] = useState(false)
   const [videoError, setVideoError] = useState<string | null>(null)
   const [videoKeyDrafts, setVideoKeyDrafts] = useState<Record<string, string>>({})
+
+  // Drop links to events that were deleted from event management
+  useEffect(() => {
+    const ids = new Set(events.map((event) => event.id))
+    setEventLinks((prev) => {
+      let changed = false
+      const next = { ...prev }
+      for (const slot of CHARACTER_EVENT_SLOTS) {
+        const linked = next[slot.key]
+        if (linked && !ids.has(linked)) {
+          next[slot.key] = null
+          changed = true
+        }
+      }
+      return changed ? next : prev
+    })
+  }, [events])
+
+  function setEventLink(slot: CharacterEventSlotKey, eventId: string | null) {
+    setEventLinks((prev) => ({ ...prev, [slot]: eventId }))
+  }
 
   const imagesRef = useRef(images)
   imagesRef.current = images
@@ -202,6 +328,8 @@ function AddCharacterPanel({ onCancel, onSubmit }: AddCharacterPanelProps) {
       if (target) URL.revokeObjectURL(target.url)
       return prev.filter((item) => item.id !== id)
     })
+    setCharacterIconId((current) => (current === id ? null : current))
+    setCharacterIllustrationId((current) => (current === id ? null : current))
     setProfileImageId((current) => (current === id ? null : current))
     setImageKeyDrafts((prev) => {
       const next = { ...prev }
@@ -264,8 +392,11 @@ function AddCharacterPanel({ onCancel, onSubmit }: AddCharacterPanelProps) {
       job: job.trim(),
       bust: bust.trim(),
       weight: weight.trim(),
+      characterIconId,
+      characterIllustrationId,
       profileImageId,
       profileVideoId,
+      eventLinks,
       images: images.map((image) => ({ id: image.id, file: image.file, keys: image.keys })),
       videos: videos.map((video) => ({ id: video.id, file: video.file, keys: video.keys })),
     })
@@ -277,7 +408,9 @@ function AddCharacterPanel({ onCancel, onSubmit }: AddCharacterPanelProps) {
         <div>
           <p className="game-kicker">CHARACTER</p>
           <h2 className="mt-1 text-lg font-semibold text-slate-100">캐릭터 추가</h2>
-          <p className="mt-2 text-sm text-slate-400">프로필, 기본 정보, 이미지·영상을 등록합니다.</p>
+          <p className="mt-2 text-sm text-slate-400">
+            프로필, 기본 정보, 이미지·영상, 이벤트를 등록합니다.
+          </p>
         </div>
         <button type="button" onClick={onCancel} className="game-btn shrink-0 rounded-xl px-4 py-2 text-sm">
           목록으로
@@ -286,7 +419,25 @@ function AddCharacterPanel({ onCancel, onSubmit }: AddCharacterPanelProps) {
 
       <div className="mt-6 max-w-3xl space-y-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-          <div className="flex shrink-0 gap-4">
+          <div className="flex shrink-0 flex-wrap gap-4">
+            <ProfilePickPreview
+              label="캐릭터 아이콘"
+              selectedId={characterIconId}
+              options={images}
+              onSelect={(id) => setCharacterIconId(id)}
+              kind="image"
+              size="icon"
+            />
+
+            <ProfilePickPreview
+              label="캐릭터 일러스트"
+              selectedId={characterIllustrationId}
+              options={images}
+              onSelect={(id) => setCharacterIllustrationId(id)}
+              kind="image"
+              size="illustration"
+            />
+
             <ProfilePickPreview
               label="프로필 이미지"
               selectedId={profileImageId}
@@ -367,7 +518,7 @@ function AddCharacterPanel({ onCancel, onSubmit }: AddCharacterPanelProps) {
 
         <MediaRegisterSection
           title="이미지 등록"
-          description="이미지를 등록한 뒤 키를 연결하고, 그중 하나를 프로필 이미지로 지정할 수 있습니다."
+          description="이미지를 등록한 뒤 키를 연결하고, 아이콘·일러스트·프로필 이미지로 지정할 수 있습니다."
           dropLabel="이미지를 드래그 앤 드롭"
           dropHint="또는 클릭해서 파일 선택 (PNG, JPG, WEBP, GIF) · 여러 개 가능"
           accept={IMAGE_ACCEPT}
@@ -432,6 +583,53 @@ function AddCharacterPanel({ onCancel, onSubmit }: AddCharacterPanelProps) {
           )}
         />
 
+        <section className="space-y-3">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-100">이벤트 연동</h3>
+            <p className="mt-1 text-xs text-slate-500">
+              이벤트 관리에 등록된 이벤트를 슬롯별로 연결합니다. 미디어·사운드가 묶인 이벤트 ID로
+              나중에 참조됩니다.
+            </p>
+          </div>
+
+          {events.length === 0 ? (
+            <p className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-3 text-sm text-amber-100">
+              등록된 이벤트가 없습니다. 왼쪽 메뉴의 <span className="font-semibold">이벤트 관리</span>
+              에서 ZIP을 추가한 뒤 연결하세요.
+            </p>
+          ) : null}
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {CHARACTER_EVENT_SLOTS.map((slot) => {
+              const linkedId = eventLinks[slot.key]
+              const linked = linkedId ? events.find((event) => event.id === linkedId) : null
+              return (
+                <label key={slot.key} className="block">
+                  <span className="game-stat-label">{slot.label}</span>
+                  <select
+                    value={linkedId ?? ''}
+                    disabled={events.length === 0}
+                    onChange={(e) => setEventLink(slot.key, e.target.value || null)}
+                    className={`${fieldClassName} disabled:cursor-not-allowed disabled:opacity-50`}
+                  >
+                    <option value="">연결 안 함</option>
+                    {events.map((event) => (
+                      <option key={event.id} value={event.id}>
+                        {event.title} (미디어 {event.media.length})
+                      </option>
+                    ))}
+                  </select>
+                  {linked ? (
+                    <p className="mt-1 truncate text-xs text-slate-500">
+                      {linked.projectTitle} · ch{linked.chapterId} · 노드 {linked.nodes.length}개
+                    </p>
+                  ) : null}
+                </label>
+              )
+            })}
+          </div>
+        </section>
+
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onCancel} className="game-btn rounded-xl px-4 py-2 text-sm">
             취소
@@ -455,6 +653,7 @@ type ProfilePickPreviewProps = {
   options: MediaItem[]
   onSelect: (id: string | null) => void
   kind: 'image' | 'video'
+  size?: 'default' | 'icon' | 'illustration'
 }
 
 function ProfilePickPreview({
@@ -463,11 +662,14 @@ function ProfilePickPreview({
   options,
   onSelect,
   kind,
+  size = 'default',
 }: ProfilePickPreviewProps) {
   const [open, setOpen] = useState(false)
   const titleId = useId()
   const selected = options.find((item) => item.id === selectedId) ?? null
   const mediaLabel = kind === 'image' ? '이미지' : '영상'
+  const isIcon = size === 'icon'
+  const isIllustration = size === 'illustration'
 
   useEffect(() => {
     if (!open) return
@@ -487,7 +689,13 @@ function ProfilePickPreview({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="mt-2 flex h-36 w-36 flex-col overflow-hidden rounded-2xl border border-white/15 bg-black/20 text-left transition hover:border-indigo-400/40"
+          className={`mt-2 flex flex-col overflow-hidden border border-white/15 bg-black/20 text-left transition hover:border-indigo-400/40 ${
+            isIcon
+              ? 'h-24 w-24 rounded-full'
+              : isIllustration
+                ? 'aspect-[3/4] h-44 w-auto rounded-2xl'
+                : 'h-36 w-36 rounded-2xl'
+          }`}
           aria-haspopup="dialog"
         >
           {selected ? (
@@ -507,11 +715,13 @@ function ProfilePickPreview({
               />
             )
           ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-1 px-3 text-center">
-              <span className="text-xl text-indigo-300" aria-hidden>
+            <div className="flex h-full flex-col items-center justify-center gap-1 px-2 text-center">
+              <span className={`${isIcon ? 'text-lg' : 'text-xl'} text-indigo-300`} aria-hidden>
                 ＋
               </span>
-              <p className="text-[11px] leading-snug text-slate-400">클릭해서 선택</p>
+              <p className={`leading-snug text-slate-400 ${isIcon ? 'text-[10px]' : 'text-[11px]'}`}>
+                {isIcon ? '아이콘 선택' : isIllustration ? '일러스트 선택' : '클릭해서 선택'}
+              </p>
             </div>
           )}
         </button>

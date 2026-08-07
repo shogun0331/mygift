@@ -1,0 +1,78 @@
+export type EventMediaKind = 'image' | 'video' | 'sound'
+
+/** Fixed event slots that a character can bind to registered GameEvents */
+export const CHARACTER_EVENT_SLOTS = [
+  { key: 'scout', label: '스카웃 이벤트' },
+  { key: 'salary', label: '연봉 협상 이벤트' },
+  { key: 'vip', label: 'VIP 이벤트' },
+  { key: 'h', label: 'H 이벤트' },
+] as const
+
+export type CharacterEventSlotKey = (typeof CHARACTER_EVENT_SLOTS)[number]['key']
+
+export type CharacterEventLinks = Record<CharacterEventSlotKey, string | null>
+
+export function emptyCharacterEventLinks(): CharacterEventLinks {
+  return {
+    scout: null,
+    salary: null,
+    vip: null,
+    h: null,
+  }
+}
+
+export type EventMediaAsset = {
+  id: string
+  fileName: string
+  kind: EventMediaKind
+  /** Original path inside the export ZIP */
+  sourcePath: string
+  blob: Blob
+  url: string
+  size: number
+}
+
+export type VnfPointDef = {
+  key: string
+  label: string
+}
+
+export type VnfCharacterDef = {
+  id: string
+  nameKey?: string
+  name?: string
+  names?: Record<string, string>
+}
+
+export type GameEvent = {
+  id: string
+  /** Source project id from export */
+  projectId: string
+  projectTitle: string
+  /** Original chapter number from VNF export (= one game event) */
+  chapterId: number
+  titleKey: string
+  /** Resolved title in default language (fallback: titleKey) */
+  title: string
+  startNode: string
+  nodes: unknown[]
+  /** lang → key → text */
+  localization: Record<string, Record<string, string>>
+  defaultLanguage: string
+  characters: VnfCharacterDef[]
+  points: VnfPointDef[]
+  /** Media bound to this event (images / videos / sounds) */
+  media: EventMediaAsset[]
+  sourceZipName: string
+  createdAt: string
+}
+
+export function revokeEventMedia(event: GameEvent) {
+  for (const asset of event.media) {
+    URL.revokeObjectURL(asset.url)
+  }
+}
+
+export function revokeEvents(events: GameEvent[]) {
+  for (const event of events) revokeEventMedia(event)
+}
