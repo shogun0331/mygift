@@ -171,16 +171,16 @@ export function InGame({
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-          <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4">
+          <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(0,245,255,0.04)]">
             <p className="game-stat-label">년월 · 시간</p>
-            <p className="mt-0.5 text-xs font-semibold tabular-nums text-slate-100 sm:text-sm">
+            <p className="mt-0.5 text-xs font-bold tabular-nums text-slate-100 sm:text-sm">
               <span>{clock.date}</span>
               <span className="mx-1.5 text-slate-600">|</span>
-              <span className="text-cyan-300">{clock.time}</span>
+              <span className="neon-text-cyan" style={{ textShadow: '0 0 8px rgba(0, 245, 255, 0.45)' }}>{clock.time}</span>
             </p>
           </div>
 
-          <div className="game-panel rounded-xl px-2.5 py-2 sm:px-3">
+          <div className="game-panel rounded-xl px-2.5 py-2 sm:px-3 border-indigo-500/25">
             <p className="game-stat-label mb-1 px-0.5">배속</p>
             <div className="flex gap-1">
               {SPEED_OPTIONS.map((option) => {
@@ -190,8 +190,8 @@ export function InGame({
                     key={option}
                     type="button"
                     onClick={() => setSpeed(option)}
-                    className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
-                      isActive ? 'game-btn-primary' : 'game-btn'
+                    className={`rounded-md px-2.5 py-1 text-xs font-bold transition-all ${
+                      isActive ? 'game-btn-pink' : 'game-btn'
                     }`}
                   >
                     {option}
@@ -201,9 +201,9 @@ export function InGame({
             </div>
           </div>
 
-          <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4">
+          <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(251,191,36,0.04)]">
             <p className="game-stat-label">자산</p>
-            <p className="text-sm font-bold text-amber-400">₩12,500,000</p>
+            <p className="text-sm font-black text-amber-400 animate-pulse" style={{ textShadow: '0 0 8px rgba(251, 191, 36, 0.45)' }}>₩12,500,000</p>
           </div>
 
           <button

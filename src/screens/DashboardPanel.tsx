@@ -79,16 +79,16 @@ const TAG_STYLE = {
 
 const STATUS_BADGE: Record<StudioSlot['status'], { label: string; className: string }> = {
   empty: {
-    label: '미배정',
-    className: 'border-slate-400/30 bg-slate-500/15 text-slate-300',
+    label: 'STANDBY',
+    className: 'border-slate-500/20 bg-slate-800/10 text-slate-400',
   },
   locked: {
-    label: '잠금',
-    className: 'border-white/10 bg-black/40 text-slate-500',
+    label: 'LOCKED',
+    className: 'border-rose-500/20 bg-rose-950/20 text-rose-400/80',
   },
   assigned: {
-    label: '배정',
-    className: 'border-emerald-400/35 bg-emerald-500/15 text-emerald-300',
+    label: 'READY',
+    className: 'border-pink-500/40 bg-pink-500/10 text-pink-300 neon-text-pink',
   },
 }
 
@@ -150,8 +150,8 @@ export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: Dashboa
           <div className="flex shrink-0 items-center justify-between gap-2">
             <h2 className="game-stat-label">Live Broadcast Rank</h2>
             {hasAssigned ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                <span className="game-live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span className="inline-flex items-center gap-1 rounded-full border border-pink-400/30 bg-pink-500/10 px-2 py-0.5 text-[10px] font-bold text-pink-300 neon-text-pink">
+                <span className="game-live-dot h-1.5 w-1.5 rounded-full bg-pink-400" />
                 READY
               </span>
             ) : (
@@ -206,7 +206,7 @@ export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: Dashboa
           type="button"
           onClick={onStartBroadcast}
           disabled={!hasAssigned}
-          className="game-btn-primary mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px]"
+          className="game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px]"
         >
           ▶ 방송시작
         </button>
@@ -225,20 +225,22 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
 
   if (slot.status === 'locked') {
     return (
-      <article className="game-panel flex flex-col overflow-hidden rounded-2xl opacity-70">
-        <div className="relative aspect-video w-full shrink-0 bg-gradient-to-br from-slate-800/50 via-slate-900 to-slate-950">
-          <div className="absolute inset-0 bg-[repeating-linear-gradient(-45deg,transparent,transparent_8px,rgba(255,255,255,0.02)_8px,rgba(255,255,255,0.02)_16px)]" />
+      <article className="neon-glow-card flex flex-col overflow-hidden rounded-2xl opacity-80 bg-slate-950/80">
+        <div className="relative aspect-video w-full shrink-0 bg-slate-950 bg-[radial-gradient(circle_at_50%_50%,rgba(255,42,116,0.06),transparent_70%)]">
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(-45deg,transparent,transparent_8px,rgba(255,255,255,0.01)_8px,rgba(255,255,255,0.01)_16px)] animate-pulse" />
           <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-2">
-            <span className="rounded-md border border-white/10 bg-black/45 px-2 py-0.5 text-[10px] font-bold tracking-[0.14em] text-slate-400 backdrop-blur-sm">
+            <span className="rounded-md border border-white/5 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-[0.14em] text-slate-500 backdrop-blur-sm">
               {slot.label}
             </span>
-            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${badge.className}`}>
+            <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${badge.className}`}>
               {badge.label}
             </span>
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-            <IconLock />
-            <p className="text-xs font-semibold tracking-wide text-slate-500">슬롯 잠김</p>
+            <div className="relative flex items-center justify-center h-10 w-10 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 shadow-[0_0_15px_rgba(255,42,116,0.15)]">
+              <IconLock />
+            </div>
+            <p className="text-[10px] font-bold tracking-widest text-rose-400/60 uppercase">LOCKED CHANNEL</p>
           </div>
         </div>
 
@@ -249,8 +251,14 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-semibold text-slate-500">잠금된 방송 슬롯</p>
-              <p className="mt-0.5 text-[10px] text-slate-600">해금 후 사용할 수 있습니다</p>
+              <p className="mt-0.5 text-[10px] text-slate-600">해금 후 방송을 시작할 수 있습니다</p>
             </div>
+            <button
+              type="button"
+              className="game-btn border-rose-500/30 hover:border-rose-400/50 bg-rose-950/20 hover:bg-rose-950/40 text-[9px] text-rose-300 font-bold px-2 py-1 transition-all"
+            >
+              ₩5.0M 해금
+            </button>
           </div>
           <div className="grid grid-cols-4 gap-1">
             <StreamAction label="배정" icon={<IconAssign />} disabled />
@@ -265,20 +273,27 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
 
   if (slot.status === 'empty') {
     return (
-      <article className="game-panel flex flex-col overflow-hidden rounded-2xl">
-        <div className="relative aspect-video w-full shrink-0 bg-gradient-to-br from-slate-700/35 via-slate-900 to-slate-950">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(99,102,241,0.12),transparent_55%)]" />
-          <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-2">
-            <span className="rounded-md border border-white/10 bg-black/45 px-2 py-0.5 text-[10px] font-bold tracking-[0.14em] text-slate-200 backdrop-blur-sm">
+      <article className="neon-glow-card flex flex-col overflow-hidden rounded-2xl bg-slate-950/40">
+        <div className="relative aspect-video w-full shrink-0 bg-slate-950">
+          <div className="cctv-scanline" />
+          <div className="cctv-noise" />
+          <div className="reticle-corner reticle-tl" />
+          <div className="reticle-corner reticle-tr" />
+          <div className="reticle-corner reticle-bl" />
+          <div className="reticle-corner reticle-br" />
+
+          <div className="absolute top-2.5 left-2.5 right-2.5 z-10 flex items-start justify-between gap-2">
+            <span className="rounded-md border border-white/10 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-[0.14em] text-slate-300 backdrop-blur-sm">
               {slot.label}
             </span>
-            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${badge.className}`}>
+            <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${badge.className}`}>
               {badge.label}
             </span>
           </div>
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
-            <p className="text-sm font-semibold tracking-wide text-slate-300">비어 있음</p>
-            <p className="text-[11px] text-slate-500">스튜디오에서 배치하세요</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 z-10">
+            <div className="text-[10px] font-semibold tracking-widest text-slate-600 uppercase">NO SIGNAL</div>
+            <p className="text-xs font-bold text-slate-500 tracking-wide">대기 중 (비어 있음)</p>
+            <p className="text-[10px] text-slate-600">크리에이터를 배치하십시오</p>
           </div>
         </div>
 
@@ -319,31 +334,38 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
   }
 
   return (
-    <article className="game-panel flex flex-col overflow-hidden rounded-2xl">
+    <article className="neon-glow-card flex flex-col overflow-hidden rounded-2xl bg-slate-950/40">
       <div
         className={`relative aspect-video w-full shrink-0 bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.12),transparent_45%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-950/90 to-transparent" />
+        <div className="cctv-scanline" />
+        <div className="cctv-noise" />
+        <div className="reticle-corner reticle-tl" />
+        <div className="reticle-corner reticle-tr" />
+        <div className="reticle-corner reticle-bl" />
+        <div className="reticle-corner reticle-br" />
 
-        <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-2">
-          <span className="rounded-md border border-white/10 bg-black/45 px-2 py-0.5 text-[10px] font-bold tracking-[0.14em] text-slate-200 backdrop-blur-sm">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(124,77,255,0.15),transparent_60%)] z-0" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-950 to-transparent z-10" />
+
+        <div className="absolute top-2.5 left-2.5 right-2.5 z-20 flex items-start justify-between gap-2">
+          <span className="rounded-md border border-white/10 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-[0.14em] text-slate-200 backdrop-blur-sm">
             {slot.label}
           </span>
           <div className="flex items-center gap-1.5">
-            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${badge.className}`}>
+            <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${badge.className}`}>
               {badge.label}
             </span>
-            {creator?.live ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/35 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold tracking-wide text-emerald-300">
-                <span className="game-live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                LIVE
-              </span>
-            ) : (
-              <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
-                IDLE
-              </span>
-            )}
+            <div className="flex items-center gap-1 rounded bg-black/50 border border-white/5 px-1.5 py-0.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-pink-500 animate-ping" />
+              <span className="text-[8px] font-extrabold text-pink-400 tracking-wider">LIVE</span>
+              <div className="live-audio-wave ml-1">
+                <span className="audio-bar" />
+                <span className="audio-bar" />
+                <span className="audio-bar" />
+                <span className="audio-bar" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
