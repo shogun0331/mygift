@@ -229,7 +229,7 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
   if (slot.status === 'locked') {
     return (
       <article className="neon-glow-card flex flex-col overflow-hidden rounded-2xl opacity-80 bg-slate-950/80">
-        <div className="relative aspect-video w-full shrink-0 bg-slate-950 bg-[radial-gradient(circle_at_50%_50%,rgba(255,42,116,0.06),transparent_70%)]">
+        <div className="relative aspect-[2/1] w-full shrink-0 bg-slate-950 bg-[radial-gradient(circle_at_50%_50%,rgba(255,42,116,0.06),transparent_70%)]">
           <div className="absolute inset-0 bg-[repeating-linear-gradient(-45deg,transparent,transparent_8px,rgba(255,255,255,0.01)_8px,rgba(255,255,255,0.01)_16px)] animate-pulse" />
           <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-2">
             <span className="rounded-md border border-white/5 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-[0.14em] text-slate-500 backdrop-blur-sm">
@@ -277,7 +277,7 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
   if (slot.status === 'empty') {
     return (
       <article className="neon-glow-card flex flex-col overflow-hidden rounded-2xl bg-slate-950/40">
-        <div className="relative aspect-video w-full shrink-0 bg-slate-950">
+        <div className="relative aspect-[2/1] w-full shrink-0 bg-slate-950">
           <div className="cctv-scanline" />
           <div className="cctv-noise" />
           <div className="reticle-corner reticle-tl" />
@@ -339,7 +339,7 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
   return (
     <article className="neon-glow-card flex flex-col overflow-hidden rounded-2xl bg-slate-950/40">
       <div
-        className={`relative aspect-video w-full shrink-0 bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
+        className={`relative aspect-[2/1] w-full shrink-0 bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
       >
         <div className="cctv-scanline" />
         <div className="cctv-noise" />
