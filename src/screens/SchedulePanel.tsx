@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '../locales/i18n'
 import {
   assignCreatorToSlot,
   clearStudioSlot,
@@ -13,6 +14,7 @@ type SchedulePanelProps = {
 }
 
 export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanelProps) {
+  const { t } = useTranslation()
   const [selectedCard, setSelectedCard] = useState<string | null>(null)
 
   function assignToSlot(slotId: string) {
@@ -86,17 +88,17 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                   key={slot.id}
                   className={`min-h-0 min-w-0 rounded-lg border p-1 transition sm:rounded-xl sm:p-1.5 ${
                     locked
-                      ? 'border-white/8 bg-black/40 opacity-70'
+                      ? 'border-rose-950/30 bg-slate-950/80 opacity-40 shadow-[0_0_10px_rgba(255,42,116,0.03)]'
                       : canPlace
                         ? 'border-indigo-400/35 bg-indigo-500/10 shadow-[0_0_14px_rgba(99,102,241,0.16)]'
                         : filled
                           ? 'border-white/12 bg-black/30'
-                          : 'border-dashed border-white/12 bg-black/20'
+                          : 'border-dashed border-indigo-500/25 bg-slate-950/30'
                   }`}
                 >
                   <button
                     type="button"
-                    disabled={locked && !selectedCard}
+                    disabled={locked}
                     onClick={() => {
                       if (locked) return
                       if (selectedCard) {
@@ -107,12 +109,12 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                     }}
                     className={`game-card h-full w-full min-h-0 text-left transition ${
                       locked
-                        ? 'cursor-not-allowed border-white/8'
+                        ? 'cursor-not-allowed border-rose-950/30 pointer-events-none'
                         : canPlace
                           ? 'hover:border-indigo-400/55 hover:ring-1 hover:ring-indigo-400/35'
                           : filled
                             ? 'hover:border-white/20'
-                            : 'border-dashed border-white/15'
+                            : 'border-dashed border-indigo-500/30 hover:border-indigo-400/60 hover:bg-indigo-500/5'
                     }`}
                   >
                     <div className="relative flex h-full min-h-0 flex-col">
@@ -121,16 +123,16 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                           {slot.label.replace('SLOT ', '')}
                         </span>
                         {locked ? (
-                          <span className="rounded-md border border-white/10 bg-black/50 px-1 py-0.5 text-[8px] font-bold text-slate-500">
-                            LOCK
+                          <span className="rounded-md border border-rose-500/25 bg-rose-950/40 px-1 py-0.5 text-[8px] font-bold text-rose-300 backdrop-blur-sm">
+                            {t('dashboard.lockedChannel')}
                           </span>
                         ) : filled ? (
                           <span className="rounded-md border border-emerald-400/30 bg-emerald-500/20 px-1 py-0.5 text-[8px] font-bold text-emerald-200">
-                            배정
+                            {t('dashboard.studioPlaced')}
                           </span>
                         ) : (
-                          <span className="rounded-md border border-slate-400/25 bg-slate-500/15 px-1 py-0.5 text-[8px] font-bold text-slate-400">
-                            미배정
+                          <span className="rounded-md border border-indigo-400/25 bg-indigo-500/10 px-1 py-0.5 text-[8px] font-bold text-indigo-300">
+                            {t('dashboard.unassigned')}
                           </span>
                         )}
                       </div>
@@ -138,7 +140,7 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                       <div
                         className={`flex min-h-0 flex-1 flex-col items-center justify-end bg-gradient-to-b px-1.5 pb-2 pt-6 ${
                           locked
-                            ? 'from-slate-900/80 to-slate-950'
+                            ? 'from-slate-950 via-slate-950 to-rose-950/10'
                             : filled
                               ? 'from-slate-700/70 to-slate-950'
                               : 'from-slate-800/40 to-slate-950'
@@ -146,10 +148,12 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                       >
                         {locked ? (
                           <>
-                            <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-slate-600 sm:h-9 sm:w-9">
+                            <div className="mb-1.5 flex h-7.5 w-7.5 items-center justify-center rounded-full border border-rose-500/20 bg-rose-950/30 text-rose-500/60 sm:h-9.5 sm:w-9.5">
                               <IconLockTiny />
                             </div>
-                            <p className="text-[9px] font-semibold text-slate-500 sm:text-[10px]">잠금</p>
+                            <p className="text-[9px] font-bold text-rose-600/70 sm:text-[10px] tracking-wide uppercase">
+                              {t('dashboard.lockedChannel')}
+                            </p>
                           </>
                         ) : filled && slot.assignment ? (
                           <>
@@ -165,11 +169,11 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                           </>
                         ) : (
                           <>
-                            <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full border border-dashed border-white/15 text-base text-slate-500 sm:h-9 sm:w-9">
+                            <div className="mb-1.5 flex h-7.5 w-7.5 items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 sm:h-9.5 sm:w-9.5 shadow-[0_0_10px_rgba(99,102,241,0.1)]">
                               ＋
                             </div>
-                            <p className="text-[9px] font-semibold text-slate-400 sm:text-[10px]">
-                              비어 있음
+                            <p className="text-[9px] font-bold text-indigo-300 sm:text-[10px]">
+                              {t('dashboard.standby')}
                             </p>
                           </>
                         )}
@@ -186,14 +190,14 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
       <section className="game-panel mx-auto w-full max-w-4xl shrink-0 rounded-2xl px-2.5 py-2 sm:px-3 sm:py-2.5">
         <div className="mb-1 flex items-center justify-between gap-2 sm:mb-1.5">
           <p className="text-[11px] font-semibold tracking-wide text-slate-400">
-            배치할 크리에이터
+            {t('studio.placementTitle')}
           </p>
-          <p className="text-[10px] text-slate-500">카드를 선택해 해금된 슬롯에 배치</p>
+          <p className="text-[10px] text-slate-500">{t('studio.placementDesc')}</p>
         </div>
 
         {handCards.length === 0 ? (
           <p className="py-4 text-center text-xs text-slate-500">
-            보유 캐릭터가 없습니다. 캐릭터를 확보하면 여기에 나타납니다.
+            {t('studio.noCreators')}
           </p>
         ) : (
           <div className="flex justify-center gap-1.5 overflow-x-auto pb-0.5 sm:gap-2">

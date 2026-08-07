@@ -69,5 +69,10 @@
     "devMode": "開発者モード",
     "devModeDesc": "開発モード有効時、[EDIT]タブが常時有効になります。",
     "saveSuccess": "設定が正常に保存されました。"
+  },
+  "studio": {
+    "placementTitle": "配置するクリエイター",
+    "placementDesc": "カードを選択して解放されたスロットに配置",
+    "noCreators": "所有しているキャラクターがいません。キャラクターを獲得するとここに表示されます。"
   }
 }

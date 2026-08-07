@@ -67,7 +67,12 @@
     "bgm": "BGM Volume",
     "se": "SFX Volume",
     "devMode": "Developer Mode",
-    "devModeDesc": "Enabling dev mode permanently shows [EDIT] tab.",
-    "saveSuccess": "Settings saved successfully."
+    "devModeDesc": "Enabling Dev Mode unlocks the [EDIT] tab constantly.",
+    "saveSuccess": "Settings have been saved successfully."
+  },
+  "studio": {
+    "placementTitle": "CREATOR PLACEMENT",
+    "placementDesc": "Select a card and place it into an unlocked slot",
+    "noCreators": "No creators owned. Recruited characters will appear here."
   }
 }

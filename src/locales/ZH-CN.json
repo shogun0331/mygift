@@ -69,5 +69,10 @@
     "devMode": "开发者模式",
     "devModeDesc": "启用开发模式时，[EDIT] 选项卡将常时启用。",
     "saveSuccess": "设置保存成功。"
+  },
+  "studio": {
+    "placementTitle": "可部署的创作者",
+    "placementDesc": "选择卡片并部署到已解锁的插槽中",
+    "noCreators": "目前没有拥研究的创作者。获得角色后会显示在这里。"
   }
 }
