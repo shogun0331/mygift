@@ -11,16 +11,16 @@ type MenuId =
 
 const MENU_ITEMS: {
   id: Exclude<MenuId, 'edit'>
-  label: string
-  sub?: string
+  labelKey: string
+  subKey?: string
   icon?: 'gear'
 }[] = [
-  { id: 'new', label: 'NEW GAME' },
-  { id: 'load', label: 'LOAD GAME', sub: '(SAVED DATA)' },
-  { id: 'settings', label: 'SETTINGS', icon: 'gear' },
-  { id: 'gallery', label: 'ENDING GALLERY' },
-  { id: 'credits', label: 'CREDITS' },
-  { id: 'exit', label: 'EXIT' },
+  { id: 'new', labelKey: 'menu.newGame' },
+  { id: 'load', labelKey: 'menu.loadGame', subKey: 'menu.savedData' },
+  { id: 'settings', labelKey: 'menu.settings', icon: 'gear' },
+  { id: 'gallery', labelKey: 'menu.gallery' },
+  { id: 'credits', labelKey: 'menu.credits' },
+  { id: 'exit', labelKey: 'menu.exit' },
 ]
 
 function GearIcon() {
@@ -41,7 +41,10 @@ type MainMenuProps = {
   onOpenEditor?: () => void
 }
 
+import { useTranslation } from '../locales/i18n'
+
 export function MainMenu({ onNewGame, onOpenEditor }: MainMenuProps) {
+  const { t } = useTranslation()
   const [active, setActive] = useState<MenuId>('new')
   const showEditor = import.meta.env.DEV
 
@@ -55,7 +58,7 @@ export function MainMenu({ onNewGame, onOpenEditor }: MainMenuProps) {
       onOpenEditor?.()
       return
     }
-    if (id === 'exit' && window.confirm('게임을 종료할까요?')) {
+    if (id === 'exit' && window.confirm(t('menu.confirmExit'))) {
       window.close()
     }
   }
@@ -70,7 +73,7 @@ export function MainMenu({ onNewGame, onOpenEditor }: MainMenuProps) {
         }}
       >
         <header className="text-right">
-          <p className="game-kicker mb-3">Tonight&apos;s Broadcast</p>
+          <p className="game-kicker mb-3">{t('menu.kicker')}</p>
           <h1
             className="game-title leading-[0.9]"
             style={{ fontSize: 'clamp(2.1rem, 2vw + 2.2vh, 5rem)' }}
@@ -87,8 +90,8 @@ export function MainMenu({ onNewGame, onOpenEditor }: MainMenuProps) {
               fontSize: 'clamp(0.7rem, 0.35vw + 0.55vh, 1rem)',
             }}
           >
-            경영 시뮬레이션 게임{' '}
-            <span className="text-amber-400">(FINAL VER.)</span>
+            {t('menu.desc')}{' '}
+            <span className="text-amber-400">({t('menu.finalVer')})</span>
           </p>
         </header>
 
@@ -116,17 +119,17 @@ export function MainMenu({ onNewGame, onOpenEditor }: MainMenuProps) {
                 <span className="flex items-center justify-center gap-[0.4em]">
                   {item.icon === 'gear' ? <GearIcon /> : null}
                   <span className="font-semibold tracking-[0.12em]">
-                    [{item.label}]
+                    [{t(item.labelKey)}]
                   </span>
                 </span>
-                {item.sub ? (
+                {item.subKey ? (
                   <span
                     className={`mt-[0.2em] block tracking-[0.14em] ${
                       isActive ? 'text-indigo-100' : 'text-slate-500'
                     }`}
                     style={{ fontSize: '0.72em' }}
                   >
-                    {item.sub}
+                    {t(item.subKey)}
                   </span>
                 ) : null}
               </button>
@@ -148,14 +151,14 @@ export function MainMenu({ onNewGame, onOpenEditor }: MainMenuProps) {
                 fontSize: 'clamp(0.78rem, 0.45vw + 0.55vh, 1.2rem)',
               }}
             >
-              <span className="font-semibold tracking-[0.12em]">[EDIT]</span>
+              <span className="font-semibold tracking-[0.12em]">[{t('menu.edit')}]</span>
               <span
                 className={`mt-[0.2em] block tracking-[0.14em] ${
                   active === 'edit' ? 'text-indigo-100' : 'text-amber-400/90'
                 }`}
                 style={{ fontSize: '0.72em' }}
               >
-                (DEV ONLY)
+                ({t('menu.devOnly')})
               </span>
             </button>
           ) : null}

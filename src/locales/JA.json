@@ -1,0 +1,70 @@
+{
+  "menu": {
+    "newGame": "NEW GAME",
+    "loadGame": "LOAD GAME",
+    "settings": "SETTINGS",
+    "gallery": "ENDING GALLERY",
+    "credits": "CREDITS",
+    "exit": "EXIT",
+    "edit": "EDIT",
+    "dashboard": "DASHBOARD",
+    "creator": "CREATOR",
+    "studio": "STUDIO",
+    "equipment": "EQUIPMENT",
+    "confirmExit": "ゲームを終了しますか？",
+    "devOnly": "DEV ONLY",
+    "finalVer": "FINAL VER.",
+    "kicker": "Tonight's Broadcast",
+    "desc": "経営シミュレーションゲーム",
+    "savedData": "(SAVED DATA)"
+  },
+  "hud": {
+    "dateTime": "年月 · 時間",
+    "speed": "倍速",
+    "assets": "資産",
+    "back": "戻る"
+  },
+  "dashboard": {
+    "recentEvents": "Recent Events",
+    "noEvents": "まだイベントが発生していません。",
+    "liveRank": "Live Broadcast Rank",
+    "noLiveBroadcast": "スタジオで配置された放送がありません。",
+    "startBroadcast": "▶ 放送開始",
+    "ready": "READY",
+    "noSignal": "NO SIGNAL",
+    "standby": "待機中 (空きスロット)",
+    "placeCreator": "クリエイターを配置してください",
+    "lockedChannel": "LOCKED CHANNEL",
+    "lockedSlot": "ロックされた放送スロット",
+    "unlockHint": "アンロック後に放送を開始できます",
+    "unlockBtn": "₩5.0M 解금",
+    "unassigned": "未配属スロット",
+    "unassignedLinked": "スタジオ配置と連動",
+    "idle": "IDLE",
+    "studioPlaced": "スタジオ配置"
+  },
+  "equipment": {
+    "title": "EQUIPMENT",
+    "camera": "カメラ",
+    "light": "照明",
+    "mic": "マイク",
+    "pc": "PC",
+    "internet": "インターネット",
+    "set": "背景/セット",
+    "revenue": "収益",
+    "popularity": "人気",
+    "loyalty": "忠誠度",
+    "upgrade": "⚡ UPGRADE"
+  },
+  "settings": {
+    "title": "SETTINGS",
+    "language": "言語設定",
+    "languageDesc": "インゲームおよびエディタの言語を選択します。",
+    "audio": "オーディオ設定",
+    "bgm": "BGM音量",
+    "se": "SE音量",
+    "devMode": "開発者モード",
+    "devModeDesc": "開発モード有効時、[EDIT]タブが常時有効になります。",
+    "saveSuccess": "設定が正常に保存されました。"
+  }
+}

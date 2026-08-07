@@ -1,0 +1,70 @@
+{
+  "menu": {
+    "newGame": "NEW GAME",
+    "loadGame": "LOAD GAME",
+    "settings": "SETTINGS",
+    "gallery": "ENDING GALLERY",
+    "credits": "CREDITS",
+    "exit": "EXIT",
+    "edit": "EDIT",
+    "dashboard": "DASHBOARD",
+    "creator": "CREATOR",
+    "studio": "STUDIO",
+    "equipment": "EQUIPMENT",
+    "confirmExit": "确定要退出游戏吗？",
+    "devOnly": "DEV ONLY",
+    "finalVer": "FINAL VER.",
+    "kicker": "Tonight's Broadcast",
+    "desc": "模拟经营游戏",
+    "savedData": "(SAVED DATA)"
+  },
+  "hud": {
+    "dateTime": "年月 · 时间",
+    "speed": "倍速",
+    "assets": "资产",
+    "back": "返回"
+  },
+  "dashboard": {
+    "recentEvents": "Recent Events",
+    "noEvents": "暂未发生任何事件。",
+    "liveRank": "Live Broadcast Rank",
+    "noLiveBroadcast": "工作室中暂未分配广播。",
+    "startBroadcast": "▶ 开始广播",
+    "ready": "READY",
+    "noSignal": "NO SIGNAL",
+    "standby": "待机中 (空闲插槽)",
+    "placeCreator": "请分配创作者",
+    "lockedChannel": "LOCKED CHANNEL",
+    "lockedSlot": "已锁定的广播插槽",
+    "unlockHint": "解锁后可开始广播",
+    "unlockBtn": "₩5.0M 解锁",
+    "unassigned": "未分配插槽",
+    "unassignedLinked": "与工作室分配连动",
+    "idle": "IDLE",
+    "studioPlaced": "工作室分配"
+  },
+  "equipment": {
+    "title": "EQUIPMENT",
+    "camera": "相机",
+    "light": "照明",
+    "mic": "麦克风",
+    "pc": "PC",
+    "internet": "网络",
+    "set": "背景/套装",
+    "revenue": "收益",
+    "popularity": "人气",
+    "loyalty": "忠诚度",
+    "upgrade": "⚡ UPGRADE"
+  },
+  "settings": {
+    "title": "SETTINGS",
+    "language": "语言设置",
+    "languageDesc": "选择游戏内及编辑器的显示语言。",
+    "audio": "音频设置",
+    "bgm": "BGM 音量",
+    "se": "SE 音量",
+    "devMode": "开发者模式",
+    "devModeDesc": "启用开发模式时，[EDIT] 选项卡将常时启用。",
+    "saveSuccess": "设置保存成功。"
+  }
+}

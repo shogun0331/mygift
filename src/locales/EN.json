@@ -1,0 +1,70 @@
+{
+  "menu": {
+    "newGame": "NEW GAME",
+    "loadGame": "LOAD GAME",
+    "settings": "SETTINGS",
+    "gallery": "ENDING GALLERY",
+    "credits": "CREDITS",
+    "exit": "EXIT",
+    "edit": "EDIT",
+    "dashboard": "DASHBOARD",
+    "creator": "CREATOR",
+    "studio": "STUDIO",
+    "equipment": "EQUIPMENT",
+    "confirmExit": "Are you sure you want to exit?",
+    "devOnly": "DEV ONLY",
+    "finalVer": "FINAL VER.",
+    "kicker": "Tonight's Broadcast",
+    "desc": "Management Sim Game",
+    "savedData": "(SAVED DATA)"
+  },
+  "hud": {
+    "dateTime": "DATE · TIME",
+    "speed": "SPEED",
+    "assets": "ASSETS",
+    "back": "BACK"
+  },
+  "dashboard": {
+    "recentEvents": "Recent Events",
+    "noEvents": "No events have occurred yet.",
+    "liveRank": "Live Broadcast Rank",
+    "noLiveBroadcast": "No broadcast assigned in studio.",
+    "startBroadcast": "▶ START LIVE",
+    "ready": "READY",
+    "noSignal": "NO SIGNAL",
+    "standby": "STANDBY (EMPTY)",
+    "placeCreator": "Please assign a creator",
+    "lockedChannel": "LOCKED CHANNEL",
+    "lockedSlot": "Locked Broadcast Slot",
+    "unlockHint": "Unlock to start broadcasting",
+    "unlockBtn": "₩5.0M UNLOCK",
+    "unassigned": "Unassigned Slot",
+    "unassignedLinked": "Linked to Studio Slots",
+    "idle": "IDLE",
+    "studioPlaced": "Studio Placed"
+  },
+  "equipment": {
+    "title": "EQUIPMENT",
+    "camera": "Camera",
+    "light": "Light",
+    "mic": "Mic",
+    "pc": "PC",
+    "internet": "Internet",
+    "set": "Set / Backdrop",
+    "revenue": "Revenue",
+    "popularity": "Popularity",
+    "loyalty": "Loyalty",
+    "upgrade": "⚡ UPGRADE"
+  },
+  "settings": {
+    "title": "SETTINGS",
+    "language": "Language Settings",
+    "languageDesc": "Select the language for the in-game and editor UI.",
+    "audio": "Audio Settings",
+    "bgm": "BGM Volume",
+    "se": "SFX Volume",
+    "devMode": "Developer Mode",
+    "devModeDesc": "Enabling dev mode permanently shows [EDIT] tab.",
+    "saveSuccess": "Settings saved successfully."
+  }
+}

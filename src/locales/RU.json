@@ -1,0 +1,70 @@
+{
+  "menu": {
+    "newGame": "NEW GAME",
+    "loadGame": "LOAD GAME",
+    "settings": "SETTINGS",
+    "gallery": "ENDING GALLERY",
+    "credits": "CREDITS",
+    "exit": "EXIT",
+    "edit": "EDIT",
+    "dashboard": "DASHBOARD",
+    "creator": "CREATOR",
+    "studio": "STUDIO",
+    "equipment": "EQUIPMENT",
+    "confirmExit": "게임을 종료할까요?",
+    "devOnly": "DEV ONLY",
+    "finalVer": "FINAL VER.",
+    "kicker": "Tonight's Broadcast",
+    "desc": "경영 시뮬레이션 게임",
+    "savedData": "(SAVED DATA)"
+  },
+  "hud": {
+    "dateTime": "년월 · 시간",
+    "speed": "배속",
+    "assets": "자산",
+    "back": "뒤로가기"
+  },
+  "dashboard": {
+    "recentEvents": "Recent Events",
+    "noEvents": "아직 발생한 이벤트가 없습니다.",
+    "liveRank": "Live Broadcast Rank",
+    "noLiveBroadcast": "스튜디오에서 배정된 방송이 없습니다.",
+    "startBroadcast": "▶ 방송시작",
+    "ready": "READY",
+    "noSignal": "NO SIGNAL",
+    "standby": "대기 중 (비어 있음)",
+    "placeCreator": "크리에이터를 배치하십시오",
+    "lockedChannel": "LOCKED CHANNEL",
+    "lockedSlot": "잠금된 방송 슬롯",
+    "unlockHint": "해금 후 방송을 시작할 수 있습니다",
+    "unlockBtn": "₩5.0M 해금",
+    "unassigned": "미배정 슬롯",
+    "unassignedLinked": "스튜디오 배치와 연동",
+    "idle": "IDLE",
+    "studioPlaced": "스튜디오 배치"
+  },
+  "equipment": {
+    "title": "EQUIPMENT",
+    "camera": "카메라",
+    "light": "조명",
+    "mic": "마이크",
+    "pc": "PC",
+    "internet": "인터넷",
+    "set": "배경/세트",
+    "revenue": "수익",
+    "popularity": "인기",
+    "loyalty": "충성도",
+    "upgrade": "⚡ UPGRADE"
+  },
+  "settings": {
+    "title": "SETTINGS",
+    "language": "언어 설정",
+    "languageDesc": "인게임 및 에디터 화면의 언어를 선택합니다.",
+    "audio": "오디오 설정",
+    "bgm": "배경음악 볼륨",
+    "se": "효과음 볼륨",
+    "devMode": "개발자 모드",
+    "devModeDesc": "개발 모드 활성화 시 [EDIT] 탭이 상시 활성화됩니다.",
+    "saveSuccess": "설정이 성공적으로 저장되었습니다."
+  }
+}

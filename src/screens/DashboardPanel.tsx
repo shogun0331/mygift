@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { creatorVisuals, type StudioSlot } from '../game/studioSlots'
+import { useTranslation } from '../locales/i18n'
 
 type DashboardPanelProps = {
   slots: StudioSlot[]
@@ -77,22 +78,23 @@ const TAG_STYLE = {
   violet: 'border-violet-400/30 bg-violet-400/15 text-violet-300',
 } as const
 
-const STATUS_BADGE: Record<StudioSlot['status'], { label: string; className: string }> = {
+const STATUS_BADGE: Record<StudioSlot['status'], { labelKey: string; className: string }> = {
   empty: {
-    label: 'STANDBY',
+    labelKey: 'dashboard.standby',
     className: 'border-slate-500/20 bg-slate-800/10 text-slate-400',
   },
   locked: {
-    label: 'LOCKED',
+    labelKey: 'dashboard.lockedChannel',
     className: 'border-rose-500/20 bg-rose-950/20 text-rose-400/80',
   },
   assigned: {
-    label: 'READY',
+    labelKey: 'dashboard.ready',
     className: 'border-pink-500/40 bg-pink-500/10 text-pink-300 neon-text-pink',
   },
 }
 
 export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: DashboardPanelProps) {
+  const { t } = useTranslation()
   const slots = studioSlots.map(toBroadcastSlot)
   const assigned = studioSlots.filter((slot) => slot.status === 'assigned' && slot.assignment)
   const hasAssigned = assigned.length > 0
@@ -125,9 +127,9 @@ export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: Dashboa
 
       <aside className="flex min-h-0 flex-col gap-2.5 lg:h-full lg:overflow-hidden">
         <section className="game-panel flex max-h-48 min-h-0 flex-col rounded-2xl p-3 lg:max-h-none lg:flex-1">
-          <h2 className="game-stat-label shrink-0">Recent Events</h2>
+          <h2 className="game-stat-label shrink-0">{t('dashboard.recentEvents')}</h2>
           {EVENTS.length === 0 ? (
-            <p className="mt-4 text-center text-xs text-slate-500">아직 발생한 이벤트가 없습니다.</p>
+            <p className="mt-4 text-center text-xs text-slate-500">{t('dashboard.noEvents')}</p>
           ) : (
             <ul className="mt-2.5 min-h-0 flex-1 space-y-2 overflow-auto pr-1">
               {EVENTS.map((event) => (
@@ -148,11 +150,11 @@ export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: Dashboa
 
         <section className="game-panel flex max-h-64 min-h-0 shrink-0 flex-col rounded-2xl p-3 lg:max-h-[40%]">
           <div className="flex shrink-0 items-center justify-between gap-2">
-            <h2 className="game-stat-label">Live Broadcast Rank</h2>
+            <h2 className="game-stat-label">{t('dashboard.liveRank')}</h2>
             {hasAssigned ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-pink-400/30 bg-pink-500/10 px-2 py-0.5 text-[10px] font-bold text-pink-300 neon-text-pink">
                 <span className="game-live-dot h-1.5 w-1.5 rounded-full bg-pink-400" />
-                READY
+                {t('dashboard.ready')}
               </span>
             ) : (
               <span className="rounded-full border border-white/10 bg-black/30 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
@@ -162,7 +164,7 @@ export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: Dashboa
           </div>
           {liveRanking.length === 0 ? (
             <p className="mt-4 text-center text-xs text-slate-500">
-              스튜디오에서 배정된 방송이 없습니다.
+              {t('dashboard.noLiveBroadcast')}
             </p>
           ) : (
             <ul className="mt-2.5 min-h-0 flex-1 space-y-1.5 overflow-auto pr-0.5">
@@ -188,7 +190,7 @@ export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: Dashboa
                       {creator.name}
                       <span className="ml-1 font-medium text-amber-400/90">({creator.concept})</span>
                     </p>
-                    <p className="mt-0.5 text-[10px] text-slate-500">스튜디오 배치</p>
+                    <p className="mt-0.5 text-[10px] text-slate-500">{t('dashboard.studioPlaced')}</p>
                   </div>
                   <div className="shrink-0 text-right">
                     <p className="text-[10px] font-semibold tracking-wide text-slate-500">인기</p>
@@ -208,7 +210,7 @@ export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: Dashboa
           disabled={!hasAssigned}
           className="game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px]"
         >
-          ▶ 방송시작
+          {t('dashboard.startBroadcast')}
         </button>
       </aside>
     </div>
@@ -216,6 +218,7 @@ export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: Dashboa
 }
 
 function StreamCard({ slot }: { slot: BroadcastSlotView }) {
+  const { t } = useTranslation()
   const badge = STATUS_BADGE[slot.status]
   const creator = slot.creator
   const staminaPct =
@@ -233,14 +236,14 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
               {slot.label}
             </span>
             <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${badge.className}`}>
-              {badge.label}
+              {t(badge.labelKey)}
             </span>
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
             <div className="relative flex items-center justify-center h-10 w-10 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 shadow-[0_0_15px_rgba(255,42,116,0.15)]">
               <IconLock />
             </div>
-            <p className="text-[10px] font-bold tracking-widest text-rose-400/60 uppercase">LOCKED CHANNEL</p>
+            <p className="text-[10px] font-bold tracking-widest text-rose-400/60 uppercase">{t('dashboard.lockedChannel')}</p>
           </div>
         </div>
 
@@ -250,14 +253,14 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
               <IconLockSmall />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold text-slate-500">잠금된 방송 슬롯</p>
-              <p className="mt-0.5 text-[10px] text-slate-600">해금 후 방송을 시작할 수 있습니다</p>
+              <p className="truncate text-xs font-semibold text-slate-500">{t('dashboard.lockedSlot')}</p>
+              <p className="mt-0.5 text-[10px] text-slate-600">{t('dashboard.unlockHint')}</p>
             </div>
             <button
               type="button"
               className="game-btn border-rose-500/30 hover:border-rose-400/50 bg-rose-950/20 hover:bg-rose-950/40 text-[9px] text-rose-300 font-bold px-2 py-1 transition-all"
             >
-              ₩5.0M 해금
+              {t('dashboard.unlockBtn')}
             </button>
           </div>
           <div className="grid grid-cols-4 gap-1">
@@ -287,13 +290,13 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
               {slot.label}
             </span>
             <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${badge.className}`}>
-              {badge.label}
+              {t(badge.labelKey)}
             </span>
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 z-10">
-            <div className="text-[10px] font-semibold tracking-widest text-slate-600 uppercase">NO SIGNAL</div>
-            <p className="text-xs font-bold text-slate-500 tracking-wide">대기 중 (비어 있음)</p>
-            <p className="text-[10px] text-slate-600">크리에이터를 배치하십시오</p>
+            <div className="text-[10px] font-semibold tracking-widest text-slate-600 uppercase">{t('dashboard.noSignal')}</div>
+            <p className="text-xs font-bold text-slate-500 tracking-wide">{t('dashboard.standby')}</p>
+            <p className="text-[10px] text-slate-600">{t('dashboard.placeCreator')}</p>
           </div>
         </div>
 
@@ -303,8 +306,8 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
               ＋
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold text-slate-400">미배정 슬롯</p>
-              <p className="mt-0.5 text-[10px] text-slate-600">스튜디오 배치와 연동</p>
+              <p className="truncate text-xs font-semibold text-slate-400">{t('dashboard.unassigned')}</p>
+              <p className="mt-0.5 text-[10px] text-slate-600">{t('dashboard.unassignedLinked')}</p>
             </div>
             <div className="flex shrink-0 items-center gap-1 text-[10px] font-semibold text-slate-600">
               <IconEye />
@@ -354,11 +357,11 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
           </span>
           <div className="flex items-center gap-1.5">
             <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${badge.className}`}>
-              {badge.label}
+              {t(badge.labelKey)}
             </span>
             <div className="flex items-center gap-1 rounded bg-black/50 border border-white/5 px-1.5 py-0.5">
               <span className="h-1.5 w-1.5 rounded-full bg-pink-500 animate-ping" />
-              <span className="text-[8px] font-extrabold text-pink-400 tracking-wider">LIVE</span>
+              <span className="text-[8px] font-extrabold text-pink-400 tracking-wider">{t('dashboard.idle')}</span>
               <div className="live-audio-wave ml-1">
                 <span className="audio-bar" />
                 <span className="audio-bar" />

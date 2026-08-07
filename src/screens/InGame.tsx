@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { useTranslation } from '../locales/i18n'
 import {
   toStudioHandCard,
   type OwnedCreator,
@@ -17,13 +18,6 @@ export type GameTab =
   | 'equipment'
   | 'settings'
 
-const TAB_TITLES: Record<GameTab, string> = {
-  dashboard: 'DASHBOARD',
-  creator: 'CREATOR',
-  schedule: 'STUDIO',
-  equipment: 'EQUIPMENT',
-  settings: 'SETTINGS',
-}
 
 const SPEED_OPTIONS = ['1x', '2x', '3x'] as const
 type SpeedOption = (typeof SPEED_OPTIONS)[number]
@@ -144,6 +138,7 @@ export function InGame({
   onBack,
   onStartBroadcast,
 }: InGameProps) {
+  const { t, locale, setLocale } = useTranslation()
   const [tab, setTab] = useState<GameTab>('dashboard')
   const [speed, setSpeed] = useState<SpeedOption>('1x')
   const [now, setNow] = useState(() => new Date())
@@ -166,13 +161,13 @@ export function InGame({
             className="game-title mt-1 text-2xl"
             style={{ letterSpacing: '0.04em' }}
           >
-            {TAB_TITLES[tab]}
+            {t(`menu.${tab}`)}
           </h1>
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
           <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(0,245,255,0.04)]">
-            <p className="game-stat-label">년월 · 시간</p>
+            <p className="game-stat-label">{t('hud.dateTime')}</p>
             <p className="mt-0.5 text-xs font-bold tabular-nums text-slate-100 sm:text-sm">
               <span>{clock.date}</span>
               <span className="mx-1.5 text-slate-600">|</span>
@@ -181,7 +176,7 @@ export function InGame({
           </div>
 
           <div className="game-panel rounded-xl px-2.5 py-2 sm:px-3 border-indigo-500/25">
-            <p className="game-stat-label mb-1 px-0.5">배속</p>
+            <p className="game-stat-label mb-1 px-0.5">{t('hud.speed')}</p>
             <div className="flex gap-1">
               {SPEED_OPTIONS.map((option) => {
                 const isActive = speed === option
@@ -202,7 +197,7 @@ export function InGame({
           </div>
 
           <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(251,191,36,0.04)]">
-            <p className="game-stat-label">자산</p>
+            <p className="game-stat-label">{t('hud.assets')}</p>
             <p className="text-sm font-black text-amber-400 animate-pulse" style={{ textShadow: '0 0 8px rgba(251, 191, 36, 0.45)' }}>₩12,500,000</p>
           </div>
 
@@ -212,7 +207,7 @@ export function InGame({
             className="game-btn px-4 py-2 text-sm"
           >
             <IconBack />
-            <span>뒤로가기</span>
+            <span>{t('hud.back')}</span>
           </button>
         </div>
       </header>
@@ -240,9 +235,76 @@ export function InGame({
           />
         ) : tab === 'equipment' ? (
           <EquipmentPanel />
+        ) : tab === 'settings' ? (
+          <div className="neon-glow-card rounded-2xl p-6 bg-slate-950/50 backdrop-blur-md max-w-2xl mx-auto border border-indigo-500/20">
+            <h2 className="text-lg font-bold text-slate-100 tracking-wider mb-5 flex items-center gap-2">
+              ⚙️ {t('settings.title')}
+            </h2>
+
+            <div className="space-y-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-slate-400 tracking-wider">
+                  {t('settings.language')}
+                </label>
+                <p className="text-[10px] text-slate-600 mb-1">
+                  {t('settings.languageDesc')}
+                </p>
+                <div className="relative">
+                  <select
+                    value={locale}
+                    onChange={(e) => setLocale(e.target.value as any)}
+                    className="w-full bg-slate-900 border border-indigo-500/30 rounded-xl px-4 py-3 text-xs text-slate-200 font-bold focus:outline-none focus:border-pink-500/60 appearance-none cursor-pointer transition-all"
+                  >
+                    <option value="KO">한국어 (KO)</option>
+                    <option value="EN">English (EN)</option>
+                    <option value="JA">日本語 (JA)</option>
+                    <option value="ZH-CN">简体中文 (ZH-CN)</option>
+                    <option value="RU">Русский (RU)</option>
+                    <option value="ES">Español (ES)</option>
+                    <option value="DE">Deutsch (DE)</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-indigo-400">
+                    <svg className="fill-current h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-white/5 pt-5 space-y-4">
+                <h3 className="text-xs font-bold text-slate-400 tracking-wider">
+                  {t('settings.audio')}
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[10px] text-slate-500 font-semibold">{t('settings.bgm')}</span>
+                    <input type="range" className="accent-pink-500 bg-slate-900 border border-indigo-500/20 h-1.5 rounded-lg appearance-none cursor-pointer" defaultValue={70} />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[10px] text-slate-500 font-semibold">{t('settings.se')}</span>
+                    <input type="range" className="accent-pink-500 bg-slate-900 border border-indigo-500/20 h-1.5 rounded-lg appearance-none cursor-pointer" defaultValue={80} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-white/5 pt-5 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xs font-bold text-slate-400 tracking-wider">
+                    {t('settings.devMode')}
+                  </h3>
+                  <p className="text-[9px] text-slate-600 mt-1">
+                    {t('settings.devModeDesc')}
+                  </p>
+                </div>
+                <span className="text-[10px] text-slate-500 font-bold bg-slate-900 border border-indigo-500/25 px-2.5 py-1 rounded-lg">
+                  OFF
+                </span>
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="game-panel min-h-full rounded-2xl p-6 text-slate-500">
-            <p className="text-base">{TAB_TITLES[tab]} 화면 준비 중</p>
+            <p className="text-base">{t(`menu.${tab}`) || tab.toUpperCase()} 화면 준비 중</p>
           </div>
         )}
       </section>
@@ -261,7 +323,7 @@ export function InGame({
                 }`}
               >
                 {item.icon}
-                <span>{item.label}</span>
+                <span>{t(`menu.${item.id}`)}</span>
               </button>
             )
           })}

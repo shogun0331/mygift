@@ -1,11 +1,11 @@
 import { useState } from 'react'
+import { useTranslation } from '../locales/i18n'
 
 type Equipment = {
   id: string
-  name: string
   icon: string
   level: number
-  bonusLabel: string
+  bonusKey: string
   bonusValue: number
   upgradeCost: number
 }
@@ -13,55 +13,49 @@ type Equipment = {
 const INITIAL_EQUIPMENT: Equipment[] = [
   {
     id: 'camera',
-    name: '카메라',
     icon: '📷',
     level: 2,
-    bonusLabel: '수익',
+    bonusKey: 'revenue',
     bonusValue: 10,
     upgradeCost: 500_000,
   },
   {
     id: 'light',
-    name: '조명',
     icon: '💡',
     level: 1,
-    bonusLabel: '인기',
+    bonusKey: 'popularity',
     bonusValue: 5,
     upgradeCost: 300_000,
   },
   {
     id: 'mic',
-    name: '마이크',
     icon: '🎙️',
     level: 0,
-    bonusLabel: '충성도',
+    bonusKey: 'loyalty',
     bonusValue: 0,
     upgradeCost: 200_000,
   },
   {
     id: 'pc',
-    name: 'PC',
     icon: '💻',
     level: 0,
-    bonusLabel: '수익',
+    bonusKey: 'revenue',
     bonusValue: 0,
     upgradeCost: 1_000_000,
   },
   {
     id: 'internet',
-    name: '인터넷',
     icon: '🌐',
     level: 0,
-    bonusLabel: '수익',
+    bonusKey: 'revenue',
     bonusValue: 0,
     upgradeCost: 300_000,
   },
   {
     id: 'set',
-    name: '배경/세트',
     icon: '🎨',
     level: 0,
-    bonusLabel: '인기',
+    bonusKey: 'popularity',
     bonusValue: 0,
     upgradeCost: 500_000,
   },
@@ -72,6 +66,7 @@ function formatCost(value: number) {
 }
 
 export function EquipmentPanel() {
+  const { t } = useTranslation()
   const [items, setItems] = useState(INITIAL_EQUIPMENT)
 
   const handleUpgrade = (id: string) => {
@@ -109,7 +104,7 @@ export function EquipmentPanel() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-bold text-slate-100 truncate">
-                      {item.name}
+                      {t(`equipment.${item.id}`)}
                     </h3>
                     <span
                       className={`rounded-md border px-1.5 py-0.2 text-[9px] font-black tracking-wider transition-all shrink-0 ${
@@ -124,7 +119,7 @@ export function EquipmentPanel() {
 
                   {/* 스탯 비교 연출 */}
                   <div className="mt-1.5 flex items-center flex-wrap gap-x-1.5 gap-y-0.5 text-xs">
-                    <span className="text-slate-500 font-semibold">{item.bonusLabel}</span>
+                    <span className="text-slate-500 font-semibold">{t(`equipment.${item.bonusKey}`)}</span>
                     <span className="text-slate-400 font-medium">{item.bonusValue}%</span>
                     <span className="text-pink-500/60 font-black">➔</span>
                     <span className="text-cyan-300 font-bold animate-pulse" style={{ textShadow: '0 0 8px rgba(0, 245, 255, 0.4)' }}>
@@ -149,7 +144,7 @@ export function EquipmentPanel() {
                     height: '46px'
                   }}
                 >
-                  <span className="text-[9px] text-pink-200 tracking-widest font-semibold uppercase">⚡ UPGRADE</span>
+                  <span className="text-[9px] text-pink-200 tracking-widest font-semibold uppercase">{t('equipment.upgrade')}</span>
                   <span className="text-[11px] font-extrabold text-white">₩{formatCost(item.upgradeCost)}</span>
                 </button>
               </div>
