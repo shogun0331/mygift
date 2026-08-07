@@ -59,13 +59,25 @@ const INITIAL_EQUIPMENT: Equipment[] = [
     bonusValue: 0,
     upgradeCost: 500_000,
   },
+  {
+    id: 'studio_expansion',
+    icon: '🏗️',
+    level: 0,
+    bonusKey: 'slots',
+    bonusValue: 0,
+    upgradeCost: 5_000_000,
+  },
 ]
 
 function formatCost(value: number) {
   return value.toLocaleString('ko-KR')
 }
 
-export function EquipmentPanel() {
+type EquipmentPanelProps = {
+  onUpgradeStudio?: () => void
+}
+
+export function EquipmentPanel({ onUpgradeStudio }: EquipmentPanelProps) {
   const { t } = useTranslation()
   const [items, setItems] = useState(INITIAL_EQUIPMENT)
 
@@ -73,11 +85,20 @@ export function EquipmentPanel() {
     setItems((prev) =>
       prev.map((item) => {
         if (item.id !== id) return item
+
+        if (id === 'studio_expansion' && onUpgradeStudio) {
+          onUpgradeStudio()
+        }
+
+        const delta = item.id === 'studio_expansion'
+          ? 1
+          : (item.id === 'light' || item.id === 'set' ? 5 : 10)
+
         return {
           ...item,
           level: item.level + 1,
-          bonusValue: item.bonusValue + (item.id === 'light' || item.id === 'set' ? 5 : 10),
-          upgradeCost: Math.round(item.upgradeCost * 1.4),
+          bonusValue: item.bonusValue + delta,
+          upgradeCost: Math.round(item.upgradeCost * 1.5),
         }
       }),
     )
@@ -87,7 +108,9 @@ export function EquipmentPanel() {
     <div className="flex min-h-full flex-col gap-4">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {items.map((item) => {
-          const bonusDelta = item.id === 'light' || item.id === 'set' ? 5 : 10
+          const bonusDelta = item.id === 'studio_expansion'
+            ? 1
+            : (item.id === 'light' || item.id === 'set' ? 5 : 10)
           const nextBonusValue = item.bonusValue + bonusDelta
 
           return (

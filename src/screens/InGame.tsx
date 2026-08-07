@@ -145,6 +145,17 @@ export function InGame({
   const [studioSlots, setStudioSlots] = useState<StudioSlot[]>(() => createInitialStudioSlots())
   const handCards = ownedCreators.map(toStudioHandCard)
 
+  const handleUpgradeStudio = () => {
+    setStudioSlots((prev) => {
+      const targetIndex = prev.findIndex((slot) => slot.status === 'locked')
+      if (targetIndex === -1) return prev
+      return prev.map((slot, idx) => {
+        if (idx !== targetIndex) return slot
+        return { ...slot, status: 'empty' }
+      })
+    })
+  }
+
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000)
     return () => window.clearInterval(timer)
@@ -234,7 +245,7 @@ export function InGame({
             onSlotsChange={setStudioSlots}
           />
         ) : tab === 'equipment' ? (
-          <EquipmentPanel />
+          <EquipmentPanel onUpgradeStudio={handleUpgradeStudio} />
         ) : tab === 'settings' ? (
           <div className="neon-glow-card rounded-2xl p-6 bg-slate-950/50 backdrop-blur-md max-w-2xl mx-auto border border-indigo-500/20">
             <h2 className="text-lg font-bold text-slate-100 tracking-wider mb-5 flex items-center gap-2">

@@ -256,12 +256,6 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
               <p className="truncate text-xs font-semibold text-slate-500">{t('dashboard.lockedSlot')}</p>
               <p className="mt-0.5 text-[10px] text-slate-600">{t('dashboard.unlockHint')}</p>
             </div>
-            <button
-              type="button"
-              className="game-btn border-rose-500/30 hover:border-rose-400/50 bg-rose-950/20 hover:bg-rose-950/40 text-[9px] text-rose-300 font-bold px-2 py-1 transition-all cursor-pointer pointer-events-auto"
-            >
-              {t('dashboard.unlockBtn')}
-            </button>
           </div>
           <div className="grid grid-cols-4 gap-1">
             <StreamAction label="배정" icon={<IconAssign />} disabled />
