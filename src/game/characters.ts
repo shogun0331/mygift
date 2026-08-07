@@ -20,6 +20,7 @@ export type RegisteredCharacter = {
   avatarTone: string
   /** optional preview url (object URL) */
   profileImageUrl: string | null
+  profileBlob?: Blob | null
 }
 
 /** 인게임에서 스카우트로 영입한 보유 크리에이터 */
@@ -95,6 +96,7 @@ export function createRegisteredCharacter(draft: CharacterDraft): RegisteredChar
     eventLinks: draft.eventLinks ?? emptyCharacterEventLinks(),
     avatarTone: visuals.avatarTone,
     profileImageUrl: draft.profileImageUrl ?? null,
+    profileBlob: (draft as any).profileBlob || null,
   }
 }
 

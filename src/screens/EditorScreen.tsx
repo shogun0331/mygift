@@ -3,7 +3,6 @@ import { EventManagePanel } from '../events/EventManagePanel'
 import {
   CHARACTER_EVENT_SLOTS,
   emptyCharacterEventLinks,
-  revokeEvents,
   type CharacterEventLinks,
   type CharacterEventSlotKey,
   type GameEvent,
@@ -16,6 +15,8 @@ type CharacterView = 'list' | 'add'
 type EditorScreenProps = {
   registeredCharacters: RegisteredCharacter[]
   onRegisterCharacter: (payload: AddCharacterPayload) => void
+  events: GameEvent[]
+  onEventsChange: (events: GameEvent[]) => void
   onBack: () => void
 }
 
@@ -41,17 +42,19 @@ function formatFileSize(bytes: number) {
 export function EditorScreen({
   registeredCharacters,
   onRegisterCharacter,
+  events,
+  onEventsChange,
   onBack,
 }: EditorScreenProps) {
   const [tab, setTab] = useState<EditorTab>('character')
   const [characterView, setCharacterView] = useState<CharacterView>('list')
-  const [events, setEvents] = useState<GameEvent[]>([])
   const eventsRef = useRef(events)
   eventsRef.current = events
 
   useEffect(() => {
     return () => {
-      revokeEvents(eventsRef.current)
+      // Do not revoke events URLs on unmount as they are persisted and used globally.
+      // revokeEvents(eventsRef.current)
     }
   }, [])
 
@@ -183,7 +186,7 @@ export function EditorScreen({
               </div>
             </div>
           ) : tab === 'event' ? (
-            <EventManagePanel events={events} onEventsChange={setEvents} />
+            <EventManagePanel events={events} onEventsChange={onEventsChange} />
           ) : null}
         </section>
       </div>

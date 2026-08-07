@@ -42,6 +42,37 @@ app.whenReady().then(() => {
   })
 })
 
+const { ipcMain } = require('electron')
+const fs = require('fs')
+
+ipcMain.handle('save-event-assets', async (event, { chapterId, assets }) => {
+  try {
+    const baseDir = path.join(app.getAppPath(), 'public/chapter_assets', String(chapterId))
+    const folderMap = {
+      image: 'images',
+      video: 'videos',
+      sound: 'sounds',
+    }
+
+    for (const asset of assets) {
+      const folderName = folderMap[asset.kind] || 'assets'
+      const targetDir = path.join(baseDir, folderName)
+
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true })
+      }
+
+      const filePath = path.join(targetDir, asset.fileName)
+      const buffer = Buffer.from(asset.buffer)
+      fs.writeFileSync(filePath, buffer)
+    }
+
+    return { success: true, path: baseDir }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()

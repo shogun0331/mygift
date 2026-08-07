@@ -6,6 +6,7 @@ import {
   type EventMediaKind,
   type GameEvent,
 } from '../events/types'
+import { EventSimulator } from './EventSimulator'
 
 type EventManagePanelProps = {
   events: GameEvent[]
@@ -35,6 +36,8 @@ const kindLabel: Record<EventMediaKind, string> = {
 export function EventManagePanel({ events, onEventsChange }: EventManagePanelProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [showSimulator, setShowSimulator] = useState(false)
+  const [savingEventId, setSavingEventId] = useState<string | null>(null)
   const [importing, setImporting] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -47,6 +50,39 @@ export function EventManagePanel({ events, onEventsChange }: EventManagePanelPro
       setSelectedId(null)
     }
   }, [events, selectedId])
+
+  const handleSaveAssets = async (event: GameEvent) => {
+    if (!window.electronAPI?.saveEventAssets) {
+      alert('Electron 데스크톱 환경에서만 로컬 에셋 저장이 가능합니다.')
+      return
+    }
+
+    setSavingEventId(event.id)
+    try {
+      const assetsPayload = await Promise.all(
+        event.media.map(async (asset) => {
+          const buffer = await asset.blob.arrayBuffer()
+          return {
+            fileName: asset.fileName,
+            kind: asset.kind,
+            buffer: buffer,
+          }
+        })
+      )
+
+      const res = await window.electronAPI.saveEventAssets(event.chapterId, assetsPayload)
+      if (res.success) {
+        alert(`물리 에셋 저장이 완료되었습니다!\n경로: ${res.path}`)
+      } else {
+        alert(`물리 에셋 저장에 실패했습니다:\n${res.error}`)
+      }
+    } catch (err) {
+      console.error(err)
+      alert('에셋 데이터를 변환하여 쓰는 도중 오류가 발생했습니다.')
+    } finally {
+      setSavingEventId(null)
+    }
+  }
 
   const importZip = async (file: File | undefined | null) => {
     if (!file) return
@@ -213,7 +249,12 @@ export function EventManagePanel({ events, onEventsChange }: EventManagePanelPro
 
         <div className="game-panel rounded-2xl p-4">
           {selected ? (
-            <EventDetail event={selected} />
+            <EventDetail
+              event={selected}
+              onSimulate={() => setShowSimulator(true)}
+              onSave={() => void handleSaveAssets(selected)}
+              isSaving={savingEventId === selected.id}
+            />
           ) : (
             <p className="px-1 py-10 text-center text-sm text-slate-500">
               왼쪽에서 이벤트를 선택하면 연결된 미디어를 확인할 수 있습니다.
@@ -221,23 +262,58 @@ export function EventManagePanel({ events, onEventsChange }: EventManagePanelPro
           )}
         </div>
       </div>
+
+      {showSimulator && selected && (
+        <EventSimulator event={selected} onClose={() => setShowSimulator(false)} />
+      )}
     </div>
   )
 }
 
-function EventDetail({ event }: { event: GameEvent }) {
+function EventDetail({
+  event,
+  onSimulate,
+  onSave,
+  isSaving,
+}: {
+  event: GameEvent
+  onSimulate: () => void
+  onSave: () => void
+  isSaving: boolean
+}) {
   const counts = countByKind(event.media)
   const groups: EventMediaKind[] = ['image', 'video', 'sound']
 
   return (
     <div className="space-y-4">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="game-kicker">LINKED MEDIA</p>
+          <h3 className="mt-1 text-base font-semibold text-slate-100">{event.title}</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            {event.sourceZipName} · start: {event.startNode || '—'} · 언어 {event.defaultLanguage}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            disabled={isSaving}
+            onClick={onSave}
+            className="game-btn shrink-0 rounded-xl px-3 py-2 text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            💾 {isSaving ? '저장 중...' : '에셋 폴더 저장'}
+          </button>
+          <button
+            type="button"
+            onClick={onSimulate}
+            className="game-btn-primary shrink-0 rounded-xl px-3 py-2 text-xs font-semibold"
+          >
+            🎮 시뮬레이터 실행
+          </button>
+        </div>
+      </div>
       <div>
-        <p className="game-kicker">LINKED MEDIA</p>
-        <h3 className="mt-1 text-base font-semibold text-slate-100">{event.title}</h3>
-        <p className="mt-1 text-xs text-slate-500">
-          {event.sourceZipName} · start: {event.startNode || '—'} · 언어 {event.defaultLanguage}
-        </p>
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="text-sm text-slate-400">
           이미지 {counts.image} · 영상 {counts.video} · 사운드 {counts.sound} · 총{' '}
           {event.media.length}개 파일이 이 이벤트에 연결됨
         </p>

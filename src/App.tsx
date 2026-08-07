@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { saveEvents, loadEvents, saveCharacters, loadCharacters } from './events/db'
+import type { GameEvent } from './events/types'
 import {
   createRegisteredCharacter,
   scoutCharacter,
@@ -19,6 +21,44 @@ export default function App() {
   const [registeredCharacters, setRegisteredCharacters] = useState<RegisteredCharacter[]>([])
   /** 인게임 보유 크리에이터 — 새 게임 시작 시 비움 */
   const [ownedCreators, setOwnedCreators] = useState<OwnedCreator[]>([])
+  /** 에디터 등록 이벤트 상태 (App 단으로 Lift up) */
+  const [events, setEvents] = useState<GameEvent[]>([])
+
+  // 1. 최초 마운트 시 데이터 로드
+  useEffect(() => {
+    loadEvents()
+      .then((loaded) => setEvents(loaded))
+      .catch((err) => console.error('Failed to load events:', err))
+
+    loadCharacters()
+      .then((records) => {
+        const chars = records.map((r) => {
+          const c = r.character
+          c.profileBlob = r.profileBlob || undefined
+          if (r.profileBlob) {
+            c.profileImageUrl = URL.createObjectURL(r.profileBlob)
+          }
+          return c
+        })
+        setRegisteredCharacters(chars)
+      })
+      .catch((err) => console.error('Failed to load characters:', err))
+  }, [])
+
+  // 2. 이벤트 상태 변경 시 자동 저장
+  useEffect(() => {
+    saveEvents(events).catch((err) => console.error('Failed to save events:', err))
+  }, [events])
+
+  // 3. 캐릭터 상태 변경 시 자동 저장
+  useEffect(() => {
+    const records = registeredCharacters.map((c) => ({
+      id: c.id,
+      character: c,
+      profileBlob: c.profileBlob || null,
+    }))
+    saveCharacters(records).catch((err) => console.error('Failed to save characters:', err))
+  }, [registeredCharacters])
 
   function handleRegisterCharacter(payload: AddCharacterPayload) {
     const profile =
@@ -26,6 +66,7 @@ export default function App() {
         ? payload.images.find((image) => image.id === payload.profileImageId)
         : null
     const profileImageUrl = profile ? URL.createObjectURL(profile.file) : null
+    const profileBlob = profile ? profile.file : null
 
     setRegisteredCharacters((prev) => [
       ...prev,
@@ -37,7 +78,8 @@ export default function App() {
         weight: payload.weight,
         eventLinks: payload.eventLinks,
         profileImageUrl,
-      }),
+        profileBlob,
+      } as any),
     ])
   }
 
@@ -62,6 +104,8 @@ export default function App() {
       <EditorScreen
         registeredCharacters={registeredCharacters}
         onRegisterCharacter={handleRegisterCharacter}
+        events={events}
+        onEventsChange={setEvents}
         onBack={() => setScreen('main')}
       />
     )
