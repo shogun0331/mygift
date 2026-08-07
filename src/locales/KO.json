@@ -10,6 +10,7 @@
     "dashboard": "DASHBOARD",
     "creator": "CREATOR",
     "studio": "STUDIO",
+    "schedule": "STUDIO",
     "equipment": "EQUIPMENT",
     "confirmExit": "게임을 종료할까요?",
     "devOnly": "DEV ONLY",

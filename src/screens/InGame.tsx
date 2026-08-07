@@ -154,7 +154,7 @@ export function InGame({
 
   return (
     <main className="game-stage fixed inset-0 grid h-dvh grid-rows-[auto_1fr_auto] overflow-hidden">
-      <header className="game-hud z-20 flex shrink-0 items-center justify-between gap-4 px-6 py-3">
+      <header className="game-hud z-20 flex shrink-0 items-center justify-between gap-4 px-6 pt-6 pb-3">
         <div>
           <p className="game-kicker">STAR BROADCASTING CO.</p>
           <h1

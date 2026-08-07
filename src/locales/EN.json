@@ -10,6 +10,7 @@
     "dashboard": "DASHBOARD",
     "creator": "CREATOR",
     "studio": "STUDIO",
+    "schedule": "STUDIO",
     "equipment": "EQUIPMENT",
     "confirmExit": "Are you sure you want to exit?",
     "devOnly": "DEV ONLY",
