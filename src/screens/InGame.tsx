@@ -145,7 +145,7 @@ export function InGame({ onBack, onStartBroadcast }: InGameProps) {
         </div>
       </header>
 
-      <section className="z-10 min-h-0 overflow-auto p-6">
+      <section className={`z-10 min-h-0 overflow-auto ${tab === 'dashboard' ? 'p-4' : 'p-6'}`}>
         {tab === 'dashboard' ? (
           <DashboardPanel onStartBroadcast={onStartBroadcast} />
         ) : tab === 'creator' ? (
