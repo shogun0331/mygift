@@ -228,7 +228,7 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
 
   if (slot.status === 'locked') {
     return (
-      <article className="neon-glow-card flex flex-col overflow-hidden rounded-2xl opacity-80 bg-slate-950/80">
+      <article className="border border-rose-950/30 flex flex-col overflow-hidden rounded-2xl opacity-60 bg-slate-950/90 cursor-not-allowed select-none">
         <div className="relative aspect-[2/1] w-full shrink-0 bg-slate-950 bg-[radial-gradient(circle_at_50%_50%,rgba(255,42,116,0.06),transparent_70%)]">
           <div className="absolute inset-0 bg-[repeating-linear-gradient(-45deg,transparent,transparent_8px,rgba(255,255,255,0.01)_8px,rgba(255,255,255,0.01)_16px)] animate-pulse" />
           <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-2">
@@ -258,7 +258,7 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
             </div>
             <button
               type="button"
-              className="game-btn border-rose-500/30 hover:border-rose-400/50 bg-rose-950/20 hover:bg-rose-950/40 text-[9px] text-rose-300 font-bold px-2 py-1 transition-all"
+              className="game-btn border-rose-500/30 hover:border-rose-400/50 bg-rose-950/20 hover:bg-rose-950/40 text-[9px] text-rose-300 font-bold px-2 py-1 transition-all cursor-pointer pointer-events-auto"
             >
               {t('dashboard.unlockBtn')}
             </button>
