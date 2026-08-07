@@ -82,13 +82,13 @@ export function EquipmentPanel({ onUpgradeStudio }: EquipmentPanelProps) {
   const [items, setItems] = useState(INITIAL_EQUIPMENT)
 
   const handleUpgrade = (id: string) => {
+    if (id === 'studio_expansion' && onUpgradeStudio) {
+      onUpgradeStudio()
+    }
+
     setItems((prev) =>
       prev.map((item) => {
         if (item.id !== id) return item
-
-        if (id === 'studio_expansion' && onUpgradeStudio) {
-          onUpgradeStudio()
-        }
 
         const delta = item.id === 'studio_expansion'
           ? 1
