@@ -238,19 +238,29 @@ export function InGame({
       </header>
 
       <section
-        className={`z-10 min-h-0 ${
+        className={`relative z-10 min-h-0 ${
           tab === 'dashboard' || tab === 'schedule' || tab === 'creator'
             ? 'overflow-hidden p-3 sm:p-4'
             : 'overflow-auto p-6'
         }`}
       >
-        {tab === 'dashboard' ? (
+        {/* 탭 전환 시 언마운트하지 않아 idle 영상 루프 유지. 비활성 시 화면 밖으로 이동해 뒤에 비치지 않음 */}
+        <div
+          className={
+            tab === 'dashboard'
+              ? 'h-full min-h-0'
+              : 'pointer-events-none fixed left-[-200vw] top-0 z-[-1] h-dvh w-screen overflow-hidden opacity-0'
+          }
+          aria-hidden={tab !== 'dashboard'}
+        >
           <DashboardPanel
             slots={studioSlots}
             ownedCreators={ownedCreators}
             onStartBroadcast={onStartBroadcast}
           />
-        ) : tab === 'creator' ? (
+        </div>
+
+        {tab === 'dashboard' ? null : tab === 'creator' ? (
           <CreatorPanel
             ownedCreators={ownedCreators}
             registeredCharacters={registeredCharacters}

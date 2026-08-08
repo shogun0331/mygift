@@ -22,7 +22,7 @@
     "characterIllustrationId": "1786146419350-ai04uuv",
     "profileImageId": "1786146425254-309r3ti",
     "profileVideoId": null,
-    "mediaRevision": 1786150984980,
+    "mediaRevision": 1786152854559,
     "images": [
       {
         "id": "1786146419350-ai04uuv",
@@ -55,7 +55,8 @@
         "keys": [
           "idle"
         ],
-        "level": 2
+        "level": 2,
+        "stage": 1
       },
       {
         "id": "1786149218669-74nfed1",
@@ -65,7 +66,8 @@
         "keys": [
           "idle"
         ],
-        "level": 3
+        "level": 3,
+        "stage": 1
       },
       {
         "id": "1786149222937-57t5pms",
@@ -75,17 +77,19 @@
         "keys": [
           "idle"
         ],
-        "level": 4
+        "level": 4,
+        "stage": 1
       },
       {
-        "id": "1786150980425-2cp3akz",
-        "fileName": "1786150980425-2cp3akz__2026-07-30_00012-audio.mp4",
-        "fileSize": 777206,
-        "url": "media://characters/1786146452316-cjvmuwo/videos/1786150980425-2cp3akz__2026-07-30_00012-audio.mp4",
+        "id": "1786152848507-8qay0ka",
+        "fileName": "1786152848507-8qay0ka__727a0744-3429-4f6f-b84e-cfb659ca1c1f_1.mp4",
+        "fileSize": 2568720,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786152848507-8qay0ka__727a0744-3429-4f6f-b84e-cfb659ca1c1f_1.mp4",
         "keys": [
           "idle"
         ],
-        "level": 1
+        "level": 1,
+        "stage": 1
       }
     ]
   }

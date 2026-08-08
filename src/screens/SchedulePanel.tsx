@@ -3,9 +3,17 @@ import { useTranslation } from '../locales/i18n'
 import {
   assignCreatorToSlot,
   clearStudioSlot,
+  moveCreatorBetweenSlots,
   type StudioHandCard,
   type StudioSlot,
 } from '../game/studioSlots'
+
+const SLOT_DRAG_MIME = 'application/x-studio-slot'
+
+function parseSlotDragPayload(raw: string) {
+  if (!raw.startsWith('slot:')) return null
+  return raw.slice('slot:'.length) || null
+}
 
 type SchedulePanelProps = {
   slots: StudioSlot[]
@@ -17,6 +25,7 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
   const { t } = useTranslation()
   const [selectedCard, setSelectedCard] = useState<string | null>(null)
   const [dragOverSlotId, setDragOverSlotId] = useState<string | null>(null)
+  const [draggingSlotId, setDraggingSlotId] = useState<string | null>(null)
 
   function assignToSlot(slotId: string) {
     if (!selectedCard) return
@@ -47,7 +56,7 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
             <h2 className="truncate text-sm font-semibold tracking-wide text-slate-100">
               Studio Slots
               <span className="ml-2 text-[11px] font-medium text-slate-500">
-                카드 선택 후 슬롯 배치 · 대시보드와 연동
+                드래그로 슬롯 이동 · 대시보드와 연동
               </span>
             </h2>
           </div>
@@ -84,7 +93,10 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
               const locked = slot.status === 'locked'
               const filled = slot.status === 'assigned' && Boolean(slot.assignment)
               const canPlace = Boolean(selectedCard) && !locked
-              const isDragOver = dragOverSlotId === slot.id
+              const isDragSource = draggingSlotId === slot.id
+              const canDropFromSlot =
+                Boolean(draggingSlotId) && draggingSlotId !== slot.id && !locked
+              const isDragOver = dragOverSlotId === slot.id && !isDragSource
 
               return (
                 <div
@@ -94,15 +106,21 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                       ? 'border-rose-950/30 bg-slate-950/80 opacity-40 shadow-[0_0_10px_rgba(255,42,116,0.03)]'
                       : isDragOver
                         ? 'border-emerald-400 bg-emerald-500/10 shadow-[0_0_14px_rgba(16,185,129,0.2)] scale-[1.02]'
-                        : canPlace
-                          ? 'border-indigo-400/80 bg-indigo-500/15 shadow-[0_0_16px_rgba(99,102,241,0.35)] scale-[1.01] animate-pulse'
-                          : filled
-                            ? 'border-white/12 bg-black/30'
-                            : 'border-dashed border-indigo-500/25 bg-indigo-950/5 shadow-[0_0_10px_rgba(99,102,241,0.03)] hover:border-indigo-400/50 hover:bg-indigo-500/5 hover:shadow-[0_0_15px_rgba(99,102,241,0.15)]'
+                        : isDragSource
+                          ? 'border-amber-400/50 bg-amber-500/10 opacity-60'
+                          : canDropFromSlot
+                            ? 'border-indigo-400/50 bg-indigo-500/10'
+                            : canPlace
+                              ? 'border-indigo-400/80 bg-indigo-500/15 shadow-[0_0_16px_rgba(99,102,241,0.35)] scale-[1.01] animate-pulse'
+                              : filled
+                                ? 'border-white/12 bg-black/30'
+                                : 'border-dashed border-indigo-500/25 bg-indigo-950/5 shadow-[0_0_10px_rgba(99,102,241,0.03)] hover:border-indigo-400/50 hover:bg-indigo-500/5 hover:shadow-[0_0_15px_rgba(99,102,241,0.15)]'
                   }`}
                   onDragOver={(e) => {
                     if (locked) return
+                    if (draggingSlotId === slot.id) return
                     e.preventDefault()
+                    e.dataTransfer.dropEffect = 'move'
                     if (dragOverSlotId !== slot.id) {
                       setDragOverSlotId(slot.id)
                     }
@@ -115,9 +133,21 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                   onDrop={(e) => {
                     if (locked) return
                     e.preventDefault()
+                    const sourceSlotId =
+                      draggingSlotId ||
+                      e.dataTransfer.getData(SLOT_DRAG_MIME) ||
+                      parseSlotDragPayload(e.dataTransfer.getData('text/plain'))
                     setDragOverSlotId(null)
+                    setDraggingSlotId(null)
+
+                    // 슬롯 → 슬롯: 빈 자리면 이동, 차 있으면 서로 교체
+                    if (sourceSlotId) {
+                      onSlotsChange(moveCreatorBetweenSlots(slots, sourceSlotId, slot.id))
+                      return
+                    }
+
                     const cardId = e.dataTransfer.getData('text/plain')
-                    if (!cardId) return
+                    if (!cardId || cardId.startsWith('slot:')) return
                     const card = handCards.find((item) => item.id === cardId)
                     if (!card) return
                     onSlotsChange(assignCreatorToSlot(slots, slot.id, card))
@@ -126,18 +156,32 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                   <button
                     type="button"
                     disabled={locked}
+                    draggable={filled}
+                    onDragStart={(e) => {
+                      if (!filled || !slot.assignment) {
+                        e.preventDefault()
+                        return
+                      }
+                      e.dataTransfer.setData(SLOT_DRAG_MIME, slot.id)
+                      e.dataTransfer.setData('text/plain', `slot:${slot.id}`)
+                      e.dataTransfer.effectAllowed = 'move'
+                      setDraggingSlotId(slot.id)
+                      setSelectedCard(null)
+                    }}
+                    onDragEnd={() => {
+                      setDraggingSlotId(null)
+                      setDragOverSlotId(null)
+                    }}
                     onClick={() => {
                       if (locked) return
                       if (selectedCard) {
                         assignToSlot(slot.id)
                         return
                       }
-                      
-                      // 카드가 선택되지 않은 상태에서 대기(빈) 슬롯을 누른 경우:
+
                       if (!filled) {
-                        // 아직 배치되지 않은 첫 번째 대기 크리에이터를 자동으로 선택해 배정을 안내
                         const unassignedCard = handCards.find(
-                          (card) => !slots.some((s) => s.assignment?.creatorId === card.id)
+                          (card) => !slots.some((s) => s.assignment?.creatorId === card.id),
                         )
                         if (unassignedCard) {
                           setSelectedCard(unassignedCard.id)
@@ -149,10 +193,10 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                     className={`game-card h-full w-full min-h-0 text-left transition ${
                       locked
                         ? 'cursor-not-allowed border-rose-950/30 pointer-events-none'
-                        : canPlace
-                          ? 'hover:border-indigo-400/55 hover:ring-1 hover:ring-indigo-400/35'
-                          : filled
-                            ? 'hover:border-white/20'
+                        : filled
+                          ? 'cursor-grab active:cursor-grabbing hover:border-white/20'
+                          : canPlace
+                            ? 'hover:border-indigo-400/55 hover:ring-1 hover:ring-indigo-400/35'
                             : 'border-dashed border-indigo-500/30 hover:border-indigo-400/60 hover:bg-indigo-500/5'
                     }`}
                   >
@@ -173,15 +217,14 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                       </div>
 
                       <div className="relative flex h-full w-full min-h-0 flex-1 flex-col items-center justify-end overflow-hidden rounded-md sm:rounded-lg">
-                        {/* 배경 이미지 추가 (배정되었고 이미지가 존재할 때) */}
                         {filled && slot.assignment?.profileImageUrl && (
                           <>
                             <img
                               src={slot.assignment.profileImageUrl}
                               alt=""
-                              className="absolute inset-0 h-full w-full object-cover"
+                              draggable={false}
+                              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
                             />
-                            {/* 어두운 그라데이션 오버레이로 글씨 가독성 확보 */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
                           </>
                         )}
@@ -210,7 +253,6 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                             </>
                           ) : filled && slot.assignment ? (
                             <>
-                              {/* 프로필 이미지가 없을 때만 동그라미 텍스트 아바타 렌더링 */}
                               {!slot.assignment.profileImageUrl && (
                                 <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full border border-indigo-300/25 bg-indigo-500/10 text-[11px] font-bold text-indigo-50 sm:h-9 sm:w-9 sm:text-sm">
                                   {slot.assignment.creatorName.slice(0, 1)}
@@ -225,7 +267,6 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                             </>
                           ) : (
                             <>
-                              {/* 채워넣으라는 느낌의 통통 튀는 Bounce 애니메이션 및 반짝임 네온 부여 */}
                               <div
                                 className="mb-2 flex h-8 w-8 items-center justify-center rounded-full border border-indigo-400/40 bg-indigo-500/10 text-indigo-300 sm:h-9.5 sm:w-9.5 shadow-[0_0_12px_rgba(99,102,241,0.25)] animate-bounce"
                                 style={{ animationDuration: '2.5s' }}
@@ -248,7 +289,7 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
         </div>
       </section>
 
-      {/* 오른쪽: 배치할 크리에이터 (세로 슬라이드 및 스크롤 영역) */}
+      {/* 오른쪽: 배치할 크리에이터 */}
       <section className="game-panel flex min-h-0 w-full flex-col rounded-2xl p-3 sm:p-4 lg:w-60 xl:w-64 shrink-0">
         <div className="mb-2 shrink-0">
           <p className="text-xs font-semibold tracking-wide text-slate-400">
@@ -259,9 +300,7 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
 
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1.5">
           {handCards.length === 0 ? (
-            <p className="py-8 text-center text-xs text-slate-500">
-              {t('studio.noCreators')}
-            </p>
+            <p className="py-8 text-center text-xs text-slate-500">{t('studio.noCreators')}</p>
           ) : (
             <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
               {handCards.map((card) => {
@@ -275,6 +314,7 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                     onDragStart={(e) => {
                       e.dataTransfer.setData('text/plain', card.id)
                       e.dataTransfer.effectAllowed = 'move'
+                      setDraggingSlotId(null)
                     }}
                     onClick={() =>
                       setSelectedCard((prev) => (prev === card.id ? null : card.id))
@@ -286,13 +326,13 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
                     } ${assigned ? 'opacity-70' : ''}`}
                   >
                     <div className="relative flex h-full w-full flex-col items-center justify-end overflow-hidden rounded-md sm:rounded-lg">
-                      {/* 카드 전체를 채우는 프로필 이미지 */}
                       {card.profileImageUrl && (
                         <>
                           <img
                             src={card.profileImageUrl}
                             alt=""
-                            className="absolute inset-0 h-full w-full object-cover"
+                            draggable={false}
+                            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
                         </>
@@ -306,7 +346,9 @@ export function SchedulePanel({ slots, handCards, onSlotsChange }: SchedulePanel
 
                       <div
                         className={`relative z-10 flex w-full flex-col items-center justify-end px-1.5 pb-1.5 pt-5 ${
-                          !card.profileImageUrl ? 'h-full bg-gradient-to-b from-slate-700/70 to-slate-950' : ''
+                          !card.profileImageUrl
+                            ? 'h-full bg-gradient-to-b from-slate-700/70 to-slate-950'
+                            : ''
                         }`}
                       >
                         {!card.profileImageUrl && (

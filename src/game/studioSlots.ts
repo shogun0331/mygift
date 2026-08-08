@@ -89,6 +89,36 @@ export function clearStudioSlot(slots: StudioSlot[], slotId: string): StudioSlot
   })
 }
 
+/** 스튜디오 슬롯 ↔ 대기 슬롯(빈/배정) 간 배치 이동. 대상이 배정이면 서로 교환 */
+export function moveCreatorBetweenSlots(
+  slots: StudioSlot[],
+  fromSlotId: string,
+  toSlotId: string,
+): StudioSlot[] {
+  if (fromSlotId === toSlotId) return slots
+  const from = slots.find((slot) => slot.id === fromSlotId)
+  const to = slots.find((slot) => slot.id === toSlotId)
+  if (!from || !to) return slots
+  if (from.status !== 'assigned' || !from.assignment) return slots
+  if (to.status === 'locked') return slots
+
+  const fromAssignment = from.assignment
+  const toAssignment = to.status === 'assigned' ? to.assignment : null
+
+  return slots.map((slot) => {
+    if (slot.id === fromSlotId) {
+      if (toAssignment) {
+        return { ...slot, status: 'assigned', assignment: toAssignment }
+      }
+      return { ...slot, status: 'empty', assignment: null }
+    }
+    if (slot.id === toSlotId) {
+      return { ...slot, status: 'assigned', assignment: fromAssignment }
+    }
+    return slot
+  })
+}
+
 const AVATAR_TONES = [
   'from-rose-400 to-amber-300',
   'from-violet-300 to-pink-400',
