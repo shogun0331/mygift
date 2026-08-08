@@ -263,6 +263,7 @@ type MediaItem = {
 
 type VideoMediaItem = MediaItem & {
   level: number
+  stage: number
 }
 
 export type AddCharacterPayload = {
@@ -292,6 +293,7 @@ export type AddCharacterPayload = {
     url?: string
     keys: string[]
     level: number
+    stage: number
   }>
 }
 
@@ -367,6 +369,7 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
         url: resolveMediaSrc(rawUrl),
         keys: video.keys ?? [],
         level: Math.max(1, Math.floor(Number(video.level) || 1)),
+        stage: Math.max(1, Math.floor(Number(video.stage ?? 1) || 1)),
       }
     }),
   )
@@ -459,6 +462,7 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
         url: trackObjectUrl(URL.createObjectURL(file)),
         keys: !levelHasIdle && index === 0 ? (['idle'] as string[]) : ([] as string[]),
         level: safeLevel,
+        stage: 1,
       }))
       return [...prev, ...added]
     })
@@ -518,47 +522,11 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
     })
   }
 
-  function setVideoLevel(id: string, nextLevelRaw: number) {
-    const nextLevel = Math.max(1, Math.floor(Number(nextLevelRaw) || 1))
-    setVideos((prev) => {
-      const target = prev.find((item) => item.id === id)
-      if (!target || target.level === nextLevel) return prev
-
-      const wasIdle = target.keys.includes('idle')
-      const destHasIdle = prev.some(
-        (item) => item.id !== id && item.level === nextLevel && item.keys.includes('idle'),
-      )
-
-      let next = prev.map((item) => {
-        if (item.id !== id) return item
-        const keys = item.keys.filter((key) => key !== 'idle')
-        return {
-          ...item,
-          level: nextLevel,
-          keys: wasIdle && !destHasIdle ? ['idle', ...keys] : keys,
-        }
-      })
-
-      if (wasIdle) {
-        const oldLevel = target.level
-        const oldHasIdle = next.some((item) => item.level === oldLevel && item.keys.includes('idle'))
-        if (!oldHasIdle) {
-          const fallback = next.find((item) => item.level === oldLevel)
-          if (fallback) {
-            next = next.map((item) =>
-              item.id === fallback.id
-                ? {
-                    ...item,
-                    keys: item.keys.includes('idle') ? item.keys : ['idle', ...item.keys],
-                  }
-                : item,
-            )
-          }
-        }
-      }
-
-      return next
-    })
+  function setVideoStage(id: string, nextStageRaw: number) {
+    const nextStage = Math.max(1, Math.floor(Number(nextStageRaw) || 1))
+    setVideos((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, stage: nextStage } : item)),
+    )
   }
 
   function addKey(
@@ -624,6 +592,7 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
           url: video.url,
           keys: video.keys,
           level: video.level,
+          stage: video.stage,
         })),
       })
     } finally {
@@ -786,8 +755,8 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
           <div>
             <h3 className="text-sm font-semibold text-slate-100">수위 영상 등록</h3>
             <p className="mt-1 text-xs text-slate-500">
-              수위 단계 레벨 1~4에 영상을 붙입니다. 각 레벨마다 기본 대기 영상 1개가 필요합니다. (대시보드
-              재생용)
+              수위 레벨(LV.1~4) 그룹에 영상을 붙입니다. 각 레벨마다 기본 대기 영상 1개가 필요합니다.
+              그룹 안의 수위 단계는 숫자로 입력합니다.
             </p>
           </div>
 
@@ -802,7 +771,7 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
                       <span className="rounded-md border border-indigo-400/35 bg-indigo-500/15 px-2 py-0.5 text-[11px] font-bold text-indigo-200">
                         LV.{lv}
                       </span>
-                      <span className="text-xs font-bold text-slate-200">수위 단계 레벨 {lv}</span>
+                      <span className="text-xs font-bold text-slate-200">수위 레벨 {lv}</span>
                     </div>
                     <span className="text-[10px] text-slate-500">
                       등록 {lvVideos.length}개 ·{' '}
@@ -818,7 +787,7 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
                     videoError={videoError}
                     onAddVideos={(files) => addVideos(files, lv)}
                     onSetIdle={setVideoAsIdle}
-                    onChangeLevel={setVideoLevel}
+                    onChangeStage={setVideoStage}
                     onRemove={removeVideo}
                   />
                 </div>
@@ -1353,16 +1322,16 @@ function MediaKeyCard({
   )
 }
 
-/** 수위 레벨별 영상 등록 (단계 숫자 선택 + 기본 대기) */
+/** 수위 레벨 그룹별 영상 등록 (그룹 고정 + 그룹 내 수위 단계 숫자) */
 type GradedVideoRegisterSectionProps = {
-  level: 1 | 2 | 3 | 4
+  level: number
   videos: VideoMediaItem[]
   videoDragging: boolean
   setVideoDragging: (d: boolean) => void
   videoError: string | null
   onAddVideos: (files: FileList | File[]) => void
   onSetIdle: (id: string) => void
-  onChangeLevel: (id: string, level: number) => void
+  onChangeStage: (id: string, stage: number) => void
   onRemove: (id: string) => void
 }
 
@@ -1374,7 +1343,7 @@ function GradedVideoRegisterSection({
   videoError,
   onAddVideos,
   onSetIdle,
-  onChangeLevel,
+  onChangeStage,
   onRemove,
 }: GradedVideoRegisterSectionProps) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -1415,7 +1384,7 @@ function GradedVideoRegisterSection({
         />
         <span className="text-xl">🎥</span>
         <p className="mt-1.5 text-xs font-semibold text-slate-300">
-          수위 LV.{level} 영상을 드래그 앤 드롭하거나 클릭하여 추가
+          수위 레벨 {level} 영상을 드래그 앤 드롭하거나 클릭하여 추가
         </p>
         <p className="mt-0.5 text-[10px] text-slate-500">MP4, WEBM, MOV 지원 · 여러 개 가능</p>
       </div>
@@ -1462,16 +1431,16 @@ function GradedVideoRegisterSection({
                     <span className="shrink-0 text-[10px] font-semibold tracking-wide text-slate-400">
                       수위 단계
                     </span>
-                    <select
-                      value={item.level}
-                      onChange={(e) => onChangeLevel(item.id, Number(e.target.value))}
-                      className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] font-semibold text-slate-100 outline-none transition focus:border-indigo-400/40"
-                    >
-                      <option value={1}>LV.1</option>
-                      <option value={2}>LV.2</option>
-                      <option value={3}>LV.3</option>
-                      <option value={4}>LV.4</option>
-                    </select>
+                    <input
+                      type="number"
+                      min={1}
+                      step={1}
+                      value={item.stage}
+                      onChange={(e) =>
+                        onChangeStage(item.id, Math.max(1, Math.floor(Number(e.target.value) || 1)))
+                      }
+                      className="w-16 rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] font-semibold text-slate-100 outline-none transition focus:border-indigo-400/40"
+                    />
                   </label>
                 </div>
 

@@ -209,6 +209,7 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
           id: vid.id,
           keys: vid.keys,
           level: vid.level,
+          stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
           fileName: safeName,
           fileSize: vid.file.size,
           url: mediaUrl(characterId, 'video', safeName, vid.file.size),
@@ -371,6 +372,8 @@ export default function App() {
               if (c.videos) {
                 c.videos = c.videos.map((vid: any) => ({
                   ...vid,
+                  stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
+                  level: Math.max(1, Math.floor(Number(vid.level) || 1)),
                   url: vid.url || (vid.fileName ? mediaUrl(c.id, 'video', vid.fileName, vid.fileSize) : (vid.file ? URL.createObjectURL(vid.file) : '')),
                 }))
               }
@@ -413,6 +416,8 @@ export default function App() {
             if (c.videos) {
               c.videos = c.videos.map((vid) => ({
                 ...vid,
+                stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
+                level: Math.max(1, Math.floor(Number(vid.level) || 1)),
                 url: vid.url || (vid.file ? URL.createObjectURL(vid.file) : ''),
               }))
             }
@@ -454,6 +459,7 @@ export default function App() {
           url: vid.fileName ? `media://characters/${c.id}/videos/${vid.fileName}` : vid.url,
           keys: vid.keys,
           level: vid.level,
+          stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
         })) ?? []
 
         const profileImageObj = cleanImages.find((img) => img.id === c.profileImageId)

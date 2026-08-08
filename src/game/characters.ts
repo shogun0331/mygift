@@ -19,7 +19,8 @@ export type CharacterVideo = {
   fileName?: string        // 물리 저장용 파일명
   fileSize?: number
   url: string              // media:// 또는 blob:
-  level: number            // 수위 단계 (사용자가 입력하는 정수, 1 이상)
+  level: number            // 수위 레벨 (그룹: LV.1~4 등)
+  stage: number            // 수위 단계 (해당 레벨 그룹 안의 단계 숫자)
   keys: string[]           // 예: ['idle'] — 기본 대기 표시용
 }
 
