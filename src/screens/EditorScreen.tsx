@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type DragEvent, type FormEvent, type ReactNode, type RefObject } from 'react'
+import { createPortal } from 'react-dom'
 import { EventManagePanel } from '../events/EventManagePanel'
 import {
   CHARACTER_EVENT_SLOTS,
@@ -8,13 +9,16 @@ import {
   type GameEvent,
 } from '../events/types'
 import type { RegisteredCharacter } from '../game/characters'
+import { resolveMediaSrc } from '../game/mediaUrl'
 
 type EditorTab = 'character' | 'notification' | 'event'
-type CharacterView = 'list' | 'add'
+type CharacterView = 'list' | 'add' | 'edit'
 
 type EditorScreenProps = {
   registeredCharacters: RegisteredCharacter[]
-  onRegisterCharacter: (payload: AddCharacterPayload) => void
+  onRegisterCharacter: (payload: AddCharacterPayload) => void | Promise<void>
+  onUpdateCharacter: (id: string, payload: AddCharacterPayload) => void | Promise<void>
+  onDeleteCharacter: (id: string) => void
   events: GameEvent[]
   onEventsChange: (events: GameEvent[]) => void
   onBack: () => void
@@ -42,14 +46,22 @@ function formatFileSize(bytes: number) {
 export function EditorScreen({
   registeredCharacters,
   onRegisterCharacter,
+  onUpdateCharacter,
+  onDeleteCharacter,
   events,
   onEventsChange,
   onBack,
 }: EditorScreenProps) {
   const [tab, setTab] = useState<EditorTab>('character')
   const [characterView, setCharacterView] = useState<CharacterView>('list')
+  const [editingCharacter, setEditingCharacter] = useState<RegisteredCharacter | null>(null)
   const eventsRef = useRef(events)
   eventsRef.current = events
+
+  function openCharacterList() {
+    setEditingCharacter(null)
+    setCharacterView('list')
+  }
 
   useEffect(() => {
     return () => {
@@ -77,7 +89,7 @@ export function EditorScreen({
             type="button"
             onClick={() => {
               setTab('character')
-              setCharacterView('list')
+              openCharacterList()
             }}
             className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
               tab === 'character' ? 'is-active' : ''
@@ -137,12 +149,20 @@ export function EditorScreen({
                         key={character.id}
                         className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 px-3 py-3"
                       >
-                        <div
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-sm font-bold text-slate-950 ${character.avatarTone}`}
-                        >
-                          {character.name.slice(0, 1)}
-                        </div>
-                        <div className="min-w-0">
+                        {character.profileImageUrl ? (
+                          <img
+                            src={character.profileImageUrl}
+                            alt=""
+                            className="h-10 w-10 shrink-0 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div
+                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-sm font-bold text-slate-950 ${character.avatarTone}`}
+                          >
+                            {character.name.slice(0, 1)}
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-semibold text-slate-100">
                             {character.name}
                           </p>
@@ -151,18 +171,56 @@ export function EditorScreen({
                             {character.age ? ` · ${character.age}세` : ''}
                           </p>
                         </div>
+                        <div className="flex shrink-0 gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingCharacter(character)
+                              setCharacterView('edit')
+                            }}
+                            className="game-btn rounded-lg px-2.5 py-1.5 text-xs"
+                          >
+                            수정
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (
+                                window.confirm(
+                                  `"${character.name}" 캐릭터를 삭제할까요? 저장된 미디어 파일도 함께 제거됩니다.`,
+                                )
+                              ) {
+                                onDeleteCharacter(character.id)
+                              }
+                            }}
+                            className="rounded-lg border border-rose-500/25 bg-rose-500/10 px-2.5 py-1.5 text-xs font-semibold text-rose-200 transition hover:bg-rose-500/20"
+                          >
+                            삭제
+                          </button>
+                        </div>
                       </li>
                     ))}
                   </ul>
                 )}
               </div>
+            ) : characterView === 'edit' && editingCharacter ? (
+              <AddCharacterPanel
+                key={editingCharacter.id}
+                events={events}
+                initialCharacter={editingCharacter}
+                onCancel={openCharacterList}
+                onSubmit={async (payload) => {
+                  await onUpdateCharacter(editingCharacter.id, payload)
+                  openCharacterList()
+                }}
+              />
             ) : (
               <AddCharacterPanel
                 events={events}
-                onCancel={() => setCharacterView('list')}
-                onSubmit={(payload) => {
-                  onRegisterCharacter(payload)
-                  setCharacterView('list')
+                onCancel={openCharacterList}
+                onSubmit={async (payload) => {
+                  await onRegisterCharacter(payload)
+                  openCharacterList()
                 }}
               />
             )
@@ -196,9 +254,15 @@ export function EditorScreen({
 
 type MediaItem = {
   id: string
-  file: File
+  file?: File
+  fileName?: string
+  fileSize?: number
   url: string
   keys: string[]
+}
+
+type VideoMediaItem = MediaItem & {
+  level: number
 }
 
 export type AddCharacterPayload = {
@@ -212,43 +276,105 @@ export type AddCharacterPayload = {
   profileImageId: string | null
   profileVideoId: string | null
   eventLinks: CharacterEventLinks
-  images: Array<{ id: string; file: File; keys: string[] }>
-  videos: Array<{ id: string; file: File; keys: string[] }>
+  images: Array<{
+    id: string
+    file?: File
+    fileName?: string
+    fileSize?: number
+    url?: string
+    keys: string[]
+  }>
+  videos: Array<{
+    id: string
+    file?: File
+    fileName?: string
+    fileSize?: number
+    url?: string
+    keys: string[]
+    level: number
+  }>
 }
 
 type AddCharacterPanelProps = {
   events: GameEvent[]
+  initialCharacter?: RegisteredCharacter | null
   onCancel: () => void
-  onSubmit: (payload: AddCharacterPayload) => void
+  onSubmit: (payload: AddCharacterPayload) => void | Promise<void>
 }
 
 const fieldClassName =
   'mt-2 w-full rounded-xl border border-white/10 bg-black/25 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-indigo-400/40'
 
-function AddCharacterPanel({ events, onCancel, onSubmit }: AddCharacterPanelProps) {
+function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit }: AddCharacterPanelProps) {
+  const isEditing = Boolean(initialCharacter)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
+  const createdObjectUrls = useRef(new Set<string>())
+  const [saving, setSaving] = useState(false)
 
-  const [name, setName] = useState('')
-  const [age, setAge] = useState('')
-  const [job, setJob] = useState('')
-  const [bust, setBust] = useState('')
-  const [weight, setWeight] = useState('')
-  const [eventLinks, setEventLinks] = useState<CharacterEventLinks>(() => emptyCharacterEventLinks())
+  const [name, setName] = useState(initialCharacter?.name ?? '')
+  const [age, setAge] = useState(initialCharacter?.age ?? '')
+  const [job, setJob] = useState(initialCharacter?.job ?? '')
+  const [bust, setBust] = useState(initialCharacter?.bust ?? '')
+  const [weight, setWeight] = useState(initialCharacter?.weight ?? '')
+  const [eventLinks, setEventLinks] = useState<CharacterEventLinks>(() => ({
+    ...emptyCharacterEventLinks(),
+    ...(initialCharacter?.eventLinks ?? {}),
+  }))
 
-  const [images, setImages] = useState<MediaItem[]>([])
-  const [characterIconId, setCharacterIconId] = useState<string | null>(null)
-  const [characterIllustrationId, setCharacterIllustrationId] = useState<string | null>(null)
-  const [profileImageId, setProfileImageId] = useState<string | null>(null)
+  const [images, setImages] = useState<MediaItem[]>(() =>
+    (initialCharacter?.images ?? []).map((image) => {
+      const rawUrl =
+        image.url ||
+        (image.fileName && initialCharacter
+          ? `media://characters/${initialCharacter.id}/images/${image.fileName}`
+          : '')
+      return {
+        id: image.id,
+        file: image.file,
+        fileName: image.fileName,
+        fileSize: image.fileSize,
+        url: resolveMediaSrc(rawUrl),
+        keys: image.keys ?? [],
+      }
+    }),
+  )
+  const [characterIconId, setCharacterIconId] = useState<string | null>(
+    initialCharacter?.characterIconId ?? null,
+  )
+  const [characterIllustrationId, setCharacterIllustrationId] = useState<string | null>(
+    initialCharacter?.characterIllustrationId ?? null,
+  )
+  const [profileImageId, setProfileImageId] = useState<string | null>(
+    initialCharacter?.profileImageId ?? null,
+  )
   const [imageDragging, setImageDragging] = useState(false)
   const [imageError, setImageError] = useState<string | null>(null)
   const [imageKeyDrafts, setImageKeyDrafts] = useState<Record<string, string>>({})
 
-  const [videos, setVideos] = useState<MediaItem[]>([])
-  const [profileVideoId, setProfileVideoId] = useState<string | null>(null)
+  const [videos, setVideos] = useState<VideoMediaItem[]>(() =>
+    (initialCharacter?.videos ?? []).map((video) => {
+      const rawUrl =
+        video.url ||
+        (video.fileName && initialCharacter
+          ? `media://characters/${initialCharacter.id}/videos/${video.fileName}`
+          : '')
+      return {
+        id: video.id,
+        file: video.file,
+        fileName: video.fileName,
+        fileSize: video.fileSize,
+        url: resolveMediaSrc(rawUrl),
+        keys: video.keys ?? [],
+        level: Math.max(1, Math.floor(Number(video.level) || 1)),
+      }
+    }),
+  )
+  const [profileVideoId, setProfileVideoId] = useState<string | null>(
+    initialCharacter?.profileVideoId ?? null,
+  )
   const [videoDragging, setVideoDragging] = useState(false)
   const [videoError, setVideoError] = useState<string | null>(null)
-  const [videoKeyDrafts, setVideoKeyDrafts] = useState<Record<string, string>>({})
 
   // Drop links to events that were deleted from event management
   useEffect(() => {
@@ -271,15 +397,21 @@ function AddCharacterPanel({ events, onCancel, onSubmit }: AddCharacterPanelProp
     setEventLinks((prev) => ({ ...prev, [slot]: eventId }))
   }
 
-  const imagesRef = useRef(images)
-  imagesRef.current = images
-  const videosRef = useRef(videos)
-  videosRef.current = videos
+  function trackObjectUrl(url: string) {
+    createdObjectUrls.current.add(url)
+    return url
+  }
+
+  function revokeTrackedUrl(url: string | undefined) {
+    if (!url || !createdObjectUrls.current.has(url)) return
+    URL.revokeObjectURL(url)
+    createdObjectUrls.current.delete(url)
+  }
 
   useEffect(() => {
     return () => {
-      for (const image of imagesRef.current) URL.revokeObjectURL(image.url)
-      for (const video of videosRef.current) URL.revokeObjectURL(video.url)
+      for (const url of createdObjectUrls.current) URL.revokeObjectURL(url)
+      createdObjectUrls.current.clear()
     }
   }, [])
 
@@ -298,37 +430,44 @@ function AddCharacterPanel({ events, onCancel, onSubmit }: AddCharacterPanelProp
       ...imageFiles.map((file) => ({
         id: createId(),
         file,
-        url: URL.createObjectURL(file),
+        fileName: file.name,
+        fileSize: file.size,
+        url: trackObjectUrl(URL.createObjectURL(file)),
         keys: [] as string[],
       })),
     ])
   }
 
-  function addVideos(files: FileList | File[]) {
+  function addVideos(files: FileList | File[], level = 1) {
     const list = Array.from(files)
     const videoFiles = list.filter(isVideoFile)
     if (videoFiles.length === 0) {
       setVideoError('영상 파일만 등록할 수 있습니다.')
       return
     }
+    const safeLevel = Math.max(1, Math.floor(Number(level) || 1))
     setVideoError(
       videoFiles.length < list.length ? '영상 파일만 추가되었습니다. (이미지는 제외됨)' : null,
     )
-    setVideos((prev) => [
-      ...prev,
-      ...videoFiles.map((file) => ({
+    setVideos((prev) => {
+      const levelHasIdle = prev.some((vid) => vid.level === safeLevel && vid.keys.includes('idle'))
+      const added = videoFiles.map((file, index) => ({
         id: createId(),
         file,
-        url: URL.createObjectURL(file),
-        keys: [] as string[],
-      })),
-    ])
+        fileName: file.name,
+        fileSize: file.size,
+        url: trackObjectUrl(URL.createObjectURL(file)),
+        keys: !levelHasIdle && index === 0 ? (['idle'] as string[]) : ([] as string[]),
+        level: safeLevel,
+      }))
+      return [...prev, ...added]
+    })
   }
 
   function removeImage(id: string) {
     setImages((prev) => {
       const target = prev.find((item) => item.id === id)
-      if (target) URL.revokeObjectURL(target.url)
+      if (target) revokeTrackedUrl(target.url)
       return prev.filter((item) => item.id !== id)
     })
     setCharacterIconId((current) => (current === id ? null : current))
@@ -344,13 +483,80 @@ function AddCharacterPanel({ events, onCancel, onSubmit }: AddCharacterPanelProp
   function removeVideo(id: string) {
     setVideos((prev) => {
       const target = prev.find((item) => item.id === id)
-      if (target) URL.revokeObjectURL(target.url)
-      return prev.filter((item) => item.id !== id)
+      if (target) revokeTrackedUrl(target.url)
+      const next = prev.filter((item) => item.id !== id)
+      // 제거한 영상이 기본 대기였으면 같은 레벨의 첫 영상을 자동 지정
+      if (target?.keys.includes('idle')) {
+        const level = target.level
+        const fallback = next.find((item) => item.level === level)
+        if (fallback) {
+          return next.map((item) =>
+            item.id === fallback.id
+              ? { ...item, keys: item.keys.includes('idle') ? item.keys : ['idle', ...item.keys] }
+              : item,
+          )
+        }
+      }
+      return next
     })
     setProfileVideoId((current) => (current === id ? null : current))
-    setVideoKeyDrafts((prev) => {
-      const next = { ...prev }
-      delete next[id]
+  }
+
+  function setVideoAsIdle(id: string) {
+    setVideos((prev) => {
+      const target = prev.find((item) => item.id === id)
+      if (!target) return prev
+      const level = target.level
+      return prev.map((item) => {
+        if (item.level !== level) return item
+        const keysWithoutIdle = item.keys.filter((key) => key !== 'idle')
+        if (item.id === id) {
+          return { ...item, keys: ['idle', ...keysWithoutIdle] }
+        }
+        return { ...item, keys: keysWithoutIdle }
+      })
+    })
+  }
+
+  function setVideoLevel(id: string, nextLevelRaw: number) {
+    const nextLevel = Math.max(1, Math.floor(Number(nextLevelRaw) || 1))
+    setVideos((prev) => {
+      const target = prev.find((item) => item.id === id)
+      if (!target || target.level === nextLevel) return prev
+
+      const wasIdle = target.keys.includes('idle')
+      const destHasIdle = prev.some(
+        (item) => item.id !== id && item.level === nextLevel && item.keys.includes('idle'),
+      )
+
+      let next = prev.map((item) => {
+        if (item.id !== id) return item
+        const keys = item.keys.filter((key) => key !== 'idle')
+        return {
+          ...item,
+          level: nextLevel,
+          keys: wasIdle && !destHasIdle ? ['idle', ...keys] : keys,
+        }
+      })
+
+      if (wasIdle) {
+        const oldLevel = target.level
+        const oldHasIdle = next.some((item) => item.level === oldLevel && item.keys.includes('idle'))
+        if (!oldHasIdle) {
+          const fallback = next.find((item) => item.level === oldLevel)
+          if (fallback) {
+            next = next.map((item) =>
+              item.id === fallback.id
+                ? {
+                    ...item,
+                    keys: item.keys.includes('idle') ? item.keys : ['idle', ...item.keys],
+                  }
+                : item,
+            )
+          }
+        }
+      }
+
       return next
     })
   }
@@ -385,24 +591,44 @@ function AddCharacterPanel({ events, onCancel, onSubmit }: AddCharacterPanelProp
     )
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     const trimmed = name.trim()
-    if (!trimmed) return
-    onSubmit({
-      name: trimmed,
-      age: age.trim(),
-      job: job.trim(),
-      bust: bust.trim(),
-      weight: weight.trim(),
-      characterIconId,
-      characterIllustrationId,
-      profileImageId,
-      profileVideoId,
-      eventLinks,
-      images: images.map((image) => ({ id: image.id, file: image.file, keys: image.keys })),
-      videos: videos.map((video) => ({ id: video.id, file: video.file, keys: video.keys })),
-    })
+    if (!trimmed || saving) return
+    setSaving(true)
+    try {
+      await onSubmit({
+        name: trimmed,
+        age: age.trim(),
+        job: job.trim(),
+        bust: bust.trim(),
+        weight: weight.trim(),
+        characterIconId,
+        characterIllustrationId,
+        profileImageId,
+        profileVideoId,
+        eventLinks,
+        images: images.map((image) => ({
+          id: image.id,
+          file: image.file,
+          fileName: image.fileName,
+          fileSize: image.fileSize,
+          url: image.url,
+          keys: image.keys,
+        })),
+        videos: videos.map((video) => ({
+          id: video.id,
+          file: video.file,
+          fileName: video.fileName,
+          fileSize: video.fileSize,
+          url: video.url,
+          keys: video.keys,
+          level: video.level,
+        })),
+      })
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -410,9 +636,13 @@ function AddCharacterPanel({ events, onCancel, onSubmit }: AddCharacterPanelProp
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="game-kicker">CHARACTER</p>
-          <h2 className="mt-1 text-lg font-semibold text-slate-100">캐릭터 추가</h2>
+          <h2 className="mt-1 text-lg font-semibold text-slate-100">
+            {isEditing ? '캐릭터 수정' : '캐릭터 추가'}
+          </h2>
           <p className="mt-2 text-sm text-slate-400">
-            프로필, 기본 정보, 이미지·영상, 이벤트를 등록합니다.
+            {isEditing
+              ? '프로필, 기본 정보, 이미지·영상, 이벤트를 수정합니다.'
+              : '프로필, 기본 정보, 이미지·영상, 이벤트를 등록합니다.'}
           </p>
         </div>
         <button type="button" onClick={onCancel} className="game-btn shrink-0 rounded-xl px-4 py-2 text-sm">
@@ -546,45 +776,56 @@ function AddCharacterPanel({ events, onCancel, onSubmit }: AddCharacterPanelProp
           renderPreview={(item) => (
             <img
               src={item.url}
-              alt={item.file.name}
+              alt={item.file?.name || item.fileName || '이미지'}
               className="h-28 w-full rounded-xl bg-black object-cover sm:w-44"
             />
           )}
         />
 
-        <MediaRegisterSection
-          title="영상 등록"
-          description="영상을 등록한 뒤 키를 연결하고, 그중 하나를 프로필 영상으로 지정할 수 있습니다."
-          dropLabel="영상을 드래그 앤 드롭"
-          dropHint="또는 클릭해서 파일 선택 (MP4, WEBM, MOV 등) · 여러 개 가능"
-          accept={VIDEO_ACCEPT}
-          inputRef={videoInputRef}
-          dragging={videoDragging}
-          setDragging={setVideoDragging}
-          error={videoError}
-          onAddFiles={addVideos}
-          items={videos}
-          profileId={profileVideoId}
-          drafts={videoKeyDrafts}
-          profileBadge="프로필 영상"
-          onDraftChange={(id, value) =>
-            setVideoKeyDrafts((prev) => ({ ...prev, [id]: value }))
-          }
-          onAddKey={(id) => addKey(id, videoKeyDrafts, setVideoKeyDrafts, setVideos)}
-          onRemoveKey={(id, key) => removeKey(id, key, setVideos)}
-          onSetProfile={(id) =>
-            setProfileVideoId((current) => (current === id ? null : id))
-          }
-          onRemove={removeVideo}
-          renderPreview={(item) => (
-            <video
-              src={item.url}
-              controls
-              preload="metadata"
-              className="h-28 w-full shrink-0 rounded-xl bg-black object-cover sm:w-44"
-            />
-          )}
-        />
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-100">수위 영상 등록</h3>
+            <p className="mt-1 text-xs text-slate-500">
+              수위 단계 레벨 1~4에 영상을 붙입니다. 각 레벨마다 기본 대기 영상 1개가 필요합니다. (대시보드
+              재생용)
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6">
+            {([1, 2, 3, 4] as const).map((lv) => {
+              const lvVideos = videos.filter((vid) => vid.level === lv)
+              const hasIdle = lvVideos.some((v) => v.keys?.includes('idle'))
+              return (
+                <div key={lv} className="rounded-2xl border border-white/5 bg-slate-900/40 p-4">
+                  <div className="mb-3 flex items-center justify-between border-b border-white/5 pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-md border border-indigo-400/35 bg-indigo-500/15 px-2 py-0.5 text-[11px] font-bold text-indigo-200">
+                        LV.{lv}
+                      </span>
+                      <span className="text-xs font-bold text-slate-200">수위 단계 레벨 {lv}</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500">
+                      등록 {lvVideos.length}개 ·{' '}
+                      {hasIdle ? '✅ 기본 대기 완료' : '⚠️ 기본 대기 필요'}
+                    </span>
+                  </div>
+
+                  <GradedVideoRegisterSection
+                    level={lv}
+                    videos={lvVideos}
+                    videoDragging={videoDragging}
+                    setVideoDragging={setVideoDragging}
+                    videoError={videoError}
+                    onAddVideos={(files) => addVideos(files, lv)}
+                    onSetIdle={setVideoAsIdle}
+                    onChangeLevel={setVideoLevel}
+                    onRemove={removeVideo}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
         <section className="space-y-3">
           <div>
@@ -634,15 +875,20 @@ function AddCharacterPanel({ events, onCancel, onSubmit }: AddCharacterPanelProp
         </section>
 
         <div className="flex justify-end gap-2">
-          <button type="button" onClick={onCancel} className="game-btn rounded-xl px-4 py-2 text-sm">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={saving}
+            className="game-btn rounded-xl px-4 py-2 text-sm disabled:opacity-40"
+          >
             취소
           </button>
           <button
             type="submit"
-            disabled={!name.trim()}
+            disabled={!name.trim() || saving}
             className="game-btn-primary rounded-xl px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
           >
-            추가
+            {saving ? '저장 중…' : isEditing ? '저장' : '추가'}
           </button>
         </div>
       </div>
@@ -731,119 +977,122 @@ function ProfilePickPreview({
       </div>
 
       {open ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm"
-          role="presentation"
-          onClick={() => setOpen(false)}
-        >
+        createPortal(
           <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            onClick={(e) => e.stopPropagation()}
-            className="game-panel-strong flex max-h-[min(36rem,85dvh)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl shadow-2xl"
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm"
+            role="presentation"
+            onClick={() => setOpen(false)}
           >
-            <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
-              <div>
-                <p className="game-kicker">SELECT</p>
-                <h3 id={titleId} className="mt-1 text-lg font-semibold text-slate-100">
-                  {label} 선택
-                </h3>
-                <p className="mt-1 text-xs text-slate-500">
-                  {options.length > 0
-                    ? `등록된 ${mediaLabel} ${options.length}개 · 미리보기를 눌러 선택`
-                    : `등록된 ${mediaLabel}가 없습니다`}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="game-btn shrink-0 rounded-xl px-3 py-1.5 text-sm"
-              >
-                닫기
-              </button>
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-auto p-5">
-              {options.length > 0 ? (
-                <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                  {options.map((item) => {
-                    const isActive = item.id === selectedId
-                    return (
-                      <li key={item.id}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            onSelect(item.id)
-                            setOpen(false)
-                          }}
-                          className={`group flex w-full flex-col overflow-hidden rounded-2xl border text-left transition ${
-                            isActive
-                              ? 'border-indigo-400/60 ring-2 ring-indigo-400/35'
-                              : 'border-white/10 hover:border-indigo-400/40'
-                          }`}
-                        >
-                          <div className="relative aspect-square bg-black/40">
-                            {kind === 'image' ? (
-                              <img
-                                src={item.url}
-                                alt={item.file.name}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <video
-                                src={item.url}
-                                muted
-                                playsInline
-                                preload="metadata"
-                                className="h-full w-full object-cover"
-                              />
-                            )}
-                            {isActive ? (
-                              <span className="absolute top-2 right-2 rounded-md bg-indigo-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                                선택됨
-                              </span>
-                            ) : null}
-                          </div>
-                          <div className="border-t border-white/10 bg-black/30 px-2.5 py-2">
-                            <p className="truncate text-xs font-medium text-slate-100">
-                              {item.file.name}
-                            </p>
-                            <p className="mt-0.5 text-[10px] text-slate-500">
-                              {formatFileSize(item.file.size)}
-                            </p>
-                          </div>
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ul>
-              ) : (
-                <div className="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/20 px-6 text-center">
-                  <p className="text-sm text-slate-300">선택할 {mediaLabel}가 없습니다.</p>
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={titleId}
+              onClick={(e) => e.stopPropagation()}
+              className="game-panel-strong flex max-h-[min(36rem,85dvh)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl shadow-2xl"
+            >
+              <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
+                <div>
+                  <p className="game-kicker">SELECT</p>
+                  <h3 id={titleId} className="mt-1 text-lg font-semibold text-slate-100">
+                    {label} 선택
+                  </h3>
                   <p className="mt-1 text-xs text-slate-500">
-                    먼저 {mediaLabel} 등록 영역에서 파일을 추가하세요.
+                    {options.length > 0
+                      ? `등록된 ${mediaLabel} ${options.length}개 · 미리보기를 눌러 선택`
+                      : `등록된 ${mediaLabel}가 없습니다`}
                   </p>
                 </div>
-              )}
-            </div>
-
-            {selectedId ? (
-              <div className="flex justify-end border-t border-white/10 px-5 py-3">
                 <button
                   type="button"
-                  onClick={() => {
-                    onSelect(null)
-                    setOpen(false)
-                  }}
-                  className="game-btn rounded-xl px-4 py-2 text-sm"
+                  onClick={() => setOpen(false)}
+                  className="game-btn shrink-0 rounded-xl px-3 py-1.5 text-sm"
                 >
-                  선택 해제
+                  닫기
                 </button>
               </div>
-            ) : null}
-          </div>
-        </div>
+
+              <div className="min-h-0 flex-1 overflow-auto p-5">
+                {options.length > 0 ? (
+                  <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                    {options.map((item) => {
+                      const isActive = item.id === selectedId
+                      return (
+                        <li key={item.id}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onSelect(item.id)
+                              setOpen(false)
+                            }}
+                            className={`group flex w-full flex-col overflow-hidden rounded-2xl border text-left transition ${
+                              isActive
+                                ? 'border-indigo-400/60 ring-2 ring-indigo-400/35'
+                                : 'border-white/10 hover:border-indigo-400/40'
+                            }`}
+                          >
+                            <div className="relative aspect-square bg-black/40">
+                              {kind === 'image' ? (
+                                <img
+                                  src={item.url}
+                                  alt={item.file?.name || item.fileName || '미리보기'}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <video
+                                  src={item.url}
+                                  muted
+                                  playsInline
+                                  preload="metadata"
+                                  className="h-full w-full object-cover"
+                                />
+                              )}
+                              {isActive ? (
+                                <span className="absolute top-2 right-2 rounded-md bg-indigo-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                                  선택됨
+                                </span>
+                              ) : null}
+                            </div>
+                            <div className="border-t border-white/10 bg-black/30 px-2.5 py-2">
+                              <p className="truncate text-xs font-medium text-slate-100">
+                                {item.file?.name || item.fileName || '이름 없음'}
+                              </p>
+                              <p className="mt-0.5 text-[10px] text-slate-500">
+                                {formatFileSize(item.file?.size || item.fileSize || 0)}
+                              </p>
+                            </div>
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                ) : (
+                  <div className="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/20 px-6 text-center">
+                    <p className="text-sm text-slate-300">선택할 {mediaLabel}가 없습니다.</p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      먼저 {mediaLabel} 등록 영역에서 파일을 추가하세요.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {selectedId ? (
+                <div className="flex justify-end border-t border-white/10 px-5 py-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onSelect(null)
+                      setOpen(false)
+                    }}
+                    className="game-btn rounded-xl px-4 py-2 text-sm"
+                  >
+                    선택 해제
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </div>,
+          document.body
+        )
       ) : null}
     </>
   )
@@ -1020,10 +1269,14 @@ function MediaKeyCard({
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="truncate text-sm font-medium text-slate-100">{item.file.name}</p>
+                <p className="truncate text-sm font-medium text-slate-100">
+                  {item.file?.name || item.fileName || '미디어'}
+                </p>
                 {isProfile ? <span className="game-chip-gold">{profileBadge}</span> : null}
               </div>
-              <p className="mt-0.5 text-xs text-slate-500">{formatFileSize(item.file.size)}</p>
+              <p className="mt-0.5 text-xs text-slate-500">
+                {formatFileSize(item.file?.size || item.fileSize || 0)}
+              </p>
             </div>
             <div className="flex shrink-0 gap-1.5">
               <button
@@ -1097,5 +1350,156 @@ function MediaKeyCard({
         </div>
       </div>
     </li>
+  )
+}
+
+/** 수위 레벨별 영상 등록 (단계 숫자 선택 + 기본 대기) */
+type GradedVideoRegisterSectionProps = {
+  level: 1 | 2 | 3 | 4
+  videos: VideoMediaItem[]
+  videoDragging: boolean
+  setVideoDragging: (d: boolean) => void
+  videoError: string | null
+  onAddVideos: (files: FileList | File[]) => void
+  onSetIdle: (id: string) => void
+  onChangeLevel: (id: string, level: number) => void
+  onRemove: (id: string) => void
+}
+
+function GradedVideoRegisterSection({
+  level,
+  videos,
+  videoDragging,
+  setVideoDragging,
+  videoError,
+  onAddVideos,
+  onSetIdle,
+  onChangeLevel,
+  onRemove,
+}: GradedVideoRegisterSectionProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  return (
+    <div className="space-y-4">
+      <div
+        onDragOver={(e) => {
+          e.preventDefault()
+          setVideoDragging(true)
+        }}
+        onDragLeave={() => setVideoDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault()
+          setVideoDragging(false)
+          if (e.dataTransfer.files) {
+            onAddVideos(e.dataTransfer.files)
+          }
+        }}
+        onClick={() => inputRef.current?.click()}
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed py-6 px-4 transition ${
+          videoDragging
+            ? 'border-indigo-400 bg-indigo-500/10'
+            : 'border-white/10 bg-black/15 hover:bg-black/25 hover:border-white/20'
+        }`}
+      >
+        <input
+          type="file"
+          ref={inputRef}
+          multiple
+          accept={VIDEO_ACCEPT}
+          className="hidden"
+          onChange={(e) => {
+            if (e.target.files) {
+              onAddVideos(e.target.files)
+            }
+          }}
+        />
+        <span className="text-xl">🎥</span>
+        <p className="mt-1.5 text-xs font-semibold text-slate-300">
+          수위 LV.{level} 영상을 드래그 앤 드롭하거나 클릭하여 추가
+        </p>
+        <p className="mt-0.5 text-[10px] text-slate-500">MP4, WEBM, MOV 지원 · 여러 개 가능</p>
+      </div>
+
+      {videoError && <p className="text-[11px] text-rose-400">{videoError}</p>}
+
+      {videos.length > 0 && (
+        <div className="space-y-2">
+          {videos.map((item) => {
+            const hasIdle = item.keys.includes('idle')
+            const sizeMB = item.fileSize ? (item.fileSize / (1024 * 1024)).toFixed(1) : '—'
+            return (
+              <div
+                key={item.id}
+                className={`flex flex-col gap-3 rounded-xl border border-white/5 bg-black/20 p-2.5 sm:flex-row sm:items-center ${
+                  hasIdle ? 'ring-1 ring-indigo-500/30 border-indigo-500/30' : ''
+                }`}
+              >
+                <div className="relative shrink-0 overflow-hidden rounded-lg bg-black">
+                  <video
+                    key={`${item.id}-${item.fileName ?? ''}-${item.fileSize ?? 0}-${item.url}`}
+                    src={resolveMediaSrc(item.url, item.fileSize ?? item.id)}
+                    controls
+                    preload="auto"
+                    playsInline
+                    className="h-20 w-36 object-cover"
+                  />
+                  <span className="absolute top-1 left-1 rounded bg-black/70 px-1 py-0.5 text-[8px] font-bold text-indigo-200">
+                    LV.{item.level}
+                  </span>
+                  {hasIdle && (
+                    <span className="absolute top-1 right-1 rounded bg-indigo-500 px-1 py-0.5 text-[8px] font-bold text-white shadow">
+                      기본 대기
+                    </span>
+                  )}
+                </div>
+
+                <div className="min-w-0 flex-1 space-y-2">
+                  <p className="truncate text-xs font-semibold text-slate-200">
+                    {item.file?.name || item.fileName || '동영상'}
+                  </p>
+                  <p className="text-[10px] text-slate-500">{sizeMB} MB</p>
+                  <label className="flex items-center gap-2">
+                    <span className="shrink-0 text-[10px] font-semibold tracking-wide text-slate-400">
+                      수위 단계
+                    </span>
+                    <select
+                      value={item.level}
+                      onChange={(e) => onChangeLevel(item.id, Number(e.target.value))}
+                      className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] font-semibold text-slate-100 outline-none transition focus:border-indigo-400/40"
+                    >
+                      <option value={1}>LV.1</option>
+                      <option value={2}>LV.2</option>
+                      <option value={3}>LV.3</option>
+                      <option value={4}>LV.4</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div className="flex shrink-0 items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onSetIdle(item.id)}
+                    className={`rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition ${
+                      hasIdle
+                        ? 'bg-indigo-500 text-white shadow-md'
+                        : 'border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10'
+                    }`}
+                  >
+                    {hasIdle ? '★ 기본 대기' : '☆ 기본 대기 지정'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onRemove(item.id)}
+                    className="rounded bg-rose-500/10 border border-rose-500/20 px-2 py-1 text-[11px] font-bold text-rose-300 hover:bg-rose-500/20"
+                  >
+                    제거
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
   )
 }

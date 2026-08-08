@@ -5,7 +5,7 @@ import {
   type OwnedCreator,
   type RegisteredCharacter,
 } from '../game/characters'
-import { createInitialStudioSlots, type StudioSlot } from '../game/studioSlots'
+import type { StudioSlot } from '../game/studioSlots'
 import { CreatorPanel } from './CreatorPanel'
 import { DashboardPanel } from './DashboardPanel'
 import { EquipmentPanel } from './EquipmentPanel'
@@ -126,34 +126,39 @@ const TABS: { id: GameTab; label: string; icon: ReactNode }[] = [
 type InGameProps = {
   registeredCharacters: RegisteredCharacter[]
   ownedCreators: OwnedCreator[]
+  studioSlots: StudioSlot[]
+  onStudioSlotsChange: (slots: StudioSlot[]) => void
   onScout: (character: RegisteredCharacter) => void
   onBack: () => void
+  onOpenEditor?: () => void
   onStartBroadcast: () => void
 }
 
 export function InGame({
   registeredCharacters,
   ownedCreators,
+  studioSlots,
+  onStudioSlotsChange,
   onScout,
   onBack,
+  onOpenEditor,
   onStartBroadcast,
 }: InGameProps) {
   const { t, locale, setLocale } = useTranslation()
   const [tab, setTab] = useState<GameTab>('dashboard')
   const [speed, setSpeed] = useState<SpeedOption>('1x')
   const [now, setNow] = useState(() => new Date())
-  const [studioSlots, setStudioSlots] = useState<StudioSlot[]>(() => createInitialStudioSlots())
   const handCards = ownedCreators.map(toStudioHandCard)
 
   const handleUpgradeStudio = () => {
-    setStudioSlots((prev) => {
-      const targetIndex = prev.findIndex((slot) => slot.status === 'locked')
-      if (targetIndex === -1) return prev
-      return prev.map((slot, idx) => {
+    const targetIndex = studioSlots.findIndex((slot) => slot.status === 'locked')
+    if (targetIndex === -1) return
+    onStudioSlotsChange(
+      studioSlots.map((slot, idx) => {
         if (idx !== targetIndex) return slot
         return { ...slot, status: 'empty' }
-      })
-    })
+      }),
+    )
   }
 
   useEffect(() => {
@@ -212,6 +217,15 @@ export function InGame({
             <p className="text-sm font-black text-amber-400 animate-pulse" style={{ textShadow: '0 0 8px rgba(251, 191, 36, 0.45)' }}>₩12,500,000</p>
           </div>
 
+          {import.meta.env.DEV && onOpenEditor ? (
+            <button
+              type="button"
+              onClick={onOpenEditor}
+              className="game-btn px-4 py-2 text-sm"
+            >
+              EDIT
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={onBack}
@@ -231,7 +245,11 @@ export function InGame({
         }`}
       >
         {tab === 'dashboard' ? (
-          <DashboardPanel slots={studioSlots} onStartBroadcast={onStartBroadcast} />
+          <DashboardPanel
+            slots={studioSlots}
+            ownedCreators={ownedCreators}
+            onStartBroadcast={onStartBroadcast}
+          />
         ) : tab === 'creator' ? (
           <CreatorPanel
             ownedCreators={ownedCreators}
@@ -242,7 +260,7 @@ export function InGame({
           <SchedulePanel
             slots={studioSlots}
             handCards={handCards}
-            onSlotsChange={setStudioSlots}
+            onSlotsChange={onStudioSlotsChange}
           />
         ) : tab === 'equipment' ? (
           <EquipmentPanel onUpgradeStudio={handleUpgradeStudio} />
@@ -315,7 +333,7 @@ export function InGame({
           </div>
         ) : (
           <div className="game-panel min-h-full rounded-2xl p-6 text-slate-500">
-            <p className="text-base">{t(`menu.${tab}`) || tab.toUpperCase()} 화면 준비 중</p>
+            <p className="text-base">{t(`menu.${tab}`) || (tab as string).toUpperCase()} 화면 준비 중</p>
           </div>
         )}
       </section>

@@ -2,6 +2,7 @@
   "menu": {
     "newGame": "NEW GAME",
     "loadGame": "LOAD GAME",
+    "continueHint": "(진행 중 세션으로 복귀)",
     "settings": "SETTINGS",
     "gallery": "ENDING GALLERY",
     "credits": "CREDITS",

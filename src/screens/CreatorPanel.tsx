@@ -272,11 +272,19 @@ export function CreatorPanel({
                   >
                     <td className="px-3 py-2.5 sm:px-4">
                       <div className="flex items-center gap-2">
-                        <div
-                          className={`flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator.avatarTone}`}
-                        >
-                          {creator.name.slice(0, 1)}
-                        </div>
+                        {creator.profileImageUrl ? (
+                          <img
+                            src={creator.profileImageUrl}
+                            alt={creator.name}
+                            className="h-7 w-7 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div
+                            className={`flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator.avatarTone}`}
+                          >
+                            {creator.name.slice(0, 1)}
+                          </div>
+                        )}
                         <div className="min-w-0">
                           <p className="truncate font-semibold text-slate-100">{creator.name}</p>
                           <p className="text-[10px] text-slate-500">{creator.concept}</p>
@@ -510,31 +518,38 @@ function CreatorDetailView({
           </div>
         </section>
 
-        <section className="game-panel relative min-h-[16rem] overflow-hidden rounded-2xl lg:min-h-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(129,140,248,0.28),transparent_50%)]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-transparent" />
-
-          <div className="relative flex h-full min-h-[16rem] flex-col items-center justify-end px-6 pb-8 pt-10 lg:min-h-0">
-            {creator.profileImageUrl ? (
+        <section className="game-panel relative min-h-[20rem] overflow-hidden rounded-2xl lg:min-h-0 flex flex-col justify-end">
+          {/* 일러스트 배경 채움 (이미지 존재 시) */}
+          {creator.profileImageUrl ? (
+            <>
               <img
                 src={creator.profileImageUrl}
                 alt=""
-                className="mb-4 h-48 w-40 rounded-2xl object-cover shadow-2xl sm:h-56 sm:w-44"
+                className="absolute inset-0 h-full w-full object-cover"
               />
-            ) : (
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent z-10" />
+            </>
+          ) : (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(129,140,248,0.28),transparent_50%)]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-transparent" />
+            </>
+          )}
+
+          <div className="relative z-20 flex flex-col items-center justify-end px-6 pb-10 pt-10 text-center">
+            {/* 이미지가 없을 때만 이름 첫 글자 대형 구체 렌더링 */}
+            {!creator.profileImageUrl && (
               <div
-                className={`mb-4 flex h-40 w-40 items-center justify-center rounded-full bg-gradient-to-br text-5xl font-black text-slate-950 shadow-2xl sm:h-48 sm:w-48 sm:text-6xl ${creator.avatarTone}`}
+                className={`mb-6 flex h-40 w-40 items-center justify-center rounded-full bg-gradient-to-br text-5xl font-black text-slate-950 shadow-2xl sm:h-48 sm:w-48 sm:text-6xl ${creator.avatarTone}`}
               >
                 {creator.name.slice(0, 1)}
               </div>
             )}
-            <p className="text-xl font-semibold text-slate-100">{creator.name}</p>
-            <p className="mt-1 text-sm text-amber-400">
+            
+            <p className="text-2xl font-bold tracking-wide text-slate-100 drop-shadow-md sm:text-3xl">{creator.name}</p>
+            <p className="mt-1.5 text-sm font-semibold text-amber-400 drop-shadow">
               {creator.grade}급 · {creator.concept}
-            </p>
-            <p className="mt-3 max-w-xs text-center text-xs text-slate-400">
-              크리에이터 대형 일러스트 / 스탠딩 영역
             </p>
           </div>
         </section>

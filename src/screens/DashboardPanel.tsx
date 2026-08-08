@@ -1,9 +1,12 @@
 import type { ReactNode } from 'react'
+import { findLevelIdleVideoUrl, type OwnedCreator } from '../game/characters'
+import { resolveMediaSrc } from '../game/mediaUrl'
 import { creatorVisuals, type StudioSlot } from '../game/studioSlots'
 import { useTranslation } from '../locales/i18n'
 
 type DashboardPanelProps = {
   slots: StudioSlot[]
+  ownedCreators?: OwnedCreator[]
   onStartBroadcast: () => void
 }
 
@@ -12,6 +15,9 @@ type StreamCreatorView = {
   concept: string
   avatar: string
   avatarTone: string
+  profileImageUrl?: string | null
+  idleVideoUrl?: string | null
+  mediaRevision?: string | number
   stamina: number
   staminaMax: number
   viewers: string
@@ -27,7 +33,7 @@ type BroadcastSlotView = {
   creator?: StreamCreatorView
 }
 
-function toBroadcastSlot(slot: StudioSlot): BroadcastSlotView {
+function toBroadcastSlot(slot: StudioSlot, owned?: OwnedCreator): BroadcastSlotView {
   const streamLabel = `STREAM ${String(slot.index).padStart(2, '0')}`
   if (slot.status !== 'assigned' || !slot.assignment) {
     return {
@@ -40,6 +46,13 @@ function toBroadcastSlot(slot: StudioSlot): BroadcastSlotView {
   const visuals = creatorVisuals(slot.assignment.creatorId, slot.assignment.creatorName)
   const staminaMax = 100
   const stamina = Math.min(staminaMax, 40 + slot.assignment.popularity)
+  // 배치 시점 캐시보다 최신 보유 크리에이터 영상을 우선 (에디터에서 교체한 idle 반영)
+  const idleVideoUrl =
+    (owned ? findLevelIdleVideoUrl(owned, 1) : null) ||
+    slot.assignment.idleVideoUrl ||
+    null
+  const mediaRevision =
+    owned?.mediaRevision ?? slot.assignment.mediaRevision ?? idleVideoUrl ?? undefined
 
   return {
     id: slot.id,
@@ -50,6 +63,9 @@ function toBroadcastSlot(slot: StudioSlot): BroadcastSlotView {
       concept: slot.assignment.grade,
       avatar: visuals.avatar,
       avatarTone: visuals.avatarTone,
+      profileImageUrl: slot.assignment.profileImageUrl || null,
+      idleVideoUrl,
+      mediaRevision,
       stamina,
       staminaMax,
       viewers: '—',
@@ -93,9 +109,20 @@ const STATUS_BADGE: Record<StudioSlot['status'], { labelKey: string; className: 
   },
 }
 
-export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: DashboardPanelProps) {
+export function DashboardPanel({
+  slots: studioSlots,
+  ownedCreators = [],
+  onStartBroadcast,
+}: DashboardPanelProps) {
   const { t } = useTranslation()
-  const slots = studioSlots.map(toBroadcastSlot)
+  const ownedById: Record<string, OwnedCreator> = {}
+  for (const creator of ownedCreators) {
+    ownedById[creator.id] = creator
+  }
+  const slots = studioSlots.map((slot) => {
+    const creatorId = slot.assignment?.creatorId
+    return toBroadcastSlot(slot, creatorId ? ownedById[creatorId] : undefined)
+  })
   const assigned = studioSlots.filter((slot) => slot.status === 'assigned' && slot.assignment)
   const hasAssigned = assigned.length > 0
 
@@ -110,6 +137,7 @@ export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: Dashboa
         concept: a.grade,
         avatar: visuals.avatar,
         avatarTone: visuals.avatarTone,
+        profileImageUrl: a.profileImageUrl || null,
         revenue: a.popularity * 1000,
         viewers: '—',
       }
@@ -180,11 +208,19 @@ export function DashboardPanel({ slots: studioSlots, onStartBroadcast }: Dashboa
                   >
                     {creator.rank}
                   </span>
-                  <div
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator.avatarTone}`}
-                  >
-                    {creator.avatar.slice(0, 2)}
-                  </div>
+                  {creator.profileImageUrl ? (
+                    <img
+                      src={creator.profileImageUrl}
+                      alt={creator.name}
+                      className="h-8 w-8 rounded-full object-cover shrink-0"
+                    />
+                  ) : (
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator.avatarTone}`}
+                    >
+                      {creator.avatar.slice(0, 2)}
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-xs font-semibold text-slate-100">
                       {creator.name}
@@ -234,9 +270,6 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
           <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-2">
             <span className="rounded-md border border-white/5 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-[0.14em] text-slate-500 backdrop-blur-sm">
               {slot.label}
-            </span>
-            <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${badge.className}`}>
-              {t(badge.labelKey)}
             </span>
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
@@ -330,20 +363,50 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
     )
   }
 
+  const idleVideoUrl = creator?.idleVideoUrl || null
+  const mediaRevision = creator?.mediaRevision
+  const playableIdleSrc = idleVideoUrl
+    ? resolveMediaSrc(idleVideoUrl, mediaRevision ?? idleVideoUrl)
+    : null
+
   return (
     <article className="neon-glow-card flex flex-col overflow-hidden rounded-2xl bg-slate-950/40">
       <div
-        className={`relative aspect-[2/1] w-full shrink-0 bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
+        className={`relative aspect-[2/1] w-full shrink-0 overflow-hidden bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
       >
-        <div className="cctv-scanline" />
-        <div className="cctv-noise" />
+        {playableIdleSrc ? (
+          <video
+            key={playableIdleSrc}
+            src={playableIdleSrc}
+            className="absolute inset-0 z-0 h-full w-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+          />
+        ) : null}
+
+        <div
+          className="cctv-scanline"
+          style={idleVideoUrl ? { opacity: 0.25 } : undefined}
+        />
+        <div
+          className="cctv-noise"
+          style={idleVideoUrl ? { opacity: 0.02 } : undefined}
+        />
+        {!idleVideoUrl ? (
+          <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_35%,rgba(124,77,255,0.15),transparent_60%)]" />
+        ) : null}
         <div className="reticle-corner reticle-tl" />
         <div className="reticle-corner reticle-tr" />
         <div className="reticle-corner reticle-bl" />
         <div className="reticle-corner reticle-br" />
-
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(124,77,255,0.15),transparent_60%)] z-0" />
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-950 to-transparent z-10" />
+        <div
+          className={`absolute inset-x-0 bottom-0 z-10 h-1/2 bg-gradient-to-t to-transparent ${
+            idleVideoUrl ? 'from-slate-950/75' : 'from-slate-950'
+          }`}
+        />
 
         <div className="absolute top-2.5 left-2.5 right-2.5 z-20 flex items-start justify-between gap-2">
           <span className="rounded-md border border-white/10 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-[0.14em] text-slate-200 backdrop-blur-sm">
@@ -369,11 +432,19 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
 
       <div className="shrink-0 space-y-2 p-2.5">
         <div className="flex items-center gap-2.5">
-          <div
-            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator?.avatarTone ?? 'from-slate-500 to-slate-700'}`}
-          >
-            {(creator?.avatar ?? '?').slice(0, 2)}
-          </div>
+          {creator?.profileImageUrl ? (
+            <img
+              src={creator.profileImageUrl}
+              alt={creator.name}
+              className="h-8 w-8 rounded-full object-cover shrink-0"
+            />
+          ) : (
+            <div
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator?.avatarTone ?? 'from-slate-500 to-slate-700'}`}
+            >
+              {(creator?.avatar ?? '?').slice(0, 2)}
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-1.5">
               <p className="truncate text-xs font-semibold text-slate-100">

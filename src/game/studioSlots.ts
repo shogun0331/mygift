@@ -5,6 +5,10 @@ export type StudioSlotAssignment = {
   creatorName: string
   grade: string
   popularity: number
+  profileImageUrl?: string | null
+  /** 대시보드 대기 루프용 — 수위 레벨 1 idle 영상 */
+  idleVideoUrl?: string | null
+  mediaRevision?: number
 }
 
 export type StudioSlot = {
@@ -21,6 +25,9 @@ export type StudioHandCard = {
   name: string
   grade: string
   popularity: number
+  profileImageUrl?: string | null
+  idleVideoUrl?: string | null
+  mediaRevision?: number
 }
 
 /** 시작: 1번만 미배정(해금), 나머지 잠금. 캐릭터 없음. */
@@ -63,6 +70,9 @@ export function assignCreatorToSlot(
         creatorName: card.name,
         grade: card.grade,
         popularity: card.popularity,
+        profileImageUrl: card.profileImageUrl || null,
+        idleVideoUrl: card.idleVideoUrl || null,
+        mediaRevision: card.mediaRevision,
       },
     }
   })

@@ -2,6 +2,7 @@
   "menu": {
     "newGame": "NEW GAME",
     "loadGame": "LOAD GAME",
+    "continueHint": "(Resume current session)",
     "settings": "SETTINGS",
     "gallery": "ENDING GALLERY",
     "credits": "CREDITS",

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "1786146452316-cjvmuwo",
+    "name": "김미래",
+    "age": "25",
+    "job": "요가 강사",
+    "bust": "C",
+    "weight": "58",
+    "grade": "C",
+    "popularity": 25,
+    "concept": "요가 강사",
+    "salary": 22000000,
+    "eventLinks": {
+      "scout": null,
+      "salary": null,
+      "vip": null,
+      "h": null
+    },
+    "avatarTone": "from-sky-300 to-indigo-400",
+    "profileImageUrl": "media://characters/1786146452316-cjvmuwo/images/1786146425254-309r3ti__2026-08-07_00010.png",
+    "characterIconId": "1786146425254-7mmjncl",
+    "characterIllustrationId": "1786146419350-ai04uuv",
+    "profileImageId": "1786146425254-309r3ti",
+    "profileVideoId": null,
+    "mediaRevision": 1786150984980,
+    "images": [
+      {
+        "id": "1786146419350-ai04uuv",
+        "fileName": "1786146419350-ai04uuv__2026-08-07_00009.png",
+        "fileSize": 354795,
+        "url": "media://characters/1786146452316-cjvmuwo/images/1786146419350-ai04uuv__2026-08-07_00009.png",
+        "keys": []
+      },
+      {
+        "id": "1786146425254-309r3ti",
+        "fileName": "1786146425254-309r3ti__2026-08-07_00010.png",
+        "fileSize": 2362740,
+        "url": "media://characters/1786146452316-cjvmuwo/images/1786146425254-309r3ti__2026-08-07_00010.png",
+        "keys": []
+      },
+      {
+        "id": "1786146425254-7mmjncl",
+        "fileName": "1786146425254-7mmjncl__2026-08-07_00012.png",
+        "fileSize": 3371558,
+        "url": "media://characters/1786146452316-cjvmuwo/images/1786146425254-7mmjncl__2026-08-07_00012.png",
+        "keys": []
+      }
+    ],
+    "videos": [
+      {
+        "id": "1786149214596-qq5ddmm",
+        "fileName": "1786149214596-qq5ddmm__798144a4-17d0-4264-b88a-33cd5439529a_1.mp4",
+        "fileSize": 2552153,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786149214596-qq5ddmm__798144a4-17d0-4264-b88a-33cd5439529a_1.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 2
+      },
+      {
+        "id": "1786149218669-74nfed1",
+        "fileName": "1786149218669-74nfed1__a48882b7-3da9-4596-9434-ecbfaef86e03_1.mp4",
+        "fileSize": 2619043,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786149218669-74nfed1__a48882b7-3da9-4596-9434-ecbfaef86e03_1.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 3
+      },
+      {
+        "id": "1786149222937-57t5pms",
+        "fileName": "1786149222937-57t5pms__8205dba1-ff5e-4557-bb46-3b060126749e_1.mp4",
+        "fileSize": 2183927,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786149222937-57t5pms__8205dba1-ff5e-4557-bb46-3b060126749e_1.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 4
+      },
+      {
+        "id": "1786150980425-2cp3akz",
+        "fileName": "1786150980425-2cp3akz__2026-07-30_00012-audio.mp4",
+        "fileSize": 777206,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786150980425-2cp3akz__2026-07-30_00012-audio.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 1
+      }
+    ]
+  }
+]
