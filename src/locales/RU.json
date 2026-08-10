@@ -31,6 +31,8 @@
     "liveRank": "Live Broadcast Rank",
     "noLiveBroadcast": "스튜디오에서 배정된 방송이 없습니다.",
     "startBroadcast": "▶ 방송시작",
+    "broadcasting": "● 방송 중",
+    "live": "LIVE",
     "ready": "READY",
     "noSignal": "NO SIGNAL",
     "standby": "대기 중 (비어 있음)",

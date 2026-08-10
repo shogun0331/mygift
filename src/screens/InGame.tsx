@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
 import {
   toStudioHandCard,
@@ -6,10 +6,33 @@ import {
   type RegisteredCharacter,
 } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
+import type { BroadcastPhase } from '../game/broadcast'
+import { MS_PER_GAME_WEEK, WEEKS_PER_MONTH, monthToCalendarDate } from '../game/broadcast'
+import { applyEndOfDayConditions } from '../game/condition'
+import {
+  buildStudioDayPlan,
+  scaleDayPlanTimes,
+  type DayEvent,
+  type StudioDayPlan,
+} from '../game/economy'
+import {
+  calcProgressiveAnnualTax,
+  createTaxUpcomingEvent,
+  isFebruaryCalendarMonth,
+  isMarchCalendarMonth,
+} from '../game/tax'
+import {
+  buildWeeklyStatement,
+  createWeekAccumulator,
+  recordDayIntoWeek,
+  type WeekAccumulator,
+  type WeeklyStatement,
+} from '../game/weeklyReport'
 import { CreatorPanel } from './CreatorPanel'
 import { DashboardPanel } from './DashboardPanel'
 import { EquipmentPanel } from './EquipmentPanel'
 import { SchedulePanel } from './SchedulePanel'
+import { WeeklySettlementModal } from './WeeklySettlementModal'
 
 export type GameTab =
   | 'dashboard'
@@ -22,17 +45,28 @@ export type GameTab =
 const SPEED_OPTIONS = ['1x', '2x', '3x'] as const
 type SpeedOption = (typeof SPEED_OPTIONS)[number]
 
+const GAME_EPOCH = new Date(2026, 0, 1)
+const INITIAL_ASSETS = 12_500_000
+const MAX_RECENT_EVENTS = 40
+
+function speedMultiplierOf(speed: SpeedOption) {
+  if (speed === '2x') return 2
+  if (speed === '3x') return 3
+  return 1
+}
+
 function formatGameClock(date: Date) {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-  const seconds = String(date.getSeconds()).padStart(2, '0')
   return {
     date: `${year}.${month}.${day}`,
-    time: `${hours}:${minutes}:${seconds}`,
+    time: '00:00:00',
   }
+}
+
+function formatAssets(value: number) {
+  return `₩${value.toLocaleString('ko-KR')}`
 }
 
 function IconBack() {
@@ -128,10 +162,10 @@ type InGameProps = {
   ownedCreators: OwnedCreator[]
   studioSlots: StudioSlot[]
   onStudioSlotsChange: (slots: StudioSlot[]) => void
-  onScout: (character: RegisteredCharacter) => void
+  onOwnedCreatorsChange: (creators: OwnedCreator[]) => void
+  onScout: (creator: OwnedCreator) => void
   onBack: () => void
   onOpenEditor?: () => void
-  onStartBroadcast: () => void
 }
 
 export function InGame({
@@ -139,15 +173,44 @@ export function InGame({
   ownedCreators,
   studioSlots,
   onStudioSlotsChange,
+  onOwnedCreatorsChange,
   onScout,
   onBack,
   onOpenEditor,
-  onStartBroadcast,
 }: InGameProps) {
   const { t, locale, setLocale } = useTranslation()
   const [tab, setTab] = useState<GameTab>('dashboard')
   const [speed, setSpeed] = useState<SpeedOption>('1x')
-  const [now, setNow] = useState(() => new Date())
+  const [gameMonth, setGameMonth] = useState(0)
+  const [broadcastPhase, setBroadcastPhase] = useState<BroadcastPhase>('prep')
+  const [monthWeekIndex, setMonthWeekIndex] = useState(0)
+  const [assets, setAssets] = useState(INITIAL_ASSETS)
+  const [liveEvents, setLiveEvents] = useState<DayEvent[]>([])
+  const [liveRevenueByCreator, setLiveRevenueByCreator] = useState<Record<string, number>>({})
+  const [weeklyStatement, setWeeklyStatement] = useState<WeeklyStatement | null>(null)
+  const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(1)
+  const dayPlanRef = useRef<StudioDayPlan | null>(null)
+  const dayStartedAtRef = useRef<number | null>(null)
+  const revealedIdsRef = useRef(new Set<string>())
+  const settledDayKeyRef = useRef<string | null>(null)
+  const weekAccumRef = useRef<WeekAccumulator>(createWeekAccumulator(1))
+  const prevWeekRevenueRef = useRef<number | null>(null)
+  const weekFinishedRef = useRef(false)
+  const annualRevenueByYearRef = useRef<Record<number, number>>({})
+  const studioSlotsRef = useRef(studioSlots)
+  const ownedCreatorsRef = useRef(ownedCreators)
+  const speedRef = useRef(speed)
+  const onOwnedCreatorsChangeRef = useRef(onOwnedCreatorsChange)
+  const gameMonthRef = useRef(gameMonth)
+  const monthWeekIndexRef = useRef(monthWeekIndex)
+  const broadcastMonthNumberRef = useRef(broadcastMonthNumber)
+  studioSlotsRef.current = studioSlots
+  ownedCreatorsRef.current = ownedCreators
+  speedRef.current = speed
+  onOwnedCreatorsChangeRef.current = onOwnedCreatorsChange
+  gameMonthRef.current = gameMonth
+  monthWeekIndexRef.current = monthWeekIndex
+  broadcastMonthNumberRef.current = broadcastMonthNumber
   const handCards = ownedCreators.map(toStudioHandCard)
 
   const handleUpgradeStudio = () => {
@@ -161,17 +224,237 @@ export function InGame({
     )
   }
 
-  useEffect(() => {
-    const timer = window.setInterval(() => setNow(new Date()), 1000)
-    return () => window.clearInterval(timer)
-  }, [])
+  function assignedCreatorsFrom(list: OwnedCreator[]) {
+    return studioSlotsRef.current
+      .filter((slot) => slot.status === 'assigned' && slot.assignment)
+      .map((slot) => list.find((c) => c.id === slot.assignment!.creatorId))
+      .filter((c): c is OwnedCreator => Boolean(c))
+  }
 
-  const clock = formatGameClock(now)
+  /** 한 주 시작: 현재 컨디션으로 주간 수익 DayPlan 선계산 */
+  function beginDayPlan(dayKey: string, weekMs: number) {
+    const plan = buildStudioDayPlan(
+      assignedCreatorsFrom(ownedCreatorsRef.current),
+      weekMs,
+      dayKey,
+    )
+    dayPlanRef.current = plan
+    dayStartedAtRef.current = performance.now()
+    revealedIdsRef.current = new Set()
+    settledDayKeyRef.current = null
+  }
+
+  function creditLiveDonations(events: DayEvent[]) {
+    const donations = events.filter((event) => event.type === 'donation' && event.amount > 0)
+    if (donations.length === 0) return
+    setLiveRevenueByCreator((prev) => {
+      const next = { ...prev }
+      for (const event of donations) {
+        next[event.creatorId] = (next[event.creatorId] ?? 0) + event.amount
+      }
+      return next
+    })
+  }
+
+  function flushRemainingEvents(plan: StudioDayPlan) {
+    const pending = plan.plans
+      .flatMap((p) => p.events)
+      .filter((event) => !revealedIdsRef.current.has(event.id))
+    if (pending.length === 0) return
+    pending.forEach((event) => revealedIdsRef.current.add(event.id))
+    creditLiveDonations(pending)
+    setLiveEvents((prev) => [...pending.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+  }
+
+  function settleCurrentDay() {
+    const plan = dayPlanRef.current
+    if (!plan || settledDayKeyRef.current === plan.dayKey) return
+    settledDayKeyRef.current = plan.dayKey
+    flushRemainingEvents(plan)
+    // 자산은 턴(월) 종료 정산에서만 반영 — 방송 중 실시간 가산 없음
+    if (plan.totalRevenueWon > 0) {
+      const year = monthToCalendarDate(GAME_EPOCH, gameMonthRef.current).getFullYear()
+      annualRevenueByYearRef.current[year] =
+        (annualRevenueByYearRef.current[year] ?? 0) + plan.totalRevenueWon
+    }
+    weekAccumRef.current = recordDayIntoWeek(weekAccumRef.current, plan.plans)
+    // 주 종료: 방송자 하락 / 미방송 회복
+    const broadcastedIds = new Set(
+      studioSlotsRef.current
+        .filter((slot) => slot.status === 'assigned' && slot.assignment)
+        .map((slot) => slot.assignment!.creatorId),
+    )
+    const nextOwned = applyEndOfDayConditions(ownedCreatorsRef.current, broadcastedIds)
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+  }
+
+  function finishBroadcastMonth() {
+    // Strict Mode / 중복 틱 방어: 한 달(턴) 종료는 1회만
+    if (weekFinishedRef.current) return
+    weekFinishedRef.current = true
+
+    // 턴 종료 → 무조건 다음 달
+    const nextMonth = gameMonthRef.current + 1
+    gameMonthRef.current = nextMonth
+    setGameMonth(nextMonth)
+
+    const weekSnapshot = weekAccumRef.current
+    const issued = formatGameClock(monthToCalendarDate(GAME_EPOCH, nextMonth)).date.replace(
+      /\./g,
+      '-',
+    )
+    const unlockedSlotCount = studioSlotsRef.current.filter(
+      (slot) => slot.status !== 'locked',
+    ).length
+    const payroll = ownedCreatorsRef.current.map((creator) => ({
+      id: creator.id,
+      name: creator.name,
+      salary: creator.salary,
+    }))
+    const nextDate = monthToCalendarDate(GAME_EPOCH, nextMonth)
+    let annualTaxWon = 0
+    let taxYear: number | undefined
+    let annualRevenueForTaxWon = 0
+    if (isMarchCalendarMonth(nextDate)) {
+      taxYear = nextDate.getFullYear() - 1
+      annualRevenueForTaxWon = annualRevenueByYearRef.current[taxYear] ?? 0
+      annualTaxWon = calcProgressiveAnnualTax(annualRevenueForTaxWon)
+      // 과세·납부 완료 → RECENT EVENTS의 예고 알림 제거
+      setLiveEvents((prev) => prev.filter((event) => event.type !== 'tax'))
+    } else if (isFebruaryCalendarMonth(nextDate)) {
+      const upcomingTaxYear = nextDate.getFullYear() - 1
+      const annualRevenue = annualRevenueByYearRef.current[upcomingTaxYear] ?? 0
+      const taxNotice = createTaxUpcomingEvent(upcomingTaxYear, annualRevenue)
+      setLiveEvents((prev) =>
+        [taxNotice, ...prev.filter((event) => event.type !== 'tax')].slice(0, MAX_RECENT_EVENTS),
+      )
+    }
+
+    const statement = buildWeeklyStatement({
+      week: weekSnapshot,
+      issuedDate: issued,
+      previousNetProfitWon: prevWeekRevenueRef.current,
+      unlockedSlotCount,
+      payroll,
+      annualTaxWon,
+      taxYear,
+      annualRevenueForTaxWon,
+    })
+    prevWeekRevenueRef.current = statement.netProfitWon
+    // 한 턴(월) 종료 시 수익·지출을 한꺼번에 자산에 반영
+    if (statement.netProfitWon !== 0) {
+      setAssets((prev) => prev + statement.netProfitWon)
+    }
+    setWeeklyStatement(statement)
+
+    const nextMonthNumber = broadcastMonthNumberRef.current + 1
+    broadcastMonthNumberRef.current = nextMonthNumber
+    setBroadcastMonthNumber(nextMonthNumber)
+    weekAccumRef.current = createWeekAccumulator(nextMonthNumber)
+    setBroadcastPhase('prep')
+    dayPlanRef.current = null
+    dayStartedAtRef.current = null
+  }
+
+  function handleRecoverCondition(creatorId: string) {
+    const nextOwned = ownedCreatorsRef.current.map((creator) => {
+      if (creator.id === creatorId) {
+        return {
+          ...creator,
+          condition: 'best' as const,
+          conditionScore: 100,
+        }
+      }
+      return creator
+    })
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+  }
+
+  function handleStartBroadcast() {
+    if (broadcastPhase === 'live') return
+    if (weeklyStatement) return
+    weekFinishedRef.current = false
+    setBroadcastPhase('live')
+    setMonthWeekIndex(0)
+    monthWeekIndexRef.current = 0
+    // 방송 시작 시 후원/시청 이벤트는 초기화, 세금 알림은 유지
+    setLiveEvents((prev) => prev.filter((event) => event.type === 'tax'))
+    setLiveRevenueByCreator({})
+    weekAccumRef.current = createWeekAccumulator(broadcastMonthNumberRef.current)
+    const weekMs = MS_PER_GAME_WEEK / speedMultiplierOf(speed)
+    beginDayPlan(`m${broadcastMonthNumberRef.current}-w0`, weekMs)
+  }
+
+  // 배속 변경 시 남은 스케줄 비율 스케일
+  useEffect(() => {
+    if (broadcastPhase !== 'live') return
+    const plan = dayPlanRef.current
+    const startedAt = dayStartedAtRef.current
+    if (!plan || startedAt == null) return
+    const nextWeekMs = MS_PER_GAME_WEEK / speedMultiplierOf(speed)
+    if (nextWeekMs === plan.dayMs) return
+    const elapsed = performance.now() - startedAt
+    const scaled = scaleDayPlanTimes(plan, nextWeekMs)
+    dayPlanRef.current = scaled
+    dayStartedAtRef.current =
+      performance.now() - Math.min(elapsed * (nextWeekMs / plan.dayMs), nextWeekMs - 1)
+  }, [speed, broadcastPhase])
+
+  // 주 진행: 이벤트 공개
+  useEffect(() => {
+    if (broadcastPhase !== 'live') return
+    const id = window.setInterval(() => {
+      const plan = dayPlanRef.current
+      const startedAt = dayStartedAtRef.current
+      if (!plan || startedAt == null) return
+      const elapsed = performance.now() - startedAt
+      const due = plan.plans
+        .flatMap((p) => p.events)
+        .filter((event) => event.atMs <= elapsed && !revealedIdsRef.current.has(event.id))
+        .sort((a, b) => a.atMs - b.atMs)
+      if (due.length === 0) return
+      due.forEach((event) => revealedIdsRef.current.add(event.id))
+      creditLiveDonations(due)
+      setLiveEvents((prev) => [...due.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+    }, 50)
+    return () => window.clearInterval(id)
+  }, [broadcastPhase])
+
+  // 주 틱: 결산 → 월 내 주차 진행 → 턴 종료 시 다음 달
+  useEffect(() => {
+    if (broadcastPhase !== 'live') return
+    const tickMs = MS_PER_GAME_WEEK / speedMultiplierOf(speed)
+    const timer = window.setInterval(() => {
+      settleCurrentDay()
+
+      const nextMonthWeek = monthWeekIndexRef.current + 1
+
+      if (nextMonthWeek >= WEEKS_PER_MONTH) {
+        monthWeekIndexRef.current = 0
+        setMonthWeekIndex(0)
+        finishBroadcastMonth()
+        return
+      }
+
+      monthWeekIndexRef.current = nextMonthWeek
+      setMonthWeekIndex(nextMonthWeek)
+      const weekMs = MS_PER_GAME_WEEK / speedMultiplierOf(speedRef.current)
+      beginDayPlan(`m${broadcastMonthNumberRef.current}-w${nextMonthWeek}`, weekMs)
+    }, tickMs)
+    return () => window.clearInterval(timer)
+  }, [broadcastPhase, speed])
+
+  const clock = formatGameClock(monthToCalendarDate(GAME_EPOCH, gameMonth))
+  const broadcastWeekCurrent = monthWeekIndex + 1
+  const broadcastWeeksLeft = Math.max(0, WEEKS_PER_MONTH - broadcastWeekCurrent)
+  const broadcastMonthPct = Math.round((broadcastWeekCurrent / WEEKS_PER_MONTH) * 100)
 
   return (
     <main className="game-stage fixed inset-0 grid h-dvh grid-rows-[auto_1fr_auto] overflow-hidden">
       <header className="game-hud z-20 flex shrink-0 items-center justify-between gap-4 px-6 pt-6 pb-3">
-        <div>
+        <div className="min-w-0">
           <p className="game-kicker">STAR BROADCASTING CO.</p>
           <h1
             className="game-title mt-1 text-2xl"
@@ -180,6 +463,41 @@ export function InGame({
             {t(`menu.${tab}`)}
           </h1>
         </div>
+
+        {broadcastPhase === 'live' ? (
+          <div className="game-panel min-w-0 flex-1 max-w-md rounded-xl border border-pink-400/35 px-3 py-2 shadow-[0_0_18px_rgba(255,42,116,0.12)] sm:px-4">
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 rounded-full border border-pink-400/40 bg-pink-500/15 px-2 py-0.5 text-[10px] font-black tracking-wider text-pink-300 neon-text-pink">
+                  <span className="game-live-dot h-1.5 w-1.5 rounded-full bg-pink-400" />
+                  {t('hud.onAir')}
+                </span>
+                <p className="text-sm font-black tabular-nums text-slate-100">
+                  <span className="text-slate-500">{t('hud.dayProgress')}</span>{' '}
+                  <span className="neon-text-cyan">{broadcastWeekCurrent}</span>
+                  <span className="text-slate-600">/</span>
+                  <span>{WEEKS_PER_MONTH}</span>
+                  <span className="ml-0.5 text-[11px] font-bold text-slate-500">
+                    {t('hud.weekUnit')}
+                  </span>
+                </p>
+              </div>
+              <p className="text-xs font-bold tabular-nums text-slate-300">
+                <span className="text-slate-500">{t('hud.daysLeft')}</span>{' '}
+                <span className="text-amber-300">{broadcastWeeksLeft}</span>
+                <span className="ml-0.5 text-[10px] text-slate-500">{t('hud.weekUnit')}</span>
+              </p>
+            </div>
+            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-800/90">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-400 to-cyan-300 transition-[width] duration-500"
+                style={{ width: `${broadcastMonthPct}%` }}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="hidden flex-1 md:block" />
+        )}
 
         <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
           <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(0,245,255,0.04)]">
@@ -214,7 +532,9 @@ export function InGame({
 
           <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(251,191,36,0.04)]">
             <p className="game-stat-label">{t('hud.assets')}</p>
-            <p className="text-sm font-black text-amber-400 animate-pulse" style={{ textShadow: '0 0 8px rgba(251, 191, 36, 0.45)' }}>₩12,500,000</p>
+            <p className="text-sm font-black text-amber-400" style={{ textShadow: '0 0 8px rgba(251, 191, 36, 0.45)' }}>
+              {formatAssets(assets)}
+            </p>
           </div>
 
           {import.meta.env.DEV && onOpenEditor ? (
@@ -256,7 +576,12 @@ export function InGame({
           <DashboardPanel
             slots={studioSlots}
             ownedCreators={ownedCreators}
-            onStartBroadcast={onStartBroadcast}
+            broadcastPhase={broadcastPhase}
+            weekDayIndex={monthWeekIndex}
+            liveEvents={liveEvents}
+            liveRevenueByCreator={liveRevenueByCreator}
+            onStartBroadcast={handleStartBroadcast}
+            onRecoverCondition={handleRecoverCondition}
           />
         </div>
 
@@ -368,6 +693,13 @@ export function InGame({
           })}
         </div>
       </nav>
+
+      {weeklyStatement ? (
+        <WeeklySettlementModal
+          statement={weeklyStatement}
+          onConfirm={() => setWeeklyStatement(null)}
+        />
+      ) : null}
     </main>
   )
 }

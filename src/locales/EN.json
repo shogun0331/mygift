@@ -24,7 +24,11 @@
     "dateTime": "DATE · TIME",
     "speed": "SPEED",
     "assets": "ASSETS",
-    "back": "BACK"
+    "back": "BACK",
+    "onAir": "ON AIR",
+    "dayProgress": "WEEK",
+    "daysLeft": "LEFT",
+    "weekUnit": "w"
   },
   "dashboard": {
     "recentEvents": "Recent Events",
@@ -32,6 +36,8 @@
     "liveRank": "Live Broadcast Rank",
     "noLiveBroadcast": "No broadcast assigned in studio.",
     "startBroadcast": "▶ START LIVE",
+    "broadcasting": "● ON AIR",
+    "live": "LIVE",
     "ready": "READY",
     "noSignal": "NO SIGNAL",
     "standby": "STANDBY (EMPTY)",
@@ -43,7 +49,17 @@
     "unassigned": "Unassigned Slot",
     "unassignedLinked": "Linked to Studio Slots",
     "idle": "IDLE",
-    "studioPlaced": "Studio Placed"
+    "studioPlaced": "Studio Placed",
+    "rankRevenue": "Revenue",
+    "actionRecover": "Recover Condition"
+  },
+  "condition": {
+    "title": "Condition",
+    "best": "Best",
+    "good": "Good",
+    "normal": "Normal",
+    "bad": "Bad",
+    "worst": "Worst"
   },
   "equipment": {
     "title": "EQUIPMENT",
@@ -71,9 +87,44 @@
     "devModeDesc": "Enabling Dev Mode unlocks the [EDIT] tab constantly.",
     "saveSuccess": "Settings have been saved successfully."
   },
+  "creator": {
+    "scout": "SCOUT",
+    "scoutDesc": "Review a random candidate's grade, stats, and salary — then hire or pass.",
+    "scoutHire": "HIRE",
+    "scoutPass": "PASS",
+    "scoutEmpty": "No scout candidates available.",
+    "statPopularity": "Popularity",
+    "statSkill": "Skill",
+    "statHeat": "Heat",
+    "statTrust": "Trust",
+    "statStamina": "Stamina",
+    "statRevenueMult": "Revenue Mult"
+  },
   "studio": {
     "placementTitle": "CREATOR PLACEMENT",
     "placementDesc": "Select a card and place it into an unlocked slot",
     "noCreators": "No creators owned. Recruited characters will appear here."
+  },
+  "settlement": {
+    "title": "Monthly Settlement",
+    "issued": "Issued",
+    "monthSuffix": "M",
+    "station": "Station",
+    "revenueSection": "Revenue",
+    "colCreator": "Creator",
+    "colHours": "Airtime",
+    "colRevenue": "Earnings",
+    "hoursUnit": "h",
+    "noBroadcast": "No broadcasts this month.",
+    "expenseSection": "Expenses",
+    "colExpense": "Item",
+    "colAmount": "Amount",
+    "noExpense": "No expenses this month.",
+    "summarySection": "Summary",
+    "totalRevenue": "Gross",
+    "totalExpense": "Expenses",
+    "netProfit": "Net",
+    "highlightsSection": "Highlights",
+    "confirm": "OK"
   }
 }

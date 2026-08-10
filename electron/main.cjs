@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol, net } = require('electron')
+const { app, BrowserWindow, protocol, net, Menu } = require('electron')
 const path = require('path')
 const { pathToFileURL } = require('url')
 
@@ -49,6 +49,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  Menu.setApplicationMenu(null)
   // media://characters/... → public/characters/... (range request 지원)
   protocol.handle('media', (request) => {
     try {

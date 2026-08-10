@@ -462,3 +462,208 @@ select {
   0% { height: 20%; }
   100% { height: 100%; }
 }
+
+/* ── Monthly settlement (closing report) ── */
+.statement-sheet {
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  background:
+    linear-gradient(165deg, rgba(49, 46, 129, 0.16), transparent 42%),
+    linear-gradient(180deg, rgba(30, 41, 59, 0.55), rgba(6, 10, 20, 0.94));
+  color: #e2e8f0;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(18px);
+}
+
+.statement-inner {
+  background-image: none;
+}
+
+.statement-hero {
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  background:
+    linear-gradient(135deg, rgba(251, 191, 36, 0.08), transparent 55%),
+    rgba(0, 0, 0, 0.28);
+}
+
+
+/* ── Revenue burst FX on stream cards ── */
+.revenue-fx-layer {
+  isolation: isolate;
+}
+
+.revenue-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* 우측 하단 작은 앵커 — 영상 중앙을 가리지 않음 */
+.revenue-burst-anchor {
+  position: absolute;
+  right: 6px;
+  bottom: 8px;
+  width: min(58%, 160px);
+  height: 52px;
+  overflow: visible;
+}
+
+.revenue-burst-glow {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 72px;
+  height: 40px;
+  border-radius: 999px;
+  background: radial-gradient(
+    ellipse at 70% 60%,
+    rgba(255, 214, 102, 0.35),
+    rgba(255, 42, 116, 0.12) 55%,
+    transparent 75%
+  );
+  animation: revenue-corner-glow 0.7s ease-out forwards;
+  filter: blur(2px);
+}
+
+.revenue-burst--big .revenue-burst-glow,
+.revenue-burst--mega .revenue-burst-glow {
+  background: radial-gradient(
+    ellipse at 70% 60%,
+    rgba(255, 236, 160, 0.5),
+    rgba(255, 180, 40, 0.22) 50%,
+    transparent 78%
+  );
+}
+
+.revenue-burst-amount {
+  position: absolute;
+  right: 2px;
+  bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  animation: revenue-amount-slide 1.05s cubic-bezier(0.16, 0.84, 0.28, 1) forwards;
+  text-shadow:
+    0 0 8px rgba(255, 200, 80, 0.55),
+    0 1px 4px rgba(0, 0, 0, 0.85);
+  z-index: 2;
+  max-width: 100%;
+}
+
+.revenue-burst-amount-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #ffe58a;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.revenue-burst--mid .revenue-burst-amount-label {
+  font-size: 12px;
+  color: #ffd666;
+}
+
+.revenue-burst--big .revenue-burst-amount-label,
+.revenue-burst--mega .revenue-burst-amount-label {
+  font-size: 12px;
+  color: #fff3bf;
+}
+
+.revenue-burst--mega .revenue-burst-amount-label {
+  font-size: 13px;
+}
+
+.revenue-particle {
+  position: absolute;
+  bottom: 6px;
+  font-weight: 900;
+  line-height: 1;
+  animation: revenue-particle-corner var(--fx-dur, 1s) ease-out var(--fx-delay, 0s) forwards;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.revenue-particle--coin {
+  color: #ffd666;
+  font-size: 9px;
+  text-shadow: 0 0 6px rgba(255, 200, 60, 0.7);
+}
+
+.revenue-particle--spark {
+  color: #fff7c2;
+  font-size: 7px;
+  text-shadow: 0 0 8px rgba(255, 240, 160, 0.85);
+}
+
+.revenue-particle--note {
+  color: #ff8ec8;
+  font-size: 8px;
+  text-shadow: 0 0 8px rgba(255, 80, 160, 0.65);
+}
+
+.revenue-burst--mega .revenue-particle--coin {
+  font-size: 10px;
+}
+
+@keyframes revenue-corner-glow {
+  0% { opacity: 0.9; transform: scale(0.85); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+
+@keyframes revenue-amount-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.92);
+  }
+  16% {
+    opacity: 1;
+    transform: translateY(0) scale(1.04);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+  }
+}
+
+@keyframes revenue-particle-corner {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(0, 4px, 0)
+      scale(calc(var(--fx-scale, 1) * 0.45))
+      rotate(var(--fx-rot, 0deg));
+  }
+  14% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--fx-drift, 0px), -36px, 0)
+      scale(var(--fx-scale, 1))
+      rotate(calc(var(--fx-rot, 0deg) + 28deg));
+  }
+}
+
+/* 컨디션 최악 — 점만 아주 약하게 호흡 */
+@keyframes condition-worst-dot {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+.condition-alert-worst .condition-status-dot {
+  animation: condition-worst-dot 1.8s ease-in-out infinite;
+}

@@ -1,0 +1,12 @@
+export type BroadcastPhase = 'prep' | 'live'
+
+/** 게임 한 주 = 실시간 5초 (배속 적용) */
+export const MS_PER_GAME_WEEK = 5000
+
+/** 한 턴 = 한 달 = 4주 */
+export const WEEKS_PER_MONTH = 4
+
+/** 턴(월) 인덱스로 달력 날짜 — 항상 해당 월 1일 */
+export function monthToCalendarDate(epoch: Date, monthIndex: number) {
+  return new Date(epoch.getFullYear(), epoch.getMonth() + monthIndex, 1)
+}

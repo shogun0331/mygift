@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '../locales/i18n'
 
 type MenuId =
   | 'new'
@@ -41,8 +42,6 @@ type MainMenuProps = {
   onContinueGame?: () => void
   onOpenEditor?: () => void
 }
-
-import { useTranslation } from '../locales/i18n'
 
 export function MainMenu({ onNewGame, onContinueGame, onOpenEditor }: MainMenuProps) {
   const { t } = useTranslation()

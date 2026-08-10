@@ -1,5 +1,7 @@
 import type { CharacterEventLinks } from '../events/types'
 import { emptyCharacterEventLinks } from '../events/types'
+import { conditionFromScore, rollStartingConditionScore } from './condition'
+import { estimateDefaultSalaryForGrade } from './salary'
 import { creatorVisuals } from './studioSlots'
 
 export type Grade = 'S' | 'A' | 'B' | 'C'
@@ -55,10 +57,20 @@ export type RegisteredCharacter = {
 export type OwnedCreator = RegisteredCharacter & {
   contractWeeks: number
   nextPayTurns: number
-  loyalty: number
+  skill: number
+  heat: number
+  trust: number
   stamina: number
   staminaMax: number
+  revenueMult: number
+  /** 컨디션 티어 (conditionScore에서 파생) */
   condition: string
+  /** 컨디션 점수 0~100 */
+  conditionScore: number
+  /** 연속 휴식 일수 */
+  restStreak: number
+  /** @deprecated trust 사용. 구 세이브 호환용 */
+  loyalty?: number
 }
 
 export type CharacterDraft = {
@@ -89,16 +101,7 @@ function defaultGradeFromJob(_job: string): Grade {
 }
 
 function defaultSalary(grade: Grade) {
-  switch (grade) {
-    case 'S':
-      return 150_000_000
-    case 'A':
-      return 110_000_000
-    case 'B':
-      return 60_000_000
-    default:
-      return 22_000_000
-  }
+  return estimateDefaultSalaryForGrade(grade)
 }
 
 function defaultPopularity(grade: Grade) {
@@ -144,16 +147,63 @@ export function createRegisteredCharacter(draft: CharacterDraft): RegisteredChar
   }
 }
 
-/** 스카우트 영입 → 보유 크리에이터 */
+/** 스카우트 영입 → 보유 크리에이터 (레거시: 고정 스탯). 신규 영입은 hireScoutOffer 사용 */
 export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
+  const conditionScore = rollStartingConditionScore()
   return {
     ...character,
     contractWeeks: 12,
     nextPayTurns: 4,
-    loyalty: 50,
+    skill: 25,
+    heat: 1,
+    trust: 50,
     stamina: 80,
-    staminaMax: 100,
-    condition: 'NORMAL',
+    staminaMax: 80,
+    revenueMult: 1.0,
+    conditionScore,
+    condition: conditionFromScore(conditionScore),
+    restStreak: 0,
+  }
+}
+
+/** 구 세이브(loyalty 등) → 신규 능력치 필드 보정 */
+export function normalizeOwnedCreator(raw: OwnedCreator & { loyalty?: number }): OwnedCreator {
+  const trust = Math.max(0, Math.min(100, Number(raw.trust ?? raw.loyalty ?? 50) || 50))
+  const staminaMax = Math.max(1, Number(raw.staminaMax ?? 70) || 70)
+  const stamina = Math.max(0, Math.min(staminaMax, Number(raw.stamina ?? staminaMax) || staminaMax))
+  const conditionRaw = (raw.condition ?? 'normal').toLowerCase()
+  const conditionTier =
+    conditionRaw === 'best' ||
+    conditionRaw === 'good' ||
+    conditionRaw === 'normal' ||
+    conditionRaw === 'bad' ||
+    conditionRaw === 'worst'
+      ? conditionRaw
+      : 'normal'
+  let conditionScore = Number(raw.conditionScore)
+  if (!Number.isFinite(conditionScore)) {
+    const mid: Record<string, number> = {
+      best: 95,
+      good: 80,
+      normal: 60,
+      bad: 40,
+      worst: 15,
+    }
+    conditionScore = mid[conditionTier] ?? 60
+  }
+  conditionScore = Math.max(0, Math.min(100, Math.round(conditionScore)))
+  return {
+    ...raw,
+    skill: Math.max(0, Math.min(100, Number(raw.skill ?? 25) || 25)),
+    heat: Math.max(1, Math.min(4, Number(raw.heat ?? 1) || 1)),
+    trust,
+    stamina,
+    staminaMax,
+    revenueMult: Number(raw.revenueMult ?? 1) || 1,
+    conditionScore,
+    condition: conditionFromScore(conditionScore),
+    restStreak: Math.max(0, Math.round(Number(raw.restStreak ?? 0) || 0)),
+    loyalty: undefined,
   }
 }
 
@@ -174,6 +224,32 @@ export function findLevelIdleVideoUrl(
     (video) => video.level === level && video.keys?.includes('idle') && Boolean(video.url),
   )
   return match?.url ?? null
+}
+
+/**
+ * 방송 일별 영상: 해당 수위 레벨의 비-idle 영상을 stage 오름차순으로 고른 뒤 dayIndex로 선택.
+ * 없으면 idle로 폴백.
+ */
+export function findBroadcastDayVideoUrl(
+  creator: { videos?: CharacterVideo[] | null },
+  dayIndex: number,
+  level = 1,
+): string | null {
+  const playlist = (creator.videos ?? [])
+    .filter(
+      (video) =>
+        video.level === level &&
+        !video.keys?.includes('idle') &&
+        Boolean(video.url),
+    )
+    .sort((a, b) => a.stage - b.stage || a.id.localeCompare(b.id))
+
+  if (playlist.length === 0) {
+    return findLevelIdleVideoUrl(creator, level)
+  }
+
+  const safeIndex = ((Math.floor(dayIndex) % playlist.length) + playlist.length) % playlist.length
+  return playlist[safeIndex]?.url ?? findLevelIdleVideoUrl(creator, level)
 }
 
 export function toStudioHandCard(creator: OwnedCreator) {

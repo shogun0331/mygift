@@ -31,6 +31,8 @@
     "liveRank": "Live Broadcast Rank",
     "noLiveBroadcast": "工作室中暂未分配广播。",
     "startBroadcast": "▶ 开始广播",
+    "broadcasting": "● 直播中",
+    "live": "LIVE",
     "ready": "READY",
     "noSignal": "NO SIGNAL",
     "standby": "待机中 (空闲插槽)",

@@ -1,25 +1,55 @@
 import type { ReactNode } from 'react'
-import { findLevelIdleVideoUrl, type OwnedCreator } from '../game/characters'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  findBroadcastDayVideoUrl,
+  findLevelIdleVideoUrl,
+  type OwnedCreator,
+} from '../game/characters'
+import {
+  CONDITION_DOT_CLASS,
+  CONDITION_ICON,
+  CONDITION_LABEL_KEY,
+  CONDITION_ROW_CLASS,
+  conditionFromScore,
+  scoreOf,
+  type CreatorCondition,
+} from '../game/condition'
+import type { DayEvent } from '../game/economy'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { creatorVisuals, type StudioSlot } from '../game/studioSlots'
 import { useTranslation } from '../locales/i18n'
+import type { BroadcastPhase } from '../game/broadcast'
+import {
+  RevenueBurstFx,
+  revenueBurstTier,
+  type RevenueBurst,
+} from './RevenueBurstFx'
 
 type DashboardPanelProps = {
   slots: StudioSlot[]
   ownedCreators?: OwnedCreator[]
+  broadcastPhase?: BroadcastPhase
+  weekDayIndex?: number
+  liveEvents?: DayEvent[]
+  /** 방송 월간 누적 실시간 수익 (크리에이터 id → 원) */
+  liveRevenueByCreator?: Record<string, number>
   onStartBroadcast: () => void
+  onRecoverCondition?: (creatorId: string) => void
 }
 
 type StreamCreatorView = {
+  id: string
   name: string
   concept: string
   avatar: string
   avatarTone: string
   profileImageUrl?: string | null
-  idleVideoUrl?: string | null
+  playVideoUrl?: string | null
   mediaRevision?: string | number
   stamina: number
   staminaMax: number
+  condition: CreatorCondition
+  conditionScore: number
   viewers: string
   live: boolean
   preview: string
@@ -33,7 +63,12 @@ type BroadcastSlotView = {
   creator?: StreamCreatorView
 }
 
-function toBroadcastSlot(slot: StudioSlot, owned?: OwnedCreator): BroadcastSlotView {
+function toBroadcastSlot(
+  slot: StudioSlot,
+  owned: OwnedCreator | undefined,
+  broadcastPhase: BroadcastPhase,
+  weekDayIndex: number,
+): BroadcastSlotView {
   const streamLabel = `STREAM ${String(slot.index).padStart(2, '0')}`
   if (slot.status !== 'assigned' || !slot.assignment) {
     return {
@@ -44,38 +79,44 @@ function toBroadcastSlot(slot: StudioSlot, owned?: OwnedCreator): BroadcastSlotV
   }
 
   const visuals = creatorVisuals(slot.assignment.creatorId, slot.assignment.creatorName)
-  const staminaMax = 100
-  const stamina = Math.min(staminaMax, 40 + slot.assignment.popularity)
-  // 배치 시점 캐시보다 최신 보유 크리에이터 영상을 우선 (에디터에서 교체한 idle 반영)
+  const staminaMax = owned?.staminaMax ?? 100
+  const stamina = owned
+    ? Math.min(staminaMax, owned.stamina)
+    : Math.min(staminaMax, 40 + slot.assignment.popularity)
   const idleVideoUrl =
     (owned ? findLevelIdleVideoUrl(owned, 1) : null) ||
     slot.assignment.idleVideoUrl ||
     null
+  const playVideoUrl =
+    broadcastPhase === 'live' && owned
+      ? findBroadcastDayVideoUrl(owned, weekDayIndex, 1) || idleVideoUrl
+      : idleVideoUrl
   const mediaRevision =
-    owned?.mediaRevision ?? slot.assignment.mediaRevision ?? idleVideoUrl ?? undefined
+    owned?.mediaRevision ?? slot.assignment.mediaRevision ?? playVideoUrl ?? undefined
 
   return {
     id: slot.id,
     label: streamLabel,
     status: 'assigned',
     creator: {
+      id: slot.assignment.creatorId,
       name: slot.assignment.creatorName,
       concept: slot.assignment.grade,
       avatar: visuals.avatar,
       avatarTone: visuals.avatarTone,
       profileImageUrl: slot.assignment.profileImageUrl || null,
-      idleVideoUrl,
+      playVideoUrl,
       mediaRevision,
       stamina,
       staminaMax,
+      conditionScore: owned ? scoreOf(owned) : 60,
+      condition: owned ? conditionFromScore(scoreOf(owned)) : 'normal',
       viewers: '—',
-      live: false,
+      live: broadcastPhase === 'live',
       preview: visuals.preview,
     },
   }
 }
-
-const EVENTS: Array<{ time: string; text: string; tone: string }> = []
 
 function formatRevenue(value: number) {
   return `₩${value.toLocaleString('ko-KR')}`
@@ -112,62 +153,119 @@ const STATUS_BADGE: Record<StudioSlot['status'], { labelKey: string; className: 
 export function DashboardPanel({
   slots: studioSlots,
   ownedCreators = [],
+  broadcastPhase = 'prep',
+  weekDayIndex = 0,
+  liveEvents = [],
+  liveRevenueByCreator = {},
   onStartBroadcast,
+  onRecoverCondition,
 }: DashboardPanelProps) {
   const { t } = useTranslation()
   const ownedById: Record<string, OwnedCreator> = {}
   for (const creator of ownedCreators) {
     ownedById[creator.id] = creator
   }
+  const isLive = broadcastPhase === 'live'
+  const [revenueBursts, setRevenueBursts] = useState<RevenueBurst[]>([])
+  const seenEventIdsRef = useRef(new Set<string>())
+
+  useEffect(() => {
+    if (!isLive) {
+      seenEventIdsRef.current = new Set()
+      setRevenueBursts([])
+      return
+    }
+    const fresh = liveEvents.filter(
+      (event) =>
+        event.type === 'donation' &&
+        event.amount > 0 &&
+        !seenEventIdsRef.current.has(event.id),
+    )
+    if (fresh.length === 0) return
+    for (const event of fresh) seenEventIdsRef.current.add(event.id)
+    setRevenueBursts((prev) => [
+      ...prev,
+      ...fresh.map((event) => ({
+        id: event.id,
+        creatorId: event.creatorId,
+        amount: event.amount,
+        tier: revenueBurstTier(event.amount),
+      })),
+    ])
+  }, [liveEvents, isLive])
+
+  const dismissBurst = useCallback((id: string) => {
+    setRevenueBursts((prev) => prev.filter((burst) => burst.id !== id))
+  }, [])
+
   const slots = studioSlots.map((slot) => {
     const creatorId = slot.assignment?.creatorId
-    return toBroadcastSlot(slot, creatorId ? ownedById[creatorId] : undefined)
+    return toBroadcastSlot(
+      slot,
+      creatorId ? ownedById[creatorId] : undefined,
+      broadcastPhase,
+      weekDayIndex,
+    )
   })
   const assigned = studioSlots.filter((slot) => slot.status === 'assigned' && slot.assignment)
   const hasAssigned = assigned.length > 0
 
   const liveRanking = assigned
-    .map((slot, index) => {
+    .map((slot) => {
       const a = slot.assignment!
       const visuals = creatorVisuals(a.creatorId, a.creatorName)
       return {
         id: a.creatorId,
-        rank: index + 1,
+        rank: 0,
         name: a.creatorName,
         concept: a.grade,
         avatar: visuals.avatar,
         avatarTone: visuals.avatarTone,
         profileImageUrl: a.profileImageUrl || null,
-        revenue: a.popularity * 1000,
+        revenue: liveRevenueByCreator[a.creatorId] ?? 0,
         viewers: '—',
       }
     })
-    .sort((a, b) => b.revenue - a.revenue)
+    .sort((a, b) => b.revenue - a.revenue || a.name.localeCompare(b.name, 'ko'))
+    .slice(0, 6)
     .map((row, index) => ({ ...row, rank: index + 1 }))
+
+  // 최대 6명 슬롯 높이 확보용 빈 칸
+  const rankPlaceholders = Math.max(0, 6 - Math.max(liveRanking.length, 1))
 
   return (
     <div className="grid h-full min-h-0 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,22%)] xl:grid-cols-[minmax(0,1fr)_minmax(15rem,20%)] 2xl:grid-cols-[minmax(0,1fr)_minmax(16rem,18%)]">
       <section className="grid min-h-0 content-start grid-cols-1 gap-2.5 overflow-auto sm:grid-cols-2 lg:grid-cols-3">
         {slots.map((slot) => (
-          <StreamCard key={slot.id} slot={slot} />
+          <StreamCard
+            key={slot.id}
+            slot={slot}
+            broadcastPhase={broadcastPhase}
+            revenueBursts={
+              slot.creator
+                ? revenueBursts.filter((burst) => burst.creatorId === slot.creator!.id)
+                : []
+            }
+            onBurstDone={dismissBurst}
+            onRecoverCondition={onRecoverCondition}
+          />
         ))}
       </section>
 
       <aside className="flex min-h-0 flex-col gap-2.5 lg:h-full lg:overflow-hidden">
-        <section className="game-panel flex max-h-48 min-h-0 flex-col rounded-2xl p-3 lg:max-h-none lg:flex-1">
+        <section className="game-panel flex min-h-0 max-h-40 flex-col rounded-2xl p-3 lg:max-h-none lg:flex-[0.85]">
           <h2 className="game-stat-label shrink-0">{t('dashboard.recentEvents')}</h2>
-          {EVENTS.length === 0 ? (
+          {liveEvents.length === 0 ? (
             <p className="mt-4 text-center text-xs text-slate-500">{t('dashboard.noEvents')}</p>
           ) : (
             <ul className="mt-2.5 min-h-0 flex-1 space-y-2 overflow-auto pr-1">
-              {EVENTS.map((event) => (
+              {liveEvents.map((event) => (
                 <li
-                  key={`${event.time}-${event.text}`}
+                  key={event.id}
                   className="flex items-start gap-2 rounded-xl border border-white/8 bg-black/20 px-2.5 py-2 text-xs text-slate-300"
                 >
                   <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${event.tone}`} />
                   <div className="min-w-0">
-                    <span className="mr-1.5 font-semibold text-slate-500">{event.time}</span>
                     <span>{event.text}</span>
                   </div>
                 </li>
@@ -176,13 +274,13 @@ export function DashboardPanel({
           )}
         </section>
 
-        <section className="game-panel flex max-h-64 min-h-0 shrink-0 flex-col rounded-2xl p-3 lg:max-h-[40%]">
+        <section className="game-panel flex min-h-[22rem] flex-[1.35] flex-col rounded-2xl p-3 sm:min-h-[24rem] lg:min-h-0">
           <div className="flex shrink-0 items-center justify-between gap-2">
             <h2 className="game-stat-label">{t('dashboard.liveRank')}</h2>
             {hasAssigned ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-pink-400/30 bg-pink-500/10 px-2 py-0.5 text-[10px] font-bold text-pink-300 neon-text-pink">
                 <span className="game-live-dot h-1.5 w-1.5 rounded-full bg-pink-400" />
-                {t('dashboard.ready')}
+                {isLive ? t('dashboard.live') : t('dashboard.ready')}
               </span>
             ) : (
               <span className="rounded-full border border-white/10 bg-black/30 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
@@ -191,15 +289,23 @@ export function DashboardPanel({
             )}
           </div>
           {liveRanking.length === 0 ? (
-            <p className="mt-4 text-center text-xs text-slate-500">
-              {t('dashboard.noLiveBroadcast')}
-            </p>
+            <div className="mt-2.5 flex min-h-0 flex-1 flex-col gap-1.5">
+              <p className="py-2 text-center text-xs text-slate-500">
+                {t('dashboard.noLiveBroadcast')}
+              </p>
+              {Array.from({ length: 5 }, (_, i) => (
+                <div
+                  key={`rank-empty-${i}`}
+                  className="h-10 rounded-xl border border-dashed border-white/8 bg-black/10"
+                />
+              ))}
+            </div>
           ) : (
-            <ul className="mt-2.5 min-h-0 flex-1 space-y-1.5 overflow-auto pr-0.5">
+            <ul className="mt-2.5 grid min-h-0 flex-1 auto-rows-fr grid-rows-6 gap-1.5 overflow-hidden pr-0.5">
               {liveRanking.map((creator) => (
                 <li
                   key={creator.id}
-                  className="flex items-center gap-2 rounded-xl border border-white/8 bg-black/20 px-2 py-1.5"
+                  className="flex min-h-0 items-center gap-2 rounded-xl border border-white/8 bg-black/20 px-2 py-1.5"
                 >
                   <span
                     className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border text-[10px] font-black ${
@@ -229,12 +335,20 @@ export function DashboardPanel({
                     <p className="mt-0.5 text-[10px] text-slate-500">{t('dashboard.studioPlaced')}</p>
                   </div>
                   <div className="shrink-0 text-right">
-                    <p className="text-[10px] font-semibold tracking-wide text-slate-500">인기</p>
+                    <p className="text-[10px] font-semibold tracking-wide text-slate-500">
+                      {t('dashboard.rankRevenue')}
+                    </p>
                     <p className="text-xs font-bold tabular-nums text-amber-400">
                       {formatRevenue(creator.revenue)}
                     </p>
                   </div>
                 </li>
+              ))}
+              {Array.from({ length: rankPlaceholders }, (_, i) => (
+                <li
+                  key={`rank-slot-${i}`}
+                  className="rounded-xl border border-dashed border-white/8 bg-black/10"
+                />
               ))}
             </ul>
           )}
@@ -243,19 +357,37 @@ export function DashboardPanel({
         <button
           type="button"
           onClick={onStartBroadcast}
-          disabled={!hasAssigned}
+          disabled={!hasAssigned || isLive}
           className="game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px]"
         >
-          {t('dashboard.startBroadcast')}
+          {isLive ? t('dashboard.broadcasting') : t('dashboard.startBroadcast')}
         </button>
       </aside>
     </div>
   )
 }
 
-function StreamCard({ slot }: { slot: BroadcastSlotView }) {
+function StreamCard({
+  slot,
+  broadcastPhase,
+  revenueBursts = [],
+  onBurstDone,
+  onRecoverCondition,
+}: {
+  slot: BroadcastSlotView
+  broadcastPhase: BroadcastPhase
+  revenueBursts?: RevenueBurst[]
+  onBurstDone?: (id: string) => void
+  onRecoverCondition?: (creatorId: string) => void
+}) {
   const { t } = useTranslation()
-  const badge = STATUS_BADGE[slot.status]
+  const badge =
+    slot.status === 'assigned' && broadcastPhase === 'live'
+      ? {
+          labelKey: 'dashboard.live',
+          className: 'border-pink-500/50 bg-pink-500/15 text-pink-300 neon-text-pink',
+        }
+      : STATUS_BADGE[slot.status]
   const creator = slot.creator
   const staminaPct =
     creator && creator.staminaMax > 0
@@ -363,21 +495,22 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
     )
   }
 
-  const idleVideoUrl = creator?.idleVideoUrl || null
+  const playVideoUrl = creator?.playVideoUrl || null
   const mediaRevision = creator?.mediaRevision
-  const playableIdleSrc = idleVideoUrl
-    ? resolveMediaSrc(idleVideoUrl, mediaRevision ?? idleVideoUrl)
+  const playableSrc = playVideoUrl
+    ? resolveMediaSrc(playVideoUrl, mediaRevision ?? playVideoUrl)
     : null
+  const isLive = Boolean(creator?.live)
 
   return (
     <article className="neon-glow-card flex flex-col overflow-hidden rounded-2xl bg-slate-950/40">
       <div
         className={`relative aspect-[2/1] w-full shrink-0 overflow-hidden bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
       >
-        {playableIdleSrc ? (
+        {playableSrc ? (
           <video
-            key={playableIdleSrc}
-            src={playableIdleSrc}
+            key={playableSrc}
+            src={playableSrc}
             className="absolute inset-0 z-0 h-full w-full object-cover"
             autoPlay
             loop
@@ -389,13 +522,13 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
 
         <div
           className="cctv-scanline"
-          style={idleVideoUrl ? { opacity: 0.25 } : undefined}
+          style={playVideoUrl ? { opacity: 0.25 } : undefined}
         />
         <div
           className="cctv-noise"
-          style={idleVideoUrl ? { opacity: 0.02 } : undefined}
+          style={playVideoUrl ? { opacity: 0.02 } : undefined}
         />
-        {!idleVideoUrl ? (
+        {!playVideoUrl ? (
           <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_35%,rgba(124,77,255,0.15),transparent_60%)]" />
         ) : null}
         <div className="reticle-corner reticle-tl" />
@@ -404,7 +537,7 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
         <div className="reticle-corner reticle-br" />
         <div
           className={`absolute inset-x-0 bottom-0 z-10 h-1/2 bg-gradient-to-t to-transparent ${
-            idleVideoUrl ? 'from-slate-950/75' : 'from-slate-950'
+            playVideoUrl ? 'from-slate-950/75' : 'from-slate-950'
           }`}
         />
 
@@ -418,7 +551,9 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
             </span>
             <div className="flex items-center gap-1 rounded bg-black/50 border border-white/5 px-1.5 py-0.5">
               <span className="h-1.5 w-1.5 rounded-full bg-pink-500 animate-ping" />
-              <span className="text-[8px] font-extrabold text-pink-400 tracking-wider">{t('dashboard.idle')}</span>
+              <span className="text-[8px] font-extrabold text-pink-400 tracking-wider">
+                {isLive ? t('dashboard.live') : t('dashboard.idle')}
+              </span>
               <div className="live-audio-wave ml-1">
                 <span className="audio-bar" />
                 <span className="audio-bar" />
@@ -428,9 +563,13 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
             </div>
           </div>
         </div>
+
+        {revenueBursts.length > 0 && onBurstDone ? (
+          <RevenueBurstFx bursts={revenueBursts} onBurstDone={onBurstDone} />
+        ) : null}
       </div>
 
-      <div className="shrink-0 space-y-2 p-2.5">
+      <div className="shrink-0 space-y-1.5 p-2.5">
         <div className="flex items-center gap-2.5">
           {creator?.profileImageUrl ? (
             <img
@@ -446,13 +585,38 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
               <p className="truncate text-xs font-semibold text-slate-100">
                 {creator?.name ?? '—'}
                 {creator?.concept ? (
                   <span className="font-medium text-amber-400"> ({creator.concept})</span>
                 ) : null}
               </p>
+              {creator ? (
+                <div className="flex flex-col gap-0.5 items-start">
+                  <span
+                    className={`inline-flex min-w-0 max-w-full items-center gap-1 text-[10px] font-bold leading-none ${CONDITION_ROW_CLASS[creator.condition]}`}
+                    title={`${t('condition.title')} ${t(CONDITION_LABEL_KEY[creator.condition])} (${creator.conditionScore}%)`}
+                  >
+                    <span
+                      className={`condition-status-dot h-1.5 w-1.5 shrink-0 rounded-full ${CONDITION_DOT_CLASS[creator.condition]}`}
+                      aria-hidden
+                    />
+                    <span className="shrink-0 text-[11px]" aria-hidden>
+                      {CONDITION_ICON[creator.condition]}
+                    </span>
+                    <span className="truncate">
+                      {t(CONDITION_LABEL_KEY[creator.condition])}
+                    </span>
+                  </span>
+                  <div className="h-1 w-10 overflow-hidden rounded-full bg-slate-800/80">
+                    <div
+                      className={`h-full rounded-full ${CONDITION_DOT_CLASS[creator.condition]}`}
+                      style={{ width: `${creator.conditionScore}%` }}
+                    />
+                  </div>
+                </div>
+              ) : null}
               {creator?.tag ? (
                 <span
                   className={`rounded-md border px-1.5 py-0.5 text-[9px] font-semibold ${TAG_STYLE[creator.tag.tone]}`}
@@ -469,7 +633,7 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
         </div>
 
         <div>
-          <div className="mb-1 flex items-center justify-between text-[10px]">
+          <div className="mb-1 flex items-center justify-between gap-2 text-[10px]">
             <span className="font-semibold tracking-wide text-slate-400">Stamina</span>
             <span className="font-semibold text-cyan-300">
               {creator ? `${creator.stamina}/${creator.staminaMax}` : '—'}
@@ -485,7 +649,11 @@ function StreamCard({ slot }: { slot: BroadcastSlotView }) {
 
         <div className="grid grid-cols-4 gap-1">
           <StreamAction label="배정" icon={<IconAssign />} disabled />
-          <StreamAction label="훈련" icon={<IconTrain />} />
+          <StreamAction
+            label={t('dashboard.actionRecover')}
+            icon={<IconTrain />}
+            onClick={() => creator && onRecoverCondition?.(creator.id)}
+          />
           <StreamAction label="통계" icon={<IconStats />} />
           <StreamAction label="설정" icon={<IconGear />} />
         </div>
@@ -498,16 +666,19 @@ function StreamAction({
   label,
   icon,
   disabled = false,
+  onClick,
 }: {
   label: string
   icon: ReactNode
   disabled?: boolean
+  onClick?: () => void
 }) {
   return (
     <button
       type="button"
       title={label}
       disabled={disabled}
+      onClick={onClick}
       className="game-btn flex h-7 items-center justify-center rounded-lg text-slate-300 disabled:cursor-not-allowed disabled:opacity-35"
     >
       <span className="sr-only">{label}</span>

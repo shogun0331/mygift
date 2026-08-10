@@ -1,15 +1,17 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
-  scoutCandidates,
   type Grade,
   type OwnedCreator,
   type RegisteredCharacter,
 } from '../game/characters'
+import { hireScoutOffer, rerollScoutOffer, type ScoutOffer } from '../game/scout'
+import { CONDITION_ICON, CONDITION_LABEL_KEY, conditionFromScore, scoreOf } from '../game/condition'
+import { useTranslation } from '../locales/i18n'
 
 type CreatorPanelProps = {
   ownedCreators: OwnedCreator[]
   registeredCharacters: RegisteredCharacter[]
-  onScout: (character: RegisteredCharacter) => void
+  onScout: (creator: OwnedCreator) => void
 }
 
 const GRADE_FILTERS: Array<'ALL' | Grade> = ['ALL', 'S', 'A', 'B', 'C']
@@ -32,7 +34,7 @@ const CARE_ACTIONS = [
   {
     id: 'bonus',
     title: '특별 보너스 지급',
-    desc: '충성도 +15%, 사기 진작',
+    desc: '신뢰 +15%, 사기 진작',
   },
   {
     id: 'gift',
@@ -65,11 +67,16 @@ function formatContract(weeks: number) {
   return `${weeks}주`
 }
 
+function trustOf(creator: OwnedCreator) {
+  return creator.trust ?? creator.loyalty ?? 0
+}
+
 export function CreatorPanel({
   ownedCreators,
   registeredCharacters,
   onScout,
 }: CreatorPanelProps) {
+  const { t } = useTranslation()
   const [view, setView] = useState<'roster' | 'scout'>('roster')
   const [query, setQuery] = useState('')
   const [gradeFilter, setGradeFilter] = useState<'ALL' | Grade>('ALL')
@@ -93,27 +100,24 @@ export function CreatorPanel({
   )
 
   const selected = ownedCreators.find((creator) => creator.id === selectedId) ?? null
-  const candidates = scoutCandidates(registeredCharacters, ownedCreators)
 
   if (view === 'scout') {
     return (
       <ScoutView
-        candidates={candidates}
-        registeredCount={registeredCharacters.length}
+        registeredCharacters={registeredCharacters}
+        ownedCreators={ownedCreators}
         onBack={() => setView('roster')}
-        onScout={(character) => {
-          onScout(character)
+        onHire={(creator) => {
+          onScout(creator)
           setView('roster')
-          setSelectedId(character.id)
+          setSelectedId(creator.id)
         }}
       />
     )
   }
 
   if (selected) {
-    return (
-      <CreatorDetailView creator={selected} onBack={() => setSelectedId(null)} />
-    )
+    return <CreatorDetailView creator={selected} onBack={() => setSelectedId(null)} />
   }
 
   return (
@@ -166,7 +170,7 @@ export function CreatorPanel({
           className="game-btn-primary rounded-xl px-4 py-2 text-sm"
         >
           <span aria-hidden>＋</span>
-          스카우트
+          {t('creator.scout')}
         </button>
       </div>
 
@@ -217,9 +221,7 @@ export function CreatorPanel({
           {filtered.length === 0 ? (
             <div className="flex min-h-[10rem] w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-black/20 px-4 text-center">
               <p className="text-sm text-slate-400">보유 캐릭터가 없습니다.</p>
-              <p className="text-xs text-slate-500">
-                스카우트를 눌러 등록된 캐릭터를 영입하세요.
-              </p>
+              <p className="text-xs text-slate-500">스카우트를 눌러 등록된 캐릭터를 영입하세요.</p>
             </div>
           ) : null}
         </div>
@@ -228,9 +230,7 @@ export function CreatorPanel({
       <section className="game-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 px-3 py-2.5 sm:px-4">
           <div>
-            <p className="text-xs font-semibold tracking-wide text-slate-200">
-              연봉 & 계약 정산
-            </p>
+            <p className="text-xs font-semibold tracking-wide text-slate-200">연봉 & 계약 정산</p>
             <p className="mt-0.5 text-[10px] text-slate-500">연봉순 정렬 · 엑셀 스타일 테이블</p>
           </div>
           <span className="game-chip text-[10px]">{sortedBySalary.length}명</span>
@@ -249,85 +249,88 @@ export function CreatorPanel({
               </button>
             </div>
           ) : (
-            <table className="w-full min-w-[52rem] border-collapse text-left text-sm">
+            <table className="w-full min-w-[56rem] border-collapse text-left text-sm">
               <thead className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur-sm">
                 <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase">
                   <th className="px-3 py-2.5 font-semibold sm:px-4">이름</th>
                   <th className="px-3 py-2.5 font-semibold">등급</th>
-                  <th className="px-3 py-2.5 font-semibold">인기도</th>
+                  <th className="px-3 py-2.5 font-semibold">{t('creator.statPopularity')}</th>
+                  <th className="px-3 py-2.5 font-semibold">{t('creator.statSkill')}</th>
+                  <th className="px-3 py-2.5 font-semibold">{t('creator.statHeat')}</th>
                   <th className="px-3 py-2.5 font-semibold">현재 연봉</th>
-                  <th className="px-3 py-2.5 font-semibold">계약 기간</th>
-                  <th className="px-3 py-2.5 font-semibold">다음 월급</th>
-                  <th className="px-3 py-2.5 font-semibold">충성도</th>
+                  <th className="px-3 py-2.5 font-semibold">{t('creator.statTrust')}</th>
                   <th className="px-3 py-2.5 font-semibold sm:px-4">액션</th>
                 </tr>
               </thead>
               <tbody>
-                {sortedBySalary.map((creator, index) => (
-                  <tr
-                    key={creator.id}
-                    className={`border-b border-white/6 transition hover:bg-indigo-500/8 ${
-                      index % 2 === 0 ? 'bg-black/10' : 'bg-transparent'
-                    }`}
-                  >
-                    <td className="px-3 py-2.5 sm:px-4">
-                      <div className="flex items-center gap-2">
-                        {creator.profileImageUrl ? (
-                          <img
-                            src={creator.profileImageUrl}
-                            alt={creator.name}
-                            className="h-7 w-7 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div
-                            className={`flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator.avatarTone}`}
-                          >
-                            {creator.name.slice(0, 1)}
+                {sortedBySalary.map((creator, index) => {
+                  const trust = trustOf(creator)
+                  return (
+                    <tr
+                      key={creator.id}
+                      className={`border-b border-white/6 transition hover:bg-indigo-500/8 ${
+                        index % 2 === 0 ? 'bg-black/10' : 'bg-transparent'
+                      }`}
+                    >
+                      <td className="px-3 py-2.5 sm:px-4">
+                        <div className="flex items-center gap-2">
+                          {creator.profileImageUrl ? (
+                            <img
+                              src={creator.profileImageUrl}
+                              alt={creator.name}
+                              className="h-7 w-7 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div
+                              className={`flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator.avatarTone}`}
+                            >
+                              {creator.name.slice(0, 1)}
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold text-slate-100">{creator.name}</p>
+                            <p className="text-[10px] text-slate-500">{creator.concept}</p>
                           </div>
-                        )}
-                        <div className="min-w-0">
-                          <p className="truncate font-semibold text-slate-100">{creator.name}</p>
-                          <p className="text-[10px] text-slate-500">{creator.concept}</p>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-3 py-2.5">
-                      <span
-                        className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${GRADE_STYLE[creator.grade]}`}
-                      >
-                        {creator.grade}급
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{creator.popularity}</td>
-                    <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
-                      {formatSalary(creator.salary)}
-                    </td>
-                    <td className="px-3 py-2.5 text-slate-300">
-                      {formatContract(creator.contractWeeks)}
-                    </td>
-                    <td className="px-3 py-2.5 text-cyan-300">{creator.nextPayTurns}턴 후</td>
-                    <td className="px-3 py-2.5">
-                      <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-14 overflow-hidden rounded-full bg-slate-800">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-indigo-400 to-violet-300"
-                            style={{ width: `${creator.loyalty}%` }}
-                          />
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <span
+                          className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${GRADE_STYLE[creator.grade]}`}
+                        >
+                          {creator.grade}급
+                        </span>
+                      </td>
+                      <td className="px-3 py-2.5 tabular-nums text-slate-300">{creator.popularity}</td>
+                      <td className="px-3 py-2.5 tabular-nums text-slate-300">{creator.skill ?? '—'}</td>
+                      <td className="px-3 py-2.5 tabular-nums text-slate-300">
+                        LV.{creator.heat ?? 1}
+                      </td>
+                      <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
+                        {formatSalary(creator.salary)}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <div className="flex items-center gap-2">
+                          <div className="h-1.5 w-14 overflow-hidden rounded-full bg-slate-800">
+                            <div
+                              className="h-full rounded-full bg-gradient-to-r from-indigo-400 to-violet-300"
+                              style={{ width: `${trust}%` }}
+                            />
+                          </div>
+                          <span className="tabular-nums text-xs text-slate-300">{trust}%</span>
                         </div>
-                        <span className="tabular-nums text-xs text-slate-300">{creator.loyalty}%</span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-2.5 sm:px-4">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedId(creator.id)}
-                        className="game-btn rounded-lg px-2.5 py-1 text-xs"
-                      >
-                        상세보기
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-3 py-2.5 sm:px-4">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedId(creator.id)}
+                          className="game-btn rounded-lg px-2.5 py-1 text-xs"
+                        >
+                          상세보기
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           )}
@@ -338,16 +341,38 @@ export function CreatorPanel({
 }
 
 function ScoutView({
-  candidates,
-  registeredCount,
+  registeredCharacters,
+  ownedCreators,
   onBack,
-  onScout,
+  onHire,
 }: {
-  candidates: RegisteredCharacter[]
-  registeredCount: number
+  registeredCharacters: RegisteredCharacter[]
+  ownedCreators: OwnedCreator[]
   onBack: () => void
-  onScout: (character: RegisteredCharacter) => void
+  onHire: (creator: OwnedCreator) => void
 }) {
+  const { t } = useTranslation()
+  const [skippedIds, setSkippedIds] = useState<string[]>([])
+  const [offer, setOffer] = useState<ScoutOffer | null>(null)
+
+  const ownedIds = useMemo(() => ownedCreators.map((c) => c.id), [ownedCreators])
+
+  useEffect(() => {
+    setOffer(rerollScoutOffer(registeredCharacters, ownedIds, skippedIds))
+  }, [registeredCharacters, ownedIds, skippedIds])
+
+  function handlePass() {
+    if (!offer) return
+    setSkippedIds((prev) => (prev.includes(offer.template.id) ? prev : [...prev, offer.template.id]))
+  }
+
+  function handleHire() {
+    if (!offer) return
+    onHire(hireScoutOffer(offer))
+  }
+
+  const stats = offer?.stats
+
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
       <header className="game-panel-strong flex shrink-0 flex-wrap items-center gap-3 rounded-2xl px-4 py-3">
@@ -356,82 +381,127 @@ function ScoutView({
         </button>
         <div className="min-w-0 flex-1">
           <p className="game-kicker">SCOUT</p>
-          <h2 className="truncate text-base font-semibold text-slate-100">스카우트</h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            에디터에 등록된 캐릭터 중 아직 영입하지 않은 카드를 선택합니다.
-          </p>
+          <h2 className="truncate text-base font-semibold text-slate-100">{t('creator.scout')}</h2>
+          <p className="mt-0.5 text-xs text-slate-500">{t('creator.scoutDesc')}</p>
         </div>
-        <span className="game-chip text-[10px]">후보 {candidates.length}명</span>
       </header>
 
-      <section className="game-panel min-h-0 flex-1 overflow-auto rounded-2xl p-4 sm:p-5">
-        {candidates.length === 0 ? (
-          <div className="flex h-full min-h-[14rem] flex-col items-center justify-center gap-2 text-center">
-            {registeredCount === 0 ? (
+      <section className="game-panel flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-2xl p-4 sm:p-6">
+        {!offer || !stats ? (
+          <div className="flex max-w-md flex-col items-center gap-2 text-center">
+            {registeredCharacters.length === 0 ? (
               <>
                 <p className="text-sm text-slate-300">등록된 캐릭터가 없습니다.</p>
-                <p className="max-w-sm text-xs text-slate-500">
-                  메인 메뉴 → 에디터 → 캐릭터 관리에서 캐릭터를 추가하면 스카우트 목록에
-                  나타납니다.
+                <p className="text-xs text-slate-500">
+                  에디터에서 캐릭터를 추가하면 스카우트 후보로 등장합니다.
                 </p>
               </>
             ) : (
               <>
-                <p className="text-sm text-slate-300">스카우트 가능한 캐릭터가 없습니다.</p>
-                <p className="text-xs text-slate-500">등록된 캐릭터를 모두 영입했습니다.</p>
+                <p className="text-sm text-slate-300">{t('creator.scoutEmpty')}</p>
+                <p className="text-xs text-slate-500">패스했거나 이미 영입한 후보가 모두 소진되었습니다.</p>
               </>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {candidates.map((character) => (
-              <article
-                key={character.id}
-                className="game-card flex flex-col overflow-hidden text-left"
-              >
-                <div className="relative flex aspect-[3/4] items-end justify-center bg-gradient-to-b from-slate-700/80 to-slate-950">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(16,185,129,0.18),transparent_55%)]" />
-                  <div className="absolute top-1.5 left-1.5">
-                    <span
-                      className={`rounded border px-1.5 py-0.5 text-[10px] font-bold tracking-wide ${GRADE_STYLE[character.grade]}`}
-                    >
-                      {character.grade}급
-                    </span>
-                  </div>
-                  {character.profileImageUrl ? (
-                    <img
-                      src={character.profileImageUrl}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div
-                      className={`relative mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br text-lg font-bold text-slate-950 ${character.avatarTone}`}
-                    >
-                      {character.name.slice(0, 1)}
-                    </div>
-                  )}
-                </div>
-                <div className="border-t border-white/8 px-2.5 py-2.5">
-                  <h3 className="truncate text-sm font-semibold text-slate-100">{character.name}</h3>
-                  <p className="mt-0.5 truncate text-[11px] text-slate-500">
-                    {character.concept}
-                    {character.age ? ` · ${character.age}세` : ''}
-                  </p>
-                  <p className="mt-1 text-[11px] font-semibold text-amber-400">
-                    {formatSalaryShort(character.salary)}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => onScout(character)}
-                    className="game-btn-primary mt-2.5 w-full rounded-lg px-2 py-1.5 text-xs"
+          <article className="grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
+            <div className="game-card relative aspect-[3/4] overflow-hidden sm:aspect-auto sm:min-h-[22rem]">
+              {offer.template.profileImageUrl ? (
+                <img
+                  src={offer.template.profileImageUrl}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-slate-700 to-slate-950">
+                  <div
+                    className={`flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br text-2xl font-bold text-slate-950 ${offer.template.avatarTone}`}
                   >
-                    스카우트
-                  </button>
+                    {offer.template.name.slice(0, 1)}
+                  </div>
                 </div>
-              </article>
-            ))}
-          </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+              <div className="absolute top-2 left-2">
+                <span
+                  className={`rounded border px-2 py-0.5 text-xs font-bold ${GRADE_STYLE[offer.grade]}`}
+                >
+                  {offer.grade}급
+                </span>
+              </div>
+              <div className="absolute inset-x-0 bottom-0 p-3">
+                <h3 className="text-lg font-bold text-slate-50">{offer.template.name}</h3>
+                <p className="text-xs text-slate-300">
+                  {offer.template.job || offer.template.concept}
+                  {offer.template.age ? ` · ${offer.template.age}세` : ''}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 rounded-2xl border border-white/8 bg-black/25 p-4">
+              <div className="flex items-end justify-between gap-2">
+                <div>
+                  <p className="text-[10px] font-semibold tracking-wide text-slate-500">제안 연봉</p>
+                  <p className="text-xl font-black tabular-nums text-amber-400">
+                    {formatSalary(offer.salary)}
+                  </p>
+                </div>
+                <p className="text-xs font-semibold text-slate-400">
+                  {t('creator.statRevenueMult')} ×{stats.revenueMult.toFixed(1)}
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                <StatBar
+                  label={t('creator.statPopularity')}
+                  valueLabel={`${stats.popularity}`}
+                  percent={stats.popularity}
+                  barClass="from-pink-400 to-rose-300"
+                />
+                <StatBar
+                  label={t('creator.statSkill')}
+                  valueLabel={`${stats.skill}`}
+                  percent={stats.skill}
+                  barClass="from-violet-400 to-indigo-300"
+                />
+                <StatBar
+                  label={t('creator.statHeat')}
+                  valueLabel={`LV.${stats.heat}`}
+                  percent={(stats.heat / 4) * 100}
+                  barClass="from-orange-400 to-amber-300"
+                />
+                <StatBar
+                  label={t('creator.statTrust')}
+                  valueLabel={`${stats.trust}`}
+                  percent={stats.trust}
+                  barClass="from-indigo-400 to-sky-300"
+                />
+                <StatBar
+                  label={t('creator.statStamina')}
+                  valueLabel={`${stats.stamina}/${stats.staminaMax}`}
+                  percent={(stats.stamina / Math.max(1, stats.staminaMax)) * 100}
+                  barClass="from-cyan-400 to-teal-300"
+                />
+              </div>
+
+              <div className="mt-auto grid grid-cols-2 gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={handlePass}
+                  className="game-btn rounded-xl px-4 py-3 text-sm font-semibold"
+                >
+                  {t('creator.scoutPass')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleHire}
+                  className="game-btn-pink rounded-xl px-4 py-3 text-sm font-bold"
+                >
+                  {t('creator.scoutHire')}
+                </button>
+              </div>
+            </div>
+          </article>
         )}
       </section>
     </div>
@@ -445,7 +515,14 @@ function CreatorDetailView({
   creator: OwnedCreator
   onBack: () => void
 }) {
-  const staminaPct = Math.round((creator.stamina / creator.staminaMax) * 100)
+  const { t } = useTranslation()
+  const trust = trustOf(creator)
+  const staminaPct = Math.round((creator.stamina / Math.max(1, creator.staminaMax)) * 100)
+  const skill = creator.skill ?? 0
+  const heat = creator.heat ?? 1
+  const revenueMult = creator.revenueMult ?? 1
+  const conditionScore = scoreOf(creator)
+  const condition = conditionFromScore(conditionScore)
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
@@ -472,20 +549,49 @@ function CreatorDetailView({
         <section className="game-panel flex min-h-0 flex-col overflow-auto rounded-2xl p-4 sm:p-5">
           <h3 className="text-sm font-semibold tracking-wide text-slate-100">핵심 능력치 & 상태</h3>
 
-          <div className="mt-4 space-y-4">
+          <div className="mt-4 space-y-3">
             <StatBar
-              label="체력"
+              label={t('creator.statPopularity')}
+              valueLabel={`${creator.popularity}`}
+              percent={creator.popularity}
+              barClass="from-pink-400 to-rose-300"
+            />
+            <StatBar
+              label={t('creator.statSkill')}
+              valueLabel={`${skill}`}
+              percent={skill}
+              barClass="from-violet-400 to-indigo-300"
+            />
+            <StatBar
+              label={t('creator.statHeat')}
+              valueLabel={`LV.${heat}`}
+              percent={(heat / 4) * 100}
+              barClass="from-orange-400 to-amber-300"
+            />
+            <StatBar
+              label={t('creator.statTrust')}
+              valueLabel={`${trust}%`}
+              note={trust >= 90 ? '만족도 최고' : '관리 필요'}
+              percent={trust}
+              barClass="from-indigo-400 to-violet-300"
+            />
+            <StatBar
+              label={t('creator.statStamina')}
               valueLabel={`${creator.stamina}/${creator.staminaMax}`}
-              note={`컨디션: ${creator.condition}`}
               percent={staminaPct}
               barClass="from-cyan-400 to-teal-300"
             />
             <StatBar
-              label="충성도"
-              valueLabel={`${creator.loyalty}%`}
-              note={creator.loyalty >= 90 ? '만족도 최고' : '관리 필요'}
-              percent={creator.loyalty}
-              barClass="from-indigo-400 to-violet-300"
+              label={t('condition.title')}
+              valueLabel={`${CONDITION_ICON[condition]} ${t(CONDITION_LABEL_KEY[condition])} (${conditionScore})`}
+              percent={conditionScore}
+              barClass="from-emerald-400 to-lime-300"
+            />
+            <StatBar
+              label={t('creator.statRevenueMult')}
+              valueLabel={`×${revenueMult.toFixed(1)}`}
+              percent={Math.min(100, (revenueMult / 2) * 100)}
+              barClass="from-amber-400 to-yellow-300"
             />
 
             <div className="rounded-xl border border-white/8 bg-black/20 px-3 py-3">
@@ -518,8 +624,7 @@ function CreatorDetailView({
           </div>
         </section>
 
-        <section className="game-panel relative min-h-[20rem] overflow-hidden rounded-2xl lg:min-h-0 flex flex-col justify-end">
-          {/* 일러스트 배경 채움 (이미지 존재 시) */}
+        <section className="game-panel relative flex min-h-[20rem] flex-col justify-end overflow-hidden rounded-2xl lg:min-h-0">
           {creator.profileImageUrl ? (
             <>
               <img
@@ -527,7 +632,7 @@ function CreatorDetailView({
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent z-10" />
+              <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
             </>
           ) : (
             <>
@@ -537,19 +642,19 @@ function CreatorDetailView({
             </>
           )}
 
-          <div className="relative z-20 flex flex-col items-center justify-end px-6 pb-10 pt-10 text-center">
-            {/* 이미지가 없을 때만 이름 첫 글자 대형 구체 렌더링 */}
+          <div className="relative z-20 p-5">
             {!creator.profileImageUrl && (
               <div
-                className={`mb-6 flex h-40 w-40 items-center justify-center rounded-full bg-gradient-to-br text-5xl font-black text-slate-950 shadow-2xl sm:h-48 sm:w-48 sm:text-6xl ${creator.avatarTone}`}
+                className={`mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br text-2xl font-bold text-slate-950 ${creator.avatarTone}`}
               >
                 {creator.name.slice(0, 1)}
               </div>
             )}
-            
-            <p className="text-2xl font-bold tracking-wide text-slate-100 drop-shadow-md sm:text-3xl">{creator.name}</p>
-            <p className="mt-1.5 text-sm font-semibold text-amber-400 drop-shadow">
-              {creator.grade}급 · {creator.concept}
+            <p className="text-xs font-semibold tracking-wide text-slate-400">{creator.concept}</p>
+            <h3 className="mt-1 text-2xl font-bold text-slate-50">{creator.name}</h3>
+            <p className="mt-2 text-sm text-slate-300">
+              {creator.job}
+              {creator.age ? ` · ${creator.age}세` : ''}
             </p>
           </div>
         </section>
@@ -567,25 +672,24 @@ function StatBar({
 }: {
   label: string
   valueLabel: string
-  note: string
+  note?: string
   percent: number
   barClass: string
 }) {
+  const width = Math.max(0, Math.min(100, percent))
   return (
     <div>
-      <div className="mb-1.5 flex items-end justify-between gap-2">
-        <div>
-          <p className="text-xs font-semibold text-slate-300">{label}</p>
-          <p className="text-[10px] text-slate-500">{note}</p>
-        </div>
-        <p className="text-xs font-bold tabular-nums text-slate-100">{valueLabel}</p>
+      <div className="mb-1 flex items-end justify-between gap-2">
+        <p className="text-[11px] font-semibold tracking-wide text-slate-400">{label}</p>
+        <p className="text-xs font-bold tabular-nums text-slate-200">{valueLabel}</p>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-slate-800">
         <div
           className={`h-full rounded-full bg-gradient-to-r ${barClass}`}
-          style={{ width: `${Math.max(0, Math.min(100, percent))}%` }}
+          style={{ width: `${width}%` }}
         />
       </div>
+      {note ? <p className="mt-1 text-[10px] text-slate-500">{note}</p> : null}
     </div>
   )
 }

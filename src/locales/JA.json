@@ -31,6 +31,8 @@
     "liveRank": "Live Broadcast Rank",
     "noLiveBroadcast": "スタジオで配置された放送がありません。",
     "startBroadcast": "▶ 放送開始",
+    "broadcasting": "● 放送中",
+    "live": "LIVE",
     "ready": "READY",
     "noSignal": "NO SIGNAL",
     "standby": "待機中 (空きスロット)",

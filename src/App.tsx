@@ -4,19 +4,19 @@ import type { GameEvent } from './events/types'
 import {
   createRegisteredCharacter,
   findLevelIdleVideoUrl,
-  scoutCharacter,
+  normalizeOwnedCreator,
   type OwnedCreator,
   type RegisteredCharacter,
 } from './game/characters'
 import { resolveMediaSrc } from './game/mediaUrl'
 import { createInitialStudioSlots, type StudioSlot } from './game/studioSlots'
 import type { AddCharacterPayload } from './screens/EditorScreen'
-import { BroadcastScene } from './screens/BroadcastScene'
 import { EditorScreen } from './screens/EditorScreen'
 import { InGame } from './screens/InGame'
 import { MainMenu } from './screens/MainMenu'
+import { I18nProvider } from './locales/i18n'
 
-type Screen = 'main' | 'game' | 'broadcast' | 'editor'
+type Screen = 'main' | 'game' | 'editor'
 
 /** 미디어 id 기반 고유 파일명 — 같은 원본 이름을 여러 번 올려도 덮어쓰지 않음 */
 function buildSafeFileName(mediaId: string, originalName: string) {
@@ -46,20 +46,30 @@ function syncOwnedWithRegistered(
   if (owned.length === 0) return owned
   let changed = false
   const next = owned.map((creator) => {
+    const normalized = normalizeOwnedCreator(creator)
+    if (
+      normalized.skill !== creator.skill ||
+      normalized.heat !== creator.heat ||
+      normalized.trust !== creator.trust ||
+      normalized.revenueMult !== creator.revenueMult
+    ) {
+      changed = true
+    }
     const source = registered.find((item) => item.id === creator.id)
-    if (!source) return creator
+    if (!source) return normalized
     if (
       source.videos === creator.videos &&
       source.images === creator.images &&
       source.profileImageUrl === creator.profileImageUrl &&
       source.name === creator.name &&
-      source.mediaRevision === creator.mediaRevision
+      source.mediaRevision === creator.mediaRevision &&
+      !changed
     ) {
-      return creator
+      return normalized
     }
     changed = true
-    return {
-      ...creator,
+    return normalizeOwnedCreator({
+      ...normalized,
       name: source.name,
       age: source.age,
       job: source.job,
@@ -76,7 +86,7 @@ function syncOwnedWithRegistered(
       images: source.images,
       videos: source.videos,
       mediaRevision: source.mediaRevision,
-    }
+    })
   })
   return changed ? next : owned
 }
@@ -333,6 +343,14 @@ async function dedupeSharedMediaFiles(character: RegisteredCharacter): Promise<R
 }
 
 export default function App() {
+  return (
+    <I18nProvider>
+      <AppInner />
+    </I18nProvider>
+  )
+}
+
+function AppInner() {
   const [screen, setScreen] = useState<Screen>('main')
   /** 에디터에 등록된 캐릭터 (스카우트 풀) */
   const [registeredCharacters, setRegisteredCharacters] = useState<RegisteredCharacter[]>([])
@@ -667,10 +685,10 @@ export default function App() {
     setOwnedCreators((prev) => prev.filter((c) => c.id !== id))
   }
 
-  function handleScout(character: RegisteredCharacter) {
+  function handleScout(creator: OwnedCreator) {
     setOwnedCreators((prev) => {
-      if (prev.some((c) => c.id === character.id)) return prev
-      return [...prev, scoutCharacter(character)]
+      if (prev.some((c) => c.id === creator.id)) return prev
+      return [...prev, normalizeOwnedCreator(creator)]
     })
   }
 
@@ -682,10 +700,6 @@ export default function App() {
 
   function continueGame() {
     setScreen('game')
-  }
-
-  if (screen === 'broadcast') {
-    return <BroadcastScene onEnd={() => setScreen('game')} />
   }
 
   if (screen === 'editor') {
@@ -709,10 +723,10 @@ export default function App() {
         ownedCreators={ownedCreators}
         studioSlots={studioSlots}
         onStudioSlotsChange={setStudioSlots}
+        onOwnedCreatorsChange={setOwnedCreators}
         onScout={handleScout}
         onBack={() => setScreen('main')}
         onOpenEditor={() => openEditor('game')}
-        onStartBroadcast={() => setScreen('broadcast')}
       />
     )
   }

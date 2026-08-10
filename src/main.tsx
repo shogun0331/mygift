@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import { I18nProvider } from './locales/i18n.tsx'
+import { I18nProvider } from './locales/i18n'
 
 window.onerror = function (message, source, lineno, colno, error) {
   alert(`[전역 런타임 에러 감지]\n메시지: ${message}\n위치: ${source}:${lineno}:${colno}\n스택: ${error?.stack}`)

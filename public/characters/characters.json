@@ -3,12 +3,12 @@
     "id": "1786146452316-cjvmuwo",
     "name": "김미래",
     "age": "25",
-    "job": "요가 강사",
+    "job": "승무원",
     "bust": "C",
     "weight": "58",
     "grade": "C",
     "popularity": 25,
-    "concept": "요가 강사",
+    "concept": "승무원",
     "salary": 22000000,
     "eventLinks": {
       "scout": null,
@@ -17,41 +17,88 @@
       "h": null
     },
     "avatarTone": "from-sky-300 to-indigo-400",
-    "profileImageUrl": "media://characters/1786146452316-cjvmuwo/images/1786146425254-309r3ti__2026-08-07_00010.png",
-    "characterIconId": "1786146425254-7mmjncl",
-    "characterIllustrationId": "1786146419350-ai04uuv",
-    "profileImageId": "1786146425254-309r3ti",
+    "profileImageUrl": "media://characters/1786146452316-cjvmuwo/images/1786316694581-sydg2d5__2026-08-09_00039.png",
+    "characterIconId": "1786316258361-47yq34l",
+    "characterIllustrationId": "1786316242202-67tc3ip",
+    "profileImageId": "1786316694581-sydg2d5",
     "profileVideoId": null,
-    "mediaRevision": 1786152854559,
+    "mediaRevision": 1786317162837,
     "images": [
       {
-        "id": "1786146419350-ai04uuv",
-        "fileName": "1786146419350-ai04uuv__2026-08-07_00009.png",
-        "fileSize": 354795,
-        "url": "media://characters/1786146452316-cjvmuwo/images/1786146419350-ai04uuv__2026-08-07_00009.png",
+        "id": "1786316242202-67tc3ip",
+        "fileName": "1786316242202-67tc3ip__2026-08-08_00001.png",
+        "fileSize": 1762467,
+        "url": "media://characters/1786146452316-cjvmuwo/images/1786316242202-67tc3ip__2026-08-08_00001.png",
         "keys": []
       },
       {
-        "id": "1786146425254-309r3ti",
-        "fileName": "1786146425254-309r3ti__2026-08-07_00010.png",
-        "fileSize": 2362740,
-        "url": "media://characters/1786146452316-cjvmuwo/images/1786146425254-309r3ti__2026-08-07_00010.png",
+        "id": "1786316258361-47yq34l",
+        "fileName": "1786316258361-47yq34l__2026-08-08_00003.png",
+        "fileSize": 2516711,
+        "url": "media://characters/1786146452316-cjvmuwo/images/1786316258361-47yq34l__2026-08-08_00003.png",
         "keys": []
       },
       {
-        "id": "1786146425254-7mmjncl",
-        "fileName": "1786146425254-7mmjncl__2026-08-07_00012.png",
-        "fileSize": 3371558,
-        "url": "media://characters/1786146452316-cjvmuwo/images/1786146425254-7mmjncl__2026-08-07_00012.png",
+        "id": "1786316694581-sydg2d5",
+        "fileName": "1786316694581-sydg2d5__2026-08-09_00039.png",
+        "fileSize": 2698490,
+        "url": "media://characters/1786146452316-cjvmuwo/images/1786316694581-sydg2d5__2026-08-09_00039.png",
         "keys": []
       }
     ],
     "videos": [
       {
-        "id": "1786149214596-qq5ddmm",
-        "fileName": "1786149214596-qq5ddmm__798144a4-17d0-4264-b88a-33cd5439529a_1.mp4",
-        "fileSize": 2552153,
-        "url": "media://characters/1786146452316-cjvmuwo/videos/1786149214596-qq5ddmm__798144a4-17d0-4264-b88a-33cd5439529a_1.mp4",
+        "id": "1786316785474-zkxyvbz",
+        "fileName": "1786316785474-zkxyvbz__2026-08-09_00031-audio.mp4",
+        "fileSize": 508462,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786316785474-zkxyvbz__2026-08-09_00031-audio.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786316797541-4l9cyw8",
+        "fileName": "1786316797541-4l9cyw8__2026-08-09_00028.mp4",
+        "fileSize": 534618,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786316797541-4l9cyw8__2026-08-09_00028.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786316812724-85eceer",
+        "fileName": "1786316812724-85eceer__2026-08-09_00035.mp4",
+        "fileSize": 624962,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786316812724-85eceer__2026-08-09_00035.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786316840884-9gz3jrv",
+        "fileName": "1786316840884-9gz3jrv__2026-08-09_00033.mp4",
+        "fileSize": 694252,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786316840884-9gz3jrv__2026-08-09_00033.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786316906162-ofom9yv",
+        "fileName": "1786316906162-ofom9yv__2026-08-09_chunked_1786316875446_109376.mp4",
+        "fileSize": 2546853,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786316906162-ofom9yv__2026-08-09_chunked_1786316875446_109376.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786316979760-nu7v7pf",
+        "fileName": "1786316979760-nu7v7pf__2026-08-09_00024-audio.mp4",
+        "fileSize": 585100,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786316979760-nu7v7pf__2026-08-09_00024-audio.mp4",
         "keys": [
           "idle"
         ],
@@ -59,36 +106,313 @@
         "stage": 1
       },
       {
-        "id": "1786149218669-74nfed1",
-        "fileName": "1786149218669-74nfed1__a48882b7-3da9-4596-9434-ecbfaef86e03_1.mp4",
-        "fileSize": 2619043,
-        "url": "media://characters/1786146452316-cjvmuwo/videos/1786149218669-74nfed1__a48882b7-3da9-4596-9434-ecbfaef86e03_1.mp4",
-        "keys": [
-          "idle"
-        ],
-        "level": 3,
+        "id": "1786317006911-gp9xg52",
+        "fileName": "1786317006911-gp9xg52__2026-08-09_00025.mp4",
+        "fileSize": 659828,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786317006911-gp9xg52__2026-08-09_00025.mp4",
+        "keys": [],
+        "level": 2,
         "stage": 1
       },
       {
-        "id": "1786149222937-57t5pms",
-        "fileName": "1786149222937-57t5pms__8205dba1-ff5e-4557-bb46-3b060126749e_1.mp4",
-        "fileSize": 2183927,
-        "url": "media://characters/1786146452316-cjvmuwo/videos/1786149222937-57t5pms__8205dba1-ff5e-4557-bb46-3b060126749e_1.mp4",
-        "keys": [
-          "idle"
-        ],
-        "level": 4,
+        "id": "1786317027282-yay176s",
+        "fileName": "1786317027282-yay176s__2026-08-09_00030.mp4",
+        "fileSize": 1041664,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786317027282-yay176s__2026-08-09_00030.mp4",
+        "keys": [],
+        "level": 2,
         "stage": 1
       },
       {
-        "id": "1786152848507-8qay0ka",
-        "fileName": "1786152848507-8qay0ka__727a0744-3429-4f6f-b84e-cfb659ca1c1f_1.mp4",
-        "fileSize": 2568720,
-        "url": "media://characters/1786146452316-cjvmuwo/videos/1786152848507-8qay0ka__727a0744-3429-4f6f-b84e-cfb659ca1c1f_1.mp4",
+        "id": "1786317080481-48oai7t",
+        "fileName": "1786317080481-48oai7t__2026-08-09_chunked_1786317052473_767597.mp4",
+        "fileSize": 2581837,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786317080481-48oai7t__2026-08-09_chunked_1786317052473_767597.mp4",
+        "keys": [],
+        "level": 2,
+        "stage": 1
+      },
+      {
+        "id": "1786317135516-c7xjbrp",
+        "fileName": "1786317135516-c7xjbrp__2026-08-09_chunked_1786317121121_803371.mp4",
+        "fileSize": 3638954,
+        "url": "media://characters/1786146452316-cjvmuwo/videos/1786317135516-c7xjbrp__2026-08-09_chunked_1786317121121_803371.mp4",
+        "keys": [],
+        "level": 2,
+        "stage": 1
+      }
+    ]
+  },
+  {
+    "id": "1786328493683-a8rgxuf",
+    "name": "강다희",
+    "age": "28",
+    "job": "요가강사",
+    "bust": "D",
+    "weight": "56",
+    "grade": "C",
+    "popularity": 25,
+    "concept": "요가강사",
+    "salary": 25920000,
+    "eventLinks": {
+      "scout": null,
+      "salary": null,
+      "vip": null,
+      "h": null
+    },
+    "avatarTone": "from-sky-300 to-indigo-400",
+    "profileImageUrl": "media://characters/1786328493683-a8rgxuf/images/1786328217151-8e9hgep__2026-08-09_00047.png",
+    "characterIconId": "1786328593489-wlxyuuw",
+    "characterIllustrationId": "1786328217151-8e9hgep",
+    "profileImageId": "1786328217151-8e9hgep",
+    "profileVideoId": null,
+    "mediaRevision": 1786328677998,
+    "images": [
+      {
+        "id": "1786328217151-8e9hgep",
+        "fileName": "1786328217151-8e9hgep__2026-08-09_00047.png",
+        "fileSize": 2401364,
+        "url": "media://characters/1786328493683-a8rgxuf/images/1786328217151-8e9hgep__2026-08-09_00047.png",
+        "keys": []
+      },
+      {
+        "id": "1786328593489-wlxyuuw",
+        "fileName": "1786328593489-wlxyuuw__2026-08-10_00015.png",
+        "fileSize": 3767046,
+        "url": "media://characters/1786328493683-a8rgxuf/images/1786328593489-wlxyuuw__2026-08-10_00015.png",
+        "keys": []
+      }
+    ],
+    "videos": [
+      {
+        "id": "1786328359492-lgher4x",
+        "fileName": "1786328359492-lgher4x__2026-08-10_00001.mp4",
+        "fileSize": 505226,
+        "url": "media://characters/1786328493683-a8rgxuf/videos/1786328359492-lgher4x__2026-08-10_00001.mp4",
         "keys": [
           "idle"
         ],
         "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786328377461-cdj1i1t",
+        "fileName": "1786328377461-cdj1i1t__2026-08-10_00004-audio.mp4",
+        "fileSize": 602939,
+        "url": "media://characters/1786328493683-a8rgxuf/videos/1786328377461-cdj1i1t__2026-08-10_00004-audio.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786328404116-dnbudr9",
+        "fileName": "1786328404116-dnbudr9__2026-08-10_00014.mp4",
+        "fileSize": 468303,
+        "url": "media://characters/1786328493683-a8rgxuf/videos/1786328404116-dnbudr9__2026-08-10_00014.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786328419365-btljcg4",
+        "fileName": "1786328419365-btljcg4__2026-08-10_00015.mp4",
+        "fileSize": 576138,
+        "url": "media://characters/1786328493683-a8rgxuf/videos/1786328419365-btljcg4__2026-08-10_00015.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786328628798-7i6nyc1",
+        "fileName": "1786328628798-7i6nyc1__2026-08-10_00010.mp4",
+        "fileSize": 678717,
+        "url": "media://characters/1786328493683-a8rgxuf/videos/1786328628798-7i6nyc1__2026-08-10_00010.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 2,
+        "stage": 1
+      },
+      {
+        "id": "1786328646072-o1vv265",
+        "fileName": "1786328646072-o1vv265__2026-08-10_00012.mp4",
+        "fileSize": 1075752,
+        "url": "media://characters/1786328493683-a8rgxuf/videos/1786328646072-o1vv265__2026-08-10_00012.mp4",
+        "keys": [],
+        "level": 2,
+        "stage": 1
+      },
+      {
+        "id": "1786328652054-721v2zj",
+        "fileName": "1786328652054-721v2zj__2026-08-10_00013.mp4",
+        "fileSize": 718224,
+        "url": "media://characters/1786328493683-a8rgxuf/videos/1786328652054-721v2zj__2026-08-10_00013.mp4",
+        "keys": [],
+        "level": 2,
+        "stage": 1
+      },
+      {
+        "id": "1786328662913-fe3qt1u",
+        "fileName": "1786328662913-fe3qt1u__2026-08-10_00016.mp4",
+        "fileSize": 486302,
+        "url": "media://characters/1786328493683-a8rgxuf/videos/1786328662913-fe3qt1u__2026-08-10_00016.mp4",
+        "keys": [],
+        "level": 2,
+        "stage": 1
+      }
+    ]
+  },
+  {
+    "id": "1786345204783-y1pjm7b",
+    "name": "서지아",
+    "age": "28",
+    "job": "간호사",
+    "bust": "C",
+    "weight": "50",
+    "grade": "C",
+    "popularity": 25,
+    "concept": "간호사",
+    "salary": 25920000,
+    "eventLinks": {
+      "scout": null,
+      "salary": null,
+      "vip": null,
+      "h": null
+    },
+    "avatarTone": "from-violet-300 to-pink-400",
+    "profileImageUrl": "media://characters/1786345204783-y1pjm7b/images/1786345015754-9m3nt0a__2026-08-10_00023.png",
+    "characterIconId": "1786344983122-511r3bw",
+    "characterIllustrationId": "1786345015754-9m3nt0a",
+    "profileImageId": "1786345015754-9m3nt0a",
+    "profileVideoId": null,
+    "mediaRevision": 1786345204886,
+    "images": [
+      {
+        "id": "1786344983122-511r3bw",
+        "fileName": "1786344983122-511r3bw__simpligen_00037.png",
+        "fileSize": 835553,
+        "url": "media://characters/1786345204783-y1pjm7b/images/1786344983122-511r3bw__simpligen_00037.png",
+        "keys": []
+      },
+      {
+        "id": "1786345015754-9m3nt0a",
+        "fileName": "1786345015754-9m3nt0a__2026-08-10_00023.png",
+        "fileSize": 2325869,
+        "url": "media://characters/1786345204783-y1pjm7b/images/1786345015754-9m3nt0a__2026-08-10_00023.png",
+        "keys": []
+      }
+    ],
+    "videos": [
+      {
+        "id": "1786345051785-8vcvmjx",
+        "fileName": "1786345051785-8vcvmjx__2026-08-10_00021-audio.mp4",
+        "fileSize": 525232,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345051785-8vcvmjx__2026-08-10_00021-audio.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786345065665-nwoutq9",
+        "fileName": "1786345065665-nwoutq9__2026-08-10_00020-audio.mp4",
+        "fileSize": 706739,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345065665-nwoutq9__2026-08-10_00020-audio.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786345079505-sbukq66",
+        "fileName": "1786345079505-sbukq66__2026-08-10_00024.mp4",
+        "fileSize": 771295,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345079505-sbukq66__2026-08-10_00024.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786345098680-fxmbgrc",
+        "fileName": "1786345098680-fxmbgrc__2026-08-10_00022.mp4",
+        "fileSize": 526924,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345098680-fxmbgrc__2026-08-10_00022.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786345109650-58bshje",
+        "fileName": "1786345109650-58bshje__2026-08-10_00023.mp4",
+        "fileSize": 252872,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345109650-58bshje__2026-08-10_00023.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786345122107-oclvx1o",
+        "fileName": "1786345122107-oclvx1o__2026-08-10_00018.mp4",
+        "fileSize": 636512,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345122107-oclvx1o__2026-08-10_00018.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786345136512-0ma37gf",
+        "fileName": "1786345136512-0ma37gf__2026-08-10_00017-audio.mp4",
+        "fileSize": 872396,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345136512-0ma37gf__2026-08-10_00017-audio.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786345158110-75udg0h",
+        "fileName": "1786345158110-75udg0h__2026-08-10_00025.mp4",
+        "fileSize": 473125,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345158110-75udg0h__2026-08-10_00025.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 2,
+        "stage": 1
+      },
+      {
+        "id": "1786345174112-zk2g7oc",
+        "fileName": "1786345174112-zk2g7oc__2026-08-10_00026.mp4",
+        "fileSize": 175461,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345174112-zk2g7oc__2026-08-10_00026.mp4",
+        "keys": [],
+        "level": 2,
+        "stage": 1
+      },
+      {
+        "id": "1786345184870-0akdf0i",
+        "fileName": "1786345184870-0akdf0i__2026-08-10_00027.mp4",
+        "fileSize": 389820,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345184870-0akdf0i__2026-08-10_00027.mp4",
+        "keys": [],
+        "level": 2,
+        "stage": 1
+      },
+      {
+        "id": "1786345191083-a1gtzec",
+        "fileName": "1786345191083-a1gtzec__2026-08-10_00028.mp4",
+        "fileSize": 237655,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345191083-a1gtzec__2026-08-10_00028.mp4",
+        "keys": [],
+        "level": 2,
+        "stage": 1
+      },
+      {
+        "id": "1786345193902-st0b5u1",
+        "fileName": "1786345193902-st0b5u1__2026-08-10_00029.mp4",
+        "fileSize": 696639,
+        "url": "media://characters/1786345204783-y1pjm7b/videos/1786345193902-st0b5u1__2026-08-10_00029.mp4",
+        "keys": [],
+        "level": 2,
         "stage": 1
       }
     ]

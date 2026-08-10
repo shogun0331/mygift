@@ -24,7 +24,11 @@
     "dateTime": "년월 · 시간",
     "speed": "배속",
     "assets": "자산",
-    "back": "뒤로가기"
+    "back": "뒤로가기",
+    "onAir": "방송 중",
+    "dayProgress": "진행",
+    "daysLeft": "남음",
+    "weekUnit": "주"
   },
   "dashboard": {
     "recentEvents": "Recent Events",
@@ -32,6 +36,8 @@
     "liveRank": "Live Broadcast Rank",
     "noLiveBroadcast": "스튜디오에서 배정된 방송이 없습니다.",
     "startBroadcast": "▶ 방송시작",
+    "broadcasting": "● 방송 중",
+    "live": "LIVE",
     "ready": "READY",
     "noSignal": "NO SIGNAL",
     "standby": "대기 중 (비어 있음)",
@@ -43,7 +49,17 @@
     "unassigned": "미배정 슬롯",
     "unassignedLinked": "스튜디오 배치와 연동",
     "idle": "IDLE",
-    "studioPlaced": "스튜디오 배치"
+    "studioPlaced": "스튜디오 배치",
+    "rankRevenue": "수익",
+    "actionRecover": "컨디션 회복"
+  },
+  "condition": {
+    "title": "컨디션",
+    "best": "최상",
+    "good": "좋음",
+    "normal": "보통",
+    "bad": "나쁨",
+    "worst": "최악"
   },
   "equipment": {
     "title": "EQUIPMENT",
@@ -71,9 +87,44 @@
     "devModeDesc": "개발 모드 활성화 시 [EDIT] 탭이 상시 활성화됩니다.",
     "saveSuccess": "설정이 성공적으로 저장되었습니다."
   },
+  "creator": {
+    "scout": "스카우트",
+    "scoutDesc": "랜덤 후보의 등급·능력치·연봉을 확인하고 영입하거나 패스합니다.",
+    "scoutHire": "영입",
+    "scoutPass": "패스",
+    "scoutEmpty": "스카우트 가능한 캐릭터가 없습니다.",
+    "statPopularity": "인기",
+    "statSkill": "스킬",
+    "statHeat": "수위",
+    "statTrust": "신뢰",
+    "statStamina": "체력",
+    "statRevenueMult": "수익 배율"
+  },
   "studio": {
     "placementTitle": "배치할 크리에이터",
     "placementDesc": "카드를 선택해 해금된 슬롯에 배치",
     "noCreators": "보유 캐릭터가 없습니다. 캐릭터를 확보하면 여기에 나타납니다."
+  },
+  "settlement": {
+    "title": "월간 정산 명세서",
+    "issued": "발행일",
+    "monthSuffix": "월차",
+    "station": "방송국명",
+    "revenueSection": "수익 내역",
+    "colCreator": "크리에이터",
+    "colHours": "방송 시간",
+    "colRevenue": "수익금",
+    "hoursUnit": "시간",
+    "noBroadcast": "이번 달 방송 기록이 없습니다.",
+    "expenseSection": "지출 내역",
+    "colExpense": "항목",
+    "colAmount": "금액",
+    "noExpense": "이번 달 지출이 없습니다.",
+    "summarySection": "정산 요약",
+    "totalRevenue": "총수익",
+    "totalExpense": "총지출",
+    "netProfit": "순이익",
+    "highlightsSection": "주요 이벤트",
+    "confirm": "확인"
   }
 }
