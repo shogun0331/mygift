@@ -2,19 +2,47 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
 import {
   toStudioHandCard,
+  type Grade,
   type OwnedCreator,
   type RegisteredCharacter,
 } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
+import { calcSlotUnlockCost, countUnlockedSlots, findNextUnlockableSlot, unlockStudioSlot } from '../game/studioSlots'
 import type { BroadcastPhase } from '../game/broadcast'
-import { MS_PER_GAME_WEEK, WEEKS_PER_MONTH, monthToCalendarDate } from '../game/broadcast'
-import { applyEndOfDayConditions } from '../game/condition'
+import { MS_PER_EMPTY_BROADCAST_WEEK, MS_PER_GAME_WEEK, WEEKS_PER_MONTH, monthToCalendarDate } from '../game/broadcast'
+import {
+  applyConditionFullCare,
+  applyToxicStaminaPenalty,
+  applyWeeklyStaminaAndCondition,
+  applyVacationRecovery,
+  calcConditionFullCareCost,
+  calcVacationCost,
+  canBroadcastByStamina,
+  scoreOf,
+} from '../game/condition'
 import {
   buildStudioDayPlan,
   scaleDayPlanTimes,
   type DayEvent,
   type StudioDayPlan,
 } from '../game/economy'
+import { applyBroadcastGrowth } from '../game/growth'
+import { formatMoney } from '../game/money'
+import { rollNegotiatedSalary } from '../game/salary'
+import {
+  advanceScoutTurn,
+  canHireScoutOffer,
+  clearFirstHireGuarantee,
+  clearScoutOfferAfterHire,
+  createInitialScoutState,
+  ensureOpeningScout,
+  hireScoutOffer,
+  markScoutViewed,
+  passScoutOffer,
+  rollScoutAccept,
+  type ScoutOffer,
+  type ScoutSystemState,
+} from '../game/scout'
 import {
   calcProgressiveAnnualTax,
   createTaxUpcomingEvent,
@@ -24,15 +52,24 @@ import {
 import {
   buildWeeklyStatement,
   createWeekAccumulator,
+  recordCareExpense,
   recordDayIntoWeek,
   type WeekAccumulator,
   type WeeklyStatement,
 } from '../game/weeklyReport'
+import { type ConditionCrashFxItem } from './ConditionCrashFx'
+import { type ToxicWhackQteItem } from './ToxicWhackQte'
 import { CreatorPanel } from './CreatorPanel'
 import { DashboardPanel } from './DashboardPanel'
 import { EquipmentPanel } from './EquipmentPanel'
+import { RecruitCardFlyFx, type RecruitFlyCard } from './RecruitCardFlyFx'
+import { RestRequiredModal } from './RestRequiredModal'
+import { SalaryNegotiateModal } from './SalaryNegotiateModal'
 import { SchedulePanel } from './SchedulePanel'
+import { ScoutFailModal } from './ScoutFailModal'
 import { WeeklySettlementModal } from './WeeklySettlementModal'
+import { EventSimulator } from '../events/EventSimulator'
+import type { GameEvent } from '../events/types'
 
 export type GameTab =
   | 'dashboard'
@@ -46,7 +83,7 @@ const SPEED_OPTIONS = ['1x', '2x', '3x'] as const
 type SpeedOption = (typeof SPEED_OPTIONS)[number]
 
 const GAME_EPOCH = new Date(2026, 0, 1)
-const INITIAL_ASSETS = 12_500_000
+const INITIAL_ASSETS = 100_000
 const MAX_RECENT_EVENTS = 40
 
 function speedMultiplierOf(speed: SpeedOption) {
@@ -66,7 +103,7 @@ function formatGameClock(date: Date) {
 }
 
 function formatAssets(value: number) {
-  return `₩${value.toLocaleString('ko-KR')}`
+  return formatMoney(value)
 }
 
 function IconBack() {
@@ -161,6 +198,7 @@ type InGameProps = {
   registeredCharacters: RegisteredCharacter[]
   ownedCreators: OwnedCreator[]
   studioSlots: StudioSlot[]
+  events: GameEvent[]
   onStudioSlotsChange: (slots: StudioSlot[]) => void
   onOwnedCreatorsChange: (creators: OwnedCreator[]) => void
   onScout: (creator: OwnedCreator) => void
@@ -172,6 +210,7 @@ export function InGame({
   registeredCharacters,
   ownedCreators,
   studioSlots,
+  events,
   onStudioSlotsChange,
   onOwnedCreatorsChange,
   onScout,
@@ -186,9 +225,230 @@ export function InGame({
   const [monthWeekIndex, setMonthWeekIndex] = useState(0)
   const [assets, setAssets] = useState(INITIAL_ASSETS)
   const [liveEvents, setLiveEvents] = useState<DayEvent[]>([])
+  const [conditionCrashes, setConditionCrashes] = useState<ConditionCrashFxItem[]>([])
+  const [toxicQteQueue, setToxicQteQueue] = useState<ToxicWhackQteItem[]>([])
   const [liveRevenueByCreator, setLiveRevenueByCreator] = useState<Record<string, number>>({})
   const [weeklyStatement, setWeeklyStatement] = useState<WeeklyStatement | null>(null)
+  /** 월간 방송 종료 후 명세서 대기·표시 중 — 닫기 전까지 방송 시작 잠금 */
+  const [startBroadcastLocked, setStartBroadcastLocked] = useState(false)
+  const [openCreatorScout, setOpenCreatorScout] = useState(false)
   const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(1)
+
+  // 스카웃 VN 이벤트 진행
+  type ScoutEventState = {
+    creator: OwnedCreator
+    step: 'scout' | 'accept'
+    currentEvent: GameEvent
+  }
+  type PromoteSalaryNego = {
+    creatorId: string
+    creatorName: string
+    previousGrade: Grade
+    newGrade: Grade
+    previousSalary: number
+    proposedSalary: number
+    salaryEvent: GameEvent | null
+  }
+
+  const [scoutEventState, setScoutEventState] = useState<ScoutEventState | null>(null)
+  const [scoutFailName, setScoutFailName] = useState<string | null>(null)
+  const [restRequiredName, setRestRequiredName] = useState<string | null>(null)
+  const [scoutSystem, setScoutSystem] = useState<ScoutSystemState>(() =>
+    createInitialScoutState(1),
+  )
+  const [promoteQueue, setPromoteQueue] = useState<PromoteSalaryNego[]>([])
+  const [salaryEventPlay, setSalaryEventPlay] = useState<PromoteSalaryNego | null>(null)
+  const [recruitFlyCard, setRecruitFlyCard] = useState<RecruitFlyCard | null>(null)
+  const [spotlightCreatorId, setSpotlightCreatorId] = useState<string | null>(null)
+  const spotlightTimerRef = useRef<number | null>(null)
+  const scoutSystemRef = useRef(scoutSystem)
+  const registeredCharactersRef = useRef(registeredCharacters)
+  const eventsRef = useRef(events)
+  scoutSystemRef.current = scoutSystem
+  registeredCharactersRef.current = registeredCharacters
+  eventsRef.current = events
+
+  function beginRecruitPresentation(creator: OwnedCreator) {
+    onScout(creator)
+    setScoutSystem((prev) => clearFirstHireGuarantee(prev))
+    setTab('schedule')
+    setRecruitFlyCard({
+      id: creator.id,
+      name: creator.name,
+      grade: creator.grade,
+      popularity: creator.popularity,
+      profileImageUrl: creator.profileImageUrl || null,
+    })
+  }
+
+  function showScoutFail(creatorName: string) {
+    setScoutEventState(null)
+    setScoutFailName(creatorName)
+  }
+
+  /** 스카웃 VN 유무와 무관 — 성공/실패 판정 후 승낙 VN 또는 즉시 결과 */
+  function resolveScoutHireOutcome(creator: OwnedCreator) {
+    const ownedCount = ownedCreatorsRef.current.length
+    const isSuccess = rollScoutAccept(
+      ownedCount,
+      scoutSystemRef.current.firstHireGuaranteed,
+    )
+    if (isSuccess) {
+      const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
+      const acceptEventId = charDef?.eventLinks?.scoutAccept
+      const acceptEvent = acceptEventId
+        ? eventsRef.current.find((e) => e.id === acceptEventId) ?? null
+        : null
+      if (acceptEvent) {
+        setScoutEventState({
+          creator,
+          step: 'accept',
+          currentEvent: acceptEvent,
+        })
+      } else {
+        setScoutEventState(null)
+        beginRecruitPresentation(creator)
+      }
+      return
+    }
+
+    // 실패 — 차감 연봉 환불 (보유 합류 전)
+    setAssets((prev) => prev + creator.salary)
+    showScoutFail(creator.name)
+  }
+
+  function applyPromotedSalary(item: PromoteSalaryNego) {
+    const nextOwned = ownedCreatorsRef.current.map((creator) =>
+      creator.id === item.creatorId ? { ...creator, salary: item.proposedSalary } : creator,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+    setPromoteQueue((prev) => {
+      const idx = prev.findIndex((row) => row.creatorId === item.creatorId)
+      if (idx < 0) return prev
+      return [...prev.slice(0, idx), ...prev.slice(idx + 1)]
+    })
+    setSalaryEventPlay((prev) => (prev?.creatorId === item.creatorId ? null : prev))
+  }
+
+  function finishRecruitFly() {
+    const id = recruitFlyCard?.id ?? null
+    setRecruitFlyCard(null)
+    if (!id) return
+    setSpotlightCreatorId(id)
+    if (spotlightTimerRef.current != null) {
+      window.clearTimeout(spotlightTimerRef.current)
+    }
+    spotlightTimerRef.current = window.setTimeout(() => {
+      setSpotlightCreatorId((prev) => (prev === id ? null : prev))
+      spotlightTimerRef.current = null
+    }, 2200)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (spotlightTimerRef.current != null) {
+        window.clearTimeout(spotlightTimerRef.current)
+      }
+      if (statementDelayTimerRef.current != null) {
+        window.clearTimeout(statementDelayTimerRef.current)
+      }
+    }
+  }, [])
+
+  // 승급 연봉 큐 → VN 또는 팝업 (명세서 대기/표시·스카우트 강제 오픈 중에는 대기)
+  useEffect(() => {
+    if (
+      salaryEventPlay ||
+      scoutEventState ||
+      weeklyStatement ||
+      startBroadcastLocked ||
+      openCreatorScout
+    ) {
+      return
+    }
+    const next = promoteQueue[0]
+    if (!next) return
+    if (next.salaryEvent) {
+      setSalaryEventPlay(next)
+    }
+  }, [
+    promoteQueue,
+    salaryEventPlay,
+    scoutEventState,
+    weeklyStatement,
+    startBroadcastLocked,
+    openCreatorScout,
+  ])
+
+  const activePromotePopup =
+    !salaryEventPlay &&
+    !scoutEventState &&
+    !weeklyStatement &&
+    !startBroadcastLocked &&
+    !openCreatorScout
+      ? promoteQueue.find((row) => !row.salaryEvent) ?? null
+      : null
+
+  function handleCreatorScoutHire(offer: ScoutOffer) {
+    const check = canHireScoutOffer(offer, assets)
+    if (!check.ok) return
+    const creator = hireScoutOffer(offer)
+    setAssets((prev) => prev - offer.salary)
+    setScoutSystem((prev) => clearScoutOfferAfterHire(prev))
+    const charDef = registeredCharacters.find((c) => c.id === creator.id)
+    const scoutEventId = charDef?.eventLinks?.scout
+    const scoutEvent = scoutEventId ? events.find((e) => e.id === scoutEventId) : null
+    if (scoutEvent) {
+      setScoutEventState({
+        creator,
+        step: 'scout',
+        currentEvent: scoutEvent,
+      })
+    } else {
+      // 스카웃 VN 미연결 → 바로 성공/실패 결과
+      resolveScoutHireOutcome(creator)
+    }
+  }
+
+  function handleScoutEventFinished() {
+    if (!scoutEventState) return
+    const { creator, step } = scoutEventState
+
+    if (step === 'scout') {
+      resolveScoutHireOutcome(creator)
+    } else if (step === 'accept') {
+      setScoutEventState(null)
+      beginRecruitPresentation(creator)
+    }
+  }
+
+  // 등록 캐릭터 로드 후 첫 스카우트 강제 등장
+  useEffect(() => {
+    setScoutSystem((prev) =>
+      ensureOpeningScout(
+        prev,
+        broadcastMonthNumberRef.current,
+        registeredCharacters,
+        ownedCreatorsRef.current.map((c) => c.id),
+      ),
+    )
+  }, [registeredCharacters])
+
+  // 보유 0명이면 스카우트 후보가 생기는 즉시 스카우트 창으로
+  useEffect(() => {
+    if (ownedCreators.length > 0) return
+    if (weeklyStatement || scoutEventState || openCreatorScout) return
+    if (!scoutSystem.activeOffer) return
+    setTab('creator')
+    setOpenCreatorScout(true)
+  }, [
+    ownedCreators.length,
+    scoutSystem.activeOffer,
+    weeklyStatement,
+    scoutEventState,
+    openCreatorScout,
+  ])
   const dayPlanRef = useRef<StudioDayPlan | null>(null)
   const dayStartedAtRef = useRef<number | null>(null)
   const revealedIdsRef = useRef(new Set<string>())
@@ -196,6 +456,9 @@ export function InGame({
   const weekAccumRef = useRef<WeekAccumulator>(createWeekAccumulator(1))
   const prevWeekRevenueRef = useRef<number | null>(null)
   const weekFinishedRef = useRef(false)
+  const toxicQteQueueRef = useRef<ToxicWhackQteItem[]>([])
+  const pendingWeekAdvanceAfterToxicRef = useRef(false)
+  const statementDelayTimerRef = useRef<number | null>(null)
   const annualRevenueByYearRef = useRef<Record<number, number>>({})
   const studioSlotsRef = useRef(studioSlots)
   const ownedCreatorsRef = useRef(ownedCreators)
@@ -214,14 +477,23 @@ export function InGame({
   const handCards = ownedCreators.map(toStudioHandCard)
 
   const handleUpgradeStudio = () => {
-    const targetIndex = studioSlots.findIndex((slot) => slot.status === 'locked')
-    if (targetIndex === -1) return
-    onStudioSlotsChange(
-      studioSlots.map((slot, idx) => {
-        if (idx !== targetIndex) return slot
-        return { ...slot, status: 'empty' }
-      }),
-    )
+    const target = findNextUnlockableSlot(studioSlots)
+    if (!target) return
+    const cost = calcSlotUnlockCost(countUnlockedSlots(studioSlots))
+    if (assets < cost) return
+    setAssets((prev) => prev - cost)
+    onStudioSlotsChange(unlockStudioSlot(studioSlots, target.id))
+  }
+
+  function handleUnlockStudioSlot(slotId: string) {
+    if (broadcastPhase === 'live') return false
+    const next = findNextUnlockableSlot(studioSlots)
+    if (!next || next.id !== slotId) return false
+    const cost = calcSlotUnlockCost(countUnlockedSlots(studioSlots))
+    if (assets < cost) return false
+    setAssets((prev) => prev - cost)
+    onStudioSlotsChange(unlockStudioSlot(studioSlots, slotId))
+    return true
   }
 
   function assignedCreatorsFrom(list: OwnedCreator[]) {
@@ -229,6 +501,14 @@ export function InGame({
       .filter((slot) => slot.status === 'assigned' && slot.assignment)
       .map((slot) => list.find((c) => c.id === slot.assignment!.creatorId))
       .filter((c): c is OwnedCreator => Boolean(c))
+      .filter((c) => canBroadcastByStamina(c.stamina))
+  }
+
+  /** 무배치면 주당 1초, 아니면 기본 5초 (배속 적용) */
+  function weekDurationMs(speedOpt: SpeedOption = speedRef.current) {
+    const empty = assignedCreatorsFrom(ownedCreatorsRef.current).length === 0
+    const base = empty ? MS_PER_EMPTY_BROADCAST_WEEK : MS_PER_GAME_WEEK
+    return base / speedMultiplierOf(speedOpt)
   }
 
   /** 한 주 시작: 현재 컨디션으로 주간 수익 DayPlan 선계산 */
@@ -278,15 +558,134 @@ export function InGame({
         (annualRevenueByYearRef.current[year] ?? 0) + plan.totalRevenueWon
     }
     weekAccumRef.current = recordDayIntoWeek(weekAccumRef.current, plan.plans)
-    // 주 종료: 방송자 하락 / 미방송 회복
-    const broadcastedIds = new Set(
-      studioSlotsRef.current
-        .filter((slot) => slot.status === 'assigned' && slot.assignment)
-        .map((slot) => slot.assignment!.creatorId),
+    // 주 종료: 실제 방송자만 스테미나/컨디션 소모(+진상 시 컨디션 급락, 스테미나는 QTE)
+    const broadcastedIds = new Set(plan.plans.map((p) => p.creatorId))
+    const { creators: nextOwned, crashes } = applyWeeklyStaminaAndCondition(
+      ownedCreatorsRef.current,
+      broadcastedIds,
     )
-    const nextOwned = applyEndOfDayConditions(ownedCreatorsRef.current, broadcastedIds)
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+
+    if (crashes.length > 0) {
+      const toxicEvents: DayEvent[] = crashes.map((crash) => ({
+        id: `toxic-${crash.creatorId}-${plan.dayKey}`,
+        creatorId: crash.creatorId,
+        creatorName: crash.creatorName,
+        type: 'toxic',
+        amount: crash.drop,
+        text: `${crash.creatorName} 진상 시청자! 컨디션 −${crash.drop} · 클릭으로 스테미나 방어!`,
+        atMs: 0,
+        tone: 'bg-rose-500',
+      }))
+      setLiveEvents((prev) => [...toxicEvents.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+      setConditionCrashes((prev) => [
+        ...prev,
+        ...crashes.map((crash) => ({
+          id: `crash-fx-${crash.creatorId}-${plan.dayKey}-${crash.drop}`,
+          creatorId: crash.creatorId,
+          drop: crash.drop,
+          staminaDrop: crash.staminaDrop,
+        })),
+      ])
+      const qteItems: ToxicWhackQteItem[] = crashes.map((crash) => ({
+        id: `toxic-qte-${crash.creatorId}-${plan.dayKey}-${crash.staminaDrop}`,
+        creatorId: crash.creatorId,
+        creatorName: crash.creatorName,
+        drop: crash.drop,
+        staminaDrop: crash.staminaDrop,
+      }))
+      toxicQteQueueRef.current = [...toxicQteQueueRef.current, ...qteItems]
+      setToxicQteQueue(toxicQteQueueRef.current)
+      for (const crash of crashes) {
+        weekAccumRef.current = {
+          ...weekAccumRef.current,
+          highlights: [
+            `${crash.creatorName} 진상 사태로 컨디션 −${crash.drop}`,
+            ...weekAccumRef.current.highlights,
+          ],
+        }
+      }
+    }
+  }
+
+  function resolveToxicQte(itemId: string, success: boolean) {
+    const current = toxicQteQueueRef.current.find((row) => row.id === itemId)
+    if (!current) return
+
+    if (success) {
+      setLiveEvents((prev) =>
+        [
+          {
+            id: `toxic-block-${current.id}`,
+            creatorId: current.creatorId,
+            creatorName: current.creatorName,
+            type: 'toxic' as const,
+            amount: 0,
+            text: `${current.creatorName} 진상 차단 성공! 스테미나 방어`,
+            atMs: 0,
+            tone: 'bg-emerald-400',
+          },
+          ...prev,
+        ].slice(0, MAX_RECENT_EVENTS),
+      )
+      weekAccumRef.current = {
+        ...weekAccumRef.current,
+        highlights: [
+          `${current.creatorName} 진상 차단 — 스테미나 방어`,
+          ...weekAccumRef.current.highlights,
+        ],
+      }
+    } else {
+      const nextOwned = ownedCreatorsRef.current.map((creator) =>
+        creator.id === current.creatorId
+          ? applyToxicStaminaPenalty(creator, current.staminaDrop)
+          : creator,
+      )
+      ownedCreatorsRef.current = nextOwned
+      onOwnedCreatorsChangeRef.current(nextOwned)
+      setLiveEvents((prev) =>
+        [
+          {
+            id: `toxic-miss-${current.id}`,
+            creatorId: current.creatorId,
+            creatorName: current.creatorName,
+            type: 'toxic' as const,
+            amount: current.staminaDrop,
+            text: `${current.creatorName} 진상 대응 실패! 스테미나 −${current.staminaDrop}`,
+            atMs: 0,
+            tone: 'bg-rose-500',
+          },
+          ...prev,
+        ].slice(0, MAX_RECENT_EVENTS),
+      )
+      weekAccumRef.current = {
+        ...weekAccumRef.current,
+        highlights: [
+          `${current.creatorName} 진상 실패로 스테미나 −${current.staminaDrop}`,
+          ...weekAccumRef.current.highlights,
+        ],
+      }
+    }
+
+    toxicQteQueueRef.current = toxicQteQueueRef.current.filter((row) => row.id !== itemId)
+    setToxicQteQueue(toxicQteQueueRef.current)
+  }
+
+  function advanceBroadcastWeek() {
+    const nextMonthWeek = monthWeekIndexRef.current + 1
+
+    if (nextMonthWeek >= WEEKS_PER_MONTH) {
+      monthWeekIndexRef.current = 0
+      setMonthWeekIndex(0)
+      finishBroadcastMonth()
+      return
+    }
+
+    monthWeekIndexRef.current = nextMonthWeek
+    setMonthWeekIndex(nextMonthWeek)
+    const weekMs = weekDurationMs(speedRef.current)
+    beginDayPlan(`m${broadcastMonthNumberRef.current}-w${nextMonthWeek}`, weekMs)
   }
 
   function finishBroadcastMonth() {
@@ -300,6 +699,56 @@ export function InGame({
     setGameMonth(nextMonth)
 
     const weekSnapshot = weekAccumRef.current
+    // 월간 1회: 해당 월에 방송한 크리에이터만 성장
+    const monthBroadcastIds = new Set(weekSnapshot.byCreator.keys())
+    const growthHighlights: string[] = []
+    const promoteBatch: PromoteSalaryNego[] = []
+    let nextOwned = ownedCreatorsRef.current.map((creator) => {
+      if (!monthBroadcastIds.has(creator.id)) return creator
+      const result = applyBroadcastGrowth(creator)
+      growthHighlights.push(
+        `${creator.name} 성장 인기 +${result.popularityGain} / 스킬 +${result.skillGain}`,
+      )
+      if (result.promotedTo) {
+        growthHighlights.push(
+          `${creator.name} ${result.previousGrade}→${result.promotedTo} 등급 상승!`,
+        )
+        const previousSalary = result.creator.salary
+        const proposedSalary = rollNegotiatedSalary(
+          {
+            popularity: result.creator.popularity,
+            skill: result.creator.skill,
+            heat: result.creator.heat,
+            trust: result.creator.trust,
+            stamina: result.creator.stamina,
+            staminaMax: result.creator.staminaMax,
+            revenueMult: result.creator.revenueMult,
+          },
+          result.promotedTo,
+        )
+        const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
+        const salaryEventId = charDef?.eventLinks?.salary
+        const salaryEvent = salaryEventId
+          ? eventsRef.current.find((e) => e.id === salaryEventId) ?? null
+          : null
+        promoteBatch.push({
+          creatorId: result.creator.id,
+          creatorName: result.creator.name,
+          previousGrade: result.previousGrade,
+          newGrade: result.promotedTo,
+          previousSalary,
+          proposedSalary,
+          salaryEvent,
+        })
+      }
+      return result.creator
+    })
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+    if (promoteBatch.length > 0) {
+      setPromoteQueue((prev) => [...prev, ...promoteBatch])
+    }
+
     const issued = formatGameClock(monthToCalendarDate(GAME_EPOCH, nextMonth)).date.replace(
       /\./g,
       '-',
@@ -307,7 +756,7 @@ export function InGame({
     const unlockedSlotCount = studioSlotsRef.current.filter(
       (slot) => slot.status !== 'locked',
     ).length
-    const payroll = ownedCreatorsRef.current.map((creator) => ({
+    const payroll = nextOwned.map((creator) => ({
       id: creator.id,
       name: creator.name,
       salary: creator.salary,
@@ -332,7 +781,10 @@ export function InGame({
     }
 
     const statement = buildWeeklyStatement({
-      week: weekSnapshot,
+      week: {
+        ...weekSnapshot,
+        highlights: [...growthHighlights, ...weekSnapshot.highlights],
+      },
       issuedDate: issued,
       previousNetProfitWon: prevWeekRevenueRef.current,
       unlockedSlotCount,
@@ -342,11 +794,15 @@ export function InGame({
       annualRevenueForTaxWon,
     })
     prevWeekRevenueRef.current = statement.netProfitWon
-    // 한 턴(월) 종료 시 수익·지출을 한꺼번에 자산에 반영
-    if (statement.netProfitWon !== 0) {
-      setAssets((prev) => prev + statement.netProfitWon)
+    // 케어비는 이미 즉시 차감됐으므로, 명세서 net에 포함된 케어분을 환산 보정
+    const careAlreadyPaid = weekSnapshot.careExpenses.reduce(
+      (sum, row) => sum + row.amountWon,
+      0,
+    )
+    const assetDelta = statement.netProfitWon + careAlreadyPaid
+    if (assetDelta !== 0) {
+      setAssets((prev) => prev + assetDelta)
     }
-    setWeeklyStatement(statement)
 
     const nextMonthNumber = broadcastMonthNumberRef.current + 1
     broadcastMonthNumberRef.current = nextMonthNumber
@@ -355,18 +811,61 @@ export function InGame({
     setBroadcastPhase('prep')
     dayPlanRef.current = null
     dayStartedAtRef.current = null
+    setStartBroadcastLocked(true)
+
+    // 방송 종료 직후 명세서가 덮지 않도록 잠시 대기 (진상 QTE 여유)
+    if (statementDelayTimerRef.current != null) {
+      window.clearTimeout(statementDelayTimerRef.current)
+    }
+    statementDelayTimerRef.current = window.setTimeout(() => {
+      statementDelayTimerRef.current = null
+      setWeeklyStatement(statement)
+    }, 2000)
+
+    // 새 턴 진입: 스카우트 후보 만료·등장 판정
+    setScoutSystem((prev) =>
+      advanceScoutTurn(
+        prev,
+        nextMonthNumber,
+        registeredCharactersRef.current,
+        ownedCreatorsRef.current.map((c) => c.id),
+      ),
+    )
   }
 
-  function handleRecoverCondition(creatorId: string) {
+  function handleConditionCare(creatorId: string) {
+    const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
+    if (!target) return
+    if (scoreOf(target) >= 100) return
+    const cost = calcConditionFullCareCost(target.grade)
+    if (assets < cost) return
+    setAssets((prev) => prev - cost)
+    weekAccumRef.current = recordCareExpense(weekAccumRef.current, {
+      creatorId: target.id,
+      name: target.name,
+      amountWon: cost,
+    })
+    const nextOwned = ownedCreatorsRef.current.map((creator) =>
+      creator.id === creatorId ? applyConditionFullCare(creator) : creator,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+  }
+
+  function handleVacation(creatorId: string) {
+    const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
+    if (!target) return
+    const month = broadcastMonthNumberRef.current
+    if (target.lastVacationMonth === month) return
+    const cost = calcVacationCost(target.salary, target.grade)
+    if (assets < cost) return
+    setAssets((prev) => prev - cost)
     const nextOwned = ownedCreatorsRef.current.map((creator) => {
-      if (creator.id === creatorId) {
-        return {
-          ...creator,
-          condition: 'best' as const,
-          conditionScore: 100,
-        }
+      if (creator.id !== creatorId) return creator
+      return {
+        ...applyVacationRecovery(creator),
+        lastVacationMonth: month,
       }
-      return creator
     })
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
@@ -374,16 +873,43 @@ export function InGame({
 
   function handleStartBroadcast() {
     if (broadcastPhase === 'live') return
-    if (weeklyStatement) return
+    if (weeklyStatement || startBroadcastLocked) return
+
+    const blockedAssigned = studioSlotsRef.current
+      .filter((slot) => slot.status === 'assigned' && slot.assignment)
+      .map((slot) =>
+        ownedCreatorsRef.current.find((c) => c.id === slot.assignment!.creatorId),
+      )
+      .filter((c): c is OwnedCreator => Boolean(c))
+      .filter((c) => !canBroadcastByStamina(c.stamina))
+
+    if (blockedAssigned.length > 0) {
+      setRestRequiredName(blockedAssigned[0]!.name)
+      return
+    }
+
+    if (statementDelayTimerRef.current != null) {
+      window.clearTimeout(statementDelayTimerRef.current)
+      statementDelayTimerRef.current = null
+    }
     weekFinishedRef.current = false
+    setStartBroadcastLocked(false)
     setBroadcastPhase('live')
     setMonthWeekIndex(0)
     monthWeekIndexRef.current = 0
     // 방송 시작 시 후원/시청 이벤트는 초기화, 세금 알림은 유지
     setLiveEvents((prev) => prev.filter((event) => event.type === 'tax'))
     setLiveRevenueByCreator({})
-    weekAccumRef.current = createWeekAccumulator(broadcastMonthNumberRef.current)
-    const weekMs = MS_PER_GAME_WEEK / speedMultiplierOf(speed)
+    setConditionCrashes([])
+    toxicQteQueueRef.current = []
+    setToxicQteQueue([])
+    pendingWeekAdvanceAfterToxicRef.current = false
+    const preservedCare = weekAccumRef.current.careExpenses
+    weekAccumRef.current = {
+      ...createWeekAccumulator(broadcastMonthNumberRef.current),
+      careExpenses: preservedCare,
+    }
+    const weekMs = weekDurationMs(speed)
     beginDayPlan(`m${broadcastMonthNumberRef.current}-w0`, weekMs)
   }
 
@@ -393,7 +919,7 @@ export function InGame({
     const plan = dayPlanRef.current
     const startedAt = dayStartedAtRef.current
     if (!plan || startedAt == null) return
-    const nextWeekMs = MS_PER_GAME_WEEK / speedMultiplierOf(speed)
+    const nextWeekMs = weekDurationMs(speed)
     if (nextWeekMs === plan.dayMs) return
     const elapsed = performance.now() - startedAt
     const scaled = scaleDayPlanTimes(plan, nextWeekMs)
@@ -402,9 +928,34 @@ export function InGame({
       performance.now() - Math.min(elapsed * (nextWeekMs / plan.dayMs), nextWeekMs - 1)
   }, [speed, broadcastPhase])
 
+  // 진상 QTE 중 방송 시계 일시정지
+  const toxicQteActive = toxicQteQueue.length > 0
+  useEffect(() => {
+    if (!toxicQteActive) return
+    const pausedAt = performance.now()
+    return () => {
+      if (dayStartedAtRef.current != null) {
+        dayStartedAtRef.current += performance.now() - pausedAt
+      }
+    }
+  }, [toxicQteActive])
+
+  // QTE 종료 후 보류된 주차 진행
+  useEffect(() => {
+    if (toxicQteActive) return
+    if (!pendingWeekAdvanceAfterToxicRef.current) return
+    if (broadcastPhase !== 'live') {
+      pendingWeekAdvanceAfterToxicRef.current = false
+      return
+    }
+    pendingWeekAdvanceAfterToxicRef.current = false
+    advanceBroadcastWeek()
+  }, [toxicQteActive, broadcastPhase])
+
   // 주 진행: 이벤트 공개
   useEffect(() => {
     if (broadcastPhase !== 'live') return
+    if (toxicQteActive) return
     const id = window.setInterval(() => {
       const plan = dayPlanRef.current
       const startedAt = dayStartedAtRef.current
@@ -420,31 +971,24 @@ export function InGame({
       setLiveEvents((prev) => [...due.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
     }, 50)
     return () => window.clearInterval(id)
-  }, [broadcastPhase])
+  }, [broadcastPhase, toxicQteActive])
 
-  // 주 틱: 결산 → 월 내 주차 진행 → 턴 종료 시 다음 달
+  // 주 틱: 결산 → 월 내 주차 진행 → 턴 종료 시 다음 달 (진상 QTE 중 일시정지)
   useEffect(() => {
     if (broadcastPhase !== 'live') return
-    const tickMs = MS_PER_GAME_WEEK / speedMultiplierOf(speed)
+    if (toxicQteActive) return
+    const tickMs = weekDurationMs(speed)
     const timer = window.setInterval(() => {
+      if (toxicQteQueueRef.current.length > 0) return
       settleCurrentDay()
-
-      const nextMonthWeek = monthWeekIndexRef.current + 1
-
-      if (nextMonthWeek >= WEEKS_PER_MONTH) {
-        monthWeekIndexRef.current = 0
-        setMonthWeekIndex(0)
-        finishBroadcastMonth()
+      if (toxicQteQueueRef.current.length > 0) {
+        pendingWeekAdvanceAfterToxicRef.current = true
         return
       }
-
-      monthWeekIndexRef.current = nextMonthWeek
-      setMonthWeekIndex(nextMonthWeek)
-      const weekMs = MS_PER_GAME_WEEK / speedMultiplierOf(speedRef.current)
-      beginDayPlan(`m${broadcastMonthNumberRef.current}-w${nextMonthWeek}`, weekMs)
+      advanceBroadcastWeek()
     }, tickMs)
     return () => window.clearInterval(timer)
-  }, [broadcastPhase, speed])
+  }, [broadcastPhase, speed, toxicQteActive])
 
   const clock = formatGameClock(monthToCalendarDate(GAME_EPOCH, gameMonth))
   const broadcastWeekCurrent = monthWeekIndex + 1
@@ -580,8 +1124,16 @@ export function InGame({
             weekDayIndex={monthWeekIndex}
             liveEvents={liveEvents}
             liveRevenueByCreator={liveRevenueByCreator}
+            conditionCrashes={conditionCrashes}
+            toxicQtes={toxicQteQueue}
+            assets={assets}
+            startBroadcastLocked={startBroadcastLocked}
             onStartBroadcast={handleStartBroadcast}
-            onRecoverCondition={handleRecoverCondition}
+            onConditionCare={handleConditionCare}
+            onConditionCrashDone={(id) =>
+              setConditionCrashes((prev) => prev.filter((row) => row.id !== id))
+            }
+            onToxicQteResolve={resolveToxicQte}
           />
         </div>
 
@@ -589,13 +1141,27 @@ export function InGame({
           <CreatorPanel
             ownedCreators={ownedCreators}
             registeredCharacters={registeredCharacters}
-            onScout={onScout}
+            scoutState={scoutSystem}
+            assets={assets}
+            broadcastMonthNumber={broadcastMonthNumber}
+            openScout={openCreatorScout}
+            onScoutClosed={() => setOpenCreatorScout(false)}
+            onScoutViewed={() => setScoutSystem((prev) => markScoutViewed(prev))}
+            onScoutPass={() => setScoutSystem((prev) => passScoutOffer(prev))}
+            onScoutHire={handleCreatorScoutHire}
+            onConditionCare={handleConditionCare}
+            onVacation={handleVacation}
           />
         ) : tab === 'schedule' ? (
           <SchedulePanel
             slots={studioSlots}
             handCards={handCards}
             onSlotsChange={onStudioSlotsChange}
+            assets={assets}
+            onUnlockSlot={handleUnlockStudioSlot}
+            pendingHandCreatorId={recruitFlyCard?.id ?? null}
+            spotlightCreatorId={spotlightCreatorId}
+            placementLocked={broadcastPhase === 'live'}
           />
         ) : tab === 'equipment' ? (
           <EquipmentPanel onUpgradeStudio={handleUpgradeStudio} />
@@ -682,7 +1248,7 @@ export function InGame({
                 key={item.id}
                 type="button"
                 onClick={() => setTab(item.id)}
-                className={`game-btn-tab flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-4 py-2.5 text-xs font-semibold tracking-wide ${
+                className={`game-btn-tab relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-4 py-2.5 text-xs font-semibold tracking-wide ${
                   isActive ? 'is-active' : ''
                 }`}
               >
@@ -697,8 +1263,64 @@ export function InGame({
       {weeklyStatement ? (
         <WeeklySettlementModal
           statement={weeklyStatement}
-          onConfirm={() => setWeeklyStatement(null)}
+          onConfirm={() => {
+            setWeeklyStatement(null)
+            setStartBroadcastLocked(false)
+            if (scoutSystemRef.current.activeOffer) {
+              setTab('creator')
+              setOpenCreatorScout(true)
+            }
+          }}
         />
+      ) : null}
+
+      {scoutEventState && (
+        <EventSimulator
+          key={scoutEventState.currentEvent.id}
+          event={scoutEventState.currentEvent}
+          mode="game"
+          onClose={handleScoutEventFinished}
+          registeredCharacters={registeredCharacters}
+        />
+      )}
+
+      {salaryEventPlay?.salaryEvent ? (
+        <EventSimulator
+          key={`salary-${salaryEventPlay.creatorId}-${salaryEventPlay.salaryEvent.id}`}
+          event={salaryEventPlay.salaryEvent}
+          mode="game"
+          onClose={() => applyPromotedSalary(salaryEventPlay)}
+          registeredCharacters={registeredCharacters}
+        />
+      ) : null}
+
+      {activePromotePopup ? (
+        <SalaryNegotiateModal
+          creatorName={activePromotePopup.creatorName}
+          previousGrade={activePromotePopup.previousGrade}
+          newGrade={activePromotePopup.newGrade}
+          previousSalary={activePromotePopup.previousSalary}
+          proposedSalary={activePromotePopup.proposedSalary}
+          onConfirm={() => applyPromotedSalary(activePromotePopup)}
+        />
+      ) : null}
+
+      {scoutFailName ? (
+        <ScoutFailModal
+          creatorName={scoutFailName}
+          onConfirm={() => setScoutFailName(null)}
+        />
+      ) : null}
+
+      {restRequiredName ? (
+        <RestRequiredModal
+          creatorName={restRequiredName}
+          onConfirm={() => setRestRequiredName(null)}
+        />
+      ) : null}
+
+      {recruitFlyCard ? (
+        <RecruitCardFlyFx card={recruitFlyCard} onDone={finishRecruitFly} />
       ) : null}
     </main>
   )

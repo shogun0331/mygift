@@ -1,5 +1,6 @@
 import type { WeeklyStatement } from '../game/weeklyReport'
 import { formatStatementWon } from '../game/weeklyReport'
+import { formatMoneySigned } from '../game/money'
 import { useTranslation } from '../locales/i18n'
 
 type WeeklySettlementModalProps = {
@@ -8,10 +9,7 @@ type WeeklySettlementModalProps = {
 }
 
 function signedWon(amount: number) {
-  const abs = formatStatementWon(Math.abs(amount))
-  if (amount > 0) return `+${abs}`
-  if (amount < 0) return `-${abs}`
-  return abs
+  return formatMoneySigned(amount)
 }
 
 export function WeeklySettlementModal({ statement, onConfirm }: WeeklySettlementModalProps) {

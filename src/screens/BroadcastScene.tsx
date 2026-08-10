@@ -56,7 +56,7 @@ export function BroadcastScene({ onEnd }: BroadcastSceneProps) {
         <div className="h-8 w-px bg-white/10" />
         <div>
           <p className="game-stat-label">자산</p>
-          <p className="text-sm font-bold text-amber-400">₩12,500,000</p>
+          <p className="text-sm font-bold text-amber-400">$12,500</p>
         </div>
         <div className="h-8 w-px bg-white/10" />
         <div>
@@ -94,7 +94,7 @@ export function BroadcastScene({ onEnd }: BroadcastSceneProps) {
           <span className="text-slate-500">/80</span>
         </span>
         <div className="ml-auto flex flex-wrap items-center gap-3 text-xs">
-          <span className="game-chip-gold game-chip">+850,000원</span>
+          <span className="game-chip-gold game-chip">+$850</span>
           <span className="game-chip font-mono">{formatTime(elapsed)}</span>
         </div>
       </div>

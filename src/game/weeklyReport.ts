@@ -1,15 +1,18 @@
 import type { DayEvent } from './economy'
+import { formatMoney } from './money'
 
 export const STATION_NAME = '스타라이트 방송국'
 /** 방송 1주 환산 시간 (기존 일×6시간 × 7일) */
 export const HOURS_PER_BROADCAST_WEEK = 42
 
-/** 슬롯 운영비 기본 단가 (1슬롯일 때) */
-export const SLOT_OP_COST_BASE = 500_000
+/** 슬롯 운영비 기본 (USD, 구 50만 원) — 해금 슬롯 n개면 base × 3^(n-1) */
+export const SLOT_OP_COST_BASE = 500
+/** 무배치(실제 방송자 0명) 월 — 운영비만 이 비율로 적용. 월급은 그대로 */
+export const EMPTY_BROADCAST_OP_COST_RATE = 0.1
 
 /**
- * 월 슬롯 운영비 = 50만 × 3^(슬롯 수 - 1)
- * 1→50만, 2→150만, 3→450만, 4→1,350만, 5→4,050만, 6→1억 2,150만
+ * 월 슬롯 운영비 = $500 × 3^(슬롯 수 - 1)
+ * 1→$500, 2→$1.5K, 3→$4.5K, …
  */
 export function calcMonthlySlotOperatingCost(slotCount: number): number {
   const n = Math.max(0, Math.min(6, Math.round(slotCount)))
@@ -52,11 +55,19 @@ export type WeeklyCreatorAccum = {
   revenueWon: number
 }
 
+export type SettlementCareExpense = {
+  creatorId: string
+  name: string
+  amountWon: number
+}
+
 export type WeekAccumulator = {
   monthNumber: number
   byCreator: Map<string, WeeklyCreatorAccum>
   highlights: string[]
   totalRevenueWon: number
+  /** 이번 달 컨디션 케어로 이미 지출한 금액(즉시 차감분) */
+  careExpenses: SettlementCareExpense[]
 }
 
 export function createWeekAccumulator(monthNumber: number): WeekAccumulator {
@@ -65,11 +76,19 @@ export function createWeekAccumulator(monthNumber: number): WeekAccumulator {
     byCreator: new Map(),
     highlights: [],
     totalRevenueWon: 0,
+    careExpenses: [],
   }
 }
 
-function formatWonPlain(amount: number) {
-  return Math.round(amount).toLocaleString('ko-KR')
+export function recordCareExpense(
+  week: WeekAccumulator,
+  line: SettlementCareExpense,
+): WeekAccumulator {
+  if (line.amountWon <= 0) return week
+  return {
+    ...week,
+    careExpenses: [...week.careExpenses, line],
+  }
 }
 
 function monthlySalaryFromAnnual(annualSalary: number) {
@@ -84,10 +103,10 @@ export function pickDayHighlights(events: DayEvent[]): string[] {
     .sort((a, b) => b.amount - a.amount)
 
   const top = donations[0]
-  if (top && top.amount >= 1_000_000) {
-    highlights.push(`${top.creatorName} 대형 후원! (₩${formatWonPlain(top.amount)})`)
-  } else if (top && top.amount >= 500_000) {
-    highlights.push(`${top.creatorName} 후원 화제! (₩${formatWonPlain(top.amount)})`)
+  if (top && top.amount >= 1_000) {
+    highlights.push(`${top.creatorName} 대형 후원! (${formatMoney(top.amount)})`)
+  } else if (top && top.amount >= 500) {
+    highlights.push(`${top.creatorName} 후원 화제! (${formatMoney(top.amount)})`)
   }
 
   for (const event of events) {
@@ -162,11 +181,18 @@ export function buildWeeklyStatement(opts: {
 
   const expenses: SettlementExpenseLine[] = []
   const slotCount = Math.max(0, Math.round(opts.unlockedSlotCount))
-  const opCost = calcMonthlySlotOperatingCost(slotCount)
+  const fullOpCost = calcMonthlySlotOperatingCost(slotCount)
+  const emptyBroadcastMonth = week.byCreator.size === 0
+  const opCost = emptyBroadcastMonth
+    ? Math.round(fullOpCost * EMPTY_BROADCAST_OP_COST_RATE)
+    : fullOpCost
   if (opCost > 0) {
     expenses.push({
       id: 'slot-ops',
       label: '스튜디오 운영비',
+      detail: emptyBroadcastMonth
+        ? `무배치 방송 (${Math.round(EMPTY_BROADCAST_OP_COST_RATE * 100)}%)`
+        : undefined,
       amountWon: opCost,
     })
   }
@@ -181,6 +207,15 @@ export function buildWeeklyStatement(opts: {
     })
   }
 
+  for (const [index, care] of week.careExpenses.entries()) {
+    if (care.amountWon <= 0) continue
+    expenses.push({
+      id: `care-${care.creatorId}-${index}`,
+      label: `컨디션 케어 (${care.name})`,
+      amountWon: care.amountWon,
+    })
+  }
+
   const annualTaxWon = Math.max(0, Math.round(opts.annualTaxWon ?? 0))
   const taxYear = opts.taxYear
   const annualRevenueForTaxWon = Math.max(0, Math.round(opts.annualRevenueForTaxWon ?? 0))
@@ -189,7 +224,7 @@ export function buildWeeklyStatement(opts: {
     expenses.push({
       id: 'annual-tax',
       label: '세금 과세',
-      detail: `${taxYear}년 연간 수익 ${formatStatementWon(annualRevenueForTaxWon)}원 기준`,
+      detail: `${taxYear}년 연간 수익 ${formatStatementWon(annualRevenueForTaxWon)} 기준`,
       amountWon: annualTaxWon,
     })
   }
@@ -213,7 +248,7 @@ export function buildWeeklyStatement(opts: {
   if (isMarchTaxEvent) {
     highlights.unshift(
       annualTaxWon > 0
-        ? `${taxYear}년 연간 소득세 과세 (−${formatStatementWon(annualTaxWon)}원)`
+        ? `${taxYear}년 연간 소득세 과세 (−${formatStatementWon(annualTaxWon)})`
         : `${taxYear}년 연간 소득세 과세 (해당 없음)`,
     )
   }
@@ -231,10 +266,10 @@ export function buildWeeklyStatement(opts: {
     totalExpenseWon,
     netProfitWon,
     profitChangePct,
-    highlights: highlights.slice(0, 5),
+    highlights: highlights.slice(0, 8),
   }
 }
 
 export function formatStatementWon(amount: number) {
-  return amount.toLocaleString('ko-KR')
+  return formatMoney(amount)
 }

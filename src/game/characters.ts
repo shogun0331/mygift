@@ -1,6 +1,10 @@
 import type { CharacterEventLinks } from '../events/types'
 import { emptyCharacterEventLinks } from '../events/types'
-import { conditionFromScore, rollStartingConditionScore } from './condition'
+import {
+  conditionFromScore,
+  scoreOf,
+  STAMINA_MAX,
+} from './condition'
 import { estimateDefaultSalaryForGrade } from './salary'
 import { creatorVisuals } from './studioSlots'
 
@@ -67,8 +71,10 @@ export type OwnedCreator = RegisteredCharacter & {
   condition: string
   /** 컨디션 점수 0~100 */
   conditionScore: number
-  /** 연속 휴식 일수 */
+  /** 연속 휴식 주수 */
   restStreak: number
+  /** 휴가를 사용한 방송월 번호 (월 1회) */
+  lastVacationMonth?: number | null
   /** @deprecated trust 사용. 구 세이브 호환용 */
   loyalty?: number
 }
@@ -149,7 +155,7 @@ export function createRegisteredCharacter(draft: CharacterDraft): RegisteredChar
 
 /** 스카우트 영입 → 보유 크리에이터 (레거시: 고정 스탯). 신규 영입은 hireScoutOffer 사용 */
 export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
-  const conditionScore = rollStartingConditionScore()
+  const conditionScore = 100
   return {
     ...character,
     contractWeeks: 12,
@@ -157,19 +163,23 @@ export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
     skill: 25,
     heat: 1,
     trust: 50,
-    stamina: 80,
-    staminaMax: 80,
+    stamina: STAMINA_MAX,
+    staminaMax: STAMINA_MAX,
     revenueMult: 1.0,
     conditionScore,
     condition: conditionFromScore(conditionScore),
     restStreak: 0,
+    lastVacationMonth: null,
   }
 }
 
 /** 구 세이브(loyalty 등) → 신규 능력치 필드 보정 */
 export function normalizeOwnedCreator(raw: OwnedCreator & { loyalty?: number }): OwnedCreator {
   const trust = Math.max(0, Math.min(100, Number(raw.trust ?? raw.loyalty ?? 50) || 50))
-  const staminaMax = Math.max(1, Number(raw.staminaMax ?? 70) || 70)
+  const staminaMax = Math.min(
+    STAMINA_MAX,
+    Math.max(1, Number(raw.staminaMax ?? STAMINA_MAX) || STAMINA_MAX),
+  )
   const stamina = Math.max(0, Math.min(staminaMax, Number(raw.stamina ?? staminaMax) || staminaMax))
   const conditionRaw = (raw.condition ?? 'normal').toLowerCase()
   const conditionTier =
@@ -192,10 +202,11 @@ export function normalizeOwnedCreator(raw: OwnedCreator & { loyalty?: number }):
     conditionScore = mid[conditionTier] ?? 60
   }
   conditionScore = Math.max(0, Math.min(100, Math.round(conditionScore)))
+  const lastVacationMonthRaw = Number(raw.lastVacationMonth)
   return {
     ...raw,
     skill: Math.max(0, Math.min(100, Number(raw.skill ?? 25) || 25)),
-    heat: Math.max(1, Math.min(4, Number(raw.heat ?? 1) || 1)),
+    heat: Math.max(1, Math.min(2, Number(raw.heat ?? 1) || 1)),
     trust,
     stamina,
     staminaMax,
@@ -203,6 +214,7 @@ export function normalizeOwnedCreator(raw: OwnedCreator & { loyalty?: number }):
     conditionScore,
     condition: conditionFromScore(conditionScore),
     restStreak: Math.max(0, Math.round(Number(raw.restStreak ?? 0) || 0)),
+    lastVacationMonth: Number.isFinite(lastVacationMonthRaw) ? lastVacationMonthRaw : null,
     loyalty: undefined,
   }
 }
@@ -258,6 +270,9 @@ export function toStudioHandCard(creator: OwnedCreator) {
     name: creator.name,
     grade: creator.grade,
     popularity: creator.popularity,
+    stamina: creator.stamina,
+    staminaMax: creator.staminaMax,
+    conditionScore: scoreOf(creator),
     profileImageUrl: creator.profileImageUrl || null,
     idleVideoUrl: findLevelIdleVideoUrl(creator, 1),
     mediaRevision: creator.mediaRevision,

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { formatMoney } from '../game/money'
 
 export type RevenueBurstTier = 'small' | 'mid' | 'big' | 'mega'
 
@@ -10,14 +11,14 @@ export type RevenueBurst = {
 }
 
 export function revenueBurstTier(amount: number): RevenueBurstTier {
-  if (amount >= 10_000_000) return 'mega'
-  if (amount >= 1_000_000) return 'big'
-  if (amount >= 100_000) return 'mid'
+  if (amount >= 10_000) return 'mega'
+  if (amount >= 1_000) return 'big'
+  if (amount >= 100) return 'mid'
   return 'small'
 }
 
 function formatBurstWon(amount: number) {
-  return `₩${Math.round(amount).toLocaleString('ko-KR')}`
+  return formatMoney(amount)
 }
 
 const PARTICLE_COUNT: Record<RevenueBurstTier, number> = {
@@ -137,7 +138,7 @@ function BurstInstance({
               } as CSSProperties
             }
           >
-            {p.kind === 'coin' ? '₩' : p.kind === 'note' ? '✦' : '•'}
+            {p.kind === 'coin' ? '$' : p.kind === 'note' ? '✦' : '•'}
           </span>
         ))}
       </div>

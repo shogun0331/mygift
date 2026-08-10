@@ -1,0 +1,103 @@
+{
+  "id": "scout_a_ok",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "scout_a_ok",
+  "title": "미래 스카웃 ok",
+  "startNode": "node_1786358475703_7rk0_0",
+  "nodes": [
+    {
+      "id": "node_1786358475703_7rk0_0",
+      "type": "graphic",
+      "image": "2026-08-10_00043_.png",
+      "delay": 1
+    },
+    {
+      "id": "node_1786358475703_yohi_1",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "사장님..."
+    },
+    {
+      "id": "node_1786358475703_c196_2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "아까는 망설였지만, 제대로 답변 드릴게요."
+    },
+    {
+      "id": "node_1786358475703_detv_3",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "그쪽 제안... 받아들이기로 했어요."
+    },
+    {
+      "id": "node_1786358475703_mhjo_4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "솔직히, 아직은 두려워요."
+    },
+    {
+      "id": "node_1786358475703_booc_5",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "하지만... 사장님이 그렇게 진심으로 찾아와 주셨으니까."
+    },
+    {
+      "id": "node_1786358475703_j9dl_6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "그 믿음에 보답하고 싶어요."
+    },
+    {
+      "id": "node_1786358475703_y2cw_7",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "앞으로 잘 부탁드려요, 사장님."
+    },
+    {
+      "id": "node_1786358475703_2uuk_8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "제가 할 수 있는 만큼, 최선을 다해볼게요."
+    },
+    {
+      "id": "node_1786358475703_75nl_9",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "정말 감사합니다, 김미래 씨. 기다릴게요."
+    }
+  ],
+  "localization": {
+    "ko": {}
+  },
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "1786146452316-cjvmuwo",
+      "name": "김미래"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "id": "1786358485176-k3arh1c",
+      "fileName": "2026-08-10_00043_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a_ok/images/2026-08-10_00043_.png",
+      "url": "media://chapter_assets/events/scout_a_ok/images/2026-08-10_00043_.png",
+      "size": 2822705
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-10T10:40:20.783Z"
+}

@@ -3,7 +3,7 @@
 interface ElectronAPI {
   platform: string
   saveEventAssets?: (
-    chapterId: number,
+    eventId: string,
     assets: Array<{ fileName: string; kind: string; buffer: ArrayBuffer }>
   ) => Promise<{ success: boolean; path?: string; error?: string }>
   saveCharacterAssets?: (
@@ -15,6 +15,11 @@ interface ElectronAPI {
   ) => Promise<{ success: boolean; error?: string }>
   loadCharactersJson?: (
   ) => Promise<{ success: boolean; characters?: any[]; error?: string }>
+  saveEventsJson?: (
+    events: any[]
+  ) => Promise<{ success: boolean; error?: string }>
+  loadEventsJson?: (
+  ) => Promise<{ success: boolean; events?: any[]; error?: string }>
   deleteCharacterFile?: (
     characterId: string,
     kind: 'image' | 'video',

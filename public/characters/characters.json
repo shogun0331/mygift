@@ -9,12 +9,16 @@
     "grade": "C",
     "popularity": 25,
     "concept": "승무원",
-    "salary": 22000000,
+    "salary": 22000,
     "eventLinks": {
-      "scout": null,
+      "scout": "scout_a",
+      "scoutAccept": "scout_a_ok",
+      "scoutFail": "scout_a_fail",
       "salary": null,
       "vip": null,
-      "h": null
+      "h": null,
+      "date1": null,
+      "date2": null
     },
     "avatarTone": "from-sky-300 to-indigo-400",
     "profileImageUrl": "media://characters/1786146452316-cjvmuwo/images/1786316694581-sydg2d5__2026-08-09_00039.png",
@@ -22,7 +26,7 @@
     "characterIllustrationId": "1786316242202-67tc3ip",
     "profileImageId": "1786316694581-sydg2d5",
     "profileVideoId": null,
-    "mediaRevision": 1786317162837,
+    "mediaRevision": 1786370946003,
     "images": [
       {
         "id": "1786316242202-67tc3ip",
@@ -153,7 +157,7 @@
     "grade": "C",
     "popularity": 25,
     "concept": "요가강사",
-    "salary": 25920000,
+    "salary": 25920,
     "eventLinks": {
       "scout": null,
       "salary": null,
@@ -272,7 +276,7 @@
     "grade": "C",
     "popularity": 25,
     "concept": "간호사",
-    "salary": 25920000,
+    "salary": 25920,
     "eventLinks": {
       "scout": null,
       "salary": null,

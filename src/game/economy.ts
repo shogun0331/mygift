@@ -5,6 +5,7 @@ import {
   scoreOf,
   type CreatorCondition,
 } from './condition'
+import { formatMoney, roundMoney, REVENUE_RAW_TO_USD } from './money'
 import { GRADE_CAPS, GRADE_REVENUE_BONUS, rollInt } from './stats'
 
 export const HEAT_COEF: Record<1 | 2 | 3 | 4, number> = {
@@ -14,10 +15,10 @@ export const HEAT_COEF: Record<1 | 2 | 3 | 4, number> = {
   4: 3.0,
 }
 
-/** raw 스칼라 → 원 환산 (기획 예시: 900 → 90만 원). 월간 체계에 맞춰 ×2 */
-export const REVENUE_RAW_TO_WON = 2_000
+/** @deprecated REVENUE_RAW_TO_USD 사용 */
+export const REVENUE_RAW_TO_WON = REVENUE_RAW_TO_USD
 
-export type DayEventType = 'donation' | 'viewers' | 'popularity' | 'tax'
+export type DayEventType = 'donation' | 'viewers' | 'popularity' | 'tax' | 'toxic'
 
 export type DayEvent = {
   id: string
@@ -33,7 +34,7 @@ export type DayEvent = {
 export type CreatorDayPlan = {
   creatorId: string
   creatorName: string
-  /** 주간 수익(원) — 수치 체계는 기존과 동일 */
+  /** 주간 수익(USD) */
   weekRevenueWon: number
   events: DayEvent[]
 }
@@ -46,16 +47,12 @@ export type StudioDayPlan = {
 }
 
 function heatCoefOf(heat: number) {
-  const h = Math.max(1, Math.min(4, Math.round(heat || 1))) as 1 | 2 | 3 | 4
+  const h = Math.max(1, Math.min(2, Math.round(heat || 1))) as 1 | 2 | 3 | 4
   return HEAT_COEF[h]
 }
 
 function randomFactor() {
   return 0.9 + Math.random() * 0.2
-}
-
-function formatWon(amount: number) {
-  return amount.toLocaleString('ko-KR')
 }
 
 function gradeOf(creator: { grade?: string }): Grade | null {
@@ -65,9 +62,10 @@ function gradeOf(creator: { grade?: string }): Grade | null {
 }
 
 /**
- * 주간 총수익(원) — 기존 일일 공식과 동일 수치
- * 기본 = pop × skill × heatCoef × revenueMult × gradeBonus × random
- * 최종 = round(기본 × REVENUE_RAW_TO_WON) × conditionMult
+ * 주간 총수익(USD)
+ * 기본 = pop × skill × heatCoef × revenueMult(등급) × gradeBonus × random
+ * 최종 = round(기본 × REVENUE_RAW_TO_USD) × conditionMult
+ * ※ 가변 수익 배율은 컨디션(CONDITION_MULT)만 적용. 스테미나는 수익에 영향 없음.
  */
 export function calcWeekRevenueWon(creator: {
   popularity: number
@@ -86,36 +84,33 @@ export function calcWeekRevenueWon(creator: {
     ? GRADE_CAPS[grade].revenueMult
     : Number(creator.revenueMult ?? 1) || 1
   const gradeBonus = grade ? GRADE_REVENUE_BONUS[grade] : 1
+  // 컨디션만 — 스테미나/기타 상태 배율 없음
   const conditionMult = CONDITION_MULT[conditionFromScore(scoreOf(creator))]
 
   const baseRaw =
     popularity * skill * heatCoefOf(heat) * revenueMult * gradeBonus * randomFactor()
-  let baseWon = Math.max(0, Math.round(baseRaw) * REVENUE_RAW_TO_WON)
-  // S급 목표 구간: 기본 수익 2억 원 이상 (월간 ×2 반영)
+  let baseUsd = Math.max(0, Math.round(baseRaw) * REVENUE_RAW_TO_USD)
+  // S급 목표 구간: 기본 수익 $200K 이상 (구 2억 원)
   if (grade === 'S') {
-    baseWon = Math.max(baseWon, 200_000_000)
+    baseUsd = Math.max(baseUsd, 200_000)
   }
-  return Math.max(0, Math.round(baseWon * conditionMult))
-}
-
-function roundToManwon(value: number) {
-  return Math.max(10_000, Math.round(value / 10_000) * 10_000)
+  return Math.max(0, Math.round(baseUsd * conditionMult))
 }
 
 /**
  * 총액 T를 5~15개 금액으로 분할. 합 = T.
- * 큰(≥100만) 1~2 / 중간(10만~100만) 3~5 / 나머지 작음(1만~10만).
+ * 큰(≥$1K) 1~2 / 중간($100~$999) 3~5 / 나머지 작음($10~$99).
  */
 export function splitDayRevenueAmounts(totalWon: number): number[] {
   const T = Math.max(0, Math.round(totalWon))
   if (T <= 0) return []
 
-  if (T < 50_000) {
+  if (T < 50) {
     return [T]
   }
 
   let n = rollInt(5, 15)
-  const maxPieces = Math.max(1, Math.floor(T / 10_000))
+  const maxPieces = Math.max(1, Math.floor(T / 10))
   n = Math.min(n, maxPieces)
 
   let bigCount = Math.min(rollInt(1, 2), n)
@@ -123,11 +118,11 @@ export function splitDayRevenueAmounts(totalWon: number): number[] {
   let smallCount = Math.max(0, n - bigCount - midCount)
 
   // T가 작으면 큰/중간 버킷 축소
-  if (T < 1_000_000) {
+  if (T < 1_000) {
     bigCount = 0
     midCount = Math.min(midCount, Math.max(0, n - 1))
     smallCount = n - midCount
-  } else if (T < 3_000_000) {
+  } else if (T < 3_000) {
     bigCount = Math.min(1, bigCount)
     midCount = Math.min(midCount, n - bigCount)
     smallCount = n - bigCount - midCount
@@ -138,13 +133,13 @@ export function splitDayRevenueAmounts(totalWon: number): number[] {
     for (let i = 0; i < count; i += 1) {
       const hi = Math.min(max, T)
       const lo = Math.min(min, hi)
-      amounts.push(roundToManwon(rollInt(lo, hi)))
+      amounts.push(roundMoney(rollInt(lo, hi)))
     }
   }
 
-  pushBucket(bigCount, 1_000_000, Math.min(2_000_000, T))
-  pushBucket(midCount, 100_000, Math.min(999_999, T))
-  pushBucket(smallCount, 10_000, Math.min(99_999, T))
+  pushBucket(bigCount, 1_000, Math.min(2_000, T))
+  pushBucket(midCount, 100, Math.min(999, T))
+  pushBucket(smallCount, 10, Math.min(99, T))
 
   if (amounts.length === 0) {
     amounts.push(T)
@@ -153,14 +148,14 @@ export function splitDayRevenueAmounts(totalWon: number): number[] {
   // 합을 T에 맞추기
   let sum = amounts.reduce((a, b) => a + b, 0)
   let diff = T - sum
-  amounts[amounts.length - 1] = Math.max(10_000, amounts[amounts.length - 1]! + diff)
+  amounts[amounts.length - 1] = Math.max(10, amounts[amounts.length - 1]! + diff)
 
   // 여전히 어긋나면 비례 재분배
   sum = amounts.reduce((a, b) => a + b, 0)
   if (sum !== T && sum > 0) {
-    const scaled = amounts.map((v) => roundToManwon((v / sum) * T))
+    const scaled = amounts.map((v) => roundMoney((v / sum) * T))
     const scaledSum = scaled.reduce((a, b) => a + b, 0)
-    scaled[scaled.length - 1] = Math.max(10_000, scaled[scaled.length - 1]! + (T - scaledSum))
+    scaled[scaled.length - 1] = Math.max(10, scaled[scaled.length - 1]! + (T - scaledSum))
     return scaled
   }
 
@@ -229,8 +224,8 @@ export function buildCreatorDayPlan(
     creatorName: creator.name,
     type: 'donation' as const,
     amount,
-    text: `💰 ${formatWon(amount)}원 후원! (${creator.name})`,
-    tone: amount >= 1_000_000 ? 'bg-amber-400' : 'bg-pink-400',
+    text: `💰 ${formatMoney(amount)} 후원! (${creator.name})`,
+    tone: amount >= 1_000 ? 'bg-amber-400' : 'bg-pink-400',
   }))
   const flavor = buildFlavorEvents(creator.name, creator.id, flavorCount)
   const merged = [...donationEvents, ...flavor]

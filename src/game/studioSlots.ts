@@ -25,9 +25,44 @@ export type StudioHandCard = {
   name: string
   grade: string
   popularity: number
+  stamina: number
+  staminaMax: number
+  conditionScore: number
   profileImageUrl?: string | null
   idleVideoUrl?: string | null
   mediaRevision?: number
+}
+
+/** 슬롯 해금 기본 단가 (USD) — 이미 열린 n개일 때 다음 칸 = base × 3^(n-1) */
+export const SLOT_UNLOCK_COST_BASE = 1_000
+
+/** @deprecated SLOT_UNLOCK_COST_BASE / calcSlotUnlockCost 사용 */
+export const SLOT_UNLOCK_COST = SLOT_UNLOCK_COST_BASE
+
+/**
+ * 다음 슬롯 해금 비용
+ * 열린 슬롯 1개(시작) → $1,000 / 2개 → $3,000 / 3개 → $9,000 …
+ */
+export function calcSlotUnlockCost(unlockedSlotCount: number): number {
+  const n = Math.max(1, Math.min(6, Math.round(unlockedSlotCount)))
+  return SLOT_UNLOCK_COST_BASE * 3 ** (n - 1)
+}
+
+export function countUnlockedSlots(slots: StudioSlot[]): number {
+  return slots.filter((slot) => slot.status !== 'locked').length
+}
+
+/** 다음에 열 수 있는 잠긴 슬롯 (인덱스 순, 하나만) */
+export function findNextUnlockableSlot(slots: StudioSlot[]): StudioSlot | null {
+  return slots.find((slot) => slot.status === 'locked') ?? null
+}
+
+/** 지정 슬롯 해금 (locked → empty) */
+export function unlockStudioSlot(slots: StudioSlot[], slotId: string): StudioSlot[] {
+  return slots.map((slot) => {
+    if (slot.id !== slotId || slot.status !== 'locked') return slot
+    return { ...slot, status: 'empty', assignment: null }
+  })
 }
 
 /** 시작: 1번만 미배정(해금), 나머지 잠금. 캐릭터 없음. */

@@ -6,6 +6,8 @@ import {
   type OwnedCreator,
 } from '../game/characters'
 import {
+  canBroadcastByStamina,
+  calcConditionFullCareCost,
   CONDITION_DOT_CLASS,
   CONDITION_ICON,
   CONDITION_LABEL_KEY,
@@ -15,6 +17,7 @@ import {
   type CreatorCondition,
 } from '../game/condition'
 import type { DayEvent } from '../game/economy'
+import { formatMoney, formatMoneyCompact } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { creatorVisuals, type StudioSlot } from '../game/studioSlots'
 import { useTranslation } from '../locales/i18n'
@@ -24,6 +27,11 @@ import {
   revenueBurstTier,
   type RevenueBurst,
 } from './RevenueBurstFx'
+import {
+  ConditionCrashFx,
+  type ConditionCrashFxItem,
+} from './ConditionCrashFx'
+import { ToxicWhackQte, type ToxicWhackQteItem } from './ToxicWhackQte'
 
 type DashboardPanelProps = {
   slots: StudioSlot[]
@@ -31,10 +39,17 @@ type DashboardPanelProps = {
   broadcastPhase?: BroadcastPhase
   weekDayIndex?: number
   liveEvents?: DayEvent[]
-  /** 방송 월간 누적 실시간 수익 (크리에이터 id → 원) */
+  /** 방송 월간 누적 실시간 수익 (크리에이터 id → USD) */
   liveRevenueByCreator?: Record<string, number>
+  assets?: number
+  conditionCrashes?: ConditionCrashFxItem[]
+  toxicQtes?: ToxicWhackQteItem[]
+  /** 명세서 대기/표시 중 — 방송 시작 비활성 */
+  startBroadcastLocked?: boolean
   onStartBroadcast: () => void
-  onRecoverCondition?: (creatorId: string) => void
+  onConditionCare?: (creatorId: string) => void
+  onConditionCrashDone?: (id: string) => void
+  onToxicQteResolve?: (id: string, success: boolean) => void
 }
 
 type StreamCreatorView = {
@@ -48,6 +63,8 @@ type StreamCreatorView = {
   mediaRevision?: string | number
   stamina: number
   staminaMax: number
+  canBroadcast: boolean
+  grade: 'S' | 'A' | 'B' | 'C'
   condition: CreatorCondition
   conditionScore: number
   viewers: string
@@ -109,6 +126,11 @@ function toBroadcastSlot(
       mediaRevision,
       stamina,
       staminaMax,
+      canBroadcast: canBroadcastByStamina(stamina),
+      grade: (() => {
+        const g = owned?.grade ?? slot.assignment.grade
+        return g === 'S' || g === 'A' || g === 'B' || g === 'C' ? g : 'C'
+      })(),
       conditionScore: owned ? scoreOf(owned) : 60,
       condition: owned ? conditionFromScore(scoreOf(owned)) : 'normal',
       viewers: '—',
@@ -119,7 +141,7 @@ function toBroadcastSlot(
 }
 
 function formatRevenue(value: number) {
-  return `₩${value.toLocaleString('ko-KR')}`
+  return formatMoney(value)
 }
 
 const RANK_BADGE: Record<number, string> = {
@@ -157,8 +179,14 @@ export function DashboardPanel({
   weekDayIndex = 0,
   liveEvents = [],
   liveRevenueByCreator = {},
+  assets = 0,
+  conditionCrashes = [],
+  toxicQtes = [],
+  startBroadcastLocked = false,
   onStartBroadcast,
-  onRecoverCondition,
+  onConditionCare,
+  onConditionCrashDone,
+  onToxicQteResolve,
 }: DashboardPanelProps) {
   const { t } = useTranslation()
   const ownedById: Record<string, OwnedCreator> = {}
@@ -166,6 +194,7 @@ export function DashboardPanel({
     ownedById[creator.id] = creator
   }
   const isLive = broadcastPhase === 'live'
+  const canStartBroadcast = !isLive && !startBroadcastLocked
   const [revenueBursts, setRevenueBursts] = useState<RevenueBurst[]>([])
   const seenEventIdsRef = useRef(new Set<string>())
 
@@ -207,7 +236,12 @@ export function DashboardPanel({
       weekDayIndex,
     )
   })
-  const assigned = studioSlots.filter((slot) => slot.status === 'assigned' && slot.assignment)
+  const assigned = studioSlots.filter((slot) => {
+    if (slot.status !== 'assigned' || !slot.assignment) return false
+    const owned = ownedById[slot.assignment.creatorId]
+    if (!owned) return true
+    return canBroadcastByStamina(owned.stamina)
+  })
   const hasAssigned = assigned.length > 0
 
   const liveRanking = assigned
@@ -241,13 +275,26 @@ export function DashboardPanel({
             key={slot.id}
             slot={slot}
             broadcastPhase={broadcastPhase}
+            assets={assets}
             revenueBursts={
               slot.creator
                 ? revenueBursts.filter((burst) => burst.creatorId === slot.creator!.id)
                 : []
             }
+            conditionCrashes={
+              slot.creator
+                ? conditionCrashes.filter((crash) => crash.creatorId === slot.creator!.id)
+                : []
+            }
+            toxicQte={
+              slot.creator
+                ? toxicQtes.find((qte) => qte.creatorId === slot.creator!.id) ?? null
+                : null
+            }
             onBurstDone={dismissBurst}
-            onRecoverCondition={onRecoverCondition}
+            onConditionCare={onConditionCare}
+            onConditionCrashDone={onConditionCrashDone}
+            onToxicQteResolve={onToxicQteResolve}
           />
         ))}
       </section>
@@ -357,7 +404,7 @@ export function DashboardPanel({
         <button
           type="button"
           onClick={onStartBroadcast}
-          disabled={!hasAssigned || isLive}
+          disabled={!canStartBroadcast}
           className="game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px]"
         >
           {isLive ? t('dashboard.broadcasting') : t('dashboard.startBroadcast')}
@@ -370,29 +417,56 @@ export function DashboardPanel({
 function StreamCard({
   slot,
   broadcastPhase,
+  assets = 0,
   revenueBursts = [],
+  conditionCrashes = [],
+  toxicQte = null,
   onBurstDone,
-  onRecoverCondition,
+  onConditionCare,
+  onConditionCrashDone,
+  onToxicQteResolve,
 }: {
   slot: BroadcastSlotView
   broadcastPhase: BroadcastPhase
+  assets?: number
   revenueBursts?: RevenueBurst[]
+  conditionCrashes?: ConditionCrashFxItem[]
+  toxicQte?: ToxicWhackQteItem | null
   onBurstDone?: (id: string) => void
-  onRecoverCondition?: (creatorId: string) => void
+  onConditionCare?: (creatorId: string) => void
+  onConditionCrashDone?: (id: string) => void
+  onToxicQteResolve?: (id: string, success: boolean) => void
 }) {
   const { t } = useTranslation()
-  const badge =
-    slot.status === 'assigned' && broadcastPhase === 'live'
-      ? {
-          labelKey: 'dashboard.live',
-          className: 'border-pink-500/50 bg-pink-500/15 text-pink-300 neon-text-pink',
-        }
-      : STATUS_BADGE[slot.status]
   const creator = slot.creator
+  const blocked = Boolean(creator && !creator.canBroadcast)
+  const badge =
+    blocked
+      ? {
+          labelKey: 'dashboard.broadcastBlockedBadge',
+          className: 'border-rose-400/40 bg-rose-500/15 text-rose-300',
+        }
+      : slot.status === 'assigned' && broadcastPhase === 'live'
+        ? {
+            labelKey: 'dashboard.live',
+            className: 'border-pink-500/50 bg-pink-500/15 text-pink-300 neon-text-pink',
+          }
+        : STATUS_BADGE[slot.status]
   const staminaPct =
     creator && creator.staminaMax > 0
       ? Math.max(0, Math.min(100, (creator.stamina / creator.staminaMax) * 100))
       : 0
+  const conditionFull = Boolean(creator && creator.conditionScore >= 100)
+  const careCost = creator ? calcConditionFullCareCost(creator.grade) : 0
+  const canAffordCare = assets >= careCost
+  const canCare = Boolean(creator && onConditionCare && !conditionFull && canAffordCare)
+  const [careSpendFlash, setCareSpendFlash] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!careSpendFlash) return
+    const id = window.setTimeout(() => setCareSpendFlash(null), 1400)
+    return () => window.clearTimeout(id)
+  }, [careSpendFlash])
 
   if (slot.status === 'locked') {
     return (
@@ -501,9 +575,14 @@ function StreamCard({
     ? resolveMediaSrc(playVideoUrl, mediaRevision ?? playVideoUrl)
     : null
   const isLive = Boolean(creator?.live)
+  const crashing = conditionCrashes.length > 0
 
   return (
-    <article className="neon-glow-card flex flex-col overflow-hidden rounded-2xl bg-slate-950/40">
+    <article
+      className={`neon-glow-card relative flex flex-col overflow-hidden rounded-2xl bg-slate-950/40 ${
+        crashing ? 'condition-crash-slot' : ''
+      }`}
+    >
       <div
         className={`relative aspect-[2/1] w-full shrink-0 overflow-hidden bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
       >
@@ -566,6 +645,17 @@ function StreamCard({
 
         {revenueBursts.length > 0 && onBurstDone ? (
           <RevenueBurstFx bursts={revenueBursts} onBurstDone={onBurstDone} />
+        ) : null}
+
+        {crashing && onConditionCrashDone ? (
+          <ConditionCrashFx crashes={conditionCrashes} onDone={onConditionCrashDone} />
+        ) : null}
+
+        {toxicQte && onToxicQteResolve ? (
+          <ToxicWhackQte
+            item={toxicQte}
+            onResolve={(success) => onToxicQteResolve(toxicQte.id, success)}
+          />
         ) : null}
       </div>
 
@@ -635,31 +725,61 @@ function StreamCard({
         <div>
           <div className="mb-1 flex items-center justify-between gap-2 text-[10px]">
             <span className="font-semibold tracking-wide text-slate-400">Stamina</span>
-            <span className="font-semibold text-cyan-300">
+            <span className={`font-semibold ${blocked ? 'text-rose-300' : 'text-cyan-300'}`}>
               {creator ? `${creator.stamina}/${creator.staminaMax}` : '—'}
             </span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-teal-300"
+              className={`h-full rounded-full bg-gradient-to-r ${
+                blocked ? 'from-rose-400 to-orange-300' : 'from-cyan-400 to-teal-300'
+              }`}
               style={{ width: `${staminaPct}%` }}
             />
           </div>
+          {blocked ? (
+            <p className="mt-1 text-[10px] font-semibold text-rose-300/90">
+              {t('dashboard.broadcastBlocked')}
+            </p>
+          ) : null}
         </div>
 
-        <div className="grid grid-cols-4 gap-1">
+        <div className="relative grid grid-cols-4 gap-1">
           <StreamAction label="배정" icon={<IconAssign />} disabled />
-          <StreamAction
-            label={t('dashboard.actionRecover')}
-            icon={<IconTrain />}
-            onClick={() => creator && onRecoverCondition?.(creator.id)}
-          />
-          <StreamAction label="통계" icon={<IconStats />} />
-          <StreamAction label="설정" icon={<IconGear />} />
+          <button
+            type="button"
+            title={`${t('dashboard.actionRecover')} −${formatMoney(careCost)}`}
+            disabled={!canCare}
+            onClick={() => {
+              if (!creator || !canCare) return
+              onConditionCare?.(creator.id)
+              setCareSpendFlash(`−${formatMoney(careCost)}`)
+            }}
+            className="game-btn flex h-7 flex-col items-center justify-center gap-0 rounded-lg px-0.5 text-emerald-200 disabled:cursor-not-allowed disabled:opacity-35"
+          >
+            <IconTrain />
+            <span className="text-[7px] font-black leading-none tabular-nums text-amber-300">
+              {careCost > 0 ? formatCareCostShort(careCost) : '—'}
+            </span>
+            <span className="sr-only">{t('dashboard.actionRecover')}</span>
+          </button>
+          <StreamAction label="통계" icon={<IconStats />} disabled />
+          <StreamAction label="설정" icon={<IconGear />} disabled />
+
+          {careSpendFlash ? (
+            <div className="pointer-events-none absolute bottom-full left-1/4 z-20 mb-1 -translate-x-1/2 rounded-md border border-amber-400/40 bg-slate-950/95 px-2 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
+              <p className="text-[10px] font-black tabular-nums text-amber-300">{careSpendFlash}</p>
+              <p className="text-[8px] font-semibold text-slate-400">{t('dashboard.actionRecover')}</p>
+            </div>
+          ) : null}
         </div>
       </div>
     </article>
   )
+}
+
+function formatCareCostShort(amount: number) {
+  return formatMoneyCompact(amount)
 }
 
 function StreamAction({

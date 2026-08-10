@@ -3,9 +3,13 @@ export type EventMediaKind = 'image' | 'video' | 'sound'
 /** Fixed event slots that a character can bind to registered GameEvents */
 export const CHARACTER_EVENT_SLOTS = [
   { key: 'scout', label: '스카웃 이벤트' },
+  { key: 'scoutAccept', label: '스카웃 이벤트 승낙' },
+  { key: 'scoutFail', label: '스카웃 이벤트 실패' },
   { key: 'salary', label: '연봉 협상 이벤트' },
   { key: 'vip', label: 'VIP 이벤트' },
   { key: 'h', label: 'H 이벤트' },
+  { key: 'date1', label: '데이트 1 이벤트' },
+  { key: 'date2', label: '데이트 2 이벤트' },
 ] as const
 
 export type CharacterEventSlotKey = (typeof CHARACTER_EVENT_SLOTS)[number]['key']
@@ -15,9 +19,13 @@ export type CharacterEventLinks = Record<CharacterEventSlotKey, string | null>
 export function emptyCharacterEventLinks(): CharacterEventLinks {
   return {
     scout: null,
+    scoutAccept: null,
+    scoutFail: null,
     salary: null,
     vip: null,
     h: null,
+    date1: null,
+    date2: null,
   }
 }
 

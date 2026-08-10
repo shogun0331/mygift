@@ -20,9 +20,9 @@ export type GradeCaps = {
 
 export const GRADE_CAPS: Record<Grade, GradeCaps> = {
   S: { popMax: 100, skillMax: 100, stamMax: 100, revenueMult: 3.0, growthWeight: 5 },
-  A: { popMax: 85, skillMax: 85, stamMax: 90, revenueMult: 1.5, growthWeight: 4 },
-  B: { popMax: 70, skillMax: 70, stamMax: 80, revenueMult: 1.2, growthWeight: 3 },
-  C: { popMax: 50, skillMax: 50, stamMax: 70, revenueMult: 1.0, growthWeight: 2 },
+  A: { popMax: 85, skillMax: 85, stamMax: 100, revenueMult: 1.5, growthWeight: 4 },
+  B: { popMax: 70, skillMax: 70, stamMax: 100, revenueMult: 1.2, growthWeight: 3 },
+  C: { popMax: 50, skillMax: 50, stamMax: 100, revenueMult: 1.0, growthWeight: 2 },
 }
 
 /** 등급 수익 보너스 — S는 1억+ 구간 맞추기용 */
@@ -56,14 +56,14 @@ export const SCOUT_STAT_RANGES: Record<Grade, ScoutStatRanges> = {
   S: {
     popularity: { min: 80, max: 100 },
     skill: { min: 80, max: 100 },
-    heat: { min: 3, max: 4 },
+    heat: { min: 2, max: 2 },
     trust: { min: 70, max: 100 },
     stamina: { min: 80, max: 100 },
   },
   A: {
     popularity: { min: 60, max: 79 },
     skill: { min: 60, max: 79 },
-    heat: { min: 2, max: 3 },
+    heat: { min: 2, max: 2 },
     trust: { min: 60, max: 89 },
     stamina: { min: 60, max: 79 },
   },
@@ -83,15 +83,15 @@ export const SCOUT_STAT_RANGES: Record<Grade, ScoutStatRanges> = {
   },
 }
 
-/** @deprecated 스탯 기반 협상 연봉 사용. 레거시 등급 구간 참고용 */
+/** @deprecated 스탯 기반 협상 연봉 사용. 레거시 등급 구간 참고용 (USD) */
 export const SCOUT_SALARY_RANGES: Record<Grade, StatRange> = {
-  S: { min: 150_000_000, max: 300_000_000 },
-  A: { min: 80_000_000, max: 150_000_000 },
-  B: { min: 50_000_000, max: 80_000_000 },
-  C: { min: 30_000_000, max: 50_000_000 },
+  S: { min: 150_000, max: 300_000 },
+  A: { min: 80_000, max: 150_000 },
+  B: { min: 50_000, max: 80_000 },
+  C: { min: 30_000, max: 50_000 },
 }
 
-const HEAT_MAX = 4
+const HEAT_MAX = 2
 const TRUST_MAX = 100
 
 function clamp(value: number, min: number, max: number) {
@@ -126,7 +126,7 @@ export function rollStatsForGrade(grade: Grade): CharacterStats {
     heat: rollInt(ranges.heat.min, ranges.heat.max),
     trust: rollInt(ranges.trust.min, ranges.trust.max),
     stamina,
-    staminaMax: stamina,
+    staminaMax: 100,
     revenueMult: caps.revenueMult,
   }
   return clampStats(raw, grade)
@@ -134,11 +134,13 @@ export function rollStatsForGrade(grade: Grade): CharacterStats {
 
 export function clampStats(stats: CharacterStats, grade: Grade): CharacterStats {
   const caps = GRADE_CAPS[grade]
-  const popularity = clamp(Math.round(stats.popularity), 0, caps.popMax)
-  const skill = clamp(Math.round(stats.skill), 0, caps.skillMax)
+  // 인기·스킬은 성장 승급을 위해 0~100 (등급별 하드캡 없음)
+  const popularity = clamp(Math.round(stats.popularity), 0, 100)
+  const skill = clamp(Math.round(stats.skill), 0, 100)
   const heat = clamp(Math.round(stats.heat), 1, HEAT_MAX)
   const trust = clamp(Math.round(stats.trust), 0, TRUST_MAX)
-  const staminaMax = clamp(Math.round(stats.staminaMax), 1, caps.stamMax)
+  // 스테미나 상한은 등급과 무관하게 100으로 통일
+  const staminaMax = clamp(Math.round(stats.staminaMax), 1, 100)
   const stamina = clamp(Math.round(stats.stamina), 0, staminaMax)
   return {
     popularity,

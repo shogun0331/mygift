@@ -28,58 +28,67 @@ type I18nContextType = {
 
 const I18nContext = createContext<I18nContextType | null>(null)
 
-// 닷 노테이션(Dot notation) 객체 탐색 함수
-function getValueByPath(obj: any, path: string): string | null {
+function getValueByPath(obj: unknown, path: string): string | null {
   const parts = path.split('.')
-  let current = obj
+  let current: unknown = obj
   for (const part of parts) {
     if (current == null || typeof current !== 'object') return null
-    current = current[part]
+    current = (current as Record<string, unknown>)[part]
   }
   return typeof current === 'string' ? current : null
 }
 
+function translate(locale: Locale, key: string): string {
+  const currentPack = RESOURCES[locale]
+  let val = getValueByPath(currentPack, key)
+  if (val != null && val.trim() !== '') return val
+
+  if (locale !== 'KO') {
+    val = getValueByPath(RESOURCES.KO, key)
+    if (val != null) return val
+  }
+
+  return key
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
-  // 로컬 스토리지에서 기본 로케일 불러오기
   const [locale, setLocaleState] = useState<Locale>(() => {
-    const saved = localStorage.getItem('locale') as Locale
-    return RESOURCES[saved] ? saved : 'KO'
+    try {
+      const saved = localStorage.getItem('locale') as Locale | null
+      return saved && RESOURCES[saved] ? saved : 'KO'
+    } catch {
+      return 'KO'
+    }
   })
 
   const setLocale = (newLocale: Locale) => {
-    if (RESOURCES[newLocale]) {
-      setLocaleState(newLocale)
+    if (!RESOURCES[newLocale]) return
+    setLocaleState(newLocale)
+    try {
       localStorage.setItem('locale', newLocale)
+    } catch {
+      // ignore storage failures (private mode / locked profile)
     }
   }
 
-  // 다국어 번역 함수 t
-  const t = (key: string): string => {
-    const currentPack = RESOURCES[locale]
-    // 1. 현재 선택한 언어 팩에서 번역 탐색
-    let val = getValueByPath(currentPack, key)
-    if (val != null && val.trim() !== '') return val
-
-    // 2. 만약 해당 번역이 비어있거나 없으면 한국어(KO)를 폴백으로 탐색
-    if (locale !== 'KO') {
-      val = getValueByPath(RESOURCES['KO'], key)
-      if (val != null) return val
-    }
-
-    return key
+  const value: I18nContextType = {
+    locale,
+    setLocale,
+    t: (key) => translate(locale, key),
   }
 
-  return (
-    <I18nContext.Provider value={{ locale, setLocale, t }}>
-      {children}
-    </I18nContext.Provider>
-  )
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
 }
 
 export function useTranslation() {
   const context = useContext(I18nContext)
-  if (!context) {
-    throw new Error('useTranslation must be used within an I18nProvider')
+  if (context) return context
+
+  // HMR/모듈 중복 등으로 Provider 컨텍스트가 비어도 앱이 죽지 않게 KO 폴백
+  return {
+    locale: 'KO' as Locale,
+    setLocale: () => {},
+    t: (key: string) => translate('KO', key),
   }
-  return context
 }
+

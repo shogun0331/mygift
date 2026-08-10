@@ -7,6 +7,7 @@ import {
   normalizeOwnedCreator,
   type OwnedCreator,
   type RegisteredCharacter,
+  type CharacterVideo,
 } from './game/characters'
 import { resolveMediaSrc } from './game/mediaUrl'
 import { createInitialStudioSlots, type StudioSlot } from './game/studioSlots'
@@ -14,7 +15,6 @@ import type { AddCharacterPayload } from './screens/EditorScreen'
 import { EditorScreen } from './screens/EditorScreen'
 import { InGame } from './screens/InGame'
 import { MainMenu } from './screens/MainMenu'
-import { I18nProvider } from './locales/i18n'
 
 type Screen = 'main' | 'game' | 'editor'
 
@@ -200,7 +200,11 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
             url: mediaUrl(characterId, 'video', vid.fileName, vid.fileSize),
           }
         }
-        return { ...vid, file: undefined }
+        return {
+          ...vid,
+          file: undefined,
+          url: vid.url || '',
+        }
       }
 
       try {
@@ -262,10 +266,10 @@ async function dedupeSharedMediaFiles(character: RegisteredCharacter): Promise<R
   const videos = [...(character.videos ?? [])]
   let changed = false
 
-  const migrate = async (
+  const migrate = async <T extends { id: string; fileName?: string; url?: string }>(
     kind: 'image' | 'video',
-    item: { id: string; fileName?: string; url?: string },
-  ) => {
+    item: T,
+  ): Promise<T> => {
     if (!item.fileName) return item
     const uniqueName = buildSafeFileName(item.id, item.fileName.replace(/^.*?__/, '') || item.fileName)
     if (item.fileName === uniqueName) return item
@@ -343,14 +347,6 @@ async function dedupeSharedMediaFiles(character: RegisteredCharacter): Promise<R
 }
 
 export default function App() {
-  return (
-    <I18nProvider>
-      <AppInner />
-    </I18nProvider>
-  )
-}
-
-function AppInner() {
   const [screen, setScreen] = useState<Screen>('main')
   /** 에디터에 등록된 캐릭터 (스카우트 풀) */
   const [registeredCharacters, setRegisteredCharacters] = useState<RegisteredCharacter[]>([])
@@ -360,6 +356,8 @@ function AppInner() {
   const [studioSlots, setStudioSlots] = useState<StudioSlot[]>(() => createInitialStudioSlots())
   /** 에디터 등록 이벤트 상태 (App 단으로 Lift up) */
   const [events, setEvents] = useState<GameEvent[]>([])
+  /** 이벤트 로드 완료 상태 플래그 */
+  const [isEventsLoaded, setIsEventsLoaded] = useState(false)
   /** 데이터 로드 완료 상태 플래그 */
   const [isLoaded, setIsLoaded] = useState(false)
   const [editorReturnScreen, setEditorReturnScreen] = useState<Screen>('main')
@@ -373,8 +371,14 @@ function AppInner() {
   // 1. 최초 마운트 시 데이터 로드
   useEffect(() => {
     loadEvents()
-      .then((loaded) => setEvents(loaded))
-      .catch((err) => console.error('Failed to load events:', err))
+      .then((loaded) => {
+        setEvents(loaded)
+        setIsEventsLoaded(true)
+      })
+      .catch((err) => {
+        console.error('Failed to load events:', err)
+        setIsEventsLoaded(true)
+      })
 
     if (window.electronAPI?.loadCharactersJson) {
       window.electronAPI.loadCharactersJson()
@@ -450,11 +454,6 @@ function AppInner() {
         })
     }
   }, [])
-
-  // 2. 이벤트 상태 변경 시 자동 저장
-  useEffect(() => {
-    saveEvents(events).catch((err) => console.error('Failed to save events:', err))
-  }, [events])
 
   // 3. 캐릭터 상태 변경 시 자동 저장
   useEffect(() => {
@@ -556,7 +555,7 @@ function AppInner() {
           profileImageId: savedPayload.profileImageId,
           profileVideoId: savedPayload.profileVideoId,
           images: savedPayload.images,
-          videos: savedPayload.videos,
+          videos: savedPayload.videos as CharacterVideo[],
           mediaRevision: Date.now(),
         }),
       ])
@@ -617,7 +616,7 @@ function AppInner() {
         profileImageId: savedPayload.profileImageId,
         profileVideoId: savedPayload.profileVideoId,
         images: savedPayload.images,
-        videos: savedPayload.videos,
+        videos: savedPayload.videos as CharacterVideo[],
         mediaRevision: Date.now(),
       }
 
@@ -702,6 +701,19 @@ function AppInner() {
     setScreen('game')
   }
 
+  const handleSaveEventsManual = async () => {
+    try {
+      await saveEvents(events)
+      const saveTarget = window.electronAPI?.saveEventsJson
+        ? '로컬 JSON 파일(events.json)'
+        : '브라우저 DB(IndexedDB)'
+      alert(`이벤트 데이터가 ${saveTarget}에 저장되었습니다.`)
+    } catch (err) {
+      console.error(err)
+      alert('이벤트 데이터 저장 중 오류가 발생했습니다.')
+    }
+  }
+
   if (screen === 'editor') {
     return (
       <EditorScreen
@@ -710,7 +722,9 @@ function AppInner() {
         onUpdateCharacter={handleUpdateCharacter}
         onDeleteCharacter={handleDeleteCharacter}
         events={events}
+        isEventsLoaded={isEventsLoaded}
         onEventsChange={setEvents}
+        onSaveEventsManual={handleSaveEventsManual}
         onBack={() => setScreen(editorReturnScreen === 'game' ? 'game' : 'main')}
       />
     )
@@ -722,6 +736,7 @@ function AppInner() {
         registeredCharacters={registeredCharacters}
         ownedCreators={ownedCreators}
         studioSlots={studioSlots}
+        events={events}
         onStudioSlotsChange={setStudioSlots}
         onOwnedCreatorsChange={setOwnedCreators}
         onScout={handleScout}

@@ -22,6 +22,12 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 export async function saveEvents(events: GameEvent[]): Promise<void> {
+  if (window.electronAPI?.saveEventsJson) {
+    const res = await window.electronAPI.saveEventsJson(events)
+    if (!res.success) throw new Error(res.error || 'Failed to save events JSON')
+    return
+  }
+
   const db = await openDB()
   return new Promise<void>((resolve, reject) => {
     const tx = db.transaction('events', 'readwrite')
@@ -41,6 +47,56 @@ export async function saveEvents(events: GameEvent[]): Promise<void> {
 }
 
 export async function loadEvents(): Promise<GameEvent[]> {
+  // 브라우저 백업용 IndexedDB 데이터를 먼저 확보 (실패 시 복구용)
+  let indexedDbEvents: GameEvent[] = []
+  try {
+    const db = await openDB()
+    indexedDbEvents = await new Promise<GameEvent[]>((resolve, reject) => {
+      const tx = db.transaction('events', 'readonly')
+      const store = tx.objectStore('events')
+      const request = store.getAll()
+      request.onsuccess = () => resolve(request.result as GameEvent[])
+      request.onerror = () => reject(request.error)
+    })
+  } catch (err) {
+    console.warn('Failed to read IndexedDB backup events:', err)
+  }
+
+  if (window.electronAPI?.loadEventsJson) {
+    const res = await window.electronAPI.loadEventsJson()
+    if (!res.success) throw new Error(res.error || 'Failed to load events JSON')
+    
+    let loadedEvents = res.events as GameEvent[]
+
+    // 복구 로직: 로컬 JSON이 비어있는데 IndexedDB 백업에 이벤트 데이터가 존재하면 복구 가동!
+    if (loadedEvents.length === 0 && indexedDbEvents.length > 0) {
+      console.log('Restoring events from IndexedDB backup:', indexedDbEvents)
+      loadedEvents = indexedDbEvents
+      try {
+        await window.electronAPI.saveEventsJson?.(loadedEvents)
+      } catch (saveErr) {
+        console.error('Failed to auto-save restored events to JSON:', saveErr)
+      }
+    }
+
+    // 로컬 디스크 물리 에셋 복구 (media:// -> blob)
+    for (const event of loadedEvents) {
+      for (const asset of event.media) {
+        const folderMap = { image: 'images', video: 'videos', sound: 'sounds' }
+        const folderName = folderMap[asset.kind] || 'assets'
+        const mediaUrl = `media://chapter_assets/events/${event.id}/${folderName}/${asset.fileName}`
+        asset.url = mediaUrl
+        try {
+          const fetchRes = await fetch(mediaUrl)
+          asset.blob = await fetchRes.blob()
+        } catch (err) {
+          console.error(`Failed to fetch media asset for blob restoration: ${mediaUrl}`, err)
+        }
+      }
+    }
+    return loadedEvents
+  }
+
   const db = await openDB()
   return new Promise((resolve, reject) => {
     const tx = db.transaction('events', 'readonly')

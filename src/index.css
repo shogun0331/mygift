@@ -667,3 +667,236 @@ select {
 .condition-alert-worst .condition-status-dot {
   animation: condition-worst-dot 1.8s ease-in-out infinite;
 }
+
+/* 진상 사태 — CCTV 슬롯 전체 흔들림 + 빨간 플래시 */
+.condition-crash-slot {
+  animation: condition-crash-shake 0.5s ease-in-out;
+  z-index: 5;
+}
+
+.condition-crash-root {
+  pointer-events: none;
+}
+
+.condition-crash-wash {
+  background: rgba(185, 28, 28, 0.82);
+  animation: condition-crash-wash 0.55s ease-out forwards;
+}
+
+.condition-crash-flash {
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(255, 70, 90, 0.95) 0%,
+    rgba(220, 38, 38, 0.55) 45%,
+    transparent 70%
+  );
+  animation: condition-crash-flash 0.55s ease-out forwards;
+}
+
+.condition-crash-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 3px,
+    rgba(255, 255, 255, 0.08) 3px,
+    rgba(255, 255, 255, 0.08) 4px
+  );
+  mix-blend-mode: overlay;
+  animation: condition-crash-scan 0.55s linear forwards;
+}
+
+.condition-crash-border {
+  box-shadow:
+    inset 0 0 0 3px rgba(251, 113, 133, 0.95),
+    inset 0 0 48px rgba(220, 38, 38, 0.7);
+  animation: condition-crash-border 0.55s ease-out forwards;
+}
+
+.condition-crash-badge {
+  animation: condition-crash-text 0.55s ease-out forwards;
+}
+
+.condition-crash-amount {
+  animation: condition-crash-text 0.55s ease-out 0.04s both;
+}
+
+.condition-crash-sub {
+  animation: condition-crash-text 0.55s ease-out 0.08s both;
+}
+
+.condition-crash-copy {
+  animation: condition-crash-copy-fade 0.55s ease-out forwards;
+}
+
+@keyframes condition-crash-shake {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  8% {
+    transform: translate3d(-8px, 4px, 0) rotate(-1deg);
+  }
+  18% {
+    transform: translate3d(9px, -4px, 0) rotate(1.1deg);
+  }
+  28% {
+    transform: translate3d(-7px, 3px, 0) rotate(-0.8deg);
+  }
+  38% {
+    transform: translate3d(7px, -3px, 0) rotate(0.7deg);
+  }
+  50% {
+    transform: translate3d(-5px, 2px, 0) rotate(-0.5deg);
+  }
+  62% {
+    transform: translate3d(5px, -2px, 0) rotate(0.4deg);
+  }
+  74% {
+    transform: translate3d(-3px, 1px, 0) rotate(-0.2deg);
+  }
+  86% {
+    transform: translate3d(2px, -1px, 0) rotate(0.1deg);
+  }
+}
+
+@keyframes condition-crash-wash {
+  0% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes condition-crash-flash {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  20% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes condition-crash-scan {
+  0% {
+    opacity: 0.95;
+    transform: translateY(-6%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10%);
+  }
+}
+
+@keyframes condition-crash-border {
+  0%,
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes condition-crash-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.75);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(0) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes condition-crash-text {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.85);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(0) scale(1.06);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+@keyframes condition-crash-copy-fade {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes condition-crash-amount {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.8);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(0) scale(1.12);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+}
+
+/* 스튜디오 — 휴식 필요로 슬롯에서 빼야 할 때 */
+.studio-slot-needs-remove {
+  animation: studio-slot-needs-remove-glow 1.4s ease-in-out infinite;
+}
+
+.studio-slot-remove-badge,
+.studio-slot-remove-pulse {
+  animation: studio-slot-remove-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes studio-slot-needs-remove-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(244, 63, 94, 0.22);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(244, 63, 94, 0.45);
+  }
+}
+
+@keyframes studio-slot-remove-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.88;
+  }
+}

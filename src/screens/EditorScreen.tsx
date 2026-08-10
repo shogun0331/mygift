@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type DragEvent, type FormEvent, type ReactNode, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import { EventManagePanel } from '../events/EventManagePanel'
+import { EventSimulator } from '../events/EventSimulator'
 import {
   CHARACTER_EVENT_SLOTS,
   emptyCharacterEventLinks,
@@ -20,7 +21,9 @@ type EditorScreenProps = {
   onUpdateCharacter: (id: string, payload: AddCharacterPayload) => void | Promise<void>
   onDeleteCharacter: (id: string) => void
   events: GameEvent[]
+  isEventsLoaded: boolean
   onEventsChange: (events: GameEvent[]) => void
+  onSaveEventsManual?: () => void
   onBack: () => void
 }
 
@@ -49,12 +52,89 @@ export function EditorScreen({
   onUpdateCharacter,
   onDeleteCharacter,
   events,
+  isEventsLoaded,
   onEventsChange,
+  onSaveEventsManual,
   onBack,
 }: EditorScreenProps) {
   const [tab, setTab] = useState<EditorTab>('character')
   const [characterView, setCharacterView] = useState<CharacterView>('list')
   const [editingCharacter, setEditingCharacter] = useState<RegisteredCharacter | null>(null)
+  const [showSimulator, setShowSimulator] = useState(false)
+  const [simulatorMode, setSimulatorMode] = useState<'debug' | 'game'>('debug')
+  const [selectedSimulatorEvent, setSelectedSimulatorEvent] = useState<GameEvent | null>(null)
+  
+  // 에디터 내 스카웃 연쇄 시뮬레이션 상태
+  type EditorScoutSimState = {
+    character: RegisteredCharacter
+    step: 'scout' | 'accept' | 'fail'
+    currentEvent: GameEvent
+    mode: 'debug' | 'game'
+  }
+  const [scoutSimState, setScoutSimState] = useState<EditorScoutSimState | null>(null)
+
+  const handleSimulateLinkedEvent = (
+    character: RegisteredCharacter,
+    slotKey: CharacterEventSlotKey,
+    mode: 'debug' | 'game'
+  ) => {
+    const linkedId = character.eventLinks[slotKey]
+    const event = linkedId ? events.find((e) => e.id === linkedId) : null
+    if (!event) return
+
+    if (slotKey === 'scout') {
+      setScoutSimState({
+        character,
+        step: 'scout',
+        currentEvent: event,
+        mode,
+      })
+    } else {
+      setSelectedSimulatorEvent(event)
+      setSimulatorMode(mode)
+      setShowSimulator(true)
+    }
+  }
+
+  const handleEditorScoutSimFinished = () => {
+    if (!scoutSimState) return
+    const { character, step, mode } = scoutSimState
+
+    if (step === 'scout') {
+      const isSuccess = Math.random() < 0.5
+      if (isSuccess) {
+        const acceptEventId = character.eventLinks.scoutAccept
+        const acceptEvent = acceptEventId ? events.find((e) => e.id === acceptEventId) : null
+        if (acceptEvent) {
+          setScoutSimState({
+            character,
+            step: 'accept',
+            currentEvent: acceptEvent,
+            mode,
+          })
+        } else {
+          setScoutSimState(null)
+          alert('스카웃 성공! (스카웃 이벤트 승낙이 연동되어 있지 않아 시뮬레이션을 종료합니다)')
+        }
+      } else {
+        const failEventId = character.eventLinks.scoutFail
+        const failEvent = failEventId ? events.find((e) => e.id === failEventId) : null
+        if (failEvent) {
+          setScoutSimState({
+            character,
+            step: 'fail',
+            currentEvent: failEvent,
+            mode,
+          })
+        } else {
+          setScoutSimState(null)
+          alert('스카웃 실패. (스카웃 이벤트 실패가 연동되어 있지 않아 시뮬레이션을 종료합니다)')
+        }
+      }
+    } else {
+      setScoutSimState(null)
+    }
+  }
   const eventsRef = useRef(events)
   eventsRef.current = events
 
@@ -207,21 +287,25 @@ export function EditorScreen({
               <AddCharacterPanel
                 key={editingCharacter.id}
                 events={events}
+                isEventsLoaded={isEventsLoaded}
                 initialCharacter={editingCharacter}
                 onCancel={openCharacterList}
                 onSubmit={async (payload) => {
                   await onUpdateCharacter(editingCharacter.id, payload)
                   openCharacterList()
                 }}
+                onSimulateLinkedEvent={handleSimulateLinkedEvent}
               />
             ) : (
               <AddCharacterPanel
                 events={events}
+                isEventsLoaded={isEventsLoaded}
                 onCancel={openCharacterList}
                 onSubmit={async (payload) => {
                   await onRegisterCharacter(payload)
                   openCharacterList()
                 }}
+                onSimulateLinkedEvent={handleSimulateLinkedEvent}
               />
             )
           ) : tab === 'notification' ? (
@@ -244,10 +328,36 @@ export function EditorScreen({
               </div>
             </div>
           ) : tab === 'event' ? (
-            <EventManagePanel events={events} onEventsChange={onEventsChange} />
+            <EventManagePanel
+              events={events}
+              onEventsChange={onEventsChange}
+              registeredCharacters={registeredCharacters}
+              onSaveEventsManual={onSaveEventsManual}
+            />
           ) : null}
         </section>
       </div>
+      {scoutSimState && (
+        <EventSimulator
+          key={scoutSimState.currentEvent.id}
+          event={scoutSimState.currentEvent}
+          mode={scoutSimState.mode}
+          onClose={handleEditorScoutSimFinished}
+          registeredCharacters={registeredCharacters}
+        />
+      )}
+      {showSimulator && selectedSimulatorEvent && (
+        <EventSimulator
+          key={selectedSimulatorEvent.id}
+          event={selectedSimulatorEvent}
+          mode={simulatorMode}
+          onClose={() => {
+            setShowSimulator(false)
+            setSelectedSimulatorEvent(null)
+          }}
+          registeredCharacters={registeredCharacters}
+        />
+      )}
     </main>
   )
 }
@@ -299,18 +409,26 @@ export type AddCharacterPayload = {
 
 type AddCharacterPanelProps = {
   events: GameEvent[]
+  isEventsLoaded: boolean
   initialCharacter?: RegisteredCharacter | null
   onCancel: () => void
   onSubmit: (payload: AddCharacterPayload) => void | Promise<void>
+  onSimulateLinkedEvent: (character: RegisteredCharacter, slotKey: CharacterEventSlotKey, mode: 'debug' | 'game') => void
 }
 
 const fieldClassName =
   'mt-2 w-full rounded-xl border border-white/10 bg-black/25 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-indigo-400/40'
 
-function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit }: AddCharacterPanelProps) {
+function AddCharacterPanel({
+  events,
+  isEventsLoaded,
+  initialCharacter = null,
+  onCancel,
+  onSubmit,
+  onSimulateLinkedEvent,
+}: AddCharacterPanelProps) {
   const isEditing = Boolean(initialCharacter)
   const imageInputRef = useRef<HTMLInputElement>(null)
-  const videoInputRef = useRef<HTMLInputElement>(null)
   const createdObjectUrls = useRef(new Set<string>())
   const [saving, setSaving] = useState(false)
 
@@ -381,6 +499,7 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
 
   // Drop links to events that were deleted from event management
   useEffect(() => {
+    if (!isEventsLoaded) return
     const ids = new Set(events.map((event) => event.id))
     setEventLinks((prev) => {
       let changed = false
@@ -394,7 +513,7 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
       }
       return changed ? next : prev
     })
-  }, [events])
+  }, [events, isEventsLoaded])
 
   function setEventLink(slot: CharacterEventSlotKey, eventId: string | null) {
     setEventLinks((prev) => ({ ...prev, [slot]: eventId }))
@@ -755,13 +874,13 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
           <div>
             <h3 className="text-sm font-semibold text-slate-100">수위 영상 등록</h3>
             <p className="mt-1 text-xs text-slate-500">
-              수위 레벨(LV.1~4) 그룹에 영상을 붙입니다. 각 레벨마다 기본 대기 영상 1개가 필요합니다.
+              수위 레벨(LV.1~2) 그룹에 영상을 붙입니다. 각 레벨마다 기본 대기 영상 1개가 필요합니다.
               그룹 안의 수위 단계는 숫자로 입력합니다.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-6">
-            {([1, 2, 3, 4] as const).map((lv) => {
+            {([1, 2] as const).map((lv) => {
               const lvVideos = videos.filter((vid) => vid.level === lv)
               const hasIdle = lvVideos.some((v) => v.keys?.includes('idle'))
               return (
@@ -833,9 +952,67 @@ function AddCharacterPanel({ events, initialCharacter = null, onCancel, onSubmit
                     ))}
                   </select>
                   {linked ? (
-                    <p className="mt-1 truncate text-xs text-slate-500">
-                      {linked.projectTitle} · ch{linked.chapterId} · 노드 {linked.nodes.length}개
-                    </p>
+                    <div className="mt-1.5 flex items-center justify-between gap-2 bg-black/30 rounded-lg px-2.5 py-1.5 border border-white/5">
+                      <p className="truncate text-xs text-slate-400">
+                        {linked.projectTitle} · ch{linked.chapterId} · 노드 {linked.nodes.length}개
+                      </p>
+                      <div className="flex gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const tempChar: RegisteredCharacter = {
+                              grade: 'C',
+                              popularity: 0,
+                              concept: '',
+                              salary: 0,
+                              avatarTone: '',
+                              profileImageUrl: null,
+                              images: [],
+                              videos: [],
+                              ...(initialCharacter ?? {}),
+                              id: initialCharacter?.id ?? 'temp_id',
+                              name: name,
+                              age: age,
+                              job: job,
+                              bust: bust,
+                              weight: weight,
+                              eventLinks: eventLinks,
+                            }
+                            onSimulateLinkedEvent(tempChar, slot.key, 'debug')
+                          }}
+                          className="rounded bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-2 py-0.5 text-[10px] text-indigo-300 font-medium transition cursor-pointer"
+                        >
+                          디버그
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const tempChar: RegisteredCharacter = {
+                              grade: 'C',
+                              popularity: 0,
+                              concept: '',
+                              salary: 0,
+                              avatarTone: '',
+                              profileImageUrl: null,
+                              images: [],
+                              videos: [],
+                              ...(initialCharacter ?? {}),
+                              id: initialCharacter?.id ?? 'temp_id',
+                              name: name,
+                              age: age,
+                              job: job,
+                              bust: bust,
+                              weight: weight,
+                              eventLinks: eventLinks,
+                            }
+                            onSimulateLinkedEvent(tempChar, slot.key, 'game')
+                          }}
+                          className="rounded bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/25 px-2 py-0.5 text-[10px] text-pink-300 font-medium transition cursor-pointer"
+                        >
+                          인게임
+                        </button>
+                      </div>
+                    </div>
                   ) : null}
                 </label>
               )

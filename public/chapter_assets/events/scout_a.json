@@ -1,0 +1,159 @@
+{
+  "id": "scout_a",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "scout_a",
+  "title": "미래 스카웃",
+  "startNode": "node_1786358290871_nyx2_0",
+  "nodes": [
+    {
+      "id": "node_1786358290871_nyx2_0",
+      "type": "graphic",
+      "image": "2026-08-10_00046_.png",
+      "delay": 2
+    },
+    {
+      "id": "node_1786358290872_85y2_1",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "김미래 씨! 잠깐만요!"
+    },
+    {
+      "id": "node_1786358290872_wlfx_2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "어? 이렇게 늦은 시간에...누구시죠..?"
+    },
+    {
+      "id": "node_1786358290872_n477_3",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "방송국 대표 입니다."
+    },
+    {
+      "id": "node_1786358290872_ob1r_4",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "일부러 기다리고 있었어요."
+    },
+    {
+      "id": "node_1786358290872_exvw_6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "저를요? 무슨 일이세요...?"
+    },
+    {
+      "id": "node_1786358290872_sxx2_7",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사실 오늘 만나려고 했어요. 진지한 제안이 있어서요."
+    },
+    {
+      "id": "node_1786358290872_ahdc_8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "제안이요...? 갑자기 긴장되네요."
+    },
+    {
+      "id": "node_1786358290872_j4w7_10",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "솔직히 말씀드릴게요. 저희 방송국에서 새로운 크리에이터를 찾고 있어요."
+    },
+    {
+      "id": "node_1786358290872_8cl0_9",
+      "type": "graphic",
+      "image": "2026-08-10_00042_.png",
+      "delay": 2
+    },
+    {
+      "id": "node_1786358290872_jyq6_11",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "크리에이터요... 저한테요?"
+    },
+    {
+      "id": "node_1786358290872_y9yh_12",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "네. 당신의 프로다운 이미지와 카리스마가 정말 필요해요. 조금 특별한 방송이긴 하지만."
+    },
+    {
+      "id": "node_1786358290872_jtf4_14",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "특별한 방송이라니... 혹시, 그런 쪽인가요?"
+    },
+    {
+      "id": "node_1786358290872_9s41_15",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "네. 성인 방송국이에요. 하지만 무턱대고 던지기엔 당신의 이미지가 너무 아까워서 직접 만나 뵙고 싶었어요."
+    },
+    {
+      "id": "node_1786358290872_eyoo_17",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "사장님은... 제가 그런 일을 할 거라고 생각하시나요?"
+    },
+    {
+      "id": "node_1786358290872_2e8m_18",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "당신이라면... 그런 선택을 할 수도 있다고 생각했어요. 당신이 가진 프로다운 매력이, 다른 방식으로도 충분히 빛날 수 있다고 믿었어요."
+    },
+    {
+      "id": "node_1786358290872_w3vl_19",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786146452316-cjvmuwo",
+      "text": "하... 사장님이 그렇게 말씀하시니까, 오히려 더 고민되네요."
+    }
+  ],
+  "localization": {
+    "ko": {}
+  },
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "1786146452316-cjvmuwo",
+      "name": "김미래"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "id": "1786358304456-wmo3uur",
+      "fileName": "2026-08-10_00046_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-10_00046_.png",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-10_00046_.png",
+      "size": 2748148
+    },
+    {
+      "id": "1786358338214-jhngfzv",
+      "fileName": "2026-08-10_00042_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-10_00042_.png",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-10_00042_.png",
+      "size": 2698562
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-10T10:35:19.712Z"
+}

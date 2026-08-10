@@ -3,7 +3,9 @@ import type { GameEvent, EventMediaAsset } from './types'
 
 type EventSimulatorProps = {
   event: GameEvent
+  mode?: 'debug' | 'game'
   onClose: () => void
+  registeredCharacters?: any[]
 }
 
 type ParsedChoice = {
@@ -93,6 +95,9 @@ function getLocalizedText(node: any, localization: Record<string, Record<string,
 function getCharacterName(node: any, event: GameEvent, lang: string): string {
   const charId = node.character || node.character_id || node.speaker || node.char
   if (charId) {
+    if (charId === 'player') {
+      return lang === 'ko' ? '플레이어' : 'Player'
+    }
     const charDef = event.characters.find((c) => c.id === charId)
     if (charDef) {
       if (charDef.names?.[lang]) return charDef.names[lang]
@@ -159,7 +164,7 @@ function findMediaAsset(fileName: string, media: EventMediaAsset[]): EventMediaA
   return media.find((m) => m.fileName.toLowerCase().trim() === fn) || null
 }
 
-export function EventSimulator({ event, onClose }: EventSimulatorProps) {
+export function EventSimulator({ event, mode = 'debug', onClose, registeredCharacters = [] }: EventSimulatorProps) {
   // 모든 노드 추출 및 평탄화
   const flatNodes = useMemo(() => flattenNodes(event.nodes), [event.nodes])
 
@@ -183,9 +188,48 @@ export function EventSimulator({ event, onClose }: EventSimulatorProps) {
   const [isPlaying, setIsPlaying] = useState(true)
   const [playbackFinished, setPlaybackFinished] = useState(false)
 
+  const [fadeOpacity, setFadeOpacity] = useState(1)
+  const [isClosing, setIsClosing] = useState(false)
+  const FADE_MS = 1200
+
+  // 시작: 전체를 잠깐 유지한 뒤 부드럽게 밝아짐
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setFadeOpacity(0)
+    }, 320)
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  const triggerClose = () => {
+    if (isClosing) return
+    setIsClosing(true)
+    setFadeOpacity(1)
+    window.setTimeout(() => {
+      onClose()
+    }, FADE_MS)
+  }
+
   // 디버거 UI 상태
   const [debugTab, setDebugTab] = useState<'nodes' | 'json'>('nodes')
   const [searchQuery, setSearchQuery] = useState('')
+  const [displayedText, setDisplayedText] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  const typingTimerRef = useRef<any>(null)
+
+
+
+  // 컴포넌트 언마운트 시 오디오 리소스 강제 해제
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        try {
+          audioRef.current.pause()
+        } catch (e) {
+          console.error('Audio cleanup error on unmount:', e)
+        }
+      }
+    }
+  }, [])
 
   // 오디오 관리
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -198,6 +242,77 @@ export function EventSimulator({ event, onClose }: EventSimulatorProps) {
   const currentNode = useMemo(() => {
     return flatNodes.find((n) => n.id === currentNodeId || n.key === currentNodeId) || null
   }, [flatNodes, currentNodeId])
+
+  // 현재 노드 파싱 정보
+  const characterName = currentNode ? getCharacterName(currentNode, event, lang) : ''
+  const dialogueText = currentNode ? getLocalizedText(currentNode, event.localization, lang) : ''
+  const choices = currentNode ? parseNodeChoices(currentNode, event.localization, lang) : []
+  const isImageNode = currentNode?.type === 'graphic'
+
+  useEffect(() => {
+    if (typingTimerRef.current) {
+      clearInterval(typingTimerRef.current)
+      typingTimerRef.current = null
+    }
+
+    if (!dialogueText) {
+      setDisplayedText('')
+      setIsTyping(false)
+      return
+    }
+
+    setDisplayedText('')
+    setIsTyping(true)
+    
+    let currentIndex = 0
+    const textLength = dialogueText.length
+    const speedMs = 25
+
+    typingTimerRef.current = setInterval(() => {
+      currentIndex++
+      if (currentIndex <= textLength) {
+        setDisplayedText(dialogueText.slice(0, currentIndex))
+      } else {
+        setIsTyping(false)
+        if (typingTimerRef.current) {
+          clearInterval(typingTimerRef.current)
+          typingTimerRef.current = null
+        }
+      }
+    }, speedMs)
+
+    return () => {
+      if (typingTimerRef.current) {
+        clearInterval(typingTimerRef.current)
+      }
+    }
+  }, [currentNodeId, dialogueText])
+
+  // 현재 화자 캐릭터의 이미지 구하기
+  const speakerCharacter = useMemo(() => {
+    if (!currentNode || !registeredCharacters) return null
+    if (currentNode.speakerType !== 'character') return null
+    return registeredCharacters.find(c => c.id === currentNode.speaker) || null
+  }, [currentNode, registeredCharacters])
+
+  // 프로필 이미지 URL 확인
+  const speakerProfileUrl = useMemo(() => {
+    if (!speakerCharacter) return null
+    
+    // 1. profileImageUrl이 직접 셋업되어 있다면 리턴
+    if (speakerCharacter.profileImageUrl) return speakerCharacter.profileImageUrl
+    
+    // 2. 이미지가 등록되어 있다면 첫 번째 이미지 파일 주소를 미디어 링크 형식으로 복구해서 리턴
+    if (speakerCharacter.images && speakerCharacter.images.length > 0) {
+      const firstImg = speakerCharacter.images[0]
+      if (firstImg.url) return firstImg.url
+      if (firstImg.fileName) {
+        return `media://characters/${speakerCharacter.id}/images/${firstImg.fileName}`
+      }
+    }
+    
+    return null
+  }, [speakerCharacter])
 
   // 현재 노드 및 이전 노드들에서 가장 최근에 설정된 미디어 탐색 (미디어가 없는 노드는 이전 미디어를 유지)
   const activeMedia = useMemo(() => {
@@ -268,19 +383,23 @@ export function EventSimulator({ event, onClose }: EventSimulatorProps) {
     }
   }, [audioVolume])
 
-  // ESC 키로 시뮬레이터 종료 지원
+  // ESC 키로 시뮬레이터 종료, Space/Enter 키로 대사 타이핑 스킵/진행 지원
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') {
+        triggerClose()
+        return
+      }
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault()
+        handleBoxClick()
+      }
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
+  }, [isClosing, isTyping, dialogueText, choices.length])
 
-  // 현재 노드 파싱 정보
-  const characterName = currentNode ? getCharacterName(currentNode, event, lang) : ''
-  const dialogueText = currentNode ? getLocalizedText(currentNode, event.localization, lang) : ''
-  const choices = currentNode ? parseNodeChoices(currentNode, event.localization, lang) : []
+
 
   // 특정 노드로 강제 점프
   const jumpToNode = (nodeId: string) => {
@@ -318,20 +437,78 @@ export function EventSimulator({ event, onClose }: EventSimulatorProps) {
       return
     }
 
+    // 다음으로 진행할 노드가 정말로 실질적인 데이터를 담고 있는지 체크하는 헬퍼
+    const hasRealisticContent = (node: any) => {
+      if (!node) return false
+      // 1. 대사 또는 화자가 있는지 확인
+      const text = getLocalizedText(node, event.localization, lang)
+      if (text && text.trim()) return true
+      
+      // 2. 선택지가 있는지 확인
+      const nodeChoices = parseNodeChoices(node, event.localization, lang)
+      if (nodeChoices && nodeChoices.length > 0) return true
+      
+      // 3. 새로 지정된 미디어가 있는지 확인
+      const img = findNodeImage(node)
+      const snd = findNodeSound(node, lang)
+      if (img || snd) return true
+      
+      return false
+    }
+
     // 2. 명시된 포인터가 없으면 플랫 노드 배열 상의 다음 인덱스로 진행
     const currentIndex = flatNodes.findIndex((n) => n.id === currentNodeId || n.key === currentNodeId)
     if (currentIndex >= 0 && currentIndex < flatNodes.length - 1) {
-      const nextNode = flatNodes[currentIndex + 1]
-      const nextId = nextNode.id || nextNode.key || ''
-      if (nextId) {
-        jumpToNode(nextId)
-        return
+      // 현재 노드 뒤에 남아있는 모든 노드들을 탐색하여 실질적인 콘텐츠가 있는 노드가 남아있는지 검사
+      const remainingNodes = flatNodes.slice(currentIndex + 1)
+      const hasMoreContent = remainingNodes.some(n => hasRealisticContent(n))
+
+      if (hasMoreContent) {
+        const nextNode = flatNodes[currentIndex + 1]
+        const nextId = nextNode.id || nextNode.key || ''
+        if (nextId) {
+          jumpToNode(nextId)
+          return
+        }
       }
     }
 
-    // 진행할 다음 노드가 없음
-    setPlaybackFinished(true)
+    // 진행할 다음 유의미한 노드가 없음 -> 바로 종료 및 부모 전달
+    triggerClose()
   }
+
+  const handleBoxClick = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation()
+    if (choices.length > 0) return
+
+    if (isTyping) {
+      if (typingTimerRef.current) {
+        clearInterval(typingTimerRef.current)
+        typingTimerRef.current = null
+      }
+      setDisplayedText(dialogueText)
+      setIsTyping(false)
+    } else {
+      handleNext()
+    }
+  }
+
+  // 자동 진행 딜레이 타이머
+  useEffect(() => {
+    if (!isPlaying || playbackFinished) return
+    if (!currentNode) return
+    if (choices.length > 0) return
+    if (isTyping) return
+
+    const delaySec = Number(currentNode.delay)
+    if (isNaN(delaySec) || delaySec <= 0) return
+
+    const timer = setTimeout(() => {
+      handleBoxClick()
+    }, delaySec * 1000)
+
+    return () => clearTimeout(timer)
+  }, [currentNodeId, isPlaying, playbackFinished, choices.length, currentNode?.delay, isTyping])
 
   // 처음부터 다시 시작
   const handleRestart = () => {
@@ -354,7 +531,21 @@ export function EventSimulator({ event, onClose }: EventSimulatorProps) {
   }, [flatNodes, searchQuery, lang, event])
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-slate-950/98 text-slate-100 font-sans backdrop-blur-sm animate-fade-in">
+    <div className={`fixed inset-0 z-50 flex flex-col text-slate-100 font-sans ${
+      mode === 'game' ? 'bg-black' : 'bg-slate-950'
+    }`}>
+      {/* 전체 화면 페이드 (시작: 검정→투명 / 종료: 투명→검정) */}
+      <div
+        aria-hidden
+        className={`fixed inset-0 z-[70] bg-black transition-opacity ease-out ${
+          fadeOpacity > 0.02 || isClosing ? 'pointer-events-auto' : 'pointer-events-none'
+        }`}
+        style={{
+          opacity: fadeOpacity,
+          transitionDuration: `${FADE_MS}ms`,
+        }}
+      />
+
       {/* Header */}
       <header className="flex shrink-0 items-center justify-between border-b border-indigo-500/15 bg-slate-900/60 px-6 py-4">
         <div className="flex items-center gap-4">
@@ -402,7 +593,10 @@ export function EventSimulator({ event, onClose }: EventSimulatorProps) {
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={(e) => {
+              e.stopPropagation()
+              triggerClose()
+            }}
             className="rounded-lg bg-indigo-600/15 hover:bg-indigo-600/35 border border-indigo-500/30 px-4 py-1.5 text-sm font-semibold text-indigo-200 transition"
           >
             뒤로가기 [ESC]
@@ -411,13 +605,25 @@ export function EventSimulator({ event, onClose }: EventSimulatorProps) {
       </header>
 
       {/* Main Body */}
-      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[1fr_380px]">
+      <div className={`grid min-h-0 flex-1 grid-cols-1 ${
+        mode === 'game' ? '' : 'lg:grid-cols-[1fr_380px]'
+      }`}>
         {/* Left: Visual Novel Player */}
         <div className="flex flex-col items-center justify-center bg-black/40 p-4 min-h-0 overflow-auto relative">
-          <div className="relative aspect-video w-full max-w-4xl bg-black rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col justify-end">
-            
+          <div className="relative aspect-video w-full max-w-[94vw] max-h-[82vh] bg-black rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col justify-end">
             {/* 1. 미디어 화면 (배경) */}
-            <div className="absolute inset-0 z-0 bg-slate-900 flex items-center justify-center">
+            <div
+              className={`absolute inset-0 z-0 bg-slate-900 flex items-center justify-center ${
+                isImageNode && !playbackFinished && choices.length === 0
+                  ? 'cursor-pointer'
+                  : ''
+              }`}
+              onClick={
+                isImageNode && !playbackFinished && choices.length === 0
+                  ? () => handleNext()
+                  : undefined
+              }
+            >
               {activeMedia ? (
                 activeMedia.kind === 'video' ? (
                   <video
@@ -426,17 +632,17 @@ export function EventSimulator({ event, onClose }: EventSimulatorProps) {
                     loop
                     muted
                     playsInline
-                    className="h-full w-full object-contain"
+                    className="h-full w-full object-cover pointer-events-none"
                   />
                 ) : (
                   <img
                     src={activeMedia.url}
                     alt="Event Background"
-                    className="h-full w-full object-contain"
+                    className="h-full w-full object-cover pointer-events-none"
                   />
                 )
               ) : (
-                <div className="flex flex-col items-center gap-2 text-slate-600">
+                <div className="flex flex-col items-center gap-2 text-slate-600 pointer-events-none">
                   <span className="text-4xl">🎬</span>
                   <p className="text-xs">배경 미디어가 없습니다</p>
                 </div>
@@ -457,8 +663,15 @@ export function EventSimulator({ event, onClose }: EventSimulatorProps) {
               </div>
             )}
 
-            {/* 2. 대사/선택지 오버레이 영역 */}
-            <div className="relative z-10 w-full p-4 flex flex-col gap-3 bg-gradient-to-t from-black via-black/80 to-transparent">
+            {/* 2. 대사/선택지 오버레이 영역 — 이미지(그래픽) 노드는 대화창 숨김 */}
+            {(!isImageNode || choices.length > 0 || playbackFinished) && (
+            <div
+              className={`relative z-10 w-full p-4 flex flex-col gap-3 ${
+                isImageNode
+                  ? ''
+                  : 'bg-gradient-to-t from-black via-black/80 to-transparent'
+              }`}
+            >
               
               {/* 분기 선택지 (Choices) */}
               {choices.length > 0 && (
@@ -495,216 +708,237 @@ export function EventSimulator({ event, onClose }: EventSimulatorProps) {
                 </div>
               )}
 
-              {/* 대사 상자 */}
-              {!playbackFinished && (
+              {!playbackFinished && !isImageNode && (
                 <div
-                  onClick={() => choices.length === 0 && handleNext()}
-                  className={`w-full min-h-[96px] bg-slate-950/70 border border-white/10 rounded-xl p-4 text-left transition select-none flex flex-col justify-between ${
-                    choices.length === 0 ? 'cursor-pointer hover:border-indigo-400/40' : ''
+                  onClick={handleBoxClick}
+                  className={`w-full bg-slate-950/80 border border-white/10 rounded-2xl p-5 md:p-6 text-left transition select-none flex gap-5 md:gap-6 items-center ${
+                    choices.length === 0 ? 'cursor-pointer hover:border-indigo-400/50' : ''
                   }`}
                 >
-                  <div className="space-y-1.5">
-                    {characterName && (
-                      <div className="inline-block bg-indigo-600/90 text-white text-[11px] font-bold px-2 py-0.5 rounded shadow">
-                        {characterName}
+                  {/* 캐릭터 프로필 이미지 (존재할 때만 표시, 플레이어는 자동 스킵) */}
+                  {speakerProfileUrl ? (
+                    <img
+                      src={speakerProfileUrl}
+                      alt={characterName}
+                      className="w-20 h-20 md:w-24 md:h-24 rounded-2xl border border-white/15 object-cover bg-slate-900 shadow-md shrink-0 transition-transform duration-300 hover:scale-105"
+                    />
+                  ) : null}
+
+                  {/* 텍스트 내용 및 이름표 (중앙 정렬) */}
+                  <div className="flex-1 flex flex-col items-center justify-center min-h-[72px] md:min-h-[96px] text-center">
+                    <div className="space-y-2 flex flex-col items-center w-full">
+                      {characterName && (
+                        <div className="inline-block bg-indigo-600 text-white text-xs md:text-sm font-extrabold px-3 py-1 rounded-lg shadow-md tracking-wide">
+                          {characterName}
+                        </div>
+                      )}
+                      <p className="text-[17px] md:text-[20px] leading-relaxed font-bold text-slate-100 break-all text-center w-full px-4">
+                        {displayedText || (dialogueText ? '' : <span className="text-slate-500 italic font-normal">(대사 없음 / 연출 노드)</span>)}
+                      </p>
+                    </div>
+
+                    {/* 마우스 클릭 지시 아이콘 (선택지가 없을 때만 노출) */}
+                    {choices.length === 0 && (
+                      <div className="self-center text-[10px] md:text-xs font-semibold text-slate-500 animate-pulse flex items-center gap-1.5 mt-3">
+                        {isTyping ? (
+                          <>클릭하여 전체 보기 <span>▶</span></>
+                        ) : (
+                          <>클릭하여 다음 노드로 <span>▼</span></>
+                        )}
                       </div>
                     )}
-                    <p className="text-[14px] leading-relaxed font-medium text-slate-100 pr-6 break-all">
-                      {dialogueText || <span className="text-slate-500 italic">(대사 없음 / 연출 노드)</span>}
-                    </p>
                   </div>
-
-                  {/* 마우스 클릭 지시 아이콘 (선택지가 없을 때만 노출) */}
-                  {choices.length === 0 && (
-                    <div className="self-end text-[10px] font-semibold text-slate-500 animate-pulse flex items-center gap-1">
-                      클릭하여 다음 노드로 <span>▼</span>
-                    </div>
-                  )}
                 </div>
               )}
+
             </div>
+            )}
           </div>
 
           {/* Player controls */}
-          <div className="mt-4 flex gap-2">
-            <button
-              type="button"
-              onClick={handleRestart}
-              className="game-btn px-4 py-2 text-xs"
-              title="첫 번째 노드로 리셋"
-            >
-              🔄 처음부터
-            </button>
-            <button
-              type="button"
-              disabled={history.length === 0}
-              onClick={handleBack}
-              className="game-btn px-4 py-2 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
-              title="이전 단계로 되돌리기"
-            >
-              ◀ 이전으로
-            </button>
-            <button
-              type="button"
-              disabled={choices.length > 0 || playbackFinished}
-              onClick={handleNext}
-              className="game-btn px-4 py-2 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
-              title="다음 단계로 진행"
-            >
-              다음으로 ▶
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsPlaying(!isPlaying)}
-              className={`game-btn px-4 py-2 text-xs ${!isPlaying ? 'bg-amber-500/10 text-amber-300 border-amber-500/30' : ''}`}
-            >
-              {isPlaying ? '⏸ 일시정지' : '▶ 재생'}
-            </button>
-          </div>
+          {mode !== 'game' && (
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={handleRestart}
+                className="game-btn px-4 py-2 text-xs"
+                title="첫 번째 노드로 리셋"
+              >
+                🔄 처음부터
+              </button>
+              <button
+                type="button"
+                disabled={history.length === 0}
+                onClick={handleBack}
+                className="game-btn px-4 py-2 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                title="이전 단계로 되돌리기"
+              >
+                ◀ 이전으로
+              </button>
+              <button
+                type="button"
+                disabled={choices.length > 0 || playbackFinished}
+                onClick={handleNext}
+                className="game-btn px-4 py-2 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                title="다음 단계로 진행"
+              >
+                다음으로 ▶
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsPlaying(!isPlaying)}
+                className={`game-btn px-4 py-2 text-xs ${!isPlaying ? 'bg-amber-500/10 text-amber-300 border-amber-500/30' : ''}`}
+              >
+                {isPlaying ? '⏸ 일시정지' : '▶ 재생'}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Right: Debug Console Panel */}
-        <aside className="border-l border-indigo-500/15 bg-slate-900/40 flex flex-col min-h-0">
-          
-          {/* Debug Console Header/Tabs */}
-          <div className="flex shrink-0 border-b border-white/10">
-            <button
-              type="button"
-              onClick={() => setDebugTab('nodes')}
-              className={`flex-1 py-3 text-xs font-semibold border-b-2 text-center transition ${
-                debugTab === 'nodes'
-                  ? 'border-indigo-500 text-indigo-300 bg-white/2'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              노드 리스트 ({flatNodes.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setDebugTab('json')}
-              className={`flex-1 py-3 text-xs font-semibold border-b-2 text-center transition ${
-                debugTab === 'json'
-                  ? 'border-indigo-500 text-indigo-300 bg-white/2'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              Raw JSON
-            </button>
-          </div>
+        {mode !== 'game' && (
+          <aside className="border-l border-indigo-500/15 bg-slate-900/40 flex flex-col min-h-0">
+            
+            {/* Debug Console Header/Tabs */}
+            <div className="flex shrink-0 border-b border-white/10">
+              <button
+                type="button"
+                onClick={() => setDebugTab('nodes')}
+                className={`flex-1 py-3 text-xs font-semibold border-b-2 text-center transition ${
+                  debugTab === 'nodes'
+                    ? 'border-indigo-500 text-indigo-300 bg-white/2'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                노드 리스트 ({flatNodes.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setDebugTab('json')}
+                className={`flex-1 py-3 text-xs font-semibold border-b-2 text-center transition ${
+                  debugTab === 'json'
+                    ? 'border-indigo-500 text-indigo-300 bg-white/2'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                Raw JSON
+              </button>
+            </div>
 
-          {/* Debug Console Body */}
-          <div className="flex-1 min-h-0 flex flex-col p-4">
-            {debugTab === 'nodes' ? (
-              <>
-                {/* 검색 바 */}
-                <input
-                  type="text"
-                  placeholder="ID, 대사, 이름 검색..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/50 mb-3"
-                />
+            {/* Debug Console Body */}
+            <div className="flex-1 min-h-0 flex flex-col p-4">
+              {debugTab === 'nodes' ? (
+                <>
+                  {/* 검색 바 */}
+                  <input
+                    type="text"
+                    placeholder="ID, 대사, 이름 검색..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/50 mb-3"
+                  />
 
-                {/* 노드 리스트 */}
-                <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
-                  {filteredNodes.map((n, index) => {
-                    const nid = n.id || n.key || ''
-                    const isActive = nid === currentNodeId
-                    const nodeChar = getCharacterName(n, event, lang)
-                    const nodeText = getLocalizedText(n, event.localization, lang)
-                    const nodeImg = findNodeImage(n)
-                    const nodeSnd = findNodeSound(n, lang)
+                  {/* 노드 리스트 */}
+                  <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
+                    {filteredNodes.map((n, index) => {
+                      const nid = n.id || n.key || ''
+                      const isActive = nid === currentNodeId
+                      const nodeChar = getCharacterName(n, event, lang)
+                      const nodeText = getLocalizedText(n, event.localization, lang)
+                      const nodeImg = findNodeImage(n)
+                      const nodeSnd = findNodeSound(n, lang)
 
-                    return (
-                      <button
-                        key={nid || index}
-                        type="button"
-                        onClick={() => jumpToNode(nid)}
-                        className={`w-full text-left rounded-lg p-2 text-xs border transition ${
-                          isActive
-                            ? 'bg-indigo-600/20 border-indigo-500 text-indigo-200 ring-1 ring-indigo-500/30'
-                            : 'bg-black/20 border-white/5 text-slate-300 hover:bg-white/5 hover:border-white/10'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="font-mono text-[10px] text-slate-500 truncate max-w-[140px]">
-                            {nid || `node_${index}`}
-                          </span>
-                          <div className="flex gap-1">
-                            {n.type && (
-                              <span className="px-1 py-0.2 rounded bg-slate-800 text-[8px] text-slate-400">
-                                {n.type}
-                              </span>
-                            )}
-                            {nodeImg && <span title={`이미지: ${nodeImg}`} className="text-[9px]">🖼️</span>}
-                            {nodeSnd && <span title={`사운드: ${nodeSnd}`} className="text-[9px]">🔊</span>}
+                      return (
+                        <button
+                          key={nid || index}
+                          type="button"
+                          onClick={() => jumpToNode(nid)}
+                          className={`w-full text-left rounded-lg p-2 text-xs border transition ${
+                            isActive
+                              ? 'bg-indigo-600/20 border-indigo-500 text-indigo-200 ring-1 ring-indigo-500/30'
+                              : 'bg-black/20 border-white/5 text-slate-300 hover:bg-white/5 hover:border-white/10'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-mono text-[10px] text-slate-500 truncate max-w-[140px]">
+                              {nid || `node_${index}`}
+                            </span>
+                            <div className="flex gap-1">
+                              {n.type && (
+                                <span className="px-1 py-0.2 rounded bg-slate-800 text-[8px] text-slate-400">
+                                  {n.type}
+                                </span>
+                              )}
+                              {nodeImg && <span title={`이미지: ${nodeImg}`} className="text-[9px]">🖼️</span>}
+                              {nodeSnd && <span title={`사운드: ${nodeSnd}`} className="text-[9px]">🔊</span>}
+                            </div>
                           </div>
-                        </div>
 
-                        {/* 대사 및 화자 */}
-                        {(nodeChar || nodeText) ? (
-                          <p className="mt-1 font-medium truncate text-slate-200">
-                            {nodeChar ? `[${nodeChar}] ` : ''}
-                            {nodeText}
-                          </p>
-                        ) : (
-                          <p className="mt-1 text-[10px] text-slate-500 italic">
-                            (연출 또는 분기 노드)
-                          </p>
-                        )}
+                          {/* 대사 및 화자 */}
+                          {(nodeChar || nodeText) ? (
+                            <p className="mt-1 font-medium truncate text-slate-200">
+                              {nodeChar ? `[${nodeChar}] ` : ''}
+                              {nodeText}
+                            </p>
+                          ) : (
+                            <p className="mt-1 text-[10px] text-slate-500 italic">
+                              (연출 또는 분기 노드)
+                            </p>
+                          )}
 
-                        {/* 분기가 있을 때 표시 */}
-                        {parseNodeChoices(n, event.localization, lang).length > 0 && (
-                          <div className="mt-1.5 flex flex-wrap gap-1">
-                            {parseNodeChoices(n, event.localization, lang).map((choice, ci) => (
-                              <span
-                                key={ci}
-                                className="px-1.5 py-0.5 rounded bg-indigo-950/60 border border-indigo-500/20 text-[9px] text-indigo-300 font-mono"
-                              >
-                                ⌥ {choice.text} ➔ {choice.targetNodeId || 'NEXT'}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </button>
-                    )
-                  })}
+                          {/* 분기가 있을 때 표시 */}
+                          {parseNodeChoices(n, event.localization, lang).length > 0 && (
+                            <div className="mt-1.5 flex flex-wrap gap-1">
+                              {parseNodeChoices(n, event.localization, lang).map((choice, ci) => (
+                                <span
+                                  key={ci}
+                                  className="px-1.5 py-0.5 rounded bg-indigo-950/60 border border-indigo-500/20 text-[9px] text-indigo-300 font-mono"
+                                >
+                                  ⌥ {choice.text} ➔ {choice.targetNodeId || 'NEXT'}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </button>
+                      )
+                    })}
 
-                  {filteredNodes.length === 0 && (
-                    <p className="text-center text-xs text-slate-500 py-6">
-                      일치하는 노드가 없습니다
-                    </p>
-                  )}
+                    {filteredNodes.length === 0 && (
+                      <p className="text-center text-xs text-slate-500 py-6">
+                        일치하는 노드가 없습니다
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                // JSON View
+                <div className="flex-1 flex flex-col min-h-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-mono text-slate-500">
+                      ID: {currentNodeId}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(JSON.stringify(currentNode, null, 2))
+                        alert('JSON이 클립보드에 복사되었습니다.')
+                      }}
+                      className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold"
+                    >
+                      📋 복사하기
+                    </button>
+                  </div>
+                  
+                  <pre className="flex-1 overflow-auto text-[11px] leading-relaxed text-emerald-400 font-mono bg-black/40 border border-white/10 p-3 rounded-lg">
+                    {currentNode
+                      ? JSON.stringify(currentNode, null, 2)
+                      : '// 현재 활성화된 노드가 없습니다'}
+                  </pre>
                 </div>
-              </>
-            ) : (
-              // JSON View
-              <div className="flex-1 flex flex-col min-h-0">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-mono text-slate-500">
-                    ID: {currentNodeId}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(JSON.stringify(currentNode, null, 2))
-                      alert('JSON이 클립보드에 복사되었습니다.')
-                    }}
-                    className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold"
-                  >
-                    📋 복사하기
-                  </button>
-                </div>
-                
-                <pre className="flex-1 overflow-auto text-[11px] leading-relaxed text-emerald-400 font-mono bg-black/40 border border-white/10 p-3 rounded-lg">
-                  {currentNode
-                    ? JSON.stringify(currentNode, null, 2)
-                    : '// 현재 활성화된 노드가 없습니다'}
-                </pre>
-              </div>
-            )}
-          </div>
-        </aside>
+              )}
+            </div>
+          </aside>
+        )}
       </div>
     </div>
   )

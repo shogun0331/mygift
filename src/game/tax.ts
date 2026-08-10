@@ -1,22 +1,19 @@
 import type { DayEvent } from './economy'
+import { formatMoney } from './money'
 
-/** 연간 수익 누진 세율 구간 (원) */
+/** 연간 수익 누진 세율 구간 (USD, 구 원화÷1000) */
 export const ANNUAL_TAX_BRACKETS = [
-  { size: 500_000_000, rate: 0.05 }, // 0 ~ 5억
-  { size: 500_000_000, rate: 0.1 }, // 5억 ~ 10억
-  { size: 1_000_000_000, rate: 0.15 }, // 10억 ~ 20억
+  { size: 500_000, rate: 0.05 }, // 0 ~ $500K (구 5억)
+  { size: 500_000, rate: 0.1 }, // $500K ~ $1M
+  { size: 1_000_000, rate: 0.15 }, // $1M ~ $2M
 ] as const
 
-/** 20억 초과분도 최고 세율 15% 적용 */
+/** $2M 초과분도 최고 세율 15% 적용 */
 const TOP_MARGINAL_RATE = 0.15
-
-function formatWon(amount: number) {
-  return Math.max(0, Math.round(amount)).toLocaleString('ko-KR')
-}
 
 /**
  * 연간 수익 누진 과세
- * 예: 5억 → 2,500만 / 10억 → 7,500만 / 20억 → 2.25억
+ * 예: $500K → $25K / $1M → $75K / $2M → $225K
  */
 export function calcProgressiveAnnualTax(annualRevenueWon: number): number {
   let remaining = Math.max(0, Math.round(annualRevenueWon))
@@ -52,7 +49,7 @@ export function createTaxUpcomingEvent(taxYear: number, annualRevenueWon: number
     creatorName: '',
     type: 'tax',
     amount: 0,
-    text: `다음 달 연간 소득세 과세 예정 (${taxYear}년 누적 수익 ${formatWon(revenue)}원)`,
+    text: `다음 달 연간 소득세 과세 예정 (${taxYear}년 누적 수익 ${formatMoney(revenue)})`,
     atMs: 0,
     tone: 'bg-amber-400',
   }

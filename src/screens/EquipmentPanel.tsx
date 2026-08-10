@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { formatMoney } from '../game/money'
 import { useTranslation } from '../locales/i18n'
 
 type Equipment = {
@@ -17,7 +18,7 @@ const INITIAL_EQUIPMENT: Equipment[] = [
     level: 2,
     bonusKey: 'revenue',
     bonusValue: 10,
-    upgradeCost: 500_000,
+    upgradeCost: 500,
   },
   {
     id: 'light',
@@ -25,7 +26,7 @@ const INITIAL_EQUIPMENT: Equipment[] = [
     level: 1,
     bonusKey: 'popularity',
     bonusValue: 5,
-    upgradeCost: 300_000,
+    upgradeCost: 300,
   },
   {
     id: 'mic',
@@ -33,7 +34,7 @@ const INITIAL_EQUIPMENT: Equipment[] = [
     level: 0,
     bonusKey: 'loyalty',
     bonusValue: 0,
-    upgradeCost: 200_000,
+    upgradeCost: 200,
   },
   {
     id: 'pc',
@@ -41,7 +42,7 @@ const INITIAL_EQUIPMENT: Equipment[] = [
     level: 0,
     bonusKey: 'revenue',
     bonusValue: 0,
-    upgradeCost: 1_000_000,
+    upgradeCost: 1_000,
   },
   {
     id: 'internet',
@@ -49,7 +50,7 @@ const INITIAL_EQUIPMENT: Equipment[] = [
     level: 0,
     bonusKey: 'revenue',
     bonusValue: 0,
-    upgradeCost: 300_000,
+    upgradeCost: 300,
   },
   {
     id: 'set',
@@ -57,7 +58,7 @@ const INITIAL_EQUIPMENT: Equipment[] = [
     level: 0,
     bonusKey: 'popularity',
     bonusValue: 0,
-    upgradeCost: 500_000,
+    upgradeCost: 500,
   },
   {
     id: 'studio_expansion',
@@ -65,12 +66,12 @@ const INITIAL_EQUIPMENT: Equipment[] = [
     level: 0,
     bonusKey: 'slots',
     bonusValue: 0,
-    upgradeCost: 5_000_000,
+    upgradeCost: 5_000,
   },
 ]
 
 function formatCost(value: number) {
-  return value.toLocaleString('ko-KR')
+  return formatMoney(value)
 }
 
 type EquipmentPanelProps = {
@@ -168,7 +169,7 @@ export function EquipmentPanel({ onUpgradeStudio }: EquipmentPanelProps) {
                   }}
                 >
                   <span className="text-[9px] text-pink-200 tracking-widest font-semibold uppercase">{t('equipment.upgrade')}</span>
-                  <span className="text-[11px] font-extrabold text-white">₩{formatCost(item.upgradeCost)}</span>
+                  <span className="text-[11px] font-extrabold text-white">{formatCost(item.upgradeCost)}</span>
                 </button>
               </div>
             </article>

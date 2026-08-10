@@ -1,3 +1,4 @@
+import type { Grade } from './characters'
 import { rollInt } from './stats'
 
 export type CreatorCondition = 'best' | 'good' | 'normal' | 'bad' | 'worst'
@@ -10,12 +11,13 @@ export const CONDITION_ORDER: CreatorCondition[] = [
   'worst',
 ]
 
+/** 컨디션별 수익 보정 — 가변 수익 배율은 컨디션만 (스테미나 무관) */
 export const CONDITION_MULT: Record<CreatorCondition, number> = {
-  best: 2.0,
-  good: 1.5,
+  best: 1.5,
+  good: 1.2,
   normal: 1.0,
-  bad: 0.5,
-  worst: 0.2,
+  bad: 0.7,
+  worst: 0.4,
 }
 
 /** 컨디션 점수 구간 (0~100) */
@@ -30,20 +32,65 @@ export const CONDITION_SCORE_RANGE: Record<
   worst: { min: 0, max: 29 },
 }
 
-/** 수위별 한 주 방송 후 컨디션 하락량 */
-export const BROADCAST_CONDITION_DECAY: Record<
-  1 | 2 | 3 | 4,
-  { min: number; max: number }
-> = {
-  1: { min: 2, max: 4 },
-  2: { min: 4, max: 7 },
-  3: { min: 7, max: 12 },
-  4: { min: 12, max: 18 },
+export const STAMINA_MAX = 100
+export const STAMINA_BROADCAST_COST = 5
+export const STAMINA_REST_GAIN = 20
+export const STAMINA_VACATION_GAIN = 30
+/** 이 값 이하면 방송 불가 */
+export const STAMINA_BROADCAST_MIN = 10
+/** 소모 후 스테미나가 이 미만이면 컨디션 급속 소모 */
+export const STAMINA_LOW_THRESHOLD = 30
+
+export const CONDITION_BROADCAST_LIGHT = { min: 2, max: 4 } as const
+export const CONDITION_BROADCAST_FAST = { min: 8, max: 12 } as const
+export const REST_RECOVERY = { min: 10, max: 15 } as const
+export const VACATION_CONDITION_GAIN = 20
+
+/** 보유 크리에이터 1명당 진상 사태 확률 (+2%p) */
+export const CONDITION_CRASH_CHANCE_PER_OWNED = 0.02
+/** @deprecated calcConditionCrashChance 사용 */
+export const CONDITION_CRASH_CHANCE = CONDITION_CRASH_CHANCE_PER_OWNED
+/** 급락 시 추가 컨디션 하락량 */
+export const CONDITION_CRASH_DROP = { min: 28, max: 42 } as const
+/** 진상 사태 시 추가 스테미나 하락량 (QTE 실패 시) */
+export const CONDITION_CRASH_STAMINA_DROP = { min: 10, max: 30 } as const
+/** 진상 두더지 QTE 제한 시간 (ms) */
+export const CONDITION_CRASH_QTE_MS = 2000
+
+export function calcConditionCrashChance(ownedCount: number): number {
+  const n = Math.max(0, Math.round(ownedCount))
+  return n * CONDITION_CRASH_CHANCE_PER_OWNED
 }
 
-export const REST_RECOVERY = { min: 10, max: 15 } as const
-export const REST_STREAK_RECOVERY = { min: 20, max: 30 } as const
-export const SPA_RECOVERY = { min: 30, max: 50 } as const
+/**
+ * 등급별 컨디션 풀케어(최상 100) 비용
+ * C 저렴 · S 고가 — 휴가비보다 낮게, 반복 사용 가능 수준
+ */
+export const CONDITION_FULL_CARE_COST: Record<Grade, number> = {
+  C: 200,
+  B: 450,
+  A: 800,
+  S: 1_500,
+}
+
+/** @deprecated 등급별 풀케어로 교체 */
+export const CONDITION_CARE_OPTIONS = [
+  { id: 'care10', cost: 100, conditionGain: 10 },
+  { id: 'care15', cost: 300, conditionGain: 15 },
+  { id: 'care20', cost: 500, conditionGain: 20 },
+] as const
+
+export function calcConditionFullCareCost(grade: Grade) {
+  return CONDITION_FULL_CARE_COST[grade] ?? CONDITION_FULL_CARE_COST.C
+}
+
+/** 휴가비 = 연봉 × 비율 (5,000만 기준 표와 동일 비율) */
+export const VACATION_SALARY_RATE: Record<Grade, number> = {
+  C: 0.006,
+  B: 0.0096,
+  A: 0.012,
+  S: 0.018,
+}
 
 export const CONDITION_LABEL_KEY: Record<CreatorCondition, string> = {
   best: 'condition.best',
@@ -53,7 +100,6 @@ export const CONDITION_LABEL_KEY: Record<CreatorCondition, string> = {
   worst: 'condition.worst',
 }
 
-/** UI용 이모지 아이콘 */
 export const CONDITION_ICON: Record<CreatorCondition, string> = {
   best: '🤩',
   good: '😊',
@@ -62,7 +108,6 @@ export const CONDITION_ICON: Record<CreatorCondition, string> = {
   worst: '😵',
 }
 
-/** StreamCard 컨디션 한 줄 — 나쁨/최악은 색만 강조 (박스 과다 사용 금지) */
 export const CONDITION_ROW_CLASS: Record<CreatorCondition, string> = {
   best: 'text-emerald-300/90',
   good: 'text-cyan-300/85',
@@ -91,6 +136,11 @@ export function clampConditionScore(score: number) {
   return Math.max(0, Math.min(100, Math.round(score)))
 }
 
+export function clampStamina(stamina: number, staminaMax = STAMINA_MAX) {
+  const max = Math.max(1, Math.min(STAMINA_MAX, Math.round(staminaMax)))
+  return Math.max(0, Math.min(max, Math.round(stamina)))
+}
+
 export function conditionFromScore(score: number): CreatorCondition {
   const s = clampConditionScore(score)
   if (s >= 90) return 'best'
@@ -102,55 +152,53 @@ export function conditionFromScore(score: number): CreatorCondition {
 
 export function normalizeCondition(raw: string | null | undefined): CreatorCondition {
   const value = (raw ?? 'normal').toLowerCase()
-  if (value === 'normal' || value === 'best' || value === 'good' || value === 'bad' || value === 'worst') {
+  if (
+    value === 'normal' ||
+    value === 'best' ||
+    value === 'good' ||
+    value === 'bad' ||
+    value === 'worst'
+  ) {
     return value
   }
   if (value === 'n' || value === 'ok') return 'normal'
   return 'normal'
 }
 
-/** 영입 시 시작 컨디션: 보통(50~69) */
 export function rollStartingConditionScore() {
   return rollInt(CONDITION_SCORE_RANGE.normal.min, CONDITION_SCORE_RANGE.normal.max)
 }
 
-function heatLevelOf(heat: number): 1 | 2 | 3 | 4 {
-  return Math.max(1, Math.min(4, Math.round(heat || 1))) as 1 | 2 | 3 | 4
+export function canBroadcastByStamina(stamina: number) {
+  return Math.round(stamina) >= STAMINA_BROADCAST_MIN
 }
 
-/** 방송 한 주 후 하락량 (음수) */
-export function rollBroadcastConditionDelta(heat: number) {
-  const range = BROADCAST_CONDITION_DECAY[heatLevelOf(heat)]
-  return -rollInt(range.min, range.max)
+export function calcVacationCost(annualSalary: number, grade: Grade) {
+  const rate = VACATION_SALARY_RATE[grade] ?? VACATION_SALARY_RATE.C
+  return Math.max(0, Math.round(annualSalary * rate))
 }
 
-/** 휴식 한 주 회복량 (양수). streak는 이번 휴식 포함 연속 주수 */
-export function rollRestConditionDelta(restStreak: number) {
-  if (restStreak >= 2) {
-    return rollInt(REST_STREAK_RECOVERY.min, REST_STREAK_RECOVERY.max)
-  }
-  return rollInt(REST_RECOVERY.min, REST_RECOVERY.max)
-}
-
-export function rollSpaConditionDelta() {
-  return rollInt(SPA_RECOVERY.min, SPA_RECOVERY.max)
-}
-
-type ConditionState = {
+type StaminaConditionState = {
+  id: string
   condition: string
   conditionScore?: number
   restStreak?: number
-  heat?: number
+  stamina?: number
+  staminaMax?: number
 }
 
-function withScore<T extends ConditionState>(
+function withVitals<T extends StaminaConditionState>(
   creator: T,
   nextScore: number,
+  nextStamina: number,
   restStreak: number,
 ): T {
+  const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
   const conditionScore = clampConditionScore(nextScore)
   return {
     ...creator,
+    staminaMax,
+    stamina: clampStamina(nextStamina, staminaMax),
     conditionScore,
     condition: conditionFromScore(conditionScore),
     restStreak,
@@ -166,29 +214,132 @@ export function scoreOf(creator: { condition?: string; conditionScore?: number }
   return Math.round((range.min + range.max) / 2)
 }
 
+export type ConditionCrashResult<T extends StaminaConditionState> = {
+  creators: T[]
+  crashes: Array<{
+    creatorId: string
+    creatorName: string
+    drop: number
+    staminaDrop: number
+    scoreBefore: number
+    scoreAfter: number
+  }>
+}
+
 /**
- * 주 종료 시 컨디션 반영.
- * - 방송한 크리에이터: 수위에 따라 하락, restStreak 리셋
- * - 휴식(미방송): 회복, restStreak 증가
+ * 주 종료: 방송자 스테미나 -5 + 컨디션 소모 / 휴식자 스테미나 +20 + 컨디션 회복
+ * 방송자는 보유 인원×2% 확률로 진상 사태(컨디션 즉시 급락, 스테미나는 QTE 실패 시 차감)
  */
-export function applyEndOfDayConditions<T extends ConditionState & { id: string }>(
+export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState & { name?: string }>(
+  creators: T[],
+  broadcastedIds: ReadonlySet<string>,
+): ConditionCrashResult<T> {
+  const crashes: ConditionCrashResult<T>['crashes'] = []
+  const crashChance = calcConditionCrashChance(creators.length)
+
+  const nextCreators = creators.map((creator) => {
+    const currentScore = scoreOf(creator)
+    const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
+    const staminaNow = clampStamina(creator.stamina ?? staminaMax, staminaMax)
+
+    if (broadcastedIds.has(creator.id)) {
+      const staminaAfter = clampStamina(staminaNow - STAMINA_BROADCAST_COST, staminaMax)
+      let condDelta =
+        staminaAfter < STAMINA_LOW_THRESHOLD
+          ? -rollInt(CONDITION_BROADCAST_FAST.min, CONDITION_BROADCAST_FAST.max)
+          : -rollInt(CONDITION_BROADCAST_LIGHT.min, CONDITION_BROADCAST_LIGHT.max)
+
+      let scoreAfterDrain = currentScore + condDelta
+      if (crashChance > 0 && Math.random() < crashChance) {
+        const drop = rollInt(CONDITION_CRASH_DROP.min, CONDITION_CRASH_DROP.max)
+        const staminaDrop = rollInt(
+          CONDITION_CRASH_STAMINA_DROP.min,
+          CONDITION_CRASH_STAMINA_DROP.max,
+        )
+        const scoreBeforeCrash = clampConditionScore(scoreAfterDrain)
+        scoreAfterDrain -= drop
+        const scoreAfter = clampConditionScore(scoreAfterDrain)
+        crashes.push({
+          creatorId: creator.id,
+          creatorName: creator.name ?? creator.id,
+          drop,
+          staminaDrop,
+          scoreBefore: scoreBeforeCrash,
+          scoreAfter,
+        })
+      }
+
+      return withVitals(creator, scoreAfterDrain, staminaAfter, 0)
+    }
+
+    const restStreak = (creator.restStreak ?? 0) + 1
+    const condDelta = rollInt(REST_RECOVERY.min, REST_RECOVERY.max)
+    return withVitals(
+      creator,
+      currentScore + condDelta,
+      staminaNow + STAMINA_REST_GAIN,
+      restStreak,
+    )
+  })
+
+  return { creators: nextCreators, crashes }
+}
+
+/** 진상 QTE 실패 — 보류된 스테미나 패널티 적용 */
+export function applyToxicStaminaPenalty<T extends StaminaConditionState>(
+  creator: T,
+  staminaDrop: number,
+): T {
+  const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
+  const staminaNow = clampStamina(creator.stamina ?? staminaMax, staminaMax)
+  return withVitals(
+    creator,
+    scoreOf(creator),
+    staminaNow - Math.max(0, Math.round(staminaDrop)),
+    creator.restStreak ?? 0,
+  )
+}
+
+/** @deprecated applyWeeklyStaminaAndCondition 사용 */
+export function applyEndOfDayConditions<T extends StaminaConditionState & { name?: string }>(
   creators: T[],
   broadcastedIds: ReadonlySet<string>,
 ): T[] {
-  return creators.map((creator) => {
-    const current = scoreOf(creator)
-    if (broadcastedIds.has(creator.id)) {
-      const delta = rollBroadcastConditionDelta(creator.heat ?? 1)
-      return withScore(creator, current + delta, 0)
-    }
-    const restStreak = (creator.restStreak ?? 0) + 1
-    const delta = rollRestConditionDelta(restStreak)
-    return withScore(creator, current + delta, restStreak)
-  })
+  return applyWeeklyStaminaAndCondition(creators, broadcastedIds).creators
 }
 
-/** 스파/휴가 등 유료 회복 */
-export function applySpaRecovery<T extends ConditionState>(creator: T): T {
-  const current = scoreOf(creator)
-  return withScore(creator, current + rollSpaConditionDelta(), creator.restStreak ?? 0)
+export function applyConditionCare<T extends StaminaConditionState>(
+  creator: T,
+  conditionGain: number,
+): T {
+  return withVitals(
+    creator,
+    scoreOf(creator) + conditionGain,
+    creator.stamina ?? STAMINA_MAX,
+    creator.restStreak ?? 0,
+  )
+}
+
+/** 컨디션을 최상(100)으로 즉시 회복 */
+export function applyConditionFullCare<T extends StaminaConditionState>(creator: T): T {
+  return withVitals(
+    creator,
+    100,
+    creator.stamina ?? STAMINA_MAX,
+    creator.restStreak ?? 0,
+  )
+}
+
+export function applyVacationRecovery<T extends StaminaConditionState>(creator: T): T {
+  return withVitals(
+    creator,
+    scoreOf(creator) + VACATION_CONDITION_GAIN,
+    (creator.stamina ?? 0) + STAMINA_VACATION_GAIN,
+    creator.restStreak ?? 0,
+  )
+}
+
+/** @deprecated applyVacationRecovery / applyConditionCare */
+export function applySpaRecovery<T extends StaminaConditionState>(creator: T): T {
+  return applyVacationRecovery(creator)
 }

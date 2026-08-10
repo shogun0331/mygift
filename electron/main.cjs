@@ -75,9 +75,9 @@ app.whenReady().then(() => {
 const { ipcMain } = require('electron')
 const fs = require('fs')
 
-ipcMain.handle('save-event-assets', async (event, { chapterId, assets }) => {
+ipcMain.handle('save-event-assets', async (event, { eventId, assets }) => {
   try {
-    const baseDir = path.join(app.getAppPath(), 'public/chapter_assets', String(chapterId))
+    const baseDir = path.join(app.getAppPath(), 'public/chapter_assets/events', String(eventId))
     const folderMap = {
       image: 'images',
       video: 'videos',
@@ -171,6 +171,108 @@ ipcMain.handle('load-characters-json', async (event) => {
     const data = fs.readFileSync(filePath, 'utf-8')
     const characters = JSON.parse(data)
     return { success: true, characters }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('save-events-json', async (event, { events }) => {
+  try {
+    const assetsDir = path.join(app.getAppPath(), 'public/chapter_assets')
+    const eventsDir = path.join(assetsDir, 'events')
+
+    if (!fs.existsSync(assetsDir)) {
+      fs.mkdirSync(assetsDir, { recursive: true })
+    }
+    if (!fs.existsSync(eventsDir)) {
+      fs.mkdirSync(eventsDir, { recursive: true })
+    }
+
+    const activeIds = new Set()
+    for (const ev of events) {
+      activeIds.add(ev.id)
+      const media = (ev.media || []).map(m => {
+        const { blob, ...rest } = m
+        return rest
+      })
+      const fullEventData = { ...ev, media }
+      const singleFilePath = path.join(eventsDir, `${ev.id}.json`)
+      fs.writeFileSync(singleFilePath, JSON.stringify(fullEventData, null, 2), 'utf-8')
+    }
+
+    if (fs.existsSync(eventsDir)) {
+      const files = fs.readdirSync(eventsDir)
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          const id = path.basename(file, '.json')
+          if (!activeIds.has(id)) {
+            try {
+              fs.unlinkSync(path.join(eventsDir, file))
+            } catch (err) {
+              console.error(`Failed to clean deleted event file: ${file}`, err)
+            }
+          }
+        }
+      }
+    }
+
+    const metadataList = events.map(ev => {
+      const { nodes, localization, characters, points, media, ...meta } = ev
+      return meta
+    })
+
+    const listFilePath = path.join(assetsDir, 'events.json')
+    fs.writeFileSync(listFilePath, JSON.stringify(metadataList, null, 2), 'utf-8')
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('load-events-json', async (event) => {
+  try {
+    const assetsDir = path.join(app.getAppPath(), 'public/chapter_assets')
+    const listFilePath = path.join(assetsDir, 'events.json')
+    const eventsDir = path.join(assetsDir, 'events')
+
+    if (!fs.existsSync(listFilePath)) {
+      return { success: true, events: [] }
+    }
+
+    const data = fs.readFileSync(listFilePath, 'utf-8')
+    const metadataList = JSON.parse(data)
+    const fullEvents = []
+
+    for (const meta of metadataList) {
+      const singleFilePath = path.join(eventsDir, `${meta.id}.json`)
+      if (fs.existsSync(singleFilePath)) {
+        try {
+          const singleData = fs.readFileSync(singleFilePath, 'utf-8')
+          fullEvents.push(JSON.parse(singleData))
+        } catch (err) {
+          console.error(`Failed to parse event file for ${meta.id}:`, err)
+          fullEvents.push({
+            ...meta,
+            nodes: [],
+            localization: { ko: {} },
+            characters: [],
+            points: [],
+            media: []
+          })
+        }
+      } else {
+        fullEvents.push({
+          ...meta,
+          nodes: [],
+          localization: { ko: {} },
+          characters: [],
+          points: [],
+          media: []
+        })
+      }
+    }
+
+    return { success: true, events: fullEvents }
   } catch (err) {
     return { success: false, error: err.message }
   }

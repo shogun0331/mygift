@@ -3,6 +3,9 @@ export type BroadcastPhase = 'prep' | 'live'
 /** 게임 한 주 = 실시간 5초 (배속 적용) */
 export const MS_PER_GAME_WEEK = 5000
 
+/** 무배치(빈) 방송 한 주 = 실시간 1초 — 빠르게 스킵 */
+export const MS_PER_EMPTY_BROADCAST_WEEK = 1000
+
 /** 한 턴 = 한 달 = 4주 */
 export const WEEKS_PER_MONTH = 4
 

@@ -4,10 +4,12 @@ const { ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI', {
   platform: process.platform,
-  saveEventAssets: (chapterId, assets) => ipcRenderer.invoke('save-event-assets', { chapterId, assets }),
+  saveEventAssets: (eventId, assets) => ipcRenderer.invoke('save-event-assets', { eventId, assets }),
   saveCharacterAssets: (characterId, assets) => ipcRenderer.invoke('save-character-assets', { characterId, assets }),
   saveCharactersJson: (characters) => ipcRenderer.invoke('save-characters-json', { characters }),
   loadCharactersJson: () => ipcRenderer.invoke('load-characters-json'),
+  saveEventsJson: (events) => ipcRenderer.invoke('save-events-json', { events }),
+  loadEventsJson: () => ipcRenderer.invoke('load-events-json'),
   deleteCharacterFile: (characterId, kind, fileName) => ipcRenderer.invoke('delete-character-file', { characterId, kind, fileName }),
   deleteCharacterFolder: (characterId) => ipcRenderer.invoke('delete-character-folder', { characterId }),
   cloneCharacterFile: (characterId, kind, sourceFileName, targetFileName) =>
