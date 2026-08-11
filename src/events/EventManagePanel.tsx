@@ -36,6 +36,49 @@ const kindLabel: Record<EventMediaKind, string> = {
   sound: '사운드',
 }
 
+// 다국어 번역용 공간을 JSON 구조 내에 자동으로 정규화하여 생성하는 헬퍼 함수
+function normalizeEventLocalization(event: GameEvent): GameEvent {
+  const defaultLanguage = event.defaultLanguage || 'ko'
+  
+  // 기존 localization 데이터 복사 및 기본 다국어(ko, en, ja) 키 생성
+  const nextLoc: Record<string, Record<string, string>> = {
+    ko: { ...(event.localization?.ko || {}) },
+    en: { ...(event.localization?.en || {}) },
+    ja: { ...(event.localization?.ja || {}) },
+    ...(event.localization || {}),
+  }
+
+  const normalizedNodes = (event.nodes || []).map((n: any) => {
+    if (n && n.type === 'text') {
+      const textKey = n.text_key || n.id || `node_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
+      
+      // default language (예: ko)에 해당 번역 키가 비어있다면, 대사 노드의 기본 text 값을 매핑
+      if (nextLoc[defaultLanguage] && !nextLoc[defaultLanguage][textKey]) {
+        nextLoc[defaultLanguage][textKey] = n.text || ''
+      }
+      
+      // ko, en, ja 각각에 번역 공간이 마련되어 있지 않다면 "" 빈 문자열로 공간 생성
+      for (const lang of ['ko', 'en', 'ja']) {
+        if (nextLoc[lang] && nextLoc[lang][textKey] === undefined) {
+          nextLoc[lang][textKey] = ''
+        }
+      }
+
+      return {
+        ...n,
+        text_key: textKey,
+      }
+    }
+    return n
+  })
+
+  return {
+    ...event,
+    nodes: normalizedNodes,
+    localization: nextLoc,
+  }
+}
+
 export function EventManagePanel({
   events,
   onEventsChange,
@@ -60,6 +103,10 @@ export function EventManagePanel({
   const [createError, setCreateError] = useState<string | null>(null)
 
   const selected = events.find((event) => event.id === selectedId) ?? null
+
+  const handleEventsChange = (nextEvents: GameEvent[]) => {
+    onEventsChange(nextEvents.map(normalizeEventLocalization))
+  }
 
   useEffect(() => {
     if (selectedId && !events.some((event) => event.id === selectedId)) {
@@ -117,7 +164,7 @@ export function EventManagePanel({
         setError('ZIP에서 생성할 이벤트가 없습니다.')
         return
       }
-      onEventsChange([...events, ...imported])
+      handleEventsChange([...events, ...imported])
       setSelectedId(imported[0]?.id ?? null)
       setWarnings(nextWarnings)
     } catch (err) {
@@ -137,7 +184,7 @@ export function EventManagePanel({
   const removeEvent = (id: string) => {
     const target = events.find((event) => event.id === id)
     if (target) revokeEventMedia(target)
-    onEventsChange(events.filter((event) => event.id !== id))
+    handleEventsChange(events.filter((event) => event.id !== id))
     if (selectedId === id) setSelectedId(null)
   }
 
@@ -177,6 +224,8 @@ export function EventManagePanel({
       nodes: [],
       localization: {
         ko: {},
+        en: {},
+        ja: {},
       },
       defaultLanguage: 'ko',
       characters: [],
@@ -186,7 +235,7 @@ export function EventManagePanel({
       createdAt: new Date().toISOString(),
     }
 
-    onEventsChange([...events, newEvent])
+    handleEventsChange([...events, newEvent])
     setSelectedId(newEvent.id)
     setShowCreateModal(false)
 
@@ -198,7 +247,7 @@ export function EventManagePanel({
 
   // 개별 이벤트 데이터 업데이트 헬퍼
   const updateEvent = (updated: GameEvent) => {
-    onEventsChange(events.map((ev) => (ev.id === updated.id ? updated : ev)))
+    handleEventsChange(events.map((ev) => (ev.id === updated.id ? updated : ev)))
   }
 
   return (

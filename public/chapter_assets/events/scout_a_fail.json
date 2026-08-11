@@ -18,60 +18,97 @@
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "사장님..."
+      "text": "사장님...",
+      "text_key": "node_1786358934446_rh0g_1"
     },
     {
       "id": "node_1786358934446_18dh_2",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "진심으로 감사하게 생각하고 있어요."
+      "text": "진심으로 감사하게 생각하고 있어요.",
+      "text_key": "node_1786358934446_18dh_2"
     },
     {
       "id": "node_1786358934446_41uk_3",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "하지만... 그 제안은 받아들이기 어려울 것 같아요."
+      "text": "하지만... 그 제안은 받아들이기 어려울 것 같아요.",
+      "text_key": "node_1786358934446_41uk_3"
     },
     {
       "id": "node_1786358934446_k4fx_4",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "지금 제게는... 그런 선택을 할 용기가 없어요."
+      "text": "지금 제게는... 그런 선택을 할 용기가 없어요.",
+      "text_key": "node_1786358934446_k4fx_4"
     },
     {
       "id": "node_1786358934446_hn0m_5",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "사장님이 저를 믿어주신 만큼, 저도 제 길을 믿고 가고 싶어요."
+      "text": "사장님이 저를 믿어주신 만큼, 저도 제 길을 믿고 가고 싶어요.",
+      "text_key": "node_1786358934446_hn0m_5"
     },
     {
       "id": "node_1786358934446_wcy9_6",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "이렇게 찾아와 주셔서 정말 감사해요."
+      "text": "이렇게 찾아와 주셔서 정말 감사해요.",
+      "text_key": "node_1786358934446_wcy9_6"
     },
     {
       "id": "node_1786358934446_icb7_7",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "그 마음만으로도 충분히 전해졌어요."
+      "text": "그 마음만으로도 충분히 전해졌어요.",
+      "text_key": "node_1786358934446_icb7_7"
     },
     {
       "id": "node_1786358934446_34nn_8",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "알겠어요. 당신의 선택을 존중할게요."
+      "text": "알겠어요. 당신의 선택을 존중할게요.",
+      "text_key": "node_1786358934446_34nn_8"
     }
   ],
   "localization": {
-    "ko": {}
+    "ko": {
+      "node_1786358934446_rh0g_1": "사장님...",
+      "node_1786358934446_18dh_2": "진심으로 감사하게 생각하고 있어요.",
+      "node_1786358934446_41uk_3": "하지만... 그 제안은 받아들이기 어려울 것 같아요.",
+      "node_1786358934446_k4fx_4": "지금 제게는... 그런 선택을 할 용기가 없어요.",
+      "node_1786358934446_hn0m_5": "사장님이 저를 믿어주신 만큼, 저도 제 길을 믿고 가고 싶어요.",
+      "node_1786358934446_wcy9_6": "이렇게 찾아와 주셔서 정말 감사해요.",
+      "node_1786358934446_icb7_7": "그 마음만으로도 충분히 전해졌어요.",
+      "node_1786358934446_34nn_8": "알겠어요. 당신의 선택을 존중할게요."
+    },
+    "en": {
+      "node_1786358934446_rh0g_1": "",
+      "node_1786358934446_18dh_2": "",
+      "node_1786358934446_41uk_3": "",
+      "node_1786358934446_k4fx_4": "",
+      "node_1786358934446_hn0m_5": "",
+      "node_1786358934446_wcy9_6": "",
+      "node_1786358934446_icb7_7": "",
+      "node_1786358934446_34nn_8": ""
+    },
+    "ja": {
+      "node_1786358934446_rh0g_1": "",
+      "node_1786358934446_18dh_2": "",
+      "node_1786358934446_41uk_3": "",
+      "node_1786358934446_k4fx_4": "",
+      "node_1786358934446_hn0m_5": "",
+      "node_1786358934446_wcy9_6": "",
+      "node_1786358934446_icb7_7": "",
+      "node_1786358934446_34nn_8": ""
+    }
   },
   "defaultLanguage": "ko",
   "characters": [
@@ -87,7 +124,7 @@
       "fileName": "2026-08-10_00046_.png",
       "kind": "image",
       "sourcePath": "chapter_assets/events/scout_a_fail/images/2026-08-10_00046_.png",
-      "url": "blob:http://localhost:5173/90ca62c0-ae95-4a51-9133-de4527bfbf21",
+      "url": "media://chapter_assets/events/scout_a_fail/images/2026-08-10_00046_.png",
       "size": 2748148
     }
   ],

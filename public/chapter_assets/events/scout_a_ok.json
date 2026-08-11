@@ -18,67 +18,108 @@
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "사장님..."
+      "text": "사장님...",
+      "text_key": "node_1786358475703_yohi_1"
     },
     {
       "id": "node_1786358475703_c196_2",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "아까는 망설였지만, 제대로 답변 드릴게요."
+      "text": "아까는 망설였지만, 제대로 답변 드릴게요.",
+      "text_key": "node_1786358475703_c196_2"
     },
     {
       "id": "node_1786358475703_detv_3",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "그쪽 제안... 받아들이기로 했어요."
+      "text": "그쪽 제안... 받아들이기로 했어요.",
+      "text_key": "node_1786358475703_detv_3"
     },
     {
       "id": "node_1786358475703_mhjo_4",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "솔직히, 아직은 두려워요."
+      "text": "솔직히, 아직은 두려워요.",
+      "text_key": "node_1786358475703_mhjo_4"
     },
     {
       "id": "node_1786358475703_booc_5",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "하지만... 사장님이 그렇게 진심으로 찾아와 주셨으니까."
+      "text": "하지만... 사장님이 그렇게 진심으로 찾아와 주셨으니까.",
+      "text_key": "node_1786358475703_booc_5"
     },
     {
       "id": "node_1786358475703_j9dl_6",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "그 믿음에 보답하고 싶어요."
+      "text": "그 믿음에 보답하고 싶어요.",
+      "text_key": "node_1786358475703_j9dl_6"
     },
     {
       "id": "node_1786358475703_y2cw_7",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "앞으로 잘 부탁드려요, 사장님."
+      "text": "앞으로 잘 부탁드려요, 사장님.",
+      "text_key": "node_1786358475703_y2cw_7"
     },
     {
       "id": "node_1786358475703_2uuk_8",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786146452316-cjvmuwo",
-      "text": "제가 할 수 있는 만큼, 최선을 다해볼게요."
+      "text": "제가 할 수 있는 만큼, 최선을 다해볼게요.",
+      "text_key": "node_1786358475703_2uuk_8"
     },
     {
       "id": "node_1786358475703_75nl_9",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "정말 감사합니다, 김미래 씨. 기다릴게요."
+      "text": "정말 감사합니다, 김미래 씨. 기다릴게요.",
+      "text_key": "node_1786358475703_75nl_9"
     }
   ],
   "localization": {
-    "ko": {}
+    "ko": {
+      "node_1786358475703_yohi_1": "사장님...",
+      "node_1786358475703_c196_2": "아까는 망설였지만, 제대로 답변 드릴게요.",
+      "node_1786358475703_detv_3": "그쪽 제안... 받아들이기로 했어요.",
+      "node_1786358475703_mhjo_4": "솔직히, 아직은 두려워요.",
+      "node_1786358475703_booc_5": "하지만... 사장님이 그렇게 진심으로 찾아와 주셨으니까.",
+      "node_1786358475703_j9dl_6": "그 믿음에 보답하고 싶어요.",
+      "node_1786358475703_y2cw_7": "앞으로 잘 부탁드려요, 사장님.",
+      "node_1786358475703_2uuk_8": "제가 할 수 있는 만큼, 최선을 다해볼게요.",
+      "node_1786358475703_75nl_9": "정말 감사합니다, 김미래 씨. 기다릴게요."
+    },
+    "en": {
+      "node_1786358475703_yohi_1": "",
+      "node_1786358475703_c196_2": "",
+      "node_1786358475703_detv_3": "",
+      "node_1786358475703_mhjo_4": "",
+      "node_1786358475703_booc_5": "",
+      "node_1786358475703_j9dl_6": "",
+      "node_1786358475703_y2cw_7": "",
+      "node_1786358475703_2uuk_8": "",
+      "node_1786358475703_75nl_9": ""
+    },
+    "ja": {
+      "node_1786358475703_yohi_1": "",
+      "node_1786358475703_c196_2": "",
+      "node_1786358475703_detv_3": "",
+      "node_1786358475703_mhjo_4": "",
+      "node_1786358475703_booc_5": "",
+      "node_1786358475703_j9dl_6": "",
+      "node_1786358475703_y2cw_7": "",
+      "node_1786358475703_2uuk_8": "",
+      "node_1786358475703_75nl_9": ""
+    }
   },
   "defaultLanguage": "ko",
   "characters": [
