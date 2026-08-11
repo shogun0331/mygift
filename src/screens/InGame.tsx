@@ -30,11 +30,20 @@ import { applyBroadcastGrowth } from '../game/growth'
 import { formatMoney } from '../game/money'
 import { rollNegotiatedSalary } from '../game/salary'
 import {
+  createInitialLeagueState,
+  reapplyLeagueGate,
+  settleLeagueRank,
+  type LeagueState,
+  type RankCreator,
+  type RankSettlementResult,
+} from '../game/ranking'
+import {
   advanceScoutTurn,
   canHireScoutOffer,
   clearFirstHireGuarantee,
   clearScoutOfferAfterHire,
   createInitialScoutState,
+  enablePremiumScout,
   ensureOpeningScout,
   hireScoutOffer,
   markScoutViewed,
@@ -67,6 +76,9 @@ import { RestRequiredModal } from './RestRequiredModal'
 import { SalaryNegotiateModal } from './SalaryNegotiateModal'
 import { SchedulePanel } from './SchedulePanel'
 import { ScoutFailModal } from './ScoutFailModal'
+import { GameClearModal } from './GameClearModal'
+import { RankChangeModal } from './RankChangeModal'
+import { RankingPanel } from './RankingPanel'
 import { WeeklySettlementModal } from './WeeklySettlementModal'
 import { EventSimulator } from '../events/EventSimulator'
 import type { GameEvent } from '../events/types'
@@ -75,6 +87,7 @@ export type GameTab =
   | 'dashboard'
   | 'creator'
   | 'schedule'
+  | 'ranking'
   | 'equipment'
   | 'settings'
 
@@ -161,6 +174,15 @@ function IconSchedule() {
   )
 }
 
+function IconRanking() {
+  return (
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M7 19V11M12 19V6M17 19v-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M4.5 19.5h15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 function IconEquipment() {
   return (
     <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -174,13 +196,13 @@ function IconEquipment() {
 
 function IconSettings() {
   return (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.7" />
       <path
-        d="M12 3.5v2.2M12 18.3v2.2M4.9 6.4l1.6 1.6M17.5 16l1.6 1.6M3.5 12h2.2M18.3 12h2.2M4.9 17.6l1.6-1.6M17.5 8l1.6-1.6"
+        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852 1.01 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
         stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
       />
     </svg>
   )
@@ -191,7 +213,7 @@ const TABS: { id: GameTab; label: string; icon: ReactNode }[] = [
   { id: 'creator', label: 'CREATOR', icon: <IconCreator /> },
   { id: 'schedule', label: 'STUDIO', icon: <IconSchedule /> },
   { id: 'equipment', label: 'EQUIPMENT', icon: <IconEquipment /> },
-  { id: 'settings', label: 'SETTINGS', icon: <IconSettings /> },
+  { id: 'ranking', label: 'RANKING', icon: <IconRanking /> },
 ]
 
 type InGameProps = {
@@ -233,6 +255,9 @@ export function InGame({
   const [startBroadcastLocked, setStartBroadcastLocked] = useState(false)
   const [openCreatorScout, setOpenCreatorScout] = useState(false)
   const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(1)
+  const [league, setLeague] = useState<LeagueState>(() => createInitialLeagueState())
+  const [rankSettlement, setRankSettlement] = useState<RankSettlementResult | null>(null)
+  const [showGameClear, setShowGameClear] = useState(false)
 
   // 스카웃 VN 이벤트 진행
   type ScoutEventState = {
@@ -362,6 +387,7 @@ export function InGame({
       salaryEventPlay ||
       scoutEventState ||
       weeklyStatement ||
+      rankSettlement ||
       startBroadcastLocked ||
       openCreatorScout
     ) {
@@ -377,6 +403,7 @@ export function InGame({
     salaryEventPlay,
     scoutEventState,
     weeklyStatement,
+    rankSettlement,
     startBroadcastLocked,
     openCreatorScout,
   ])
@@ -385,6 +412,7 @@ export function InGame({
     !salaryEventPlay &&
     !scoutEventState &&
     !weeklyStatement &&
+    !rankSettlement &&
     !startBroadcastLocked &&
     !openCreatorScout
       ? promoteQueue.find((row) => !row.salaryEvent) ?? null
@@ -435,10 +463,25 @@ export function InGame({
     )
   }, [registeredCharacters])
 
+  // 보유 로스터 승격 게이트 즉시 반영 (정산 시 방송 인원만 보고 막힌 순위 보정)
+  const rosterGateKey = ownedCreators
+    .map((creator) => `${creator.id}:${creator.grade}`)
+    .sort()
+    .join('|')
+  useEffect(() => {
+    const next = reapplyLeagueGate(leagueRef.current, toRankCreators(ownedCreatorsRef.current))
+    if (next === leagueRef.current) return
+    leagueRef.current = next
+    setLeague(next)
+    if (next.scoutRateUp) {
+      setScoutSystem((scout) => enablePremiumScout(scout))
+    }
+  }, [rosterGateKey])
+
   // 보유 0명이면 스카우트 후보가 생기는 즉시 스카우트 창으로
   useEffect(() => {
     if (ownedCreators.length > 0) return
-    if (weeklyStatement || scoutEventState || openCreatorScout) return
+    if (weeklyStatement || rankSettlement || scoutEventState || openCreatorScout) return
     if (!scoutSystem.activeOffer) return
     setTab('creator')
     setOpenCreatorScout(true)
@@ -446,6 +489,7 @@ export function InGame({
     ownedCreators.length,
     scoutSystem.activeOffer,
     weeklyStatement,
+    rankSettlement,
     scoutEventState,
     openCreatorScout,
   ])
@@ -459,6 +503,9 @@ export function InGame({
   const toxicQteQueueRef = useRef<ToxicWhackQteItem[]>([])
   const pendingWeekAdvanceAfterToxicRef = useRef(false)
   const statementDelayTimerRef = useRef<number | null>(null)
+  const leagueRef = useRef(league)
+  const pendingScoutAfterRankRef = useRef(false)
+  const pendingRankResultRef = useRef<RankSettlementResult | null>(null)
   const annualRevenueByYearRef = useRef<Record<number, number>>({})
   const studioSlotsRef = useRef(studioSlots)
   const ownedCreatorsRef = useRef(ownedCreators)
@@ -474,6 +521,7 @@ export function InGame({
   gameMonthRef.current = gameMonth
   monthWeekIndexRef.current = monthWeekIndex
   broadcastMonthNumberRef.current = broadcastMonthNumber
+  leagueRef.current = league
   const handCards = ownedCreators.map(toStudioHandCard)
 
   const handleUpgradeStudio = () => {
@@ -504,6 +552,23 @@ export function InGame({
       .filter((c) => canBroadcastByStamina(c.stamina))
   }
 
+  function toRankCreators(list: OwnedCreator[]): RankCreator[] {
+    return list.map((creator) => ({
+      id: creator.id,
+      name: creator.name,
+      grade: creator.grade,
+      popularity: creator.popularity,
+      skill: creator.skill,
+      condition: creator.condition,
+      conditionScore: creator.conditionScore,
+    }))
+  }
+
+  function openScoutFromRanking() {
+    setTab('creator')
+    setOpenCreatorScout(true)
+  }
+
   /** 무배치면 주당 1초, 아니면 기본 5초 (배속 적용) */
   function weekDurationMs(speedOpt: SpeedOption = speedRef.current) {
     const empty = assignedCreatorsFrom(ownedCreatorsRef.current).length === 0
@@ -517,6 +582,7 @@ export function InGame({
       assignedCreatorsFrom(ownedCreatorsRef.current),
       weekMs,
       dayKey,
+      leagueRef.current.revenueBonusPercent,
     )
     dayPlanRef.current = plan
     dayStartedAtRef.current = performance.now()
@@ -804,6 +870,21 @@ export function InGame({
       setAssets((prev) => prev + assetDelta)
     }
 
+    const broadcastedIds = new Set(weekSnapshot.byCreator.keys())
+    const ownedRankCreators = toRankCreators(ownedCreatorsRef.current)
+    const broadcastedCreators = ownedRankCreators.filter((creator) =>
+      broadcastedIds.has(creator.id),
+    )
+    const settled = settleLeagueRank(
+      leagueRef.current,
+      broadcastedCreators,
+      ownedRankCreators,
+    )
+    leagueRef.current = settled.state
+    setLeague(settled.state)
+    pendingRankResultRef.current = settled.result
+    const unlockPremiumScout = settled.result.scoutRateUp
+
     const nextMonthNumber = broadcastMonthNumberRef.current + 1
     broadcastMonthNumberRef.current = nextMonthNumber
     setBroadcastMonthNumber(nextMonthNumber)
@@ -823,14 +904,15 @@ export function InGame({
     }, 2000)
 
     // 새 턴 진입: 스카우트 후보 만료·등장 판정
-    setScoutSystem((prev) =>
-      advanceScoutTurn(
-        prev,
+    setScoutSystem((prev) => {
+      const base = unlockPremiumScout ? enablePremiumScout(prev) : prev
+      return advanceScoutTurn(
+        base,
         nextMonthNumber,
         registeredCharactersRef.current,
         ownedCreatorsRef.current.map((c) => c.id),
-      ),
-    )
+      )
+    })
   }
 
   function handleConditionCare(creatorId: string) {
@@ -997,7 +1079,7 @@ export function InGame({
 
   return (
     <main className="game-stage fixed inset-0 grid h-dvh grid-rows-[auto_1fr_auto] overflow-hidden">
-      <header className="game-hud z-20 flex shrink-0 items-center justify-between gap-4 px-6 pt-6 pb-3">
+      <header className="game-hud relative z-40 flex shrink-0 items-center justify-between gap-4 px-6 pt-6 pb-3">
         <div className="min-w-0">
           <p className="game-kicker">STAR BROADCASTING CO.</p>
           <h1
@@ -1098,12 +1180,27 @@ export function InGame({
             <IconBack />
             <span>{t('hud.back')}</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setTab('settings')}
+            title={t('menu.settings')}
+            aria-label={t('menu.settings')}
+            aria-pressed={tab === 'settings'}
+            className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition ${
+              tab === 'settings'
+                ? 'border-pink-400/50 bg-pink-500/20 text-pink-200 shadow-[0_0_14px_rgba(255,42,116,0.25)]'
+                : 'border-white/15 bg-slate-950/70 text-slate-300 hover:border-indigo-400/40 hover:text-indigo-200'
+            }`}
+          >
+            <IconSettings />
+          </button>
         </div>
       </header>
 
       <section
         className={`relative z-10 min-h-0 ${
-          tab === 'dashboard' || tab === 'schedule' || tab === 'creator'
+          tab === 'dashboard' || tab === 'schedule' || tab === 'creator' || tab === 'ranking'
             ? 'overflow-hidden p-3 sm:p-4'
             : 'overflow-auto p-6'
         }`}
@@ -1162,6 +1259,17 @@ export function InGame({
             pendingHandCreatorId={recruitFlyCard?.id ?? null}
             spotlightCreatorId={spotlightCreatorId}
             placementLocked={broadcastPhase === 'live'}
+          />
+        ) : tab === 'ranking' ? (
+          <RankingPanel
+            league={league}
+            creators={toRankCreators(ownedCreators)}
+            weeksUntilSettlement={
+              broadcastPhase === 'live'
+                ? Math.max(0, WEEKS_PER_MONTH - (monthWeekIndex + 1))
+                : WEEKS_PER_MONTH
+            }
+            onOpenScout={openScoutFromRanking}
           />
         ) : tab === 'equipment' ? (
           <EquipmentPanel onUpgradeStudio={handleUpgradeStudio} />
@@ -1240,7 +1348,7 @@ export function InGame({
       </section>
 
       <nav className="game-dock z-20 shrink-0 px-6 py-3" aria-label="인게임 메뉴">
-        <div className="mx-auto flex w-full max-w-5xl gap-2">
+        <div className="mx-auto flex w-full max-w-6xl gap-1.5 sm:gap-2">
           {TABS.map((item) => {
             const isActive = tab === item.id
             return (
@@ -1265,8 +1373,58 @@ export function InGame({
           statement={weeklyStatement}
           onConfirm={() => {
             setWeeklyStatement(null)
+            const pendingRank = pendingRankResultRef.current
+            pendingRankResultRef.current = null
+            if (pendingRank) {
+              pendingScoutAfterRankRef.current = Boolean(scoutSystemRef.current.activeOffer)
+              setRankSettlement(pendingRank)
+              return
+            }
             setStartBroadcastLocked(false)
             if (scoutSystemRef.current.activeOffer) {
+              setTab('creator')
+              setOpenCreatorScout(true)
+            }
+          }}
+        />
+      ) : null}
+
+      {rankSettlement ? (
+        <RankChangeModal
+          result={rankSettlement}
+          onOpenScout={() => {
+            const cleared = rankSettlement.gameCleared
+            setRankSettlement(null)
+            setStartBroadcastLocked(false)
+            pendingScoutAfterRankRef.current = false
+            openScoutFromRanking()
+            if (cleared) setShowGameClear(true)
+          }}
+          onConfirm={() => {
+            const cleared = rankSettlement.gameCleared
+            const openScout = pendingScoutAfterRankRef.current
+            setRankSettlement(null)
+            setStartBroadcastLocked(false)
+            if (cleared) {
+              pendingScoutAfterRankRef.current = openScout
+              setShowGameClear(true)
+              return
+            }
+            pendingScoutAfterRankRef.current = false
+            if (openScout && scoutSystemRef.current.activeOffer) {
+              setTab('creator')
+              setOpenCreatorScout(true)
+            }
+          }}
+        />
+      ) : null}
+
+      {showGameClear ? (
+        <GameClearModal
+          onConfirm={() => {
+            setShowGameClear(false)
+            if (pendingScoutAfterRankRef.current && scoutSystemRef.current.activeOffer) {
+              pendingScoutAfterRankRef.current = false
               setTab('creator')
               setOpenCreatorScout(true)
             }

@@ -2,14 +2,43 @@
   "name": "broadcast-game",
   "private": true,
   "version": "0.0.0",
+  "description": "Broadcast Game Studio",
+  "author": "shogun0331",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
     "dev": "concurrently -n vite,electron -c cyan,magenta \"vite\" \"wait-on http://localhost:5173 && cross-env ELECTRON_DEV=1 electron .\"",
     "build": "tsc -b && vite build",
+    "build:electron": "tsc -b && vite build && electron-builder --win && node scripts/encrypt-assets.cjs && (robocopy C:/Users/shogu/AppData/Local/Temp/broadcast-game-dist ./dist-electron /E /NFL /NDL /XD win-unpacked.tmp || exit 0) && (rmdir /s /q ./dist-electron/win-unpacked/resources/app || exit 0)",
     "start": "electron .",
     "lint": "oxlint",
     "preview": "vite preview"
+  },
+  "build": {
+    "appId": "com.broadcast.game",
+    "productName": "BroadcastGame",
+    "directories": {
+      "output": "C:/Users/shogu/AppData/Local/Temp/broadcast-game-dist"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "public/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "public/characters/**/*",
+      "public/chapter_assets/**/*"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "portable": {
+      "splashImage": "public/loading_splash.bmp"
+    }
   },
   "dependencies": {
     "jszip": "^3.10.1",
@@ -25,6 +54,7 @@
     "concurrently": "^10.0.4",
     "cross-env": "^10.1.0",
     "electron": "^43.3.0",
+    "electron-builder": "^26.15.3",
     "oxlint": "^1.75.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",

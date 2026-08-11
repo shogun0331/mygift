@@ -1,7 +1,13 @@
 import type { Grade, OwnedCreator, RegisteredCharacter } from './characters'
 import { conditionFromScore } from './condition'
 import { rollNegotiatedSalary } from './salary'
-import { clampStats, rollInt, rollStatsForGrade, type CharacterStats } from './stats'
+import {
+  clampStats,
+  rollGrade,
+  rollInt,
+  rollStatsForGrade,
+  type CharacterStats,
+} from './stats'
 
 export type ScoutOffer = {
   template: RegisteredCharacter
@@ -25,6 +31,8 @@ export type ScoutSystemState = {
   firstHireGuaranteed: boolean
   /** 성공적으로 등장한 횟수 (1·2회차 100%, 이후 50%) */
   appearCount: number
+  /** 10위 진입 후 A/S 가중 상향 */
+  premiumScout: boolean
 }
 
 export function scoutGradeForTurn(turn: number): Grade {
@@ -33,6 +41,17 @@ export function scoutGradeForTurn(turn: number): Grade {
   if (t <= 24) return 'B'
   if (t <= 36) return 'A'
   return 'S'
+}
+
+const GRADE_ORDER: Grade[] = ['C', 'B', 'A', 'S']
+
+function betterGrade(a: Grade, b: Grade): Grade {
+  return GRADE_ORDER.indexOf(b) > GRADE_ORDER.indexOf(a) ? b : a
+}
+
+export function enablePremiumScout(state: ScoutSystemState): ScoutSystemState {
+  if (state.premiumScout) return state
+  return { ...state, premiumScout: true }
 }
 
 export function createInitialScoutState(currentTurn: number): ScoutSystemState {
@@ -48,6 +67,7 @@ export function createInitialScoutState(currentTurn: number): ScoutSystemState {
     openingScoutPending: true,
     firstHireGuaranteed: true,
     appearCount: 0,
+    premiumScout: false,
   }
 }
 
@@ -113,7 +133,9 @@ function trySpawnOffer(
   options?: { force?: boolean },
 ): ScoutSystemState {
   const exclude = buildExcludeSet(ownedIds, state.permanentExcludeIds)
-  const grade = scoutGradeForTurn(currentTurn)
+  const turnGrade = scoutGradeForTurn(currentTurn)
+  const rolled = state.premiumScout ? rollGrade(true) : turnGrade
+  const grade = betterGrade(turnGrade, rolled)
   const template = pickRandomTemplate(registered, exclude)
   const scheduleNext = (): ScoutSystemState => ({
     ...state,

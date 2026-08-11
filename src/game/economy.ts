@@ -67,15 +67,18 @@ function gradeOf(creator: { grade?: string }): Grade | null {
  * 최종 = round(기본 × REVENUE_RAW_TO_USD) × conditionMult
  * ※ 가변 수익 배율은 컨디션(CONDITION_MULT)만 적용. 스테미나는 수익에 영향 없음.
  */
-export function calcWeekRevenueWon(creator: {
-  popularity: number
-  skill?: number
-  heat?: number
-  revenueMult?: number
-  condition?: string
-  conditionScore?: number
-  grade?: string
-}): number {
+export function calcWeekRevenueWon(
+  creator: {
+    popularity: number
+    skill?: number
+    heat?: number
+    revenueMult?: number
+    condition?: string
+    conditionScore?: number
+    grade?: string
+  },
+  stationRevenueBonusPercent = 0,
+): number {
   const popularity = Number(creator.popularity) || 0
   const skill = Number(creator.skill ?? 25) || 25
   const heat = Number(creator.heat ?? 1) || 1
@@ -86,6 +89,7 @@ export function calcWeekRevenueWon(creator: {
   const gradeBonus = grade ? GRADE_REVENUE_BONUS[grade] : 1
   // 컨디션만 — 스테미나/기타 상태 배율 없음
   const conditionMult = CONDITION_MULT[conditionFromScore(scoreOf(creator))]
+  const stationMult = 1 + Math.max(0, stationRevenueBonusPercent) / 100
 
   const baseRaw =
     popularity * skill * heatCoefOf(heat) * revenueMult * gradeBonus * randomFactor()
@@ -94,7 +98,7 @@ export function calcWeekRevenueWon(creator: {
   if (grade === 'S') {
     baseUsd = Math.max(baseUsd, 200_000)
   }
-  return Math.max(0, Math.round(baseUsd * conditionMult))
+  return Math.max(0, Math.round(baseUsd * conditionMult * stationMult))
 }
 
 /**
@@ -215,8 +219,9 @@ export function buildCreatorDayPlan(
   creator: OwnedCreator,
   dayMs: number,
   dayKey: string,
+  stationRevenueBonusPercent = 0,
 ): CreatorDayPlan {
-  const weekRevenueWon = calcWeekRevenueWon(creator)
+  const weekRevenueWon = calcWeekRevenueWon(creator, stationRevenueBonusPercent)
   const amounts = splitDayRevenueAmounts(weekRevenueWon)
   const flavorCount = Math.min(3, rollInt(0, 3))
   const donationEvents: Array<Omit<DayEvent, 'atMs' | 'id'>> = amounts.map((amount) => ({
@@ -254,8 +259,11 @@ export function buildStudioDayPlan(
   creators: OwnedCreator[],
   dayMs: number,
   dayKey: string,
+  stationRevenueBonusPercent = 0,
 ): StudioDayPlan {
-  const plans = creators.map((creator) => buildCreatorDayPlan(creator, dayMs, dayKey))
+  const plans = creators.map((creator) =>
+    buildCreatorDayPlan(creator, dayMs, dayKey, stationRevenueBonusPercent),
+  )
   const totalRevenueWon = plans.reduce((sum, plan) => sum + plan.weekRevenueWon, 0)
   return { dayKey, dayMs, plans, totalRevenueWon }
 }

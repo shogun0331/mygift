@@ -41,6 +41,14 @@ export const GRADE_WEIGHTS: Array<{ grade: Grade; weight: number }> = [
   { grade: 'S', weight: 10 },
 ]
 
+/** 10위 진입 후 고급 스카우트 가중치 */
+export const PREMIUM_GRADE_WEIGHTS: Array<{ grade: Grade; weight: number }> = [
+  { grade: 'C', weight: 15 },
+  { grade: 'B', weight: 25 },
+  { grade: 'A', weight: 35 },
+  { grade: 'S', weight: 25 },
+]
+
 type StatRange = { min: number; max: number }
 
 export type ScoutStatRanges = {
@@ -106,10 +114,11 @@ export function rollInt(min: number, max: number) {
   return lo + Math.floor(Math.random() * (hi - lo + 1))
 }
 
-export function rollGrade(): Grade {
-  const total = GRADE_WEIGHTS.reduce((sum, row) => sum + row.weight, 0)
+export function rollGrade(premium = false): Grade {
+  const table = premium ? PREMIUM_GRADE_WEIGHTS : GRADE_WEIGHTS
+  const total = table.reduce((sum, row) => sum + row.weight, 0)
   let ticket = Math.random() * total
-  for (const row of GRADE_WEIGHTS) {
+  for (const row of table) {
     ticket -= row.weight
     if (ticket < 0) return row.grade
   }
