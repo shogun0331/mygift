@@ -900,3 +900,192 @@ select {
     opacity: 0.88;
   }
 }
+
+@keyframes equip-available-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.95);
+  }
+}
+
+@keyframes equip-owned-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px rgba(250, 204, 21, 0.45),
+      0 0 22px rgba(250, 204, 21, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 0 16px rgba(250, 204, 21, 0.7),
+      0 0 32px rgba(250, 204, 21, 0.4);
+  }
+}
+
+.equip-node-available {
+  animation: equip-available-glow 2s ease-in-out infinite;
+}
+
+.equip-node-owned {
+  animation: equip-owned-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes equip-scout-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(232, 121, 249, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(240, 171, 252, 0.55);
+  }
+}
+
+@keyframes equip-slot-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(165, 243, 252, 0.55);
+  }
+}
+
+.equip-node-scout-available,
+.equip-node-scout-owned {
+  animation: equip-scout-glow 2s ease-in-out infinite;
+}
+
+.equip-node-slot-available,
+.equip-node-slot-owned {
+  animation: equip-slot-glow 2s ease-in-out infinite;
+}
+
+@keyframes equip-node-purchase {
+  0% {
+    filter: brightness(2.4);
+    box-shadow:
+      0 0 28px rgba(250, 204, 21, 1),
+      0 0 56px rgba(250, 204, 21, 0.7);
+  }
+  100% {
+    filter: brightness(1.15);
+    box-shadow:
+      0 0 18px rgba(250, 204, 21, 0.7),
+      0 0 34px rgba(250, 204, 21, 0.4);
+  }
+}
+
+.equip-node-purchase {
+  animation: equip-node-purchase 0.65s ease-out both;
+}
+
+@keyframes equip-buy-ring {
+  0% {
+    width: 12px;
+    height: 12px;
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  100% {
+    width: 120px;
+    height: 120px;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.equip-buy-ring {
+  animation: equip-buy-ring 0.85s ease-out forwards;
+}
+
+.equip-buy-ring-a {
+  animation-duration: 0.75s;
+  border-color: rgba(253, 224, 71, 0.95);
+}
+
+.equip-buy-ring-b {
+  animation-delay: 0.08s;
+  animation-duration: 0.95s;
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+@keyframes equip-buy-core {
+  0% {
+    width: 6px;
+    height: 6px;
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(254, 240, 138, 1);
+  }
+  40% {
+    width: 22px;
+    height: 22px;
+    opacity: 0.95;
+    box-shadow: 0 0 28px rgba(250, 204, 21, 0.95);
+  }
+  100% {
+    width: 4px;
+    height: 4px;
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(250, 204, 21, 0);
+  }
+}
+
+.equip-buy-core {
+  animation: equip-buy-core 0.7s ease-out forwards;
+}
+
+@keyframes equip-buy-spark {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--spark-x)), calc(-50% + var(--spark-y))) scale(0.2);
+  }
+}
+
+.equip-buy-spark {
+  animation: equip-buy-spark 0.7s ease-out forwards;
+}
+
+@keyframes equip-edge-ignite {
+  0% {
+    opacity: 0.2;
+    stroke-width: 0.4;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.55;
+  }
+}
+
+.equip-edge-ignite {
+  animation: equip-edge-ignite 0.85s ease-out both;
+}
+
+@keyframes equip-stage-flash {
+  0% {
+    background: radial-gradient(circle at center, rgba(250, 204, 21, 0.22), transparent 55%);
+    opacity: 1;
+  }
+  100% {
+    background: radial-gradient(circle at center, rgba(250, 204, 21, 0), transparent 60%);
+    opacity: 0;
+  }
+}
+
+.equip-stage-flash {
+  animation: equip-stage-flash 0.55s ease-out forwards;
+}
+
+
+
+

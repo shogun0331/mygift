@@ -1,37 +1,46 @@
 import { useEffect, useMemo, useRef, useState, type Ref } from 'react'
 import {
-  checkPromotionEligible,
   filterRankEntries,
   formatViewers,
   MILESTONE_REWARDS,
+  RANK_MILESTONES,
   type LeagueState,
   type MilestoneReward,
-  type RankCreator,
   type RankEntry,
 } from '../game/ranking'
+import {
+  getStationReviewStatus,
+  STATION_SPECS,
+  type StationGrade,
+} from '../game/station'
 import { useTranslation } from '../locales/i18n'
 
 type RankFilter = 'all' | 'rivals' | 'top10'
 
 type RankingPanelProps = {
   league: LeagueState
-  creators: RankCreator[]
+  stationGrade: StationGrade
+  nextReviewDate: string
   weeksUntilSettlement: number
+  creators: Array<{ grade: StationGrade }>
   onOpenScout: () => void
 }
 
 export function RankingPanel({
   league,
-  creators,
+  stationGrade,
+  nextReviewDate,
   weeksUntilSettlement,
+  creators,
   onOpenScout,
 }: RankingPanelProps) {
   const { t } = useTranslation()
   const [filter, setFilter] = useState<RankFilter>('all')
   const playerRowRef = useRef<HTMLTableRowElement | null>(null)
-  const promotion = useMemo(
-    () => checkPromotionEligible(league.currentRank, league.viewers, creators),
-    [league.currentRank, league.viewers, creators],
+  const spec = STATION_SPECS[stationGrade]
+  const review = useMemo(
+    () => getStationReviewStatus(stationGrade, league.viewers, creators),
+    [stationGrade, league.viewers, creators],
   )
   const rows = useMemo(
     () => filterRankEntries(league.entries, filter),
@@ -43,12 +52,8 @@ export function RankingPanel({
     playerRowRef.current?.scrollIntoView({ block: 'center' })
   }, [filter, league.currentRank])
 
-  const targetRank = promotion.target?.enterRank ?? 1
-  const reward = promotion.target?.reward ?? (
-    promotion.target?.nextMilestone
-      ? MILESTONE_REWARDS[promotion.target.nextMilestone]
-      : null
-  )
+  const nextMilestone = RANK_MILESTONES.find((rank) => rank < league.currentRank) ?? null
+  const reward = nextMilestone ? MILESTONE_REWARDS[nextMilestone] : null
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
@@ -59,8 +64,8 @@ export function RankingPanel({
             {t('ranking.title')}
           </h2>
         </div>
-        <span className="rounded-full border border-indigo-400/30 bg-indigo-500/20 px-2.5 py-1 text-[10px] font-bold tracking-wide text-indigo-300">
-          {t('ranking.season')}
+        <span className="rounded-full border border-amber-400/30 bg-amber-500/20 px-2.5 py-1 text-[10px] font-bold tracking-wide text-amber-200">
+          {t('station.gradeBadge').replace('{grade}', stationGrade)}
         </span>
         <div className="flex flex-wrap items-center gap-3 text-xs">
           <p className="font-bold text-amber-200">
@@ -123,82 +128,81 @@ export function RankingPanel({
 
         <aside className="flex min-h-0 flex-col gap-2.5 overflow-auto">
           <section className="game-panel rounded-2xl p-3">
-            <h3 className="game-stat-label">{t('ranking.nextTarget')}</h3>
-            {promotion.target ? (
-              <>
-                <p className="mt-1.5 text-sm font-black text-slate-100">
-                  {targetRank}
-                  {t('ranking.rankUnit')} {t('ranking.entry')}
-                </p>
-                <p className="mt-2 text-[10px] font-semibold text-slate-400">
-                  {t('ranking.viewerProgress')}
-                </p>
-                <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-800">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-amber-400 to-pink-400"
-                    style={{ width: `${Math.round(promotion.viewerProgress * 100)}%` }}
-                  />
-                </div>
-                <p className="mt-1 text-[11px] font-bold tabular-nums text-slate-300">
-                  {formatViewers(promotion.viewers)} / {formatViewers(promotion.requiredViewers)}
-                  {t('ranking.viewersUnit')}
-                </p>
-              </>
-            ) : (
-              <p className="mt-2 text-xs font-bold text-amber-300">{t('ranking.atTop')}</p>
-            )}
+            <h3 className="game-stat-label">{t('station.panelTitle')}</h3>
+            <p className="mt-1.5 text-sm font-black text-slate-100">
+              {t('station.gradeBadge').replace('{grade}', stationGrade)}
+            </p>
+            <p className="mt-2 text-[11px] font-semibold text-slate-300">
+              {t('station.maxRank')}: {spec.maxRank}
+              {t('ranking.rankUnit')}
+            </p>
+            <p className="mt-1 text-[11px] font-semibold text-slate-300">
+              {t('station.viewerCap')}:{' '}
+              {spec.viewerCap == null
+                ? t('station.viewerCapNone')
+                : `${formatViewers(spec.viewerCap)}${t('ranking.viewersUnit')}`}
+            </p>
+            <p className="mt-1 text-[11px] font-semibold text-amber-200/90">
+              {t('station.nextReview')}: {nextReviewDate}
+            </p>
           </section>
 
-          {promotion.target ? (
-            <section
-              className={`game-panel rounded-2xl p-3 ${
-                promotion.heldByGate
-                  ? 'border border-rose-400/50 bg-rose-950/40 shadow-[0_0_18px_rgba(244,63,94,0.25)]'
-                  : ''
-              }`}
-            >
-              <h3 className="game-stat-label">{t('ranking.requirements')}</h3>
-              <ul className="mt-2 space-y-1.5">
-                {promotion.checks.map((check, index) => {
-                  const prev = promotion.checks[index - 1]
-                  const showOr = Boolean(check.orGroup && prev?.orGroup === check.orGroup)
-                  return (
-                    <li key={check.id}>
-                      {showOr ? (
-                        <p className="mb-1 text-center text-[9px] font-black tracking-wide text-slate-500">
-                          {t('ranking.or')}
-                        </p>
-                      ) : null}
-                      <div
-                        className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
-                          check.met
-                            ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
-                            : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
-                        }`}
-                      >
-                        <span className="mr-1">{check.met ? '[v]' : '[x]'}</span>
-                        {t(check.labelKey)} ({check.current}/{check.count})
-                      </div>
-                    </li>
-                  )
-                })}
-              </ul>
-              {!promotion.creatorsMet ? (
-                <button
-                  type="button"
-                  onClick={onOpenScout}
-                  className="game-btn-pink mt-3 w-full rounded-xl px-3 py-2 text-[11px] font-black"
-                >
-                  {t('ranking.goScout')}
-                </button>
-              ) : null}
-            </section>
-          ) : null}
+          <section
+            className={`game-panel rounded-2xl p-3 ${
+              review.next && !review.eligible
+                ? 'border border-rose-400/40 bg-rose-950/30'
+                : ''
+            }`}
+          >
+            <h3 className="game-stat-label">{t('station.reviewChecks')}</h3>
+            {review.next ? (
+              <>
+                <ul className="mt-2 space-y-1.5">
+                  <li
+                    className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
+                      review.viewersMet
+                        ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
+                        : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
+                    }`}
+                  >
+                    <span className="mr-1">{review.viewersMet ? '[v]' : '[x]'}</span>
+                    {t('station.needViewers')} ({formatViewers(review.viewers)} /{' '}
+                    {formatViewers(review.requiredViewers)}
+                    {t('ranking.viewersUnit')})
+                  </li>
+                  <li
+                    className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
+                      review.creatorsMet
+                        ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
+                        : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
+                    }`}
+                  >
+                    <span className="mr-1">{review.creatorsMet ? '[v]' : '[x]'}</span>
+                    {t('station.needCreators')
+                      .replace('{grade}', review.creatorGrade)
+                      .replace('{count}', String(review.creatorRequired))}{' '}
+                    ({review.creatorCurrent}/{review.creatorRequired})
+                  </li>
+                </ul>
+                {!review.creatorsMet ? (
+                  <button
+                    type="button"
+                    onClick={onOpenScout}
+                    className="game-btn-pink mt-3 w-full rounded-xl px-3 py-2 text-[11px] font-black"
+                  >
+                    {t('ranking.goScout')}
+                  </button>
+                ) : null}
+              </>
+            ) : (
+              <p className="mt-2 text-xs font-bold text-amber-300">{t('station.reviewMax')}</p>
+            )}
+          </section>
 
           <section className="game-panel rounded-2xl p-3">
             <h3 className="game-stat-label">{t('ranking.rewardTitle')}</h3>
             {reward ? (
-              <RewardList reward={reward} nextMilestone={promotion.target?.nextMilestone ?? null} />
+              <RewardList reward={reward} nextMilestone={nextMilestone} />
             ) : (
               <p className="mt-2 text-xs text-slate-500">{t('ranking.noReward')}</p>
             )}
@@ -320,7 +324,6 @@ function RewardList({
   if (reward.revenueBonusPercent > 0) {
     lines.push(`${t('ranking.rewardRevenue')} +${reward.revenueBonusPercent}%`)
   }
-  if (reward.scoutRateUp) lines.push(t('ranking.rewardScout'))
   if (reward.specialEventUnlock) lines.push(t('ranking.rewardHidden'))
   if (reward.isGameClear) lines.push(t('ranking.rewardClear'))
 

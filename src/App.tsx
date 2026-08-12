@@ -97,7 +97,7 @@ function syncStudioSlotsWithOwned(slots: StudioSlot[], owned: OwnedCreator[]): S
     if (!slot.assignment) return slot
     const creator = owned.find((item) => item.id === slot.assignment!.creatorId)
     if (!creator) return slot
-    const idleVideoUrl = findLevelIdleVideoUrl(creator, 1)
+    const idleVideoUrl = findLevelIdleVideoUrl(creator, creator.heat ?? 1)
     const profileImageUrl = creator.profileImageUrl || null
     const revision = creator.mediaRevision
     if (

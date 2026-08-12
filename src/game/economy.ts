@@ -78,6 +78,7 @@ export function calcWeekRevenueWon(
     grade?: string
   },
   stationRevenueBonusPercent = 0,
+  equipmentRevenueMult = 1,
 ): number {
   const popularity = Number(creator.popularity) || 0
   const skill = Number(creator.skill ?? 25) || 25
@@ -90,6 +91,7 @@ export function calcWeekRevenueWon(
   // 컨디션만 — 스테미나/기타 상태 배율 없음
   const conditionMult = CONDITION_MULT[conditionFromScore(scoreOf(creator))]
   const stationMult = 1 + Math.max(0, stationRevenueBonusPercent) / 100
+  const equipMult = Math.max(0.1, equipmentRevenueMult)
 
   const baseRaw =
     popularity * skill * heatCoefOf(heat) * revenueMult * gradeBonus * randomFactor()
@@ -98,7 +100,7 @@ export function calcWeekRevenueWon(
   if (grade === 'S') {
     baseUsd = Math.max(baseUsd, 200_000)
   }
-  return Math.max(0, Math.round(baseUsd * conditionMult * stationMult))
+  return Math.max(0, Math.round(baseUsd * conditionMult * stationMult * equipMult))
 }
 
 /**
@@ -220,8 +222,13 @@ export function buildCreatorDayPlan(
   dayMs: number,
   dayKey: string,
   stationRevenueBonusPercent = 0,
+  equipmentRevenueMult = 1,
 ): CreatorDayPlan {
-  const weekRevenueWon = calcWeekRevenueWon(creator, stationRevenueBonusPercent)
+  const weekRevenueWon = calcWeekRevenueWon(
+    creator,
+    stationRevenueBonusPercent,
+    equipmentRevenueMult,
+  )
   const amounts = splitDayRevenueAmounts(weekRevenueWon)
   const flavorCount = Math.min(3, rollInt(0, 3))
   const donationEvents: Array<Omit<DayEvent, 'atMs' | 'id'>> = amounts.map((amount) => ({
@@ -260,9 +267,16 @@ export function buildStudioDayPlan(
   dayMs: number,
   dayKey: string,
   stationRevenueBonusPercent = 0,
+  revenueMultByCreatorId: Record<string, number> = {},
 ): StudioDayPlan {
   const plans = creators.map((creator) =>
-    buildCreatorDayPlan(creator, dayMs, dayKey, stationRevenueBonusPercent),
+    buildCreatorDayPlan(
+      creator,
+      dayMs,
+      dayKey,
+      stationRevenueBonusPercent,
+      revenueMultByCreatorId[creator.id] ?? 1,
+    ),
   )
   const totalRevenueWon = plans.reduce((sum, plan) => sum + plan.weekRevenueWon, 0)
   return { dayKey, dayMs, plans, totalRevenueWon }

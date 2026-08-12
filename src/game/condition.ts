@@ -141,6 +141,23 @@ export function clampStamina(stamina: number, staminaMax = STAMINA_MAX) {
   return Math.max(0, Math.min(max, Math.round(stamina)))
 }
 
+/** VIP 수락 등 — 최대 스테미나 감소. 방송 가능 하한 미만으로 내려가지 않음 */
+export function applyStaminaMaxPenalty<T extends { stamina: number; staminaMax: number }>(
+  creator: T,
+  loss: number,
+): T {
+  const cut = Math.max(0, Math.round(loss))
+  const nextMax = Math.max(
+    STAMINA_BROADCAST_MIN,
+    Math.min(STAMINA_MAX, Math.round(creator.staminaMax) - cut),
+  )
+  return {
+    ...creator,
+    staminaMax: nextMax,
+    stamina: clampStamina(creator.stamina, nextMax),
+  }
+}
+
 export function conditionFromScore(score: number): CreatorCondition {
   const s = clampConditionScore(score)
   if (s >= 90) return 'best'
@@ -226,6 +243,11 @@ export type ConditionCrashResult<T extends StaminaConditionState> = {
   }>
 }
 
+export type SlotDrainMults = {
+  staminaMult: number
+  conditionMult: number
+}
+
 /**
  * 주 종료: 방송자 스테미나 -5 + 컨디션 소모 / 휴식자 스테미나 +20 + 컨디션 회복
  * 방송자는 보유 인원×2% 확률로 진상 사태(컨디션 즉시 급락, 스테미나는 QTE 실패 시 차감)
@@ -233,6 +255,7 @@ export type ConditionCrashResult<T extends StaminaConditionState> = {
 export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState & { name?: string }>(
   creators: T[],
   broadcastedIds: ReadonlySet<string>,
+  drainMultByCreatorId: Record<string, SlotDrainMults> = {},
 ): ConditionCrashResult<T> {
   const crashes: ConditionCrashResult<T>['crashes'] = []
   const crashChance = calcConditionCrashChance(creators.length)
@@ -243,11 +266,16 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
     const staminaNow = clampStamina(creator.stamina ?? staminaMax, staminaMax)
 
     if (broadcastedIds.has(creator.id)) {
-      const staminaAfter = clampStamina(staminaNow - STAMINA_BROADCAST_COST, staminaMax)
-      let condDelta =
+      const drain = drainMultByCreatorId[creator.id]
+      const staminaMult = Math.max(0.5, Math.min(1, drain?.staminaMult ?? 1))
+      const conditionMult = Math.max(0.5, Math.min(1, drain?.conditionMult ?? 1))
+      const staminaCost = Math.max(1, Math.round(STAMINA_BROADCAST_COST * staminaMult))
+      const staminaAfter = clampStamina(staminaNow - staminaCost, staminaMax)
+      const rawCond =
         staminaAfter < STAMINA_LOW_THRESHOLD
           ? -rollInt(CONDITION_BROADCAST_FAST.min, CONDITION_BROADCAST_FAST.max)
           : -rollInt(CONDITION_BROADCAST_LIGHT.min, CONDITION_BROADCAST_LIGHT.max)
+      let condDelta = Math.min(-1, Math.round(rawCond * conditionMult))
 
       let scoreAfterDrain = currentScore + condDelta
       if (crashChance > 0 && Math.random() < crashChance) {
@@ -335,6 +363,21 @@ export function applyVacationRecovery<T extends StaminaConditionState>(creator: 
     creator,
     scoreOf(creator) + VACATION_CONDITION_GAIN,
     (creator.stamina ?? 0) + STAMINA_VACATION_GAIN,
+    creator.restStreak ?? 0,
+  )
+}
+
+/** 컨디션·스테미나 증감 (선물/H재요청 등) */
+export function applyVitalsDelta<T extends StaminaConditionState>(
+  creator: T,
+  delta: { condition?: number; stamina?: number },
+): T {
+  const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
+  const staminaNow = clampStamina(creator.stamina ?? staminaMax, staminaMax)
+  return withVitals(
+    creator,
+    scoreOf(creator) + (delta.condition ?? 0),
+    staminaNow + (delta.stamina ?? 0),
     creator.restStreak ?? 0,
   )
 }

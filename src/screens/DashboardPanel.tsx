@@ -100,13 +100,14 @@ function toBroadcastSlot(
   const stamina = owned
     ? Math.min(staminaMax, owned.stamina)
     : Math.min(staminaMax, 40 + slot.assignment.popularity)
+  const heatLevel = owned?.heat ?? 1
   const idleVideoUrl =
-    (owned ? findLevelIdleVideoUrl(owned, 1) : null) ||
+    (owned ? findLevelIdleVideoUrl(owned, heatLevel) : null) ||
     slot.assignment.idleVideoUrl ||
     null
   const playVideoUrl =
     broadcastPhase === 'live' && owned
-      ? findBroadcastDayVideoUrl(owned, weekDayIndex, 1) || idleVideoUrl
+      ? findBroadcastDayVideoUrl(owned, weekDayIndex, heatLevel) || idleVideoUrl
       : idleVideoUrl
   const mediaRevision =
     owned?.mediaRevision ?? slot.assignment.mediaRevision ?? playVideoUrl ?? undefined

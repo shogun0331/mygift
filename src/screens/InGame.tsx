@@ -7,11 +7,29 @@ import {
   type RegisteredCharacter,
 } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
-import { calcSlotUnlockCost, countUnlockedSlots, findNextUnlockableSlot, unlockStudioSlot } from '../game/studioSlots'
+import { unlockNextStudioSlot } from '../game/studioSlots'
+import {
+  createInitialEquipmentTree,
+  getEquipNode,
+  getConditionCostMult,
+  getRevenueMult,
+  getStaminaCostMult,
+  purchaseNode,
+  canPurchaseNode,
+  type EquipmentTreeState,
+} from '../game/equipmentTree'
 import type { BroadcastPhase } from '../game/broadcast'
-import { MS_PER_EMPTY_BROADCAST_WEEK, MS_PER_GAME_WEEK, WEEKS_PER_MONTH, monthToCalendarDate } from '../game/broadcast'
+import {
+  GAME_EPOCH,
+  MS_PER_EMPTY_BROADCAST_WEEK,
+  MS_PER_GAME_WEEK,
+  WEEKS_PER_MONTH,
+  monthToCalendarDate,
+} from '../game/broadcast'
 import {
   applyConditionFullCare,
+  applyStaminaMaxPenalty,
+  applyVitalsDelta,
   applyToxicStaminaPenalty,
   applyWeeklyStaminaAndCondition,
   applyVacationRecovery,
@@ -30,6 +48,7 @@ import { applyBroadcastGrowth } from '../game/growth'
 import { formatMoney } from '../game/money'
 import { rollNegotiatedSalary } from '../game/salary'
 import {
+  applyAudiencePenalty,
   createInitialLeagueState,
   reapplyLeagueGate,
   settleLeagueRank,
@@ -38,17 +57,16 @@ import {
   type RankSettlementResult,
 } from '../game/ranking'
 import {
-  advanceScoutTurn,
   canHireScoutOffer,
   clearFirstHireGuarantee,
   clearScoutOfferAfterHire,
   createInitialScoutState,
-  enablePremiumScout,
+  createRandomScoutOffer,
   ensureOpeningScout,
+  hasScoutPool,
   hireScoutOffer,
   markScoutViewed,
   passScoutOffer,
-  rollScoutAccept,
   type ScoutOffer,
   type ScoutSystemState,
 } from '../game/scout'
@@ -75,10 +93,40 @@ import { RecruitCardFlyFx, type RecruitFlyCard } from './RecruitCardFlyFx'
 import { RestRequiredModal } from './RestRequiredModal'
 import { SalaryNegotiateModal } from './SalaryNegotiateModal'
 import { SchedulePanel } from './SchedulePanel'
-import { ScoutFailModal } from './ScoutFailModal'
 import { GameClearModal } from './GameClearModal'
+import {
+  applyStationReview,
+  isAnnualReviewMonth,
+  nextJanuaryAfter,
+  type StationGrade,
+  type StationReviewStatus,
+} from '../game/station'
+import {
+  rollVipAcceptSp,
+  rollVipRejectViewers,
+  VIP_ACCEPT_BY_GRADE,
+  type VipOffer,
+} from '../game/vip'
+import {
+  advanceAndPickSocialEvent,
+  createSocialSpawnState,
+  dateArcAfter,
+  H_RETRY_BY_GRADE,
+  rollGiftAcceptVitals,
+  rollRejectConditionLoss,
+  type DatePending,
+  type GiftPending,
+  type HRetryPending,
+  type SocialPending,
+} from '../game/social'
 import { RankChangeModal } from './RankChangeModal'
 import { RankingPanel } from './RankingPanel'
+import { StationReviewModal } from './StationReviewModal'
+import { DateOfferModal, DateResultModal } from './DateEventModal'
+import { GiftOfferModal, GiftResultModal } from './GiftEventModal'
+import { HRetryOfferModal, HRetryResultModal } from './HRetryEventModal'
+import { VipOfferModal } from './VipOfferModal'
+import { VipResultModal, type VipResult } from './VipResultModal'
 import { WeeklySettlementModal } from './WeeklySettlementModal'
 import { EventSimulator } from '../events/EventSimulator'
 import type { GameEvent } from '../events/types'
@@ -95,7 +143,6 @@ export type GameTab =
 const SPEED_OPTIONS = ['1x', '2x', '3x'] as const
 type SpeedOption = (typeof SPEED_OPTIONS)[number]
 
-const GAME_EPOCH = new Date(2026, 0, 1)
 const INITIAL_ASSETS = 100_000
 const MAX_RECENT_EVENTS = 40
 
@@ -255,9 +302,57 @@ export function InGame({
   const [startBroadcastLocked, setStartBroadcastLocked] = useState(false)
   const [openCreatorScout, setOpenCreatorScout] = useState(false)
   const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(1)
-  const [league, setLeague] = useState<LeagueState>(() => createInitialLeagueState())
+  const [league, setLeague] = useState<LeagueState>(() => createInitialLeagueState([], 'S'))
   const [rankSettlement, setRankSettlement] = useState<RankSettlementResult | null>(null)
+  /** TODO: 테스트 시작값. 배포 전 C / 0 으로 되돌릴 것 */
+  const [stationGrade, setStationGrade] = useState<StationGrade>('B')
+  const [skillPoints, setSkillPoints] = useState(1000)
+  const [broadcastMonthsTowardSp, setBroadcastMonthsTowardSp] = useState(0)
+  const [stationReview, setStationReview] = useState<{
+    promoted: boolean
+    status: StationReviewStatus
+  } | null>(null)
+  const [vipOffer, setVipOffer] = useState<VipOffer | null>(null)
+  const [vipResult, setVipResult] = useState<VipResult | null>(null)
+  const [vipEventPlay, setVipEventPlay] = useState<{
+    offer: VipOffer
+    event: GameEvent
+    spGain: number
+    staminaMaxLoss: number
+  } | null>(null)
+  type SocialUi =
+    | { mode: 'dateOffer'; pending: DatePending }
+    | { mode: 'dateVn'; pending: DatePending; event: GameEvent }
+    | { mode: 'dateResult'; pending: DatePending; unlockedHeat: boolean }
+    | { mode: 'giftOffer'; pending: GiftPending }
+    | {
+        mode: 'giftResult'
+        pending: GiftPending
+        accepted: boolean
+        conditionDelta: number
+        staminaDelta: number
+      }
+    | { mode: 'hRetryOffer'; pending: HRetryPending }
+    | {
+        mode: 'hRetryVn'
+        pending: HRetryPending
+        event: GameEvent
+        spGain: number
+        staminaLoss: number
+      }
+    | {
+        mode: 'hRetryResult'
+        pending: HRetryPending
+        accepted: boolean
+        spGain: number
+        staminaLoss: number
+        conditionLoss: number
+      }
+  const [socialUi, setSocialUi] = useState<SocialUi | null>(null)
   const [showGameClear, setShowGameClear] = useState(false)
+  const [equipmentTree, setEquipmentTree] = useState<EquipmentTreeState>(() =>
+    createInitialEquipmentTree(),
+  )
 
   // 스카웃 VN 이벤트 진행
   type ScoutEventState = {
@@ -276,7 +371,6 @@ export function InGame({
   }
 
   const [scoutEventState, setScoutEventState] = useState<ScoutEventState | null>(null)
-  const [scoutFailName, setScoutFailName] = useState<string | null>(null)
   const [restRequiredName, setRestRequiredName] = useState<string | null>(null)
   const [scoutSystem, setScoutSystem] = useState<ScoutSystemState>(() =>
     createInitialScoutState(1),
@@ -306,40 +400,40 @@ export function InGame({
     })
   }
 
-  function showScoutFail(creatorName: string) {
-    setScoutEventState(null)
-    setScoutFailName(creatorName)
-  }
-
-  /** 스카웃 VN 유무와 무관 — 성공/실패 판정 후 승낙 VN 또는 즉시 결과 */
+  /** 스카웃은 승낙만. 승낙 VN이 있으면 재생, 없으면 바로 합류 */
   function resolveScoutHireOutcome(creator: OwnedCreator) {
-    const ownedCount = ownedCreatorsRef.current.length
-    const isSuccess = rollScoutAccept(
-      ownedCount,
-      scoutSystemRef.current.firstHireGuaranteed,
-    )
-    if (isSuccess) {
-      const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
-      const acceptEventId = charDef?.eventLinks?.scoutAccept
-      const acceptEvent = acceptEventId
-        ? eventsRef.current.find((e) => e.id === acceptEventId) ?? null
-        : null
-      if (acceptEvent) {
-        setScoutEventState({
-          creator,
-          step: 'accept',
-          currentEvent: acceptEvent,
-        })
-      } else {
-        setScoutEventState(null)
-        beginRecruitPresentation(creator)
-      }
+    const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
+    const acceptEventId = charDef?.eventLinks?.scoutAccept
+    const acceptEvent = acceptEventId
+      ? eventsRef.current.find((e) => e.id === acceptEventId) ?? null
+      : null
+    if (acceptEvent) {
+      setScoutEventState({
+        creator,
+        step: 'accept',
+        currentEvent: acceptEvent,
+      })
       return
     }
+    setScoutEventState(null)
+    beginRecruitPresentation(creator)
+  }
 
-    // 실패 — 차감 연봉 환불 (보유 합류 전)
-    setAssets((prev) => prev + creator.salary)
-    showScoutFail(creator.name)
+  function beginScoutVisualNovel(creator: OwnedCreator) {
+    const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
+    const scoutEventId = charDef?.eventLinks?.scout
+    const scoutEvent = scoutEventId
+      ? eventsRef.current.find((e) => e.id === scoutEventId) ?? null
+      : null
+    if (scoutEvent) {
+      setScoutEventState({
+        creator,
+        step: 'scout',
+        currentEvent: scoutEvent,
+      })
+      return
+    }
+    resolveScoutHireOutcome(creator)
   }
 
   function applyPromotedSalary(item: PromoteSalaryNego) {
@@ -388,6 +482,11 @@ export function InGame({
       scoutEventState ||
       weeklyStatement ||
       rankSettlement ||
+      stationReview ||
+      vipOffer ||
+      vipResult ||
+      vipEventPlay ||
+      socialUi ||
       startBroadcastLocked ||
       openCreatorScout
     ) {
@@ -404,6 +503,11 @@ export function InGame({
     scoutEventState,
     weeklyStatement,
     rankSettlement,
+    stationReview,
+    vipOffer,
+    vipResult,
+    vipEventPlay,
+    socialUi,
     startBroadcastLocked,
     openCreatorScout,
   ])
@@ -413,6 +517,11 @@ export function InGame({
     !scoutEventState &&
     !weeklyStatement &&
     !rankSettlement &&
+    !stationReview &&
+    !vipOffer &&
+    !vipResult &&
+    !vipEventPlay &&
+    !socialUi &&
     !startBroadcastLocked &&
     !openCreatorScout
       ? promoteQueue.find((row) => !row.salaryEvent) ?? null
@@ -424,19 +533,7 @@ export function InGame({
     const creator = hireScoutOffer(offer)
     setAssets((prev) => prev - offer.salary)
     setScoutSystem((prev) => clearScoutOfferAfterHire(prev))
-    const charDef = registeredCharacters.find((c) => c.id === creator.id)
-    const scoutEventId = charDef?.eventLinks?.scout
-    const scoutEvent = scoutEventId ? events.find((e) => e.id === scoutEventId) : null
-    if (scoutEvent) {
-      setScoutEventState({
-        creator,
-        step: 'scout',
-        currentEvent: scoutEvent,
-      })
-    } else {
-      // 스카웃 VN 미연결 → 바로 성공/실패 결과
-      resolveScoutHireOutcome(creator)
-    }
+    beginScoutVisualNovel(creator)
   }
 
   function handleScoutEventFinished() {
@@ -469,19 +566,32 @@ export function InGame({
     .sort()
     .join('|')
   useEffect(() => {
-    const next = reapplyLeagueGate(leagueRef.current, toRankCreators(ownedCreatorsRef.current))
+    const next = reapplyLeagueGate(
+      leagueRef.current,
+      toRankCreators(ownedCreatorsRef.current),
+      stationGradeRef.current,
+    )
     if (next === leagueRef.current) return
     leagueRef.current = next
     setLeague(next)
-    if (next.scoutRateUp) {
-      setScoutSystem((scout) => enablePremiumScout(scout))
-    }
   }, [rosterGateKey])
 
   // 보유 0명이면 스카우트 후보가 생기는 즉시 스카우트 창으로
   useEffect(() => {
     if (ownedCreators.length > 0) return
-    if (weeklyStatement || rankSettlement || scoutEventState || openCreatorScout) return
+    if (
+      weeklyStatement ||
+      rankSettlement ||
+      stationReview ||
+      vipOffer ||
+      vipResult ||
+      vipEventPlay ||
+      socialUi ||
+      scoutEventState ||
+      openCreatorScout
+    ) {
+      return
+    }
     if (!scoutSystem.activeOffer) return
     setTab('creator')
     setOpenCreatorScout(true)
@@ -490,6 +600,11 @@ export function InGame({
     scoutSystem.activeOffer,
     weeklyStatement,
     rankSettlement,
+    stationReview,
+    vipOffer,
+    vipResult,
+    vipEventPlay,
+    socialUi,
     scoutEventState,
     openCreatorScout,
   ])
@@ -506,6 +621,13 @@ export function InGame({
   const leagueRef = useRef(league)
   const pendingScoutAfterRankRef = useRef(false)
   const pendingRankResultRef = useRef<RankSettlementResult | null>(null)
+  const pendingStationReviewRef = useRef(false)
+  const pendingGameClearRef = useRef(false)
+  const pendingSocialQueueRef = useRef<SocialPending[]>([])
+  const socialSpawnRef = useRef(createSocialSpawnState())
+  const stationGradeRef = useRef(stationGrade)
+  const skillPointsRef = useRef(skillPoints)
+  const broadcastMonthsTowardSpRef = useRef(broadcastMonthsTowardSp)
   const annualRevenueByYearRef = useRef<Record<number, number>>({})
   const studioSlotsRef = useRef(studioSlots)
   const ownedCreatorsRef = useRef(ownedCreators)
@@ -514,6 +636,7 @@ export function InGame({
   const gameMonthRef = useRef(gameMonth)
   const monthWeekIndexRef = useRef(monthWeekIndex)
   const broadcastMonthNumberRef = useRef(broadcastMonthNumber)
+  const equipmentTreeRef = useRef(equipmentTree)
   studioSlotsRef.current = studioSlots
   ownedCreatorsRef.current = ownedCreators
   speedRef.current = speed
@@ -522,26 +645,45 @@ export function InGame({
   monthWeekIndexRef.current = monthWeekIndex
   broadcastMonthNumberRef.current = broadcastMonthNumber
   leagueRef.current = league
+  equipmentTreeRef.current = equipmentTree
+  stationGradeRef.current = stationGrade
+  skillPointsRef.current = skillPoints
+  broadcastMonthsTowardSpRef.current = broadcastMonthsTowardSp
   const handCards = ownedCreators.map(toStudioHandCard)
 
-  const handleUpgradeStudio = () => {
-    const target = findNextUnlockableSlot(studioSlots)
-    if (!target) return
-    const cost = calcSlotUnlockCost(countUnlockedSlots(studioSlots))
-    if (assets < cost) return
-    setAssets((prev) => prev - cost)
-    onStudioSlotsChange(unlockStudioSlot(studioSlots, target.id))
-  }
-
-  function handleUnlockStudioSlot(slotId: string) {
-    if (broadcastPhase === 'live') return false
-    const next = findNextUnlockableSlot(studioSlots)
-    if (!next || next.id !== slotId) return false
-    const cost = calcSlotUnlockCost(countUnlockedSlots(studioSlots))
-    if (assets < cost) return false
-    setAssets((prev) => prev - cost)
-    onStudioSlotsChange(unlockStudioSlot(studioSlots, slotId))
-    return true
+  function handlePurchaseEquipmentNode(nodeId: string) {
+    const check = canPurchaseNode(
+      equipmentTree,
+      nodeId,
+      assets,
+      skillPoints,
+      stationGrade,
+    )
+    if (!check.ok) return
+    const node = getEquipNode(nodeId)
+    if (!node) return
+    if (node.type === 'scout') {
+      if (ownedCreatorsRef.current.length === 0 || scoutEventState) return
+      const offer = createRandomScoutOffer(
+        registeredCharactersRef.current,
+        ownedCreatorsRef.current.map((c) => c.id),
+        node.minStationGrade,
+      )
+      if (!offer) return
+      setAssets((prev) => prev - node.cost)
+      setSkillPoints((prev) => prev - node.spCost)
+      setEquipmentTree((prev) => purchaseNode(prev, nodeId))
+      beginScoutVisualNovel(hireScoutOffer(offer))
+      return
+    }
+    setAssets((prev) => prev - node.cost)
+    setSkillPoints((prev) => prev - node.spCost)
+    setEquipmentTree((prev) => purchaseNode(prev, nodeId))
+    if (node.type === 'slot_unlock') {
+      const nextSlots = unlockNextStudioSlot(studioSlotsRef.current)
+      studioSlotsRef.current = nextSlots
+      onStudioSlotsChange(nextSlots)
+    }
   }
 
   function assignedCreatorsFrom(list: OwnedCreator[]) {
@@ -565,8 +707,12 @@ export function InGame({
   }
 
   function openScoutFromRanking() {
-    setTab('creator')
-    setOpenCreatorScout(true)
+    if (ownedCreatorsRef.current.length === 0) {
+      setTab('creator')
+      setOpenCreatorScout(true)
+      return
+    }
+    setTab('equipment')
   }
 
   /** 무배치면 주당 1초, 아니면 기본 5초 (배속 적용) */
@@ -578,11 +724,19 @@ export function InGame({
 
   /** 한 주 시작: 현재 컨디션으로 주간 수익 DayPlan 선계산 */
   function beginDayPlan(dayKey: string, weekMs: number) {
+    const tree = equipmentTreeRef.current
+    const revenueMult = getRevenueMult(tree)
+    const assigned = assignedCreatorsFrom(ownedCreatorsRef.current)
+    const revenueMultByCreatorId: Record<string, number> = {}
+    for (const creator of assigned) {
+      revenueMultByCreatorId[creator.id] = revenueMult
+    }
     const plan = buildStudioDayPlan(
-      assignedCreatorsFrom(ownedCreatorsRef.current),
+      assigned,
       weekMs,
       dayKey,
       leagueRef.current.revenueBonusPercent,
+      revenueMultByCreatorId,
     )
     dayPlanRef.current = plan
     dayStartedAtRef.current = performance.now()
@@ -626,9 +780,20 @@ export function InGame({
     weekAccumRef.current = recordDayIntoWeek(weekAccumRef.current, plan.plans)
     // 주 종료: 실제 방송자만 스테미나/컨디션 소모(+진상 시 컨디션 급락, 스테미나는 QTE)
     const broadcastedIds = new Set(plan.plans.map((p) => p.creatorId))
+    const tree = equipmentTreeRef.current
+    const staminaMult = getStaminaCostMult(tree)
+    const conditionMult = getConditionCostMult(tree)
+    const drainMultByCreatorId: Record<
+      string,
+      { staminaMult: number; conditionMult: number }
+    > = {}
+    for (const creatorId of broadcastedIds) {
+      drainMultByCreatorId[creatorId] = { staminaMult, conditionMult }
+    }
     const { creators: nextOwned, crashes } = applyWeeklyStaminaAndCondition(
       ownedCreatorsRef.current,
       broadcastedIds,
+      drainMultByCreatorId,
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
@@ -767,6 +932,18 @@ export function InGame({
     const weekSnapshot = weekAccumRef.current
     // 월간 1회: 해당 월에 방송한 크리에이터만 성장
     const monthBroadcastIds = new Set(weekSnapshot.byCreator.keys())
+    // 실제 방송 3개월당 SP +1. VIP·데이트·선물·H재요청은 이벤트 보상으로 별도 지급.
+    if (monthBroadcastIds.size > 0) {
+      const nextToward = broadcastMonthsTowardSpRef.current + 1
+      if (nextToward >= 3) {
+        broadcastMonthsTowardSpRef.current = 0
+        setBroadcastMonthsTowardSp(0)
+        setSkillPoints((prev) => prev + 1)
+      } else {
+        broadcastMonthsTowardSpRef.current = nextToward
+        setBroadcastMonthsTowardSp(nextToward)
+      }
+    }
     const growthHighlights: string[] = []
     const promoteBatch: PromoteSalaryNego[] = []
     let nextOwned = ownedCreatorsRef.current.map((creator) => {
@@ -879,11 +1056,22 @@ export function InGame({
       leagueRef.current,
       broadcastedCreators,
       ownedRankCreators,
+      stationGradeRef.current,
     )
     leagueRef.current = settled.state
     setLeague(settled.state)
     pendingRankResultRef.current = settled.result
-    const unlockPremiumScout = settled.result.scoutRateUp
+    pendingStationReviewRef.current = isAnnualReviewMonth(nextDate, GAME_EPOCH)
+
+    const socialBlocked =
+      pendingStationReviewRef.current || Boolean(settled.result.gameCleared)
+    const socialRoll = advanceAndPickSocialEvent(
+      socialSpawnRef.current,
+      ownedCreatorsRef.current,
+      socialBlocked,
+    )
+    socialSpawnRef.current = socialRoll.state
+    pendingSocialQueueRef.current = socialRoll.event ? [socialRoll.event] : []
 
     const nextMonthNumber = broadcastMonthNumberRef.current + 1
     broadcastMonthNumberRef.current = nextMonthNumber
@@ -902,16 +1090,204 @@ export function InGame({
       statementDelayTimerRef.current = null
       setWeeklyStatement(statement)
     }, 2000)
+  }
 
-    // 새 턴 진입: 스카우트 후보 만료·등장 판정
-    setScoutSystem((prev) => {
-      const base = unlockPremiumScout ? enablePremiumScout(prev) : prev
-      return advanceScoutTurn(
-        base,
-        nextMonthNumber,
-        registeredCharactersRef.current,
-        ownedCreatorsRef.current.map((c) => c.id),
-      )
+  function continueAfterMonthModals(openScout: boolean) {
+    const next = pendingSocialQueueRef.current.shift() ?? null
+    if (next) {
+      pendingScoutAfterRankRef.current = openScout
+      setStartBroadcastLocked(true)
+      if (next.kind === 'vip') setVipOffer(next.offer)
+      else if (next.kind === 'date') setSocialUi({ mode: 'dateOffer', pending: next })
+      else if (next.kind === 'gift') setSocialUi({ mode: 'giftOffer', pending: next })
+      else setSocialUi({ mode: 'hRetryOffer', pending: next })
+      return
+    }
+    pendingScoutAfterRankRef.current = false
+    setStartBroadcastLocked(false)
+    if (openScout && scoutSystemRef.current.activeOffer) {
+      setTab('creator')
+      setOpenCreatorScout(true)
+    }
+  }
+
+  function patchOwnedCreator(creatorId: string, patch: (creator: OwnedCreator) => OwnedCreator) {
+    const nextOwned = ownedCreatorsRef.current.map((creator) =>
+      creator.id === creatorId ? patch(creator) : creator,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+  }
+
+  function completeDateEvent(pending: DatePending) {
+    const unlockedHeat = pending.step === 'h'
+    patchOwnedCreator(pending.creatorId, (creator) => ({
+      ...creator,
+      dateArcStep: dateArcAfter(pending.step),
+      heat: unlockedHeat ? Math.max(creator.heat ?? 1, 2) : creator.heat,
+    }))
+    setSkillPoints((prev) => prev + pending.spGain)
+    setSocialUi({ mode: 'dateResult', pending, unlockedHeat })
+  }
+
+  function handleDateStart() {
+    if (socialUi?.mode !== 'dateOffer') return
+    const pending = socialUi.pending
+    const charDef = registeredCharactersRef.current.find((c) => c.id === pending.creatorId)
+    const slot = pending.step === 'h' ? 'h' : pending.step
+    const eventId = charDef?.eventLinks?.[slot]
+    const event = eventId ? eventsRef.current.find((e) => e.id === eventId) ?? null : null
+    if (event) {
+      setSocialUi({ mode: 'dateVn', pending, event })
+      return
+    }
+    completeDateEvent(pending)
+  }
+
+  function applyVipAcceptRewards(offer: VipOffer, spGain: number, staminaMaxLoss: number) {
+    setSkillPoints((prev) => prev + spGain)
+    const nextOwned = ownedCreatorsRef.current.map((creator) =>
+      creator.id === offer.creatorId
+        ? applyStaminaMaxPenalty(creator, staminaMaxLoss)
+        : creator,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+    setVipResult({
+      kind: 'accept',
+      creatorName: offer.creatorName,
+      spGain,
+      staminaMaxLoss,
+    })
+  }
+
+  function handleVipAccept() {
+    if (!vipOffer) return
+    const offer = vipOffer
+    setVipOffer(null)
+    const spec = VIP_ACCEPT_BY_GRADE[offer.grade]
+    const spGain = rollVipAcceptSp(offer.grade)
+    const charDef = registeredCharactersRef.current.find((c) => c.id === offer.creatorId)
+    const vipEventId = charDef?.eventLinks?.vip
+    const vipEvent = vipEventId
+      ? eventsRef.current.find((e) => e.id === vipEventId) ?? null
+      : null
+    if (vipEvent) {
+      setVipEventPlay({
+        offer,
+        event: vipEvent,
+        spGain,
+        staminaMaxLoss: spec.staminaMaxLoss,
+      })
+      return
+    }
+    applyVipAcceptRewards(offer, spGain, spec.staminaMaxLoss)
+  }
+
+  function handleVipReject() {
+    if (!vipOffer) return
+    const offer = vipOffer
+    setVipOffer(null)
+    const viewerLoss = rollVipRejectViewers(offer.grade)
+    const nextLeague = applyAudiencePenalty(
+      leagueRef.current,
+      toRankCreators(ownedCreatorsRef.current),
+      stationGradeRef.current,
+      viewerLoss,
+    )
+    leagueRef.current = nextLeague
+    setLeague(nextLeague)
+    setVipResult({
+      kind: 'reject',
+      creatorName: offer.creatorName,
+      viewerLoss,
+    })
+  }
+
+  function handleGiftAccept() {
+    if (socialUi?.mode !== 'giftOffer') return
+    const pending = socialUi.pending
+    if (assets < pending.assetCost) return
+    const vitals = rollGiftAcceptVitals()
+    setAssets((prev) => prev - pending.assetCost)
+    setSkillPoints((prev) => prev + pending.spGain)
+    patchOwnedCreator(pending.creatorId, (creator) =>
+      applyVitalsDelta(creator, { condition: vitals.condition, stamina: vitals.stamina }),
+    )
+    setSocialUi({
+      mode: 'giftResult',
+      pending,
+      accepted: true,
+      conditionDelta: vitals.condition,
+      staminaDelta: vitals.stamina,
+    })
+  }
+
+  function handleGiftReject() {
+    if (socialUi?.mode !== 'giftOffer') return
+    const pending = socialUi.pending
+    const loss = rollRejectConditionLoss(pending.grade)
+    patchOwnedCreator(pending.creatorId, (creator) =>
+      applyVitalsDelta(creator, { condition: -loss }),
+    )
+    setSocialUi({
+      mode: 'giftResult',
+      pending,
+      accepted: false,
+      conditionDelta: loss,
+      staminaDelta: 0,
+    })
+  }
+
+  function handleHRetryAccept() {
+    if (socialUi?.mode !== 'hRetryOffer') return
+    const pending = socialUi.pending
+    const spec = H_RETRY_BY_GRADE[pending.grade]
+    const charDef = registeredCharactersRef.current.find((c) => c.id === pending.creatorId)
+    const eventId = charDef?.eventLinks?.h
+    const event = eventId ? eventsRef.current.find((e) => e.id === eventId) ?? null : null
+    if (event) {
+      setSocialUi({
+        mode: 'hRetryVn',
+        pending,
+        event,
+        spGain: spec.sp,
+        staminaLoss: spec.staminaLoss,
+      })
+      return
+    }
+    applyHRetryAccept(pending, spec.sp, spec.staminaLoss)
+  }
+
+  function applyHRetryAccept(pending: HRetryPending, spGain: number, staminaLoss: number) {
+    setSkillPoints((prev) => prev + spGain)
+    patchOwnedCreator(pending.creatorId, (creator) =>
+      applyVitalsDelta(creator, { stamina: -staminaLoss }),
+    )
+    setSocialUi({
+      mode: 'hRetryResult',
+      pending,
+      accepted: true,
+      spGain,
+      staminaLoss,
+      conditionLoss: 0,
+    })
+  }
+
+  function handleHRetryReject() {
+    if (socialUi?.mode !== 'hRetryOffer') return
+    const pending = socialUi.pending
+    const loss = rollRejectConditionLoss(pending.grade)
+    patchOwnedCreator(pending.creatorId, (creator) =>
+      applyVitalsDelta(creator, { condition: -loss }),
+    )
+    setSocialUi({
+      mode: 'hRetryResult',
+      pending,
+      accepted: false,
+      spGain: 0,
+      staminaLoss: 0,
+      conditionLoss: loss,
     })
   }
 
@@ -955,7 +1331,16 @@ export function InGame({
 
   function handleStartBroadcast() {
     if (broadcastPhase === 'live') return
-    if (weeklyStatement || startBroadcastLocked) return
+    if (
+      weeklyStatement ||
+      startBroadcastLocked ||
+      vipOffer ||
+      vipResult ||
+      vipEventPlay ||
+      socialUi
+    ) {
+      return
+    }
 
     const blockedAssigned = studioSlotsRef.current
       .filter((slot) => slot.status === 'assigned' && slot.assignment)
@@ -1157,6 +1542,11 @@ export function InGame({
           </div>
 
           <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(251,191,36,0.04)]">
+            <p className="game-stat-label">{t('hud.stationGrade')}</p>
+            <p className="text-sm font-black text-amber-200">{stationGrade}</p>
+          </div>
+
+          <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(251,191,36,0.04)]">
             <p className="game-stat-label">{t('hud.assets')}</p>
             <p className="text-sm font-black text-amber-400" style={{ textShadow: '0 0 8px rgba(251, 191, 36, 0.45)' }}>
               {formatAssets(assets)}
@@ -1200,8 +1590,12 @@ export function InGame({
 
       <section
         className={`relative z-10 min-h-0 ${
-          tab === 'dashboard' || tab === 'schedule' || tab === 'creator' || tab === 'ranking'
-            ? 'overflow-hidden p-3 sm:p-4'
+          tab === 'dashboard' ||
+          tab === 'schedule' ||
+          tab === 'creator' ||
+          tab === 'ranking' ||
+          tab === 'equipment'
+            ? 'h-full overflow-hidden p-3 sm:p-4'
             : 'overflow-auto p-6'
         }`}
       >
@@ -1254,8 +1648,6 @@ export function InGame({
             slots={studioSlots}
             handCards={handCards}
             onSlotsChange={onStudioSlotsChange}
-            assets={assets}
-            onUnlockSlot={handleUnlockStudioSlot}
             pendingHandCreatorId={recruitFlyCard?.id ?? null}
             spotlightCreatorId={spotlightCreatorId}
             placementLocked={broadcastPhase === 'live'}
@@ -1263,6 +1655,11 @@ export function InGame({
         ) : tab === 'ranking' ? (
           <RankingPanel
             league={league}
+            stationGrade={stationGrade}
+            nextReviewDate={
+              formatGameClock(nextJanuaryAfter(monthToCalendarDate(GAME_EPOCH, gameMonth), GAME_EPOCH))
+                .date
+            }
             creators={toRankCreators(ownedCreators)}
             weeksUntilSettlement={
               broadcastPhase === 'live'
@@ -1272,7 +1669,24 @@ export function InGame({
             onOpenScout={openScoutFromRanking}
           />
         ) : tab === 'equipment' ? (
-          <EquipmentPanel onUpgradeStudio={handleUpgradeStudio} />
+          <div className="h-full min-h-0">
+            <EquipmentPanel
+              tree={equipmentTree}
+              assets={assets}
+              skillPoints={skillPoints}
+              stationGrade={stationGrade}
+              canScout={
+                ownedCreators.length > 0 &&
+                !scoutEventState &&
+                hasScoutPool(
+                  registeredCharacters,
+                  ownedCreators.map((c) => c.id),
+                  [],
+                )
+              }
+              onPurchase={handlePurchaseEquipmentNode}
+            />
+          </div>
         ) : tab === 'settings' ? (
           <div className="neon-glow-card rounded-2xl p-6 bg-slate-950/50 backdrop-blur-md max-w-2xl mx-auto border border-indigo-500/20">
             <h2 className="text-lg font-bold text-slate-100 tracking-wider mb-5 flex items-center gap-2">
@@ -1375,16 +1789,15 @@ export function InGame({
             setWeeklyStatement(null)
             const pendingRank = pendingRankResultRef.current
             pendingRankResultRef.current = null
+            const openScout =
+              ownedCreatorsRef.current.length === 0 &&
+              Boolean(scoutSystemRef.current.activeOffer)
             if (pendingRank) {
-              pendingScoutAfterRankRef.current = Boolean(scoutSystemRef.current.activeOffer)
+              pendingScoutAfterRankRef.current = openScout
               setRankSettlement(pendingRank)
               return
             }
-            setStartBroadcastLocked(false)
-            if (scoutSystemRef.current.activeOffer) {
-              setTab('creator')
-              setOpenCreatorScout(true)
-            }
+            continueAfterMonthModals(openScout)
           }}
         />
       ) : null}
@@ -1392,29 +1805,62 @@ export function InGame({
       {rankSettlement ? (
         <RankChangeModal
           result={rankSettlement}
-          onOpenScout={() => {
-            const cleared = rankSettlement.gameCleared
-            setRankSettlement(null)
-            setStartBroadcastLocked(false)
-            pendingScoutAfterRankRef.current = false
-            openScoutFromRanking()
-            if (cleared) setShowGameClear(true)
-          }}
           onConfirm={() => {
             const cleared = rankSettlement.gameCleared
             const openScout = pendingScoutAfterRankRef.current
             setRankSettlement(null)
-            setStartBroadcastLocked(false)
+            if (pendingStationReviewRef.current) {
+              pendingStationReviewRef.current = false
+              pendingScoutAfterRankRef.current = openScout
+              pendingGameClearRef.current = cleared
+              const review = applyStationReview(
+                stationGradeRef.current,
+                leagueRef.current.viewers,
+                ownedCreatorsRef.current,
+              )
+              setStationReview({ promoted: review.promoted, status: review.status })
+              return
+            }
             if (cleared) {
               pendingScoutAfterRankRef.current = openScout
               setShowGameClear(true)
               return
             }
-            pendingScoutAfterRankRef.current = false
-            if (openScout && scoutSystemRef.current.activeOffer) {
-              setTab('creator')
-              setOpenCreatorScout(true)
+            continueAfterMonthModals(openScout)
+          }}
+        />
+      ) : null}
+
+      {stationReview ? (
+        <StationReviewModal
+          promoted={stationReview.promoted}
+          status={stationReview.status}
+          onConfirm={() => {
+            const review = stationReview
+            setStationReview(null)
+            if (review.promoted && review.status.next) {
+              const nextGrade = review.status.next
+              stationGradeRef.current = nextGrade
+              setStationGrade(nextGrade)
+              setSkillPoints((prev) => prev + review.status.spReward)
+              const nextLeague = reapplyLeagueGate(
+                leagueRef.current,
+                toRankCreators(ownedCreatorsRef.current),
+                nextGrade,
+              )
+              leagueRef.current = nextLeague
+              setLeague(nextLeague)
+              if (nextLeague.gameCleared) pendingGameClearRef.current = true
             }
+            const openScout = pendingScoutAfterRankRef.current
+            const cleared = pendingGameClearRef.current
+            pendingGameClearRef.current = false
+            if (cleared) {
+              pendingScoutAfterRankRef.current = openScout
+              setShowGameClear(true)
+              return
+            }
+            continueAfterMonthModals(openScout)
           }}
         />
       ) : null}
@@ -1422,12 +1868,83 @@ export function InGame({
       {showGameClear ? (
         <GameClearModal
           onConfirm={() => {
+            const openScout = pendingScoutAfterRankRef.current
             setShowGameClear(false)
-            if (pendingScoutAfterRankRef.current && scoutSystemRef.current.activeOffer) {
-              pendingScoutAfterRankRef.current = false
-              setTab('creator')
-              setOpenCreatorScout(true)
-            }
+            continueAfterMonthModals(openScout)
+          }}
+        />
+      ) : null}
+
+      {vipOffer ? (
+        <VipOfferModal
+          offer={vipOffer}
+          onAccept={handleVipAccept}
+          onReject={handleVipReject}
+        />
+      ) : null}
+
+      {vipResult ? (
+        <VipResultModal
+          result={vipResult}
+          onConfirm={() => {
+            setVipResult(null)
+            continueAfterMonthModals(pendingScoutAfterRankRef.current)
+          }}
+        />
+      ) : null}
+
+      {socialUi?.mode === 'dateOffer' ? (
+        <DateOfferModal pending={socialUi.pending} onStart={handleDateStart} />
+      ) : null}
+      {socialUi?.mode === 'dateResult' ? (
+        <DateResultModal
+          pending={socialUi.pending}
+          unlockedHeat={socialUi.unlockedHeat}
+          onConfirm={() => {
+            setSocialUi(null)
+            continueAfterMonthModals(pendingScoutAfterRankRef.current)
+          }}
+        />
+      ) : null}
+      {socialUi?.mode === 'giftOffer' ? (
+        <GiftOfferModal
+          pending={socialUi.pending}
+          assets={assets}
+          onAccept={handleGiftAccept}
+          onReject={handleGiftReject}
+        />
+      ) : null}
+      {socialUi?.mode === 'giftResult' ? (
+        <GiftResultModal
+          accepted={socialUi.accepted}
+          creatorName={socialUi.pending.creatorName}
+          spGain={socialUi.pending.spGain}
+          assetCost={socialUi.pending.assetCost}
+          conditionDelta={socialUi.conditionDelta}
+          staminaDelta={socialUi.staminaDelta}
+          onConfirm={() => {
+            setSocialUi(null)
+            continueAfterMonthModals(pendingScoutAfterRankRef.current)
+          }}
+        />
+      ) : null}
+      {socialUi?.mode === 'hRetryOffer' ? (
+        <HRetryOfferModal
+          pending={socialUi.pending}
+          onAccept={handleHRetryAccept}
+          onReject={handleHRetryReject}
+        />
+      ) : null}
+      {socialUi?.mode === 'hRetryResult' ? (
+        <HRetryResultModal
+          accepted={socialUi.accepted}
+          creatorName={socialUi.pending.creatorName}
+          spGain={socialUi.spGain}
+          staminaLoss={socialUi.staminaLoss}
+          conditionLoss={socialUi.conditionLoss}
+          onConfirm={() => {
+            setSocialUi(null)
+            continueAfterMonthModals(pendingScoutAfterRankRef.current)
           }}
         />
       ) : null}
@@ -1441,6 +1958,46 @@ export function InGame({
           registeredCharacters={registeredCharacters}
         />
       )}
+
+      {vipEventPlay ? (
+        <EventSimulator
+          key={`vip-${vipEventPlay.offer.creatorId}-${vipEventPlay.event.id}`}
+          event={vipEventPlay.event}
+          mode="game"
+          onClose={() => {
+            const play = vipEventPlay
+            setVipEventPlay(null)
+            applyVipAcceptRewards(play.offer, play.spGain, play.staminaMaxLoss)
+          }}
+          registeredCharacters={registeredCharacters}
+        />
+      ) : null}
+
+      {socialUi?.mode === 'dateVn' ? (
+        <EventSimulator
+          key={`date-${socialUi.pending.creatorId}-${socialUi.pending.step}-${socialUi.event.id}`}
+          event={socialUi.event}
+          mode="game"
+          onClose={() => {
+            if (socialUi.mode !== 'dateVn') return
+            completeDateEvent(socialUi.pending)
+          }}
+          registeredCharacters={registeredCharacters}
+        />
+      ) : null}
+
+      {socialUi?.mode === 'hRetryVn' ? (
+        <EventSimulator
+          key={`hretry-${socialUi.pending.creatorId}-${socialUi.event.id}`}
+          event={socialUi.event}
+          mode="game"
+          onClose={() => {
+            if (socialUi.mode !== 'hRetryVn') return
+            applyHRetryAccept(socialUi.pending, socialUi.spGain, socialUi.staminaLoss)
+          }}
+          registeredCharacters={registeredCharacters}
+        />
+      ) : null}
 
       {salaryEventPlay?.salaryEvent ? (
         <EventSimulator
@@ -1460,13 +2017,6 @@ export function InGame({
           previousSalary={activePromotePopup.previousSalary}
           proposedSalary={activePromotePopup.proposedSalary}
           onConfirm={() => applyPromotedSalary(activePromotePopup)}
-        />
-      ) : null}
-
-      {scoutFailName ? (
-        <ScoutFailModal
-          creatorName={scoutFailName}
-          onConfirm={() => setScoutFailName(null)}
         />
       ) : null}
 

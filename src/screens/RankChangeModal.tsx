@@ -7,10 +7,9 @@ import { useTranslation } from '../locales/i18n'
 type RankChangeModalProps = {
   result: RankSettlementResult
   onConfirm: () => void
-  onOpenScout: () => void
 }
 
-export function RankChangeModal({ result, onConfirm, onOpenScout }: RankChangeModalProps) {
+export function RankChangeModal({ result, onConfirm }: RankChangeModalProps) {
   const { t } = useTranslation()
   const up = result.rankChange > 0
   const down = result.rankChange < 0
@@ -36,7 +35,6 @@ export function RankChangeModal({ result, onConfirm, onOpenScout }: RankChangeMo
   if (result.rewards.revenueBonusPercent > 0) {
     rewardLines.push(`${t('ranking.rewardRevenue')} +${result.rewards.revenueBonusPercent}%`)
   }
-  if (result.rewards.scoutRateUp) rewardLines.push(t('ranking.rewardScout'))
   if (result.rewards.specialEventUnlock) rewardLines.push(t('ranking.rewardHidden'))
   if (result.rewards.isGameClear) rewardLines.push(t('ranking.rewardClear'))
 
@@ -73,7 +71,7 @@ export function RankChangeModal({ result, onConfirm, onOpenScout }: RankChangeMo
 
         {result.heldByGate ? (
           <div className="mt-4 rounded-xl border border-rose-400/40 bg-rose-950/50 px-3 py-3 text-xs font-semibold leading-relaxed text-rose-100">
-            {t('ranking.modalHeldBody')}
+            {t('ranking.modalHeldBody').replace('{rank}', String(result.gatedFloor))}
           </div>
         ) : null}
 
@@ -102,15 +100,6 @@ export function RankChangeModal({ result, onConfirm, onOpenScout }: RankChangeMo
         ) : null}
 
         <div className="mt-5 flex flex-wrap justify-center gap-2">
-          {result.heldByGate ? (
-            <button
-              type="button"
-              onClick={onOpenScout}
-              className="game-btn-pink min-w-[132px] rounded-xl px-4 py-2.5 text-sm font-bold"
-            >
-              {t('ranking.goScout')}
-            </button>
-          ) : null}
           <button
             type="button"
             onClick={onConfirm}

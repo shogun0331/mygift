@@ -8,16 +8,11 @@ import {
 } from '../game/condition'
 import {
   assignCreatorToSlot,
-  calcSlotUnlockCost,
   clearStudioSlot,
-  countUnlockedSlots,
-  findNextUnlockableSlot,
   moveCreatorBetweenSlots,
   type StudioHandCard,
   type StudioSlot,
 } from '../game/studioSlots'
-import { formatMoney } from '../game/money'
-import { UnlockSlotModal } from './UnlockSlotModal'
 
 const SLOT_DRAG_MIME = 'application/x-studio-slot'
 
@@ -52,8 +47,6 @@ type SchedulePanelProps = {
   slots: StudioSlot[]
   handCards: StudioHandCard[]
   onSlotsChange: (slots: StudioSlot[]) => void
-  assets?: number
-  onUnlockSlot?: (slotId: string) => boolean
   /** 영입 연출 중 — 해당 핸드 카드는 도착 전까지 숨김 */
   pendingHandCreatorId?: string | null
   /** 연출 직후 하이라이트 */
@@ -66,8 +59,6 @@ export function SchedulePanel({
   slots,
   handCards,
   onSlotsChange,
-  assets = 0,
-  onUnlockSlot,
   pendingHandCreatorId = null,
   spotlightCreatorId = null,
   placementLocked = false,
@@ -76,18 +67,12 @@ export function SchedulePanel({
   const [selectedCard, setSelectedCard] = useState<string | null>(null)
   const [dragOverSlotId, setDragOverSlotId] = useState<string | null>(null)
   const [draggingSlotId, setDraggingSlotId] = useState<string | null>(null)
-  const [unlockSlotId, setUnlockSlotId] = useState<string | null>(null)
-
-  const nextUnlockSlot = findNextUnlockableSlot(slots)
-  const nextUnlockCost = calcSlotUnlockCost(countUnlockedSlots(slots))
-  const canAffordUnlock = assets >= nextUnlockCost
 
   useEffect(() => {
     if (!placementLocked) return
     setSelectedCard(null)
     setDragOverSlotId(null)
     setDraggingSlotId(null)
-    setUnlockSlotId(null)
   }, [placementLocked])
 
   function assignToSlot(slotId: string) {
@@ -146,10 +131,6 @@ export function SchedulePanel({
             {slots.map((slot) => {
               const locked = slot.status === 'locked'
               const filled = slot.status === 'assigned' && Boolean(slot.assignment)
-              const isNextUnlock =
-                locked && Boolean(nextUnlockSlot) && nextUnlockSlot!.id === slot.id
-              const canUnlockHere =
-                isNextUnlock && Boolean(onUnlockSlot) && !placementLocked
               const handForSlot = filled
                 ? handCards.find((card) => card.id === slot.assignment!.creatorId)
                 : undefined
@@ -230,7 +211,7 @@ export function SchedulePanel({
                 >
                   <button
                     type="button"
-                    disabled={(!locked && placementLocked) || (locked && !canUnlockHere)}
+                    disabled={locked || placementLocked}
                     draggable={filled && !placementLocked}
                     onDragStart={(e) => {
                       if (placementLocked || !filled || !slot.assignment) {
@@ -248,12 +229,7 @@ export function SchedulePanel({
                       setDragOverSlotId(null)
                     }}
                     onClick={() => {
-                      if (locked) {
-                        if (!canUnlockHere) return
-                        setUnlockSlotId(slot.id)
-                        return
-                      }
-                      if (placementLocked) return
+                      if (locked || placementLocked) return
                       if (selectedCard) {
                         assignToSlot(slot.id)
                         return
@@ -274,9 +250,7 @@ export function SchedulePanel({
                     }}
                     className={`game-card relative h-full w-full min-h-0 text-left transition ${
                       locked
-                        ? canUnlockHere
-                          ? 'cursor-pointer border-rose-950/30 hover:border-pink-400/40 hover:bg-rose-950/20'
-                          : 'cursor-default border-rose-950/30'
+                        ? 'cursor-default border-rose-950/30'
                         : placementLocked
                           ? 'cursor-not-allowed border-rose-950/30'
                           : filled
@@ -358,32 +332,19 @@ export function SchedulePanel({
                           }`}
                         >
                           {locked ? (
-                            canUnlockHere ? (
-                              <>
-                                <div className="flex flex-1 flex-col items-center justify-center gap-1.5">
-                                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-pink-400/50 bg-pink-500/25 text-xl font-black text-pink-100 shadow-[0_0_18px_rgba(255,42,116,0.4)] sm:h-11 sm:w-11 sm:text-2xl">
-                                    ＋
-                                  </span>
-                                  <p className="text-[9px] font-bold tabular-nums text-pink-200 sm:text-[10px]">
-                                    {formatMoney(nextUnlockCost)}
-                                  </p>
+                            <>
+                              <div className="flex flex-1 flex-col items-center justify-center gap-1.5">
+                                <div className="flex h-7.5 w-7.5 items-center justify-center rounded-full border border-rose-500/20 bg-rose-500/30 text-rose-500/60 sm:h-9.5 sm:w-9.5">
+                                  <IconLockTiny />
                                 </div>
-                                <p className="pb-0.5 text-[8px] font-bold tracking-wide text-rose-500/70 uppercase sm:text-[9px]">
+                                <p className="text-[9px] font-bold tracking-wide text-rose-600/70 uppercase sm:text-[10px]">
                                   {t('dashboard.lockedChannel')}
                                 </p>
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex flex-1 flex-col items-center justify-center gap-1.5">
-                                  <div className="flex h-7.5 w-7.5 items-center justify-center rounded-full border border-rose-500/20 bg-rose-500/30 text-rose-500/60 sm:h-9.5 sm:w-9.5">
-                                    <IconLockTiny />
-                                  </div>
-                                  <p className="text-[9px] font-bold tracking-wide text-rose-600/70 uppercase sm:text-[10px]">
-                                    {t('dashboard.lockedChannel')}
-                                  </p>
-                                </div>
-                              </>
-                            )
+                                <p className="max-w-[90%] text-center text-[8px] font-semibold leading-snug text-pink-300/80 sm:text-[9px]">
+                                  {t('studio.unlockViaEquipment')}
+                                </p>
+                              </div>
+                            </>
                           ) : filled && slot.assignment ? (
                             <>
                               {!slot.assignment.profileImageUrl && (
@@ -559,17 +520,6 @@ export function SchedulePanel({
         </div>
       </section>
 
-      {unlockSlotId ? (
-        <UnlockSlotModal
-          price={nextUnlockCost}
-          canAfford={canAffordUnlock}
-          onCancel={() => setUnlockSlotId(null)}
-          onConfirm={() => {
-            const ok = onUnlockSlot?.(unlockSlotId)
-            if (ok) setUnlockSlotId(null)
-          }}
-        />
-      ) : null}
     </div>
   )
 }

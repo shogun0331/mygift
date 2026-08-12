@@ -75,6 +75,8 @@ export type OwnedCreator = RegisteredCharacter & {
   restStreak: number
   /** 휴가를 사용한 방송월 번호 (월 1회) */
   lastVacationMonth?: number | null
+  /** 데이트 아크: 0=데이트1 대기, 1=데이트2, 2=H, 3=H 완료 */
+  dateArcStep?: 0 | 1 | 2 | 3
   /** @deprecated trust 사용. 구 세이브 호환용 */
   loyalty?: number
 }
@@ -170,6 +172,7 @@ export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
     condition: conditionFromScore(conditionScore),
     restStreak: 0,
     lastVacationMonth: null,
+    dateArcStep: 0,
   }
 }
 
@@ -203,10 +206,13 @@ export function normalizeOwnedCreator(raw: OwnedCreator & { loyalty?: number }):
   }
   conditionScore = Math.max(0, Math.min(100, Math.round(conditionScore)))
   const lastVacationMonthRaw = Number(raw.lastVacationMonth)
+  const arcRaw = Math.round(Number(raw.dateArcStep ?? 0) || 0)
+  const dateArcStep: 0 | 1 | 2 | 3 = arcRaw <= 0 ? 0 : arcRaw === 1 ? 1 : arcRaw === 2 ? 2 : 3
   return {
     ...raw,
     skill: Math.max(0, Math.min(100, Number(raw.skill ?? 25) || 25)),
     heat: Math.max(1, Math.min(2, Number(raw.heat ?? 1) || 1)),
+    dateArcStep,
     trust,
     stamina,
     staminaMax,
@@ -274,7 +280,7 @@ export function toStudioHandCard(creator: OwnedCreator) {
     staminaMax: creator.staminaMax,
     conditionScore: scoreOf(creator),
     profileImageUrl: creator.profileImageUrl || null,
-    idleVideoUrl: findLevelIdleVideoUrl(creator, 1),
+    idleVideoUrl: findLevelIdleVideoUrl(creator, creator.heat ?? 1),
     mediaRevision: creator.mediaRevision,
   }
 }

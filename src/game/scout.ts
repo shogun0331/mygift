@@ -1,13 +1,8 @@
 import type { Grade, OwnedCreator, RegisteredCharacter } from './characters'
 import { conditionFromScore } from './condition'
 import { rollNegotiatedSalary } from './salary'
-import {
-  clampStats,
-  rollGrade,
-  rollInt,
-  rollStatsForGrade,
-  type CharacterStats,
-} from './stats'
+import type { StationGrade } from './station'
+import { clampStats, rollInt, rollStatsForGrade, type CharacterStats } from './stats'
 
 export type ScoutOffer = {
   template: RegisteredCharacter
@@ -31,27 +26,12 @@ export type ScoutSystemState = {
   firstHireGuaranteed: boolean
   /** 성공적으로 등장한 횟수 (1·2회차 100%, 이후 50%) */
   appearCount: number
-  /** 10위 진입 후 A/S 가중 상향 */
+  /** @deprecated 10위 프리미엄 스카웃 — 국 등급 스카웃으로 대체 */
   premiumScout: boolean
 }
 
-export function scoutGradeForTurn(turn: number): Grade {
-  const t = Math.max(1, Math.round(turn))
-  if (t <= 12) return 'C'
-  if (t <= 24) return 'B'
-  if (t <= 36) return 'A'
-  return 'S'
-}
-
-const GRADE_ORDER: Grade[] = ['C', 'B', 'A', 'S']
-
-function betterGrade(a: Grade, b: Grade): Grade {
-  return GRADE_ORDER.indexOf(b) > GRADE_ORDER.indexOf(a) ? b : a
-}
-
 export function enablePremiumScout(state: ScoutSystemState): ScoutSystemState {
-  if (state.premiumScout) return state
-  return { ...state, premiumScout: true }
+  return state
 }
 
 export function createInitialScoutState(currentTurn: number): ScoutSystemState {
@@ -88,6 +68,17 @@ export function createScoutOffer(template: RegisteredCharacter, grade: Grade): S
     stats,
     salary: rollNegotiatedSalary(stats, grade),
   }
+}
+
+/** 스킬트리 스카웃 — 보유 제외 후 랜덤 1명. 오퍼 등급 = 노드/국 등급 */
+export function createRandomScoutOffer(
+  registered: RegisteredCharacter[],
+  ownedIds: Iterable<string>,
+  offerGrade: StationGrade,
+): ScoutOffer | null {
+  const template = pickRandomTemplate(registered, new Set(ownedIds))
+  if (!template) return null
+  return createScoutOffer(template, offerGrade)
 }
 
 function buildExcludeSet(
@@ -133,9 +124,6 @@ function trySpawnOffer(
   options?: { force?: boolean },
 ): ScoutSystemState {
   const exclude = buildExcludeSet(ownedIds, state.permanentExcludeIds)
-  const turnGrade = scoutGradeForTurn(currentTurn)
-  const rolled = state.premiumScout ? rollGrade(true) : turnGrade
-  const grade = betterGrade(turnGrade, rolled)
   const template = pickRandomTemplate(registered, exclude)
   const scheduleNext = (): ScoutSystemState => ({
     ...state,
@@ -146,20 +134,11 @@ function trySpawnOffer(
     return scheduleNext()
   }
 
-  const force =
-    Boolean(options?.force) ||
-    state.failStreak >= 3 ||
-    currentTurn - state.lastAppearTurn >= 6
-  const success = force || Math.random() < scoutAppearChance(state.appearCount)
-  if (!success) {
-    return {
-      ...state,
-      failStreak: state.failStreak + 1,
-      nextCheckTurn: currentTurn + rollInt(2, 3),
-    }
+  if (!options?.force) {
+    return scheduleNext()
   }
 
-  const offer = createScoutOffer(template, grade)
+  const offer = createScoutOffer(template, 'C')
   return {
     ...state,
     activeOffer: offer,
@@ -194,7 +173,7 @@ export function ensureOpeningScout(
 
 /**
  * 새 턴(달) 진입 시 호출.
- * 1) 이전 턴 후보 만료  2) 체크 도래 시 등장 판정
+ * 일반 턴 카드 등장은 하지 않는다. 오프닝 강제 스카웃만 유지.
  */
 export function advanceScoutTurn(
   state: ScoutSystemState,
@@ -202,26 +181,10 @@ export function advanceScoutTurn(
   registered: RegisteredCharacter[],
   ownedIds: Iterable<string>,
 ): ScoutSystemState {
-  let next = state
-
-  if (
-    next.activeOffer &&
-    next.offerAppearedTurn != null &&
-    next.offerAppearedTurn < currentTurn
-  ) {
-    // 달을 넘겨 미처리된 후보 — 이번 기회만 소멸, 풀에서 영구 제외하지 않음
-    next = expireActiveOffer(next, { permanentExclude: false })
+  if (state.openingScoutPending && !state.activeOffer) {
+    return ensureOpeningScout(state, currentTurn, registered, ownedIds)
   }
-
-  if (next.openingScoutPending && !next.activeOffer) {
-    next = ensureOpeningScout(next, currentTurn, registered, ownedIds)
-    if (next.activeOffer) return next
-  }
-
-  if (next.activeOffer) return next
-  if (currentTurn < next.nextCheckTurn) return next
-
-  return trySpawnOffer(next, currentTurn, registered, ownedIds)
+  return state
 }
 
 export function clearFirstHireGuarantee(state: ScoutSystemState): ScoutSystemState {
@@ -257,29 +220,6 @@ export function canHireScoutOffer(
   return { ok: true }
 }
 
-/**
- * 스카우트 등장 확률 — 누적 등장 횟수 기준
- * 1·2회차(appearCount 0·1) → 100%, 이후 → 50%
- */
-export function scoutAppearChance(appearCount: number): number {
-  const n = Math.max(0, Math.round(appearCount))
-  return n < 2 ? 1 : 0.5
-}
-
-/**
- * 스카우트 승낙 확률 — 보유 n명일 때 다음 영입
- * 1·2회차(n=0·1) → 100%, 이후 → 50%
- */
-export function scoutAcceptChance(ownedCount: number): number {
-  const n = Math.max(0, Math.round(ownedCount))
-  return n < 2 ? 1 : 0.5
-}
-
-export function rollScoutAccept(ownedCount: number, guaranteed = false): boolean {
-  if (guaranteed) return true
-  return Math.random() < scoutAcceptChance(ownedCount)
-}
-
 /** 스카우트 오퍼 → 보유 크리에이터 (영입 직후 컨디션·스테미나 풀) */
 export function hireScoutOffer(offer: ScoutOffer): OwnedCreator {
   const stats = clampStats(offer.stats, offer.grade)
@@ -292,7 +232,7 @@ export function hireScoutOffer(offer: ScoutOffer): OwnedCreator {
     popularity: stats.popularity,
     salary: offer.salary,
     skill: stats.skill,
-    heat: stats.heat,
+    heat: 1,
     trust: stats.trust,
     stamina: staminaMax,
     staminaMax,
@@ -303,5 +243,6 @@ export function hireScoutOffer(offer: ScoutOffer): OwnedCreator {
     condition: conditionFromScore(conditionScore),
     restStreak: 0,
     lastVacationMonth: null,
+    dateArcStep: 0,
   }
 }

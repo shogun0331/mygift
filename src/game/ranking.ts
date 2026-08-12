@@ -4,6 +4,12 @@ import {
   conditionFromScore,
   scoreOf,
 } from './condition'
+import {
+  capStationViewers,
+  gatedFloorOfStation,
+  VIEWER_FLOOR,
+  type StationGrade,
+} from './station'
 import { STATION_NAME } from './weeklyReport'
 
 export type CreatorGrade = Grade
@@ -144,7 +150,7 @@ export const MILESTONE_REWARDS: Record<RankMilestone, MilestoneReward> = {
   50: { subscribersBonus: 1_000, revenueBonusPercent: 0 },
   30: { subscribersBonus: 5_000, revenueBonusPercent: 5 },
   20: { subscribersBonus: 10_000, revenueBonusPercent: 10 },
-  10: { subscribersBonus: 50_000, revenueBonusPercent: 0, scoutRateUp: true },
+  10: { subscribersBonus: 50_000, revenueBonusPercent: 0 },
   5: { subscribersBonus: 100_000, revenueBonusPercent: 0, specialEventUnlock: true },
   1: { subscribersBonus: 0, revenueBonusPercent: 0, isGameClear: true },
 }
@@ -371,21 +377,11 @@ export function calcRosterViewers(
     const cond = CONDITION_MULT[conditionFromScore(scoreOf(creator))] ?? 1
     return sum + popularity * skill * GRADE_VIEWER_MULT[grade] * cond
   }, 0)
-  return Math.max(1_000, Math.round(1000 + roster + Math.max(0, subscribers) * 0.4))
+  return Math.max(VIEWER_FLOOR, Math.round(VIEWER_FLOOR + roster + Math.max(0, subscribers) * 0.4))
 }
 
-export function gatedFloorOf(creators: RankCreator[], viewers: number): number {
-  const bPlus = countAtLeast(creators, 'B')
-  const aPlus = countAtLeast(creators, 'A')
-  const sCount = countAtLeast(creators, 'S')
-
-  if (sCount >= 3 && viewers >= 1_000_000) return 1
-  if (sCount >= 1 && viewers >= 500_000) return 4
-  if (aPlus >= 3 || sCount >= 1) return 11
-  if (aPlus >= 2) return 21
-  if (bPlus >= 3 || aPlus >= 1) return 31
-  if (bPlus >= 2) return 41
-  return 51
+export function gatedFloorOf(stationGrade: StationGrade): number {
+  return gatedFloorOfStation(stationGrade)
 }
 
 function checksForTarget(
@@ -431,8 +427,9 @@ export function checkPromotionEligible(
   currentRank: number,
   viewers: number,
   creators: RankCreator[],
+  stationGrade: StationGrade = 'C',
 ): PromotionStatus {
-  const gatedFloor = gatedFloorOf(creators, viewers)
+  const gatedFloor = gatedFloorOf(stationGrade)
   const target = nextPromotionTarget(currentRank)
   if (!target) {
     return {
@@ -614,11 +611,14 @@ export function unclaimedMilestonesFor(
   return RANK_MILESTONES.filter((m) => rank <= m && !claimed.includes(m))
 }
 
-export function createInitialLeagueState(creators: RankCreator[] = []): LeagueState {
-  const viewers = calcRosterViewers(creators, 0)
+export function createInitialLeagueState(
+  creators: RankCreator[] = [],
+  stationGrade: StationGrade = 'C',
+): LeagueState {
+  const viewers = capStationViewers(calcRosterViewers(creators, 0), stationGrade)
   const npcs = generateNpcStations()
   const ace = playerAce(creators)
-  const gatedFloor = gatedFloorOf(creators, viewers)
+  const gatedFloor = gatedFloorOf(stationGrade)
   const board = assembleLeaderboard({
     playerViewers: viewers,
     playerAceName: ace.name,
@@ -646,6 +646,7 @@ export function settleLeagueRank(
   state: LeagueState,
   broadcastedCreators: RankCreator[],
   ownedCreators: RankCreator[] = broadcastedCreators,
+  stationGrade: StationGrade = 'C',
 ): { state: LeagueState; result: RankSettlementResult } {
   const jittered = jitterNpcViewers(state.npcStations)
   const organicSubs = Math.round(state.viewers * 0.03)
@@ -655,11 +656,12 @@ export function settleLeagueRank(
     broadcastedCreators.length > 0 ? broadcastedCreators : ownedCreators
   /** 승격 게이트: 스펙상 '보유' 크리에이터 */
   const gateRoster = ownedCreators.length > 0 ? ownedCreators : broadcastedCreators
-  let viewers = calcRosterViewers(viewerRoster, subscribers)
+  let viewers = capStationViewers(calcRosterViewers(viewerRoster, subscribers), stationGrade)
   const ace = playerAce(gateRoster)
+  const stationFloor = gatedFloorOf(stationGrade)
 
   const applyBoard = (nextViewers: number, previousRank: number) => {
-    const floor = gatedFloorOf(gateRoster, nextViewers)
+    const floor = stationFloor
     return assembleLeaderboard({
       playerViewers: nextViewers,
       playerAceName: ace.name,
@@ -687,12 +689,11 @@ export function settleLeagueRank(
   claimAt(board.playerRank)
   if (rewards.subscribersBonus > 0) {
     subscribers += rewards.subscribersBonus
-    viewers = calcRosterViewers(viewerRoster, subscribers)
+    viewers = capStationViewers(calcRosterViewers(viewerRoster, subscribers), stationGrade)
     board = applyBoard(viewers, state.currentRank)
     claimAt(board.playerRank)
   }
 
-  const promotion = checkPromotionEligible(board.playerRank, viewers, gateRoster)
   const unconstrained = assembleLeaderboard({
     playerViewers: viewers,
     playerAceName: ace.name,
@@ -701,9 +702,7 @@ export function settleLeagueRank(
     gatedFloor: 1,
     npcs: jittered,
   })
-  const heldByGate =
-    unconstrained.playerRank < board.playerRank &&
-    (promotion.heldByGate || unconstrained.playerRank < promotion.gatedFloor)
+  const heldByGate = unconstrained.playerRank < board.playerRank
 
   const nextState: LeagueState = {
     currentRank: board.playerRank,
@@ -716,7 +715,8 @@ export function settleLeagueRank(
     entries: board.entries,
     scoutRateUp: state.scoutRateUp || Boolean(rewards.scoutRateUp),
     hiddenEventUnlocked: state.hiddenEventUnlocked || Boolean(rewards.specialEventUnlock),
-    gameCleared: state.gameCleared || Boolean(rewards.isGameClear),
+    gameCleared:
+      state.gameCleared || (Boolean(rewards.isGameClear) && stationGrade === 'S'),
   }
 
   return {
@@ -727,7 +727,7 @@ export function settleLeagueRank(
       rankChange: state.currentRank - board.playerRank,
       viewers,
       heldByGate,
-      gatedFloor: promotion.gatedFloor,
+      gatedFloor: stationFloor,
       newMilestones: fresh,
       rewards,
       scoutRateUp: nextState.scoutRateUp,
@@ -744,11 +744,12 @@ export function settleLeagueRank(
 export function reapplyLeagueGate(
   state: LeagueState,
   ownedCreators: RankCreator[],
+  stationGrade: StationGrade = 'C',
 ): LeagueState {
   const gateRoster = ownedCreators
   const ace = playerAce(gateRoster)
   let subscribers = state.subscribers
-  let viewers = state.viewers
+  let viewers = capStationViewers(state.viewers, stationGrade)
   let claimed = [...state.claimedMilestones]
   let revenueBonusPercent = state.revenueBonusPercent
   let scoutRateUp = state.scoutRateUp
@@ -761,7 +762,7 @@ export function reapplyLeagueGate(
       playerAceName: ace.name,
       playerAceGrade: ace.grade,
       previousPlayerRank: state.currentRank,
-      gatedFloor: gatedFloorOf(gateRoster, nextViewers),
+      gatedFloor: gatedFloorOf(stationGrade),
       npcs: state.npcStations,
     })
 
@@ -774,21 +775,24 @@ export function reapplyLeagueGate(
     revenueBonusPercent += reward.revenueBonusPercent
     scoutRateUp = scoutRateUp || Boolean(reward.scoutRateUp)
     hiddenEventUnlocked = hiddenEventUnlocked || Boolean(reward.specialEventUnlock)
-    gameCleared = gameCleared || Boolean(reward.isGameClear)
+    gameCleared = gameCleared || (Boolean(reward.isGameClear) && stationGrade === 'S')
   }
   if (bonusSubs > 0) {
     subscribers += bonusSubs
-    viewers = Math.max(viewers, Math.round(viewers + bonusSubs * 0.4))
+    viewers = capStationViewers(Math.max(viewers, Math.round(viewers + bonusSubs * 0.4)), stationGrade)
     board = apply(viewers)
     for (const milestone of unclaimedMilestonesFor(board.playerRank, claimed)) {
       claimed.push(milestone)
       const reward = MILESTONE_REWARDS[milestone]
       subscribers += reward.subscribersBonus
-      viewers = Math.max(viewers, Math.round(viewers + reward.subscribersBonus * 0.4))
+      viewers = capStationViewers(
+        Math.max(viewers, Math.round(viewers + reward.subscribersBonus * 0.4)),
+        stationGrade,
+      )
       revenueBonusPercent += reward.revenueBonusPercent
       scoutRateUp = scoutRateUp || Boolean(reward.scoutRateUp)
       hiddenEventUnlocked = hiddenEventUnlocked || Boolean(reward.specialEventUnlock)
-      gameCleared = gameCleared || Boolean(reward.isGameClear)
+      gameCleared = gameCleared || (Boolean(reward.isGameClear) && stationGrade === 'S')
       board = apply(viewers)
     }
   }
@@ -797,7 +801,13 @@ export function reapplyLeagueGate(
     const aceChanged =
       state.entries.find((row) => row.isPlayer)?.aceCreatorName !== ace.name ||
       state.entries.find((row) => row.isPlayer)?.aceCreatorGrade !== ace.grade
-    if (!aceChanged) return state
+    if (
+      !aceChanged &&
+      viewers === state.viewers &&
+      subscribers === state.subscribers
+    ) {
+      return state
+    }
   }
 
   return {
@@ -814,6 +824,19 @@ export function reapplyLeagueGate(
     hiddenEventUnlocked,
     gameCleared,
   }
+}
+
+/** VIP 거절 등 — 시청자·구독자를 깎고 순위를 다시 맞춘다 */
+export function applyAudiencePenalty(
+  state: LeagueState,
+  ownedCreators: RankCreator[],
+  stationGrade: StationGrade,
+  viewerLoss: number,
+): LeagueState {
+  const loss = Math.max(0, Math.round(viewerLoss))
+  const viewers = capStationViewers(state.viewers - loss, stationGrade)
+  const subscribers = Math.max(0, Math.round(state.subscribers - loss))
+  return reapplyLeagueGate({ ...state, viewers, subscribers }, ownedCreators, stationGrade)
 }
 
 export function formatViewers(count: number): string {

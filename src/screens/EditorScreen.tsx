@@ -101,35 +101,18 @@ export function EditorScreen({
     const { character, step, mode } = scoutSimState
 
     if (step === 'scout') {
-      const isSuccess = Math.random() < 0.5
-      if (isSuccess) {
-        const acceptEventId = character.eventLinks.scoutAccept
-        const acceptEvent = acceptEventId ? events.find((e) => e.id === acceptEventId) : null
-        if (acceptEvent) {
-          setScoutSimState({
-            character,
-            step: 'accept',
-            currentEvent: acceptEvent,
-            mode,
-          })
-        } else {
-          setScoutSimState(null)
-          alert('스카웃 성공! (스카웃 이벤트 승낙이 연동되어 있지 않아 시뮬레이션을 종료합니다)')
-        }
+      const acceptEventId = character.eventLinks.scoutAccept
+      const acceptEvent = acceptEventId ? events.find((e) => e.id === acceptEventId) : null
+      if (acceptEvent) {
+        setScoutSimState({
+          character,
+          step: 'accept',
+          currentEvent: acceptEvent,
+          mode,
+        })
       } else {
-        const failEventId = character.eventLinks.scoutFail
-        const failEvent = failEventId ? events.find((e) => e.id === failEventId) : null
-        if (failEvent) {
-          setScoutSimState({
-            character,
-            step: 'fail',
-            currentEvent: failEvent,
-            mode,
-          })
-        } else {
-          setScoutSimState(null)
-          alert('스카웃 실패. (스카웃 이벤트 실패가 연동되어 있지 않아 시뮬레이션을 종료합니다)')
-        }
+        setScoutSimState(null)
+        alert('스카웃 승낙. (스카웃 이벤트 승낙이 연동되어 있지 않아 시뮬레이션을 종료합니다)')
       }
     } else {
       setScoutSimState(null)
