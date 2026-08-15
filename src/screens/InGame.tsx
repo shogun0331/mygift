@@ -652,6 +652,7 @@ export function InGame({
   const handCards = ownedCreators.map(toStudioHandCard)
 
   function handlePurchaseEquipmentNode(nodeId: string) {
+    if (broadcastPhase === 'live') return
     const check = canPurchaseNode(
       equipmentTree,
       nodeId,
@@ -1684,6 +1685,7 @@ export function InGame({
                   [],
                 )
               }
+              researchLocked={broadcastPhase === 'live'}
               onPurchase={handlePurchaseEquipmentNode}
             />
           </div>

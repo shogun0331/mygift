@@ -112,6 +112,8 @@
       "needStationGrade": "Requires station grade {grade}",
       "minGrade": "Required grade",
       "needParent": "Research the connected prerequisite first",
+      "needOnAir": "Cannot research while on air",
+      "onAirLockHint": "On air — research locked",
       "unavailable": "Unavailable",
       "branchRevenue": "Revenue Rate",
       "branchStamina": "Stamina Drain",
@@ -191,8 +193,7 @@
     "unlockConfirmBody": "Unlock this slot for {price}?",
     "unlockConfirmOk": "Unlock",
     "unlockConfirmCancel": "Cancel",
-    "unlockNeedAssets": "Not enough assets",
-    "unlockViaEquipment": "Unlocks when station grade rises"
+    "unlockNeedAssets": "Not enough assets"
   },
   "settlement": {
     "title": "Monthly Settlement",

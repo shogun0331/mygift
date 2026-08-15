@@ -340,9 +340,6 @@ export function SchedulePanel({
                                 <p className="text-[9px] font-bold tracking-wide text-rose-600/70 uppercase sm:text-[10px]">
                                   {t('dashboard.lockedChannel')}
                                 </p>
-                                <p className="max-w-[90%] text-center text-[8px] font-semibold leading-snug text-pink-300/80 sm:text-[9px]">
-                                  {t('studio.unlockViaEquipment')}
-                                </p>
                               </div>
                             </>
                           ) : filled && slot.assignment ? (

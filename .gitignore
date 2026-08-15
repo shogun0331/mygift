@@ -24,3 +24,6 @@ release
 *.njsproj
 *.sln
 *.sw?
+
+# Electron 빌드 산출물 (용량 초과로 GitHub 푸시 거부됨)
+dist-electron

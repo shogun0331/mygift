@@ -1,3 +1,4 @@
+import { fetchPublicJson } from '../game/encryptedJson'
 import type { GameEvent } from './types'
 import type { RegisteredCharacter } from '../game/characters'
 
@@ -67,6 +68,22 @@ export async function loadEvents(): Promise<GameEvent[]> {
     if (!res.success) throw new Error(res.error || 'Failed to load events JSON')
     
     let loadedEvents = res.events as GameEvent[]
+
+    if (loadedEvents.length === 0 && typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
+      try {
+        const metadataList = await fetchPublicJson<any[]>('/chapter_assets/events.json')
+        if (Array.isArray(metadataList) && metadataList.length > 0) {
+          const restored: GameEvent[] = []
+          for (const meta of metadataList) {
+            const full = await fetchPublicJson<GameEvent>(`/chapter_assets/events/${meta.id}.json`)
+            restored.push((full || { ...meta, nodes: [], localization: { ko: {} }, characters: [], points: [], media: [] }) as GameEvent)
+          }
+          loadedEvents = restored
+        }
+      } catch (err) {
+        console.warn('Failed to load events.json from public folder:', err)
+      }
+    }
 
     // 복구 로직: 로컬 JSON이 비어있는데 IndexedDB 백업에 이벤트 데이터가 존재하면 복구 가동!
     if (loadedEvents.length === 0 && indexedDbEvents.length > 0) {

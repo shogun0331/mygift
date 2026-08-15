@@ -109,6 +109,27 @@ function getMimeType(filePath) {
 
 const isDev = process.env.ELECTRON_DEV === '1'
 
+function getProjectRoot() {
+  if (app.isPackaged) {
+    const unpacked = path.join(process.resourcesPath, 'app.asar.unpacked')
+    if (fs.existsSync(path.join(unpacked, 'public'))) {
+      return unpacked
+    }
+    return app.getAppPath()
+  }
+  // Mac/Win 공통: getAppPath()가 Electron.app 쪽을 가리키면 public 을 못 찾음
+  return path.join(__dirname, '..')
+}
+
+function publicPath(...segments) {
+  const parts = segments.flatMap((seg) =>
+    String(seg)
+      .split(/[/\\]+/)
+      .filter(Boolean),
+  )
+  return path.join(getProjectRoot(), 'public', ...parts)
+}
+
 // video range/stream 지원을 위해 ready 이전에 등록해야 함
 protocol.registerSchemesAsPrivileged([
   {
@@ -132,6 +153,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: false,
     },
   })
 
@@ -158,8 +180,7 @@ app.whenReady().then(() => {
   protocol.handle('media', (request) => {
     try {
       const parsed = new URL(request.url)
-      const rel = path.join(parsed.hostname, decodeURIComponent(parsed.pathname))
-      const filePath = path.normalize(path.join(app.getAppPath(), 'public', rel))
+      const filePath = path.normalize(publicPath(parsed.hostname, decodeURIComponent(parsed.pathname)))
 
       if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
         return new Response('Not Found', { status: 404 })
@@ -197,7 +218,7 @@ const { ipcMain } = require('electron')
 
 ipcMain.handle('save-event-assets', async (event, { eventId, assets }) => {
   try {
-    const baseDir = path.join(app.getAppPath(), 'public/chapter_assets/events', String(eventId))
+    const baseDir = publicPath('chapter_assets', 'events', String(eventId))
     const folderMap = {
       image: 'images',
       video: 'videos',
@@ -226,7 +247,7 @@ ipcMain.handle('save-event-assets', async (event, { eventId, assets }) => {
 
 ipcMain.handle('save-character-assets', async (event, { characterId, assets }) => {
   try {
-    const baseDir = path.join(app.getAppPath(), 'public/characters', String(characterId))
+    const baseDir = publicPath('characters', String(characterId))
     const folderMap = {
       image: 'images',
       video: 'videos',
@@ -272,11 +293,18 @@ ipcMain.handle('save-character-assets', async (event, { characterId, assets }) =
 
 ipcMain.handle('save-characters-json', async (event, { characters }) => {
   try {
-    const dir = path.join(app.getAppPath(), 'public/characters')
+    const dir = publicPath('characters')
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true })
     }
     const filePath = path.join(dir, 'characters.json')
+    if ((!characters || characters.length === 0) && fs.existsSync(filePath)) {
+      const existing = parseMaybeEncryptedJson(fs.readFileSync(filePath)) || []
+      if (existing.length > 0) {
+        console.warn('Refusing to overwrite characters.json with an empty list')
+        return { success: true, skippedEmptyOverwrite: true }
+      }
+    }
     const rawBuffer = Buffer.from(JSON.stringify(characters, null, 2), 'utf-8')
     const encryptedBuffer = xorBuffer(rawBuffer)
     fs.writeFileSync(filePath, encryptedBuffer)
@@ -288,12 +316,13 @@ ipcMain.handle('save-characters-json', async (event, { characters }) => {
 
 ipcMain.handle('load-characters-json', async (event) => {
   try {
-    const filePath = path.join(app.getAppPath(), 'public/characters/characters.json')
+    const filePath = publicPath('characters', 'characters.json')
     if (!fs.existsSync(filePath)) {
       return { success: true, characters: [] }
     }
     const encryptedBuffer = fs.readFileSync(filePath)
     const characters = parseMaybeEncryptedJson(encryptedBuffer) || []
+    console.log('[load-characters-json]', filePath, Array.isArray(characters) ? characters.length : typeof characters)
     return { success: true, characters }
   } catch (err) {
     return { success: false, error: err.message }
@@ -302,7 +331,7 @@ ipcMain.handle('load-characters-json', async (event) => {
 
 ipcMain.handle('save-events-json', async (event, { events }) => {
   try {
-    const assetsDir = path.join(app.getAppPath(), 'public/chapter_assets')
+    const assetsDir = publicPath('chapter_assets')
     const eventsDir = path.join(assetsDir, 'events')
 
     if (!fs.existsSync(assetsDir)) {
@@ -359,7 +388,7 @@ ipcMain.handle('save-events-json', async (event, { events }) => {
 
 ipcMain.handle('load-events-json', async (event) => {
   try {
-    const assetsDir = path.join(app.getAppPath(), 'public/chapter_assets')
+    const assetsDir = publicPath('chapter_assets')
     const listFilePath = path.join(assetsDir, 'events.json')
     const eventsDir = path.join(assetsDir, 'events')
 
@@ -414,7 +443,7 @@ ipcMain.handle('delete-character-file', async (event, { characterId, kind, fileN
       video: 'videos',
     }
     const folderName = folderMap[kind] || 'assets'
-    const filePath = path.join(app.getAppPath(), 'public/characters', String(characterId), folderName, fileName)
+    const filePath = publicPath('characters', String(characterId), folderName, fileName)
 
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath)
@@ -432,7 +461,7 @@ ipcMain.handle('clone-character-file', async (event, { characterId, kind, source
       video: 'videos',
     }
     const folderName = folderMap[kind] || 'assets'
-    const dir = path.join(app.getAppPath(), 'public/characters', String(characterId), folderName)
+    const dir = publicPath('characters', String(characterId), folderName)
     const sourcePath = path.join(dir, sourceFileName)
     const targetPath = path.join(dir, targetFileName)
 
@@ -453,7 +482,7 @@ ipcMain.handle('clone-character-file', async (event, { characterId, kind, source
 
 ipcMain.handle('delete-character-folder', async (event, { characterId }) => {
   try {
-    const dirPath = path.join(app.getAppPath(), 'public/characters', String(characterId))
+    const dirPath = publicPath('characters', String(characterId))
     if (fs.existsSync(dirPath)) {
       fs.rmSync(dirPath, { recursive: true, force: true })
     }
@@ -464,7 +493,5 @@ ipcMain.handle('delete-character-folder', async (event, { characterId }) => {
 })
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.quit()
 })

@@ -112,6 +112,8 @@
       "needStationGrade": "필요 등급 {grade}",
       "minGrade": "필요 등급",
       "needParent": "선행 노드를 먼저 연구하세요",
+      "needOnAir": "방송 중에는 연구할 수 없습니다",
+      "onAirLockHint": "방송 중 — 연구 불가",
       "unavailable": "연구할 수 없습니다",
       "branchRevenue": "수익률",
       "branchStamina": "체력 감소율",
@@ -191,8 +193,7 @@
     "unlockConfirmBody": "{price}에 슬롯을 개방하시겠습니까?",
     "unlockConfirmOk": "개방",
     "unlockConfirmCancel": "취소",
-    "unlockNeedAssets": "자산이 부족합니다",
-    "unlockViaEquipment": "방송국 등급 상승 시 개방"
+    "unlockNeedAssets": "자산이 부족합니다"
   },
   "settlement": {
     "title": "월간 정산 명세서",

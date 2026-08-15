@@ -9,6 +9,7 @@ import {
   type RegisteredCharacter,
   type CharacterVideo,
 } from './game/characters'
+import { fetchPublicJson } from './game/encryptedJson'
 import { resolveMediaSrc } from './game/mediaUrl'
 import { createInitialStudioSlots, type StudioSlot } from './game/studioSlots'
 import type { AddCharacterPayload } from './screens/EditorScreen'
@@ -37,6 +38,91 @@ function buildSafeFileName(mediaId: string, originalName: string) {
 function mediaUrl(characterId: string, kind: 'image' | 'video', fileName: string, cacheKey?: string | number) {
   const folder = kind === 'image' ? 'images' : 'videos'
   return resolveMediaSrc(`media://characters/${characterId}/${folder}/${fileName}`, cacheKey ?? fileName)
+}
+
+function hydrateRegisteredCharacter(c: any): RegisteredCharacter {
+  const images = (c.images ?? []).map((img: any) => ({
+    ...img,
+    url: img.fileName
+      ? mediaUrl(c.id, 'image', img.fileName, img.fileSize)
+      : img.url
+        ? resolveMediaSrc(img.url, img.fileSize)
+        : img.file
+          ? URL.createObjectURL(img.file)
+          : '',
+  }))
+  const videos = (c.videos ?? []).map((vid: any) => ({
+    ...vid,
+    stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
+    level: Math.max(1, Math.floor(Number(vid.level) || 1)),
+    url: vid.fileName
+      ? mediaUrl(c.id, 'video', vid.fileName, vid.fileSize)
+      : vid.url
+        ? resolveMediaSrc(vid.url, vid.fileSize)
+        : vid.file
+          ? URL.createObjectURL(vid.file)
+          : '',
+  }))
+  const profileImg = images.find((img: any) => img.id === c.profileImageId)
+  return {
+    ...c,
+    images,
+    videos,
+    profileImageUrl: profileImg?.url || (c.profileImageUrl ? resolveMediaSrc(c.profileImageUrl) : c.profileImageUrl),
+  } as RegisteredCharacter
+}
+
+async function loadRegisteredCharactersFromDisk(): Promise<RegisteredCharacter[]> {
+  let source: any[] = []
+
+  try {
+    const res = await window.electronAPI?.loadCharactersJson?.()
+    if (res?.success && Array.isArray(res.characters) && res.characters.length > 0) {
+      source = res.characters
+    }
+  } catch (err) {
+    console.error('Failed to load characters via Electron:', err)
+  }
+
+  if (source.length === 0 && typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
+    try {
+      const parsed = await fetchPublicJson<any[]>('/characters/characters.json')
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        source = parsed
+      }
+    } catch (err) {
+      console.warn('Failed to load characters.json from public folder:', err)
+    }
+  }
+
+  if (source.length === 0) {
+    try {
+      const records = await loadCharacters()
+      return records.map((r) => {
+        const c = r.character
+        c.profileBlob = r.profileBlob || undefined
+        if (r.profileBlob) {
+          c.profileImageUrl = URL.createObjectURL(r.profileBlob)
+        }
+        return hydrateRegisteredCharacter(c)
+      })
+    } catch (err) {
+      console.error('Failed to load characters from IndexedDB:', err)
+      return []
+    }
+  }
+
+  const list = source.map(hydrateRegisteredCharacter)
+  const migrated: RegisteredCharacter[] = []
+  for (const character of list) {
+    try {
+      migrated.push(await dedupeSharedMediaFiles(character))
+    } catch (err) {
+      console.error('Failed to migrate character media:', character.id, err)
+      migrated.push(character)
+    }
+  }
+  return migrated
 }
 
 function syncOwnedWithRegistered(
@@ -380,79 +466,15 @@ export default function App() {
         setIsEventsLoaded(true)
       })
 
-    if (window.electronAPI?.loadCharactersJson) {
-      window.electronAPI.loadCharactersJson()
-        .then(async (res) => {
-          if (res.success && res.characters) {
-            const list = res.characters.map((c) => {
-              if (c.images) {
-                c.images = c.images.map((img: any) => ({
-                  ...img,
-                  url: img.url || (img.fileName ? mediaUrl(c.id, 'image', img.fileName, img.fileSize) : (img.file ? URL.createObjectURL(img.file) : '')),
-                }))
-              }
-              if (c.videos) {
-                c.videos = c.videos.map((vid: any) => ({
-                  ...vid,
-                  stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
-                  level: Math.max(1, Math.floor(Number(vid.level) || 1)),
-                  url: vid.url || (vid.fileName ? mediaUrl(c.id, 'video', vid.fileName, vid.fileSize) : (vid.file ? URL.createObjectURL(vid.file) : '')),
-                }))
-              }
-              const profileImg = c.images?.find((img: any) => img.id === c.profileImageId)
-              if (profileImg) {
-                c.profileImageUrl = profileImg.url
-              }
-              return c as RegisteredCharacter
-            })
-
-            const migrated = []
-            for (const character of list) {
-              migrated.push(await dedupeSharedMediaFiles(character))
-            }
-            setRegisteredCharacters(migrated)
-          } else {
-            console.error('Failed to load characters JSON:', res.error)
-          }
-          setIsLoaded(true)
-        })
-        .catch((err) => {
-          console.error('Failed to load characters JSON:', err)
-          setIsLoaded(true)
-        })
-    } else {
-      loadCharacters()
-        .then((records) => {
-          const chars = records.map((r) => {
-            const c = r.character
-            c.profileBlob = r.profileBlob || undefined
-            if (r.profileBlob) {
-              c.profileImageUrl = URL.createObjectURL(r.profileBlob)
-            }
-            if (c.images) {
-              c.images = c.images.map((img) => ({
-                ...img,
-                url: img.url || (img.file ? URL.createObjectURL(img.file) : ''),
-              }))
-            }
-            if (c.videos) {
-              c.videos = c.videos.map((vid) => ({
-                ...vid,
-                stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
-                level: Math.max(1, Math.floor(Number(vid.level) || 1)),
-                url: vid.url || (vid.file ? URL.createObjectURL(vid.file) : ''),
-              }))
-            }
-            return c
-          })
-          setRegisteredCharacters(chars)
-          setIsLoaded(true)
-        })
-        .catch((err) => {
-          console.error('Failed to load characters:', err)
-          setIsLoaded(true)
-        })
-    }
+    loadRegisteredCharactersFromDisk()
+      .then((chars) => {
+        setRegisteredCharacters(chars)
+        setIsLoaded(true)
+      })
+      .catch((err) => {
+        console.error('Failed to load characters:', err)
+        setIsLoaded(true)
+      })
   }, [])
 
   // 3. 캐릭터 상태 변경 시 자동 저장

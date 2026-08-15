@@ -28,6 +28,7 @@ type EquipmentPanelProps = {
   skillPoints: number
   stationGrade: StationGrade
   canScout?: boolean
+  researchLocked?: boolean
   onPurchase: (nodeId: string) => void
 }
 
@@ -54,6 +55,7 @@ export function EquipmentPanel({
   skillPoints,
   stationGrade,
   canScout = true,
+  researchLocked = false,
   onPurchase,
 }: EquipmentPanelProps) {
   const { t } = useTranslation()
@@ -72,7 +74,7 @@ export function EquipmentPanel({
   const status = nodeStatus(tree, selected.id)
   const purchase = canPurchaseNode(tree, selected.id, assets, skillPoints, stationGrade)
   const scoutBlocked = selected.type === 'scout' && !canScout
-  const canBuy = purchase.ok && !scoutBlocked
+  const canBuy = purchase.ok && !scoutBlocked && !researchLocked
   const edges = useMemo(() => listEquipEdges(), [])
   const visual = getNodeVisual(selected)
   const progress = getBranchProgress(tree, selected)
@@ -141,6 +143,11 @@ export function EquipmentPanel({
             {t('equipment.tree.title')}
           </p>
           <div className="mt-1 h-px w-16 bg-white/25" />
+          {researchLocked ? (
+            <p className="mt-2 border border-rose-400/30 bg-rose-950/70 px-2 py-1 text-[10px] font-semibold tracking-wide text-rose-200/90">
+              {t('equipment.tree.onAirLockHint')}
+            </p>
+          ) : null}
         </div>
 
         <div className="pointer-events-none absolute top-3 right-3 z-10 border border-cyan-300/35 bg-black/45 px-3 py-1.5 text-right backdrop-blur-[2px]">
@@ -461,7 +468,9 @@ export function EquipmentPanel({
                 </button>
                 {!canBuy ? (
                   <p className="text-center text-[11px] text-white/40">
-                    {purchase.reason === 'locked'
+                    {researchLocked
+                      ? t('equipment.tree.needOnAir')
+                      : purchase.reason === 'locked'
                       ? t('equipment.tree.needParent')
                       : purchase.reason === 'grade'
                         ? t('equipment.tree.needStationGrade').replace(
