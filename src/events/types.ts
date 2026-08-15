@@ -29,6 +29,15 @@ export function emptyCharacterEventLinks(): CharacterEventLinks {
   }
 }
 
+export type BlurRegion = {
+  id: string
+  x: number
+  y: number
+  w: number
+  h: number
+  blur: number
+}
+
 export type EventMediaAsset = {
   id: string
   fileName: string

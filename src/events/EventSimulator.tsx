@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import type { GameEvent, EventMediaAsset } from './types'
+import { BlurRegionOverlay, readBlurRegions } from './BlurRegionEditor'
 
 type EventSimulatorProps = {
   event: GameEvent
@@ -45,17 +46,28 @@ function findNodeImage(node: any): string | null {
 }
 
 // 3. 노드 사운드/보이스 파일명 추출
-function findNodeSound(node: any, lang: string): string | null {
+function resolveVoiceFileName(node: any, lang: string): string | null {
+  if (!node || node.type === 'sound') return null
+  if (typeof node.voice === 'string' && node.voice.trim()) {
+    return node.voice.trim()
+  }
   if (node.voice && typeof node.voice === 'object') {
     const voiceFile = node.voice[lang] || Object.values(node.voice)[0]
     if (typeof voiceFile === 'string' && voiceFile.trim()) {
       return voiceFile.trim()
     }
   }
-  if (node.sound && typeof node.sound === 'string' && node.sound.trim()) {
+  if (typeof node.sound === 'string' && node.sound.trim()) {
     return node.sound.trim()
   }
   return null
+}
+
+function findNodeSound(node: any, lang: string): string | null {
+  if (node?.type === 'sound' && typeof node.sound === 'string' && node.sound.trim()) {
+    return node.sound.trim()
+  }
+  return resolveVoiceFileName(node, lang)
 }
 
 // 4. 다국어 매핑 및 대사 텍스트 추출
@@ -191,10 +203,16 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
 
   const [fadeOpacity, setFadeOpacity] = useState(1)
   const [isClosing, setIsClosing] = useState(false)
+  const [sceneFadeOpacity, setSceneFadeOpacity] = useState(0)
+  const [overlayColor, setOverlayColor] = useState('#000000')
+  const [overlayMs, setOverlayMs] = useState(1200)
   const FADE_MS = 1200
+  const handleNextRef = useRef<() => void>(() => {})
 
-  // 시작: 전체를 잠깐 유지한 뒤 부드럽게 밝아짐
+  // 시작: 첫 노드가 페이드가 아니면 전체를 잠깐 유지한 뒤 부드럽게 밝아짐
   useEffect(() => {
+    const first = flattenNodes(event.nodes || [])[0]
+    if (first?.type === 'fade') return
     const timer = window.setTimeout(() => {
       setFadeOpacity(0)
     }, 320)
@@ -204,7 +222,17 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
   const triggerClose = () => {
     if (isClosing) return
     setIsClosing(true)
+    setOverlayColor('#000000')
+    setOverlayMs(FADE_MS)
     setFadeOpacity(1)
+    for (const channel of ['voice', 'bgm', 'sfx'] as const) {
+      const audio = channelsRef.current[channel]
+      if (audio) {
+        audio.pause()
+        audio.src = ''
+        channelsRef.current[channel] = null
+      }
+    }
     window.setTimeout(() => {
       onClose()
     }, FADE_MS)
@@ -217,27 +245,59 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
   const [isTyping, setIsTyping] = useState(false)
   const typingTimerRef = useRef<any>(null)
 
+  type AudioChannel = 'voice' | 'bgm' | 'sfx'
+  const channelsRef = useRef<Record<AudioChannel, HTMLAudioElement | null>>({
+    voice: null,
+    bgm: null,
+    sfx: null,
+  })
+  const isPlayingRef = useRef(isPlaying)
+  isPlayingRef.current = isPlaying
+  const [audioVolume, setAudioVolume] = useState(0.8)
+  const volumeRef = useRef(audioVolume)
+  volumeRef.current = audioVolume
+  const [channelNames, setChannelNames] = useState<Record<AudioChannel, string | null>>({
+    voice: null,
+    bgm: null,
+    sfx: null,
+  })
 
+  const stopChannel = (channel: AudioChannel) => {
+    const audio = channelsRef.current[channel]
+    if (audio) {
+      audio.pause()
+      audio.src = ''
+      channelsRef.current[channel] = null
+    }
+    setChannelNames((prev) => (prev[channel] ? { ...prev, [channel]: null } : prev))
+  }
+
+  const playChannel = (channel: AudioChannel, asset: EventMediaAsset, loop: boolean) => {
+    stopChannel(channel)
+    const audio = new Audio(asset.url)
+    audio.loop = loop
+    audio.volume = volumeRef.current
+    channelsRef.current[channel] = audio
+    setChannelNames((prev) => ({ ...prev, [channel]: asset.fileName }))
+    if (isPlayingRef.current) {
+      audio.play().catch((err) => console.log('Audio autoplay blocked or failed:', err))
+    }
+  }
 
   // 컴포넌트 언마운트 시 오디오 리소스 강제 해제
   useEffect(() => {
     return () => {
-      if (audioRef.current) {
+      for (const channel of Object.values(channelsRef.current)) {
+        if (!channel) continue
         try {
-          audioRef.current.pause()
+          channel.pause()
+          channel.src = ''
         } catch (e) {
           console.error('Audio cleanup error on unmount:', e)
         }
       }
     }
   }, [])
-
-  // 오디오 관리
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  const [audioVolume, setAudioVolume] = useState(0.8)
-  const volumeRef = useRef(audioVolume)
-  volumeRef.current = audioVolume
-  const [currentSoundName, setCurrentSoundName] = useState<string | null>(null)
 
   // 현재 노드 객체 가져오기
   const currentNode = useMemo(() => {
@@ -249,6 +309,8 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
   const dialogueText = currentNode ? getLocalizedText(currentNode, event.localization, lang) : ''
   const choices = currentNode ? parseNodeChoices(currentNode, event.localization, lang) : []
   const isImageNode = currentNode?.type === 'graphic'
+  const isFadeNode = currentNode?.type === 'fade'
+  const isSoundNode = currentNode?.type === 'sound'
 
   useEffect(() => {
     if (typingTimerRef.current) {
@@ -340,47 +402,82 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
     return null
   }, [flatNodes, currentNodeId, currentNode, event.media])
 
-  // 현재 노드의 사운드 확인 및 재생
-  const activeSound = useMemo(() => {
+  const blurSourceNode = useMemo(() => {
     if (!currentNode) return null
-    const soundName = findNodeSound(currentNode, lang)
-    if (!soundName) return null
-    return findMediaAsset(soundName, event.media)
-  }, [currentNode, lang, event.media])
+    if (currentNode.type === 'graphic') return currentNode
+    const currentIndex = flatNodes.findIndex((n) => n.id === currentNodeId || n.key === currentNodeId)
+    if (currentIndex < 0) return null
+    for (let i = currentIndex; i >= 0; i--) {
+      if (flatNodes[i]?.type === 'graphic') return flatNodes[i]
+    }
+    return null
+  }, [flatNodes, currentNode, currentNodeId])
 
-  // 사운드 파일 재생 처리
+  const activeBlurRegions = useMemo(
+    () => (activeMedia ? readBlurRegions(blurSourceNode) : []),
+    [activeMedia, blurSourceNode],
+  )
+
+  // 3채널 오디오: 보이스는 텍스트 노드, BGM/SFX는 사운드 노드가 담당. 그래픽/페이드는 건드리지 않음.
   useEffect(() => {
-    if (!isPlaying) {
-      if (audioRef.current) audioRef.current.pause()
+    if (!currentNode) return
+
+    if (currentNode.type === 'sound') {
+      const role: AudioChannel = currentNode.role === 'sfx' ? 'sfx' : 'bgm'
+      if (currentNode.stop) {
+        stopChannel(role)
+        return
+      }
+      const fileName = typeof currentNode.sound === 'string' ? currentNode.sound.trim() : ''
+      if (!fileName) return
+      const asset = findMediaAsset(fileName, event.media)
+      if (asset) playChannel(role, asset, Boolean(currentNode.loop))
       return
     }
 
-    if (activeSound) {
-      if (audioRef.current) {
-        audioRef.current.pause()
-      }
-      const audio = new Audio(activeSound.url)
-      audio.volume = volumeRef.current
-      audio.play().catch((err) => console.log('Audio autoplay blocked or failed:', err))
-      audioRef.current = audio
-      setCurrentSoundName(activeSound.fileName)
+    if (currentNode.type === 'graphic' || currentNode.type === 'fade') return
 
-      return () => {
-        audio.pause()
-      }
-    } else {
-      // 새로운 노드에 사운드가 없다면, 이전 보이스는 정지 (단, 일반 sound가 루프 재생 중이 아닐 때)
-      if (audioRef.current && currentNode?.voice) {
-        audioRef.current.pause()
-        setCurrentSoundName(null)
+    if (currentNode.stopVoice !== false) {
+      stopChannel('voice')
+    }
+    if (currentNode.stopBgm === true) {
+      stopChannel('bgm')
+    }
+
+    const voiceName = resolveVoiceFileName(currentNode, lang)
+    if (voiceName) {
+      const asset = findMediaAsset(voiceName, event.media)
+      if (asset) playChannel('voice', asset, false)
+    }
+    // 노드 ID·오디오 필드가 바뀔 때만 채널을 다시 건다 (에디터 리렌더로 BGM이 끊기지 않게)
+  }, [
+    currentNodeId,
+    lang,
+    currentNode?.type,
+    currentNode?.role,
+    currentNode?.stop,
+    currentNode?.loop,
+    currentNode?.sound,
+    typeof currentNode?.voice === 'string' ? currentNode.voice : JSON.stringify(currentNode?.voice ?? null),
+    currentNode?.stopVoice,
+    currentNode?.stopBgm,
+    event.media,
+  ])
+
+  useEffect(() => {
+    for (const channel of Object.values(channelsRef.current)) {
+      if (!channel) continue
+      if (isPlaying) {
+        channel.play().catch(() => {})
+      } else {
+        channel.pause()
       }
     }
-  }, [activeSound, isPlaying, currentNode])
+  }, [isPlaying])
 
-  // 볼륨 실시간 반영
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = audioVolume
+    for (const channel of Object.values(channelsRef.current)) {
+      if (channel) channel.volume = audioVolume
     }
   }, [audioVolume])
 
@@ -441,6 +538,7 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
     // 다음으로 진행할 노드가 정말로 실질적인 데이터를 담고 있는지 체크하는 헬퍼
     const hasRealisticContent = (node: any) => {
       if (!node) return false
+      if (node.type === 'fade' || node.type === 'graphic' || node.type === 'sound') return true
       // 1. 대사 또는 화자가 있는지 확인
       const text = getLocalizedText(node, event.localization, lang)
       if (text && text.trim()) return true
@@ -494,10 +592,53 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
     }
   }
 
+  handleNextRef.current = handleNext
+
+  // 페이드 노드: 오버레이를 재생한 뒤 다음으로 진행
+  useEffect(() => {
+    if (!isPlaying || playbackFinished || isClosing) return
+    if (!currentNode || currentNode.type !== 'fade') return
+    if (choices.length > 0) return
+
+    const durationMs = Math.max(80, (Number(currentNode.duration) || 1.2) * 1000)
+    const color = typeof currentNode.color === 'string' && currentNode.color ? currentNode.color : '#000000'
+    const dir = currentNode.fade === 'in' ? 'in' : 'out'
+
+    setOverlayColor(color)
+    setOverlayMs(0)
+    setSceneFadeOpacity(dir === 'in' ? 1 : 0)
+
+    const frame = window.requestAnimationFrame(() => {
+      setOverlayMs(durationMs)
+      setSceneFadeOpacity(dir === 'in' ? 0 : 1)
+    })
+
+    const timer = window.setTimeout(() => {
+      handleNextRef.current()
+    }, durationMs + 40)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.clearTimeout(timer)
+    }
+  }, [currentNodeId, isPlaying, playbackFinished, isClosing, currentNode, choices.length])
+
+  // 사운드 노드: 채널만 바꾸고 바로 다음으로
+  useEffect(() => {
+    if (!isPlaying || playbackFinished || isClosing) return
+    if (!currentNode || currentNode.type !== 'sound') return
+    if (choices.length > 0) return
+    const timer = window.setTimeout(() => {
+      handleNextRef.current()
+    }, 80)
+    return () => window.clearTimeout(timer)
+  }, [currentNodeId, isPlaying, playbackFinished, isClosing, currentNode, choices.length])
+
   // 자동 진행 딜레이 타이머
   useEffect(() => {
     if (!isPlaying || playbackFinished) return
     if (!currentNode) return
+    if (currentNode.type === 'fade' || currentNode.type === 'sound') return
     if (choices.length > 0) return
     if (isTyping) return
 
@@ -517,6 +658,11 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
     const startId = event.startNode || flatNodes[0]?.id || flatNodes[0]?.key || ''
     setCurrentNodeId(startId)
     setPlaybackFinished(false)
+    setSceneFadeOpacity(0)
+    setOverlayMs(0)
+    stopChannel('voice')
+    stopChannel('bgm')
+    stopChannel('sfx')
   }
 
   // 검색 필터링된 노드 목록
@@ -611,7 +757,10 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
       }`}>
         {/* Left: Visual Novel Player */}
         <div className="flex flex-col items-center justify-center bg-black/40 p-4 min-h-0 overflow-auto relative">
-          <div className="relative aspect-video w-full max-w-[94vw] max-h-[82vh] bg-black rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col justify-end">
+          <div
+            className="relative aspect-video w-full bg-black rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col justify-end"
+            style={{ maxWidth: 'min(100%, 94vw, calc(82vh * 16 / 9))' }}
+          >
             {/* 1. 미디어 화면 (배경) */}
             <div
               className={`absolute inset-0 z-0 bg-slate-900 flex items-center justify-center ${
@@ -648,7 +797,21 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
                   <p className="text-xs">배경 미디어가 없습니다</p>
                 </div>
               )}
+              {activeBlurRegions.length > 0 ? (
+                <BlurRegionOverlay regions={activeBlurRegions} />
+              ) : null}
             </div>
+
+            {/* 장면 페이드 (페이드 노드) */}
+            <div
+              aria-hidden
+              className="absolute inset-0 z-20 pointer-events-none transition-opacity ease-linear"
+              style={{
+                opacity: sceneFadeOpacity,
+                backgroundColor: overlayColor,
+                transitionDuration: `${overlayMs}ms`,
+              }}
+            />
 
             {/* LIVE Badge (인게임 방송 연출 느낌용) */}
             <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 rounded-full border border-indigo-400/40 bg-indigo-500/20 px-2.5 py-1 text-[10px] font-bold tracking-wider text-indigo-200">
@@ -657,15 +820,16 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
             </div>
 
             {/* 현재 재생중인 사운드 뱃지 */}
-            {currentSoundName && (
-              <div className="absolute top-4 right-4 z-10 inline-flex items-center gap-1 rounded bg-black/60 border border-white/10 px-2 py-1 text-[10px] text-slate-300">
-                <span>🔊</span>
-                <span className="truncate max-w-[120px] font-mono">{currentSoundName}</span>
+            {(channelNames.voice || channelNames.bgm || channelNames.sfx) && (
+              <div className="absolute top-4 right-4 z-10 flex max-w-[220px] flex-col gap-1 rounded bg-black/60 border border-white/10 px-2 py-1 text-[10px] text-slate-300">
+                {channelNames.voice ? <span className="truncate font-mono">VO {channelNames.voice}</span> : null}
+                {channelNames.bgm ? <span className="truncate font-mono">BGM {channelNames.bgm}</span> : null}
+                {channelNames.sfx ? <span className="truncate font-mono">SFX {channelNames.sfx}</span> : null}
               </div>
             )}
 
-            {/* 2. 대사/선택지 오버레이 영역 — 이미지(그래픽) 노드는 대화창 숨김 */}
-            {(!isImageNode || choices.length > 0 || playbackFinished) && (
+            {/* 2. 대사/선택지 오버레이 영역 — 이미지·페이드 노드는 대화창 숨김 */}
+            {(!isImageNode && !isFadeNode && !isSoundNode) || choices.length > 0 || playbackFinished ? (
             <div
               className={`relative z-10 w-full p-4 flex flex-col gap-3 ${
                 isImageNode
@@ -709,7 +873,7 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
                 </div>
               )}
 
-              {!playbackFinished && !isImageNode && (
+              {!playbackFinished && !isImageNode && !isFadeNode && !isSoundNode && (
                 <div
                   onClick={handleBoxClick}
                   className={`w-full bg-slate-950/80 border border-white/10 rounded-2xl p-5 md:p-6 text-left transition select-none flex gap-5 md:gap-6 items-center ${
@@ -753,7 +917,7 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
               )}
 
             </div>
-            )}
+            ) : null}
           </div>
 
           {/* Player controls */}
@@ -880,6 +1044,16 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
                             <p className="mt-1 font-medium truncate text-slate-200">
                               {nodeChar ? `[${nodeChar}] ` : ''}
                               {nodeText}
+                            </p>
+                          ) : n.type === 'sound' ? (
+                            <p className="mt-1 text-[10px] text-slate-400">
+                              {n.stop
+                                ? `${n.role === 'sfx' ? '이펙트' : '배경음'} 정지`
+                                : `${n.role === 'sfx' ? '이펙트' : '배경음'}${n.loop ? ' 루프' : ''} · ${n.sound || '파일 없음'}`}
+                            </p>
+                          ) : n.type === 'fade' ? (
+                            <p className="mt-1 text-[10px] text-slate-400">
+                              페이드 {n.fade === 'in' ? '인' : '아웃'} · {Number(n.duration) || 1.2}초
                             </p>
                           ) : (
                             <p className="mt-1 text-[10px] text-slate-500 italic">

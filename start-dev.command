@@ -74,17 +74,37 @@ if pids=$(lsof -tiTCP:5173 -sTCP:LISTEN 2>/dev/null); then
 fi
 
 echo "Starting Vite + Electron..."
-echo "이 창에서 Ctrl+C 를 누르면 종료됩니다."
+echo "게임 창을 닫으면 개발 서버와 이 창도 함께 종료됩니다."
 echo
 
 npm run dev
 exit_code=$?
 
+# Electron이 꺼진 뒤 Vite가 남아 있으면 5173을 강제로 비움
+if pids=$(lsof -tiTCP:5173 -sTCP:LISTEN 2>/dev/null); then
+  echo "$pids" | xargs kill 2>/dev/null
+  sleep 0.3
+  if pids=$(lsof -tiTCP:5173 -sTCP:LISTEN 2>/dev/null); then
+    echo "$pids" | xargs kill -9 2>/dev/null
+  fi
+fi
+
 if [[ $exit_code -ne 0 ]]; then
   echo
   echo "[ERROR] 실행에 실패했습니다. (exit $exit_code)"
+  echo
+  read -r "?아무 키나 누르면 종료합니다..."
+  exit $exit_code
 fi
 
-echo
-read -r "?아무 키나 누르면 종료합니다..."
-exit $exit_code
+# Finder에서 연 .command 터미널 창 닫기
+if [[ "${TERM_PROGRAM:-}" == "Apple_Terminal" ]]; then
+  osascript >/dev/null 2>&1 <<'EOF' &
+tell application "Terminal"
+  try
+    close front window
+  end try
+end tell
+EOF
+fi
+exit 0

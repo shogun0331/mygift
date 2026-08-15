@@ -20,6 +20,14 @@ interface ElectronAPI {
   ) => Promise<{ success: boolean; error?: string }>
   loadEventsJson?: (
   ) => Promise<{ success: boolean; events?: any[]; error?: string }>
+  deleteEventFile?: (
+    eventId: string,
+    kind: 'image' | 'video' | 'sound',
+    fileName: string
+  ) => Promise<{ success: boolean; error?: string }>
+  deleteEventFolder?: (
+    eventId: string
+  ) => Promise<{ success: boolean; error?: string }>
   deleteCharacterFile?: (
     characterId: string,
     kind: 'image' | 'video',

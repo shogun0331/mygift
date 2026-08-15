@@ -208,6 +208,7 @@ app.whenReady().then(() => {
   createWindow()
 
   app.on('activate', () => {
+    if (isDev) return
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow()
     }
@@ -240,6 +241,49 @@ ipcMain.handle('save-event-assets', async (event, { eventId, assets }) => {
     }
 
     return { success: true, path: baseDir }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('delete-event-file', async (event, { eventId, kind, fileName }) => {
+  try {
+    const safeId = path.basename(String(eventId || ''))
+    const safeName = path.basename(String(fileName || ''))
+    if (!safeId || !safeName) {
+      return { success: false, error: 'invalid path' }
+    }
+    const folderMap = {
+      image: 'images',
+      video: 'videos',
+      sound: 'sounds',
+    }
+    const folderName = folderMap[kind] || 'assets'
+    const filePath = publicPath('chapter_assets', 'events', safeId, folderName, safeName)
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath)
+    }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('delete-event-folder', async (event, { eventId }) => {
+  try {
+    const safeId = path.basename(String(eventId || ''))
+    if (!safeId) {
+      return { success: false, error: 'invalid path' }
+    }
+    const dirPath = publicPath('chapter_assets', 'events', safeId)
+    if (fs.existsSync(dirPath)) {
+      fs.rmSync(dirPath, { recursive: true, force: true })
+    }
+    const jsonPath = publicPath('chapter_assets', 'events', `${safeId}.json`)
+    if (fs.existsSync(jsonPath)) {
+      fs.unlinkSync(jsonPath)
+    }
+    return { success: true }
   } catch (err) {
     return { success: false, error: err.message }
   }
@@ -358,14 +402,24 @@ ipcMain.handle('save-events-json', async (event, { events }) => {
     if (fs.existsSync(eventsDir)) {
       const files = fs.readdirSync(eventsDir)
       for (const file of files) {
+        const fullPath = path.join(eventsDir, file)
         if (file.endsWith('.json')) {
           const id = path.basename(file, '.json')
           if (!activeIds.has(id)) {
             try {
-              fs.unlinkSync(path.join(eventsDir, file))
+              fs.unlinkSync(fullPath)
             } catch (err) {
               console.error(`Failed to clean deleted event file: ${file}`, err)
             }
+          }
+        } else {
+          try {
+            const stat = fs.statSync(fullPath)
+            if (stat.isDirectory() && !activeIds.has(file)) {
+              fs.rmSync(fullPath, { recursive: true, force: true })
+            }
+          } catch (err) {
+            console.error(`Failed to clean deleted event assets folder: ${file}`, err)
           }
         }
       }

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type DragEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { parseVnfExportZip } from '../events/parseVnfExport'
 import {
   revokeEventMedia,
@@ -7,6 +8,7 @@ import {
   type GameEvent,
 } from '../events/types'
 import { EventSimulator } from './EventSimulator'
+import { BlurRegionEditor, BlurRegionOverlay, readBlurRegions } from './BlurRegionEditor'
 import type { RegisteredCharacter } from '../game/characters'
 
 type EventManagePanelProps = {
@@ -34,6 +36,99 @@ const kindLabel: Record<EventMediaKind, string> = {
   image: '이미지',
   video: '영상',
   sound: '사운드',
+}
+
+type EditorNodeType = 'text' | 'graphic' | 'fade' | 'sound'
+
+const NODE_TYPE_OPTIONS: Array<{ value: EditorNodeType; label: string }> = [
+  { value: 'text', label: '텍스트' },
+  { value: 'graphic', label: '그래픽' },
+  { value: 'fade', label: '페이드' },
+  { value: 'sound', label: '사운드' },
+]
+
+function makeNodeId() {
+  return `node_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
+}
+
+function createEmptyNode(type: EditorNodeType, id = makeNodeId()) {
+  if (type === 'graphic') {
+    return { id, type: 'graphic' as const, image: '', delay: 2.0, blurRegions: [], blurDefault: 16 }
+  }
+  if (type === 'fade') {
+    return { id, type: 'fade' as const, fade: 'out' as const, duration: 1.2, color: '#000000' }
+  }
+  if (type === 'sound') {
+    return {
+      id,
+      type: 'sound' as const,
+      role: 'bgm' as const,
+      sound: '',
+      loop: true,
+      stop: false,
+    }
+  }
+  return {
+    id,
+    type: 'text' as const,
+    speakerType: 'character',
+    speaker: '',
+    text: '',
+    voice: '',
+    stopVoice: true,
+    stopBgm: false,
+  }
+}
+
+function convertNodeToType(prev: Record<string, any>, type: EditorNodeType) {
+  const id = prev.id || makeNodeId()
+  const voiceFromPrev =
+    typeof prev.voice === 'string'
+      ? prev.voice
+      : typeof prev.sound === 'string' && prev.type !== 'sound'
+        ? prev.sound
+        : ''
+  if (type === 'text') {
+    return {
+      id,
+      type: 'text',
+      speakerType: prev.speakerType || 'character',
+      speaker: prev.speaker || '',
+      text: prev.text || '',
+      voice: voiceFromPrev,
+      stopVoice: prev.stopVoice !== false,
+      stopBgm: Boolean(prev.stopBgm),
+      ...(prev.text_key ? { text_key: prev.text_key } : {}),
+    }
+  }
+  if (type === 'graphic') {
+    return {
+      id,
+      type: 'graphic',
+      image: prev.image || '',
+      delay: prev.delay ?? 2.0,
+      blurRegions: Array.isArray(prev.blurRegions) ? prev.blurRegions : [],
+      blurDefault: prev.blurDefault ?? 16,
+    }
+  }
+  if (type === 'sound') {
+    return {
+      id,
+      type: 'sound',
+      role: prev.role === 'sfx' ? 'sfx' : 'bgm',
+      sound: typeof prev.sound === 'string' ? prev.sound : voiceFromPrev,
+      loop: prev.loop !== undefined ? Boolean(prev.loop) : prev.role !== 'sfx',
+      stop: Boolean(prev.stop),
+    }
+  }
+  const durationRaw = Number(prev.duration ?? prev.delay)
+  return {
+    id,
+    type: 'fade',
+    fade: prev.fade === 'in' ? 'in' : 'out',
+    duration: Number.isFinite(durationRaw) && durationRaw > 0 ? durationRaw : 1.2,
+    color: prev.color || '#000000',
+  }
 }
 
 // 다국어 번역용 공간을 JSON 구조 내에 자동으로 정규화하여 생성하는 헬퍼 함수
@@ -183,7 +278,16 @@ export function EventManagePanel({
 
   const removeEvent = (id: string) => {
     const target = events.find((event) => event.id === id)
-    if (target) revokeEventMedia(target)
+    if (!target) return
+    if (!confirm(`이벤트 '${target.title}'을(를) 삭제하시겠습니까?\n연결된 미디어 파일도 디스크에서 삭제됩니다.`)) {
+      return
+    }
+    revokeEventMedia(target)
+    if (window.electronAPI?.deleteEventFolder) {
+      void window.electronAPI.deleteEventFolder(id).catch((err) => {
+        console.error('Failed to delete event folder from disk:', err)
+      })
+    }
     handleEventsChange(events.filter((event) => event.id !== id))
     if (selectedId === id) setSelectedId(null)
   }
@@ -433,9 +537,10 @@ export function EventManagePanel({
         />
       )}
 
-      {/* 수동 이벤트 직접 추가 모달 */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      {/* 수동 이벤트 직접 추가 모달 — game-panel(backdrop-filter) 밖에 포탈해야 화면 전체에 고정됨 */}
+      {showCreateModal &&
+        createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl border border-indigo-500/25 bg-slate-900 p-6 shadow-2xl animate-fade-in">
             <h3 className="text-base font-semibold text-slate-100">새 이벤트 생성</h3>
             <p className="mt-1 text-xs text-slate-400">
@@ -506,7 +611,8 @@ export function EventManagePanel({
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   )
@@ -538,6 +644,79 @@ function EventDetail({
   const [showScriptModal, setShowScriptModal] = useState(false)
   const [scriptText, setScriptText] = useState('')
   const [importMode, setImportMode] = useState<'append' | 'replace'>('append')
+  const [focusNodeId, setFocusNodeId] = useState<string | null>(null)
+  const [blurEditorIndex, setBlurEditorIndex] = useState<number | null>(null)
+  const nodeCardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+
+  useEffect(() => {
+    if (!focusNodeId) return
+    const el = nodeCardRefs.current.get(focusNodeId)
+    el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    const timer = window.setTimeout(() => setFocusNodeId(null), 1800)
+    return () => window.clearTimeout(timer)
+  }, [focusNodeId, event.nodes])
+
+  const getInsertIndex = () => {
+    const nodes = (event.nodes || []) as any[]
+    if (nodes.length === 0) return 0
+
+    const centerY = window.innerHeight / 2
+    let bestIndex = nodes.length - 1
+    let bestDist = Infinity
+
+    nodes.forEach((node, index) => {
+      const id = String(node?.id || '')
+      const el = id ? nodeCardRefs.current.get(id) : null
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return
+      const mid = (rect.top + rect.bottom) / 2
+      const dist = Math.abs(mid - centerY)
+      if (dist < bestDist) {
+        bestDist = dist
+        bestIndex = index
+      }
+    })
+
+    return bestIndex + 1
+  }
+
+  const insertNode = (type: EditorNodeType) => {
+    const newNode = createEmptyNode(type)
+    const updatedNodes = [...(event.nodes || [])]
+    const insertAt = Math.min(getInsertIndex(), updatedNodes.length)
+    updatedNodes.splice(insertAt, 0, newNode)
+    const startNode = event.startNode || newNode.id
+
+    onUpdateEvent({
+      ...event,
+      nodes: updatedNodes,
+      startNode,
+    })
+    setFocusNodeId(newNode.id)
+  }
+
+  const convertNodeType = (index: number, type: EditorNodeType) => {
+    const updatedNodes = [...(event.nodes || [])]
+    const prev = { ...(updatedNodes[index] as Record<string, any>) }
+    if (prev.type === type) return
+    updatedNodes[index] = convertNodeToType(prev, type)
+    onUpdateEvent({ ...event, nodes: updatedNodes })
+  }
+
+  const duplicateNode = (index: number) => {
+    const source = event.nodes?.[index]
+    if (!source || typeof source !== 'object') return
+    const copy = JSON.parse(JSON.stringify(source)) as Record<string, any>
+    const newId = makeNodeId()
+    copy.id = newId
+    if (copy.key) copy.key = newId
+    if (copy.text_key) copy.text_key = newId
+    const updatedNodes = [...(event.nodes || [])]
+    updatedNodes.splice(index + 1, 0, copy)
+    onUpdateEvent({ ...event, nodes: updatedNodes })
+    setFocusNodeId(newId)
+  }
 
   // 스크립트 텍스트 파싱 및 가져오기 핸들러
   const handleImportScript = (e: React.FormEvent) => {
@@ -546,35 +725,63 @@ function EventDetail({
 
     const lines = scriptText.split('\n')
     const parsedNodes: any[] = []
+    const nextCharacters = [...(event.characters || [])]
+    const stamp = Date.now()
+
+    const ensureCharacter = (id: string, name: string) => {
+      if (!nextCharacters.some((c) => c.id === id)) {
+        nextCharacters.push({ id, name })
+      }
+    }
 
     lines.forEach((line) => {
       const trimmed = line.trim()
       if (!trimmed) return
 
-      // 1. 그래픽 노드 파싱
+      const nextId = () =>
+        `node_${stamp}_${parsedNodes.length}_${Math.random().toString(36).slice(2, 6)}`
+
+      // 1. 그래픽 노드 파싱 (전각 콜론 포함)
       // 예: "그래픽: #1 — 거실 입구 (풀샷)"
-      const graphicMatch = trimmed.match(/^그래픽\s*:\s*(.*)$/)
+      const graphicMatch = trimmed.match(/^그래픽\s*[:：]\s*(.*)$/)
       if (graphicMatch) {
         const desc = graphicMatch[1].trim()
 
-        // 미디어 파일명에 설명문구 조각이 들어있는 에셋이 매칭되는지 탐색
         const matchedAsset = event.media.find((m) =>
           m.fileName.toLowerCase().includes(desc.toLowerCase()) ||
           desc.toLowerCase().includes(m.fileName.toLowerCase())
         )
 
         parsedNodes.push({
-          id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 6)}_${parsedNodes.length}`,
+          id: nextId(),
           type: 'graphic',
           image: matchedAsset ? matchedAsset.fileName : '',
           delay: 2.0,
+          blurRegions: [],
+          blurDefault: 16,
+        })
+        return
+      }
+
+      // 1-b. 페이드 노드 파싱
+      // 예: "페이드: 아웃" / "페이드: 인"
+      const fadeMatch = trimmed.match(/^페이드\s*[:：]\s*(.*)$/)
+      if (fadeMatch) {
+        const raw = fadeMatch[1].trim().toLowerCase()
+        const isIn = raw.includes('인') || raw === 'in' || raw.includes('밝')
+        parsedNodes.push({
+          id: nextId(),
+          type: 'fade',
+          fade: isIn ? 'in' : 'out',
+          duration: 1.2,
+          color: '#000000',
         })
         return
       }
 
       // 2. 대사/텍스트 노드 파싱
       // 예: "이모: 너, 잠 안 와?"
-      const dialogueMatch = trimmed.match(/^([^:]+)\s*:\s*(.*)$/)
+      const dialogueMatch = trimmed.match(/^([^:：]+)\s*[:：]\s*(.*)$/)
       if (dialogueMatch) {
         const speakerName = dialogueMatch[1].trim()
         const text = dialogueMatch[2].trim()
@@ -585,31 +792,26 @@ function EventDetail({
         if (speakerName === '플레이어' || speakerName.toLowerCase() === 'player') {
           speakerType = 'player'
           speaker = 'player'
+        } else if (
+          speakerName === '지문' ||
+          speakerName === '나레이션' ||
+          speakerName.toLowerCase() === 'narrator'
+        ) {
+          speakerType = 'narrator'
+          speaker = ''
         } else {
           const char = registeredCharacters.find((c) => c.name === speakerName)
           if (char) {
             speaker = char.id
-            const exist = event.characters.some((c) => c.id === char.id)
-            if (!exist) {
-              event.characters.push({
-                id: char.id,
-                name: char.name,
-              })
-            }
+            ensureCharacter(char.id, char.name)
           } else {
             speaker = speakerName
-            const exist = event.characters.some((c) => c.id === speakerName)
-            if (!exist) {
-              event.characters.push({
-                id: speakerName,
-                name: speakerName,
-              })
-            }
+            ensureCharacter(speakerName, speakerName)
           }
         }
 
         parsedNodes.push({
-          id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 6)}_${parsedNodes.length}`,
+          id: nextId(),
           type: 'text',
           speakerType,
           speaker,
@@ -620,7 +822,7 @@ function EventDetail({
 
       // 3. 지문 노드 (구분자 콜론이 없는 일반 라인)
       parsedNodes.push({
-        id: `node_${Date.now()}_${Math.random().toString(36).slice(2, 6)}_${parsedNodes.length}`,
+        id: nextId(),
         type: 'text',
         speakerType: 'narrator',
         speaker: '',
@@ -636,6 +838,7 @@ function EventDetail({
 
     onUpdateEvent({
       ...event,
+      characters: nextCharacters,
       nodes: updatedNodes,
       startNode,
     })
@@ -684,45 +887,6 @@ function EventDetail({
       ...event,
       media: updatedMedia,
       nodes: updatedNodes,
-    })
-  }
-
-  // 노드 추가 (텍스트 노드)
-  const addTextNode = () => {
-    const newNodeId = `node_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
-    const newNode = {
-      id: newNodeId,
-      type: 'text',
-      speakerType: 'character', // 'character' | 'player' | 'narrator'
-      speaker: '',
-      text: '',
-    }
-    const updatedNodes = [...(event.nodes || []), newNode]
-    const startNode = event.startNode || newNodeId
-
-    onUpdateEvent({
-      ...event,
-      nodes: updatedNodes,
-      startNode,
-    })
-  }
-
-  // 노드 추가 (그래픽 노드)
-  const addGraphicNode = () => {
-    const newNodeId = `node_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
-    const newNode = {
-      id: newNodeId,
-      type: 'graphic',
-      image: '',
-      delay: 2.0,
-    }
-    const updatedNodes = [...(event.nodes || []), newNode]
-    const startNode = event.startNode || newNodeId
-
-    onUpdateEvent({
-      ...event,
-      nodes: updatedNodes,
-      startNode,
     })
   }
 
@@ -794,7 +958,11 @@ function EventDetail({
   }
 
   // 로컬 미디어 직접 업로드 핸들러
-  const handleUploadMedia = (e: React.ChangeEvent<HTMLInputElement>, targetNodeIndex?: number) => {
+  const handleUploadMedia = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    targetNodeIndex?: number,
+    bindField?: 'image' | 'voice' | 'sound',
+  ) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -817,11 +985,14 @@ function EventDetail({
 
     const updatedMedia = [...(event.media || []), newAsset]
 
-    // 만약 특정 노드에서 미디어 업로드를 실행한 경우, 업로드된 파일명을 자동으로 바인딩함
     let updatedNodes = [...(event.nodes || [])]
     if (targetNodeIndex !== undefined) {
-      const node = { ...(updatedNodes[targetNodeIndex] as Record<string, any>), image: file.name }
-      updatedNodes[targetNodeIndex] = node
+      const existing = { ...(updatedNodes[targetNodeIndex] as Record<string, any>) }
+      const field =
+        bindField ||
+        (existing.type === 'sound' ? 'sound' : kind === 'sound' ? 'voice' : 'image')
+      existing[field] = file.name
+      updatedNodes[targetNodeIndex] = existing
     }
 
     onUpdateEvent({
@@ -840,29 +1011,40 @@ function EventDetail({
 
     // 현재 노드에서 이 파일명을 참조하고 있는지 검사
     const isReferenced = (event.nodes || []).some(
-      (node: any) => node.image === assetToRemove.fileName
+      (node: any) =>
+        node.image === assetToRemove.fileName ||
+        node.voice === assetToRemove.fileName ||
+        node.sound === assetToRemove.fileName
     )
 
-    let confirmMsg = `미디어 파일 '${assetToRemove.fileName}'을(를) 삭제하시겠습니까?`
+    let confirmMsg = `미디어 파일 '${assetToRemove.fileName}'을(를) 삭제하시겠습니까?\n디스크에 저장된 파일도 함께 삭제됩니다.`
     if (isReferenced) {
       confirmMsg = `이 미디어(${assetToRemove.fileName})는 현재 스토리 노드에서 참조 중입니다. 정말 삭제하시겠습니까?\n삭제 시 관련 노드의 미디어 연결도 함께 초기화됩니다.`
     }
 
     if (!confirm(confirmMsg)) return
 
-    // Blob URL 리소스 해제
     if (assetToRemove.url && assetToRemove.url.startsWith('blob:')) {
       URL.revokeObjectURL(assetToRemove.url)
+    }
+
+    if (window.electronAPI?.deleteEventFile) {
+      void window.electronAPI
+        .deleteEventFile(event.id, assetToRemove.kind, assetToRemove.fileName)
+        .catch((err) => {
+          console.error('Failed to delete event media from disk:', err)
+        })
     }
 
     const updatedMedia = event.media.filter((m) => m.id !== assetId)
     let updatedNodes = [...(event.nodes || [])]
     if (isReferenced) {
       updatedNodes = updatedNodes.map((node: any) => {
-        if (node.image === assetToRemove.fileName) {
-          return { ...node, image: '' }
-        }
-        return node
+        const next = { ...node }
+        if (next.image === assetToRemove.fileName) next.image = ''
+        if (next.voice === assetToRemove.fileName) next.voice = ''
+        if (next.sound === assetToRemove.fileName) next.sound = ''
+        return next
       })
     }
 
@@ -941,11 +1123,11 @@ function EventDetail({
       {/* Tab Contents: Node Editor */}
       {activeTab === 'nodes' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
             <span className="text-xs text-slate-500">
-              드래그 앤 드롭으로 카드 순서를 재배치할 수 있습니다.
+              새 노드는 지금 보고 있는 카드 바로 아래에 추가됩니다. 드래그로 순서를 바꿀 수 있습니다.
             </span>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => setShowScriptModal(true)}
@@ -955,17 +1137,31 @@ function EventDetail({
               </button>
               <button
                 type="button"
-                onClick={addTextNode}
+                onClick={() => insertNode('text')}
                 className="rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-3 py-1.5 text-xs text-indigo-300 font-medium transition"
               >
-                ＋ 텍스트 노드 추가
+                ＋ 텍스트 노드
               </button>
               <button
                 type="button"
-                onClick={addGraphicNode}
+                onClick={() => insertNode('graphic')}
                 className="rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-3 py-1.5 text-xs text-indigo-300 font-medium transition"
               >
-                ＋ 그래픽 노드 추가
+                ＋ 그래픽 노드
+              </button>
+              <button
+                type="button"
+                onClick={() => insertNode('fade')}
+                className="rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-3 py-1.5 text-xs text-indigo-300 font-medium transition"
+              >
+                ＋ 페이드 노드
+              </button>
+              <button
+                type="button"
+                onClick={() => insertNode('sound')}
+                className="rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-3 py-1.5 text-xs text-indigo-300 font-medium transition"
+              >
+                ＋ 사운드 노드
               </button>
             </div>
           </div>
@@ -980,37 +1176,83 @@ function EventDetail({
               </div>
             ) : (
               (event.nodes as any[]).map((node, index) => {
-                const isText = node.type === 'text'
+                const isFade = node.type === 'fade'
+                const isGraphic = node.type === 'graphic'
+                const isSound = node.type === 'sound'
+                const isText = !isFade && !isGraphic && !isSound
                 const speakerType = node.speakerType || 'character'
+                const editorType: EditorNodeType = isFade
+                  ? 'fade'
+                  : isGraphic
+                    ? 'graphic'
+                    : isSound
+                      ? 'sound'
+                      : 'text'
+                const isFocused = focusNodeId && node.id === focusNodeId
+                const soundAssets = (event.media || []).filter((m) => m.kind === 'sound')
 
                 return (
                   <div
                     key={node.id || index}
+                    ref={(el) => {
+                      if (!node.id) return
+                      if (el) nodeCardRefs.current.set(node.id, el)
+                      else nodeCardRefs.current.delete(node.id)
+                    }}
                     draggable
-                    onDragStart={() => handleDragStart(index)}
+                    onDragStart={(e) => {
+                      const target = e.target as HTMLElement
+                      if (target.closest('input, textarea, select, button, label')) {
+                        e.preventDefault()
+                        return
+                      }
+                      handleDragStart(index)
+                    }}
                     onDragOver={(e) => handleDragOver(e, index)}
                     onDrop={() => handleDrop(index)}
-                    className={`relative rounded-xl border border-white/10 bg-black/25 p-4 transition-all hover:border-white/20 ${
-                      draggedIndex === index ? 'opacity-40 border-indigo-500 bg-indigo-500/5' : ''
-                    }`}
+                    className={`relative rounded-xl border bg-black/25 p-4 transition-all hover:border-white/20 ${
+                      draggedIndex === index ? 'opacity-40 border-indigo-500 bg-indigo-500/5' : 'border-white/10'
+                    } ${isFocused ? 'ring-2 ring-indigo-400/70 border-indigo-400/50' : ''}`}
                   >
                     {/* Card Header & Controls */}
-                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/5">
-                      <div className="flex items-center gap-2 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300">
+                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/5 gap-2">
+                      <div className="flex items-center gap-2 min-w-0 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300">
                         <span className="text-xs">↕</span>
-                        <span className="font-mono text-[10px] text-slate-400">
-                          #{index + 1} - {isText ? '텍스트 노드' : '그래픽 노드'}
+                        <span className="font-mono text-[10px] text-slate-400 shrink-0">
+                          #{index + 1}
                         </span>
-                        <span className="text-[9px] text-slate-600 font-mono">({node.id})</span>
+                        <select
+                          value={editorType}
+                          onChange={(e) => convertNodeType(index, e.target.value as EditorNodeType)}
+                          className="rounded-md border border-white/10 bg-black/50 px-1.5 py-0.5 text-[10px] text-slate-200 outline-none focus:border-indigo-500/50 cursor-pointer"
+                          title="노드 형태 변경"
+                        >
+                          {NODE_TYPE_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label} 노드
+                            </option>
+                          ))}
+                        </select>
+                        <span className="text-[9px] text-slate-600 font-mono truncate">({node.id})</span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeNode(index)}
-                        className="rounded hover:bg-white/5 p-1 text-xs text-slate-500 hover:text-rose-400 transition"
-                        title="노드 삭제"
-                      >
-                        🗑 삭제
-                      </button>
+                      <div className="flex shrink-0 items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => duplicateNode(index)}
+                          className="rounded hover:bg-white/5 px-1.5 py-1 text-xs text-slate-500 hover:text-indigo-300 transition"
+                          title="바로 아래에 복사"
+                        >
+                          📋 복사
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeNode(index)}
+                          className="rounded hover:bg-white/5 p-1 text-xs text-slate-500 hover:text-rose-400 transition"
+                          title="노드 삭제"
+                        >
+                          🗑 삭제
+                        </button>
+                      </div>
                     </div>
 
                     {/* Node Specific Form fields */}
@@ -1087,6 +1329,223 @@ function EventDetail({
                             className="w-full rounded-xl border border-white/10 bg-black/40 p-3 text-xs text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/50 resize-y"
                           />
                         </div>
+
+                        <div className="space-y-2 rounded-xl border border-white/5 bg-black/20 p-3">
+                          <div className="flex items-center justify-between gap-2">
+                            <label className="text-[11px] font-semibold text-slate-400">대사 음성</label>
+                            <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
+                              📁 음성 파일 추가
+                              <input
+                                type="file"
+                                accept="audio/*"
+                                className="hidden"
+                                onChange={(e) => handleUploadMedia(e, index, 'voice')}
+                              />
+                            </label>
+                          </div>
+                          <select
+                            value={typeof node.voice === 'string' ? node.voice : ''}
+                            onChange={(e) => handleNodeChange(index, { voice: e.target.value })}
+                            className="w-full rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500/50 cursor-pointer"
+                          >
+                            <option value="">-- 음성 없음 --</option>
+                            {soundAssets.map((asset) => (
+                              <option key={asset.id} value={asset.fileName}>
+                                {asset.fileName}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="flex flex-wrap gap-4 pt-1">
+                            <label className="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={node.stopVoice !== false}
+                                onChange={(e) => handleNodeChange(index, { stopVoice: e.target.checked })}
+                                className="accent-indigo-500"
+                              />
+                              이 줄에서 보이스 끄기
+                            </label>
+                            <label className="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(node.stopBgm)}
+                                onChange={(e) => handleNodeChange(index, { stopBgm: e.target.checked })}
+                                className="accent-indigo-500"
+                              />
+                              이 줄에서 배경음 끄기
+                            </label>
+                          </div>
+                          <p className="text-[10px] text-slate-500">
+                            보이스 끄기는 기본 켜짐입니다. 이전 줄 음성이 이 대사와 겹치지 않습니다.
+                          </p>
+                        </div>
+                      </div>
+                    ) : isSound ? (
+                      <div className="space-y-3">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                          <label className="text-[11px] font-semibold text-slate-400 w-16">역할</label>
+                          <div className="flex gap-1.5">
+                            {([
+                              { value: 'bgm', label: '배경음' },
+                              { value: 'sfx', label: '이펙트음' },
+                            ] as const).map((option) => {
+                              const active = (node.role || 'bgm') === option.value
+                              return (
+                                <button
+                                  key={option.value}
+                                  type="button"
+                                  onClick={() =>
+                                    handleNodeChange(index, {
+                                      role: option.value,
+                                      loop: option.value === 'bgm' ? node.loop !== false : Boolean(node.loop),
+                                    })
+                                  }
+                                  className={`rounded-lg border px-2.5 py-1 text-xs transition ${
+                                    active
+                                      ? 'border-indigo-400/40 bg-indigo-500/20 text-indigo-300'
+                                      : 'border-white/10 bg-black/25 text-slate-400 hover:text-slate-200'
+                                  }`}
+                                >
+                                  {option.label}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-4">
+                          <label className="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(node.loop)}
+                              onChange={(e) => handleNodeChange(index, { loop: e.target.checked })}
+                              className="accent-indigo-500"
+                            />
+                            루프 재생
+                          </label>
+                          <label className="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(node.stop)}
+                              onChange={(e) => handleNodeChange(index, { stop: e.target.checked })}
+                              className="accent-indigo-500"
+                            />
+                            이 채널 정지 (파일 없이 끄기)
+                          </label>
+                        </div>
+
+                        {!node.stop ? (
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <label className="text-[11px] font-semibold text-slate-400">사운드 파일</label>
+                              <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
+                                📁 새 파일 추가
+                                <input
+                                  type="file"
+                                  accept="audio/*"
+                                  className="hidden"
+                                  onChange={(e) => handleUploadMedia(e, index, 'sound')}
+                                />
+                              </label>
+                            </div>
+                            <select
+                              value={node.sound || ''}
+                              onChange={(e) => handleNodeChange(index, { sound: e.target.value })}
+                              className="w-full rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500/50 cursor-pointer"
+                            >
+                              <option value="">-- 사운드 선택 --</option>
+                              {soundAssets.map((asset) => (
+                                <option key={asset.id} value={asset.fileName}>
+                                  {asset.fileName}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        ) : (
+                          <p className="text-[10px] text-slate-500">
+                            정지가 켜져 있으면 {(node.role || 'bgm') === 'sfx' ? '이펙트음' : '배경음'} 채널만 즉시 멈춥니다.
+                          </p>
+                        )}
+                      </div>
+                    ) : isFade ? (
+                      <div className="space-y-3">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                          <label className="text-[11px] font-semibold text-slate-400 w-16">
+                            방향
+                          </label>
+                          <div className="flex gap-1.5">
+                            {([
+                              { value: 'out', label: '페이드 아웃 (어두워짐)' },
+                              { value: 'in', label: '페이드 인 (밝아짐)' },
+                            ] as const).map((option) => {
+                              const active = (node.fade || 'out') === option.value
+                              return (
+                                <button
+                                  key={option.value}
+                                  type="button"
+                                  onClick={() => handleNodeChange(index, { fade: option.value })}
+                                  className={`rounded-lg border px-2.5 py-1 text-xs transition ${
+                                    active
+                                      ? 'border-indigo-400/40 bg-indigo-500/20 text-indigo-300'
+                                      : 'border-white/10 bg-black/25 text-slate-400 hover:text-slate-200'
+                                  }`}
+                                >
+                                  {option.label}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="space-y-1.5">
+                            <label className="block text-[11px] font-semibold text-slate-400">
+                              전환 시간 (초)
+                            </label>
+                            <input
+                              type="number"
+                              min="0.1"
+                              step="0.1"
+                              value={node.duration !== undefined ? node.duration : 1.2}
+                              onChange={(e) =>
+                                handleNodeChange(index, {
+                                  duration: Math.max(0.1, parseFloat(e.target.value) || 0.1),
+                                })
+                              }
+                              className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500/50"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="block text-[11px] font-semibold text-slate-400">
+                              페이드 색
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={node.color || '#000000'}
+                                onChange={(e) => handleNodeChange(index, { color: e.target.value })}
+                                className="h-8 w-10 cursor-pointer rounded border border-white/10 bg-transparent"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleNodeChange(index, { color: '#000000' })}
+                                className="rounded-lg border border-white/10 px-2 py-1 text-[10px] text-slate-400 hover:text-slate-200"
+                              >
+                                검정
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleNodeChange(index, { color: '#ffffff' })}
+                                className="rounded-lg border border-white/10 px-2 py-1 text-[10px] text-slate-400 hover:text-slate-200"
+                              >
+                                흰색
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-slate-500">
+                          페이드 아웃 다음에는 장면(그래픽/대사)을 두고, 다시 페이드 인으로 밝히면 자연스럽습니다.
+                        </p>
                       </div>
                     ) : (
                       /* Graphic Node Fields */
@@ -1112,16 +1571,27 @@ function EventDetail({
                             <label className="text-[11px] font-semibold text-slate-400">
                               배경 미디어
                             </label>
-                            {/* 개별 노드에서 즉시 업로드용 라벨 */}
-                            <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
-                              📁 새 파일 추가
-                              <input
-                                type="file"
-                                accept="image/*,video/*"
-                                className="hidden"
-                                onChange={(e) => handleUploadMedia(e, index)}
-                              />
-                            </label>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setBlurEditorIndex(index)}
+                                className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold"
+                              >
+                                블러 영역 편집
+                                {(node.blurRegions?.length ?? 0) > 0
+                                  ? ` (${node.blurRegions.length})`
+                                  : ''}
+                              </button>
+                              <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
+                                📁 새 파일 추가
+                                <input
+                                  type="file"
+                                  accept="image/*,video/*"
+                                  className="hidden"
+                                  onChange={(e) => handleUploadMedia(e, index)}
+                                />
+                              </label>
+                            </div>
                           </div>
 
                           <div className={`relative transition rounded-lg border ${
@@ -1160,20 +1630,23 @@ function EventDetail({
                             }
                             return (
                               <div className="mt-2 flex items-center gap-3 animate-fade-in bg-black/20 p-1.5 rounded-lg border border-white/5 w-fit">
-                                {asset.kind === 'image' ? (
-                                  <img
-                                    src={asset.url}
-                                    alt="Preview"
-                                    className="w-24 aspect-video object-cover rounded border border-white/10 bg-black/40"
-                                  />
-                                ) : asset.kind === 'video' ? (
-                                  <video
-                                    src={asset.url}
-                                    muted
-                                    playsInline
-                                    className="w-24 aspect-video object-cover rounded border border-white/10 bg-black/40"
-                                  />
-                                ) : null}
+                                <div className="relative w-24 aspect-video overflow-hidden rounded border border-white/10 bg-black/40">
+                                  {asset.kind === 'image' ? (
+                                    <img
+                                      src={asset.url}
+                                      alt="Preview"
+                                      className="h-full w-full object-cover"
+                                    />
+                                  ) : asset.kind === 'video' ? (
+                                    <video
+                                      src={asset.url}
+                                      muted
+                                      playsInline
+                                      className="h-full w-full object-cover"
+                                    />
+                                  ) : null}
+                                  <BlurRegionOverlay regions={readBlurRegions(node)} />
+                                </div>
                                 <div className="text-[10px] text-slate-400 min-w-0 max-w-[150px]">
                                   <p className="truncate text-slate-200 font-semibold" title={asset.fileName}>
                                     {asset.fileName}
@@ -1286,10 +1759,15 @@ function EventDetail({
         </div>
       )}
 
-      {/* 스크립트 일괄 가져오기 모달 */}
-      {showScriptModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-indigo-500/25 bg-slate-900 p-6 shadow-2xl animate-fade-in flex flex-col max-h-[90vh]">
+      {/* 스크립트 일괄 가져오기 모달 — 패널 밖(body)에 그려야 화면 전체에 고정됨 */}
+      {showScriptModal &&
+        createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="w-full max-w-lg rounded-2xl border border-indigo-500/25 bg-slate-900 p-6 shadow-2xl animate-fade-in flex flex-col max-h-[90vh]"
+          >
             <h3 className="text-base font-semibold text-slate-100">시나리오 스크립트 일괄 가져오기</h3>
             <p className="mt-1 text-xs text-slate-400">
               대본 형식의 텍스트를 파싱하여 자동으로 텍스트 및 그래픽 노드 시퀀스를 구성합니다.
@@ -1344,7 +1822,9 @@ function EventDetail({
               <div className="rounded-lg bg-black/35 p-3 text-[11px] text-slate-500 border border-white/5 space-y-1">
                 <p className="font-semibold text-slate-400">💡 텍스트 문법 가이드</p>
                 <p>• <span className="text-indigo-300 font-semibold">그래픽: 설명</span> : 그래픽 노드 생성</p>
+                <p>• <span className="text-indigo-300 font-semibold">페이드: 인</span> / <span className="text-indigo-300 font-semibold">페이드: 아웃</span> : 화면 전환 노드</p>
                 <p>• <span className="text-indigo-300 font-semibold">이름: 대사</span> : 해당 이름의 화자와 대사 노드 생성 (플레이어는 별도 지정)</p>
+                <p>• <span className="text-indigo-300 font-semibold">지문: 설명</span> 또는 콜론 없는 문장 : 지문(나레이션) 노드</p>
                 <p>• <span className="text-indigo-300 font-semibold">일반 문장</span> : 이름 없는 지문 노드 생성</p>
               </div>
 
@@ -1368,8 +1848,25 @@ function EventDetail({
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
+
+      {blurEditorIndex !== null && event.nodes?.[blurEditorIndex] ? (
+        <BlurRegionEditor
+          asset={
+            event.media.find(
+              (m) => m.fileName === (event.nodes[blurEditorIndex] as any).image,
+            ) ?? null
+          }
+          regions={readBlurRegions(event.nodes[blurEditorIndex])}
+          blurDefault={Number((event.nodes[blurEditorIndex] as any).blurDefault) || 16}
+          onChange={({ blurRegions, blurDefault }) => {
+            handleNodeChange(blurEditorIndex, { blurRegions, blurDefault })
+          }}
+          onClose={() => setBlurEditorIndex(null)}
+        />
+      ) : null}
     </div>
   )
 }

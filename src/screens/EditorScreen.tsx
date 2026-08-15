@@ -214,7 +214,7 @@ export function EditorScreen({
                       >
                         {character.profileImageUrl ? (
                           <img
-                            src={character.profileImageUrl}
+                            src={resolveMediaSrc(character.profileImageUrl)}
                             alt=""
                             className="h-10 w-10 shrink-0 rounded-full object-cover"
                           />
