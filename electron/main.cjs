@@ -2,110 +2,75 @@ const { app, BrowserWindow, protocol, net, Menu } = require('electron')
 const path = require('path')
 const { pathToFileURL } = require('url')
 const fs = require('fs')
-const { Transform, Readable } = require('stream')
 
-// XOR 암호화용 8바이트 대칭키
-const XOR_KEY = Buffer.from([0x7E, 0x3F, 0x1A, 0x9B, 0x5C, 0xD2, 0x48, 0xFE])
+// 이벤트 대사 파일 키 (src/events/eventLocales.ts 와 동일)
+const EVENT_LOCALES = ['ko', 'en', 'ja', 'zh-cn', 'ru', 'es', 'de']
+const EVENT_DEFAULT_LOCALE = 'ko'
 
-// 메모리 바이너리 즉시 XOR 변환
-function xorBuffer(buffer) {
-  const result = Buffer.alloc(buffer.length)
-  for (let i = 0; i < buffer.length; i++) {
-    result[i] = buffer[i] ^ XOR_KEY[i % XOR_KEY.length]
-  }
-  return result
+function canonicalEventLocale(lang) {
+  const raw = String(lang || '').trim()
+  if (!raw) return null
+  const upper = raw.toUpperCase()
+  if (upper === 'KO') return 'ko'
+  if (upper === 'EN') return 'en'
+  if (upper === 'JA') return 'ja'
+  if (upper === 'ZH-CN' || upper === 'ZH' || upper === 'ZH_CN') return 'zh-cn'
+  if (upper === 'RU') return 'ru'
+  if (upper === 'ES') return 'es'
+  if (upper === 'DE') return 'de'
+  const lower = raw.toLowerCase().replace(/_/g, '-')
+  if (lower === 'zh' || lower === 'zh-hans') return 'zh-cn'
+  if (EVENT_LOCALES.includes(lower)) return lower
+  return null
 }
 
-// 암호화되었을 수도 있고 평문일 수도 있는 JSON 버퍼 안전 파싱 헬퍼
-function parseMaybeEncryptedJson(buffer) {
-  if (buffer.length === 0) return null;
-  // 첫 바이트가 '{' (0x7B) 또는 '[' (0x5B) 이면 평문 JSON 가능성이 높음
-  const firstByte = buffer[0]
-  if (firstByte === 0x7B || firstByte === 0x5B) {
+function emptyEventLocalization() {
+  const next = {}
+  for (const lang of EVENT_LOCALES) next[lang] = {}
+  return next
+}
+
+function mergeEventLocalization(raw) {
+  const next = emptyEventLocalization()
+  if (!raw || typeof raw !== 'object') return next
+  for (const [key, map] of Object.entries(raw)) {
+    const lang = canonicalEventLocale(key)
+    if (!lang || !map || typeof map !== 'object' || Array.isArray(map)) continue
+    const copy = { ...next[lang] }
+    for (const [textKey, value] of Object.entries(map)) {
+      if (typeof value === 'string') copy[textKey] = value
+    }
+    next[lang] = copy
+  }
+  return next
+}
+
+function writeJson(filePath, data) {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8')
+}
+
+function assembleEventLocalization(embedded, locDir) {
+  const loc = mergeEventLocalization(embedded)
+  if (!fs.existsSync(locDir)) return loc
+  for (const lang of EVENT_LOCALES) {
+    const filePath = path.join(locDir, `${lang}.json`)
+    if (!fs.existsSync(filePath)) continue
     try {
-      return JSON.parse(buffer.toString('utf-8'))
-    } catch (e) {
-      // 평문 파싱 에러 발생 시 복호화 시도로 이동
-    }
-  }
-  
-  try {
-    const decrypted = xorBuffer(buffer)
-    return JSON.parse(decrypted.toString('utf-8'))
-  } catch (e) {
-    // 만약 복호화해서도 파싱 실패하면 최후의 수단으로 다시 평문 시도
-    return JSON.parse(buffer.toString('utf-8'))
-  }
-}
-
-// 평문 파일 시그니처 체크 헬퍼
-function isPlaintext(buffer, ext) {
-  if (buffer.length === 0) return false;
-  
-  if (ext === '.json') {
-    return buffer[0] === 0x7B || buffer[0] === 0x5B; // '{' or '['
-  }
-  
-  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) return true; // PNG
-  if (buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) return true; // JPEG
-  
-  if (buffer.length > 12) {
-    const riff = buffer.slice(0, 4).toString('ascii')
-    const webp = buffer.slice(8, 12).toString('ascii')
-    if (riff === 'RIFF' && webp === 'WEBP') return true
-  }
-  
-  if (buffer.length > 3 && buffer.slice(0, 3).toString('ascii') === 'GIF') return true
-  if (buffer.length > 8 && buffer.slice(4, 8).toString('ascii') === 'ftyp') return true // MP4
-  if (buffer.length > 3 && buffer.slice(0, 3).toString('ascii') === 'ID3') return true // MP3
-  
-  if (buffer.length > 12) {
-    const riff = buffer.slice(0, 4).toString('ascii')
-    const wave = buffer.slice(8, 12).toString('ascii')
-    if (riff === 'RIFF' && wave === 'WAVE') return true
-  }
-  
-  if (buffer.length > 4 && buffer.slice(0, 4).toString('ascii') === 'OggS') return true
-
-  return false
-}
-
-
-// 오프셋 기반 비동기 복호화 Transform Stream 생성기
-function createXorStream(startOffset = 0) {
-  let offset = startOffset
-  return new Transform({
-    transform(chunk, encoding, callback) {
-      const decrypted = Buffer.alloc(chunk.length)
-      for (let i = 0; i < chunk.length; i++) {
-        decrypted[i] = chunk[i] ^ XOR_KEY[(offset + i) % XOR_KEY.length]
+      const parsed = parseJsonFile(fs.readFileSync(filePath))
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        loc[lang] = { ...loc[lang], ...parsed }
       }
-      offset += chunk.length
-      callback(null, decrypted)
+    } catch (err) {
+      console.error(`Failed to parse loc file ${filePath}:`, err)
     }
-  })
-}
-
-// 파일 확장자 기반 MIME 타입 헬퍼
-function getMimeType(filePath) {
-  const ext = path.extname(filePath).toLowerCase()
-  switch (ext) {
-    case '.mp4': return 'video/mp4'
-    case '.webm': return 'video/webm'
-    case '.mov': return 'video/quicktime'
-    case '.png': return 'image/png'
-    case '.jpg':
-    case '.jpeg': return 'image/jpeg'
-    case '.webp': return 'image/webp'
-    case '.gif': return 'image/gif'
-    case '.json': return 'application/json'
-    case '.mp3': return 'audio/mpeg'
-    case '.wav': return 'audio/wav'
-    case '.ogg': return 'audio/ogg'
-    default: return 'application/octet-stream'
   }
+  return loc
 }
 
+function parseJsonFile(buffer) {
+  if (!buffer || buffer.length === 0) return null
+  return JSON.parse(buffer.toString('utf-8'))
+}
 
 const isDev = process.env.ELECTRON_DEV === '1'
 
@@ -186,19 +151,7 @@ app.whenReady().then(() => {
         return new Response('Not Found', { status: 404 })
       }
 
-      const raw = fs.readFileSync(filePath)
-      const ext = path.extname(filePath).toLowerCase()
-      const decrypted = isPlaintext(raw, ext) ? raw : xorBuffer(raw)
-      const mimeType = getMimeType(filePath)
-
-      return new Response(decrypted, {
-        status: 200,
-        headers: {
-          'Content-Length': String(decrypted.length),
-          'Content-Type': mimeType,
-          'Accept-Ranges': 'bytes',
-        }
-      })
+      return net.fetch(pathToFileURL(filePath).href)
     } catch (err) {
       console.error('media protocol error:', err)
       return new Response('Internal Error', { status: 500 })
@@ -235,9 +188,7 @@ ipcMain.handle('save-event-assets', async (event, { eventId, assets }) => {
       }
 
       const filePath = path.join(targetDir, asset.fileName)
-      const rawBuffer = Buffer.from(asset.buffer)
-      const encryptedBuffer = xorBuffer(rawBuffer)
-      fs.writeFileSync(filePath, encryptedBuffer)
+      fs.writeFileSync(filePath, Buffer.from(asset.buffer))
     }
 
     return { success: true, path: baseDir }
@@ -324,8 +275,7 @@ ipcMain.handle('save-character-assets', async (event, { characterId, assets }) =
         throw new Error(`Empty buffer for asset ${asset.fileName}`)
       }
 
-      const encryptedBuffer = xorBuffer(rawBuffer)
-      fs.writeFileSync(filePath, encryptedBuffer)
+      fs.writeFileSync(filePath, rawBuffer)
     }
 
     return { success: true, path: baseDir }
@@ -343,15 +293,13 @@ ipcMain.handle('save-characters-json', async (event, { characters }) => {
     }
     const filePath = path.join(dir, 'characters.json')
     if ((!characters || characters.length === 0) && fs.existsSync(filePath)) {
-      const existing = parseMaybeEncryptedJson(fs.readFileSync(filePath)) || []
+      const existing = parseJsonFile(fs.readFileSync(filePath)) || []
       if (existing.length > 0) {
         console.warn('Refusing to overwrite characters.json with an empty list')
         return { success: true, skippedEmptyOverwrite: true }
       }
     }
-    const rawBuffer = Buffer.from(JSON.stringify(characters, null, 2), 'utf-8')
-    const encryptedBuffer = xorBuffer(rawBuffer)
-    fs.writeFileSync(filePath, encryptedBuffer)
+    writeJson(filePath, characters)
     return { success: true }
   } catch (err) {
     return { success: false, error: err.message }
@@ -364,8 +312,7 @@ ipcMain.handle('load-characters-json', async (event) => {
     if (!fs.existsSync(filePath)) {
       return { success: true, characters: [] }
     }
-    const encryptedBuffer = fs.readFileSync(filePath)
-    const characters = parseMaybeEncryptedJson(encryptedBuffer) || []
+    const characters = parseJsonFile(fs.readFileSync(filePath)) || []
     console.log('[load-characters-json]', filePath, Array.isArray(characters) ? characters.length : typeof characters)
     return { success: true, characters }
   } catch (err) {
@@ -392,11 +339,17 @@ ipcMain.handle('save-events-json', async (event, { events }) => {
         const { blob, ...rest } = m
         return rest
       })
-      const fullEventData = { ...ev, media }
+      const { localization, ...eventWithoutLoc } = ev
+      const fullEventData = { ...eventWithoutLoc, media }
       const singleFilePath = path.join(eventsDir, `${ev.id}.json`)
-      const rawSingleBuffer = Buffer.from(JSON.stringify(fullEventData, null, 2), 'utf-8')
-      const encryptedSingleBuffer = xorBuffer(rawSingleBuffer)
-      fs.writeFileSync(singleFilePath, encryptedSingleBuffer)
+      writeJson(singleFilePath, fullEventData)
+
+      const locDir = path.join(eventsDir, String(ev.id), 'loc')
+      fs.mkdirSync(locDir, { recursive: true })
+      const locMaps = mergeEventLocalization(localization)
+      for (const lang of EVENT_LOCALES) {
+        writeJson(path.join(locDir, `${lang}.json`), locMaps[lang] || {})
+      }
     }
 
     if (fs.existsSync(eventsDir)) {
@@ -431,9 +384,7 @@ ipcMain.handle('save-events-json', async (event, { events }) => {
     })
 
     const listFilePath = path.join(assetsDir, 'events.json')
-    const rawListBuffer = Buffer.from(JSON.stringify(metadataList, null, 2), 'utf-8')
-    const encryptedListBuffer = xorBuffer(rawListBuffer)
-    fs.writeFileSync(listFilePath, encryptedListBuffer)
+    writeJson(listFilePath, metadataList)
     return { success: true }
   } catch (err) {
     return { success: false, error: err.message }
@@ -450,23 +401,28 @@ ipcMain.handle('load-events-json', async (event) => {
       return { success: true, events: [] }
     }
 
-    const encryptedList = fs.readFileSync(listFilePath)
-    const metadataList = parseMaybeEncryptedJson(encryptedList) || []
+    const metadataList = parseJsonFile(fs.readFileSync(listFilePath)) || []
     const fullEvents = []
 
     for (const meta of metadataList) {
       const singleFilePath = path.join(eventsDir, `${meta.id}.json`)
       if (fs.existsSync(singleFilePath)) {
         try {
-          const encryptedSingle = fs.readFileSync(singleFilePath)
-          const singleData = parseMaybeEncryptedJson(encryptedSingle)
-          fullEvents.push(singleData)
+          const singleData = parseJsonFile(fs.readFileSync(singleFilePath)) || {}
+          const locDir = path.join(eventsDir, String(meta.id), 'loc')
+          const localization = assembleEventLocalization(singleData.localization, locDir)
+          const { localization: _embedded, ...rest } = singleData
+          fullEvents.push({
+            ...rest,
+            localization,
+            defaultLanguage: rest.defaultLanguage || EVENT_DEFAULT_LOCALE,
+          })
         } catch (err) {
           console.error(`Failed to parse event file for ${meta.id}:`, err)
           fullEvents.push({
             ...meta,
             nodes: [],
-            localization: { ko: {} },
+            localization: emptyEventLocalization(),
             characters: [],
             points: [],
             media: []
@@ -476,7 +432,7 @@ ipcMain.handle('load-events-json', async (event) => {
         fullEvents.push({
           ...meta,
           nodes: [],
-          localization: { ko: {} },
+          localization: emptyEventLocalization(),
           characters: [],
           points: [],
           media: []

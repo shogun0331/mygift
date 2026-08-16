@@ -245,29 +245,39 @@ export function findLevelIdleVideoUrl(
 }
 
 /**
- * 방송 일별 영상: 해당 수위 레벨의 비-idle 영상을 stage 오름차순으로 고른 뒤 dayIndex로 선택.
- * 없으면 idle로 폴백.
+ * 방송용 클립: 해당 수위 레벨에서 idle이 아닌 영상.
  */
-export function findBroadcastDayVideoUrl(
+export function listBroadcastPlayVideos(
   creator: { videos?: CharacterVideo[] | null },
-  dayIndex: number,
   level = 1,
-): string | null {
-  const playlist = (creator.videos ?? [])
-    .filter(
-      (video) =>
-        video.level === level &&
-        !video.keys?.includes('idle') &&
-        Boolean(video.url),
-    )
-    .sort((a, b) => a.stage - b.stage || a.id.localeCompare(b.id))
+): CharacterVideo[] {
+  return (creator.videos ?? []).filter(
+    (video) =>
+      video.level === level &&
+      !video.keys?.includes('idle') &&
+      Boolean(video.url),
+  )
+}
 
+/**
+ * idle을 제외하고 랜덤 1개. 방송 클립이 없으면 idle로 폴백.
+ * avoidUrl이 있고 후보가 2개 이상이면 직전 클립은 빼서 같은 영상이 연속되지 않게 한다.
+ */
+export function pickRandomBroadcastVideoUrl(
+  creator: { videos?: CharacterVideo[] | null },
+  level = 1,
+  avoidUrl?: string | null,
+): string | null {
+  let playlist = listBroadcastPlayVideos(creator, level)
+  if (avoidUrl && playlist.length > 1) {
+    const without = playlist.filter((video) => video.url !== avoidUrl)
+    if (without.length > 0) playlist = without
+  }
   if (playlist.length === 0) {
     return findLevelIdleVideoUrl(creator, level)
   }
-
-  const safeIndex = ((Math.floor(dayIndex) % playlist.length) + playlist.length) % playlist.length
-  return playlist[safeIndex]?.url ?? findLevelIdleVideoUrl(creator, level)
+  const index = Math.floor(Math.random() * playlist.length)
+  return playlist[index]?.url ?? findLevelIdleVideoUrl(creator, level)
 }
 
 export function toStudioHandCard(creator: OwnedCreator) {

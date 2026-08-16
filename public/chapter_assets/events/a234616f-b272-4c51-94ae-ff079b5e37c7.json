@@ -1,0 +1,1015 @@
+{
+  "id": "a234616f-b272-4c51-94ae-ff079b5e37c7",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "a234616f-b272-4c51-94ae-ff079b5e37c7",
+  "title": "데이트2",
+  "startNode": "node_1786844358646_0_8uxr",
+  "nodes": [
+    {
+      "id": "node_1786844358646_0_8uxr",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844358646_1_79i7",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "개인 필라테스 짐 입구. 미사키가 먼저 도착해 기다리고 있다. 흰 크롭탑에 블랙 레깅스 차림.",
+      "text_key": "node_1786844358646_1_79i7"
+    },
+    {
+      "id": "node_1786844358646_2_19dm",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "사장님~! 어서 오세요! (손을 크게 흔든다)",
+      "text_key": "node_1786844358646_2_19dm"
+    },
+    {
+      "id": "node_1786844358646_3_wpos",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "기다렸어요? 늦어서 미안합니다.",
+      "text_key": "node_1786844358646_3_wpos"
+    },
+    {
+      "id": "node_1786844358646_4_mhna",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "아니에요! 오늘은 제가 사장님을 모시는 날이에요. (환하게 웃는다)",
+      "text_key": "node_1786844358646_4_mhna"
+    },
+    {
+      "id": "node_1786844358646_5_854u",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "모시다니… 개인 필라테스 짐을 통째로 빌리다니, 준비가 대단하네요.",
+      "text_key": "node_1786844358646_5_854u"
+    },
+    {
+      "id": "node_1786844358646_6_btus",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "사장님을 위한 개인 레슨이요. 오늘만큼은 전속 강사입니다. (씩 웃는다)",
+      "text_key": "node_1786844358646_6_btus"
+    },
+    {
+      "id": "node_1786844358646_7_m5nt",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "전속 강사라… 부담스러운데요.",
+      "text_key": "node_1786844358646_7_m5nt"
+    },
+    {
+      "id": "node_1786844358646_8_tfiz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "부담은 이따가 하세요. 지금은 들어와요. (짐 안쪽으로 턱짓)",
+      "text_key": "node_1786844358646_8_tfiz"
+    },
+    {
+      "id": "node_1786844358646_9_a55h",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…알겠어요. 어차피 부른 건 너니까.",
+      "text_key": "node_1786844358646_9_a55h"
+    },
+    {
+      "id": "node_1786844358646_10_5bkn",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "네. 오늘은 제가 사장님을 운동시키는 날이에요. (또박또박)",
+      "text_key": "node_1786844358646_10_5bkn"
+    },
+    {
+      "id": "node_1786844358646_11_cw72",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "평소 방송국에서 밝게 웃던 얼굴인데, 이렇게 둘만의 공간에 오니 더 반짝인다. 저 크롭탑과 레깅스가 오늘은 유난히 신경 쓰인다. 참아라, 나는 대표니까.",
+      "text_key": "node_1786844358646_11_cw72"
+    },
+    {
+      "id": "node_1786844358646_12_5d3s",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "운동이라… 저는 유연하지가 않다고 말했잖아요.",
+      "text_key": "node_1786844358646_12_5d3s"
+    },
+    {
+      "id": "node_1786844358646_13_wh6d",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "그러니까 제가 가르쳐 드리려고요. 요가보다 필라테스가 사장님한테 더 잘 맞을 거예요. (눈을 반짝인다)",
+      "text_key": "node_1786844358646_13_wh6d"
+    },
+    {
+      "id": "node_1786844358646_14_7arv",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그런 이유로 짐을 빌린 거예요?",
+      "text_key": "node_1786844358646_14_7arv"
+    },
+    {
+      "id": "node_1786844358646_15_q912",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "네. 사장님 몸, 제가 책임질게요. (입꼬리를 올린다)",
+      "text_key": "node_1786844358646_15_q912"
+    },
+    {
+      "id": "node_1786844358646_16_3929",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "몸을 책임진다고? 저 밝은 미소로 저런 말을 하니, 다른 의미로 들린다. 심장이 빨리 뛴다. 대표니까, 참아야 한다.",
+      "text_key": "node_1786844358646_16_3929"
+    },
+    {
+      "id": "node_1786844358646_17_qaw5",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…네가 책임질 일이 없도록, 착실하게 따라갈게요.",
+      "text_key": "node_1786844358646_17_qaw5"
+    },
+    {
+      "id": "node_1786844358646_18_tm88",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "좋아요! 그럼 시작해요. (매트 쪽으로 걸어간다)",
+      "text_key": "node_1786844358646_18_tm88"
+    },
+    {
+      "id": "node_1786844358646_19_nuc4",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미사키가 짐 안쪽 매트로 걸어간다. 나는 그 뒷모습을 따라가며, 레깅스에 감싸인 몸에서 시선을 뗄 수 없다.",
+      "text_key": "node_1786844358646_19_nuc4"
+    },
+    {
+      "id": "node_1786844358646_20_ew24",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844358646_21_qc4l",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "짐 안쪽 매트. 미사키가 필라테스 동작을 시범 보인다. 블랙 레깅스가 몸에 밀착되어 있다.",
+      "text_key": "node_1786844358646_21_qc4l"
+    },
+    {
+      "id": "node_1786844358646_22_igz0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "자, 사장님. 이 동작 따라 해보세요. (몸을 길게 늘인다)",
+      "text_key": "node_1786844358646_22_igz0"
+    },
+    {
+      "id": "node_1786844358646_23_fo6b",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이렇게요? (어설프게 따라 한다)",
+      "text_key": "node_1786844358646_23_fo6b"
+    },
+    {
+      "id": "node_1786844358646_24_nsbm",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "아, 그거 아니에요. 허리를 더 펴고요. (내 옆으로 와서 자세를 고쳐준다)",
+      "text_key": "node_1786844358646_24_nsbm"
+    },
+    {
+      "id": "node_1786844358646_25_26g4",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미사키가 내 허리와 등을 손으로 짚어준다. 레깅스에 감싸인 엉덩이가 눈앞에 있다.",
+      "text_key": "node_1786844358646_25_26g4"
+    },
+    {
+      "id": "node_1786844358646_26_0uy0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 자세를 고쳐준다. 몸이 가까워질 때마다 레깅스에 감싸인 엉덩이와 허벅지가 눈에 들어온다. 저 몸이 이렇게 가까이에… 자지가 반응하는 걸 겨우 참는다.",
+      "text_key": "node_1786844358646_26_0uy0"
+    },
+    {
+      "id": "node_1786844358646_27_8zc0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "사장님, 몸이 너무 뻣뻣해요. (낄낄 웃는다)",
+      "text_key": "node_1786844358646_27_8zc0"
+    },
+    {
+      "id": "node_1786844358646_28_lj6w",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그러니까 유연하지 않다고 했잖아요.",
+      "text_key": "node_1786844358646_28_lj6w"
+    },
+    {
+      "id": "node_1786844358646_29_1psf",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "걱정 마요. 제가 유연하게 만들어 드릴게요. (몸을 숙여 동작을 보여준다)",
+      "text_key": "node_1786844358646_29_1psf"
+    },
+    {
+      "id": "node_1786844358646_30_4hqn",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "몸을 숙이자 크롭탑 아래로 태닝된 허리가 드러나고, 레깅스가 엉덩이를 팽팽하게 감싼다.",
+      "text_key": "node_1786844358646_30_4hqn"
+    },
+    {
+      "id": "node_1786844358646_31_ixqr",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…… (시선을 뗄 수 없다)",
+      "text_key": "node_1786844358646_31_ixqr"
+    },
+    {
+      "id": "node_1786844358646_32_x977",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "사장님, 또 아래 보고 계시네요. (어깨너머로 씩 웃는다)",
+      "text_key": "node_1786844358646_32_x977"
+    },
+    {
+      "id": "node_1786844358646_33_55fu",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…동작을 보고 있던 거예요.",
+      "text_key": "node_1786844358646_33_55fu"
+    },
+    {
+      "id": "node_1786844358646_34_2yxv",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "거짓말. 제 엉덩이 보고 있었죠? (일어나서 나를 본다)",
+      "text_key": "node_1786844358646_34_2yxv"
+    },
+    {
+      "id": "node_1786844358646_35_xyuh",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "레깅스가 엉덩이 곡선을 그대로 드러낸다. 저 밝은 얼굴로 저렇게 파고들다니… 일부러다. 보고 싶어서 미칠 것 같다.",
+      "text_key": "node_1786844358646_35_xyuh"
+    },
+    {
+      "id": "node_1786844358646_36_9wsr",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844358646_37_99sg",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…제가 그런 걸 보고 있겠어요.",
+      "text_key": "node_1786844358646_37_99sg"
+    },
+    {
+      "id": "node_1786844358646_38_a54i",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "봐도 돼요. 오늘은 사장님이 아니라, 그냥 남자로 와주세요. (또박또박)",
+      "text_key": "node_1786844358646_38_a54i"
+    },
+    {
+      "id": "node_1786844358646_39_t97g",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그게 제일 어려운 부탁인데.",
+      "text_key": "node_1786844358646_39_t97g"
+    },
+    {
+      "id": "node_1786844358646_40_eupw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "알아요. 그래도 오늘만요. (한 걸음 다가선다)",
+      "text_key": "node_1786844358646_40_eupw"
+    },
+    {
+      "id": "node_1786844358646_41_eyl8",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 앞에 서서, 몸을 살짝 내민다. 크롭탑이 가슴을 팽팽하게 받치고 있다.",
+      "text_key": "node_1786844358646_41_eyl8"
+    },
+    {
+      "id": "node_1786844358646_42_okfo",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…… (숨을 들이쉰다)",
+      "text_key": "node_1786844358646_42_okfo"
+    },
+    {
+      "id": "node_1786844358646_43_gcqh",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844358646_44_ntg2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "매트 한쪽. 미사키가 땀을 닦으며, 크롭탑 끈에 손을 댄다.",
+      "text_key": "node_1786844358646_44_ntg2"
+    },
+    {
+      "id": "node_1786844358646_45_j2oc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "아, 덥네요. 운동하니까 땀이 나요. (크롭탑을 부채질하듯 흔든다)",
+      "text_key": "node_1786844358646_45_j2oc"
+    },
+    {
+      "id": "node_1786844358646_46_2v1o",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…그래도 옷은 입고 있어야죠.",
+      "text_key": "node_1786844358646_46_2v1o"
+    },
+    {
+      "id": "node_1786844358646_47_92wz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "여긴 우리 둘뿐인데요. (눈을 가늘게 뜬다)",
+      "text_key": "node_1786844358646_47_92wz"
+    },
+    {
+      "id": "node_1786844358646_48_7iem",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미사키가 크롭탑을 천천히 벗어 올린다.",
+      "text_key": "node_1786844358646_48_7iem"
+    },
+    {
+      "id": "node_1786844358646_49_vbwz",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "미사키 씨, 지금 뭐 하는 거예요.",
+      "text_key": "node_1786844358646_49_vbwz"
+    },
+    {
+      "id": "node_1786844358646_50_p2ci",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "더우니까요. 운동복 벗는 게 이상해요? (크롭탑을 완전히 벗는다)",
+      "text_key": "node_1786844358646_50_p2ci"
+    },
+    {
+      "id": "node_1786844358646_51_ypx9",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844358646_52_1m8o",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "흰 크롭탑이 벗겨지고, 태닝된 맨가슴이 그대로 드러난다.",
+      "text_key": "node_1786844358646_52_1m8o"
+    },
+    {
+      "id": "node_1786844358646_53_argl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "!",
+      "text_key": "node_1786844358646_53_argl"
+    },
+    {
+      "id": "node_1786844358646_54_hmmu",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠? (가슴을 살짝 내민다)",
+      "text_key": "node_1786844358646_54_hmmu"
+    },
+    {
+      "id": "node_1786844358646_55_epnc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "태닝된 피부에 맨가슴이 그대로 드러난다. 땀에 젖어 반짝이고, 선명한 젖꼭지까지. 입으로 빨고 싶고, 손으로 움켜쥐고 싶다. 대표니까 참아야 하는데, 몸이 말을 듣지 않는다.",
+      "text_key": "node_1786844358646_55_epnc"
+    },
+    {
+      "id": "node_1786844358646_56_tfp7",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이러면 안 돼요.",
+      "text_key": "node_1786844358646_56_tfp7"
+    },
+    {
+      "id": "node_1786844358646_57_ylws",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "왜요. 저는 지금, 되게 두근거리는데. (내 손을 잡아 가슴 위에 얹는다)",
+      "text_key": "node_1786844358646_57_ylws"
+    },
+    {
+      "id": "node_1786844358646_58_869l",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손끝에 맨살이 닿는다. 땀에 젖어 따뜻한 가슴.",
+      "text_key": "node_1786844358646_58_869l"
+    },
+    {
+      "id": "node_1786844358646_59_vehj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…… (손가락이 떨린다)",
+      "text_key": "node_1786844358646_59_vehj"
+    },
+    {
+      "id": "node_1786844358646_60_o3tb",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "만져요. 제가 허락했으니까. (내 손 위에 손을 포갠다)",
+      "text_key": "node_1786844358646_60_o3tb"
+    },
+    {
+      "id": "node_1786844358646_61_w0ev",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손바닥에 그녀의 가슴이 차오른다. 부드럽고 탄력 있는 무게. 손가락으로 젖꼭지를 스치자 그녀가 몸을 떤다. 이건 일이 아니다.",
+      "text_key": "node_1786844358646_61_w0ev"
+    },
+    {
+      "id": "node_1786844358646_62_5nvr",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이건 안 돼요. (손을 거두려 한다)",
+      "text_key": "node_1786844358646_62_5nvr"
+    },
+    {
+      "id": "node_1786844358646_63_m46t",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "도망가지 마요. (내 손을 꼭 잡는다)",
+      "text_key": "node_1786844358646_63_m46t"
+    },
+    {
+      "id": "node_1786844358646_64_lmxa",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "오늘, 저는 사장님을 원해요.",
+      "text_key": "node_1786844358646_64_lmxa"
+    },
+    {
+      "id": "node_1786844358646_65_tjhr",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "미사키 씨…",
+      "text_key": "node_1786844358646_65_tjhr"
+    },
+    {
+      "id": "node_1786844358646_66_zy72",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "제가 오늘 왜 이랬는지, 이제 알려드릴게요. (나를 똑바로 본다)",
+      "text_key": "node_1786844358646_66_zy72"
+    },
+    {
+      "id": "node_1786844358646_67_0dj9",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 몸 쪽으로 다가와, 무릎을 꿇는다.",
+      "text_key": "node_1786844358646_67_0dj9"
+    },
+    {
+      "id": "node_1786844358646_68_oxbg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "사장님을, 제가 모시고 싶어요. (낮게)",
+      "text_key": "node_1786844358646_68_oxbg"
+    },
+    {
+      "id": "node_1786844358646_69_thlw",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844358646_70_8s4p",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "매트 위. 미사키가 내 앞에 무릎을 꿇고 앉아 있다. 크롭탑을 벗은 맨가슴 차림.",
+      "text_key": "node_1786844358646_70_8s4p"
+    },
+    {
+      "id": "node_1786844358646_71_ijkm",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…괜찮죠? (내 바지 위로 손을 올린다)",
+      "text_key": "node_1786844358646_71_ijkm"
+    },
+    {
+      "id": "node_1786844358646_72_u70t",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "미사키 씨, 거기까지는…",
+      "text_key": "node_1786844358646_72_u70t"
+    },
+    {
+      "id": "node_1786844358646_73_xtmz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "저, 하고 싶어요. (눈을 올려 나를 본다)",
+      "text_key": "node_1786844358646_73_xtmz"
+    },
+    {
+      "id": "node_1786844358646_74_wrwm",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 손이 내 바지 위를 더듬는다. 이미 반응해버린 자지가 그 손끝에 닿는다. 대표니까 물려야 하는데, 몸이 말을 듣지 않는다.",
+      "text_key": "node_1786844358646_74_wrwm"
+    },
+    {
+      "id": "node_1786844358646_75_ozns",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…이미 이렇게 돼 있잖아요. (지퍼에 손을 댄다)",
+      "text_key": "node_1786844358646_75_ozns"
+    },
+    {
+      "id": "node_1786844358646_76_lure",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…… (숨을 들이쉰다)",
+      "text_key": "node_1786844358646_76_lure"
+    },
+    {
+      "id": "node_1786844358646_77_i74d",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 바지를 천천히 내린다. 발기한 자지가 그대로 드러난다.",
+      "text_key": "node_1786844358646_77_i74d"
+    },
+    {
+      "id": "node_1786844358646_78_mn7r",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "대단해요… (자지를 두 손으로 감싼다)",
+      "text_key": "node_1786844358646_78_mn7r"
+    },
+    {
+      "id": "node_1786844358646_79_co6h",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… (거친 숨)",
+      "text_key": "node_1786844358646_79_co6h"
+    },
+    {
+      "id": "node_1786844358646_80_xddi",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 손이 내 자지를 감싼다. 차가운 손이 뜨거운 자지에 닿자 전기가 흐른다. 이게 내 크리에이터의 손이라는 게 믿기지 않는다.",
+      "text_key": "node_1786844358646_80_xddi"
+    },
+    {
+      "id": "node_1786844358646_81_jvn8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "맛있게 해드릴게요. (혀를 내밀어 귀두를 핥는다)",
+      "text_key": "node_1786844358646_81_jvn8"
+    },
+    {
+      "id": "node_1786844358646_82_pvcj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "읏…… (몸이 움찔)",
+      "text_key": "node_1786844358646_82_pvcj"
+    },
+    {
+      "id": "node_1786844358646_83_7cvz",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "혀로 자지 전체를 천천히 핥는다.",
+      "text_key": "node_1786844358646_83_7cvz"
+    },
+    {
+      "id": "node_1786844358646_84_9zjc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 혀가 내 자지를 핥아 올린다. 따뜻하고 축축한 혀끝이 귀두를 감돈다. 저 맨가슴이 내 앞에서 흔들리는 게 보인다.",
+      "text_key": "node_1786844358646_84_9zjc"
+    },
+    {
+      "id": "node_1786844358646_85_clth",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "입에 넣을게요… (입을 벌려 귀두를 물어 넣는다)",
+      "text_key": "node_1786844358646_85_clth"
+    },
+    {
+      "id": "node_1786844358646_86_6lb0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입술이 귀두를 감싸고, 그녀가 천천히 머리를 앞으로 움직인다.",
+      "text_key": "node_1786844358646_86_6lb0"
+    },
+    {
+      "id": "node_1786844358646_87_licx",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 미사키 씨… (손으로 그녀의 머리를 감싼다)",
+      "text_key": "node_1786844358646_87_licx"
+    },
+    {
+      "id": "node_1786844358646_88_20vo",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844358646_89_6yc9",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "머리를 깊게 움직인다.",
+      "text_key": "node_1786844358646_89_6yc9"
+    },
+    {
+      "id": "node_1786844358646_90_919j",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입속이 뜨겁고 좁다. 혀가 자지를 감싸고, 입술이 귀두를 조인다. 저 맨가슴이 내 허벅지에 닿을 듯 흔들린다. 참을 수 없다.",
+      "text_key": "node_1786844358646_90_919j"
+    },
+    {
+      "id": "node_1786844358646_91_shtm",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…더 깊이… (허리를 살짝 내민다)",
+      "text_key": "node_1786844358646_91_shtm"
+    },
+    {
+      "id": "node_1786844358646_92_fti0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "머리를 더 깊이 움직인다. 그녀가 눈을 감고, 내 자지를 깊이 받아들인다. 맨가슴이 위아래로 출렁인다.",
+      "text_key": "node_1786844358646_92_fti0"
+    },
+    {
+      "id": "node_1786844358646_93_tcx9",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "미사키 씨… 나… 곧… (숨을 헐떡인다)",
+      "text_key": "node_1786844358646_93_tcx9"
+    },
+    {
+      "id": "node_1786844358646_94_d5t6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "그대로, 입에… 내주세요. (자지를 입에 문 채, 눈으로 내게 말한다)",
+      "text_key": "node_1786844358646_94_d5t6"
+    },
+    {
+      "id": "node_1786844358646_95_qz2t",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그 눈빛에, 참고 있던 게 무너진다. 그녀의 입속, 혀 위에, 모든 걸 쏟아내고 싶다. 이제는 멈출 수 없다.",
+      "text_key": "node_1786844358646_95_qz2t"
+    },
+    {
+      "id": "node_1786844358646_96_5ao8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아… 나온다…! (허리가 떨린다)",
+      "text_key": "node_1786844358646_96_5ao8"
+    },
+    {
+      "id": "node_1786844358646_97_o9ow",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입으로 자지를 꽉 물고, 목울대로 삼킨다. 그녀가 내 정액을 한 방울도 흘리지 않고, 천천히 삼킨다.",
+      "text_key": "node_1786844358646_97_o9ow"
+    },
+    {
+      "id": "node_1786844358646_98_7ozf",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "맛있었어요. (입을 떼고, 혀로 입술을 닦는다)",
+      "text_key": "node_1786844358646_98_7ozf"
+    },
+    {
+      "id": "node_1786844358646_99_yb7l",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… 하…… (숨을 몰아쉰다)",
+      "text_key": "node_1786844358646_99_yb7l"
+    },
+    {
+      "id": "node_1786844358646_100_862g",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "잘하셨어요. (입꼬리를 올린다)",
+      "text_key": "node_1786844358646_100_862g"
+    },
+    {
+      "id": "node_1786844358646_101_3z2b",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 정액을 다 삼켰다. 맨가슴을 드러낸 채, 내 앞에서 웃고 있다. 나는 지금, 내 크리에이터에게 입으로 봉사를 받았다. 정신이 아득하다.",
+      "text_key": "node_1786844358646_101_3z2b"
+    },
+    {
+      "id": "node_1786844358646_102_k9nk",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844358646_103_b9nt",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "매트 옆. 미사키는 크롭탑을 다시 입고, 나는 옷을 정리하고 있다. 평온한 표정.",
+      "text_key": "node_1786844358646_103_b9nt"
+    },
+    {
+      "id": "node_1786844358646_104_72sr",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "오늘, 정말 좋은 시간이었어요. (정면을 보며)",
+      "text_key": "node_1786844358646_104_72sr"
+    },
+    {
+      "id": "node_1786844358646_105_5905",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "나도요. …솔직히, 이렇게 될 줄은 몰랐지만.",
+      "text_key": "node_1786844358646_105_5905"
+    },
+    {
+      "id": "node_1786844358646_106_8pzm",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "후회는 없으시죠? (입꼬리를 올린다)",
+      "text_key": "node_1786844358646_106_8pzm"
+    },
+    {
+      "id": "node_1786844358646_107_y1nl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "없어요. 아주, 없어요. (작게 웃는다)",
+      "text_key": "node_1786844358646_107_y1nl"
+    },
+    {
+      "id": "node_1786844358646_108_10xp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "다행이에요. (매트를 정리하며 일어선다)",
+      "text_key": "node_1786844358646_108_10xp"
+    },
+    {
+      "id": "node_1786844358646_109_12jp",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…벌써 가려고?",
+      "text_key": "node_1786844358646_109_12jp"
+    },
+    {
+      "id": "node_1786844358646_110_0luc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "운동도 했고, 이쯤이면 됐어요. (시계를 본다)",
+      "text_key": "node_1786844358646_110_0luc"
+    },
+    {
+      "id": "node_1786844358646_111_rmsb",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그렇네요.",
+      "text_key": "node_1786844358646_111_rmsb"
+    },
+    {
+      "id": "node_1786844358646_112_cnib",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "회사에선, 평소처럼 밝게 대할게요. (또박또박)",
+      "text_key": "node_1786844358646_112_cnib"
+    },
+    {
+      "id": "node_1786844358646_113_mtmj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그래요. 평소처럼.",
+      "text_key": "node_1786844358646_113_mtmj"
+    },
+    {
+      "id": "node_1786844358646_114_bvhj",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "아쉽다. 저 크롭탑이 다시 단정해졌다는 게, 저 몸이 내 손끝에서 멀어졌다는 게. 하지만 이게 대표로서의 선이다.",
+      "text_key": "node_1786844358646_114_bvhj"
+    },
+    {
+      "id": "node_1786844358646_115_b5tk",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "그럼 저는, 이쪽으로. (짐 출구를 가리킨다)",
+      "text_key": "node_1786844358646_115_b5tk"
+    },
+    {
+      "id": "node_1786844358646_116_38hu",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "배웅해 줄까요?",
+      "text_key": "node_1786844358646_116_38hu"
+    },
+    {
+      "id": "node_1786844358646_117_p51b",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "괜찮아요. 여기서 헤어져요. (한 걸음 물러선다)",
+      "text_key": "node_1786844358646_117_p51b"
+    },
+    {
+      "id": "node_1786844358646_118_cr16",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미사키가 등을 돌려 걸어가다, 잠시 멈춘다.",
+      "text_key": "node_1786844358646_118_cr16"
+    },
+    {
+      "id": "node_1786844358646_119_mihc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "사장님, 다음에 또 불러도 돼요?",
+      "text_key": "node_1786844358646_119_mihc"
+    },
+    {
+      "id": "node_1786844358646_120_3lk7",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…나중에 생각해 볼게요.",
+      "text_key": "node_1786844358646_120_3lk7"
+    },
+    {
+      "id": "node_1786844358646_121_0h5s",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "네! 그럼. (손을 흔들며 걸어간다)",
+      "text_key": "node_1786844358646_121_0h5s"
+    },
+    {
+      "id": "node_1786844358646_122_7xck",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미사키가 짐 출구 쪽으로 걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
+      "text_key": "node_1786844358646_122_7xck"
+    },
+    {
+      "id": "node_1786844358646_123_dsta",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "결국, 그녀는 나를 '모셨다'. 저 크롭탑과 레깅스, 방금 내 앞에서 흔들리던 맨가슴이. 아, 정말로 아쉽다.",
+      "text_key": "node_1786844358646_123_dsta"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "미사키",
+      "name": "미사키"
+    }
+  ],
+  "points": [],
+  "media": [],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T01:39:09.244Z",
+  "ownerCharacterId": "1786833964287-iflkqh2"
+}

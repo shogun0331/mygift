@@ -3,8 +3,6 @@ export type EventMediaKind = 'image' | 'video' | 'sound'
 /** Fixed event slots that a character can bind to registered GameEvents */
 export const CHARACTER_EVENT_SLOTS = [
   { key: 'scout', label: '스카웃 이벤트' },
-  { key: 'scoutAccept', label: '스카웃 이벤트 승낙' },
-  { key: 'scoutFail', label: '스카웃 이벤트 실패' },
   { key: 'salary', label: '연봉 협상 이벤트' },
   { key: 'vip', label: 'VIP 이벤트' },
   { key: 'h', label: 'H 이벤트' },
@@ -16,11 +14,20 @@ export type CharacterEventSlotKey = (typeof CHARACTER_EVENT_SLOTS)[number]['key'
 
 export type CharacterEventLinks = Record<CharacterEventSlotKey, string | null>
 
+export function createGameEventId(existingIds?: Iterable<string>): string {
+  const taken = new Set(existingIds ?? [])
+  const make = () =>
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `ev_${Date.now().toString(16)}_${Math.random().toString(16).slice(2, 10)}`
+  let id = make()
+  while (taken.has(id)) id = make()
+  return id
+}
+
 export function emptyCharacterEventLinks(): CharacterEventLinks {
   return {
     scout: null,
-    scoutAccept: null,
-    scoutFail: null,
     salary: null,
     vip: null,
     h: null,
@@ -82,6 +89,24 @@ export type GameEvent = {
   media: EventMediaAsset[]
   sourceZipName: string
   createdAt: string
+  /** null = 공용. 값이 있으면 그 캐릭터 전용 */
+  ownerCharacterId: string | null
+}
+
+export function normalizeOwnerCharacterId(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  const id = value.trim()
+  return id ? id : null
+}
+
+export function eventUsableInCharacterSlot(
+  event: GameEvent,
+  characterId: string,
+  keepEventId?: string | null,
+): boolean {
+  if (keepEventId && event.id === keepEventId) return true
+  const owner = normalizeOwnerCharacterId(event.ownerCharacterId)
+  return owner === null || owner === characterId
 }
 
 export function revokeEventMedia(event: GameEvent) {

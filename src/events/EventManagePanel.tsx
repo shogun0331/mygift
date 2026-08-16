@@ -2,14 +2,29 @@ import { useEffect, useRef, useState, type DragEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { parseVnfExportZip } from '../events/parseVnfExport'
 import {
+  createGameEventId,
+  normalizeOwnerCharacterId,
   revokeEventMedia,
   type EventMediaAsset,
   type EventMediaKind,
   type GameEvent,
 } from '../events/types'
 import { EventSimulator } from './EventSimulator'
-import { BlurRegionEditor, BlurRegionOverlay, readBlurRegions } from './BlurRegionEditor'
+import {
+  BLUR_DEFAULT,
+  BlurRegionEditor,
+  BlurRegionOverlay,
+  clampBlur,
+  readBlurRegions,
+} from './BlurRegionEditor'
 import type { RegisteredCharacter } from '../game/characters'
+import {
+  EVENT_DEFAULT_LOCALE,
+  EVENT_LOCALES,
+  emptyEventLocalization,
+  mergeEventLocalization,
+  normalizeEventLocale,
+} from './eventLocales'
 
 type EventManagePanelProps = {
   events: GameEvent[]
@@ -53,7 +68,7 @@ function makeNodeId() {
 
 function createEmptyNode(type: EditorNodeType, id = makeNodeId()) {
   if (type === 'graphic') {
-    return { id, type: 'graphic' as const, image: '', delay: 2.0, blurRegions: [], blurDefault: 16 }
+    return { id, type: 'graphic' as const, image: '', delay: 2.0, blurRegions: [], blurDefault: BLUR_DEFAULT }
   }
   if (type === 'fade') {
     return { id, type: 'fade' as const, fade: 'out' as const, duration: 1.2, color: '#000000' }
@@ -108,7 +123,7 @@ function convertNodeToType(prev: Record<string, any>, type: EditorNodeType) {
       image: prev.image || '',
       delay: prev.delay ?? 2.0,
       blurRegions: Array.isArray(prev.blurRegions) ? prev.blurRegions : [],
-      blurDefault: prev.blurDefault ?? 16,
+      blurDefault: Number.isFinite(Number(prev.blurDefault)) ? clampBlur(prev.blurDefault) : BLUR_DEFAULT,
     }
   }
   if (type === 'sound') {
@@ -133,28 +148,19 @@ function convertNodeToType(prev: Record<string, any>, type: EditorNodeType) {
 
 // 다국어 번역용 공간을 JSON 구조 내에 자동으로 정규화하여 생성하는 헬퍼 함수
 function normalizeEventLocalization(event: GameEvent): GameEvent {
-  const defaultLanguage = event.defaultLanguage || 'ko'
-  
-  // 기존 localization 데이터 복사 및 기본 다국어(ko, en, ja) 키 생성
-  const nextLoc: Record<string, Record<string, string>> = {
-    ko: { ...(event.localization?.ko || {}) },
-    en: { ...(event.localization?.en || {}) },
-    ja: { ...(event.localization?.ja || {}) },
-    ...(event.localization || {}),
-  }
+  const defaultLanguage = normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE)
+  const nextLoc = mergeEventLocalization(event.localization)
 
   const normalizedNodes = (event.nodes || []).map((n: any) => {
     if (n && n.type === 'text') {
       const textKey = n.text_key || n.id || `node_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
-      
-      // default language (예: ko)에 해당 번역 키가 비어있다면, 대사 노드의 기본 text 값을 매핑
-      if (nextLoc[defaultLanguage] && !nextLoc[defaultLanguage][textKey]) {
+
+      if (!nextLoc[defaultLanguage][textKey]) {
         nextLoc[defaultLanguage][textKey] = n.text || ''
       }
-      
-      // ko, en, ja 각각에 번역 공간이 마련되어 있지 않다면 "" 빈 문자열로 공간 생성
-      for (const lang of ['ko', 'en', 'ja']) {
-        if (nextLoc[lang] && nextLoc[lang][textKey] === undefined) {
+
+      for (const lang of EVENT_LOCALES) {
+        if (nextLoc[lang][textKey] === undefined) {
           nextLoc[lang][textKey] = ''
         }
       }
@@ -169,6 +175,8 @@ function normalizeEventLocalization(event: GameEvent): GameEvent {
 
   return {
     ...event,
+    defaultLanguage,
+    ownerCharacterId: normalizeOwnerCharacterId(event.ownerCharacterId),
     nodes: normalizedNodes,
     localization: nextLoc,
   }
@@ -192,10 +200,11 @@ export function EventManagePanel({
 
   // 수동 이벤트 생성 모달 상태
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [newEvId, setNewEvId] = useState('')
   const [newEvTitle, setNewEvTitle] = useState('')
-  const [newEvChapter, setNewEvChapter] = useState(1)
+  const [newEvOwner, setNewEvOwner] = useState<string | null>(null)
   const [createError, setCreateError] = useState<string | null>(null)
+  const [listQuery, setListQuery] = useState('')
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({})
 
   const selected = events.find((event) => event.id === selectedId) ?? null
 
@@ -297,46 +306,32 @@ export function EventManagePanel({
     e.preventDefault()
     setCreateError(null)
 
-    const cleanedId = newEvId.trim()
     const cleanedTitle = newEvTitle.trim()
 
-    if (!cleanedId) {
-      setCreateError('이벤트 ID를 입력해 주세요.')
-      return
-    }
-    if (!/^[a-zA-Z0-9_-]+$/.test(cleanedId)) {
-      setCreateError('이벤트 ID는 영문, 숫자, 하이픈(-), 언더바(_)만 가능합니다.')
-      return
-    }
     if (!cleanedTitle) {
       setCreateError('이벤트 제목을 입력해 주세요.')
       return
     }
-    if (events.some((ev) => ev.id === cleanedId)) {
-      setCreateError('이미 존재하는 이벤트 ID입니다.')
-      return
-    }
+
+    const eventId = createGameEventId(events.map((ev) => ev.id))
 
     const newEvent: GameEvent = {
-      id: cleanedId,
+      id: eventId,
       projectId: 'custom',
       projectTitle: '직접 생성',
-      chapterId: newEvChapter,
-      titleKey: cleanedId,
+      chapterId: 1,
+      titleKey: eventId,
       title: cleanedTitle,
       startNode: '',
       nodes: [],
-      localization: {
-        ko: {},
-        en: {},
-        ja: {},
-      },
-      defaultLanguage: 'ko',
+      localization: emptyEventLocalization(),
+      defaultLanguage: EVENT_DEFAULT_LOCALE,
       characters: [],
       points: [],
       media: [],
       sourceZipName: '직접 생성',
       createdAt: new Date().toISOString(),
+      ownerCharacterId: normalizeOwnerCharacterId(newEvOwner),
     }
 
     handleEventsChange([...events, newEvent])
@@ -344,14 +339,135 @@ export function EventManagePanel({
     setShowCreateModal(false)
 
     // 입력 필드 초기화
-    setNewEvId('')
     setNewEvTitle('')
-    setNewEvChapter(1)
+    setNewEvOwner(null)
   }
 
   // 개별 이벤트 데이터 업데이트 헬퍼
   const updateEvent = (updated: GameEvent) => {
     handleEventsChange(events.map((ev) => (ev.id === updated.id ? updated : ev)))
+  }
+
+  const openCreateModal = (ownerCharacterId: string | null) => {
+    setNewEvTitle('')
+    setNewEvOwner(ownerCharacterId)
+    setCreateError(null)
+    setShowCreateModal(true)
+  }
+
+  const setEventOwner = (eventId: string, ownerCharacterId: string | null) => {
+    handleEventsChange(
+      events.map((ev) =>
+        ev.id === eventId ? { ...ev, ownerCharacterId: normalizeOwnerCharacterId(ownerCharacterId) } : ev,
+      ),
+    )
+  }
+
+  const toggleGroup = (key: string) => {
+    setCollapsedGroups((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  const query = listQuery.trim().toLowerCase()
+  const matchesQuery = (event: GameEvent) =>
+    !query ||
+    event.title.toLowerCase().includes(query) ||
+    event.id.toLowerCase().includes(query)
+
+  const knownCharacterIds = new Set(registeredCharacters.map((c) => c.id))
+  const sharedEvents = events.filter(
+    (event) => !normalizeOwnerCharacterId(event.ownerCharacterId) && matchesQuery(event),
+  )
+  const orphanEvents = events.filter((event) => {
+    const owner = normalizeOwnerCharacterId(event.ownerCharacterId)
+    return Boolean(owner) && !knownCharacterIds.has(owner as string) && matchesQuery(event)
+  })
+
+  const ownerSelect = (event: GameEvent) => (
+    <select
+      value={normalizeOwnerCharacterId(event.ownerCharacterId) ?? ''}
+      onChange={(e) => setEventOwner(event.id, e.target.value || null)}
+      onClick={(e) => e.stopPropagation()}
+      className="mt-1.5 w-full rounded-md border border-white/10 bg-black/40 px-1.5 py-1 text-[10px] text-slate-300 outline-none focus:border-indigo-500/50"
+      title="이벤트 소속"
+    >
+      <option value="">공용</option>
+      {registeredCharacters.map((character) => (
+        <option key={character.id} value={character.id}>
+          {character.name}
+        </option>
+      ))}
+    </select>
+  )
+
+  const renderEventRow = (event: GameEvent) => {
+    const active = event.id === selectedId
+    return (
+      <li
+        key={event.id}
+        className={`rounded-xl border px-3 py-2.5 transition ${
+          active
+            ? 'border-indigo-400/40 bg-indigo-500/15'
+            : 'border-white/10 bg-black/20 hover:border-white/20'
+        }`}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => setSelectedId(event.id)}
+            className="min-w-0 flex-1 text-left"
+          >
+            <p className="truncate text-sm font-semibold text-slate-100" title={event.title}>
+              {event.title}
+            </p>
+            <p className="mt-1 text-[11px] text-slate-400">
+              노드 {event.nodes?.length ?? 0}개 · 미디어 {event.media?.length ?? 0}개
+            </p>
+          </button>
+          <button
+            type="button"
+            onClick={() => removeEvent(event.id)}
+            className="shrink-0 rounded-lg px-2 py-1 text-xs text-slate-400 hover:bg-white/5 hover:text-rose-300 transition"
+          >
+            삭제
+          </button>
+        </div>
+        {ownerSelect(event)}
+      </li>
+    )
+  }
+
+  const renderGroup = (key: string, title: string, groupEvents: GameEvent[], ownerForCreate: string | null) => {
+    const collapsed = Boolean(collapsedGroups[key])
+    return (
+      <div key={key} className="mb-2">
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => toggleGroup(key)}
+            className="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-1 py-1.5 text-left hover:bg-white/5"
+          >
+            <span className="text-[10px] text-slate-500">{collapsed ? '▸' : '▾'}</span>
+            <span className="truncate text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+              {title}
+            </span>
+            <span className="text-[10px] text-slate-600">({groupEvents.length})</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => openCreateModal(ownerForCreate)}
+            className="shrink-0 rounded-md px-1.5 py-0.5 text-[10px] text-indigo-300 hover:bg-indigo-500/10"
+            title={`${title}에 이벤트 추가`}
+          >
+            +
+          </button>
+        </div>
+        {collapsed ? null : groupEvents.length === 0 ? (
+          <p className="px-2 pb-2 text-[11px] text-slate-600">없음</p>
+        ) : (
+          <ul className="space-y-2 pb-1">{groupEvents.map(renderEventRow)}</ul>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -379,13 +495,7 @@ export function EventManagePanel({
             )}
             <button
               type="button"
-              onClick={() => {
-                setNewEvId('')
-                setNewEvTitle('')
-                setNewEvChapter(1)
-                setCreateError(null)
-                setShowCreateModal(true)
-              }}
+            onClick={() => openCreateModal(null)}
               className="game-btn shrink-0 rounded-xl px-4 py-2 text-sm"
             >
               ＋ 직접 추가
@@ -456,52 +566,37 @@ export function EventManagePanel({
       <div className="grid min-h-0 gap-4 lg:grid-cols-[280px_1fr]">
         {/* Left Side: Event List */}
         <div className="game-panel flex flex-col rounded-2xl p-4 min-h-[400px]">
-          <p className="game-stat-label mb-3 px-1">등록된 이벤트 ({events.length})</p>
+          <p className="game-stat-label mb-2 px-1">등록된 이벤트 ({events.length})</p>
+          <input
+            type="search"
+            value={listQuery}
+            onChange={(e) => setListQuery(e.target.value)}
+            placeholder="제목 또는 ID 검색"
+            className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/50"
+          />
           {events.length === 0 ? (
             <p className="px-1 py-10 text-center text-sm text-slate-500">
               아직 등록된 이벤트가 없습니다.
             </p>
           ) : (
-            <ul className="space-y-2 overflow-y-auto max-h-[600px] pr-1">
-              {events.map((event) => {
-                const active = event.id === selectedId
-                return (
-                  <li
-                    key={event.id}
-                    className={`rounded-xl border px-3 py-3 transition ${
-                      active
-                        ? 'border-indigo-400/40 bg-indigo-500/15'
-                        : 'border-white/10 bg-black/20 hover:border-white/20'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedId(event.id)}
-                        className="min-w-0 flex-1 text-left"
-                      >
-                        <p className="truncate text-sm font-semibold text-slate-100" title={event.title}>
-                          {event.title}
-                        </p>
-                        <p className="mt-0.5 truncate text-[11px] text-slate-500">
-                          ID: {event.id} · ch{event.chapterId}
-                        </p>
-                        <p className="mt-1 text-[11px] text-slate-400">
-                          노드 {event.nodes?.length ?? 0}개 · 미디어 {event.media?.length ?? 0}개
-                        </p>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeEvent(event.id)}
-                        className="shrink-0 rounded-lg px-2 py-1 text-xs text-slate-400 hover:bg-white/5 hover:text-rose-300 transition"
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
+            <div className="max-h-[600px] overflow-y-auto pr-1">
+              {renderGroup('shared', '공용', sharedEvents, null)}
+              {registeredCharacters.map((character) =>
+                renderGroup(
+                  character.id,
+                  character.name,
+                  events.filter(
+                    (event) =>
+                      normalizeOwnerCharacterId(event.ownerCharacterId) === character.id &&
+                      matchesQuery(event),
+                  ),
+                  character.id,
+                ),
+              )}
+              {orphanEvents.length > 0
+                ? renderGroup('orphan', '기타 (삭제된 캐릭터)', orphanEvents, null)
+                : null}
+            </div>
           )}
         </div>
 
@@ -544,28 +639,16 @@ export function EventManagePanel({
           <div className="w-full max-w-md rounded-2xl border border-indigo-500/25 bg-slate-900 p-6 shadow-2xl animate-fade-in">
             <h3 className="text-base font-semibold text-slate-100">새 이벤트 생성</h3>
             <p className="mt-1 text-xs text-slate-400">
-              비주얼 노벨의 스토리 혹은 조건용 이벤트를 수동으로 구성합니다.
+              제목과 소속만 정하면 됩니다.
             </p>
 
             <form onSubmit={handleCreateEventSubmit} className="mt-4 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-400">이벤트 ID</label>
-                <input
-                  type="text"
-                  required
-                  autoFocus
-                  placeholder="예: scout_seah_event"
-                  value={newEvId}
-                  onChange={(e) => setNewEvId(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/50"
-                />
-              </div>
-
               <div>
                 <label className="block text-xs font-semibold text-slate-400">이벤트 제목</label>
                 <input
                   type="text"
                   required
+                  autoFocus
                   placeholder="예: 세아 스카웃 이벤트"
                   value={newEvTitle}
                   onChange={(e) => setNewEvTitle(e.target.value)}
@@ -574,15 +657,19 @@ export function EventManagePanel({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400">챕터 번호</label>
-                <input
-                  type="number"
-                  required
-                  min={1}
-                  value={newEvChapter}
-                  onChange={(e) => setNewEvChapter(Math.max(1, parseInt(e.target.value) || 1))}
+                <label className="block text-xs font-semibold text-slate-400">소속</label>
+                <select
+                  value={newEvOwner ?? ''}
+                  onChange={(e) => setNewEvOwner(e.target.value || null)}
                   className="mt-1 w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500/50"
-                />
+                >
+                  <option value="">공용</option>
+                  {registeredCharacters.map((character) => (
+                    <option key={character.id} value={character.id}>
+                      {character.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {createError && (
@@ -627,6 +714,23 @@ type EventDetailProps = {
   onUpdateEvent: (updated: GameEvent) => void
 }
 
+function isScriptTextFile(file: File) {
+  const name = file.name.toLowerCase()
+  return name.endsWith('.txt') || file.type === 'text/plain'
+}
+
+async function readScriptTextFile(file: File): Promise<string> {
+  const bytes = new Uint8Array(await file.arrayBuffer())
+  if (bytes.length >= 2 && bytes[0] === 0xff && bytes[1] === 0xfe) {
+    return new TextDecoder('utf-16le').decode(bytes.subarray(2))
+  }
+  if (bytes.length >= 2 && bytes[0] === 0xfe && bytes[1] === 0xff) {
+    return new TextDecoder('utf-16be').decode(bytes.subarray(2))
+  }
+  const start = bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf ? 3 : 0
+  return new TextDecoder('utf-8').decode(bytes.subarray(start))
+}
+
 function EventDetail({
   event,
   onSimulate,
@@ -643,6 +747,9 @@ function EventDetail({
   const [fileDragOverIndex, setFileDragOverIndex] = useState<number | null>(null)
   const [showScriptModal, setShowScriptModal] = useState(false)
   const [scriptText, setScriptText] = useState('')
+  const [scriptFileName, setScriptFileName] = useState('')
+  const [scriptTxtOver, setScriptTxtOver] = useState(false)
+  const scriptFileInputRef = useRef<HTMLInputElement>(null)
   const [importMode, setImportMode] = useState<'append' | 'replace'>('append')
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null)
   const [blurEditorIndex, setBlurEditorIndex] = useState<number | null>(null)
@@ -758,7 +865,7 @@ function EventDetail({
           image: matchedAsset ? matchedAsset.fileName : '',
           delay: 2.0,
           blurRegions: [],
-          blurDefault: 16,
+          blurDefault: BLUR_DEFAULT,
         })
         return
       }
@@ -844,7 +951,17 @@ function EventDetail({
     })
 
     setScriptText('')
+    setScriptFileName('')
     setShowScriptModal(false)
+  }
+
+  const applyScriptFile = async (file: File) => {
+    if (!isScriptTextFile(file)) return false
+    const text = await readScriptTextFile(file)
+    setScriptText(text)
+    setScriptFileName(file.name)
+    setShowScriptModal(true)
+    return true
   }
 
   // 파일 드롭 핸들러
@@ -855,6 +972,11 @@ function EventDetail({
 
     const file = e.dataTransfer.files?.[0]
     if (!file) return
+
+    if (isScriptTextFile(file)) {
+      void applyScriptFile(file)
+      return
+    }
 
     const kind: EventMediaKind = file.type.startsWith('video/')
       ? 'video'
@@ -911,7 +1033,19 @@ function EventDetail({
     }
 
     updatedNodes[index] = targetNode
-    onUpdateEvent({ ...event, nodes: updatedNodes })
+    const nextEvent: GameEvent = { ...event, nodes: updatedNodes }
+    if (typeof fields.text === 'string' && targetNode.type === 'text') {
+      const textKey = String(targetNode.text_key || targetNode.id || '')
+      const lang = normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE)
+      if (textKey) {
+        nextEvent.localization = mergeEventLocalization(event.localization)
+        nextEvent.localization[lang] = {
+          ...nextEvent.localization[lang],
+          [textKey]: fields.text,
+        }
+      }
+    }
+    onUpdateEvent(nextEvent)
   }
 
   // 노드 삭제
@@ -1061,10 +1195,30 @@ function EventDetail({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="game-kicker">SELECTED EVENT</p>
-          <h3 className="mt-1 text-base font-semibold text-slate-100">{event.title}</h3>
-          <p className="mt-1 text-xs text-slate-500">
-            ID: {event.id} · ch{event.chapterId} · start: {event.startNode || '—'}
-          </p>
+            <h3 className="mt-1 text-base font-semibold text-slate-100">{event.title}</h3>
+            {event.startNode ? (
+              <p className="mt-1 text-xs text-slate-500">start: {event.startNode}</p>
+            ) : null}
+          <label className="mt-2 flex items-center gap-2 text-[11px] text-slate-400">
+            <span className="shrink-0">소속</span>
+            <select
+              value={normalizeOwnerCharacterId(event.ownerCharacterId) ?? ''}
+              onChange={(e) =>
+                onUpdateEvent({
+                  ...event,
+                  ownerCharacterId: e.target.value ? e.target.value : null,
+                })
+              }
+              className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-xs text-slate-200 outline-none focus:border-indigo-500/50"
+            >
+              <option value="">공용</option>
+              {registeredCharacters.map((character) => (
+                <option key={character.id} value={character.id}>
+                  {character.name}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="flex shrink-0 gap-2">
           <button
@@ -1122,10 +1276,37 @@ function EventDetail({
 
       {/* Tab Contents: Node Editor */}
       {activeTab === 'nodes' && (
-        <div className="space-y-4">
+        <div
+          className={`space-y-4 rounded-xl transition ${
+            scriptTxtOver ? 'ring-2 ring-indigo-400/60 bg-indigo-500/5' : ''
+          }`}
+          onDragEnter={(e) => {
+            if ([...e.dataTransfer.types].includes('Files')) setScriptTxtOver(true)
+          }}
+          onDragOver={(e) => {
+            if (![...e.dataTransfer.types].includes('Files')) return
+            e.preventDefault()
+            setScriptTxtOver(true)
+          }}
+          onDragLeave={(e) => {
+            if (e.currentTarget.contains(e.relatedTarget as Node)) return
+            setScriptTxtOver(false)
+          }}
+          onDrop={(e) => {
+            const file = e.dataTransfer.files?.[0]
+            if (file && isScriptTextFile(file)) {
+              e.preventDefault()
+              e.stopPropagation()
+              setScriptTxtOver(false)
+              void applyScriptFile(file)
+            } else {
+              setScriptTxtOver(false)
+            }
+          }}
+        >
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <span className="text-xs text-slate-500">
-              새 노드는 지금 보고 있는 카드 바로 아래에 추가됩니다. 드래그로 순서를 바꿀 수 있습니다.
+              새 노드는 지금 보고 있는 카드 바로 아래에 추가됩니다. 드래그로 순서를 바꿀 수 있습니다. txt 대본은 여기로 드롭해도 됩니다.
             </span>
             <div className="flex flex-wrap gap-2">
               <button
@@ -1770,23 +1951,87 @@ function EventDetail({
           >
             <h3 className="text-base font-semibold text-slate-100">시나리오 스크립트 일괄 가져오기</h3>
             <p className="mt-1 text-xs text-slate-400">
-              대본 형식의 텍스트를 파싱하여 자동으로 텍스트 및 그래픽 노드 시퀀스를 구성합니다.
+              대본을 붙여 넣거나 <span className="text-indigo-300">.txt</span> 파일을 끌어다 놓으면, 텍스트·그래픽 노드 시퀀스를 만듭니다.
             </p>
 
             <form onSubmit={handleImportScript} className="mt-4 space-y-4 flex-1 flex flex-col min-h-0">
               <div className="flex-1 flex flex-col min-h-0">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <label className="block text-xs font-semibold text-slate-400">시나리오 텍스트</label>
-                  <span className="text-[10px] text-slate-500 font-mono">라인별 구분 파싱</span>
+                  <div className="flex items-center gap-2">
+                    {scriptFileName ? (
+                      <span className="max-w-[140px] truncate text-[10px] font-mono text-indigo-300" title={scriptFileName}>
+                        {scriptFileName}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-slate-500 font-mono">라인별 구분 파싱</span>
+                    )}
+                    <label className="cursor-pointer text-[10px] font-semibold text-indigo-400 hover:text-indigo-300">
+                      txt 열기
+                      <input
+                        ref={scriptFileInputRef}
+                        type="file"
+                        accept=".txt,text/plain"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) void applyScriptFile(file)
+                          e.target.value = ''
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
-                <textarea
-                  required
-                  rows={12}
-                  placeholder={`[작성 예시]\n그래픽: #1 — 거실 입구\n이모: 너, 잠 안 와?\n플레이어: 이모, 많이 드셨어요?\n...`}
-                  value={scriptText}
-                  onChange={(e) => setScriptText(e.target.value)}
-                  className="mt-1.5 w-full flex-1 rounded-xl border border-white/10 bg-black/40 p-3 text-xs text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/50 font-mono resize-none overflow-y-auto"
-                />
+                <div
+                  className={`relative mt-1.5 flex min-h-0 flex-1 flex-col rounded-xl border ${
+                    scriptTxtOver ? 'border-indigo-400 bg-indigo-500/10' : 'border-white/10'
+                  }`}
+                  onDragEnter={(e) => {
+                    if ([...e.dataTransfer.types].includes('Files')) {
+                      e.preventDefault()
+                      setScriptTxtOver(true)
+                    }
+                  }}
+                  onDragOver={(e) => {
+                    if (![...e.dataTransfer.types].includes('Files')) return
+                    e.preventDefault()
+                    e.dataTransfer.dropEffect = 'copy'
+                    setScriptTxtOver(true)
+                  }}
+                  onDragLeave={(e) => {
+                    if (e.currentTarget.contains(e.relatedTarget as Node)) return
+                    setScriptTxtOver(false)
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setScriptTxtOver(false)
+                    const file = e.dataTransfer.files?.[0]
+                    if (!file) return
+                    if (!isScriptTextFile(file)) {
+                      alert('.txt 파일만 가져올 수 있습니다.')
+                      return
+                    }
+                    void applyScriptFile(file)
+                  }}
+                >
+                  <textarea
+                    required
+                    rows={12}
+                    placeholder={`[작성 예시]\n그래픽: #1 — 거실 입구\n이모: 너, 잠 안 와?\n플레이어: 이모, 많이 드셨어요?\n\n또는 이 칸에 .txt 파일을 드롭하세요.`}
+                    value={scriptText}
+                    onChange={(e) => {
+                      setScriptText(e.target.value)
+                      if (scriptFileName) setScriptFileName('')
+                    }}
+                    className="w-full flex-1 rounded-xl bg-black/40 p-3 text-xs text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/50 font-mono resize-none overflow-y-auto border-0"
+                  />
+                  {scriptTxtOver ? (
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-indigo-950/70 text-sm font-semibold text-indigo-100">
+                      txt 파일을 놓으면 대본을 읽습니다
+                    </div>
+                  ) : null}
+                </div>
               </div>
 
               {/* 가져오기 옵션 */}
@@ -1834,6 +2079,7 @@ function EventDetail({
                   onClick={() => {
                     setShowScriptModal(false)
                     setScriptText('')
+                    setScriptFileName('')
                   }}
                   className="rounded-xl border border-white/10 hover:bg-white/5 px-4 py-2 text-xs font-semibold text-slate-300 transition"
                 >
@@ -1860,7 +2106,7 @@ function EventDetail({
             ) ?? null
           }
           regions={readBlurRegions(event.nodes[blurEditorIndex])}
-          blurDefault={Number((event.nodes[blurEditorIndex] as any).blurDefault) || 16}
+          blurDefault={clampBlur(Number((event.nodes[blurEditorIndex] as any).blurDefault))}
           onChange={({ blurRegions, blurDefault }) => {
             handleNodeChange(blurEditorIndex, { blurRegions, blurDefault })
           }}

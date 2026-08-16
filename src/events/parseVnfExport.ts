@@ -1,13 +1,15 @@
 import JSZip from 'jszip'
-import type {
-  EventMediaAsset,
-  EventMediaKind,
-  GameEvent,
-  VnfCharacterDef,
-  VnfPointDef,
+import {
+  createGameEventId,
+  type EventMediaAsset,
+  type EventMediaKind,
+  type GameEvent,
+  type VnfCharacterDef,
+  type VnfPointDef,
 } from './types'
+import { EVENT_LOCALES, mergeEventLocalization, normalizeEventLocale } from './eventLocales'
 
-function createId() {
+function createAssetId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
@@ -120,7 +122,7 @@ function listMediaFileNamesReferenced(nodes: unknown[]): Set<string> {
 
     if (typeof n.image === 'string' && n.image.trim()) names.add(n.image.trim())
     if (typeof n.sound === 'string' && n.sound.trim()) names.add(n.sound.trim())
-
+    if (typeof n.voice === 'string' && n.voice.trim()) names.add(n.voice.trim())
     if (n.voice && typeof n.voice === 'object') {
       for (const value of Object.values(n.voice as Record<string, unknown>)) {
         if (typeof value === 'string' && value.trim()) names.add(value.trim())
@@ -163,7 +165,7 @@ async function loadMediaForChapter(
     const blob = data.type ? data : new Blob([data], { type: mimeFor(kind, ext) })
     const url = URL.createObjectURL(blob)
     byFileName.set(fileName, {
-      id: createId(),
+      id: createAssetId(),
       fileName,
       kind,
       sourcePath: path,
@@ -212,6 +214,34 @@ async function loadMediaForChapter(
   }
 
   return [...byFileName.values()].sort((a, b) => a.fileName.localeCompare(b.fileName))
+}
+
+function flattenNodeVoice(nodes: unknown[]): unknown[] {
+  const flattenVoice = (value: unknown): string => {
+    if (typeof value === 'string') return value
+    if (value && typeof value === 'object') {
+      const first = Object.values(value as Record<string, unknown>).find(
+        (v) => typeof v === 'string' && v.trim(),
+      )
+      return typeof first === 'string' ? first : ''
+    }
+    return ''
+  }
+
+  const visit = (list: unknown[]): unknown[] =>
+    list.map((node) => {
+      if (!node || typeof node !== 'object') return node
+      const n = { ...(node as Record<string, unknown>) }
+      if (n.type !== 'sound' && n.voice != null) {
+        n.voice = flattenVoice(n.voice)
+      }
+      if (n.type === 'event' && Array.isArray(n.nodes)) {
+        n.nodes = visit(n.nodes)
+      }
+      return n
+    })
+
+  return visit(nodes)
 }
 
 function resolveTitle(
@@ -268,7 +298,7 @@ export async function parseVnfExportZip(file: File): Promise<ParseVnfResult> {
   const project = await readJson<ProjectJson>(zip, projectPath)
   const projectId = project.project_id ?? 'unknown'
   const projectTitle = project.title ?? projectId
-  const defaultLanguage = project.default_language ?? 'ko'
+  const defaultLanguage = normalizeEventLocale(project.default_language)
   const chapterMetas = project.chapters ?? []
 
   if (chapterMetas.length === 0) {
@@ -285,25 +315,29 @@ export async function parseVnfExportZip(file: File): Promise<ParseVnfResult> {
     const chapter = await readJson<ChapterJson>(zip, chapterPath)
     const chapterId = chapter.chapter ?? meta.id
     const titleKey = chapter.title_key ?? meta.title_key ?? `ch${chapterId}_title`
-    const nodes = Array.isArray(chapter.nodes) ? chapter.nodes : []
+    const nodes = flattenNodeVoice(Array.isArray(chapter.nodes) ? chapter.nodes : [])
     const startNode = chapter.start_node ?? ''
 
     if (!startNode) {
       warnings.push(`챕터 ${chapterId}: start_node 가 없습니다.`)
     }
 
-    const localization: Record<string, Record<string, string>> = {}
-    const langs = project.supported_languages?.length
-      ? project.supported_languages
-      : [defaultLanguage]
+    const localizationRaw: Record<string, Record<string, string>> = {}
+    const langs = new Set<string>([
+      ...(project.supported_languages ?? []),
+      defaultLanguage,
+      ...EVENT_LOCALES,
+    ])
 
     for (const lang of langs) {
       const locPath = joinRoot(root, `localization/${lang}/${chapterFile}`)
       const map = await tryReadJson<Record<string, string>>(zip, locPath)
-      if (map) localization[lang] = map
+      if (map) localizationRaw[lang] = map
     }
 
-    if (!localization[defaultLanguage] && Object.keys(localization).length === 0) {
+    const localization = mergeEventLocalization(localizationRaw)
+
+    if (Object.values(localization).every((map) => Object.keys(map).length === 0)) {
       warnings.push(`챕터 ${chapterId}: localization 파일을 찾지 못했습니다.`)
     }
 
@@ -320,7 +354,7 @@ export async function parseVnfExportZip(file: File): Promise<ParseVnfResult> {
     }
 
     events.push({
-      id: createId(),
+      id: createGameEventId(),
       projectId,
       projectTitle,
       chapterId,
@@ -335,6 +369,7 @@ export async function parseVnfExportZip(file: File): Promise<ParseVnfResult> {
       media,
       sourceZipName: file.name,
       createdAt: new Date().toISOString(),
+      ownerCharacterId: null,
     })
   }
 

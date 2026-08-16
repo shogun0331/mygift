@@ -1,0 +1,351 @@
+{
+  "id": "47215c35-ad07-4b2b-a633-1fbc75c2055a",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "47215c35-ad07-4b2b-a633-1fbc75c2055a",
+  "title": "스카웃",
+  "startNode": "node_1786858399782_0_grvx",
+  "nodes": [
+    {
+      "id": "node_1786858399782_0_grvx",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786858399782_1_zsk5",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "거리. 크리에이터를 스카웃하러 이곳저곳 돌아다니던 중, 순찰 중인 한 여경이 눈에 들어온다.",
+      "text_key": "node_1786858399782_1_zsk5"
+    },
+    {
+      "id": "node_1786858399782_2_o4dy",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "눈에 띄는 얼굴이다. 좁고 긴 눈이 날카롭게 빛나고, 무쌍의 시선이 오히려 더 치명적이다. 반팔 셔츠가 가슴을 팽팽하게 받치고, 태닝된 피부가 유니폼 사이로 드러난다. 저 몸이 방송에 나오면… 시청자들이 미칠 거다.",
+      "text_key": "node_1786858399782_2_o4dy"
+    },
+    {
+      "id": "node_1786858399782_3_x3hc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "아키야마 씨가 거리를 천천히 순찰하고 있다. 곧은 자세, 흐트러짐 없는 걸음걸이다.",
+      "text_key": "node_1786858399782_3_x3hc"
+    },
+    {
+      "id": "node_1786858399782_4_qbjk",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "유니폼에 감싸인 몸, 짧은 검은 머리, 날카로운 눈빛. 스카웃 감이다. 아니, 저건 스카웃이 아니라 무기다.",
+      "text_key": "node_1786858399782_4_qbjk"
+    },
+    {
+      "id": "node_1786858399782_5_xhx4",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "나는 그녀에게 다가가기로 마음먹는다.",
+      "text_key": "node_1786858399782_5_xhx4"
+    },
+    {
+      "id": "node_1786858399782_6_nzq4",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786858399782_7_yzeu",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "거리 한쪽. 아키야마 씨가 순찰을 잠시 멈춘 틈에, 나는 그녀에게 다가가 말을 건다.",
+      "text_key": "node_1786858399782_7_yzeu"
+    },
+    {
+      "id": "node_1786858399782_8_dh6c",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "실례합니다, 잠시 괜찮을까요.",
+      "text_key": "node_1786858399782_8_dh6c"
+    },
+    {
+      "id": "node_1786858399782_9_abxl",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "네. (짧게 답하며, 시선을 나에게 향한다)",
+      "text_key": "node_1786858399782_9_abxl"
+    },
+    {
+      "id": "node_1786858399782_10_q65x",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "제가 방송국을 운영하는 사람인데요. 너에게 꼭 드릴 제안이 있어서요.",
+      "text_key": "node_1786858399782_10_q65x"
+    },
+    {
+      "id": "node_1786858399782_11_gp3g",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "제안이요. (눈을 가늘게 뜬다)",
+      "text_key": "node_1786858399782_11_gp3g"
+    },
+    {
+      "id": "node_1786858399782_12_cdal",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저희 방송국에서, 크리에이터로 활동해 보시지 않겠습니까.",
+      "text_key": "node_1786858399782_12_cdal"
+    },
+    {
+      "id": "node_1786858399782_13_jijj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "…크리에이터. 저는 경찰입니다. (건조하게)",
+      "text_key": "node_1786858399782_13_jijj"
+    },
+    {
+      "id": "node_1786858399782_14_cb14",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "가까이서 보니 더하다. 넥타이 아래로 드러난 쇄골, 셔츠 단추가 가슴에 팽팽하게 당겨진다. 저 무심한 표정이 방송에서 무너질 때를 상상하면… 생각만 해도 자지가 반응한다.",
+      "text_key": "node_1786858399782_14_cb14"
+    },
+    {
+      "id": "node_1786858399782_15_df61",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "경찰로서의 단정함과 카리스마, 그게 저희 방송에선 최고의 무기가 됩니다.",
+      "text_key": "node_1786858399782_15_df61"
+    },
+    {
+      "id": "node_1786858399782_16_k2q6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "방송. 어떤 방송국이죠. (간결하게)",
+      "text_key": "node_1786858399782_16_k2q6"
+    },
+    {
+      "id": "node_1786858399782_17_z1l5",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "성인 방송국입니다. 솔직히 말씀드리죠. (정면을 본다)",
+      "text_key": "node_1786858399782_17_z1l5"
+    },
+    {
+      "id": "node_1786858399782_18_osnd",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "…! (잠시 말을 잃는다)",
+      "text_key": "node_1786858399782_18_osnd"
+    },
+    {
+      "id": "node_1786858399782_19_hz1m",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "놀란 표정도 짧다. 금세 평정을 되찾은 저 무쌍의 눈빛이, 오히려 더 자극적이다. 저 입술이 방송에서 무슨 말을 할지 상상하니 흥분된다. 하지만 지금은 참아야 한다. 첫인상이 전부니까.",
+      "text_key": "node_1786858399782_19_hz1m"
+    },
+    {
+      "id": "node_1786858399782_20_dxkl",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "성인 방송에, 저 같은 사람이요. (고개를 살짝 젓는다)",
+      "text_key": "node_1786858399782_20_dxkl"
+    },
+    {
+      "id": "node_1786858399782_21_jlur",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "너 같은 사람이니까요. 다른 사람이 아니라. (단호히)",
+      "text_key": "node_1786858399782_21_jlur"
+    },
+    {
+      "id": "node_1786858399782_22_qkvr",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "…… (잠시 생각에 잠긴다)",
+      "text_key": "node_1786858399782_22_qkvr"
+    },
+    {
+      "id": "node_1786858399782_23_dalk",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "갑자기 이런 말씀 드려서 죄송합니다. 다만, 너의 그 단정한 모습을 보자마자 확신했어요.",
+      "text_key": "node_1786858399782_23_dalk"
+    },
+    {
+      "id": "node_1786858399782_24_3ksl",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "확신. (내 눈을 바라본다)",
+      "text_key": "node_1786858399782_24_3ksl"
+    },
+    {
+      "id": "node_1786858399782_25_tats",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "고민하고 있다. 짧은 침묵, 흔들리지 않던 시선이 잠시 흔들린다. 저 태닝된 피부가 긴장으로 조용히 긴장하는 게 보인다. 아니, 내가 미쳐가고 있는 건가.",
+      "text_key": "node_1786858399782_25_tats"
+    },
+    {
+      "id": "node_1786858399782_26_jm94",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786858399782_27_upw2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "거리 한쪽. 아키야마 씨가 고민 끝에 얼굴을 든다.",
+      "text_key": "node_1786858399782_27_upw2"
+    },
+    {
+      "id": "node_1786858399782_28_f4qw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "…제가, 할 수 있을까요. (조용히)",
+      "text_key": "node_1786858399782_28_f4qw"
+    },
+    {
+      "id": "node_1786858399782_29_utgm",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "할 수 있어요. 아니, 네가 아니면 안 됩니다. (또박또박)",
+      "text_key": "node_1786858399782_29_utgm"
+    },
+    {
+      "id": "node_1786858399782_30_fb33",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "그렇게까지 말씀하시니. (살짝 입꼬리를 올린다)",
+      "text_key": "node_1786858399782_30_fb33"
+    },
+    {
+      "id": "node_1786858399782_31_xinr",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그럼, 승낙으로 받아들여도 되겠습니까.",
+      "text_key": "node_1786858399782_31_xinr"
+    },
+    {
+      "id": "node_1786858399782_32_rvvz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "네. 조건만 괜찮다면요. (고개를 끄덕인다)",
+      "text_key": "node_1786858399782_32_rvvz"
+    },
+    {
+      "id": "node_1786858399782_33_2rje",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "물론입니다. 너에게 불리한 조건은 절대 없어요.",
+      "text_key": "node_1786858399782_33_2rje"
+    },
+    {
+      "id": "node_1786858399782_34_qabv",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "…잘 부탁드립니다. (허리를 숙여 인사한다)",
+      "text_key": "node_1786858399782_34_qabv"
+    },
+    {
+      "id": "node_1786858399782_35_4mhv",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "성공했다. 저 건조한 여경이, 이제 내 방송국의 크리에이터다. 저 유니폼이 방송 세트로 바뀌는 날을 생각하니, 참고 있던 흥분이 다시 올라온다. 하지만 오늘은 여기까지. 첫만남은, 여기까지가 정답이다.",
+      "text_key": "node_1786858399782_35_4mhv"
+    },
+    {
+      "id": "node_1786858399782_36_rnsn",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "너야말로, 잘 부탁드립니다. 아키야마 씨. (미소 짓는다)",
+      "text_key": "node_1786858399782_36_rnsn"
+    },
+    {
+      "id": "node_1786858399782_37_99rh",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "…성함, 어떻게 부르면 될까요. (시선을 올린다)",
+      "text_key": "node_1786858399782_37_99rh"
+    },
+    {
+      "id": "node_1786858399782_38_p98i",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사장, 이라고 불러 주세요. 앞으로 그렇게 될 테니까요.",
+      "text_key": "node_1786858399782_38_p98i"
+    },
+    {
+      "id": "node_1786858399782_39_ozg4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미호",
+      "text": "네, 사장님. (짧게, 입꼬리를 올린다)",
+      "text_key": "node_1786858399782_39_ozg4"
+    },
+    {
+      "id": "node_1786858399782_40_534a",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 다시 순찰로 돌아간다. 나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
+      "text_key": "node_1786858399782_40_534a"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "미호",
+      "name": "미호"
+    }
+  ],
+  "points": [],
+  "media": [],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T05:32:58.445Z",
+  "ownerCharacterId": "1786850998437-g6olmc9"
+}

@@ -79,6 +79,7 @@
 - [x] 좌측 사이드바 + **캐릭터 관리** / **이벤트 관리** 메뉴
 - [x] 이벤트 노드 시퀀스 편집, ZIP 가져오기, **스크립트 가져오기**
 - [x] 스크립트 가져오기 사용법: [`docs/event-script-import.md`](docs/event-script-import.md)
+- [x] 이벤트 음성 JSON 구조: [`docs/event-voice-json.md`](docs/event-voice-json.md)
 
 ---
 

@@ -1,0 +1,383 @@
+{
+  "id": "08e8e28c-c1bd-4b14-a8d8-797afa97288f",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "08e8e28c-c1bd-4b14-a8d8-797afa97288f",
+  "title": "스카웃",
+  "startNode": "node_1786844325053_0_t4oj",
+  "nodes": [
+    {
+      "id": "node_1786844325053_0_t4oj",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "공원. 크리에이터를 스카웃하러 이곳저곳 돌아다니던 중, 요가를 하는 한 여성이 눈에 들어온다.",
+      "text_key": "node_1786844325053_0_t4oj"
+    },
+    {
+      "id": "node_1786860987632_radx",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844325053_1_7azm",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "눈에 띄는 몸이다. 크롭탑 사이로 드러난 허리, 레깅스에 감싸인 엉덩이와 허벅지. 저 유연한 동작 하나하나가… 자연스럽고, 평화롭고, 그런데 왜 이렇게 야한 거지.",
+      "text_key": "node_1786844325053_1_7azm"
+    },
+    {
+      "id": "node_1786844325053_2_uufb",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "타치바나 씨가 요가 매트 위에서 동작을 이어간다. 숨을 고르며 몸을 늘이는 모습이 프로답다.",
+      "text_key": "node_1786844325053_2_uufb"
+    },
+    {
+      "id": "node_1786844325053_3_5af3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "동작을 바꿀 때마다 태닝된 피부가 햇살에 반짝이고, 숏컷 머리가 흔들린다. 저 몸이 방송에 나오면… 시청자들이 미칠 거다. 스카웃 감이다.",
+      "text_key": "node_1786844325053_3_5af3"
+    },
+    {
+      "id": "node_1786844325053_4_e5mm",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "나는 그녀에게 다가가기로 마음먹는다.",
+      "text_key": "node_1786844325053_4_e5mm"
+    },
+    {
+      "id": "node_1786844325053_6_cj1u",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "공원 한쪽. 타치바나 씨가 요가를 마치고, 물병을 들어 물을 마시고 있다. 나는 그녀에게 다가가 말을 건다.",
+      "text_key": "node_1786844325053_6_cj1u"
+    },
+    {
+      "id": "node_1786844325053_5_kfqc",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844325053_7_ml1k",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "실례합니다, 잠시 괜찮을까요.",
+      "text_key": "node_1786844325053_7_ml1k"
+    },
+    {
+      "id": "node_1786844325053_8_qnjj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "네, 말씀하세요. (밝은 미소로 고개를 든다)",
+      "text_key": "node_1786844325053_8_qnjj"
+    },
+    {
+      "id": "node_1786844325053_9_rpeg",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "요가 하시는 모습, 멀리서 봤는데 정말 아름답더라고요.",
+      "text_key": "node_1786844325053_9_rpeg"
+    },
+    {
+      "id": "node_1786844325053_10_2lwy",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "감사합니다. 요가를 좀 오래 했거든요. (물병을 내려놓는다)",
+      "text_key": "node_1786844325053_10_2lwy"
+    },
+    {
+      "id": "node_1786844325053_11_29a2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "가까이서 보니 더하다. 땀에 젖은 쇄골, 크롭탑이 가슴을 팽팽하게 받치고, 웃을 때마다 D컵 가슴이 살짝 흔들린다. 저 건강한 미소가 방송에서 시청자들을 상대하면…",
+      "text_key": "node_1786844325053_11_29a2"
+    },
+    {
+      "id": "node_1786844325053_12_3hdg",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "갑자기 실례지만, 제가 방송국을 운영하는 사람인데요.  꼭 드릴 제안이 있어서요.",
+      "text_key": "node_1786844325053_12_3hdg"
+    },
+    {
+      "id": "node_1786844325053_13_kzk4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "제안이요? (눈을 가늘게 뜬다)",
+      "text_key": "node_1786844325053_13_kzk4"
+    },
+    {
+      "id": "node_1786844325053_14_tm09",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저희 방송국에서, 새로운 크리에이터를 찾고 있습니다.  자연스러운 분위기와 건강한 이미지가 정말 필요해요.",
+      "text_key": "node_1786844325053_14_tm09"
+    },
+    {
+      "id": "node_1786844325053_15_6b8w",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "크리에이터요… 저는 그냥 요가 강사인데요. (살짝 당황한 표정)",
+      "text_key": "node_1786844325053_15_6b8w"
+    },
+    {
+      "id": "node_1786844325053_16_5lt8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그 '그냥'이 아니거든요. 저 요가 동작 하나하나가, 시청자들한테는 최고의 매력이 됩니다.",
+      "text_key": "node_1786844325053_16_5lt8"
+    },
+    {
+      "id": "node_1786844325053_17_4uor",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "저 태닝된 피부, 레깅스에 감싸인 탄탄한 허벅지. 건강하고 밝은 이미지가, 성인 방송에서 오히려 더 독하게 먹힌다. 저 몸을 화면에 담는 상상을 하니 자지가 반응한다.",
+      "text_key": "node_1786844325053_17_4uor"
+    },
+    {
+      "id": "node_1786844325053_18_xsuj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "그런데… 혹시 어떤 방송국인가요? (조심스럽게)",
+      "text_key": "node_1786844325053_18_xsuj"
+    },
+    {
+      "id": "node_1786844325053_19_s94r",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "성인 방송국입니다. 솔직히 말씀드리죠. (정면을 본다)",
+      "text_key": "node_1786844325053_19_s94r"
+    },
+    {
+      "id": "node_1786861110460_yehe",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844325053_20_871i",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…! (말을 잃는다)",
+      "text_key": "node_1786844325053_20_871i"
+    },
+    {
+      "id": "node_1786844325053_21_37ib",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "놀란 표정도 건강하고 예쁘다. 저 입술이 방송에서 무슨 말을 할지 상상하니 흥분된다. 하지만 지금은 참아야 한다. 첫인상이 전부니까.",
+      "text_key": "node_1786844325053_21_37ib"
+    },
+    {
+      "id": "node_1786844325053_22_6kte",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "성인 방송에, 저 같은 사람이… (고개를 젓는다)",
+      "text_key": "node_1786844325053_22_6kte"
+    },
+    {
+      "id": "node_1786844325053_23_wg4i",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "당신 같은 사람이니까요. 다른 사람이 아니라. (단호히)",
+      "text_key": "node_1786844325053_23_wg4i"
+    },
+    {
+      "id": "node_1786844325053_24_6fjb",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…… (잠시 생각에 잠긴다)",
+      "text_key": "node_1786844325053_24_6fjb"
+    },
+    {
+      "id": "node_1786844325053_25_3ih5",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "갑자기 이런 말씀 드려서 죄송합니다. 다만, 당신의 그 건강하고 자연스러운 모습을 보자마자 확신했어요.",
+      "text_key": "node_1786844325053_25_3ih5"
+    },
+    {
+      "id": "node_1786844325053_26_5673",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "확신… (내 눈을 바라본다)",
+      "text_key": "node_1786844325053_26_5673"
+    },
+    {
+      "id": "node_1786844325053_27_w6ak",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "고민하고 있다. 물병을 움켜쥔 손끝, 살짝 긴장한 표정. 저 태닝된 몸이 긴장으로 조용히 떨리는 게 보인다. 아니, 내가 미쳐가고 있는 건가.",
+      "text_key": "node_1786844325053_27_w6ak"
+    },
+    {
+      "id": "node_1786844325053_28_qucm",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844325053_29_pqqu",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "공원 한쪽. 타치바나 씨가 고민 끝에 얼굴을 든다.",
+      "text_key": "node_1786844325053_29_pqqu"
+    },
+    {
+      "id": "node_1786844325053_30_wb11",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…제가, 할 수 있을까요. (조용히)",
+      "text_key": "node_1786844325053_30_wb11"
+    },
+    {
+      "id": "node_1786844325053_31_xbl9",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "할 수 있어요. 아니, 당신이 아니면 안 됩니다. (또박또박)",
+      "text_key": "node_1786844325053_31_xbl9"
+    },
+    {
+      "id": "node_1786844325053_32_221h",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "그렇게까지 말씀하시니… (밝게 웃는다)",
+      "text_key": "node_1786844325053_32_221h"
+    },
+    {
+      "id": "node_1786844325053_33_gqi2",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그럼, 승낙으로 받아들여도 되겠습니까.",
+      "text_key": "node_1786844325053_33_gqi2"
+    },
+    {
+      "id": "node_1786844325053_34_h6vk",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "네. 조건만 괜찮다면요. (고개를 끄덕인다)",
+      "text_key": "node_1786844325053_34_h6vk"
+    },
+    {
+      "id": "node_1786844325053_35_zdoe",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "물론입니다. 당신에게 불리한 조건은 절대 없어요.",
+      "text_key": "node_1786844325053_35_zdoe"
+    },
+    {
+      "id": "node_1786844325053_36_ukes",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…그럼, 잘 부탁드립니다. (허리를 숙여 인사한다)",
+      "text_key": "node_1786844325053_36_ukes"
+    },
+    {
+      "id": "node_1786844325053_37_tauc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "성공했다. 저 건강한 요가 강사가, 이제 내 방송국의 크리에이터다. 저 크롭탑과 레깅스가 방송 세트로 바뀌는 날을 생각하니, 참고 있던 흥분이 다시 올라온다. 하지만 오늘은 여기까지. 첫만남은, 여기까지가 정답이다.",
+      "text_key": "node_1786844325053_37_tauc"
+    },
+    {
+      "id": "node_1786844325053_38_33gx",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저야말로, 잘 부탁드립니다. 타치바나 씨. (미소 짓는다)",
+      "text_key": "node_1786844325053_38_33gx"
+    },
+    {
+      "id": "node_1786844325053_39_wuug",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…성함, 어떻게 부르면 될까요. (시선을 올린다)",
+      "text_key": "node_1786844325053_39_wuug"
+    },
+    {
+      "id": "node_1786844325053_40_glko",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사장, 이라고 불러 주세요. 앞으로 그렇게 될 테니까요.",
+      "text_key": "node_1786844325053_40_glko"
+    },
+    {
+      "id": "node_1786844325053_41_cvkc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "네, 사장님. (입꼬리를 올린다)",
+      "text_key": "node_1786844325053_41_cvkc"
+    },
+    {
+      "id": "node_1786844325053_42_mmm0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 요가 매트를 정리하며 웃는다. 나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
+      "text_key": "node_1786844325053_42_mmm0"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "미사키",
+      "name": "미사키"
+    }
+  ],
+  "points": [],
+  "media": [],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T01:38:11.208Z",
+  "ownerCharacterId": "1786833964287-iflkqh2"
+}

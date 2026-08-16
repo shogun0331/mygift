@@ -5,6 +5,7 @@ import { EventSimulator } from '../events/EventSimulator'
 import {
   CHARACTER_EVENT_SLOTS,
   emptyCharacterEventLinks,
+  eventUsableInCharacterSlot,
   type CharacterEventLinks,
   type CharacterEventSlotKey,
   type GameEvent,
@@ -62,17 +63,6 @@ export function EditorScreen({
   const [editingCharacter, setEditingCharacter] = useState<RegisteredCharacter | null>(null)
   const [showSimulator, setShowSimulator] = useState(false)
   const [simulatorMode, setSimulatorMode] = useState<'debug' | 'game'>('debug')
-  const [selectedSimulatorEvent, setSelectedSimulatorEvent] = useState<GameEvent | null>(null)
-  
-  // 에디터 내 스카웃 연쇄 시뮬레이션 상태
-  type EditorScoutSimState = {
-    character: RegisteredCharacter
-    step: 'scout' | 'accept' | 'fail'
-    currentEvent: GameEvent
-    mode: 'debug' | 'game'
-  }
-  const [scoutSimState, setScoutSimState] = useState<EditorScoutSimState | null>(null)
-
   const handleSimulateLinkedEvent = (
     character: RegisteredCharacter,
     slotKey: CharacterEventSlotKey,
@@ -81,42 +71,9 @@ export function EditorScreen({
     const linkedId = character.eventLinks[slotKey]
     const event = linkedId ? events.find((e) => e.id === linkedId) : null
     if (!event) return
-
-    if (slotKey === 'scout') {
-      setScoutSimState({
-        character,
-        step: 'scout',
-        currentEvent: event,
-        mode,
-      })
-    } else {
-      setSelectedSimulatorEvent(event)
-      setSimulatorMode(mode)
-      setShowSimulator(true)
-    }
-  }
-
-  const handleEditorScoutSimFinished = () => {
-    if (!scoutSimState) return
-    const { character, step, mode } = scoutSimState
-
-    if (step === 'scout') {
-      const acceptEventId = character.eventLinks.scoutAccept
-      const acceptEvent = acceptEventId ? events.find((e) => e.id === acceptEventId) : null
-      if (acceptEvent) {
-        setScoutSimState({
-          character,
-          step: 'accept',
-          currentEvent: acceptEvent,
-          mode,
-        })
-      } else {
-        setScoutSimState(null)
-        alert('스카웃 승낙. (스카웃 이벤트 승낙이 연동되어 있지 않아 시뮬레이션을 종료합니다)')
-      }
-    } else {
-      setScoutSimState(null)
-    }
+    setSelectedSimulatorEvent(event)
+    setSimulatorMode(mode)
+    setShowSimulator(true)
   }
   const eventsRef = useRef(events)
   eventsRef.current = events
@@ -320,15 +277,6 @@ export function EditorScreen({
           ) : null}
         </section>
       </div>
-      {scoutSimState && (
-        <EventSimulator
-          key={scoutSimState.currentEvent.id}
-          event={scoutSimState.currentEvent}
-          mode={scoutSimState.mode}
-          onClose={handleEditorScoutSimFinished}
-          registeredCharacters={registeredCharacters}
-        />
-      )}
       {showSimulator && selectedSimulatorEvent && (
         <EventSimulator
           key={selectedSimulatorEvent.id}
@@ -928,7 +876,11 @@ function AddCharacterPanel({
                     className={`${fieldClassName} disabled:cursor-not-allowed disabled:opacity-50`}
                   >
                     <option value="">연결 안 함</option>
-                    {events.map((event) => (
+                    {events
+                      .filter((event) =>
+                        eventUsableInCharacterSlot(event, initialCharacter?.id ?? '', linkedId),
+                      )
+                      .map((event) => (
                       <option key={event.id} value={event.id}>
                         {event.title} (미디어 {event.media.length})
                       </option>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
 import {
   toStudioHandCard,
+  pickRandomBroadcastVideoUrl,
   type Grade,
   type OwnedCreator,
   type RegisteredCharacter,
@@ -291,6 +292,8 @@ export function InGame({
   const [speed, setSpeed] = useState<SpeedOption>('1x')
   const [gameMonth, setGameMonth] = useState(0)
   const [broadcastPhase, setBroadcastPhase] = useState<BroadcastPhase>('prep')
+  const [livePlayVideoByCreator, setLivePlayVideoByCreator] = useState<Record<string, string>>({})
+  const livePlayVideoByCreatorRef = useRef(livePlayVideoByCreator)
   const [monthWeekIndex, setMonthWeekIndex] = useState(0)
   const [assets, setAssets] = useState(INITIAL_ASSETS)
   const [liveEvents, setLiveEvents] = useState<DayEvent[]>([])
@@ -357,7 +360,6 @@ export function InGame({
   // 스카웃 VN 이벤트 진행
   type ScoutEventState = {
     creator: OwnedCreator
-    step: 'scout' | 'accept'
     currentEvent: GameEvent
   }
   type PromoteSalaryNego = {
@@ -400,25 +402,6 @@ export function InGame({
     })
   }
 
-  /** 스카웃은 승낙만. 승낙 VN이 있으면 재생, 없으면 바로 합류 */
-  function resolveScoutHireOutcome(creator: OwnedCreator) {
-    const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
-    const acceptEventId = charDef?.eventLinks?.scoutAccept
-    const acceptEvent = acceptEventId
-      ? eventsRef.current.find((e) => e.id === acceptEventId) ?? null
-      : null
-    if (acceptEvent) {
-      setScoutEventState({
-        creator,
-        step: 'accept',
-        currentEvent: acceptEvent,
-      })
-      return
-    }
-    setScoutEventState(null)
-    beginRecruitPresentation(creator)
-  }
-
   function beginScoutVisualNovel(creator: OwnedCreator) {
     const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
     const scoutEventId = charDef?.eventLinks?.scout
@@ -428,12 +411,11 @@ export function InGame({
     if (scoutEvent) {
       setScoutEventState({
         creator,
-        step: 'scout',
         currentEvent: scoutEvent,
       })
       return
     }
-    resolveScoutHireOutcome(creator)
+    beginRecruitPresentation(creator)
   }
 
   function applyPromotedSalary(item: PromoteSalaryNego) {
@@ -538,14 +520,9 @@ export function InGame({
 
   function handleScoutEventFinished() {
     if (!scoutEventState) return
-    const { creator, step } = scoutEventState
-
-    if (step === 'scout') {
-      resolveScoutHireOutcome(creator)
-    } else if (step === 'accept') {
-      setScoutEventState(null)
-      beginRecruitPresentation(creator)
-    }
+    const { creator } = scoutEventState
+    setScoutEventState(null)
+    beginRecruitPresentation(creator)
   }
 
   // 등록 캐릭터 로드 후 첫 스카우트 강제 등장
@@ -639,6 +616,7 @@ export function InGame({
   const equipmentTreeRef = useRef(equipmentTree)
   studioSlotsRef.current = studioSlots
   ownedCreatorsRef.current = ownedCreators
+  livePlayVideoByCreatorRef.current = livePlayVideoByCreator
   speedRef.current = speed
   onOwnedCreatorsChangeRef.current = onOwnedCreatorsChange
   gameMonthRef.current = gameMonth
@@ -650,6 +628,18 @@ export function InGame({
   skillPointsRef.current = skillPoints
   broadcastMonthsTowardSpRef.current = broadcastMonthsTowardSp
   const handCards = ownedCreators.map(toStudioHandCard)
+
+  function rollLivePlayVideos(prev: Record<string, string> = {}) {
+    const next: Record<string, string> = {}
+    for (const slot of studioSlotsRef.current) {
+      if (slot.status !== 'assigned' || !slot.assignment) continue
+      const owned = ownedCreatorsRef.current.find((c) => c.id === slot.assignment!.creatorId)
+      if (!owned) continue
+      const url = pickRandomBroadcastVideoUrl(owned, owned.heat ?? 1, prev[owned.id])
+      if (url) next[owned.id] = url
+    }
+    setLivePlayVideoByCreator(next)
+  }
 
   function handlePurchaseEquipmentNode(nodeId: string) {
     if (broadcastPhase === 'live') return
@@ -916,6 +906,7 @@ export function InGame({
 
     monthWeekIndexRef.current = nextMonthWeek
     setMonthWeekIndex(nextMonthWeek)
+    rollLivePlayVideos(livePlayVideoByCreatorRef.current)
     const weekMs = weekDurationMs(speedRef.current)
     beginDayPlan(`m${broadcastMonthNumberRef.current}-w${nextMonthWeek}`, weekMs)
   }
@@ -1079,6 +1070,7 @@ export function InGame({
     setBroadcastMonthNumber(nextMonthNumber)
     weekAccumRef.current = createWeekAccumulator(nextMonthNumber)
     setBroadcastPhase('prep')
+    setLivePlayVideoByCreator({})
     dayPlanRef.current = null
     dayStartedAtRef.current = null
     setStartBroadcastLocked(true)
@@ -1363,6 +1355,7 @@ export function InGame({
     weekFinishedRef.current = false
     setStartBroadcastLocked(false)
     setBroadcastPhase('live')
+    rollLivePlayVideos()
     setMonthWeekIndex(0)
     monthWeekIndexRef.current = 0
     // 방송 시작 시 후원/시청 이벤트는 초기화, 세금 알림은 유지
@@ -1613,7 +1606,7 @@ export function InGame({
             slots={studioSlots}
             ownedCreators={ownedCreators}
             broadcastPhase={broadcastPhase}
-            weekDayIndex={monthWeekIndex}
+            livePlayVideoByCreator={livePlayVideoByCreator}
             liveEvents={liveEvents}
             liveRevenueByCreator={liveRevenueByCreator}
             conditionCrashes={conditionCrashes}

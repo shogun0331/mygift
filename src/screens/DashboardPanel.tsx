@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
-  findBroadcastDayVideoUrl,
   findLevelIdleVideoUrl,
   type OwnedCreator,
 } from '../game/characters'
@@ -37,7 +36,7 @@ type DashboardPanelProps = {
   slots: StudioSlot[]
   ownedCreators?: OwnedCreator[]
   broadcastPhase?: BroadcastPhase
-  weekDayIndex?: number
+  livePlayVideoByCreator?: Record<string, string>
   liveEvents?: DayEvent[]
   /** 방송 월간 누적 실시간 수익 (크리에이터 id → USD) */
   liveRevenueByCreator?: Record<string, number>
@@ -84,7 +83,7 @@ function toBroadcastSlot(
   slot: StudioSlot,
   owned: OwnedCreator | undefined,
   broadcastPhase: BroadcastPhase,
-  weekDayIndex: number,
+  livePlayUrl?: string | null,
 ): BroadcastSlotView {
   const streamLabel = `STREAM ${String(slot.index).padStart(2, '0')}`
   if (slot.status !== 'assigned' || !slot.assignment) {
@@ -107,7 +106,7 @@ function toBroadcastSlot(
     null
   const playVideoUrl =
     broadcastPhase === 'live' && owned
-      ? findBroadcastDayVideoUrl(owned, weekDayIndex, heatLevel) || idleVideoUrl
+      ? livePlayUrl || idleVideoUrl
       : idleVideoUrl
   const mediaRevision =
     owned?.mediaRevision ?? slot.assignment.mediaRevision ?? playVideoUrl ?? undefined
@@ -177,7 +176,7 @@ export function DashboardPanel({
   slots: studioSlots,
   ownedCreators = [],
   broadcastPhase = 'prep',
-  weekDayIndex = 0,
+  livePlayVideoByCreator = {},
   liveEvents = [],
   liveRevenueByCreator = {},
   assets = 0,
@@ -234,7 +233,7 @@ export function DashboardPanel({
       slot,
       creatorId ? ownedById[creatorId] : undefined,
       broadcastPhase,
-      weekDayIndex,
+      creatorId ? livePlayVideoByCreator[creatorId] : undefined,
     )
   })
   const assigned = studioSlots.filter((slot) => {

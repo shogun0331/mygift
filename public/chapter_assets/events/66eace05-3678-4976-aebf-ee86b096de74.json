@@ -1,0 +1,815 @@
+{
+  "id": "66eace05-3678-4976-aebf-ee86b096de74",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "66eace05-3678-4976-aebf-ee86b096de74",
+  "title": "데이트1",
+  "startNode": "node_1786859264250_0_jhjz",
+  "nodes": [
+    {
+      "id": "node_1786859264250_0_jhjz",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786859264250_1_1n4s",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "야간의 도쿄타워 전망대. 야경이 내려다보이는 가운데, 루이자가 먼저 도착해 창가에 서 있다. 레드 짧은 원피스 차림.",
+      "text_key": "node_1786859264250_1_1n4s"
+    },
+    {
+      "id": "node_1786859264250_2_n3x5",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "…왔다! 여기, 여기! (손을 흔든다)",
+      "text_key": "node_1786859264250_2_n3x5"
+    },
+    {
+      "id": "node_1786859264250_3_8vxu",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "기다렸어요? 늦어서 미안합니다.",
+      "text_key": "node_1786859264250_3_8vxu"
+    },
+    {
+      "id": "node_1786859264250_4_er4o",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "괜찮아! 나, 방금 왔어. (씩 웃는다)",
+      "text_key": "node_1786859264250_4_er4o"
+    },
+    {
+      "id": "node_1786859264250_5_3q8q",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "도쿄타워라니, 의외네요. 네가 고른 거예요?",
+      "text_key": "node_1786859264250_5_3q8q"
+    },
+    {
+      "id": "node_1786859264250_6_tenc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "응! 야경, 예쁘잖아. 사장이랑 보려고. (창밖을 가리킨다)",
+      "text_key": "node_1786859264250_6_tenc"
+    },
+    {
+      "id": "node_1786859264250_7_wa98",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그런데 왜 하필 저를? 크리에이터가 사장을 부를 이유는 없잖아요.",
+      "text_key": "node_1786859264250_7_wa98"
+    },
+    {
+      "id": "node_1786859264250_8_l34n",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "그거, 오늘 천천히 말할게. (한 걸음 다가선다)",
+      "text_key": "node_1786859264250_8_l34n"
+    },
+    {
+      "id": "node_1786859264250_9_0lm3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "평소 방송국에서 쾌활하게 웃던 얼굴인데, 이렇게 사적인 자리에서 보니 더 반짝인다. 저 레드 짧은 원피스가 갈색 피부에 착 달라붙어 있다. 참아라, 나는 대표니까.",
+      "text_key": "node_1786859264250_9_0lm3"
+    },
+    {
+      "id": "node_1786859264250_10_0ot3",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…알겠어요. 어차피 부른 건 너니까, 오늘은 네 뜻에 맞출게요.",
+      "text_key": "node_1786859264250_10_0ot3"
+    },
+    {
+      "id": "node_1786859264250_11_1875",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "오케이! 그럼, 여기 구경하자! (창가로 이끈다)",
+      "text_key": "node_1786859264250_11_1875"
+    },
+    {
+      "id": "node_1786859264250_12_h4lg",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "회사 얘기는 안 하자는 거죠?",
+      "text_key": "node_1786859264250_12_h4lg"
+    },
+    {
+      "id": "node_1786859264250_13_6nuw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "응. 여기선 나도, 사장도, 그냥 둘이야. (정면을 본다)",
+      "text_key": "node_1786859264250_13_6nuw"
+    },
+    {
+      "id": "node_1786859264250_14_8ff4",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…그 말, 방송보다 더 위험하게 들리네요.",
+      "text_key": "node_1786859264250_14_8ff4"
+    },
+    {
+      "id": "node_1786859264250_15_7cg1",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "위험하게 들릴 만큼, 사장이 내 방송 잘 본다는 거잖아. (입꼬리를 올린다)",
+      "text_key": "node_1786859264250_15_7cg1"
+    },
+    {
+      "id": "node_1786859264250_16_tmvz",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "어눌한 반말로 저렇게 파고들 줄은… 저 쾌활한 표정으로 저런 말을 하니, 오히려 더 위험하다. 여기서 넘어가면 안 된다. 나는 그녀의 대표니까.",
+      "text_key": "node_1786859264250_16_tmvz"
+    },
+    {
+      "id": "node_1786859264250_17_r0se",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…대표니까 당연히 봐야죠. 크리에이터 관리는 내 일이니까요.",
+      "text_key": "node_1786859264250_17_r0se"
+    },
+    {
+      "id": "node_1786859264250_18_6yzz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "오늘은 관리, 잊어. 그냥, 나랑 야경 보는 남자. (옆모습을 나에게로 돌린다)",
+      "text_key": "node_1786859264250_18_6yzz"
+    },
+    {
+      "id": "node_1786859264250_19_709r",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…그게 제일 어려운 부탁인데. (작게 한숨)",
+      "text_key": "node_1786859264250_19_709r"
+    },
+    {
+      "id": "node_1786859264250_20_5m6y",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "알아. 그래서 부른 거야. (또박또박)",
+      "text_key": "node_1786859264250_20_5m6y"
+    },
+    {
+      "id": "node_1786859264250_21_tbsw",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "루이자가 창가로 가고, 나는 그 옆에 선다. 서로의 시선이 밤의 야경을 향한다.",
+      "text_key": "node_1786859264250_21_tbsw"
+    },
+    {
+      "id": "node_1786859264250_22_0zau",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786859264250_23_th05",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "전망대 창가. 루이자가 창틀에 몸을 기대며, 레드 짧은 원피스가 엉덩이를 간신히 가린다.",
+      "text_key": "node_1786859264250_23_th05"
+    },
+    {
+      "id": "node_1786859264250_24_c28b",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "여기, 야경 진짜 예쁘지! (창밖을 가리킨다)",
+      "text_key": "node_1786859264250_24_c28b"
+    },
+    {
+      "id": "node_1786859264250_25_sp9x",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그러네요.",
+      "text_key": "node_1786859264250_25_sp9x"
+    },
+    {
+      "id": "node_1786859264250_26_329t",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "사장, 나, 이 원피스 입고 왔어. 어때? (빙글 돈다)",
+      "text_key": "node_1786859264250_26_329t"
+    },
+    {
+      "id": "node_1786859264250_27_o5y5",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…잘 어울려요. 그런데 좀 짧네요.",
+      "text_key": "node_1786859264250_27_o5y5"
+    },
+    {
+      "id": "node_1786859264250_28_i10a",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "짧아? 이게 포인트인데. (뒤를 돌아 엉덩이 쪽을 본다)",
+      "text_key": "node_1786859264250_28_i10a"
+    },
+    {
+      "id": "node_1786859264250_29_48py",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "레드 짧은 원피스가 엉덩이를 간신히 덮고 있다. 백리스로 드러난 등, 갈색 피부가 야경 조명에 반짝인다. 몸을 돌릴 때마다 치마 끝이 살짝 들린다. 자지가 반응하는 걸 겨우 참는다.",
+      "text_key": "node_1786859264250_29_48py"
+    },
+    {
+      "id": "node_1786859264250_30_zkbd",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786859264250_31_pw8z",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "포인트라니… 몸매가 좋으니까 더 신경 쓰이네요.",
+      "text_key": "node_1786859264250_31_pw8z"
+    },
+    {
+      "id": "node_1786859264250_32_b56b",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "칭찬? 고마워! 기분 좋다! (활짝 웃는다)",
+      "text_key": "node_1786859264250_32_b56b"
+    },
+    {
+      "id": "node_1786859264250_33_7w0w",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "쾌활하게 웃는 모습이 오히려 더 치명적이다. 저 긴 금발이 흔들리고, 갈색 피부가 조명에 빛난다. 대표니까 참아야 한다.",
+      "text_key": "node_1786859264250_33_7w0w"
+    },
+    {
+      "id": "node_1786859264250_34_vh0u",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786859264250_35_r88w",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "전망대 한쪽. 루이자가 몸을 숙여 아래 야경을 내려다본다. 짧은 원피스가 위로 밀려 올라간다.",
+      "text_key": "node_1786859264250_35_r88w"
+    },
+    {
+      "id": "node_1786859264250_36_6632",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "사장! 여기 아래, 진짜 멋져! (몸을 숙여 아래를 본다)",
+      "text_key": "node_1786859264250_36_6632"
+    },
+    {
+      "id": "node_1786859264250_37_ko0i",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "몸을 숙이자 짧은 원피스가 위로 밀려 올라가, 엉덩이와 팬티가 드러난다.",
+      "text_key": "node_1786859264250_37_ko0i"
+    },
+    {
+      "id": "node_1786859264250_38_dx9o",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…루이자 씨, 치마.",
+      "text_key": "node_1786859264250_38_dx9o"
+    },
+    {
+      "id": "node_1786859264250_39_zdob",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "어? 치마 왜? (당황하며 고개를 돌린다)",
+      "text_key": "node_1786859264250_39_zdob"
+    },
+    {
+      "id": "node_1786859264250_40_qcmm",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "몸 숙이면, 다 보여요.",
+      "text_key": "node_1786859264250_40_qcmm"
+    },
+    {
+      "id": "node_1786859264250_41_cmc9",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "오… 이거, 일부러야. (씩 웃으며 다시 몸을 숙인다)",
+      "text_key": "node_1786859264250_41_cmc9"
+    },
+    {
+      "id": "node_1786859264250_42_xthm",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "짧은 치마가 위로 밀려 올라가, 통통한 엉덩이와 팬티가 그대로 드러난다. 갈색 피부의 엉덩이 골까지… 자지가 바지 안에서 아파 온다. 대표니까 참아야 해.",
+      "text_key": "node_1786859264250_42_xthm"
+    },
+    {
+      "id": "node_1786859264250_43_96j0",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786859264250_44_fsou",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "사장, 여기 와서 봐. 같이 보자. (뒤를 돌아 내 손을 잡는다)",
+      "text_key": "node_1786859264250_44_fsou"
+    },
+    {
+      "id": "node_1786859264250_45_ykrr",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "몸을 틀자 치마가 더 올라가, 엉덩이가 완전히 드러난다.",
+      "text_key": "node_1786859264250_45_ykrr"
+    },
+    {
+      "id": "node_1786859264250_46_o9f9",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이러면 안 돼요.",
+      "text_key": "node_1786859264250_46_o9f9"
+    },
+    {
+      "id": "node_1786859264250_47_hpc6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "왜? 나, 지금 되게 두근거리는데. (내 손을 잡아 자기 엉덩이 쪽으로 이끈다)",
+      "text_key": "node_1786859264250_47_hpc6"
+    },
+    {
+      "id": "node_1786859264250_48_frgs",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786859264250_49_1y60",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "전망대 구석, 사람 없는 창가. 루이자가 내 앞에서 몸을 살짝 돌린다.",
+      "text_key": "node_1786859264250_49_1y60"
+    },
+    {
+      "id": "node_1786859264250_50_nho2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "사장, 계속 참을 거야? (치마 끝을 살짝 걷어 올린다)",
+      "text_key": "node_1786859264250_50_nho2"
+    },
+    {
+      "id": "node_1786859264250_51_rd0y",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…뭐 하는 거예요.",
+      "text_key": "node_1786859264250_51_rd0y"
+    },
+    {
+      "id": "node_1786859264250_52_s7nn",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "사장이 나를 어떻게 보는지, 확인하고 싶어서. (낮게)",
+      "text_key": "node_1786859264250_52_s7nn"
+    },
+    {
+      "id": "node_1786859264250_53_1cjj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그게 왜 중요한데요.",
+      "text_key": "node_1786859264250_53_1cjj"
+    },
+    {
+      "id": "node_1786859264250_54_mix7",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "중요하니까 부른 거야. (치마를 더 걷어 올려 엉덩이를 드러낸다)",
+      "text_key": "node_1786859264250_54_mix7"
+    },
+    {
+      "id": "node_1786859264250_55_oz7h",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786859264250_56_mkui",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "치마가 걷어 올려져, 팬티에 감싸인 엉덩이가 그대로 드러난다.",
+      "text_key": "node_1786859264250_56_mkui"
+    },
+    {
+      "id": "node_1786859264250_57_zs5g",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이러면 안 돼요.",
+      "text_key": "node_1786859264250_57_zs5g"
+    },
+    {
+      "id": "node_1786859264250_58_4k10",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "왜. 나, 지금 꽤 두근거려. (내 손을 잡아 엉덩이 위에 올린다)",
+      "text_key": "node_1786859264250_58_4k10"
+    },
+    {
+      "id": "node_1786859264250_59_tmuk",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손끝에 맨살이 닿는다.",
+      "text_key": "node_1786859264250_59_tmuk"
+    },
+    {
+      "id": "node_1786859264250_60_z9zn",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "! (숨이 멎는다)",
+      "text_key": "node_1786859264250_60_z9zn"
+    },
+    {
+      "id": "node_1786859264250_61_ebjf",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "어때. 뜨거워? (여유 있게, 가만히 나를 본다)",
+      "text_key": "node_1786859264250_61_ebjf"
+    },
+    {
+      "id": "node_1786859264250_62_601r",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…뜨거워요.",
+      "text_key": "node_1786859264250_62_601r"
+    },
+    {
+      "id": "node_1786859264250_63_r482",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "나도. (내 손 위에 손을 포갠다)",
+      "text_key": "node_1786859264250_63_r482"
+    },
+    {
+      "id": "node_1786859264250_64_5vt2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손바닥 밑에 그녀의 엉덩이. 팬티 너머로 탄력 있는 살이 손에 차오른다. 손가락이 저절로 떨린다. 저 쾌활한 얼굴로, 이렇게 치명적일 줄은 몰랐다.",
+      "text_key": "node_1786859264250_64_5vt2"
+    },
+    {
+      "id": "node_1786859264250_65_gp57",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이건 안 돼요. (손을 거둔다)",
+      "text_key": "node_1786859264250_65_gp57"
+    },
+    {
+      "id": "node_1786859264250_66_tk3i",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "지금 여기서, 대표가 무슨 상관이야. (치마를 더 올린다)",
+      "text_key": "node_1786859264250_66_tk3i"
+    },
+    {
+      "id": "node_1786859264250_67_hv2l",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786859264250_68_uyvq",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "원피스가 허리까지 걷어 올려져, 갈색 피부의 엉덩이와 팬티가 완전히 드러난다.",
+      "text_key": "node_1786859264250_68_uyvq"
+    },
+    {
+      "id": "node_1786859264250_69_ak36",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "루이자 씨…",
+      "text_key": "node_1786859264250_69_ak36"
+    },
+    {
+      "id": "node_1786859264250_70_emfu",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "오늘 하루만, 일 그만둬. (단호히)",
+      "text_key": "node_1786859264250_70_emfu"
+    },
+    {
+      "id": "node_1786859264250_71_lkxj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…그게 제일 어려운 부탁인데.",
+      "text_key": "node_1786859264250_71_lkxj"
+    },
+    {
+      "id": "node_1786859264250_72_bl9s",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "알아. 그래서… (내 손을 잡아, 걷어 올린 치마 안쪽으로 이끈다)",
+      "text_key": "node_1786859264250_72_bl9s"
+    },
+    {
+      "id": "node_1786859264250_73_463i",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손끝이 그녀의 엉덩이 위에 닿는다.",
+      "text_key": "node_1786859264250_73_463i"
+    },
+    {
+      "id": "node_1786859264250_74_gsuf",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…… (숨을 들이쉰다)",
+      "text_key": "node_1786859264250_74_gsuf"
+    },
+    {
+      "id": "node_1786859264250_75_t2ha",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "나는 준비돼 있어. 사장은? (눈을 맞추며, 낮게)",
+      "text_key": "node_1786859264250_75_t2ha"
+    },
+    {
+      "id": "node_1786859264250_76_wfjc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손끝에 그녀의 엉덩이가 닿는다. 부드럽고 뜨거운 온기. 저 쾌활하던 삼바 댄서가, 지금 내 앞에서 당당하게 몸을 열고 있다. 여기까지다. 대표니까.",
+      "text_key": "node_1786859264250_76_wfjc"
+    },
+    {
+      "id": "node_1786859264250_77_zcay",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786859264250_78_5y8n",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "전망대. 루이자는 원피스를 정리하고, 나는 자세를 고쳐 선다. 야경은 여전히 반짝인다.",
+      "text_key": "node_1786859264250_78_5y8n"
+    },
+    {
+      "id": "node_1786859264250_79_uw94",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "오늘, 진짜 재밌었어! (정면을 보며)",
+      "text_key": "node_1786859264250_79_uw94"
+    },
+    {
+      "id": "node_1786859264250_80_7cdb",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "나도요.",
+      "text_key": "node_1786859264250_80_7cdb"
+    },
+    {
+      "id": "node_1786859264250_81_s5k2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "후회, 없지? (입꼬리를 올린다)",
+      "text_key": "node_1786859264250_81_s5k2"
+    },
+    {
+      "id": "node_1786859264250_82_b84x",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "없어요. 아주, 없어요. (작게 웃는다)",
+      "text_key": "node_1786859264250_82_b84x"
+    },
+    {
+      "id": "node_1786859264250_83_w5e2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "다행이다! (치마를 정리한다)",
+      "text_key": "node_1786859264250_83_w5e2"
+    },
+    {
+      "id": "node_1786859264250_84_qac9",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…벌써 가려고?",
+      "text_key": "node_1786859264250_84_qac9"
+    },
+    {
+      "id": "node_1786859264250_85_zy7v",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "이쯤이면 됐어. 시간도 늦었고. (시계를 본다)",
+      "text_key": "node_1786859264250_85_zy7v"
+    },
+    {
+      "id": "node_1786859264250_86_y2ug",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그렇네요.",
+      "text_key": "node_1786859264250_86_y2ug"
+    },
+    {
+      "id": "node_1786859264250_87_aul1",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "회사에선, 평소처럼 할게. (또박또박)",
+      "text_key": "node_1786859264250_87_aul1"
+    },
+    {
+      "id": "node_1786859264250_88_p3gp",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그래요. 평소처럼.",
+      "text_key": "node_1786859264250_88_p3gp"
+    },
+    {
+      "id": "node_1786859264250_89_eyoh",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "아쉽다. 저 레드 원피스가 다시 단정해졌다는 게, 저 몸이 내 손끝에서 멀어졌다는 게. 하지만 이게 대표로서의 선이다.",
+      "text_key": "node_1786859264250_89_eyoh"
+    },
+    {
+      "id": "node_1786859264250_90_zz2s",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "그럼 나, 이쪽으로. (출구를 가리킨다)",
+      "text_key": "node_1786859264250_90_zz2s"
+    },
+    {
+      "id": "node_1786859264250_91_13y2",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "배웅해 줄까요?",
+      "text_key": "node_1786859264250_91_13y2"
+    },
+    {
+      "id": "node_1786859264250_92_pehr",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "괜찮아. 여기서 헤어져. (한 걸음 물러선다)",
+      "text_key": "node_1786859264250_92_pehr"
+    },
+    {
+      "id": "node_1786859264250_93_0qlj",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "루이자가 등을 돌려 걸어가다, 잠시 멈춘다.",
+      "text_key": "node_1786859264250_93_0qlj"
+    },
+    {
+      "id": "node_1786859264250_94_l7bv",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "다음에 또, 불러도 돼?",
+      "text_key": "node_1786859264250_94_l7bv"
+    },
+    {
+      "id": "node_1786859264250_95_gtgh",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…나중에 생각해 볼게요.",
+      "text_key": "node_1786859264250_95_gtgh"
+    },
+    {
+      "id": "node_1786859264250_96_pj80",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "오케이! 그럼! (걸어간다)",
+      "text_key": "node_1786859264250_96_pj80"
+    },
+    {
+      "id": "node_1786859264250_97_n8a9",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "루이자가 출구 쪽으로 걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
+      "text_key": "node_1786859264250_97_n8a9"
+    },
+    {
+      "id": "node_1786859264250_98_9kqp",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "결국 아무 일도 없었다. 그런데 왜, 가슴 한구석이 이렇게 텅 비는 걸까. 저 원피스 아래, 방금 내 손에 있던 온기가. 아, 정말로 아쉽다.",
+      "text_key": "node_1786859264250_98_9kqp"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "1786851153987-tb6qhg5",
+      "name": "루이자"
+    }
+  ],
+  "points": [],
+  "media": [],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T05:47:37.566Z",
+  "ownerCharacterId": "1786851153987-tb6qhg5"
+}

@@ -1,0 +1,367 @@
+{
+  "id": "10bf4ee0-bc0c-4b27-91ff-92acfe34a356",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "10bf4ee0-bc0c-4b27-91ff-92acfe34a356",
+  "title": "스카웃",
+  "startNode": "node_1786851935599_0_0xgg",
+  "nodes": [
+    {
+      "id": "node_1786851935599_0_0xgg",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851935599_1_4vsx",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "저녁 무렵, 고급 중식 레스토랑. 나는 홀로 식사를 하러 들렀다. 홀에서 직접 손님을 맞이하는 셰프가 눈에 들어온다. 다크 블루 실크 치파오 차림.",
+      "text_key": "node_1786851935599_1_4vsx"
+    },
+    {
+      "id": "node_1786851935599_2_gmv7",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "눈에 띄는 여자다. 다크 블루 실크 치파오가 몸에 착 달라붙어 가슴과 허리 라인이 그대로 드러난다. 하이 슬릿 사이로 긴 허벅지가 번쩍이고, 쇄골과 어깨 라인이 고급스럽게 드러난다. 저 몸이 방송에 리메이면… 시청자들이 미칠 거다.",
+      "text_key": "node_1786851935599_2_gmv7"
+    },
+    {
+      "id": "node_1786851935599_3_ukcu",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "리메이 씨가 손님을 안내한다. 간결하고 정확한 말투, 흐트러짐 없는 동작이다.",
+      "text_key": "node_1786851935599_3_ukcu"
+    },
+    {
+      "id": "node_1786851935599_4_8ntk",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "실크 치파오가 170cm의 긴 몸을 감싸고, 포니테일이 흔들릴 때마다 목덜미가 드러난다. 저 직설적인 눈빛이 오히려 매력이다. 스카웃 감이다. 아니, 저건 스카웃이 아니라 걸작이다.",
+      "text_key": "node_1786851935599_4_8ntk"
+    },
+    {
+      "id": "node_1786851935599_5_09hu",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "나는 그녀에게 다가가기로 마음먹는다.",
+      "text_key": "node_1786851935599_5_09hu"
+    },
+    {
+      "id": "node_1786851935599_6_bym2",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851935599_7_wrif",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "식사를 마치고, 리메이 씨가 홀을 정리하는 틈에 다가가 말을 건다.",
+      "text_key": "node_1786851935599_7_wrif"
+    },
+    {
+      "id": "node_1786851935599_8_e8yl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "실례합니다, 잠시 괜찮을까요.",
+      "text_key": "node_1786851935599_8_e8yl"
+    },
+    {
+      "id": "node_1786851935599_9_znre",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "뭐죠. (간결하게)",
+      "text_key": "node_1786851935599_9_znre"
+    },
+    {
+      "id": "node_1786851935599_10_pqoq",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "방금 그 요리, 정말 훌륭했습니다. 셰프님이 만드신 건가요.",
+      "text_key": "node_1786851935599_10_pqoq"
+    },
+    {
+      "id": "node_1786851935599_11_1hg4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "네. 제 요리입니다. (담담하게)",
+      "text_key": "node_1786851935599_11_1hg4"
+    },
+    {
+      "id": "node_1786851935599_12_cd8p",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "갑자기 실례지만, 제가 방송국을 운영하는 사람인데요. 너에게 꼭 드릴 제안이 있어서요.",
+      "text_key": "node_1786851935599_12_cd8p"
+    },
+    {
+      "id": "node_1786851935599_13_gmep",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "제안이요. (눈을 가늘게 뜬다)",
+      "text_key": "node_1786851935599_13_gmep"
+    },
+    {
+      "id": "node_1786851935599_14_2pl1",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "우리 방송국에서, 크리에이터로 활동해 보시지 않겠습니까.",
+      "text_key": "node_1786851935599_14_2pl1"
+    },
+    {
+      "id": "node_1786851935599_15_pmbk",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "크리에이터. 저는 셰프인데요. (무덤덤하게)",
+      "text_key": "node_1786851935599_15_pmbk"
+    },
+    {
+      "id": "node_1786851935599_16_zsip",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "가까이서 보니 더하다. 실크 치파오가 가슴에 팽팽하게 당겨지고, 하이 슬릿 사이로 허벅지가 그대로 드러난다. 저 단정한 입이 방송에서 뭘 말할지… 상상만 해도 자지가 반응한다.",
+      "text_key": "node_1786851935599_16_zsip"
+    },
+    {
+      "id": "node_1786851935599_17_0ko2",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "셰프로서의 프로 의식과 그 간결함, 그게 저희 방송에선 최고의 무기가 됩니다.",
+      "text_key": "node_1786851935599_17_0ko2"
+    },
+    {
+      "id": "node_1786851935599_18_9kh2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "그래서, 무슨 방송이죠. (정면을 본다)",
+      "text_key": "node_1786851935599_18_9kh2"
+    },
+    {
+      "id": "node_1786851935599_19_ewgq",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "성인 방송국입니다. 솔직히 말씀드리죠.",
+      "text_key": "node_1786851935599_19_ewgq"
+    },
+    {
+      "id": "node_1786851935599_20_lii4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "…성인 방송. (잠시 말을 잃는다)",
+      "text_key": "node_1786851935599_20_lii4"
+    },
+    {
+      "id": "node_1786851935599_21_152p",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "놀란 표정도 예쁘다. 저 입술이 방송에서 시청자들을 상대로 무슨 말을 할지… 흥분된다. 하지만 지금은 참아야 한다. 첫인상이 전부니까.",
+      "text_key": "node_1786851935599_21_152p"
+    },
+    {
+      "id": "node_1786851935599_22_mfre",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "저 같은 사람이, 그런 데요. (고개를 젓는다)",
+      "text_key": "node_1786851935599_22_mfre"
+    },
+    {
+      "id": "node_1786851935599_23_fkjy",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "너 같은 사람이니까요. 다른 사람이 아니라. (단호히)",
+      "text_key": "node_1786851935599_23_fkjy"
+    },
+    {
+      "id": "node_1786851935599_24_aj9l",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "…… (잠시 생각에 잠긴다)",
+      "text_key": "node_1786851935599_24_aj9l"
+    },
+    {
+      "id": "node_1786851935599_25_cpkh",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "갑자기 이런 말씀 드려서 죄송합니다. 다만, 너의 그 요리 솜씨와 당당한 모습을 보자마자 확신했어요.",
+      "text_key": "node_1786851935599_25_cpkh"
+    },
+    {
+      "id": "node_1786851935599_26_tper",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "확신. (내 눈을 바라본다)",
+      "text_key": "node_1786851935599_26_tper"
+    },
+    {
+      "id": "node_1786851935599_27_ddxy",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "고민하고 있다. 치파오 자락을 살짝 움켜쥔 손끝, 흔들리는 포니테일. 저 밝은 피부가 홀의 조명에 반짝인다. 아니, 내가 미쳐가고 있는 건가.",
+      "text_key": "node_1786851935599_27_ddxy"
+    },
+    {
+      "id": "node_1786851935599_28_jmec",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851935599_29_qiq2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "레스토랑 한쪽. 리메이 씨가 고민 끝에 얼굴을 든다.",
+      "text_key": "node_1786851935599_29_qiq2"
+    },
+    {
+      "id": "node_1786851935599_30_e2iq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "…제가, 할 수 있겠습니까. (조용히)",
+      "text_key": "node_1786851935599_30_e2iq"
+    },
+    {
+      "id": "node_1786851935599_31_3f5n",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "할 수 있어요. 아니, 네가 아니면 안 됩니다. (또박또박)",
+      "text_key": "node_1786851935599_31_3f5n"
+    },
+    {
+      "id": "node_1786851935599_32_dsqj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "그렇게까지 말하신다면. (살짝 웃는다)",
+      "text_key": "node_1786851935599_32_dsqj"
+    },
+    {
+      "id": "node_1786851935599_33_sjwb",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그럼, 승낙으로 받아들여도 되겠습니까.",
+      "text_key": "node_1786851935599_33_sjwb"
+    },
+    {
+      "id": "node_1786851935599_34_m931",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "네. 조건만 괜찮다면. (고개를 끄덕인다)",
+      "text_key": "node_1786851935599_34_m931"
+    },
+    {
+      "id": "node_1786851935599_35_mj7k",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "물론입니다. 너에게 불리한 조건은 절대 없어요.",
+      "text_key": "node_1786851935599_35_mj7k"
+    },
+    {
+      "id": "node_1786851935599_36_mpmi",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "…알겠습니다. 잘 부탁드립니다. (허리를 숙여 인사한다)",
+      "text_key": "node_1786851935599_36_mpmi"
+    },
+    {
+      "id": "node_1786851935599_37_cucz",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "성공했다. 저 직설적인 셰프가, 이제 내 방송국의 크리에이터다. 저 실크 치파오가 방송 세트로 바뀌는 날을 생각하니, 참고 있던 흥분이 다시 올라온다. 하지만 오늘은 여기까지. 첫만남은, 여기까지가 정답이다.",
+      "text_key": "node_1786851935599_37_cucz"
+    },
+    {
+      "id": "node_1786851935599_38_941n",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "너야말로, 잘 부탁드립니다. 리메이 씨. (미소 짓는다)",
+      "text_key": "node_1786851935599_38_941n"
+    },
+    {
+      "id": "node_1786851935599_39_yawo",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "…성함은 어떻게 부르면 됩니까. (시선을 올린다)",
+      "text_key": "node_1786851935599_39_yawo"
+    },
+    {
+      "id": "node_1786851935599_40_spyl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사장, 이라고 불러 주세요. 앞으로 그렇게 될 테니까요.",
+      "text_key": "node_1786851935599_40_spyl"
+    },
+    {
+      "id": "node_1786851935599_41_y2hr",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "네, 사장님. …요리보다는 힘들지 않겠죠. (입꼬리를 올린다)",
+      "text_key": "node_1786851935599_41_y2hr"
+    },
+    {
+      "id": "node_1786851935599_42_lzej",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 홀 정리를 마저 하러 돌아간다. 나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
+      "text_key": "node_1786851935599_42_lzej"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "1786851291899-dqn64g6",
+      "name": "리메이"
+    }
+  ],
+  "points": [],
+  "media": [],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T03:45:17.741Z",
+  "ownerCharacterId": "1786851291899-dqn64g6"
+}

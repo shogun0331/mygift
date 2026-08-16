@@ -2,16 +2,31 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { BlurRegion, EventMediaAsset } from './types'
 
-export const BLUR_MIN = 4
+export const BLUR_MIN = 0
 export const BLUR_MAX = 40
-export const BLUR_DEFAULT = 16
+export const BLUR_DEFAULT = 4
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n))
 }
 
-function clampBlur(n: number) {
-  return clamp(Math.round(Number(n) || BLUR_DEFAULT), BLUR_MIN, BLUR_MAX)
+/** 0은 블러 없음. `||` 로 0을 기본값으로 바꾸지 않는다. */
+export function clampBlur(n: number) {
+  const v = Number(n)
+  if (!Number.isFinite(v)) return BLUR_DEFAULT
+  return clamp(Math.round(v * 2) / 2, BLUR_MIN, BLUR_MAX)
+}
+
+function blurFilterCss(px: number) {
+  const v = clampBlur(px)
+  if (v <= 0) return 'none'
+  return `blur(${v}px)`
+}
+
+function blurTint(px: number) {
+  const v = clampBlur(px)
+  if (v <= 0) return 'transparent'
+  return `rgba(0,0,0,${Math.min(0.1, (v / BLUR_MAX) * 0.1)})`
 }
 
 function makeRegionId() {
@@ -68,10 +83,15 @@ export function BlurRegionOverlay({
             top: `${region.y * 100}%`,
             width: `${region.w * 100}%`,
             height: `${region.h * 100}%`,
-            backdropFilter: `blur(${clampBlur(region.blur)}px)`,
-            WebkitBackdropFilter: `blur(${clampBlur(region.blur)}px)`,
-            background: 'rgba(0,0,0,0.35)',
-            outline: selectedId === region.id ? '2px solid rgba(165, 180, 252, 0.95)' : '1px solid rgba(255,255,255,0.25)',
+            backdropFilter: blurFilterCss(region.blur),
+            WebkitBackdropFilter: blurFilterCss(region.blur),
+            background: blurTint(region.blur),
+            outline:
+              selectedId === region.id
+                ? '2px solid rgba(165, 180, 252, 0.95)'
+                : showHandles
+                  ? '1px solid rgba(255,255,255,0.25)'
+                  : 'none',
           }}
         />
       ))}
@@ -347,15 +367,17 @@ export function BlurRegionEditor({
                 type="range"
                 min={BLUR_MIN}
                 max={BLUR_MAX}
+                step={0.5}
                 value={defaultBlur}
                 onChange={(e) => onChange({ blurRegions: regions, blurDefault: clampBlur(Number(e.target.value)) })}
                 className="w-full accent-indigo-400"
               />
               <div className="flex gap-1.5">
                 {[
-                  { label: '약함', value: 8 },
-                  { label: '보통', value: 16 },
-                  { label: '강함', value: 28 },
+                  { label: '없음', value: 0 },
+                  { label: '약함', value: 2 },
+                  { label: '보통', value: 5 },
+                  { label: '강함', value: 12 },
                 ].map((preset) => (
                   <button
                     key={preset.value}
@@ -378,6 +400,7 @@ export function BlurRegionEditor({
                     type="range"
                     min={BLUR_MIN}
                     max={BLUR_MAX}
+                    step={0.5}
                     value={clampBlur(selected.blur)}
                     onChange={(e) => {
                       const blur = clampBlur(Number(e.target.value))
@@ -387,9 +410,10 @@ export function BlurRegionEditor({
                   />
                   <div className="flex items-center gap-1.5">
                     {[
-                      { label: '약함', value: 8 },
-                      { label: '보통', value: 16 },
-                      { label: '강함', value: 28 },
+                      { label: '없음', value: 0 },
+                      { label: '약함', value: 2 },
+                      { label: '보통', value: 5 },
+                      { label: '강함', value: 12 },
                     ].map((preset) => (
                       <button
                         key={preset.value}

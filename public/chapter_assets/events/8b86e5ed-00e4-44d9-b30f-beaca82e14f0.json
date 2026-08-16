@@ -1,0 +1,999 @@
+{
+  "id": "8b86e5ed-00e4-44d9-b30f-beaca82e14f0",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "8b86e5ed-00e4-44d9-b30f-beaca82e14f0",
+  "title": "데이트2",
+  "startNode": "node_1786860487072_0_10tb",
+  "nodes": [
+    {
+      "id": "node_1786860487072_0_10tb",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860487072_1_97fq",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "낮의 놀이공원 입구. 사람들이 오가고, 아이들의 웃음소리가 들린다. 마이가 먼저 도착해 입구 앞에서 기다리고 있다. A형 흰색 원피스 차림.",
+      "text_key": "node_1786860487072_1_97fq"
+    },
+    {
+      "id": "node_1786860487072_2_43m1",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "…오셨네요. 와주셔서 감사합니다. (살짝 고개를 숙인다)",
+      "text_key": "node_1786860487072_2_43m1"
+    },
+    {
+      "id": "node_1786860487072_3_m1jp",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "기다렸어요? 늦어서 미안합니다.",
+      "text_key": "node_1786860487072_3_m1jp"
+    },
+    {
+      "id": "node_1786860487072_4_pbuf",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "아니에요. 제가 일찍 온 거예요. (입꼬리를 올린다)",
+      "text_key": "node_1786860487072_4_pbuf"
+    },
+    {
+      "id": "node_1786860487072_5_suw9",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "놀이공원이라니, 의외네요. 네가 고른 데잖아요.",
+      "text_key": "node_1786860487072_5_suw9"
+    },
+    {
+      "id": "node_1786860487072_6_nov2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "네. 가끔은 이렇게 동심으로 돌아가고 싶어서요. (놀이공원 쪽으로 턱짓)",
+      "text_key": "node_1786860487072_6_nov2"
+    },
+    {
+      "id": "node_1786860487072_7_6bay",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그런데 왜 하필 저를? 크리에이터가 사장을 부를 이유는 없잖아요.",
+      "text_key": "node_1786860487072_7_6bay"
+    },
+    {
+      "id": "node_1786860487072_8_srpp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "그런 건 오늘, 천천히 말해도 되죠. (한 걸음 다가선다)",
+      "text_key": "node_1786860487072_8_srpp"
+    },
+    {
+      "id": "node_1786860487072_9_5uz8",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "평소 방송국에서 감정을 실어 노래하던 얼굴인데, 어깨끈 원피스 차림은 처음이다. 저 몸매가… 아니, 나는 대표니까.",
+      "text_key": "node_1786860487072_9_5uz8"
+    },
+    {
+      "id": "node_1786860487072_10_jig3",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…분위기가 심상치 않네요.",
+      "text_key": "node_1786860487072_10_jig3"
+    },
+    {
+      "id": "node_1786860487072_11_xgvr",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "심상치 않을 만큼, 제가 진심이라는 거예요. (눈을 가늘게 뜬다)",
+      "text_key": "node_1786860487072_11_xgvr"
+    },
+    {
+      "id": "node_1786860487072_12_fez2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "저 입술이 방송에서 시청자들한테 무슨 말을 하는지 다 알고 있다. 그런 입이 지금 나한테 '진심'이라고… 심장이 빨리 뛴다.",
+      "text_key": "node_1786860487072_12_fez2"
+    },
+    {
+      "id": "node_1786860487072_13_0mz3",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "진심이라니, 무슨 진심인지 알겠어요?",
+      "text_key": "node_1786860487072_13_0mz3"
+    },
+    {
+      "id": "node_1786860487072_14_lol4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "알고 계시면서. (입꼬리만 살짝)",
+      "text_key": "node_1786860487072_14_lol4"
+    },
+    {
+      "id": "node_1786860487072_15_obol",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…오늘은 네 뜻에 맞춰 드릴게요. 어차피 부른 건 너니까.",
+      "text_key": "node_1786860487072_15_obol"
+    },
+    {
+      "id": "node_1786860487072_16_lsmq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "좋아요. 그럼 들어가요. (몸을 돌려 앞장선다)",
+      "text_key": "node_1786860487072_16_lsmq"
+    },
+    {
+      "id": "node_1786860487072_17_jryr",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "놀이공원은 오랜만이에요.",
+      "text_key": "node_1786860487072_17_jryr"
+    },
+    {
+      "id": "node_1786860487072_18_ntvg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "저도요. …뭐, 이 나이에 혼자 오긴 좀 그렇고요. (시니컬하게 웃으며)",
+      "text_key": "node_1786860487072_18_ntvg"
+    },
+    {
+      "id": "node_1786860487072_19_9jnv",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "저 시니컬한 농담이 오히려 매력이다. 어깨끈 원피스가 햇살에 비쳐, 몸의 라인이 드러난다. 참아라.",
+      "text_key": "node_1786860487072_19_9jnv"
+    },
+    {
+      "id": "node_1786860487072_20_og04",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…너와 오는 거니까, 괜찮잖아요.",
+      "text_key": "node_1786860487072_20_og04"
+    },
+    {
+      "id": "node_1786860487072_21_n5ag",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "네. 오늘은 사장님과 둘이니까요. (정면을 바라보며)",
+      "text_key": "node_1786860487072_21_n5ag"
+    },
+    {
+      "id": "node_1786860487072_22_z2lc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "마이가 입구 쪽으로 걸어간다. 나는 그 뒷모습을 따라가며, 시선을 뗄 수 없다.",
+      "text_key": "node_1786860487072_22_z2lc"
+    },
+    {
+      "id": "node_1786860487072_23_tngw",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860487072_24_9nh0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "놀이공원 한복판. 마이가 걸어가며, 어깨끈 원피스가 바람에 흔들린다.",
+      "text_key": "node_1786860487072_24_9nh0"
+    },
+    {
+      "id": "node_1786860487072_25_oeri",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "저기, 회전목마 타 볼래요? (회전목마를 가리킨다)",
+      "text_key": "node_1786860487072_25_oeri"
+    },
+    {
+      "id": "node_1786860487072_26_7hlj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그런 것도 타세요?",
+      "text_key": "node_1786860487072_26_7hlj"
+    },
+    {
+      "id": "node_1786860487072_27_iavp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "가끔은요. (살짝 웃는다)",
+      "text_key": "node_1786860487072_27_iavp"
+    },
+    {
+      "id": "node_1786860487072_28_7s1x",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "마이가 몸을 기울여 회전목마를 본다. 어깨끈이 살짝 미끄러진다.",
+      "text_key": "node_1786860487072_28_7s1x"
+    },
+    {
+      "id": "node_1786860487072_29_n0dv",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…원피스, 잘 어울리네요.",
+      "text_key": "node_1786860487072_29_n0dv"
+    },
+    {
+      "id": "node_1786860487072_30_8o5v",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "그래요? (눈을 가늘게 뜬다)",
+      "text_key": "node_1786860487072_30_8o5v"
+    },
+    {
+      "id": "node_1786860487072_31_tqcw",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "A형 원피스가 몸에 착 달라붙어, 가슴과 허리 라인이 그대로 드러난다. 어깨끈이 어깨에 간신히 걸려 있고, 몸을 움직일 때마다 원피스가 흔들린다. 자지가 반응하는 걸 겨우 참는다.",
+      "text_key": "node_1786860487072_31_tqcw"
+    },
+    {
+      "id": "node_1786860487072_32_k68j",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…너, 몸매가 예쁘네요.",
+      "text_key": "node_1786860487072_32_k68j"
+    },
+    {
+      "id": "node_1786860487072_33_dsu6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "과찬이세요. …뭐, 이런 데 와서도 그런 말 들으면 기분 좋네요. (시니컬하게 웃으며)",
+      "text_key": "node_1786860487072_33_dsu6"
+    },
+    {
+      "id": "node_1786860487072_34_4bd1",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860487072_35_15po",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "칭찬이에요. 부담 갖지 마요.",
+      "text_key": "node_1786860487072_35_15po"
+    },
+    {
+      "id": "node_1786860487072_36_he3x",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "칭찬이라도… 감사합니다. (입꼬리를 올린다)",
+      "text_key": "node_1786860487072_36_he3x"
+    },
+    {
+      "id": "node_1786860487072_37_rqer",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "성숙하게 웃는 모습이, 오히려 더 치명적이다. 저 어깨끈이, 저 매트 레드 립스틱이, 시청자들을 미치게 만들 거다. 대표니까 참아야 한다.",
+      "text_key": "node_1786860487072_37_rqer"
+    },
+    {
+      "id": "node_1786860487072_38_nd03",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860487072_39_ci02",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "놀이공원 한쪽 벤치. 마이가 자세를 고치며, 원피스의 한쪽 어깨끈이 흘러내린다.",
+      "text_key": "node_1786860487072_39_ci02"
+    },
+    {
+      "id": "node_1786860487072_40_cj6m",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "사장님, 여기 앉아 보세요. (벤치를 두드린다)",
+      "text_key": "node_1786860487072_40_cj6m"
+    },
+    {
+      "id": "node_1786860487072_41_l66q",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "뭐 하려고요.",
+      "text_key": "node_1786860487072_41_l66q"
+    },
+    {
+      "id": "node_1786860487072_42_mlma",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "뭐 하려는지, 보시면 알아요. (어깨끈을 천천히 내린다)",
+      "text_key": "node_1786860487072_42_mlma"
+    },
+    {
+      "id": "node_1786860487072_43_ivx7",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "어깨끈이 흘러내리고, 원피스가 가슴 쪽으로 느슨해진다.",
+      "text_key": "node_1786860487072_43_ivx7"
+    },
+    {
+      "id": "node_1786860487072_44_i5te",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사쿠라기 씨, 지금 뭐 하는 거예요.",
+      "text_key": "node_1786860487072_44_i5te"
+    },
+    {
+      "id": "node_1786860487072_45_imey",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "더우니까요. (앞을 가린 채, 나를 본다)",
+      "text_key": "node_1786860487072_45_imey"
+    },
+    {
+      "id": "node_1786860487072_46_fbk0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "원피스가 흘러내려, 가슴이 드러날 듯 매달려 있다. 저 손만 치우면… 젠장, 보고 싶어서 미칠 것 같다.",
+      "text_key": "node_1786860487072_46_fbk0"
+    },
+    {
+      "id": "node_1786860487072_47_l4om",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…그게 더위 때문이에요?",
+      "text_key": "node_1786860487072_47_l4om"
+    },
+    {
+      "id": "node_1786860487072_48_r07a",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "아니요. 사장님 때문이에요. (앞을 가린 손을 천천히 내린다)",
+      "text_key": "node_1786860487072_48_r07a"
+    },
+    {
+      "id": "node_1786860487072_49_rg4x",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860487072_50_zzty",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "A형 원피스 상의가 흘러내리고, 맨가슴이 햇살에 드러난다.",
+      "text_key": "node_1786860487072_50_zzty"
+    },
+    {
+      "id": "node_1786860487072_51_6zni",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "! (말을 잃는다)",
+      "text_key": "node_1786860487072_51_6zni"
+    },
+    {
+      "id": "node_1786860487072_52_h7iz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠? (가슴을 살짝 내민다)",
+      "text_key": "node_1786860487072_52_h7iz"
+    },
+    {
+      "id": "node_1786860487072_53_w54d",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "방송에서는 감춰져 있던 젖가슴이 그대로 드러난다. 밝은 스킨톤의 피부, 선명한 젖꼭지까지. 입으로 빨고 싶고, 손으로 움켜쥐고 싶다.",
+      "text_key": "node_1786860487072_53_w54d"
+    },
+    {
+      "id": "node_1786860487072_54_u52j",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이러면 안 돼요.",
+      "text_key": "node_1786860487072_54_u52j"
+    },
+    {
+      "id": "node_1786860487072_55_1161",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "왜요. 저는 지금, 참을 수 없을 만큼 두근거리는데. (내 손을 잡아 가슴 위에 얹는다)",
+      "text_key": "node_1786860487072_55_1161"
+    },
+    {
+      "id": "node_1786860487072_56_a9yo",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손끝에 맨살이 닿는다. 따뜻한 가슴.",
+      "text_key": "node_1786860487072_56_a9yo"
+    },
+    {
+      "id": "node_1786860487072_57_njyu",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…… (손가락이 떨린다)",
+      "text_key": "node_1786860487072_57_njyu"
+    },
+    {
+      "id": "node_1786860487072_58_6g3h",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "만져요. 제가 허락했으니까. (내 손 위에 손을 포갠다)",
+      "text_key": "node_1786860487072_58_6g3h"
+    },
+    {
+      "id": "node_1786860487072_59_e8oq",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손바닥에 그녀의 가슴이 차오른다. 부드럽고 탄력 있는 무게. 손가락으로 젖꼭지를 스치자 그녀가 몸을 떤다. 이건 일이 아니다.",
+      "text_key": "node_1786860487072_59_e8oq"
+    },
+    {
+      "id": "node_1786860487072_60_3phk",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이건 안 돼요. (손을 거두려 한다)",
+      "text_key": "node_1786860487072_60_3phk"
+    },
+    {
+      "id": "node_1786860487072_61_0n7j",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "도망가지 마요. (내 손을 꼭 잡는다)",
+      "text_key": "node_1786860487072_61_0n7j"
+    },
+    {
+      "id": "node_1786860487072_62_iouy",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "오늘, 저는 사장님을 원해요.",
+      "text_key": "node_1786860487072_62_iouy"
+    },
+    {
+      "id": "node_1786860487072_63_xy71",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사쿠라기 씨…",
+      "text_key": "node_1786860487072_63_xy71"
+    },
+    {
+      "id": "node_1786860487072_64_gtm4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "…저기, 화장실로 가요. (낮게, 나를 똑바로 본다)",
+      "text_key": "node_1786860487072_64_gtm4"
+    },
+    {
+      "id": "node_1786860487072_65_g6bb",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 원피스를 정리하고, 내 손을 잡고 화장실 쪽으로 이끈다.",
+      "text_key": "node_1786860487072_65_g6bb"
+    },
+    {
+      "id": "node_1786860487072_66_j2sm",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860487072_67_7p4t",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "놀이공원 화장실 안. 마이가 문을 잠그고, 원피스를 벗어 팬티만 입은 채 내 앞에 무릎을 꿇는다.",
+      "text_key": "node_1786860487072_67_7p4t"
+    },
+    {
+      "id": "node_1786860487072_68_87l5",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "…괜찮죠? (내 바지 위로 손을 올린다)",
+      "text_key": "node_1786860487072_68_87l5"
+    },
+    {
+      "id": "node_1786860487072_69_hf6w",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사쿠라기 씨, 이런 데서…",
+      "text_key": "node_1786860487072_69_hf6w"
+    },
+    {
+      "id": "node_1786860487072_70_8giq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "이런 데니까요. …뭐, 인생에 이런 날도 있어야죠. (시니컬하게 웃으며)",
+      "text_key": "node_1786860487072_70_8giq"
+    },
+    {
+      "id": "node_1786860487072_71_nhl3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 손이 내 바지 위를 더듬는다. 이미 반응해버린 자지가 그 손끝에 닿는다. 대표니까 물려야 하는데, 몸이 말을 듣지 않는다.",
+      "text_key": "node_1786860487072_71_nhl3"
+    },
+    {
+      "id": "node_1786860487072_72_hjcy",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "…이미 이렇게 돼 있잖아요. (지퍼에 손을 댄다)",
+      "text_key": "node_1786860487072_72_hjcy"
+    },
+    {
+      "id": "node_1786860487072_73_l91t",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…… (숨을 들이쉰다)",
+      "text_key": "node_1786860487072_73_l91t"
+    },
+    {
+      "id": "node_1786860487072_74_ufzg",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 바지를 천천히 내린다. 발기한 자지가 그대로 드러난다.",
+      "text_key": "node_1786860487072_74_ufzg"
+    },
+    {
+      "id": "node_1786860487072_75_yiim",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "대단해요… (자지를 두 손으로 감싼다)",
+      "text_key": "node_1786860487072_75_yiim"
+    },
+    {
+      "id": "node_1786860487072_76_cjpj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… (거친 숨)",
+      "text_key": "node_1786860487072_76_cjpj"
+    },
+    {
+      "id": "node_1786860487072_77_ny5x",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 손이 내 자지를 감싼다. 차가운 손이 뜨거운 자지에 닿자 전기가 흐른다. 이게 내 크리에이터의 손이라는 게 믿기지 않는다.",
+      "text_key": "node_1786860487072_77_ny5x"
+    },
+    {
+      "id": "node_1786860487072_78_l4cg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "맛있게 해드릴게요. (혀를 내밀어 귀두를 핥는다)",
+      "text_key": "node_1786860487072_78_l4cg"
+    },
+    {
+      "id": "node_1786860487072_79_sdpd",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "읏…… (몸이 움찔)",
+      "text_key": "node_1786860487072_79_sdpd"
+    },
+    {
+      "id": "node_1786860487072_80_zpqq",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "혀로 자지 전체를 천천히 핥는다.",
+      "text_key": "node_1786860487072_80_zpqq"
+    },
+    {
+      "id": "node_1786860487072_81_xnk6",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 혀가 내 자지를 핥아 올린다. 따뜻하고 축축한 혀끝이 귀두를 감돈다. 저 맨가슴이 내 앞에서 흔들리는 게 보인다.",
+      "text_key": "node_1786860487072_81_xnk6"
+    },
+    {
+      "id": "node_1786860487072_82_jmh1",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "입에 넣을게요… (입을 벌려 귀두를 물어 넣는다)",
+      "text_key": "node_1786860487072_82_jmh1"
+    },
+    {
+      "id": "node_1786860487072_83_opgk",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입술이 귀두를 감싸고, 그녀가 천천히 머리를 앞으로 움직인다.",
+      "text_key": "node_1786860487072_83_opgk"
+    },
+    {
+      "id": "node_1786860487072_84_sxei",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 사쿠라기 씨… (손으로 그녀의 머리를 감싼다)",
+      "text_key": "node_1786860487072_84_sxei"
+    },
+    {
+      "id": "node_1786860487072_85_sys6",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860487072_86_ft6m",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "머리를 깊게 움직인다.",
+      "text_key": "node_1786860487072_86_ft6m"
+    },
+    {
+      "id": "node_1786860487072_87_ukaf",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입속이 뜨겁고 좁다. 혀가 자지를 감싸고, 입술이 귀두를 조인다. 저 맨가슴이 내 허벅지에 닿을 듯 흔들린다. 참을 수 없다.",
+      "text_key": "node_1786860487072_87_ukaf"
+    },
+    {
+      "id": "node_1786860487072_88_6d61",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…더 깊이… (허리를 살짝 내민다)",
+      "text_key": "node_1786860487072_88_6d61"
+    },
+    {
+      "id": "node_1786860487072_89_vom9",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "머리를 더 깊이 움직인다. 그녀가 눈을 감고, 내 자지를 깊이 받아들인다. 맨가슴이 위아래로 출렁인다.",
+      "text_key": "node_1786860487072_89_vom9"
+    },
+    {
+      "id": "node_1786860487072_90_wt6b",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사쿠라기 씨… 나… 곧… (숨을 헐떡인다)",
+      "text_key": "node_1786860487072_90_wt6b"
+    },
+    {
+      "id": "node_1786860487072_91_pd89",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "그대로, 입에… 내주세요. (자지를 입에 문 채, 눈으로 내게 말한다)",
+      "text_key": "node_1786860487072_91_pd89"
+    },
+    {
+      "id": "node_1786860487072_92_h2hj",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그 눈빛에, 참고 있던 게 무너진다. 그녀의 입속, 혀 위에, 모든 걸 쏟아내고 싶다. 이제는 멈출 수 없다.",
+      "text_key": "node_1786860487072_92_h2hj"
+    },
+    {
+      "id": "node_1786860487072_93_6dzi",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아… 나온다…! (허리가 떨린다)",
+      "text_key": "node_1786860487072_93_6dzi"
+    },
+    {
+      "id": "node_1786860487072_94_8g2h",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입으로 자지를 꽉 물고, 목울대로 삼킨다. 그녀가 내 정액을 한 방울도 흘리지 않고, 천천히 삼킨다.",
+      "text_key": "node_1786860487072_94_8g2h"
+    },
+    {
+      "id": "node_1786860487072_95_occg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "맛있었어요. (입을 떼고, 혀로 입술을 닦는다)",
+      "text_key": "node_1786860487072_95_occg"
+    },
+    {
+      "id": "node_1786860487072_96_f43x",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… 하…… (숨을 몰아쉰다)",
+      "text_key": "node_1786860487072_96_f43x"
+    },
+    {
+      "id": "node_1786860487072_97_dw68",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "잘하셨어요. (입꼬리를 올린다)",
+      "text_key": "node_1786860487072_97_dw68"
+    },
+    {
+      "id": "node_1786860487072_98_6n11",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 정액을 다 삼켰다. 맨가슴을 드러낸 채, 내 앞에서 성숙하게 웃고 있다. 나는 지금, 내 크리에이터에게 입으로 봉사를 받았다. 정신이 아득하다.",
+      "text_key": "node_1786860487072_98_6n11"
+    },
+    {
+      "id": "node_1786860487072_99_q3xp",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "마이가 원피스를 다시 입고, 화장실 문을 연다. 우리는 아무 일 없었다는 듯 밖으로 나간다.",
+      "text_key": "node_1786860487072_99_q3xp"
+    },
+    {
+      "id": "node_1786860487072_100_3evk",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860487072_101_waw0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "놀이공원 입구. 마이는 원피스를 정리하고, 나는 옷을 정리하고 있다. 처음 만났던 그 장면 그대로다. 평온한 표정.",
+      "text_key": "node_1786860487072_101_waw0"
+    },
+    {
+      "id": "node_1786860487072_102_xevy",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "오늘, 정말 좋은 시간이었어요. (정면을 보며)",
+      "text_key": "node_1786860487072_102_xevy"
+    },
+    {
+      "id": "node_1786860487072_103_5bya",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "나도요. …솔직히, 이렇게 될 줄은 몰랐지만.",
+      "text_key": "node_1786860487072_103_5bya"
+    },
+    {
+      "id": "node_1786860487072_104_0iby",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "후회는 없으시죠? (입꼬리를 올린다)",
+      "text_key": "node_1786860487072_104_0iby"
+    },
+    {
+      "id": "node_1786860487072_105_a07r",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "없어요. 아주, 없어요. (작게 웃는다)",
+      "text_key": "node_1786860487072_105_a07r"
+    },
+    {
+      "id": "node_1786860487072_106_5net",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "다행이네요. (입구 쪽을 바라보며)",
+      "text_key": "node_1786860487072_106_5net"
+    },
+    {
+      "id": "node_1786860487072_107_n6on",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…벌써 가려고?",
+      "text_key": "node_1786860487072_107_n6on"
+    },
+    {
+      "id": "node_1786860487072_108_es5n",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "이쯤이면 됐어요. 해도 지고 있고요. (하늘을 본다)",
+      "text_key": "node_1786860487072_108_es5n"
+    },
+    {
+      "id": "node_1786860487072_109_4vad",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그렇네요.",
+      "text_key": "node_1786860487072_109_4vad"
+    },
+    {
+      "id": "node_1786860487072_110_rlu6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "회사에선, 평소처럼 대할게요. (또박또박)",
+      "text_key": "node_1786860487072_110_rlu6"
+    },
+    {
+      "id": "node_1786860487072_111_rv6l",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그래요. 평소처럼.",
+      "text_key": "node_1786860487072_111_rv6l"
+    },
+    {
+      "id": "node_1786860487072_112_nqdn",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "아쉽다. 저 어깨끈 원피스가 다시 단정해졌다는 게, 저 몸이 내 손끝에서 멀어졌다는 게. 하지만 이게 대표로서의 선이다.",
+      "text_key": "node_1786860487072_112_nqdn"
+    },
+    {
+      "id": "node_1786860487072_113_cmdz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "그럼 저는, 이쪽으로. (놀이공원 출구를 가리킨다)",
+      "text_key": "node_1786860487072_113_cmdz"
+    },
+    {
+      "id": "node_1786860487072_114_7ttj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "배웅해 줄까요?",
+      "text_key": "node_1786860487072_114_7ttj"
+    },
+    {
+      "id": "node_1786860487072_115_8922",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "괜찮아요. 여기서 헤어져요. (한 걸음 물러선다)",
+      "text_key": "node_1786860487072_115_8922"
+    },
+    {
+      "id": "node_1786860487072_116_isv5",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "마이가 등을 돌려 걸어가다, 잠시 멈춘다.",
+      "text_key": "node_1786860487072_116_isv5"
+    },
+    {
+      "id": "node_1786860487072_117_3l1w",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "다음에 또, 불러도 돼요?",
+      "text_key": "node_1786860487072_117_3l1w"
+    },
+    {
+      "id": "node_1786860487072_118_8clw",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…나중에 생각해 볼게요.",
+      "text_key": "node_1786860487072_118_8clw"
+    },
+    {
+      "id": "node_1786860487072_119_9ol2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "좋아요. 그럼. (걸어간다)",
+      "text_key": "node_1786860487072_119_9ol2"
+    },
+    {
+      "id": "node_1786860487072_120_9xka",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "마이가 놀이공원 출구 쪽으로 걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
+      "text_key": "node_1786860487072_120_9xka"
+    },
+    {
+      "id": "node_1786860487072_121_kyjt",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "결국, 그녀는 나를 '모셨다'. 저 어깨끈 원피스, 방금 화장실에서 흔들리던 맨가슴이. 아, 정말로 아쉽다.",
+      "text_key": "node_1786860487072_121_kyjt"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "마이",
+      "name": "마이"
+    }
+  ],
+  "points": [],
+  "media": [],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T06:08:00.134Z",
+  "ownerCharacterId": "1786851211019-59swl59"
+}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { saveEvents, loadEvents, saveCharacters, loadCharacters } from './events/db'
 import type { GameEvent } from './events/types'
+import { normalizeOwnerCharacterId } from './events/types'
 import {
   createRegisteredCharacter,
   findLevelIdleVideoUrl,
@@ -9,7 +10,7 @@ import {
   type RegisteredCharacter,
   type CharacterVideo,
 } from './game/characters'
-import { fetchPublicJson } from './game/encryptedJson'
+import { fetchPublicJson } from './game/publicJson'
 import { resolveMediaSrc } from './game/mediaUrl'
 import { createInitialStudioSlots, type StudioSlot } from './game/studioSlots'
 import type { AddCharacterPayload } from './screens/EditorScreen'
@@ -458,7 +459,12 @@ export default function App() {
   useEffect(() => {
     loadEvents()
       .then((loaded) => {
-        setEvents(loaded)
+        setEvents(
+          loaded.map((event) => ({
+            ...event,
+            ownerCharacterId: normalizeOwnerCharacterId(event.ownerCharacterId),
+          })),
+        )
         setIsEventsLoaded(true)
       })
       .catch((err) => {

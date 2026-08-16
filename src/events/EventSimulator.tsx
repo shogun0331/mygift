@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import type { GameEvent, EventMediaAsset } from './types'
 import { BlurRegionOverlay, readBlurRegions } from './BlurRegionEditor'
+import {
+  EVENT_DEFAULT_LOCALE,
+  EVENT_LOCALES,
+  lookupLocalizedString,
+  normalizeEventLocale,
+} from './eventLocales'
 
 type EventSimulatorProps = {
   event: GameEvent
@@ -46,16 +52,14 @@ function findNodeImage(node: any): string | null {
 }
 
 // 3. 노드 사운드/보이스 파일명 추출
-function resolveVoiceFileName(node: any, lang: string): string | null {
+function resolveVoiceFileName(node: any): string | null {
   if (!node || node.type === 'sound') return null
   if (typeof node.voice === 'string' && node.voice.trim()) {
     return node.voice.trim()
   }
   if (node.voice && typeof node.voice === 'object') {
-    const voiceFile = node.voice[lang] || Object.values(node.voice)[0]
-    if (typeof voiceFile === 'string' && voiceFile.trim()) {
-      return voiceFile.trim()
-    }
+    const first = Object.values(node.voice).find((v) => typeof v === 'string' && v.trim())
+    if (typeof first === 'string') return first.trim()
   }
   if (typeof node.sound === 'string' && node.sound.trim()) {
     return node.sound.trim()
@@ -63,11 +67,11 @@ function resolveVoiceFileName(node: any, lang: string): string | null {
   return null
 }
 
-function findNodeSound(node: any, lang: string): string | null {
+function findNodeSound(node: any): string | null {
   if (node?.type === 'sound' && typeof node.sound === 'string' && node.sound.trim()) {
     return node.sound.trim()
   }
-  return resolveVoiceFileName(node, lang)
+  return resolveVoiceFileName(node)
 }
 
 // 4. 다국어 매핑 및 대사 텍스트 추출
@@ -81,14 +85,9 @@ function getLocalizedText(node: any, localization: Record<string, Record<string,
     node.dialogue,
     node.text,
   ]
+  const mapped = lookupLocalizedString(localization, lang, keys)
+  if (mapped) return mapped
 
-  for (const k of keys) {
-    if (typeof k === 'string' && localization[lang]?.[k]) {
-      return localization[lang][k]
-    }
-  }
-
-  // 매핑되지 않은 경우 직접 들어있는 텍스트 확인
   if (typeof node.text === 'string') return node.text
   if (typeof node.dialogue === 'string') return node.dialogue
   if (typeof node.message === 'string') return node.message
@@ -106,37 +105,30 @@ function getLocalizedText(node: any, localization: Record<string, Record<string,
 
 // 5. 캐릭터 이름 추출
 function getCharacterName(node: any, event: GameEvent, lang: string): string {
+  const locale = normalizeEventLocale(lang)
   const charId = node.character || node.character_id || node.speaker || node.char
   if (charId) {
     if (charId === 'player') {
-      return lang === 'ko' ? '플레이어' : 'Player'
+      return locale === 'ko' ? '플레이어' : 'Player'
     }
     const charDef = event.characters.find((c) => c.id === charId)
     if (charDef) {
+      if (charDef.names?.[locale]) return charDef.names[locale]
       if (charDef.names?.[lang]) return charDef.names[lang]
       if (charDef.name) return charDef.name
-      if (charDef.nameKey && event.localization[lang]?.[charDef.nameKey]) {
-        return event.localization[lang][charDef.nameKey]
-      }
+      const named = lookupLocalizedString(event.localization, locale, [charDef.nameKey, charId])
+      if (named) return named
     }
-    if (event.localization[lang]?.[charId]) return event.localization[lang][charId]
+    const fromLoc = lookupLocalizedString(event.localization, locale, [charId])
+    if (fromLoc) return fromLoc
     return charId
   }
 
-  const nameKeys = [
-    node.character_name,
-    node.speaker_name,
-    node.name,
-    node.name_key,
-  ]
-
+  const nameKeys = [node.character_name, node.speaker_name, node.name, node.name_key]
+  const mapped = lookupLocalizedString(event.localization, locale, nameKeys)
+  if (mapped) return mapped
   for (const nk of nameKeys) {
-    if (typeof nk === 'string') {
-      if (event.localization[lang]?.[nk]) {
-        return event.localization[lang][nk]
-      }
-      return nk
-    }
+    if (typeof nk === 'string' && nk) return nk
   }
 
   return ''
@@ -150,14 +142,7 @@ function parseNodeChoices(node: any, localization: Record<string, Record<string,
   return choicesField.map((c: any) => {
     if (!c || typeof c !== 'object') return { text: String(c), targetNodeId: '' }
 
-    let text = ''
-    const textKeys = [c.text_key, c.label_key, c.key]
-    for (const tk of textKeys) {
-      if (typeof tk === 'string' && localization[lang]?.[tk]) {
-        text = localization[lang][tk]
-        break
-      }
-    }
+    let text = lookupLocalizedString(localization, lang, [c.text_key, c.label_key, c.key])
     if (!text) {
       text = c.text || c.label || c.title || c.content || ''
       if (typeof text === 'object') {
@@ -182,15 +167,10 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
   const flatNodes = useMemo(() => flattenNodes(event.nodes), [event.nodes])
 
   // 언어 설정 (기본값 설정)
-  const availableLangs = useMemo(() => {
-    const keys = Object.keys(event.localization)
-    return keys.length > 0 ? keys : [event.defaultLanguage || 'ko']
-  }, [event.localization, event.defaultLanguage])
+  const availableLangs = EVENT_LOCALES
 
   const [lang, setLang] = useState<string>(() => {
-    return event.defaultLanguage && event.localization[event.defaultLanguage]
-      ? event.defaultLanguage
-      : availableLangs[0] || 'ko'
+    return normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE)
   })
 
   // 플레이어 및 내비게이션 상태
@@ -444,7 +424,7 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
       stopChannel('bgm')
     }
 
-    const voiceName = resolveVoiceFileName(currentNode, lang)
+    const voiceName = resolveVoiceFileName(currentNode)
     if (voiceName) {
       const asset = findMediaAsset(voiceName, event.media)
       if (asset) playChannel('voice', asset, false)
@@ -549,7 +529,7 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
       
       // 3. 새로 지정된 미디어가 있는지 확인
       const img = findNodeImage(node)
-      const snd = findNodeSound(node, lang)
+      const snd = findNodeSound(node)
       if (img || snd) return true
       
       return false
@@ -763,7 +743,7 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
           >
             {/* 1. 미디어 화면 (배경) */}
             <div
-              className={`absolute inset-0 z-0 bg-slate-900 flex items-center justify-center ${
+              className={`absolute inset-0 z-0 bg-black flex items-center justify-center ${
                 isImageNode && !playbackFinished && choices.length === 0
                   ? 'cursor-pointer'
                   : ''
@@ -791,12 +771,7 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
                     className="h-full w-full object-cover pointer-events-none"
                   />
                 )
-              ) : (
-                <div className="flex flex-col items-center gap-2 text-slate-600 pointer-events-none">
-                  <span className="text-4xl">🎬</span>
-                  <p className="text-xs">배경 미디어가 없습니다</p>
-                </div>
-              )}
+              ) : null}
               {activeBlurRegions.length > 0 ? (
                 <BlurRegionOverlay regions={activeBlurRegions} />
               ) : null}
@@ -1011,7 +986,7 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
                       const nodeChar = getCharacterName(n, event, lang)
                       const nodeText = getLocalizedText(n, event.localization, lang)
                       const nodeImg = findNodeImage(n)
-                      const nodeSnd = findNodeSound(n, lang)
+                      const nodeSnd = findNodeSound(n)
 
                       return (
                         <button

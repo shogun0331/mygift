@@ -1,0 +1,831 @@
+{
+  "id": "b3dd121c-2f6c-4a20-9245-01cfcf2ef89d",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "b3dd121c-2f6c-4a20-9245-01cfcf2ef89d",
+  "title": "데이트1",
+  "startNode": "node_1786851954774_0_ja3m",
+  "nodes": [
+    {
+      "id": "node_1786851954774_0_ja3m",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851954774_1_177w",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "야간의 프라이빗 요리 클래스. 조용한 요리 스튜디오. 리메이가 먼저 도착해 조리대 앞에서 재료를 정리하고 있다. 다크 블루 실크 치파오 차림.",
+      "text_key": "node_1786851954774_1_177w"
+    },
+    {
+      "id": "node_1786851954774_2_oa2a",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "…왔네요. (손에 든 칼을 내려놓으며 고개를 든다)",
+      "text_key": "node_1786851954774_2_oa2a"
+    },
+    {
+      "id": "node_1786851954774_3_rkk7",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "기다렸어요? 늦어서 미안합니다.",
+      "text_key": "node_1786851954774_3_rkk7"
+    },
+    {
+      "id": "node_1786851954774_4_ip4e",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "아니에요. 준비하고 있었어요. (치파오 자락을 매만진다)",
+      "text_key": "node_1786851954774_4_ip4e"
+    },
+    {
+      "id": "node_1786851954774_5_wxo8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "요리 클래스라니, 의외네요. 네가 고른 거예요?",
+      "text_key": "node_1786851954774_5_wxo8"
+    },
+    {
+      "id": "node_1786851954774_6_njk9",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "네. 제가 제일 잘하는 걸로 부르는 게 좋겠더라고요. (입꼬리를 올린다)",
+      "text_key": "node_1786851954774_6_njk9"
+    },
+    {
+      "id": "node_1786851954774_7_z7sb",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그런데 왜 하필 저를? 크리에이터가 사장을 부를 이유는 없잖아요.",
+      "text_key": "node_1786851954774_7_z7sb"
+    },
+    {
+      "id": "node_1786851954774_8_yc9t",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "그건 오늘, 천천히 말할게요. (조리대를 닦으며)",
+      "text_key": "node_1786851954774_8_yc9t"
+    },
+    {
+      "id": "node_1786851954774_9_f1vc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "평소 방송국에서 간결하게 웃던 얼굴인데, 이렇게 사적인 자리에서 보니 더 매력적이다. 저 실크 치파오가 몸에 잘 맞고, 하이 슬릿 사이로 긴 다리가 보인다. 참아라, 나는 대표니까.",
+      "text_key": "node_1786851954774_9_f1vc"
+    },
+    {
+      "id": "node_1786851954774_10_0bmx",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…알겠어요. 어차피 부른 건 너니까, 오늘은 네 뜻에 맞출게요.",
+      "text_key": "node_1786851954774_10_0bmx"
+    },
+    {
+      "id": "node_1786851954774_11_o94a",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "좋아요. 그럼 요리부터 시작할게요. (조리대로 이끈다)",
+      "text_key": "node_1786851954774_11_o94a"
+    },
+    {
+      "id": "node_1786851954774_12_03c5",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "회사 얘기는 안 하자는 거죠?",
+      "text_key": "node_1786851954774_12_03c5"
+    },
+    {
+      "id": "node_1786851954774_13_aqn0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "네. 여기선 저도, 사장님도, 그냥 요리하는 두 사람이에요. (정면을 본다)",
+      "text_key": "node_1786851954774_13_aqn0"
+    },
+    {
+      "id": "node_1786851954774_14_pb53",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…그 말, 방송보다 더 위험하게 들리네요.",
+      "text_key": "node_1786851954774_14_pb53"
+    },
+    {
+      "id": "node_1786851954774_15_w843",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "위험하게 들릴 만큼, 사장님이 제 방송을 잘 본다는 거잖아요. (입꼬리를 올린다)",
+      "text_key": "node_1786851954774_15_w843"
+    },
+    {
+      "id": "node_1786851954774_16_5pnq",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "간결하게, 또박또박 저렇게 파고들 줄은… 저 직설적인 표정으로 저런 말을 하니, 오히려 더 위험하다. 여기서 넘어가면 안 된다. 나는 그녀의 대표니까.",
+      "text_key": "node_1786851954774_16_5pnq"
+    },
+    {
+      "id": "node_1786851954774_17_9bul",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…대표니까 당연히 봐야죠. 크리에이터 관리는 내 일이니까요.",
+      "text_key": "node_1786851954774_17_9bul"
+    },
+    {
+      "id": "node_1786851954774_18_7mec",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "오늘은 관리도 잊으세요. 그냥, 저한테 요리 배우는 남자로요. (내 앞에 선다)",
+      "text_key": "node_1786851954774_18_7mec"
+    },
+    {
+      "id": "node_1786851954774_19_4pf5",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…그게 제일 어려운 부탁인데. (작게 한숨)",
+      "text_key": "node_1786851954774_19_4pf5"
+    },
+    {
+      "id": "node_1786851954774_20_znqv",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "알아요. 그래서 부른 거예요. (또박또박)",
+      "text_key": "node_1786851954774_20_znqv"
+    },
+    {
+      "id": "node_1786851954774_21_9nem",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "리메이가 조리대 앞으로 가고, 나는 그 옆에 거리를 두고 선다. 서로의 시선이 스튜디오의 조용한 조명을 향한다.",
+      "text_key": "node_1786851954774_21_9nem"
+    },
+    {
+      "id": "node_1786851954774_22_guvl",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851954774_23_xy25",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "조리대 앞. 리메이가 조리대에 몸을 기대며, 다크 블루 실크 치파오가 몸에 밀착된다.",
+      "text_key": "node_1786851954774_23_xy25"
+    },
+    {
+      "id": "node_1786851954774_24_z9o0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "자, 그럼 시작할게요. (조리대에 몸을 기댄다)",
+      "text_key": "node_1786851954774_24_z9o0"
+    },
+    {
+      "id": "node_1786851954774_25_4xvv",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…치파오, 몸에 잘 맞네요.",
+      "text_key": "node_1786851954774_25_4xvv"
+    },
+    {
+      "id": "node_1786851954774_26_511z",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "그래요? (눈을 가늘게 뜬다)",
+      "text_key": "node_1786851954774_26_511z"
+    },
+    {
+      "id": "node_1786851954774_27_mcog",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "리메이가 몸을 살짝 틀며, 하이 슬릿 사이로 긴 허벅지가 드러난다.",
+      "text_key": "node_1786851954774_27_mcog"
+    },
+    {
+      "id": "node_1786851954774_28_3ryt",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…너, 몸매가 좋네요.",
+      "text_key": "node_1786851954774_28_3ryt"
+    },
+    {
+      "id": "node_1786851954774_29_rjwr",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "칭찬이에요? 기분 나쁘진 않네요. (씩 웃는다)",
+      "text_key": "node_1786851954774_29_rjwr"
+    },
+    {
+      "id": "node_1786851954774_30_nqv8",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "실크 치파오가 몸에 착 달라붙어, 가슴과 허리 라인이 그대로 드러난다. 하이 슬릿 사이로 170cm의 긴 다리가 이어지고, 쇄골과 어깨 라인이 고급스럽게 드러난다. 자지가 반응하는 걸 겨우 참는다.",
+      "text_key": "node_1786851954774_30_nqv8"
+    },
+    {
+      "id": "node_1786851954774_31_uz0x",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851954774_32_vuqt",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "칭찬이에요. 부담 갖지 마요.",
+      "text_key": "node_1786851954774_32_vuqt"
+    },
+    {
+      "id": "node_1786851954774_33_pbis",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "부담이요? 저는 오히려 기분 좋은데요. (입꼬리를 올린다)",
+      "text_key": "node_1786851954774_33_pbis"
+    },
+    {
+      "id": "node_1786851954774_34_9hs2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "직설적으로 웃는 모습이, 오히려 더 치명적이다. 저 포니테일이 흔들리고, 저 밝은 피부가 조리대 조명에 빛난다. 시청자들을 미치게 만들 거다. 대표니까 참아야 한다.",
+      "text_key": "node_1786851954774_34_9hs2"
+    },
+    {
+      "id": "node_1786851954774_35_lgaf",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851954774_36_xmtq",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "조리대 앞. 리메이가 몸을 숙여 재료 손질을 보여준다. 치파오가 가슴 쪽으로 당겨지고, 하이 슬릿이 벌어진다.",
+      "text_key": "node_1786851954774_36_xmtq"
+    },
+    {
+      "id": "node_1786851954774_37_6qt4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "여기, 이렇게 썰면 돼요. (몸을 숙여 칼질을 보여준다)",
+      "text_key": "node_1786851954774_37_6qt4"
+    },
+    {
+      "id": "node_1786851954774_38_6k1i",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "몸을 숙이자 치파오가 가슴을 팽팽하게 감싸고, 하이 슬릿 사이로 허벅지가 그대로 드러난다.",
+      "text_key": "node_1786851954774_38_6k1i"
+    },
+    {
+      "id": "node_1786851954774_39_wkrp",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…잘 보여요.",
+      "text_key": "node_1786851954774_39_wkrp"
+    },
+    {
+      "id": "node_1786851954774_40_8yr0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "뭘요. 칼질이요? (눈을 가늘게 뜬다)",
+      "text_key": "node_1786851954774_40_8yr0"
+    },
+    {
+      "id": "node_1786851954774_41_w09t",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "치파오가… 몸에 잘 맞네요.",
+      "text_key": "node_1786851954774_41_w09t"
+    },
+    {
+      "id": "node_1786851954774_42_uydu",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "보고 싶은 거, 숨기지 마세요. (칼라 단추를 하나 푼다)",
+      "text_key": "node_1786851954774_42_uydu"
+    },
+    {
+      "id": "node_1786851954774_43_bx4j",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "칼라 단추가 풀리며 쇄골과 가슴 골이 드러난다. 저 직설적인 눈빛으로 단추를 푸는 모습이, 오히려 더 야하다. 이대로 치파오를 벗기고 싶다. 참을 수 없다.",
+      "text_key": "node_1786851954774_43_bx4j"
+    },
+    {
+      "id": "node_1786851954774_44_w0dd",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851954774_45_qha0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "리메이가 자세를 고치며, 풀린 칼라 단추 사이로 쇄골과 가슴 윗라인이 드러난다.",
+      "text_key": "node_1786851954774_45_qha0"
+    },
+    {
+      "id": "node_1786851954774_46_3aag",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "어때요. 이 정도면, 사장님도 솔직해지나요. (시선을 올린다)",
+      "text_key": "node_1786851954774_46_3aag"
+    },
+    {
+      "id": "node_1786851954774_47_ku7s",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…더 위험해질 뿐이에요.",
+      "text_key": "node_1786851954774_47_ku7s"
+    },
+    {
+      "id": "node_1786851954774_48_sn4g",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "위험한 쪽이 좋은 거잖아요. (입꼬리를 올린다)",
+      "text_key": "node_1786851954774_48_sn4g"
+    },
+    {
+      "id": "node_1786851954774_49_7tar",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "저 당당한 표정으로 저런 말을 하다니… 치파오 아래 가슴이 숨을 쉴 때마다 오르내린다. 보고 싶어서 미칠 것 같다.",
+      "text_key": "node_1786851954774_49_7tar"
+    },
+    {
+      "id": "node_1786851954774_50_7vqx",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851954774_51_z285",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "조리대 옆, 조용한 구석. 리메이가 내 앞에 서서, 몸을 살짝 돌린다.",
+      "text_key": "node_1786851954774_51_z285"
+    },
+    {
+      "id": "node_1786851954774_52_jakw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "사장님, 이래도 계속 참으실 거예요? (칼라 단추를 더 푼다)",
+      "text_key": "node_1786851954774_52_jakw"
+    },
+    {
+      "id": "node_1786851954774_53_bogt",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…뭐 하는 거예요.",
+      "text_key": "node_1786851954774_53_bogt"
+    },
+    {
+      "id": "node_1786851954774_54_l9xy",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "저, 사장님이 저를 어떻게 보는지… 확인하고 싶어서요. (낮게)",
+      "text_key": "node_1786851954774_54_l9xy"
+    },
+    {
+      "id": "node_1786851954774_55_j5ub",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그게 왜 중요한데요.",
+      "text_key": "node_1786851954774_55_j5ub"
+    },
+    {
+      "id": "node_1786851954774_56_kk13",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "중요하니까 부른 거예요. (치파오를 내려 어깨와 쇄골을 드러낸다)",
+      "text_key": "node_1786851954774_56_kk13"
+    },
+    {
+      "id": "node_1786851954774_57_h8b9",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851954774_58_m3sg",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "치파오가 흘러내려, 어깨에서 쇄골, 가슴 위 라인이 드러난다.",
+      "text_key": "node_1786851954774_58_m3sg"
+    },
+    {
+      "id": "node_1786851954774_59_7k1b",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이러면 안 돼요.",
+      "text_key": "node_1786851954774_59_7k1b"
+    },
+    {
+      "id": "node_1786851954774_60_tgbj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "왜요. 저는 지금, 꽤 두근거리는데요. (내 손을 잡아 어깨 위에 올린다)",
+      "text_key": "node_1786851954774_60_tgbj"
+    },
+    {
+      "id": "node_1786851954774_61_8etg",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손끝에 맨살이 닿는다.",
+      "text_key": "node_1786851954774_61_8etg"
+    },
+    {
+      "id": "node_1786851954774_62_h2y4",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "! (숨이 멎는다)",
+      "text_key": "node_1786851954774_62_h2y4"
+    },
+    {
+      "id": "node_1786851954774_63_fouw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "어때요. 뜨거워요? (여유 있게, 가만히 나를 본다)",
+      "text_key": "node_1786851954774_63_fouw"
+    },
+    {
+      "id": "node_1786851954774_64_urni",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…뜨거워요.",
+      "text_key": "node_1786851954774_64_urni"
+    },
+    {
+      "id": "node_1786851954774_65_14k4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "저도요. (내 손 위에 손을 포갠다)",
+      "text_key": "node_1786851954774_65_14k4"
+    },
+    {
+      "id": "node_1786851954774_66_khe0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손바닥 밑에 그녀의 어깨. 살짝 내려가면 가슴이다. 손가락이 저절로 떨린다. 저 당당한 얼굴로, 이렇게 치명적일 줄은 몰랐다.",
+      "text_key": "node_1786851954774_66_khe0"
+    },
+    {
+      "id": "node_1786851954774_67_m5zm",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이건 안 돼요. (손을 거둔다)",
+      "text_key": "node_1786851954774_67_m5zm"
+    },
+    {
+      "id": "node_1786851954774_68_kctu",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "지금 여기서, 대표가 무슨 상관이에요. (치파오를 더 내린다)",
+      "text_key": "node_1786851954774_68_kctu"
+    },
+    {
+      "id": "node_1786851954774_69_t342",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851954774_70_gtvv",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "치파오가 가슴 위까지 흘러내려, 브라 윗라인이 드러난다.",
+      "text_key": "node_1786851954774_70_gtvv"
+    },
+    {
+      "id": "node_1786851954774_71_jhf1",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "리메이 씨…",
+      "text_key": "node_1786851954774_71_jhf1"
+    },
+    {
+      "id": "node_1786851954774_72_f3r6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "오늘 하루만, 일 그만두세요. (단호히)",
+      "text_key": "node_1786851954774_72_f3r6"
+    },
+    {
+      "id": "node_1786851954774_73_w2g6",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…그게 제일 어려운 부탁인데.",
+      "text_key": "node_1786851954774_73_w2g6"
+    },
+    {
+      "id": "node_1786851954774_74_xnx5",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "알아요. 그래서… (내 손을 잡아, 흘러내린 치파오 안쪽으로 이끈다)",
+      "text_key": "node_1786851954774_74_xnx5"
+    },
+    {
+      "id": "node_1786851954774_75_3b5r",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손끝이 그녀의 가슴 위에 닿는다.",
+      "text_key": "node_1786851954774_75_3b5r"
+    },
+    {
+      "id": "node_1786851954774_76_nv36",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…… (숨을 들이쉰다)",
+      "text_key": "node_1786851954774_76_nv36"
+    },
+    {
+      "id": "node_1786851954774_77_gznl",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "저는 준비돼 있어요. 사장님은요? (눈을 맞추며, 낮게)",
+      "text_key": "node_1786851954774_77_gznl"
+    },
+    {
+      "id": "node_1786851954774_78_kvgw",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "손끝에 그녀의 가슴이 닿는다. 부드럽고 뜨거운 온기. 저 직설적이던 셰프가, 지금 내 앞에서 당당하게 몸을 열고 있다. 여기까지다. 대표니까.",
+      "text_key": "node_1786851954774_78_kvgw"
+    },
+    {
+      "id": "node_1786851954774_79_twgl",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786851954774_80_wj3q",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "요리 스튜디오. 리메이는 치파오를 정리하고, 나는 자세를 고쳐 선다. 조리대 위 재료는 그대로다.",
+      "text_key": "node_1786851954774_80_wj3q"
+    },
+    {
+      "id": "node_1786851954774_81_sqd6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "오늘, 정말 좋은 시간이었어요. (정면을 보며)",
+      "text_key": "node_1786851954774_81_sqd6"
+    },
+    {
+      "id": "node_1786851954774_82_34i7",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "나도요.",
+      "text_key": "node_1786851954774_82_34i7"
+    },
+    {
+      "id": "node_1786851954774_83_qb0d",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "후회는 없으시죠? (입꼬리를 올린다)",
+      "text_key": "node_1786851954774_83_qb0d"
+    },
+    {
+      "id": "node_1786851954774_84_k65x",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "없어요. 아주, 없어요. (작게 웃는다)",
+      "text_key": "node_1786851954774_84_k65x"
+    },
+    {
+      "id": "node_1786851954774_85_wu0h",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "다행이네요. (치파오 자락을 정리한다)",
+      "text_key": "node_1786851954774_85_wu0h"
+    },
+    {
+      "id": "node_1786851954774_86_3r6z",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…벌써 가려고?",
+      "text_key": "node_1786851954774_86_3r6z"
+    },
+    {
+      "id": "node_1786851954774_87_kglb",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "이쯤이면 됐어요. 재료도 다 상하겠어요. (조리대를 정리하며)",
+      "text_key": "node_1786851954774_87_kglb"
+    },
+    {
+      "id": "node_1786851954774_88_87os",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그렇네요.",
+      "text_key": "node_1786851954774_88_87os"
+    },
+    {
+      "id": "node_1786851954774_89_lbik",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "회사에선, 평소처럼 대할게요. (또박또박)",
+      "text_key": "node_1786851954774_89_lbik"
+    },
+    {
+      "id": "node_1786851954774_90_2ke1",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그래요. 평소처럼.",
+      "text_key": "node_1786851954774_90_2ke1"
+    },
+    {
+      "id": "node_1786851954774_91_purq",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "아쉽다. 저 치파오가 다시 단정해졌다는 게, 저 몸이 내 손끝에서 멀어졌다는 게. 하지만 이게 대표로서의 선이다.",
+      "text_key": "node_1786851954774_91_purq"
+    },
+    {
+      "id": "node_1786851954774_92_fui1",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "그럼 저는, 이쪽으로. (요리 스튜디오 출구를 가리킨다)",
+      "text_key": "node_1786851954774_92_fui1"
+    },
+    {
+      "id": "node_1786851954774_93_3di8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "배웅해 줄까요?",
+      "text_key": "node_1786851954774_93_3di8"
+    },
+    {
+      "id": "node_1786851954774_94_e8zp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "괜찮아요. 여기서 헤어져요. (한 걸음 물러선다)",
+      "text_key": "node_1786851954774_94_e8zp"
+    },
+    {
+      "id": "node_1786851954774_95_oh78",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "리메이가 등을 돌려 걸어가다, 잠시 멈춘다.",
+      "text_key": "node_1786851954774_95_oh78"
+    },
+    {
+      "id": "node_1786851954774_96_b8ze",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "사장님, 다음에 또 불러도 돼요?",
+      "text_key": "node_1786851954774_96_b8ze"
+    },
+    {
+      "id": "node_1786851954774_97_rmrn",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…나중에 생각해 볼게요.",
+      "text_key": "node_1786851954774_97_rmrn"
+    },
+    {
+      "id": "node_1786851954774_98_k98t",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "좋아요. 그럼. (살짝 웃으며 걸어간다)",
+      "text_key": "node_1786851954774_98_k98t"
+    },
+    {
+      "id": "node_1786851954774_99_fp96",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "리메이가 요리 스튜디오 출구 쪽으로 걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
+      "text_key": "node_1786851954774_99_fp96"
+    },
+    {
+      "id": "node_1786851954774_100_z9ci",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "결국 아무 일도 없었다. 그런데 왜, 가슴 한구석이 이렇게 텅 비는 걸까. 저 치파오 아래, 방금 내 손에 있던 온기가. 아, 정말로 아쉽다.",
+      "text_key": "node_1786851954774_100_z9ci"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "1786851291899-dqn64g6",
+      "name": "리메이"
+    }
+  ],
+  "points": [],
+  "media": [],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T03:45:46.477Z",
+  "ownerCharacterId": "1786851291899-dqn64g6"
+}

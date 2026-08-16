@@ -1,8 +1,14 @@
-import { fetchPublicJson } from '../game/encryptedJson'
-import type { GameEvent } from './types'
+import { fetchPublicJson } from '../game/publicJson'
+import { EVENT_LOCALES, mergeEventLocalization } from './eventLocales'
+import { normalizeOwnerCharacterId, type GameEvent } from './types'
 import type { RegisteredCharacter } from '../game/characters'
 
-const DB_NAME = 'broadcast-game-db'
+function withOwner(events: GameEvent[]): GameEvent[] {
+  return events.map((event) => ({
+    ...event,
+    ownerCharacterId: normalizeOwnerCharacterId(event.ownerCharacterId),
+  }))
+}
 const DB_VERSION = 1
 
 function openDB(): Promise<IDBDatabase> {
@@ -76,7 +82,23 @@ export async function loadEvents(): Promise<GameEvent[]> {
           const restored: GameEvent[] = []
           for (const meta of metadataList) {
             const full = await fetchPublicJson<GameEvent>(`/chapter_assets/events/${meta.id}.json`)
-            restored.push((full || { ...meta, nodes: [], localization: { ko: {} }, characters: [], points: [], media: [] }) as GameEvent)
+            const base = (full || {
+              ...meta,
+              nodes: [],
+              characters: [],
+              points: [],
+              media: [],
+            }) as GameEvent
+            const loc = mergeEventLocalization(base.localization)
+            for (const lang of EVENT_LOCALES) {
+              const locMap = await fetchPublicJson<Record<string, string>>(
+                `/chapter_assets/events/${meta.id}/loc/${lang}.json`,
+              )
+              if (locMap && typeof locMap === 'object') {
+                loc[lang] = { ...loc[lang], ...locMap }
+              }
+            }
+            restored.push({ ...base, localization: loc })
           }
           loadedEvents = restored
         }
@@ -111,7 +133,7 @@ export async function loadEvents(): Promise<GameEvent[]> {
         }
       }
     }
-    return loadedEvents
+    return withOwner(loadedEvents)
   }
 
   const db = await openDB()
@@ -130,7 +152,7 @@ export async function loadEvents(): Promise<GameEvent[]> {
           }
         }
       }
-      resolve(events)
+      resolve(withOwner(events))
     }
 
     request.onerror = () => reject(request.error)

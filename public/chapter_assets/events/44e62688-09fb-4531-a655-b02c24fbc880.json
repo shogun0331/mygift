@@ -1,0 +1,591 @@
+{
+  "id": "44e62688-09fb-4531-a655-b02c24fbc880",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "44e62688-09fb-4531-a655-b02c24fbc880",
+  "title": "엔딩",
+  "startNode": "node_1786844399316_0_mzkt",
+  "nodes": [
+    {
+      "id": "node_1786844399316_0_mzkt",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844399316_1_xzwo",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "결혼식장 신부대기실. 미사키가 화이트 웨딩드레스를 입고 거울 앞에 서 있다. 나는 문을 열고 들어선다.",
+      "text_key": "node_1786844399316_1_xzwo"
+    },
+    {
+      "id": "node_1786844399316_2_uqb4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "사장님~! (거울 속의 나를 보며 활짝 웃는다)",
+      "text_key": "node_1786844399316_2_uqb4"
+    },
+    {
+      "id": "node_1786844399316_3_saux",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "왔어요. …예쁘네요. 정말.",
+      "text_key": "node_1786844399316_3_saux"
+    },
+    {
+      "id": "node_1786844399316_4_lw9r",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "감사합니다. 저, 너무 떨려요! (가슴에 손을 얹는다)",
+      "text_key": "node_1786844399316_4_lw9r"
+    },
+    {
+      "id": "node_1786844399316_5_irtg",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저도 떨려요. 오늘이 이렇게 올 줄은… (다가선다)",
+      "text_key": "node_1786844399316_5_irtg"
+    },
+    {
+      "id": "node_1786844399316_6_nkc6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "저, 사장님을 만나서 정말 다행이에요. (몸을 돌려 나를 마주 본다)",
+      "text_key": "node_1786844399316_6_nkc6"
+    },
+    {
+      "id": "node_1786844399316_7_s3mc",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그 말, 제가 해야죠.",
+      "text_key": "node_1786844399316_7_s3mc"
+    },
+    {
+      "id": "node_1786844399316_8_kv2v",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "처음 공원에서 스카웃 받던 날, 사장님이 다가오실 때 이상하게 마음이 설렜어요. (또박또박)",
+      "text_key": "node_1786844399316_8_kv2v"
+    },
+    {
+      "id": "node_1786844399316_9_3mnj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그때는 제가 요가 하시는 분한테 실례되는 소리나 안 했나 걱정했는데.",
+      "text_key": "node_1786844399316_9_3mnj"
+    },
+    {
+      "id": "node_1786844399316_10_dkqn",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "저는 한 번도 후회한 적 없어요. (눈을 맞춘다)",
+      "text_key": "node_1786844399316_10_dkqn"
+    },
+    {
+      "id": "node_1786844399316_11_h9v5",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "화이트 웨딩드레스에 감싸인 그녀가, 이제 내 아내가 된다. 레이스 보디스가 가슴을 우아하게 받치고, 태닝된 어깨가 오프숄더 사이로 드러난다. 저 건강하던 요가 강사가, 지금은 내 앞에서 신부로 서 있다.",
+      "text_key": "node_1786844399316_11_h9v5"
+    },
+    {
+      "id": "node_1786844399316_12_5lor",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…저도요. 너를 스카웃한 게, 제 인생 최고의 선택이었어요.",
+      "text_key": "node_1786844399316_12_5lor"
+    },
+    {
+      "id": "node_1786844399316_13_2e8r",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "그럼, 오늘부터는 크리에이터가 아니라… (말을 잇지 못한다)",
+      "text_key": "node_1786844399316_13_2e8r"
+    },
+    {
+      "id": "node_1786844399316_14_zy6k",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아내예요. 오늘부터 너는, 제 아내입니다. (그녀의 손을 잡는다)",
+      "text_key": "node_1786844399316_14_zy6k"
+    },
+    {
+      "id": "node_1786844399316_15_7ajz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…네. (눈물이 글썽인다)",
+      "text_key": "node_1786844399316_15_7ajz"
+    },
+    {
+      "id": "node_1786844399316_16_h423",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사랑해요, 타치바나 씨.",
+      "text_key": "node_1786844399316_16_h423"
+    },
+    {
+      "id": "node_1786844399316_17_od8o",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "저도 사랑해요, 사장님! (내 손을 꼭 잡는다)",
+      "text_key": "node_1786844399316_17_od8o"
+    },
+    {
+      "id": "node_1786844399316_18_ban1",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844399316_19_vmha",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "신부대기실. 예식 전, 미사키가 웨딩드레스를 입은 채 내 앞에 무릎을 꿇는다.",
+      "text_key": "node_1786844399316_19_vmha"
+    },
+    {
+      "id": "node_1786844399316_20_7gt9",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "예식 전에, 신부가 신랑을 모셔야죠! (내 바지 위로 손을 올린다)",
+      "text_key": "node_1786844399316_20_7gt9"
+    },
+    {
+      "id": "node_1786844399316_21_iusq",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "이런 데서요…? (숨을 들이쉰다)",
+      "text_key": "node_1786844399316_21_iusq"
+    },
+    {
+      "id": "node_1786844399316_22_ji0y",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "이런 데니까요. 오늘은, 전부 사장님 거예요. (눈을 올려 나를 본다)",
+      "text_key": "node_1786844399316_22_ji0y"
+    },
+    {
+      "id": "node_1786844399316_23_a5ei",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 바지를 내리고, 발기한 자지를 두 손으로 감싼다.",
+      "text_key": "node_1786844399316_23_a5ei"
+    },
+    {
+      "id": "node_1786844399316_24_xpuf",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… (거친 숨)",
+      "text_key": "node_1786844399316_24_xpuf"
+    },
+    {
+      "id": "node_1786844399316_25_rw3i",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "맛있게 해드릴게요. (입을 벌려 귀두를 물어 넣는다)",
+      "text_key": "node_1786844399316_25_rw3i"
+    },
+    {
+      "id": "node_1786844399316_26_lgr2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입술이 귀두를 감싸고, 그녀가 천천히 머리를 움직인다.",
+      "text_key": "node_1786844399316_26_lgr2"
+    },
+    {
+      "id": "node_1786844399316_27_5e66",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 미사키 씨… (손으로 그녀의 머리를 감싼다)",
+      "text_key": "node_1786844399316_27_5e66"
+    },
+    {
+      "id": "node_1786844399316_28_qv7z",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "웨딩드레스를 입은 신부가, 내 앞에서 무릎 꿇고 봉사를 한다. 화이트 베일이 흔들리고, 레이스 보디스에 감싸인 가슴이 숨을 쉴 때마다 오르내린다. 이보다 음란한 신부는 없을 것이다.",
+      "text_key": "node_1786844399316_28_qv7z"
+    },
+    {
+      "id": "node_1786844399316_29_o1f6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "사장님, 입에 그대로… (낮게)",
+      "text_key": "node_1786844399316_29_o1f6"
+    },
+    {
+      "id": "node_1786844399316_30_ew8f",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "나… 곧… (허리가 떨린다)",
+      "text_key": "node_1786844399316_30_ew8f"
+    },
+    {
+      "id": "node_1786844399316_31_klbt",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아… 나온다…! (허리가 떨리며 정액을 쏟아낸다)",
+      "text_key": "node_1786844399316_31_klbt"
+    },
+    {
+      "id": "node_1786844399316_32_l8qg",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 입으로 정액을 받아 삼킨다.",
+      "text_key": "node_1786844399316_32_l8qg"
+    },
+    {
+      "id": "node_1786844399316_33_21vt",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "맛있었어요. …이제, 본론이에요. (입술을 혀로 닦으며, 입꼬리를 올린다)",
+      "text_key": "node_1786844399316_33_21vt"
+    },
+    {
+      "id": "node_1786844399316_34_imie",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844399316_35_l0ag",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "신부대기실 소파에 미사키가 손을 짚고 서 있다. 웨딩드레스 치마를 걷어 올린 채다.",
+      "text_key": "node_1786844399316_35_l0ag"
+    },
+    {
+      "id": "node_1786844399316_36_nv39",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…사장님, 뒤에서 해주세요. (엉덩이를 살짝 든다)",
+      "text_key": "node_1786844399316_36_nv39"
+    },
+    {
+      "id": "node_1786844399316_37_fujz",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "미사키 씨… (그녀의 허리를 잡는다)",
+      "text_key": "node_1786844399316_37_fujz"
+    },
+    {
+      "id": "node_1786844399316_38_c8jw",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "웨딩드레스 치마가 걷어 올려지고, 드러난 엉덩이와 젖은 그곳이 보인다. 신부의 몸을, 예식 직전에, 이렇게 가지다니… 나는 이제 돌이킬 수 없다.",
+      "text_key": "node_1786844399316_38_c8jw"
+    },
+    {
+      "id": "node_1786844399316_39_khw1",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "으읏…… (허리를 깊이 내민다)",
+      "text_key": "node_1786844399316_39_khw1"
+    },
+    {
+      "id": "node_1786844399316_40_akqh",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "깊어요… 사장님, 제 안 깊은 곳까지… (몸을 떤다)",
+      "text_key": "node_1786844399316_40_akqh"
+    },
+    {
+      "id": "node_1786844399316_41_5xlp",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 꽉 조여요… (허리를 격렬하게 움직인다)",
+      "text_key": "node_1786844399316_41_5xlp"
+    },
+    {
+      "id": "node_1786844399316_42_sbim",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "좋아요… 더 세게… 제 안, 사장님으로 가득 채워줘요… (엉덩이를 내게 밀어붙인다)",
+      "text_key": "node_1786844399316_42_sbim"
+    },
+    {
+      "id": "node_1786844399316_43_ha6p",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 안이 내 자지를 뜨겁게 조인다. 웨딩드레스가 출렁이고, 화이트 베일이 흔들린다. 이대로 안에 쏟아내면, 이 여자는 완전히 내 것이 된다.",
+      "text_key": "node_1786844399316_43_ha6p"
+    },
+    {
+      "id": "node_1786844399316_44_eug7",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "나… 이제… 안에… (숨을 헐떡인다)",
+      "text_key": "node_1786844399316_44_eug7"
+    },
+    {
+      "id": "node_1786844399316_45_8da2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "네… 안에, 전부 주세요… (낮게)",
+      "text_key": "node_1786844399316_45_8da2"
+    },
+    {
+      "id": "node_1786844399316_46_oc2q",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 나온다……! (허리가 떨리며 정액을 쏟아낸다)",
+      "text_key": "node_1786844399316_46_oc2q"
+    },
+    {
+      "id": "node_1786844399316_47_ct1u",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 안에 정액을 전부 쏟아내고, 천천히 자지를 뽑는다.",
+      "text_key": "node_1786844399316_47_ct1u"
+    },
+    {
+      "id": "node_1786844399316_48_ourp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…사장님의 전부, 제 안에 있어요. (웨딩드레스를 내리며, 나를 돌아본다)",
+      "text_key": "node_1786844399316_48_ourp"
+    },
+    {
+      "id": "node_1786844399316_49_h3rw",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… 하…… (숨을 몰아쉰다)",
+      "text_key": "node_1786844399316_49_h3rw"
+    },
+    {
+      "id": "node_1786844399316_50_if79",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "이제, 예식 시작해요. 신부가 되러 가요! (밝게 웃는다)",
+      "text_key": "node_1786844399316_50_if79"
+    },
+    {
+      "id": "node_1786844399316_51_eog0",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844399316_52_grob",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "예식장 버진로드. 미사키와 나, 두 사람이 하객 앞에 서 있다. 방금 전 일은 아무도 모른다.",
+      "text_key": "node_1786844399316_52_grob"
+    },
+    {
+      "id": "node_1786844399316_53_xa49",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…사장님. (조용히)",
+      "text_key": "node_1786844399316_53_xa49"
+    },
+    {
+      "id": "node_1786844399316_54_w0i5",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "네.",
+      "text_key": "node_1786844399316_54_w0i5"
+    },
+    {
+      "id": "node_1786844399316_55_t228",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "저, 오늘 정말 행복해요. (눈물을 닦으며)",
+      "text_key": "node_1786844399316_55_t228"
+    },
+    {
+      "id": "node_1786844399316_56_rppb",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저도예요. 네가 있어서, 행복합니다. (그녀의 손을 잡는다)",
+      "text_key": "node_1786844399316_56_rppb"
+    },
+    {
+      "id": "node_1786844399316_57_dbtk",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "앞으로도, 계속 제 곁에 있어 주세요. (또박또박)",
+      "text_key": "node_1786844399316_57_dbtk"
+    },
+    {
+      "id": "node_1786844399316_58_u2pc",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "평생이요.",
+      "text_key": "node_1786844399316_58_u2pc"
+    },
+    {
+      "id": "node_1786844399316_59_apvo",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "네! (환하게 웃는다)",
+      "text_key": "node_1786844399316_59_apvo"
+    },
+    {
+      "id": "node_1786844399316_60_wn89",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "주례의 말이 이어지고, 우리는 서약을 나눈다. 결혼식이 무사히 완료된다.",
+      "text_key": "node_1786844399316_60_wn89"
+    },
+    {
+      "id": "node_1786844399316_61_a0tl",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786844399316_62_ho0w",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "시간이 흘러, 어느 날. 미사키가 일반복을 입고, 배가 불러 있다.",
+      "text_key": "node_1786844399316_62_ho0w"
+    },
+    {
+      "id": "node_1786844399316_63_qmrh",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "…사장님, 이제 곧이에요! (부른 배를 쓰다듬으며)",
+      "text_key": "node_1786844399316_63_qmrh"
+    },
+    {
+      "id": "node_1786844399316_64_7zgc",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그러네요. 우리 아이가… (그녀의 배에 손을 얹는다)",
+      "text_key": "node_1786844399316_64_7zgc"
+    },
+    {
+      "id": "node_1786844399316_65_hb87",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "사장님을 닮았으면 좋겠어요. (미소 짓는다)",
+      "text_key": "node_1786844399316_65_hb87"
+    },
+    {
+      "id": "node_1786844399316_66_ya0f",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "너를 닮아야죠. 예쁘게.",
+      "text_key": "node_1786844399316_66_ya0f"
+    },
+    {
+      "id": "node_1786844399316_67_fp9m",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "저, 요가 하던 때도, 크리에이터였던 때도, 지금도… 사장님 곁이 제일 행복해요. (눈을 맞춘다)",
+      "text_key": "node_1786844399316_67_fp9m"
+    },
+    {
+      "id": "node_1786844399316_68_nd52",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "웨딩드레스를 입고 서 있던 그 신부가, 이제는 내 아이를 품은 아내가 되었다. 모든 게, 저 공원에서 시작됐다. 이 여자와의 인생은, 아직 끝나지 않았다.",
+      "text_key": "node_1786844399316_68_nd52"
+    },
+    {
+      "id": "node_1786844399316_69_6s40",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…사랑해요, 타치바나 씨. 그리고, 고마워요.",
+      "text_key": "node_1786844399316_69_6s40"
+    },
+    {
+      "id": "node_1786844399316_70_ol7o",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미사키",
+      "text": "저도요, 사장님! (내 손을 꼭 잡는다)",
+      "text_key": "node_1786844399316_70_ol7o"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "미사키",
+      "name": "미사키"
+    }
+  ],
+  "points": [],
+  "media": [],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T01:39:52.131Z",
+  "ownerCharacterId": "1786833964287-iflkqh2"
+}

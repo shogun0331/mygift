@@ -1,0 +1,463 @@
+{
+  "id": "b55d4260-8b00-467e-a696-301888eeb32c",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "b55d4260-8b00-467e-a696-301888eeb32c",
+  "title": "VIP",
+  "startNode": "node_1786860527439_0_sjhh",
+  "nodes": [
+    {
+      "id": "node_1786860527439_0_sjhh",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860527439_1_m57c",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "고급 호텔룸. 문이 열리고, 무대 의상 차림의 마이가 들어온다. 개인 만남을 수락한 것이다.",
+      "text_key": "node_1786860527439_1_m57c"
+    },
+    {
+      "id": "node_1786860527439_2_0oqy",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "…안녕하세요. 불러주셔서 감사합니다. (고개를 살짝 숙인다)",
+      "text_key": "node_1786860527439_2_0oqy"
+    },
+    {
+      "id": "node_1786860527439_3_yj2o",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "와줘서 고마워요. 방송에서 보던 그대로네요.",
+      "text_key": "node_1786860527439_3_yj2o"
+    },
+    {
+      "id": "node_1786860527439_4_56l0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "오늘은, VIP분과의 개인적인 만남이라고 들어서요. (또박또박)",
+      "text_key": "node_1786860527439_4_56l0"
+    },
+    {
+      "id": "node_1786860527439_5_dq6t",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "부담 주지 않을게요. 편하게 해요.",
+      "text_key": "node_1786860527439_5_dq6t"
+    },
+    {
+      "id": "node_1786860527439_6_ubw7",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "네. …방송 밖에서 뵙는 건 처음이네요. (입꼬리를 올린다)",
+      "text_key": "node_1786860527439_6_ubw7"
+    },
+    {
+      "id": "node_1786860527439_7_9tiz",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저도예요. 이렇게 예쁜 분을 가까이서 보니, 방송이랑은 또 다르네요.",
+      "text_key": "node_1786860527439_7_9tiz"
+    },
+    {
+      "id": "node_1786860527439_8_lbmq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "과찬이세요. …뭐, 이 나이에 그런 말 들으면 기분 좋네요. (시니컬하게 웃으며)",
+      "text_key": "node_1786860527439_8_lbmq"
+    },
+    {
+      "id": "node_1786860527439_9_5nq7",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "벨벳 슬립 드레스가 호텔룸에 어색하게 빛난다. 가는 끈이 가슴을 팽팽하게 받치고, 백리스로 드러난 등이 조명에 반짝인다. 오늘 밤, 이 여자가 내 것이 된다.",
+      "text_key": "node_1786860527439_9_5nq7"
+    },
+    {
+      "id": "node_1786860527439_10_y9er",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "오늘은… 제가 원하는 대로 해도 되는 거죠?",
+      "text_key": "node_1786860527439_10_y9er"
+    },
+    {
+      "id": "node_1786860527439_11_vewq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "네. 오늘만큼은, 고객님의 뜻대로. (눈을 맞춘다)",
+      "text_key": "node_1786860527439_11_vewq"
+    },
+    {
+      "id": "node_1786860527439_12_k70w",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860527439_13_yyyk",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "침대 앞. 마이가 내 앞에 무릎을 꿇는다. 드레스 상의를 내려 가슴을 드러내고, 드레스를 걷어 올린다.",
+      "text_key": "node_1786860527439_13_yyyk"
+    },
+    {
+      "id": "node_1786860527439_14_3udz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "제가, 입으로 모실게요. (내 바지 위로 손을 올린다)",
+      "text_key": "node_1786860527439_14_3udz"
+    },
+    {
+      "id": "node_1786860527439_15_ry3a",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "부탁해요. (숨을 들이쉰다)",
+      "text_key": "node_1786860527439_15_ry3a"
+    },
+    {
+      "id": "node_1786860527439_16_hkp5",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 드레스 상의를 내려 가슴을 드러내고, 드레스를 걷어 올려 허벅지와 성기가 드러난다.",
+      "text_key": "node_1786860527439_16_hkp5"
+    },
+    {
+      "id": "node_1786860527439_17_t88x",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "방송에서 늘 감춰져 있던 몸이, 이제 내 앞에 드러난다. 밝은 스킨톤의 가슴, 걷어 올린 드레스 아래로 젖은 성기. 저 모습만으로도 자지가 터질 것 같다.",
+      "text_key": "node_1786860527439_17_t88x"
+    },
+    {
+      "id": "node_1786860527439_18_cz0k",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 바지를 내리고, 발기한 자지를 두 손으로 감싼다.",
+      "text_key": "node_1786860527439_18_cz0k"
+    },
+    {
+      "id": "node_1786860527439_19_uy4c",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… (거친 숨)",
+      "text_key": "node_1786860527439_19_uy4c"
+    },
+    {
+      "id": "node_1786860527439_20_rdoa",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "맛있게 해드릴게요. (입을 벌려 귀두를 물어 넣는다)",
+      "text_key": "node_1786860527439_20_rdoa"
+    },
+    {
+      "id": "node_1786860527439_21_mxr3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입술이 귀두를 감싸고, 그녀가 천천히 머리를 움직인다.",
+      "text_key": "node_1786860527439_21_mxr3"
+    },
+    {
+      "id": "node_1786860527439_22_1xd9",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 사쿠라기 씨… (손으로 그녀의 머리를 감싼다)",
+      "text_key": "node_1786860527439_22_1xd9"
+    },
+    {
+      "id": "node_1786860527439_23_pdyo",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입속이 뜨겁고 좁다. 혀가 자지를 감싸고, 입술이 귀두를 조인다. 드러난 가슴이 내 앞에서 흔들린다. 참을 수 없다.",
+      "text_key": "node_1786860527439_23_pdyo"
+    },
+    {
+      "id": "node_1786860527439_24_4577",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "고객님, 입에 그대로… (낮게)",
+      "text_key": "node_1786860527439_24_4577"
+    },
+    {
+      "id": "node_1786860527439_25_ftvh",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "나… 곧… (허리가 떨린다)",
+      "text_key": "node_1786860527439_25_ftvh"
+    },
+    {
+      "id": "node_1786860527439_26_9d4d",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아… 나온다…! (허리가 떨리며 정액을 쏟아낸다)",
+      "text_key": "node_1786860527439_26_9d4d"
+    },
+    {
+      "id": "node_1786860527439_27_5ym1",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 입으로 정액을 받는다. 입을 벌리자, 가득 찬 정액이 입술 밖으로 흘러내린다.",
+      "text_key": "node_1786860527439_27_5ym1"
+    },
+    {
+      "id": "node_1786860527439_28_ape6",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860527439_29_lhmp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "맛있었어요. …이제, 뒤에서 할게요. (입술을 혀로 닦으며, 입꼬리를 올린다)",
+      "text_key": "node_1786860527439_29_lhmp"
+    },
+    {
+      "id": "node_1786860527439_30_ucso",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860527439_31_tt8i",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "침대. 마이가 드레스를 걷어 올린 채, 네 발로 엎드린다. 드러난 몸으로 내 뒤를 향한다.",
+      "text_key": "node_1786860527439_31_tt8i"
+    },
+    {
+      "id": "node_1786860527439_32_cjgh",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "이제, 뒤에서 해주세요, 고객님. (엉덩이를 살짝 든다)",
+      "text_key": "node_1786860527439_32_cjgh"
+    },
+    {
+      "id": "node_1786860527439_33_m7qp",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사쿠라기 씨… 정말 예뻐요. (그녀의 허리를 잡는다)",
+      "text_key": "node_1786860527439_33_m7qp"
+    },
+    {
+      "id": "node_1786860527439_34_636c",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "넣어주세요. (허리를 낮춘다)",
+      "text_key": "node_1786860527439_34_636c"
+    },
+    {
+      "id": "node_1786860527439_35_hizi",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "드러난 성기가 내 자지를 천천히 삼킨다.",
+      "text_key": "node_1786860527439_35_hizi"
+    },
+    {
+      "id": "node_1786860527439_36_covg",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "으읏…… (몸이 긴장한다)",
+      "text_key": "node_1786860527439_36_covg"
+    },
+    {
+      "id": "node_1786860527439_37_z55p",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "들어갔어요… 고객님의, 제 안에… (숨을 들이쉰다)",
+      "text_key": "node_1786860527439_37_z55p"
+    },
+    {
+      "id": "node_1786860527439_38_xkyq",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "뒤에서 넣자, 그녀의 안이 내 자지를 뜨겁게 감싼다. 드러난 가슴이 아래로 매달려 출렁이고, 젖은 성기가 내 자지를 뿌리까지 삼킨다. 방송의 그녀가, 지금 내 앞에서 엎드려 있다.",
+      "text_key": "node_1786860527439_38_xkyq"
+    },
+    {
+      "id": "node_1786860527439_39_rfz0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "기분 좋아요… 고객님 자지, 제 안 깊은 곳까지… (허리를 움직인다)",
+      "text_key": "node_1786860527439_39_rfz0"
+    },
+    {
+      "id": "node_1786860527439_40_lrrj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 너무 좋아요… (숨을 헐떡인다)",
+      "text_key": "node_1786860527439_40_lrrj"
+    },
+    {
+      "id": "node_1786860527439_41_pnm3",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "더 세게 해주세요. 저도, 고객님을 느끼고 있으니까요. (엉덩이를 내게 밀어붙인다)",
+      "text_key": "node_1786860527439_41_pnm3"
+    },
+    {
+      "id": "node_1786860527439_42_i42q",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 뒤에서 격렬하게 허리를 흔든다. 드러난 가슴이 출렁이고, 성기가 내 자지를 삼켰다 뱉는다.",
+      "text_key": "node_1786860527439_42_i42q"
+    },
+    {
+      "id": "node_1786860527439_43_ps7h",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사쿠라기 씨… 나… 이제… (한계가 온다)",
+      "text_key": "node_1786860527439_43_ps7h"
+    },
+    {
+      "id": "node_1786860527439_44_jiij",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "저도요… 같이… (낮게)",
+      "text_key": "node_1786860527439_44_jiij"
+    },
+    {
+      "id": "node_1786860527439_45_xpcb",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786860527439_46_cn83",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "침대. 마이가 다리를 벌린 채, 방금 사정한 정액이 성기에서 흘러나온다.",
+      "text_key": "node_1786860527439_46_cn83"
+    },
+    {
+      "id": "node_1786860527439_47_0lm2",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 나온다……! (허리가 떨리며 질내에 정액을 쏟아낸다)",
+      "text_key": "node_1786860527439_47_0lm2"
+    },
+    {
+      "id": "node_1786860527439_48_ldn9",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "고객님의… 전부… (몸을 떤다)",
+      "text_key": "node_1786860527439_48_ldn9"
+    },
+    {
+      "id": "node_1786860527439_49_38rx",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "질내 사정 후, 천천히 자지를 뽑자 정액이 그녀의 성기에서 흘러나온다.",
+      "text_key": "node_1786860527439_49_38rx"
+    },
+    {
+      "id": "node_1786860527439_50_21md",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 성기에서 내 정액이 흘러나온다. 방송에서 늘 성숙하게 노래하던 그 크리에이터가, 지금은 내 정액으로 젖은 성기를 드러낸 채 누워 있다. 이게 오늘 밤의 끝이다.",
+      "text_key": "node_1786860527439_50_21md"
+    },
+    {
+      "id": "node_1786860527439_51_1d8i",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "하…… 고객님… 대단해요… (정액이 흐르는 성기를 드러낸 채, 나를 본다)",
+      "text_key": "node_1786860527439_51_1d8i"
+    },
+    {
+      "id": "node_1786860527439_52_g2n4",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… 하…… (숨을 몰아쉰다)",
+      "text_key": "node_1786860527439_52_g2n4"
+    },
+    {
+      "id": "node_1786860527439_53_bnm6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "마이",
+      "text": "오늘 밤은, 여기까지… (입꼬리를 올린다)",
+      "text_key": "node_1786860527439_53_bnm6"
+    },
+    {
+      "id": "node_1786860527439_54_4oaf",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 성기에서 정액이 천천히 흘러내린다. 이 히든씬은, 이렇게 끝난다. 하지만 다음 만남을 약속하는 그 미소가, 나를 다시 방송으로 이끈다.",
+      "text_key": "node_1786860527439_54_4oaf"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "마이",
+      "name": "마이"
+    }
+  ],
+  "points": [],
+  "media": [],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T06:08:42.431Z",
+  "ownerCharacterId": "1786851211019-59swl59"
+}
