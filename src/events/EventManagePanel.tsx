@@ -628,6 +628,7 @@ export function EventManagePanel({
         <EventSimulator
           event={selected}
           mode={simulatorMode}
+          returnLabel="에디터로 돌아가기"
           onClose={() => setShowSimulator(false)}
         />
       )}

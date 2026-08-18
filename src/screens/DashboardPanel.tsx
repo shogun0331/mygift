@@ -18,8 +18,12 @@ import {
 import type { DayEvent } from '../game/economy'
 import { formatMoney, formatMoneyCompact } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import {
+  characterDisplayJob,
+  characterDisplayName,
+} from '../game/characterLocales'
 import { creatorVisuals, type StudioSlot } from '../game/studioSlots'
-import { useTranslation } from '../locales/i18n'
+import { useTranslation, type Locale } from '../locales/i18n'
 import type { BroadcastPhase } from '../game/broadcast'
 import {
   RevenueBurstFx,
@@ -83,6 +87,7 @@ function toBroadcastSlot(
   slot: StudioSlot,
   owned: OwnedCreator | undefined,
   broadcastPhase: BroadcastPhase,
+  locale: Locale,
   livePlayUrl?: string | null,
 ): BroadcastSlotView {
   const streamLabel = `STREAM ${String(slot.index).padStart(2, '0')}`
@@ -94,7 +99,11 @@ function toBroadcastSlot(
     }
   }
 
-  const visuals = creatorVisuals(slot.assignment.creatorId, slot.assignment.creatorName)
+  const displayName = owned
+    ? characterDisplayName(owned, locale)
+    : slot.assignment.creatorName
+  const displayJob = owned ? characterDisplayJob(owned, locale) : ''
+  const visuals = creatorVisuals(slot.assignment.creatorId, displayName)
   const staminaMax = owned?.staminaMax ?? 100
   const stamina = owned
     ? Math.min(staminaMax, owned.stamina)
@@ -117,8 +126,8 @@ function toBroadcastSlot(
     status: 'assigned',
     creator: {
       id: slot.assignment.creatorId,
-      name: slot.assignment.creatorName,
-      concept: slot.assignment.grade,
+      name: displayName,
+      concept: displayJob || slot.assignment.grade,
       avatar: visuals.avatar,
       avatarTone: visuals.avatarTone,
       profileImageUrl: slot.assignment.profileImageUrl || null,
@@ -188,7 +197,7 @@ export function DashboardPanel({
   onConditionCrashDone,
   onToxicQteResolve,
 }: DashboardPanelProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const ownedById: Record<string, OwnedCreator> = {}
   for (const creator of ownedCreators) {
     ownedById[creator.id] = creator
@@ -233,6 +242,7 @@ export function DashboardPanel({
       slot,
       creatorId ? ownedById[creatorId] : undefined,
       broadcastPhase,
+      locale,
       creatorId ? livePlayVideoByCreator[creatorId] : undefined,
     )
   })
@@ -247,12 +257,15 @@ export function DashboardPanel({
   const liveRanking = assigned
     .map((slot) => {
       const a = slot.assignment!
-      const visuals = creatorVisuals(a.creatorId, a.creatorName)
+      const owned = ownedById[a.creatorId]
+      const displayName = owned ? characterDisplayName(owned, locale) : a.creatorName
+      const displayJob = owned ? characterDisplayJob(owned, locale) : a.grade
+      const visuals = creatorVisuals(a.creatorId, displayName)
       return {
         id: a.creatorId,
         rank: 0,
-        name: a.creatorName,
-        concept: a.grade,
+        name: displayName,
+        concept: displayJob,
         avatar: visuals.avatar,
         avatarTone: visuals.avatarTone,
         profileImageUrl: a.profileImageUrl || null,

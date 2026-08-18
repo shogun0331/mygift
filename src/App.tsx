@@ -6,6 +6,7 @@ import {
   createRegisteredCharacter,
   findLevelIdleVideoUrl,
   normalizeOwnedCreator,
+  normalizeRegisteredCharacter,
   type OwnedCreator,
   type RegisteredCharacter,
   type CharacterVideo,
@@ -65,12 +66,12 @@ function hydrateRegisteredCharacter(c: any): RegisteredCharacter {
           : '',
   }))
   const profileImg = images.find((img: any) => img.id === c.profileImageId)
-  return {
+  return normalizeRegisteredCharacter({
     ...c,
     images,
     videos,
     profileImageUrl: profileImg?.url || (c.profileImageUrl ? resolveMediaSrc(c.profileImageUrl) : c.profileImageUrl),
-  } as RegisteredCharacter
+  })
 }
 
 async function loadRegisteredCharactersFromDisk(): Promise<RegisteredCharacter[]> {
@@ -149,6 +150,9 @@ function syncOwnedWithRegistered(
       source.images === creator.images &&
       source.profileImageUrl === creator.profileImageUrl &&
       source.name === creator.name &&
+      source.names === creator.names &&
+      source.job === creator.job &&
+      source.jobs === creator.jobs &&
       source.mediaRevision === creator.mediaRevision &&
       !changed
     ) {
@@ -158,8 +162,10 @@ function syncOwnedWithRegistered(
     return normalizeOwnedCreator({
       ...normalized,
       name: source.name,
+      names: source.names,
       age: source.age,
       job: source.job,
+      jobs: source.jobs,
       bust: source.bust,
       weight: source.weight,
       concept: source.concept,
@@ -513,8 +519,10 @@ export default function App() {
         return {
           id: c.id,
           name: c.name,
+          names: c.names,
           age: c.age,
           job: c.job,
+          jobs: c.jobs,
           bust: c.bust,
           weight: c.weight,
           grade: c.grade,
@@ -571,8 +579,10 @@ export default function App() {
         createRegisteredCharacter({
           id: tempId,
           name: savedPayload.name,
+          names: savedPayload.names,
           age: savedPayload.age,
           job: savedPayload.job,
+          jobs: savedPayload.jobs,
           bust: savedPayload.bust,
           weight: savedPayload.weight,
           eventLinks: savedPayload.eventLinks,
@@ -629,16 +639,18 @@ export default function App() {
           : null
       const profileImageUrl = profile?.url || null
 
-      const nextCharacter = {
+      const nextCharacter = createRegisteredCharacter({
+        id,
         name: savedPayload.name,
+        names: savedPayload.names,
         age: savedPayload.age,
         job: savedPayload.job,
+        jobs: savedPayload.jobs,
         bust: savedPayload.bust,
         weight: savedPayload.weight,
-        concept: savedPayload.job.trim() || '뉴비',
         eventLinks: savedPayload.eventLinks,
         profileImageUrl,
-        profileBlob: null as Blob | null,
+        profileBlob: null,
         characterIconId: savedPayload.characterIconId,
         characterIllustrationId: savedPayload.characterIllustrationId,
         profileImageId: savedPayload.profileImageId,
@@ -646,7 +658,7 @@ export default function App() {
         images: savedPayload.images,
         videos: savedPayload.videos as CharacterVideo[],
         mediaRevision: Date.now(),
-      }
+      })
 
       setRegisteredCharacters((prev) =>
         prev.map((c) => {
@@ -666,7 +678,14 @@ export default function App() {
             }
           }
 
-          return { ...c, ...nextCharacter }
+          return {
+            ...c,
+            ...nextCharacter,
+            grade: c.grade,
+            popularity: c.popularity,
+            salary: c.salary,
+            avatarTone: c.avatarTone,
+          }
         }),
       )
 

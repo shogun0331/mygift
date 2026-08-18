@@ -522,7 +522,7 @@
     "characterIllustrationId": "1786851012692-5okgifr",
     "profileImageId": "1786851012692-5okgifr",
     "profileVideoId": null,
-    "mediaRevision": 1786851057574,
+    "mediaRevision": 1786873012500,
     "images": [
       {
         "id": "1786851012691-cj9ehp3",
@@ -539,7 +539,136 @@
         "keys": []
       }
     ],
-    "videos": []
+    "videos": [
+      {
+        "id": "1786872998964-ak2gcz5",
+        "fileName": "1786872998964-ak2gcz5__2026-08-16_00060.mp4",
+        "fileSize": 454738,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786872998964-ak2gcz5__2026-08-16_00060.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873001753-wzod99v",
+        "fileName": "1786873001753-wzod99v__2026-08-16_00059.mp4",
+        "fileSize": 413742,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873001753-wzod99v__2026-08-16_00059.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005524-upwuggv",
+        "fileName": "1786873005524-upwuggv__2026-08-16_00044.mp4",
+        "fileSize": 392836,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005524-upwuggv__2026-08-16_00044.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005524-6y20qss",
+        "fileName": "1786873005524-6y20qss__2026-08-16_00046.mp4",
+        "fileSize": 496076,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005524-6y20qss__2026-08-16_00046.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005525-wrnqw1x",
+        "fileName": "1786873005525-wrnqw1x__2026-08-16_00048.mp4",
+        "fileSize": 400444,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005525-wrnqw1x__2026-08-16_00048.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005525-u5hwg5i",
+        "fileName": "1786873005525-u5hwg5i__2026-08-16_00049.mp4",
+        "fileSize": 487821,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005525-u5hwg5i__2026-08-16_00049.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005525-o3acl1c",
+        "fileName": "1786873005525-o3acl1c__2026-08-16_00050.mp4",
+        "fileSize": 468849,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005525-o3acl1c__2026-08-16_00050.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005525-notk3j1",
+        "fileName": "1786873005525-notk3j1__2026-08-16_00051.mp4",
+        "fileSize": 529125,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005525-notk3j1__2026-08-16_00051.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005525-bqywq81",
+        "fileName": "1786873005525-bqywq81__2026-08-16_00052.mp4",
+        "fileSize": 416030,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005525-bqywq81__2026-08-16_00052.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005525-7n773sm",
+        "fileName": "1786873005525-7n773sm__2026-08-16_00053.mp4",
+        "fileSize": 506467,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005525-7n773sm__2026-08-16_00053.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005525-opjw0zm",
+        "fileName": "1786873005525-opjw0zm__2026-08-16_00054.mp4",
+        "fileSize": 425235,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005525-opjw0zm__2026-08-16_00054.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005526-nvskje9",
+        "fileName": "1786873005526-nvskje9__2026-08-16_00056.mp4",
+        "fileSize": 408031,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005526-nvskje9__2026-08-16_00056.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005526-p4bmt3c",
+        "fileName": "1786873005526-p4bmt3c__2026-08-16_00057.mp4",
+        "fileSize": 543683,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005526-p4bmt3c__2026-08-16_00057.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786873005526-8lissse",
+        "fileName": "1786873005526-8lissse__2026-08-16_00058.mp4",
+        "fileSize": 436909,
+        "url": "media://characters/1786851057540-5sup19s/videos/1786873005526-8lissse__2026-08-16_00058.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      }
+    ]
   },
   {
     "id": "1786851109772-o2n3dj3",
@@ -566,7 +695,7 @@
     "characterIllustrationId": "1786851072697-mubqh2i",
     "profileImageId": "1786851072697-mubqh2i",
     "profileVideoId": null,
-    "mediaRevision": 1786851109811,
+    "mediaRevision": 1786880024947,
     "images": [
       {
         "id": "1786851072697-wmo4ggx",
@@ -583,7 +712,82 @@
         "keys": []
       }
     ],
-    "videos": []
+    "videos": [
+      {
+        "id": "1786880007738-42xy04n",
+        "fileName": "1786880007738-42xy04n__2026-08-16_00071.mp4",
+        "fileSize": 468423,
+        "url": "media://characters/1786851109772-o2n3dj3/videos/1786880007738-42xy04n__2026-08-16_00071.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786880015462-wbi69yp",
+        "fileName": "1786880015462-wbi69yp__2026-08-16_00069.mp4",
+        "fileSize": 413287,
+        "url": "media://characters/1786851109772-o2n3dj3/videos/1786880015462-wbi69yp__2026-08-16_00069.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786880020307-4lqeuqi",
+        "fileName": "1786880020307-4lqeuqi__2026-08-16_00062.mp4",
+        "fileSize": 339692,
+        "url": "media://characters/1786851109772-o2n3dj3/videos/1786880020307-4lqeuqi__2026-08-16_00062.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786880020308-6vgphri",
+        "fileName": "1786880020308-6vgphri__2026-08-16_00063.mp4",
+        "fileSize": 359754,
+        "url": "media://characters/1786851109772-o2n3dj3/videos/1786880020308-6vgphri__2026-08-16_00063.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786880020308-34vwf25",
+        "fileName": "1786880020308-34vwf25__2026-08-16_00064.mp4",
+        "fileSize": 343563,
+        "url": "media://characters/1786851109772-o2n3dj3/videos/1786880020308-34vwf25__2026-08-16_00064.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786880020308-o9xjizu",
+        "fileName": "1786880020308-o9xjizu__2026-08-16_00066.mp4",
+        "fileSize": 306673,
+        "url": "media://characters/1786851109772-o2n3dj3/videos/1786880020308-o9xjizu__2026-08-16_00066.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786880020308-muizwe1",
+        "fileName": "1786880020308-muizwe1__2026-08-16_00067.mp4",
+        "fileSize": 436152,
+        "url": "media://characters/1786851109772-o2n3dj3/videos/1786880020308-muizwe1__2026-08-16_00067.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786880020309-cb6i38a",
+        "fileName": "1786880020309-cb6i38a__2026-08-16_00068.mp4",
+        "fileSize": 326153,
+        "url": "media://characters/1786851109772-o2n3dj3/videos/1786880020309-cb6i38a__2026-08-16_00068.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      }
+    ]
   },
   {
     "id": "1786851153987-tb6qhg5",
@@ -610,7 +814,7 @@
     "characterIllustrationId": "1786851121329-s6uy6cc",
     "profileImageId": "1786851121329-s6uy6cc",
     "profileVideoId": null,
-    "mediaRevision": 1786851154030,
+    "mediaRevision": 1786927232129,
     "images": [
       {
         "id": "1786851121329-wxzy6zc",
@@ -627,15 +831,90 @@
         "keys": []
       }
     ],
-    "videos": []
+    "videos": [
+      {
+        "id": "1786927212689-phzr8lz",
+        "fileName": "1786927212689-phzr8lz__2026-08-17_00005.mp4",
+        "fileSize": 540374,
+        "url": "media://characters/1786851153987-tb6qhg5/videos/1786927212689-phzr8lz__2026-08-17_00005.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786927218978-zgk96gl",
+        "fileName": "1786927218978-zgk96gl__2026-08-16_00074.mp4",
+        "fileSize": 793315,
+        "url": "media://characters/1786851153987-tb6qhg5/videos/1786927218978-zgk96gl__2026-08-16_00074.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786927218978-pzce339",
+        "fileName": "1786927218978-pzce339__2026-08-16_00076.mp4",
+        "fileSize": 466362,
+        "url": "media://characters/1786851153987-tb6qhg5/videos/1786927218978-pzce339__2026-08-16_00076.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786927218979-u2o41zu",
+        "fileName": "1786927218979-u2o41zu__2026-08-17_00001.mp4",
+        "fileSize": 584480,
+        "url": "media://characters/1786851153987-tb6qhg5/videos/1786927218979-u2o41zu__2026-08-17_00001.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786927218979-duoywkn",
+        "fileName": "1786927218979-duoywkn__2026-08-17_00002.mp4",
+        "fileSize": 510962,
+        "url": "media://characters/1786851153987-tb6qhg5/videos/1786927218979-duoywkn__2026-08-17_00002.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786927218979-ve8sm5o",
+        "fileName": "1786927218979-ve8sm5o__2026-08-17_00003.mp4",
+        "fileSize": 558719,
+        "url": "media://characters/1786851153987-tb6qhg5/videos/1786927218979-ve8sm5o__2026-08-17_00003.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      }
+    ]
   },
   {
     "id": "1786851211019-59swl59",
     "name": "사쿠라기 마이",
+    "names": {
+      "ko": "사쿠라기 마이",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
     "age": "32",
     "job": "재즈 가수",
-    "bust": "D",
-    "weight": "52",
+    "jobs": {
+      "ko": "재즈 가수",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "bust": "",
+    "weight": "",
     "grade": "C",
     "popularity": 25,
     "concept": "재즈 가수",
@@ -654,7 +933,7 @@
     "characterIllustrationId": "1786851163784-hl0s77y",
     "profileImageId": "1786851163784-hl0s77y",
     "profileVideoId": null,
-    "mediaRevision": 1786851211060,
+    "mediaRevision": 1786932810982,
     "images": [
       {
         "id": "1786851163784-g58ht1b",
@@ -671,7 +950,73 @@
         "keys": []
       }
     ],
-    "videos": []
+    "videos": [
+      {
+        "id": "1786932421981-lx30v7a",
+        "fileName": "1786932421981-lx30v7a__2026-08-17_00006.mp4",
+        "fileSize": 506340,
+        "url": "media://characters/1786851211019-59swl59/videos/1786932421981-lx30v7a__2026-08-17_00006.mp4",
+        "keys": [
+          "idle"
+        ],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786932437629-0vfkxi2",
+        "fileName": "1786932437629-0vfkxi2__2026-08-17_00008.mp4",
+        "fileSize": 582556,
+        "url": "media://characters/1786851211019-59swl59/videos/1786932437629-0vfkxi2__2026-08-17_00008.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786932437630-sul3wzz",
+        "fileName": "1786932437630-sul3wzz__2026-08-17_00009.mp4",
+        "fileSize": 554738,
+        "url": "media://characters/1786851211019-59swl59/videos/1786932437630-sul3wzz__2026-08-17_00009.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786932437630-dw0t517",
+        "fileName": "1786932437630-dw0t517__2026-08-17_00011.mp4",
+        "fileSize": 386878,
+        "url": "media://characters/1786851211019-59swl59/videos/1786932437630-dw0t517__2026-08-17_00011.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786932437630-n0kgbzk",
+        "fileName": "1786932437630-n0kgbzk__2026-08-17_00012.mp4",
+        "fileSize": 578935,
+        "url": "media://characters/1786851211019-59swl59/videos/1786932437630-n0kgbzk__2026-08-17_00012.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786932437630-jcrhiet",
+        "fileName": "1786932437630-jcrhiet__2026-08-17_00014.mp4",
+        "fileSize": 500068,
+        "url": "media://characters/1786851211019-59swl59/videos/1786932437630-jcrhiet__2026-08-17_00014.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      },
+      {
+        "id": "1786932795833-cmp0dow",
+        "fileName": "1786932795833-cmp0dow__2026-08-17_00015.mp4",
+        "fileSize": 408923,
+        "url": "media://characters/1786851211019-59swl59/videos/1786932795833-cmp0dow__2026-08-17_00015.mp4",
+        "keys": [],
+        "level": 1,
+        "stage": 1
+      }
+    ]
   },
   {
     "id": "1786851291899-dqn64g6",

@@ -11,6 +11,8 @@ import {
 type EventSimulatorProps = {
   event: GameEvent
   mode?: 'debug' | 'game'
+  /** 디버그 모드에서 닫기 버튼 라벨 (기본: 에디터로 돌아가기) */
+  returnLabel?: string
   onClose: () => void
   registeredCharacters?: any[]
 }
@@ -162,7 +164,13 @@ function findMediaAsset(fileName: string, media: EventMediaAsset[]): EventMediaA
   return media.find((m) => m.fileName.toLowerCase().trim() === fn) || null
 }
 
-export function EventSimulator({ event, mode = 'debug', onClose, registeredCharacters = [] }: EventSimulatorProps) {
+export function EventSimulator({
+  event,
+  mode = 'debug',
+  returnLabel,
+  onClose,
+  registeredCharacters = [],
+}: EventSimulatorProps) {
   // 모든 노드 추출 및 평탄화
   const flatNodes = useMemo(() => flattenNodes(event.nodes), [event.nodes])
 
@@ -657,6 +665,8 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
     })
   }, [flatNodes, searchQuery, lang, event])
 
+  const exitLabel = returnLabel ?? (mode === 'debug' ? '에디터로 돌아가기' : '뒤로가기 [ESC]')
+
   return (
     <div className={`fixed inset-0 z-50 flex flex-col text-slate-100 font-sans ${
       mode === 'game' ? 'bg-black' : 'bg-slate-950'
@@ -724,9 +734,13 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
               e.stopPropagation()
               triggerClose()
             }}
-            className="rounded-lg bg-indigo-600/15 hover:bg-indigo-600/35 border border-indigo-500/30 px-4 py-1.5 text-sm font-semibold text-indigo-200 transition"
+            className={`rounded-lg border px-4 py-1.5 text-sm font-semibold transition ${
+              mode === 'debug'
+                ? 'border-emerald-500/40 bg-emerald-600/15 text-emerald-200 hover:bg-emerald-600/30'
+                : 'border-indigo-500/30 bg-indigo-600/15 text-indigo-200 hover:bg-indigo-600/35'
+            }`}
           >
-            뒤로가기 [ESC]
+            {mode === 'debug' ? `← ${exitLabel}` : exitLabel}
           </button>
         </div>
       </header>
@@ -938,6 +952,16 @@ export function EventSimulator({ event, mode = 'debug', onClose, registeredChara
         {/* Right: Debug Console Panel */}
         {mode !== 'game' && (
           <aside className="border-l border-indigo-500/15 bg-slate-900/40 flex flex-col min-h-0">
+            <div className="shrink-0 border-b border-white/10 p-3">
+              <button
+                type="button"
+                onClick={triggerClose}
+                className="w-full rounded-xl border border-emerald-500/35 bg-emerald-600/10 px-3 py-2.5 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-600/20"
+              >
+                ← {exitLabel}
+              </button>
+              <p className="mt-2 text-center text-[10px] text-slate-500">ESC 키로도 닫을 수 있습니다</p>
+            </div>
             
             {/* Debug Console Header/Tabs */}
             <div className="flex shrink-0 border-b border-white/10">

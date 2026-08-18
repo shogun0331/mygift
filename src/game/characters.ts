@@ -1,6 +1,12 @@
 import type { CharacterEventLinks } from '../events/types'
 import { emptyCharacterEventLinks } from '../events/types'
 import {
+  type CharacterLocaleText,
+  mergeCharacterLocaleText,
+  normalizeCharacterNamedFields,
+  primaryCharacterLocaleText,
+} from './characterLocales'
+import {
   conditionFromScore,
   scoreOf,
   STAMINA_MAX,
@@ -33,9 +39,15 @@ export type CharacterVideo = {
 /** 에디터에 등록된 캐릭터 (스카우트 대상 풀) */
 export type RegisteredCharacter = {
   id: string
+  /** 기본(ko) 닉네임 — 검색·슬롯 스냅샷·폴백용 */
   name: string
+  /** 언어별 닉네임 (ko/en/ja/zh-cn/ru/es/de) */
+  names: CharacterLocaleText
   age: string
+  /** 기본(ko) 직업 — concept 폴백용 */
   job: string
+  /** 언어별 직업 */
+  jobs: CharacterLocaleText
   bust: string
   weight: string
   grade: Grade
@@ -84,8 +96,10 @@ export type OwnedCreator = RegisteredCharacter & {
 export type CharacterDraft = {
   id?: string
   name: string
+  names?: Partial<Record<string, string>> | CharacterLocaleText
   age: string
   job: string
+  jobs?: Partial<Record<string, string>> | CharacterLocaleText
   bust: string
   weight: string
   eventLinks: CharacterEventLinks
@@ -125,24 +139,61 @@ function defaultPopularity(grade: Grade) {
   }
 }
 
+/** 로드·세이브 직전 닉네임/직업 로케일 정규화 */
+export function normalizeRegisteredCharacter(
+  raw: RegisteredCharacter | (Partial<RegisteredCharacter> & { id: string; name?: string }),
+): RegisteredCharacter {
+  const named = normalizeCharacterNamedFields({
+    name: raw.name,
+    names: raw.names,
+    job: raw.job,
+    jobs: raw.jobs,
+    concept: raw.concept,
+  })
+  const grade = (raw.grade as Grade | undefined) ?? defaultGradeFromJob(named.job)
+  const visuals = creatorVisuals(raw.id, named.name)
+  return {
+    id: raw.id,
+    name: named.name,
+    names: named.names,
+    age: String(raw.age ?? ''),
+    job: named.job,
+    jobs: named.jobs,
+    bust: String(raw.bust ?? ''),
+    weight: String(raw.weight ?? ''),
+    grade,
+    popularity: Number(raw.popularity ?? defaultPopularity(grade)) || defaultPopularity(grade),
+    concept: named.concept,
+    salary: Number(raw.salary ?? defaultSalary(grade)) || defaultSalary(grade),
+    eventLinks: raw.eventLinks ?? emptyCharacterEventLinks(),
+    avatarTone: raw.avatarTone || visuals.avatarTone,
+    profileImageUrl: raw.profileImageUrl ?? null,
+    profileBlob: raw.profileBlob ?? null,
+    characterIconId: raw.characterIconId ?? null,
+    characterIllustrationId: raw.characterIllustrationId ?? null,
+    profileImageId: raw.profileImageId ?? null,
+    profileVideoId: raw.profileVideoId ?? null,
+    images: raw.images ?? [],
+    videos: raw.videos ?? [],
+    mediaRevision: raw.mediaRevision,
+  }
+}
+
 /** 에디터에서 캐릭터 등록 */
 export function createRegisteredCharacter(draft: CharacterDraft): RegisteredCharacter {
   const id = draft.id || createId()
-  const grade = defaultGradeFromJob(draft.job)
-  const visuals = creatorVisuals(id, draft.name)
-  return {
+  const names = mergeCharacterLocaleText(draft.names, draft.name)
+  const jobs = mergeCharacterLocaleText(draft.jobs, draft.job)
+  const name = primaryCharacterLocaleText(names)
+  const job = primaryCharacterLocaleText(jobs)
+  return normalizeRegisteredCharacter({
     id,
-    name: draft.name,
+    name,
+    names,
     age: draft.age,
-    job: draft.job,
-    bust: draft.bust,
-    weight: draft.weight,
-    grade,
-    popularity: defaultPopularity(grade),
-    concept: draft.job.trim() || '뉴비',
-    salary: defaultSalary(grade),
+    job,
+    jobs,
     eventLinks: draft.eventLinks ?? emptyCharacterEventLinks(),
-    avatarTone: visuals.avatarTone,
     profileImageUrl: draft.profileImageUrl ?? null,
     profileBlob: draft.profileBlob || null,
     characterIconId: draft.characterIconId ?? null,
@@ -152,7 +203,7 @@ export function createRegisteredCharacter(draft: CharacterDraft): RegisteredChar
     images: draft.images ?? [],
     videos: draft.videos ?? [],
     mediaRevision: draft.mediaRevision,
-  }
+  })
 }
 
 /** 스카우트 영입 → 보유 크리에이터 (레거시: 고정 스탯). 신규 영입은 hireScoutOffer 사용 */
@@ -178,6 +229,7 @@ export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
 
 /** 구 세이브(loyalty 등) → 신규 능력치 필드 보정 */
 export function normalizeOwnedCreator(raw: OwnedCreator & { loyalty?: number }): OwnedCreator {
+  const base = normalizeRegisteredCharacter(raw)
   const trust = Math.max(0, Math.min(100, Number(raw.trust ?? raw.loyalty ?? 50) || 50))
   const staminaMax = Math.min(
     STAMINA_MAX,
@@ -210,6 +262,7 @@ export function normalizeOwnedCreator(raw: OwnedCreator & { loyalty?: number }):
   const dateArcStep: 0 | 1 | 2 | 3 = arcRaw <= 0 ? 0 : arcRaw === 1 ? 1 : arcRaw === 2 ? 2 : 3
   return {
     ...raw,
+    ...base,
     skill: Math.max(0, Math.min(100, Number(raw.skill ?? 25) || 25)),
     heat: Math.max(1, Math.min(2, Number(raw.heat ?? 1) || 1)),
     dateArcStep,

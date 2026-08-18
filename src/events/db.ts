@@ -9,6 +9,7 @@ function withOwner(events: GameEvent[]): GameEvent[] {
     ownerCharacterId: normalizeOwnerCharacterId(event.ownerCharacterId),
   }))
 }
+const DB_NAME = 'broadcast-game'
 const DB_VERSION = 1
 
 function openDB(): Promise<IDBDatabase> {

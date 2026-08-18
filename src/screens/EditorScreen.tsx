@@ -11,6 +11,11 @@ import {
   type GameEvent,
 } from '../events/types'
 import type { RegisteredCharacter } from '../game/characters'
+import {
+  CHARACTER_DEFAULT_LOCALE,
+  mergeCharacterLocaleText,
+  type CharacterLocaleText,
+} from '../game/characterLocales'
 import { resolveMediaSrc } from '../game/mediaUrl'
 
 type EditorTab = 'character' | 'notification' | 'event'
@@ -63,6 +68,7 @@ export function EditorScreen({
   const [editingCharacter, setEditingCharacter] = useState<RegisteredCharacter | null>(null)
   const [showSimulator, setShowSimulator] = useState(false)
   const [simulatorMode, setSimulatorMode] = useState<'debug' | 'game'>('debug')
+  const [selectedSimulatorEvent, setSelectedSimulatorEvent] = useState<GameEvent | null>(null)
   const handleSimulateLinkedEvent = (
     character: RegisteredCharacter,
     slotKey: CharacterEventSlotKey,
@@ -282,6 +288,7 @@ export function EditorScreen({
           key={selectedSimulatorEvent.id}
           event={selectedSimulatorEvent}
           mode={simulatorMode}
+          returnLabel="에디터로 돌아가기"
           onClose={() => {
             setShowSimulator(false)
             setSelectedSimulatorEvent(null)
@@ -309,8 +316,10 @@ type VideoMediaItem = MediaItem & {
 
 export type AddCharacterPayload = {
   name: string
+  names: CharacterLocaleText
   age: string
   job: string
+  jobs: CharacterLocaleText
   bust: string
   weight: string
   characterIconId: string | null
@@ -613,12 +622,23 @@ function AddCharacterPanel({
     e.preventDefault()
     const trimmed = name.trim()
     if (!trimmed || saving) return
+    // 에디터는 한국어만 편집. 다른 언어 번역은 기존 값을 유지한다.
+    const names: CharacterLocaleText = {
+      ...mergeCharacterLocaleText(initialCharacter?.names, initialCharacter?.name ?? ''),
+      [CHARACTER_DEFAULT_LOCALE]: trimmed,
+    }
+    const jobs: CharacterLocaleText = {
+      ...mergeCharacterLocaleText(initialCharacter?.jobs, initialCharacter?.job ?? ''),
+      [CHARACTER_DEFAULT_LOCALE]: job.trim(),
+    }
     setSaving(true)
     try {
       await onSubmit({
         name: trimmed,
+        names,
         age: age.trim(),
         job: job.trim(),
+        jobs,
         bust: bust.trim(),
         weight: weight.trim(),
         characterIconId,
@@ -647,6 +667,37 @@ function AddCharacterPanel({
       })
     } finally {
       setSaving(false)
+    }
+  }
+
+  function buildDraftCharacter(): RegisteredCharacter {
+    const names: CharacterLocaleText = {
+      ...mergeCharacterLocaleText(initialCharacter?.names, initialCharacter?.name ?? ''),
+      [CHARACTER_DEFAULT_LOCALE]: name.trim(),
+    }
+    const jobs: CharacterLocaleText = {
+      ...mergeCharacterLocaleText(initialCharacter?.jobs, initialCharacter?.job ?? ''),
+      [CHARACTER_DEFAULT_LOCALE]: job.trim(),
+    }
+    return {
+      grade: 'C',
+      popularity: 0,
+      concept: job.trim() || '뉴비',
+      salary: 0,
+      avatarTone: '',
+      profileImageUrl: null,
+      images: [],
+      videos: [],
+      ...(initialCharacter ?? {}),
+      id: initialCharacter?.id ?? 'temp_id',
+      name: name.trim(),
+      names,
+      age,
+      job: job.trim(),
+      jobs,
+      bust,
+      weight,
+      eventLinks,
     }
   }
 
@@ -895,25 +946,7 @@ function AddCharacterPanel({
                         <button
                           type="button"
                           onClick={() => {
-                            const tempChar: RegisteredCharacter = {
-                              grade: 'C',
-                              popularity: 0,
-                              concept: '',
-                              salary: 0,
-                              avatarTone: '',
-                              profileImageUrl: null,
-                              images: [],
-                              videos: [],
-                              ...(initialCharacter ?? {}),
-                              id: initialCharacter?.id ?? 'temp_id',
-                              name: name,
-                              age: age,
-                              job: job,
-                              bust: bust,
-                              weight: weight,
-                              eventLinks: eventLinks,
-                            }
-                            onSimulateLinkedEvent(tempChar, slot.key, 'debug')
+                            onSimulateLinkedEvent(buildDraftCharacter(), slot.key, 'debug')
                           }}
                           className="rounded bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-2 py-0.5 text-[10px] text-indigo-300 font-medium transition cursor-pointer"
                         >
@@ -922,25 +955,7 @@ function AddCharacterPanel({
                         <button
                           type="button"
                           onClick={() => {
-                            const tempChar: RegisteredCharacter = {
-                              grade: 'C',
-                              popularity: 0,
-                              concept: '',
-                              salary: 0,
-                              avatarTone: '',
-                              profileImageUrl: null,
-                              images: [],
-                              videos: [],
-                              ...(initialCharacter ?? {}),
-                              id: initialCharacter?.id ?? 'temp_id',
-                              name: name,
-                              age: age,
-                              job: job,
-                              bust: bust,
-                              weight: weight,
-                              eventLinks: eventLinks,
-                            }
-                            onSimulateLinkedEvent(tempChar, slot.key, 'game')
+                            onSimulateLinkedEvent(buildDraftCharacter(), slot.key, 'game')
                           }}
                           className="rounded bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/25 px-2 py-0.5 text-[10px] text-pink-300 font-medium transition cursor-pointer"
                         >

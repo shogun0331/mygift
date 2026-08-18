@@ -19,6 +19,10 @@ import {
   scoreOf,
 } from '../game/condition'
 import { formatMoney, formatMoneyPerYear } from '../game/money'
+import {
+  characterDisplayJob,
+  characterDisplayName,
+} from '../game/characterLocales'
 import { useTranslation } from '../locales/i18n'
 
 type CreatorPanelProps = {
@@ -84,7 +88,7 @@ export function CreatorPanel({
   onConditionCare,
   onVacation,
 }: CreatorPanelProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const [view, setView] = useState<'roster' | 'scout'>('roster')
   const [query, setQuery] = useState('')
   const [gradeFilter, setGradeFilter] = useState<'ALL' | Grade>('ALL')
@@ -105,10 +109,16 @@ export function CreatorPanel({
     const q = query.trim().toLowerCase()
     return ownedCreators.filter((creator) => {
       const matchGrade = gradeFilter === 'ALL' || creator.grade === gradeFilter
-      const matchQuery =
-        q.length === 0 ||
-        creator.name.toLowerCase().includes(q) ||
-        creator.concept.toLowerCase().includes(q)
+      const nameHay = [
+        creator.name,
+        ...Object.values(creator.names ?? {}),
+        creator.job,
+        creator.concept,
+        ...Object.values(creator.jobs ?? {}),
+      ]
+        .join(' ')
+        .toLowerCase()
+      const matchQuery = q.length === 0 || nameHay.includes(q)
       return matchGrade && matchQuery
     })
   }, [ownedCreators, query, gradeFilter])
@@ -205,7 +215,9 @@ export function CreatorPanel({
           <p className="text-[10px] text-slate-500">좌우 스크롤 · 클릭 시 상세</p>
         </div>
         <div className="flex gap-2.5 overflow-x-auto pb-1">
-          {filtered.map((creator) => (
+          {filtered.map((creator) => {
+            const displayName = characterDisplayName(creator, locale)
+            return (
             <button
               key={creator.id}
               type="button"
@@ -231,18 +243,19 @@ export function CreatorPanel({
                   <div
                     className={`relative mb-2 flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br text-sm font-bold text-slate-950 ${creator.avatarTone}`}
                   >
-                    {creator.name.slice(0, 1)}
+                    {displayName.slice(0, 1)}
                   </div>
                 )}
               </div>
               <div className="border-t border-white/8 px-2 py-2">
-                <h3 className="truncate text-xs font-semibold text-slate-100">{creator.name}</h3>
+                <h3 className="truncate text-xs font-semibold text-slate-100">{displayName}</h3>
                 <p className="mt-0.5 text-[10px] font-semibold text-amber-400">
                   {formatSalaryShort(creator.salary)}
                 </p>
               </div>
             </button>
-          ))}
+            )
+          })}
           {filtered.length === 0 ? (
             <div className="flex min-h-[10rem] w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-black/20 px-4 text-center">
               <p className="text-sm text-slate-400">보유 캐릭터가 없습니다.</p>
@@ -284,6 +297,8 @@ export function CreatorPanel({
               <tbody>
                 {sortedBySalary.map((creator, index) => {
                   const trust = trustOf(creator)
+                  const displayName = characterDisplayName(creator, locale)
+                  const displayJob = characterDisplayJob(creator, locale)
                   return (
                     <tr
                       key={creator.id}
@@ -296,19 +311,19 @@ export function CreatorPanel({
                           {creator.profileImageUrl ? (
                             <img
                               src={creator.profileImageUrl}
-                              alt={creator.name}
+                              alt={displayName}
                               className="h-7 w-7 rounded-full object-cover"
                             />
                           ) : (
                             <div
                               className={`flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator.avatarTone}`}
                             >
-                              {creator.name.slice(0, 1)}
+                              {displayName.slice(0, 1)}
                             </div>
                           )}
                           <div className="min-w-0">
-                            <p className="truncate font-semibold text-slate-100">{creator.name}</p>
-                            <p className="text-[10px] text-slate-500">{creator.concept}</p>
+                            <p className="truncate font-semibold text-slate-100">{displayName}</p>
+                            <p className="text-[10px] text-slate-500">{displayJob}</p>
                           </div>
                         </div>
                       </td>
@@ -378,7 +393,7 @@ function ScoutView({
   onPass: () => void
   onHire: (offer: ScoutOffer) => void
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const stats = offer?.stats
   const hireCheck = offer ? canHireScoutOffer(offer, assets) : null
   const mustHire = ownedCount <= 0
@@ -441,7 +456,7 @@ function ScoutView({
                   <div
                     className={`flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br text-2xl font-bold text-slate-950 ${offer.template.avatarTone}`}
                   >
-                    {offer.template.name.slice(0, 1)}
+                    {characterDisplayName(offer.template, locale).slice(0, 1)}
                   </div>
                 </div>
               )}
@@ -454,9 +469,11 @@ function ScoutView({
                 </span>
               </div>
               <div className="absolute inset-x-0 bottom-0 p-3">
-                <h3 className="text-lg font-bold text-slate-50">{offer.template.name}</h3>
+                <h3 className="text-lg font-bold text-slate-50">
+                  {characterDisplayName(offer.template, locale)}
+                </h3>
                 <p className="text-xs text-slate-300">
-                  {offer.template.job || offer.template.concept}
+                  {characterDisplayJob(offer.template, locale)}
                   {offer.template.age ? ` · ${offer.template.age}세` : ''}
                 </p>
               </div>
@@ -558,7 +575,9 @@ function CreatorDetailView({
   onConditionCare: (creatorId: string) => void
   onVacation: (creatorId: string) => void
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
+  const displayName = characterDisplayName(creator, locale)
+  const displayJob = characterDisplayJob(creator, locale)
   const trust = trustOf(creator)
   const staminaPct = Math.round((creator.stamina / Math.max(1, creator.staminaMax)) * 100)
   const skill = creator.skill ?? 0
@@ -585,7 +604,7 @@ function CreatorDetailView({
         <div className="min-w-0 flex-1">
           <p className="game-kicker">CREATOR PROFILE</p>
           <h2 className="truncate text-base font-semibold text-slate-100">
-            {creator.name}{' '}
+            {displayName}{' '}
             <span className={`text-sm font-bold ${GRADE_TEXT[creator.grade]}`}>
               ({creator.grade}급)
             </span>
@@ -748,10 +767,10 @@ function CreatorDetailView({
                 {creator.name.slice(0, 1)}
               </div>
             )}
-            <p className="text-xs font-semibold tracking-wide text-slate-400">{creator.concept}</p>
-            <h3 className="mt-1 text-2xl font-bold text-slate-50">{creator.name}</h3>
+            <p className="text-xs font-semibold tracking-wide text-slate-400">{displayJob}</p>
+            <h3 className="mt-1 text-2xl font-bold text-slate-50">{displayName}</h3>
             <p className="mt-2 text-sm text-slate-300">
-              {creator.job}
+              {displayJob}
               {creator.age ? ` · ${creator.age}세` : ''}
             </p>
           </div>

@@ -5,106 +5,106 @@
   "chapterId": 1,
   "titleKey": "c8d535db-c786-48d0-8b9c-0a24ae64de40",
   "title": "VIP",
-  "startNode": "node_1786859126122_0_mdu3",
+  "startNode": "node_1787012131245_0_ehw3",
   "nodes": [
     {
-      "id": "node_1786859126122_0_mdu3",
+      "id": "node_1787012131245_0_ehw3",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-18_00001_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786859126122_1_11q9",
+      "id": "node_1787012131245_1_twfb",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "고급 호텔룸. 문이 열리고, 흰 블라우스에 네이비 H라인 치마 차림의 아야가 들어온다. 개인 만남을 수락한 것이다.",
-      "text_key": "node_1786859126122_1_11q9"
+      "text": "고급 호텔룸. 문이 열리고, 흰 셔츠에 네이비 H라인 치마 차림의 아야가 들어온다. 개인 만남을 수락한 것이다.",
+      "text_key": "node_1787012131245_1_twfb"
     },
     {
-      "id": "node_1786859126122_2_2b7o",
+      "id": "node_1787012131245_2_lcio",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "…안녕하세요. 불러주셔서 감사합니다. (고개를 살짝 숙인다)",
-      "text_key": "node_1786859126122_2_2b7o"
+      "text_key": "node_1787012131245_2_lcio"
     },
     {
-      "id": "node_1786859126122_3_534o",
+      "id": "node_1787012131245_3_bc67",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "와줘서 고마워요. 방송에서 보던 그대로네요.",
-      "text_key": "node_1786859126122_3_534o"
+      "text_key": "node_1787012131245_3_bc67"
     },
     {
-      "id": "node_1786859126122_4_13tv",
+      "id": "node_1787012131245_4_db2h",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "VIP분과의 개인적인 만남이라고 들었어요. (또박또박)",
-      "text_key": "node_1786859126122_4_13tv"
+      "text_key": "node_1787012131245_4_db2h"
     },
     {
-      "id": "node_1786859126122_5_r0f6",
+      "id": "node_1787012131245_5_lhh0",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "부담 주지 않을게요. 편하게 해요.",
-      "text_key": "node_1786859126122_5_r0f6"
+      "text_key": "node_1787012131245_5_lhh0"
     },
     {
-      "id": "node_1786859126122_6_fqes",
+      "id": "node_1787012131245_6_kkvk",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
-      "text": "네. …방송 밖에서 뵙는 건 처음이네요. (입꼬리를 올린다)",
-      "text_key": "node_1786859126122_6_fqes"
+      "text": "네. … (입꼬리를 올린다)",
+      "text_key": "node_1787012131245_6_kkvk"
     },
     {
-      "id": "node_1786859126122_7_7e7p",
+      "id": "node_1787012131245_7_6qta",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "저도예요. 이렇게 예쁜 분을 가까이서 보니, 방송이랑은 또 다르네요.",
-      "text_key": "node_1786859126122_7_7e7p"
+      "text": "이렇게 예쁜 분을 가까이서 보니, 방송이랑은 또 다르네요.",
+      "text_key": "node_1787012131245_7_6qta"
     },
     {
-      "id": "node_1786859126122_8_rdoj",
+      "id": "node_1787012131245_8_5nvg",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "과찬이세요. (시선을 살짝 내린다)",
-      "text_key": "node_1786859126122_8_rdoj"
+      "text_key": "node_1787012131245_8_5nvg"
     },
     {
-      "id": "node_1786859126122_9_lpnt",
+      "id": "node_1787012131245_9_9oca",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "흰 블라우스가 호텔룸에 어색하게 빛난다. 블라우스가 D컵 가슴을 팽팽하게 받치고, 네이비 H라인 치마가 허리와 엉덩이를 따라 흐른다. 안경 너머의 냉철한 눈빛. 오늘 밤, 이 여자가 내 것이 된다.",
-      "text_key": "node_1786859126122_9_lpnt"
+      "text_key": "node_1787012131245_9_9oca"
     },
     {
-      "id": "node_1786859126122_10_lu3q",
+      "id": "node_1787012131245_10_oj4o",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "오늘은… 제가 원하는 대로 해도 되는 거죠?",
-      "text_key": "node_1786859126122_10_lu3q"
+      "text_key": "node_1787012131245_10_oj4o"
     },
     {
-      "id": "node_1786859126122_11_bkqw",
+      "id": "node_1787012131245_11_vvaa",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "네. 오늘만큼은, 고객님의 뜻대로. (눈을 맞춘다)",
-      "text_key": "node_1786859126122_11_bkqw"
+      "text_key": "node_1787012131245_11_vvaa"
     },
     {
-      "id": "node_1786859126122_12_u8cd",
+      "id": "node_1787012131245_12_gxyp",
       "type": "graphic",
       "image": "",
       "delay": 2,
@@ -112,127 +112,63 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1786859126122_13_q7xx",
+      "id": "node_1787012131245_13_oan3",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "침대 앞. 아야가 내 앞에 무릎을 꿇는다. 블라우스 단추를 풀어 가슴을 드러내고, 치마를 걷어 올린다.",
-      "text_key": "node_1786859126122_13_q7xx"
+      "text": "침대. 아야가 블라우스와 치마를 벗고, 완전히 드러난 몸으로 침대 위에 네 발로 엎드린다.",
+      "text_key": "node_1787012131245_13_oan3"
     },
     {
-      "id": "node_1786859126122_14_6mra",
+      "id": "node_1787013070968_4uxd",
+      "type": "graphic",
+      "image": "2026-08-18_00007_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787012131245_14_s0v9",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
-      "text": "제가, 입으로 모실게요. (내 바지 위로 손을 올린다)",
-      "text_key": "node_1786859126122_14_6mra"
+      "text": "…이쪽이 좋아요. (엉덩이를 살짝 든다)",
+      "text_key": "node_1787012131245_14_s0v9"
     },
     {
-      "id": "node_1786859126122_15_nivg",
+      "id": "node_1787012131245_15_dey5",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "부탁해요. (숨을 들이쉰다)",
-      "text_key": "node_1786859126122_15_nivg"
+      "text": "시라카와 씨… (그녀의 허리를 잡는다)",
+      "text_key": "node_1787012131245_15_dey5"
     },
     {
-      "id": "node_1786859126122_16_wy1s",
+      "id": "node_1787012131245_16_8hd1",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀가 블라우스 단추를 풀어 가슴을 드러내고, 치마를 걷어 올려 허벅지와 성기가 드러난다.",
-      "text_key": "node_1786859126122_16_wy1s"
+      "text": "그녀가 네 발로 엎드렸다. 드러난 가슴이 아래로 매달리고, 젖은 성기가 애액으로 반짝인다. 방송에서 늘 감춰져 있던 몸이, 이제 내 앞에 그대로 드러난다.",
+      "text_key": "node_1787012131245_16_8hd1"
     },
     {
-      "id": "node_1786859126122_17_o5z9",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "방송에서 늘 감춰져 있던 몸이, 이제 내 앞에 드러난다. 드러난 가슴, 걷어 올린 치마 아래로 젖은 성기. 저 냉철한 얼굴로 저런 몸을 드러내니, 오히려 더 야하다.",
-      "text_key": "node_1786859126122_17_o5z9"
-    },
-    {
-      "id": "node_1786859126122_18_83po",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 바지를 내리고, 발기한 자지를 두 손으로 감싼다.",
-      "text_key": "node_1786859126122_18_83po"
-    },
-    {
-      "id": "node_1786859126122_19_zywt",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "하…… (거친 숨)",
-      "text_key": "node_1786859126122_19_zywt"
-    },
-    {
-      "id": "node_1786859126122_20_qrwi",
+      "id": "node_1787012131245_17_cof2",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
-      "text": "맛있게 해드릴게요. (입을 벌려 귀두를 물어 넣는다)",
-      "text_key": "node_1786859126122_20_qrwi"
+      "text": "넣어주세요. 제 안에… (엉덩이를 더 든다)",
+      "text_key": "node_1787012131245_17_cof2"
     },
     {
-      "id": "node_1786859126122_21_ehw1",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입술이 귀두를 감싸고, 그녀가 천천히 머리를 움직인다.",
-      "text_key": "node_1786859126122_21_ehw1"
+      "id": "node_1787013088815_zpd7",
+      "type": "graphic",
+      "image": "2026-08-17_00080_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
-      "id": "node_1786859126122_22_d4dh",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "아…… 시라카와 씨… (손으로 그녀의 머리를 감싼다)",
-      "text_key": "node_1786859126122_22_d4dh"
-    },
-    {
-      "id": "node_1786859126122_23_b350",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입속이 뜨겁고 좁다. 혀가 자지를 감싸고, 입술이 귀두를 조인다. 드러난 가슴이 내 앞에서 흔들린다. 참을 수 없다.",
-      "text_key": "node_1786859126122_23_b350"
-    },
-    {
-      "id": "node_1786859126122_24_s4ev",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "고객님, 입에 그대로… (낮게)",
-      "text_key": "node_1786859126122_24_s4ev"
-    },
-    {
-      "id": "node_1786859126122_25_6ics",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "나… 곧… (허리가 떨린다)",
-      "text_key": "node_1786859126122_25_6ics"
-    },
-    {
-      "id": "node_1786859126122_26_nvhk",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "아… 나온다…! (허리가 떨리며 정액을 쏟아낸다)",
-      "text_key": "node_1786859126122_26_nvhk"
-    },
-    {
-      "id": "node_1786859126122_27_3fyf",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 입으로 정액을 받는다. 입을 벌리자, 가득 찬 정액이 입술 밖으로 흘러내린다.",
-      "text_key": "node_1786859126122_27_3fyf"
-    },
-    {
-      "id": "node_1786859126122_28_54cu",
+      "id": "node_1787012131245_18_kehw",
       "type": "graphic",
       "image": "",
       "delay": 2,
@@ -240,135 +176,79 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1786859126122_29_tyfj",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "맛있었어요. …이제, 위에서 할게요. (입술을 혀로 닦으며, 입꼬리를 올린다)",
-      "text_key": "node_1786859126122_29_tyfj"
-    },
-    {
-      "id": "node_1786859126122_30_mqam",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786859126122_31_ia8k",
+      "id": "node_1787012131245_19_dpmq",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "침대. 아야가 블라우스와 치마를 벗고, 완전히 드러난 몸으로 내 위에 올라탄다.",
-      "text_key": "node_1786859126122_31_ia8k"
+      "text": "내 자지가 그녀의 성기를 뒤에서 밀어 넣는다.",
+      "text_key": "node_1787012131245_19_dpmq"
     },
     {
-      "id": "node_1786859126122_32_3wr4",
+      "id": "node_1787012131245_20_tmga",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "으읏…… (허리를 깊이 내민다)",
+      "text_key": "node_1787012131245_20_tmga"
+    },
+    {
+      "id": "node_1787012131245_21_6smg",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
-      "text": "이제, 제가 고객님을 안아드릴게요. (내 위에 걸터앉는다)",
-      "text_key": "node_1786859126122_32_3wr4"
+      "text": "깊어요… 고객님, 제 안 깊은 곳까지… (몸을 떤다)",
+      "text_key": "node_1787012131245_21_6smg"
     },
     {
-      "id": "node_1786859126122_33_91u7",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "시라카와 씨… 정말 예뻐요. (그녀의 허리를 잡는다)",
-      "text_key": "node_1786859126122_33_91u7"
-    },
-    {
-      "id": "node_1786859126122_34_hkml",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "넣어드릴게요. (허리를 낮춘다)",
-      "text_key": "node_1786859126122_34_hkml"
-    },
-    {
-      "id": "node_1786859126122_35_c3wt",
+      "id": "node_1787012131245_22_7uga",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "드러난 성기가 내 자지를 천천히 삼킨다.",
-      "text_key": "node_1786859126122_35_c3wt"
+      "text": "뒤에서 넣자, 더 깊이 들어간다. 그녀의 성기가 내 자지를 꽉 조이고, 애액이 허벅지를 타고 흘러내린다. 방송의 그녀가, 지금 내 앞에서 몸을 떨고 있다.",
+      "text_key": "node_1787012131245_22_7uga"
     },
     {
-      "id": "node_1786859126122_36_f0sk",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "으읏…… (몸이 긴장한다)",
-      "text_key": "node_1786859126122_36_f0sk"
-    },
-    {
-      "id": "node_1786859126122_37_vy7p",
+      "id": "node_1787012131245_23_5v8b",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
-      "text": "들어갔어요… 고객님의, 제 안에… (숨을 들이쉰다)",
-      "text_key": "node_1786859126122_37_vy7p"
+      "text": "좋아요… 더 세게… (엉덩이를 내게 밀어붙인다)",
+      "text_key": "node_1787012131245_23_5v8b"
     },
     {
-      "id": "node_1786859126122_38_x189",
+      "id": "node_1787012131245_24_qqy7",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "아…… 시라카와 씨… (그녀의 허리를 잡고 허리를 움직인다)",
+      "text_key": "node_1787012131245_24_qqy7"
+    },
+    {
+      "id": "node_1787012131245_25_ziqs",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀의 안이 내 자지를 뜨겁게 감싼다. 드러난 가슴이 내 앞에서 크게 출렁이고, 젖은 성기가 내 자지를 뿌리까지 삼킨다. 방송의 그녀가, 지금 내 위에서 허리를 흔들고 있다.",
-      "text_key": "node_1786859126122_38_x189"
+      "text": "나는 그녀의 허리를 잡고 격렬하게 허리를 움직인다. 드러난 가슴이 아래로 크게 흔들리고, 젖은 성기가 내 자지를 삼켰다 뱉는다.",
+      "text_key": "node_1787012131245_25_ziqs"
     },
     {
-      "id": "node_1786859126122_39_txer",
+      "id": "node_1787012131245_26_dpo9",
       "type": "text",
       "speakerType": "character",
-      "speaker": "아야",
-      "text": "기분 좋아요… 고객님 자지, 제 안에서 커지고 있어요… (허리를 움직인다)",
-      "text_key": "node_1786859126122_39_txer"
-    },
-    {
-      "id": "node_1786859126122_40_e7sa",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "아…… 너무 좋아요… (숨을 헐떡인다)",
-      "text_key": "node_1786859126122_40_e7sa"
-    },
-    {
-      "id": "node_1786859126122_41_muw2",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "더 느껴주세요. 저도, 고객님을 느끼고 있으니까요. (허리를 빠르게 움직인다)",
-      "text_key": "node_1786859126122_41_muw2"
-    },
-    {
-      "id": "node_1786859126122_42_fk4o",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 위에서 격렬하게 허리를 흔든다. 드러난 가슴이 출렁이고, 성기가 내 자지를 삼켰다 뱉는다.",
-      "text_key": "node_1786859126122_42_fk4o"
-    },
-    {
-      "id": "node_1786859126122_43_5wz1",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speaker": "VIP",
       "text": "시라카와 씨… 나… 이제… (한계가 온다)",
-      "text_key": "node_1786859126122_43_5wz1"
+      "text_key": "node_1787012131245_26_dpo9"
     },
     {
-      "id": "node_1786859126122_44_lq6u",
+      "id": "node_1787012131245_27_g7bt",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "저도요… 같이… (낮게)",
-      "text_key": "node_1786859126122_44_lq6u"
+      "text_key": "node_1787012131245_27_g7bt"
     },
     {
-      "id": "node_1786859126122_45_x2qc",
+      "id": "node_1787012131245_28_njii",
       "type": "graphic",
       "image": "",
       "delay": 2,
@@ -376,76 +256,92 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1786859126122_46_9bwe",
+      "id": "node_1787012131245_29_8tj0",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "침대. 아야가 다리를 벌린 채, 방금 사정한 정액이 성기에서 흘러나온다.",
-      "text_key": "node_1786859126122_46_9bwe"
+      "text": "침대. 아야가 네 발로 엎드린 채, 방금 사정한 정액이 성기에서 흘러나온다.",
+      "text_key": "node_1787012131245_29_8tj0"
     },
     {
-      "id": "node_1786859126122_47_vft3",
+      "id": "node_1787012131245_30_bagr",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "VIP",
       "text": "아…… 나온다……! (허리가 떨리며 질내에 정액을 쏟아낸다)",
-      "text_key": "node_1786859126122_47_vft3"
+      "text_key": "node_1787012131245_30_bagr"
     },
     {
-      "id": "node_1786859126122_48_uiow",
+      "id": "node_1787012131245_31_c28l",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "고객님의… 전부… (몸을 떤다)",
-      "text_key": "node_1786859126122_48_uiow"
+      "text_key": "node_1787012131245_31_c28l"
     },
     {
-      "id": "node_1786859126122_49_5iwv",
+      "id": "node_1787013120498_p9zl",
+      "type": "graphic",
+      "image": "2026-08-18_00010_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787012131245_32_trik",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "질내 사정 후, 천천히 자지를 뽑자 정액이 그녀의 성기에서 흘러나온다.",
-      "text_key": "node_1786859126122_49_5iwv"
+      "text_key": "node_1787012131245_32_trik"
     },
     {
-      "id": "node_1786859126122_50_o44s",
+      "id": "node_1787012131245_33_pf46",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀의 성기에서 내 정액이 흘러나온다. 방송에서 늘 냉철하던 그 교수가, 지금은 내 정액으로 젖은 성기를 드러낸 채 누워 있다. 이게 오늘 밤의 끝이다.",
-      "text_key": "node_1786859126122_50_o44s"
+      "text": "그녀의 성기에서 내 정액이 흘러나온다. 방송에서 늘 냉철하던 그 교수가, 지금은 내 정액으로 젖은 성기를 드러낸 채 엎드려 있다. 이게 오늘 밤의 끝이다.",
+      "text_key": "node_1787012131245_33_pf46"
     },
     {
-      "id": "node_1786859126122_51_wjal",
+      "id": "node_1787012131245_34_fubb",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
-      "text": "하…… 고객님… 대단해요… (정액이 흐르는 성기를 드러낸 채, 나를 본다)",
-      "text_key": "node_1786859126122_51_wjal"
+      "text": "하…… 고객님… 대단해요… (정액이 흐르는 성기를 드러낸 채, 어깨 너머로 나를 본다)",
+      "text_key": "node_1787012131245_34_fubb"
     },
     {
-      "id": "node_1786859126122_52_qe7q",
+      "id": "node_1787012131245_35_r2c3",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "VIP",
       "text": "하…… 하…… (숨을 몰아쉰다)",
-      "text_key": "node_1786859126122_52_qe7q"
+      "text_key": "node_1787012131245_35_r2c3"
     },
     {
-      "id": "node_1786859126122_53_1f9x",
+      "id": "node_1787013136831_jzcg",
+      "type": "graphic",
+      "image": "2026-08-18_00001_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787012131245_36_vly7",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "오늘 밤은, 여기까지… (입꼬리를 올린다)",
-      "text_key": "node_1786859126122_53_1f9x"
+      "text_key": "node_1787012131245_36_vly7"
     },
     {
-      "id": "node_1786859126122_54_bd6l",
+      "id": "node_1787012131245_37_hsyl",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "그녀의 성기에서 정액이 천천히 흘러내린다. 이 히든씬은, 이렇게 끝난다. 하지만 다음 만남을 약속하는 그 미소가, 나를 다시 방송으로 이끈다.",
-      "text_key": "node_1786859126122_54_bd6l"
+      "text_key": "node_1787012131245_37_hsyl"
     }
   ],
   "defaultLanguage": "ko",
@@ -453,10 +349,47 @@
     {
       "id": "아야",
       "name": "아야"
+    },
+    {
+      "id": "VIP",
+      "name": "VIP"
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "id": "1787012898093-v5i6hsy",
+      "fileName": "2026-08-18_00001_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-18_00001_.png",
+      "url": "blob:http://localhost:5173/99db4d20-5cd9-46a5-8e0b-41d121d3750f",
+      "size": 1962544
+    },
+    {
+      "id": "1787012943129-7sfl11g",
+      "fileName": "2026-08-18_00007_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-18_00007_.png",
+      "url": "blob:http://localhost:5173/59c64cab-8a8c-4538-b389-f782bcf4fa8d",
+      "size": 2368257
+    },
+    {
+      "id": "1787012947560-483p29d",
+      "fileName": "2026-08-17_00080_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-17_00080_.png",
+      "url": "blob:http://localhost:5173/acb1a701-f67f-4f86-be26-42a44d5067f5",
+      "size": 2072329
+    },
+    {
+      "id": "1787012950974-38hk10v",
+      "fileName": "2026-08-18_00010_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-18_00010_.png",
+      "url": "blob:http://localhost:5173/4ca45540-a561-4286-a8bc-4a590f8570d1",
+      "size": 1912113
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T05:45:19.401Z",
   "ownerCharacterId": "1786851057540-5sup19s"
