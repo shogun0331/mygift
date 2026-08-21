@@ -426,7 +426,7 @@ function AddCharacterPanel({
         fileSize: video.fileSize,
         url: resolveMediaSrc(rawUrl),
         keys: video.keys ?? [],
-        level: Math.max(1, Math.floor(Number(video.level) || 1)),
+        level: 1,
         stage: Math.max(1, Math.floor(Number(video.stage ?? 1) || 1)),
       }
     }),
@@ -500,27 +500,26 @@ function AddCharacterPanel({
     ])
   }
 
-  function addVideos(files: FileList | File[], level = 1) {
+  function addVideos(files: FileList | File[]) {
     const list = Array.from(files)
     const videoFiles = list.filter(isVideoFile)
     if (videoFiles.length === 0) {
       setVideoError('영상 파일만 등록할 수 있습니다.')
       return
     }
-    const safeLevel = Math.max(1, Math.floor(Number(level) || 1))
     setVideoError(
       videoFiles.length < list.length ? '영상 파일만 추가되었습니다. (이미지는 제외됨)' : null,
     )
     setVideos((prev) => {
-      const levelHasIdle = prev.some((vid) => vid.level === safeLevel && vid.keys.includes('idle'))
+      const hasIdle = prev.some((vid) => vid.keys.includes('idle'))
       const added = videoFiles.map((file, index) => ({
         id: createId(),
         file,
         fileName: file.name,
         fileSize: file.size,
         url: trackObjectUrl(URL.createObjectURL(file)),
-        keys: !levelHasIdle && index === 0 ? (['idle'] as string[]) : ([] as string[]),
-        level: safeLevel,
+        keys: !hasIdle && index === 0 ? (['idle'] as string[]) : ([] as string[]),
+        level: 1,
         stage: 1,
       }))
       return [...prev, ...added]
@@ -548,10 +547,9 @@ function AddCharacterPanel({
       const target = prev.find((item) => item.id === id)
       if (target) revokeTrackedUrl(target.url)
       const next = prev.filter((item) => item.id !== id)
-      // 제거한 영상이 기본 대기였으면 같은 레벨의 첫 영상을 자동 지정
+      // 제거한 영상이 기본 대기였으면 남은 첫 영상을 자동 지정
       if (target?.keys.includes('idle')) {
-        const level = target.level
-        const fallback = next.find((item) => item.level === level)
+        const fallback = next[0]
         if (fallback) {
           return next.map((item) =>
             item.id === fallback.id
@@ -569,14 +567,12 @@ function AddCharacterPanel({
     setVideos((prev) => {
       const target = prev.find((item) => item.id === id)
       if (!target) return prev
-      const level = target.level
       return prev.map((item) => {
-        if (item.level !== level) return item
         const keysWithoutIdle = item.keys.filter((key) => key !== 'idle')
         if (item.id === id) {
-          return { ...item, keys: ['idle', ...keysWithoutIdle] }
+          return { ...item, keys: ['idle', ...keysWithoutIdle], level: 1 }
         }
-        return { ...item, keys: keysWithoutIdle }
+        return { ...item, keys: keysWithoutIdle, level: 1 }
       })
     })
   }
@@ -661,7 +657,7 @@ function AddCharacterPanel({
           fileSize: video.fileSize,
           url: video.url,
           keys: video.keys,
-          level: video.level,
+          level: 1,
           stage: video.stage,
         })),
       })
@@ -856,44 +852,31 @@ function AddCharacterPanel({
           <div>
             <h3 className="text-sm font-semibold text-slate-100">수위 영상 등록</h3>
             <p className="mt-1 text-xs text-slate-500">
-              수위 레벨(LV.1~2) 그룹에 영상을 붙입니다. 각 레벨마다 기본 대기 영상 1개가 필요합니다.
-              그룹 안의 수위 단계는 숫자로 입력합니다.
+              기본 대기 영상 1개와 방송용 클립을 등록합니다. 수위 단계는 숫자로 입력합니다.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6">
-            {([1, 2] as const).map((lv) => {
-              const lvVideos = videos.filter((vid) => vid.level === lv)
-              const hasIdle = lvVideos.some((v) => v.keys?.includes('idle'))
-              return (
-                <div key={lv} className="rounded-2xl border border-white/5 bg-slate-900/40 p-4">
-                  <div className="mb-3 flex items-center justify-between border-b border-white/5 pb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="rounded-md border border-indigo-400/35 bg-indigo-500/15 px-2 py-0.5 text-[11px] font-bold text-indigo-200">
-                        LV.{lv}
-                      </span>
-                      <span className="text-xs font-bold text-slate-200">수위 레벨 {lv}</span>
-                    </div>
-                    <span className="text-[10px] text-slate-500">
-                      등록 {lvVideos.length}개 ·{' '}
-                      {hasIdle ? '✅ 기본 대기 완료' : '⚠️ 기본 대기 필요'}
-                    </span>
-                  </div>
+          <div className="rounded-2xl border border-white/5 bg-slate-900/40 p-4">
+            <div className="mb-3 flex items-center justify-between border-b border-white/5 pb-2">
+              <span className="text-xs font-bold text-slate-200">등록 영상</span>
+              <span className="text-[10px] text-slate-500">
+                등록 {videos.length}개 ·{' '}
+                {videos.some((v) => v.keys?.includes('idle'))
+                  ? '✅ 기본 대기 완료'
+                  : '⚠️ 기본 대기 필요'}
+              </span>
+            </div>
 
-                  <GradedVideoRegisterSection
-                    level={lv}
-                    videos={lvVideos}
-                    videoDragging={videoDragging}
-                    setVideoDragging={setVideoDragging}
-                    videoError={videoError}
-                    onAddVideos={(files) => addVideos(files, lv)}
-                    onSetIdle={setVideoAsIdle}
-                    onChangeStage={setVideoStage}
-                    onRemove={removeVideo}
-                  />
-                </div>
-              )
-            })}
+            <GradedVideoRegisterSection
+              videos={videos}
+              videoDragging={videoDragging}
+              setVideoDragging={setVideoDragging}
+              videoError={videoError}
+              onAddVideos={addVideos}
+              onSetIdle={setVideoAsIdle}
+              onChangeStage={setVideoStage}
+              onRemove={removeVideo}
+            />
           </div>
         </div>
 
@@ -1449,9 +1432,8 @@ function MediaKeyCard({
   )
 }
 
-/** 수위 레벨 그룹별 영상 등록 (그룹 고정 + 그룹 내 수위 단계 숫자) */
+/** 수위 영상 등록 (기본 대기 1개 + 방송 클립) */
 type GradedVideoRegisterSectionProps = {
-  level: number
   videos: VideoMediaItem[]
   videoDragging: boolean
   setVideoDragging: (d: boolean) => void
@@ -1463,7 +1445,6 @@ type GradedVideoRegisterSectionProps = {
 }
 
 function GradedVideoRegisterSection({
-  level,
   videos,
   videoDragging,
   setVideoDragging,
@@ -1511,7 +1492,7 @@ function GradedVideoRegisterSection({
         />
         <span className="text-xl">🎥</span>
         <p className="mt-1.5 text-xs font-semibold text-slate-300">
-          수위 레벨 {level} 영상을 드래그 앤 드롭하거나 클릭하여 추가
+          영상을 드래그 앤 드롭하거나 클릭하여 추가
         </p>
         <p className="mt-0.5 text-[10px] text-slate-500">MP4, WEBM, MOV 지원 · 여러 개 가능</p>
       </div>
@@ -1539,9 +1520,6 @@ function GradedVideoRegisterSection({
                     playsInline
                     className="h-20 w-36 object-cover"
                   />
-                  <span className="absolute top-1 left-1 rounded bg-black/70 px-1 py-0.5 text-[8px] font-bold text-indigo-200">
-                    LV.{item.level}
-                  </span>
                   {hasIdle && (
                     <span className="absolute top-1 right-1 rounded bg-indigo-500 px-1 py-0.5 text-[8px] font-bold text-white shadow">
                       기본 대기

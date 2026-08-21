@@ -20,16 +20,14 @@
     "directories": {
       "output": "C:/Users/shogu/AppData/Local/Temp/broadcast-game-dist"
     },
+    "asar": true,
     "files": [
       "dist/**/*",
+      "!dist/characters/**",
+      "!dist/chapter_assets/**",
       "electron/**/*",
       "public/**/*",
       "package.json"
-    ],
-    "asar": true,
-    "asarUnpack": [
-      "public/characters/**/*",
-      "public/chapter_assets/**/*"
     ],
     "win": {
       "target": [
@@ -41,6 +39,7 @@
     }
   },
   "dependencies": {
+    "framer-motion": "^13.1.1",
     "jszip": "^3.10.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"

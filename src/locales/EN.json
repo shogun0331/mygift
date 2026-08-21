@@ -22,16 +22,19 @@
     "savedData": "(SAVED DATA)"
   },
   "hud": {
-    "dateTime": "DATE · TIME",
+    "dateTime": "DATE",
     "speed": "SPEED",
     "assets": "ASSETS",
-    "stationGrade": "GRADE",
+    "stationGrade": "RANK",
+    "stationRank": "RANK",
+    "viewers": "VIEWERS",
     "skillPoints": "SP",
     "back": "BACK",
     "onAir": "ON AIR",
     "dayProgress": "WEEK",
     "daysLeft": "LEFT",
-    "weekUnit": "w"
+    "weekUnit": "w",
+    "skip": "SKIP"
   },
   "dashboard": {
     "recentEvents": "Recent Events",
@@ -40,6 +43,7 @@
     "noLiveBroadcast": "No broadcast assigned in studio.",
     "startBroadcast": "▶ START LIVE",
     "broadcasting": "● ON AIR",
+    "broadcastEnded": "BROADCAST ENDED",
     "live": "LIVE",
     "ready": "READY",
     "noSignal": "NO SIGNAL",
@@ -54,6 +58,8 @@
     "idle": "IDLE",
     "studioPlaced": "Studio Placed",
     "rankRevenue": "Revenue",
+    "rankUp": "Rank up",
+    "rankDown": "Rank down",
     "actionRecover": "Recover Condition",
     "broadcastBlocked": "Cannot broadcast (needs rest)",
     "broadcastBlockedBadge": "REST",
@@ -201,9 +207,13 @@
     "monthSuffix": "M",
     "station": "Station",
     "revenueSection": "Revenue",
+    "colRank": "#",
     "colCreator": "Creator",
     "colHours": "Airtime",
-    "colRevenue": "Earnings",
+    "colRevenue": "Sales",
+    "colLabor": "Labor",
+    "colProfit": "Profit",
+    "laborCareHint": "incl. care",
     "hoursUnit": "h",
     "noBroadcast": "No broadcasts this month.",
     "expenseSection": "Expenses",
@@ -214,6 +224,8 @@
     "totalRevenue": "Gross",
     "totalExpense": "Expenses",
     "netProfit": "Net",
+    "miscExpenses": "Other costs",
+    "funds": "Funds",
     "highlightsSection": "Highlights",
     "confirm": "OK"
   },
@@ -270,12 +282,10 @@
     "offerTitleH": "H Event",
     "offerBody": "A date with {name} begins. You cannot decline.",
     "offerSp": "SP +{n}",
-    "offerHeatHint": "Completing this unlocks heat level 2 for this creator.",
     "start": "Start",
     "resultTitle": "Date Complete",
     "resultBody": "The event with {name} has ended.",
     "resultSp": "SP +{n} gained",
-    "resultHeat": "Heat level 2 unlocked",
     "confirm": "OK"
   },
   "gift": {
@@ -328,7 +338,7 @@
     "rankUnit": "",
     "viewersUnit": " viewers",
     "settlementIn": "Settlement in",
-    "filterAll": "All 1–100",
+    "filterAll": "All 1–200",
     "filterRivals": "Rivals ±5",
     "filterTop10": "TOP 10",
     "colRank": "Rank",
@@ -373,6 +383,20 @@
     "clearKicker": "GLOBAL BROADCAST LEAGUE",
     "clearTitle": "GAME CLEAR",
     "clearBody": "Starlight Station has taken 1st place. The ending is unlocked. You can keep broadcasting.",
-    "clearConfirm": "Continue"
+    "clearConfirm": "Continue",
+    "stockLabel": "Current viewers",
+    "currentRankLabel": "Current rank",
+    "currentMarker": "NOW",
+    "upShout": "UP!!",
+    "rangeClosed": "{from} – {to}",
+    "rangeOpen": "{from}+",
+    "company": {
+      "top": "Top Firm",
+      "large": "Large Corp",
+      "mid": "Mid-size Firm",
+      "sme": "SME",
+      "tiny": "Tiny Business",
+      "black": "Black Company"
+    }
   }
 }

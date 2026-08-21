@@ -22,16 +22,19 @@
     "savedData": "(SAVED DATA)"
   },
   "hud": {
-    "dateTime": "년월 · 시간",
+    "dateTime": "년월일",
     "speed": "배속",
     "assets": "자산",
-    "stationGrade": "국 등급",
+    "stationGrade": "RANK",
+    "stationRank": "순위",
+    "viewers": "시청자",
     "skillPoints": "SP",
     "back": "뒤로가기",
     "onAir": "방송 중",
     "dayProgress": "진행",
     "daysLeft": "남음",
-    "weekUnit": "주"
+    "weekUnit": "주",
+    "skip": "스킵하기"
   },
   "dashboard": {
     "recentEvents": "Recent Events",
@@ -40,6 +43,7 @@
     "noLiveBroadcast": "스튜디오에서 배정된 방송이 없습니다.",
     "startBroadcast": "▶ 방송시작",
     "broadcasting": "● 방송 중",
+    "broadcastEnded": "방송 종료",
     "live": "LIVE",
     "ready": "READY",
     "noSignal": "NO SIGNAL",
@@ -54,6 +58,8 @@
     "idle": "IDLE",
     "studioPlaced": "스튜디오 배치",
     "rankRevenue": "수익",
+    "rankUp": "순위 상승",
+    "rankDown": "순위 하락",
     "actionRecover": "컨디션 회복",
     "broadcastBlocked": "방송 불가 (휴식 필요)",
     "broadcastBlockedBadge": "REST",
@@ -201,9 +207,13 @@
     "monthSuffix": "월차",
     "station": "방송국명",
     "revenueSection": "수익 내역",
+    "colRank": "#",
     "colCreator": "크리에이터",
     "colHours": "방송 시간",
-    "colRevenue": "수익금",
+    "colRevenue": "매출",
+    "colLabor": "인건비",
+    "colProfit": "수익",
+    "laborCareHint": "케어 포함",
     "hoursUnit": "시간",
     "noBroadcast": "이번 달 방송 기록이 없습니다.",
     "expenseSection": "지출 내역",
@@ -211,9 +221,11 @@
     "colAmount": "금액",
     "noExpense": "이번 달 지출이 없습니다.",
     "summarySection": "정산 요약",
-    "totalRevenue": "총수익",
+    "totalRevenue": "총매출",
     "totalExpense": "총지출",
     "netProfit": "순이익",
+    "miscExpenses": "기타 잡비",
+    "funds": "보유 자산",
     "highlightsSection": "주요 이벤트",
     "confirm": "확인"
   },
@@ -270,12 +282,10 @@
     "offerTitleH": "H 이벤트",
     "offerBody": "{name}과(와)의 데이트가 시작됩니다. 거절할 수 없습니다.",
     "offerSp": "SP +{n}",
-    "offerHeatHint": "완료 시 해당 크리에이터의 수위 레벨 2가 개방됩니다.",
     "start": "시작",
     "resultTitle": "데이트 완료",
     "resultBody": "{name}과의 이벤트가 끝났습니다.",
     "resultSp": "SP +{n} (획득)",
-    "resultHeat": "수위 레벨 2 개방",
     "confirm": "확인"
   },
   "gift": {
@@ -328,7 +338,7 @@
     "rankUnit": "위",
     "viewersUnit": "명",
     "settlementIn": "정산까지",
-    "filterAll": "전체 1~100위",
+    "filterAll": "전체 1~200위",
     "filterRivals": "내 라이벌 ±5",
     "filterTop10": "TOP 10",
     "colRank": "순위",
@@ -373,6 +383,20 @@
     "clearKicker": "GLOBAL BROADCAST LEAGUE",
     "clearTitle": "GAME CLEAR",
     "clearBody": "스타라이트 방송국이 리그 1위에 올랐습니다. 엔딩이 해금되었습니다. 이후에도 방송을 이어갈 수 있습니다.",
-    "clearConfirm": "계속하기"
+    "clearConfirm": "계속하기",
+    "stockLabel": "현재 시청자",
+    "currentRankLabel": "현재 랭크",
+    "currentMarker": "현재",
+    "upShout": "UP!!",
+    "rangeClosed": "{from}위 ~ {to}위",
+    "rangeOpen": "{from}위 ~",
+    "company": {
+      "top": "일등기업",
+      "large": "대기업",
+      "mid": "중견기업",
+      "sme": "중소기업",
+      "tiny": "영세기업",
+      "black": "블랙기업"
+    }
   }
 }

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   findLevelIdleVideoUrl,
   type OwnedCreator,
@@ -35,6 +36,7 @@ import {
   type ConditionCrashFxItem,
 } from './ConditionCrashFx'
 import { ToxicWhackQte, type ToxicWhackQteItem } from './ToxicWhackQte'
+import { LiveRankBoard } from './LiveRankBoard'
 
 type DashboardPanelProps = {
   slots: StudioSlot[]
@@ -108,9 +110,8 @@ function toBroadcastSlot(
   const stamina = owned
     ? Math.min(staminaMax, owned.stamina)
     : Math.min(staminaMax, 40 + slot.assignment.popularity)
-  const heatLevel = owned?.heat ?? 1
   const idleVideoUrl =
-    (owned ? findLevelIdleVideoUrl(owned, heatLevel) : null) ||
+    (owned ? findLevelIdleVideoUrl(owned) : null) ||
     slot.assignment.idleVideoUrl ||
     null
   const playVideoUrl =
@@ -149,14 +150,8 @@ function toBroadcastSlot(
   }
 }
 
-function formatRevenue(value: number) {
-  return formatMoney(value)
-}
-
-const RANK_BADGE: Record<number, string> = {
-  1: 'border-amber-400/40 bg-amber-400/15 text-amber-300',
-  2: 'border-slate-300/35 bg-slate-300/10 text-slate-200',
-  3: 'border-orange-400/35 bg-orange-400/10 text-orange-300',
+function prefersReducedMotion() {
+  return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 const TAG_STYLE = {
@@ -198,6 +193,7 @@ export function DashboardPanel({
   onToxicQteResolve,
 }: DashboardPanelProps) {
   const { t, locale } = useTranslation()
+  const reducedMotion = prefersReducedMotion()
   const ownedById: Record<string, OwnedCreator> = {}
   for (const creator of ownedCreators) {
     ownedById[creator.id] = creator
@@ -246,12 +242,9 @@ export function DashboardPanel({
       creatorId ? livePlayVideoByCreator[creatorId] : undefined,
     )
   })
-  const assigned = studioSlots.filter((slot) => {
-    if (slot.status !== 'assigned' || !slot.assignment) return false
-    const owned = ownedById[slot.assignment.creatorId]
-    if (!owned) return true
-    return canBroadcastByStamina(owned.stamina)
-  })
+  const assigned = studioSlots.filter(
+    (slot) => slot.status === 'assigned' && Boolean(slot.assignment),
+  )
   const hasAssigned = assigned.length > 0
 
   const liveRanking = assigned
@@ -261,6 +254,7 @@ export function DashboardPanel({
       const displayName = owned ? characterDisplayName(owned, locale) : a.creatorName
       const displayJob = owned ? characterDisplayJob(owned, locale) : a.grade
       const visuals = creatorVisuals(a.creatorId, displayName)
+      const stamina = owned?.stamina ?? 40 + a.popularity
       return {
         id: a.creatorId,
         rank: 0,
@@ -271,6 +265,7 @@ export function DashboardPanel({
         profileImageUrl: a.profileImageUrl || null,
         revenue: liveRevenueByCreator[a.creatorId] ?? 0,
         viewers: '—',
+        blocked: !canBroadcastByStamina(owned?.stamina ?? stamina),
       }
     })
     .sort((a, b) => b.revenue - a.revenue || a.name.localeCompare(b.name, 'ko'))
@@ -319,17 +314,30 @@ export function DashboardPanel({
             <p className="mt-4 text-center text-xs text-slate-500">{t('dashboard.noEvents')}</p>
           ) : (
             <ul className="mt-2.5 min-h-0 flex-1 space-y-2 overflow-auto pr-1">
-              {liveEvents.map((event) => (
-                <li
-                  key={event.id}
-                  className="flex items-start gap-2 rounded-xl border border-white/8 bg-black/20 px-2.5 py-2 text-xs text-slate-300"
-                >
-                  <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${event.tone}`} />
-                  <div className="min-w-0">
-                    <span>{event.text}</span>
-                  </div>
-                </li>
-              ))}
+              <AnimatePresence initial={false}>
+                {liveEvents.map((event) => (
+                  <motion.li
+                    key={event.id}
+                    layout
+                    initial={reducedMotion ? false : { opacity: 0, x: -24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={reducedMotion ? undefined : { opacity: 0, x: -12 }}
+                    transition={{
+                      layout: reducedMotion
+                        ? { duration: 0 }
+                        : { type: 'spring', stiffness: 380, damping: 30 },
+                      opacity: { duration: 0.22 },
+                      x: { type: 'spring', stiffness: 420, damping: 28 },
+                    }}
+                    className="flex items-start gap-2 rounded-xl border-0 bg-white/[0.06] px-2.5 py-2 text-xs text-slate-300"
+                  >
+                    <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${event.tone}`} />
+                    <div className="min-w-0">
+                      <span>{event.text}</span>
+                    </div>
+                  </motion.li>
+                ))}
+              </AnimatePresence>
             </ul>
           )}
         </section>
@@ -361,56 +369,13 @@ export function DashboardPanel({
               ))}
             </div>
           ) : (
-            <ul className="mt-2.5 grid min-h-0 flex-1 auto-rows-fr grid-rows-6 gap-1.5 overflow-hidden pr-0.5">
-              {liveRanking.map((creator) => (
-                <li
-                  key={creator.id}
-                  className="flex min-h-0 items-center gap-2 rounded-xl border border-white/8 bg-black/20 px-2 py-1.5"
-                >
-                  <span
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border text-[10px] font-black ${
-                      RANK_BADGE[creator.rank] ?? 'border-white/10 bg-black/30 text-slate-400'
-                    }`}
-                  >
-                    {creator.rank}
-                  </span>
-                  {creator.profileImageUrl ? (
-                    <img
-                      src={creator.profileImageUrl}
-                      alt={creator.name}
-                      className="h-8 w-8 rounded-full object-cover shrink-0"
-                    />
-                  ) : (
-                    <div
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator.avatarTone}`}
-                    >
-                      {creator.avatar.slice(0, 2)}
-                    </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-semibold text-slate-100">
-                      {creator.name}
-                      <span className="ml-1 font-medium text-amber-400/90">({creator.concept})</span>
-                    </p>
-                    <p className="mt-0.5 text-[10px] text-slate-500">{t('dashboard.studioPlaced')}</p>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <p className="text-[10px] font-semibold tracking-wide text-slate-500">
-                      {t('dashboard.rankRevenue')}
-                    </p>
-                    <p className="text-xs font-bold tabular-nums text-amber-400">
-                      {formatRevenue(creator.revenue)}
-                    </p>
-                  </div>
-                </li>
-              ))}
-              {Array.from({ length: rankPlaceholders }, (_, i) => (
-                <li
-                  key={`rank-slot-${i}`}
-                  className="rounded-xl border border-dashed border-white/8 bg-black/10"
-                />
-              ))}
-            </ul>
+            <LiveRankBoard
+              ranking={liveRanking}
+              placeholders={rankPlaceholders}
+              jackpots={revenueBursts.filter(
+                (burst) => burst.tier === 'big' || burst.tier === 'mega',
+              )}
+            />
           )}
         </section>
 

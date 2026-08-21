@@ -1,21 +1,21 @@
-import { useEffect, useMemo, useRef, useState, type Ref } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 import {
-  filterRankEntries,
+  COMPANY_TIERS,
+  companyTierLabelKey,
+  companyTierOf,
+  companyTierReached,
   formatViewers,
   MILESTONE_REWARDS,
   RANK_MILESTONES,
+  type CompanyTier,
   type LeagueState,
   type MilestoneReward,
-  type RankEntry,
 } from '../game/ranking'
 import {
   getStationReviewStatus,
-  STATION_SPECS,
   type StationGrade,
 } from '../game/station'
 import { useTranslation } from '../locales/i18n'
-
-type RankFilter = 'all' | 'rivals' | 'top10'
 
 type RankingPanelProps = {
   league: LeagueState
@@ -26,6 +26,8 @@ type RankingPanelProps = {
   onOpenScout: () => void
 }
 
+const TIER_COUNT = COMPANY_TIERS.length
+
 export function RankingPanel({
   league,
   stationGrade,
@@ -35,315 +37,192 @@ export function RankingPanel({
   onOpenScout,
 }: RankingPanelProps) {
   const { t } = useTranslation()
-  const [filter, setFilter] = useState<RankFilter>('all')
-  const playerRowRef = useRef<HTMLTableRowElement | null>(null)
-  const spec = STATION_SPECS[stationGrade]
   const review = useMemo(
     () => getStationReviewStatus(stationGrade, league.viewers, creators),
     [stationGrade, league.viewers, creators],
   )
-  const rows = useMemo(
-    () => filterRankEntries(league.entries, filter),
-    [league.entries, filter],
-  )
-
-  useEffect(() => {
-    if (filter !== 'all') return
-    playerRowRef.current?.scrollIntoView({ block: 'center' })
-  }, [filter, league.currentRank])
-
+  const currentTier = companyTierOf(league.currentRank)
+  const rankUp = league.previousRank > league.currentRank
+  const rankDown = league.previousRank < league.currentRank
   const nextMilestone = RANK_MILESTONES.find((rank) => rank < league.currentRank) ?? null
   const reward = nextMilestone ? MILESTONE_REWARDS[nextMilestone] : null
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3">
-      <header className="game-panel flex shrink-0 flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3">
-        <div className="min-w-0">
-          <p className="game-kicker">GLOBAL BROADCAST LEAGUE</p>
-          <h2 className="mt-0.5 text-lg font-black tracking-wide text-slate-100">
-            {t('ranking.title')}
-          </h2>
+    <div className="rank-arena">
+      <div className="rank-stats" role="status">
+        <div className="rank-stats-row">
+          <span className="rank-stats-ico rank-stats-ico--viewers" aria-hidden />
+          <span className="rank-stats-label">{t('ranking.stockLabel')}</span>
+          <span className="rank-stats-value">
+            {formatViewers(league.viewers)}
+            {t('ranking.viewersUnit')}
+          </span>
+          <RankDelta up={rankUp} down={rankDown} />
         </div>
-        <span className="rounded-full border border-amber-400/30 bg-amber-500/20 px-2.5 py-1 text-[10px] font-bold tracking-wide text-amber-200">
-          {t('station.gradeBadge').replace('{grade}', stationGrade)}
-        </span>
-        <div className="flex flex-wrap items-center gap-3 text-xs">
-          <p className="font-bold text-amber-200">
-            {t('ranking.myRank')}: {league.currentRank}
+        <div className="rank-stats-row">
+          <span className="rank-stats-ico rank-stats-ico--rank" aria-hidden />
+          <span className="rank-stats-label">{t('ranking.currentRankLabel')}</span>
+          <span className="rank-stats-value">
+            {league.currentRank}
             {t('ranking.rankUnit')}
-            <span className="ml-2 font-semibold text-slate-300">
-              ({formatViewers(league.viewers)}
-              {t('ranking.viewersUnit')})
-            </span>
-          </p>
-          <p className="font-semibold text-slate-400">
-            {t('ranking.settlementIn')}: {weeksUntilSettlement}
-            {t('hud.weekUnit')}
-          </p>
+          </span>
+          <span className={`rank-stats-tier rank-stats-tier--${currentTier.id}`}>
+            {t(companyTierLabelKey(currentTier.id))}
+          </span>
+          <RankDelta up={rankUp} down={rankDown} />
         </div>
-      </header>
+      </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
-        <section className="game-panel flex min-h-0 flex-col overflow-hidden rounded-2xl p-3">
-          <div className="mb-2 flex shrink-0 flex-wrap gap-1.5">
-            {FILTERS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setFilter(item.id)}
-                className={`rounded-lg border px-2.5 py-1 text-[10px] font-bold tracking-wide ${
-                  filter === item.id
-                    ? 'border-pink-400/50 bg-pink-500/15 text-pink-200'
-                    : 'border-white/10 bg-black/20 text-slate-400 hover:border-white/20'
-                }`}
-              >
-                {t(item.labelKey)}
-              </button>
-            ))}
+      <div className="rank-board">
+        <div className="rank-pyramid-wrap">
+          <div className="rank-layers" aria-hidden={false}>
+            {COMPANY_TIERS.map((tier, index) => {
+              const active = tier.id === currentTier.id
+              const filled = companyTierReached(league.currentRank, tier)
+              return (
+                <div
+                  key={tier.id}
+                  className={`rank-layer-slot${filled ? ' is-filled' : ''}${active ? ' is-current' : ''}`}
+                  style={
+                    {
+                      '--t0': String(index / TIER_COUNT),
+                      '--t1': String((index + 1) / TIER_COUNT),
+                    } as CSSProperties
+                  }
+                >
+                  <div className={`rank-layer rank-layer--${tier.id}`} />
+                  {filled ? <LayerSparks dense={active} /> : null}
+                  {active ? (
+                    <CurrentMarker rank={league.currentRank} cheering={rankUp} />
+                  ) : null}
+                </div>
+              )
+            })}
           </div>
+        </div>
 
-          <div className="min-h-0 flex-1 overflow-auto">
-            <table className="w-full border-separate border-spacing-y-1 text-left">
-              <thead className="sticky top-0 z-10 bg-slate-950/95 text-[10px] font-bold tracking-wide text-slate-500">
-                <tr>
-                  <th className="px-2 py-1.5">{t('ranking.colRank')}</th>
-                  <th className="px-2 py-1.5">{t('ranking.colStation')}</th>
-                  <th className="px-2 py-1.5">{t('ranking.colAce')}</th>
-                  <th className="px-2 py-1.5 text-right">{t('ranking.colViewers')}</th>
-                  <th className="px-2 py-1.5 text-right">{t('ranking.colChange')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => (
-                  <RankRow
-                    key={`${row.rank}-${row.stationName}`}
-                    row={row}
-                    rowRef={row.isPlayer ? playerRowRef : undefined}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <div className="rank-cards">
+          {COMPANY_TIERS.map((tier) => (
+            <TierCard
+              key={tier.id}
+              tier={tier}
+              active={tier.id === currentTier.id}
+              filled={companyTierReached(league.currentRank, tier)}
+            />
+          ))}
+        </div>
+      </div>
 
-        <aside className="flex min-h-0 flex-col gap-2.5 overflow-auto">
-          <section className="game-panel rounded-2xl p-3">
-            <h3 className="game-stat-label">{t('station.panelTitle')}</h3>
-            <p className="mt-1.5 text-sm font-black text-slate-100">
-              {t('station.gradeBadge').replace('{grade}', stationGrade)}
-            </p>
-            <p className="mt-2 text-[11px] font-semibold text-slate-300">
-              {t('station.maxRank')}: {spec.maxRank}
-              {t('ranking.rankUnit')}
-            </p>
-            <p className="mt-1 text-[11px] font-semibold text-slate-300">
-              {t('station.viewerCap')}:{' '}
-              {spec.viewerCap == null
-                ? t('station.viewerCapNone')
-                : `${formatViewers(spec.viewerCap)}${t('ranking.viewersUnit')}`}
-            </p>
-            <p className="mt-1 text-[11px] font-semibold text-amber-200/90">
-              {t('station.nextReview')}: {nextReviewDate}
-            </p>
-          </section>
+      <footer className="rank-foot">
+        <p className="rank-foot-meta">
+          {t('ranking.settlementIn')}: {weeksUntilSettlement}
+          {t('hud.weekUnit')}
+          <span className="rank-foot-dot">·</span>
+          {t('station.nextReview')}: {nextReviewDate}
+        </p>
+        {reward && nextMilestone ? (
+          <p className="rank-foot-reward">
+            {nextMilestone}
+            {t('ranking.rankUnit')} {t('ranking.entry')}
+            {' — '}
+            <RewardSummary reward={reward} />
+          </p>
+        ) : null}
+        {review.next && !review.creatorsMet ? (
+          <button type="button" onClick={onOpenScout} className="game-btn-pink rank-foot-scout">
+            {t('ranking.goScout')}
+          </button>
+        ) : null}
+      </footer>
+    </div>
+  )
+}
 
-          <section
-            className={`game-panel rounded-2xl p-3 ${
-              review.next && !review.eligible
-                ? 'border border-rose-400/40 bg-rose-950/30'
-                : ''
-            }`}
-          >
-            <h3 className="game-stat-label">{t('station.reviewChecks')}</h3>
-            {review.next ? (
-              <>
-                <ul className="mt-2 space-y-1.5">
-                  <li
-                    className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
-                      review.viewersMet
-                        ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
-                        : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
-                    }`}
-                  >
-                    <span className="mr-1">{review.viewersMet ? '[v]' : '[x]'}</span>
-                    {t('station.needViewers')} ({formatViewers(review.viewers)} /{' '}
-                    {formatViewers(review.requiredViewers)}
-                    {t('ranking.viewersUnit')})
-                  </li>
-                  <li
-                    className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
-                      review.creatorsMet
-                        ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
-                        : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
-                    }`}
-                  >
-                    <span className="mr-1">{review.creatorsMet ? '[v]' : '[x]'}</span>
-                    {t('station.needCreators')
-                      .replace('{grade}', review.creatorGrade)
-                      .replace('{count}', String(review.creatorRequired))}{' '}
-                    ({review.creatorCurrent}/{review.creatorRequired})
-                  </li>
-                </ul>
-                {!review.creatorsMet ? (
-                  <button
-                    type="button"
-                    onClick={onOpenScout}
-                    className="game-btn-pink mt-3 w-full rounded-xl px-3 py-2 text-[11px] font-black"
-                  >
-                    {t('ranking.goScout')}
-                  </button>
-                ) : null}
-              </>
-            ) : (
-              <p className="mt-2 text-xs font-bold text-amber-300">{t('station.reviewMax')}</p>
-            )}
-          </section>
+function RankDelta({ up, down }: { up: boolean; down: boolean }) {
+  if (up) return <span className="rank-delta is-up" aria-hidden />
+  if (down) return <span className="rank-delta is-down" aria-hidden />
+  return <span className="rank-delta is-flat" aria-hidden />
+}
 
-          <section className="game-panel rounded-2xl p-3">
-            <h3 className="game-stat-label">{t('ranking.rewardTitle')}</h3>
-            {reward ? (
-              <RewardList reward={reward} nextMilestone={nextMilestone} />
-            ) : (
-              <p className="mt-2 text-xs text-slate-500">{t('ranking.noReward')}</p>
-            )}
-            {league.hiddenEventUnlocked ? (
-              <p className="mt-2 text-[10px] font-bold text-violet-300">
-                {t('ranking.hiddenUnlocked')}
-              </p>
-            ) : null}
-            {league.gameCleared ? (
-              <p className="mt-1 text-[10px] font-bold text-amber-300">{t('ranking.cleared')}</p>
-            ) : null}
-          </section>
-        </aside>
+function LayerSparks({ dense }: { dense: boolean }) {
+  const count = dense ? 14 : 7
+  return (
+    <div className="rank-layer-sparks" aria-hidden>
+      {Array.from({ length: count }, (_, i) => (
+        <span
+          key={i}
+          className="rank-spark"
+          style={
+            {
+              '--x': `${18 + ((i * 17) % 64)}%`,
+              '--d': `${(i * 0.18).toFixed(2)}s`,
+              '--s': `${0.55 + (i % 4) * 0.18}`,
+            } as CSSProperties
+          }
+        />
+      ))}
+    </div>
+  )
+}
+
+function CurrentMarker({ rank, cheering }: { rank: number; cheering: boolean }) {
+  const { t } = useTranslation()
+  return (
+    <div className={`rank-tip${cheering ? ' is-up' : ''}`}>
+      {cheering ? <span className="rank-tip-shout">{t('ranking.upShout')}</span> : null}
+      <div className="rank-tip-card">
+        <p className="rank-tip-kicker">{t('ranking.currentMarker')}</p>
+        <p className="rank-tip-rank">
+          {rank}
+          {t('ranking.rankUnit')}
+        </p>
       </div>
     </div>
   )
 }
 
-const FILTERS: Array<{ id: RankFilter; labelKey: string }> = [
-  { id: 'all', labelKey: 'ranking.filterAll' },
-  { id: 'rivals', labelKey: 'ranking.filterRivals' },
-  { id: 'top10', labelKey: 'ranking.filterTop10' },
-]
-
-function RankRow({
-  row,
-  rowRef,
+function TierCard({
+  tier,
+  active,
+  filled,
 }: {
-  row: RankEntry
-  rowRef?: Ref<HTMLTableRowElement>
+  tier: CompanyTier
+  active: boolean
+  filled: boolean
 }) {
   const { t } = useTranslation()
-  const medal =
-    row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : String(row.rank)
-  const change =
-    row.rankChange > 0
-      ? `▲ +${row.rankChange}`
-      : row.rankChange < 0
-        ? `▼ ${row.rankChange}`
-        : '—'
-  const changeClass =
-    row.rankChange > 0
-      ? 'text-emerald-400'
-      : row.rankChange < 0
-        ? 'text-rose-400'
-        : 'text-slate-500'
+  const range =
+    tier.worstRank == null
+      ? t('ranking.rangeOpen').replace('{from}', String(tier.bestRank))
+      : t('ranking.rangeClosed')
+          .replace('{from}', String(tier.bestRank))
+          .replace('{to}', String(tier.worstRank))
 
   return (
-    <tr
-      ref={rowRef}
-      className={
-        row.isPlayer
-          ? 'bg-amber-500/15 shadow-[0_0_16px_rgba(245,158,11,0.18)]'
-          : 'bg-black/20'
-      }
+    <div
+      className={`rank-card rank-card--${tier.id}${filled ? ' is-filled' : ''}${active ? ' is-active' : ''}`}
     >
-      <td
-        className={`rounded-l-lg px-2 py-2 text-xs font-black tabular-nums ${
-          row.isPlayer ? 'border-y-2 border-l-2 border-amber-500/60' : 'border border-transparent'
-        }`}
-      >
-        <span className="inline-flex items-center gap-1 tabular-nums">{medal}</span>
-      </td>
-      <td
-        className={`px-2 py-2 text-xs font-semibold ${
-          row.isPlayer ? 'border-y-2 border-amber-500/60 text-amber-100' : 'text-slate-200'
-        }`}
-      >
-        <span className="inline-flex items-center gap-1.5">
-          {row.stationName}
-          {row.isPlayer ? (
-            <span className="rounded border border-amber-400/50 bg-amber-500/20 px-1 py-0.5 text-[8px] font-black text-amber-200">
-              MY
-            </span>
-          ) : null}
-        </span>
-      </td>
-      <td
-        className={`px-2 py-2 text-[11px] ${
-          row.isPlayer ? 'border-y-2 border-amber-500/60 text-slate-200' : 'text-slate-400'
-        }`}
-      >
-        {row.aceCreatorName}
-        <span className="ml-1 font-bold text-amber-400/90">({row.aceCreatorGrade})</span>
-      </td>
-      <td
-        className={`px-2 py-2 text-right text-[11px] font-bold tabular-nums ${
-          row.isPlayer ? 'border-y-2 border-amber-500/60 text-slate-100' : 'text-slate-300'
-        }`}
-      >
-        {formatViewers(row.viewers)}
-        {t('ranking.viewersUnit')}
-      </td>
-      <td
-        className={`rounded-r-lg px-2 py-2 text-right text-[11px] font-black tabular-nums ${changeClass} ${
-          row.isPlayer ? 'border-y-2 border-r-2 border-amber-500/60' : ''
-        }`}
-      >
-        {change}
-      </td>
-    </tr>
+      <span className={`rank-card-icon rank-legend-icon--${tier.id}`} aria-hidden />
+      <div className="rank-card-copy">
+        <p className="rank-card-name">{t(companyTierLabelKey(tier.id))}</p>
+        <p className="rank-card-range">{range}</p>
+      </div>
+    </div>
   )
 }
 
-function RewardList({
-  reward,
-  nextMilestone,
-}: {
-  reward: MilestoneReward
-  nextMilestone: number | null
-}) {
+function RewardSummary({ reward }: { reward: MilestoneReward }) {
   const { t } = useTranslation()
-  const lines: string[] = []
+  const parts: string[] = []
   if (reward.subscribersBonus > 0) {
-    lines.push(
+    parts.push(
       `${t('ranking.rewardSubs')} +${formatViewers(reward.subscribersBonus)}${t('ranking.viewersUnit')}`,
     )
   }
   if (reward.revenueBonusPercent > 0) {
-    lines.push(`${t('ranking.rewardRevenue')} +${reward.revenueBonusPercent}%`)
+    parts.push(`${t('ranking.rewardRevenue')} +${reward.revenueBonusPercent}%`)
   }
-  if (reward.specialEventUnlock) lines.push(t('ranking.rewardHidden'))
-  if (reward.isGameClear) lines.push(t('ranking.rewardClear'))
-
-  return (
-    <div className="mt-2 space-y-1">
-      {nextMilestone ? (
-        <p className="text-[10px] font-bold text-amber-200/90">
-          {nextMilestone}
-          {t('ranking.rankUnit')} {t('ranking.entry')}
-        </p>
-      ) : null}
-      {lines.length === 0 ? (
-        <p className="text-xs text-slate-500">{t('ranking.noReward')}</p>
-      ) : (
-        lines.map((line) => (
-          <p key={line} className="text-[11px] font-semibold text-slate-300">
-            - {line}
-          </p>
-        ))
-      )}
-    </div>
-  )
+  if (reward.specialEventUnlock) parts.push(t('ranking.rewardHidden'))
+  if (reward.isGameClear) parts.push(t('ranking.rewardClear'))
+  return <span>{parts.join(' · ') || t('ranking.noReward')}</span>
 }

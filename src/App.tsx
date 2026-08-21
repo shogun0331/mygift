@@ -56,7 +56,7 @@ function hydrateRegisteredCharacter(c: any): RegisteredCharacter {
   const videos = (c.videos ?? []).map((vid: any) => ({
     ...vid,
     stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
-    level: Math.max(1, Math.floor(Number(vid.level) || 1)),
+    level: 1,
     url: vid.fileName
       ? mediaUrl(c.id, 'video', vid.fileName, vid.fileSize)
       : vid.url
@@ -190,7 +190,7 @@ function syncStudioSlotsWithOwned(slots: StudioSlot[], owned: OwnedCreator[]): S
     if (!slot.assignment) return slot
     const creator = owned.find((item) => item.id === slot.assignment!.creatorId)
     if (!creator) return slot
-    const idleVideoUrl = findLevelIdleVideoUrl(creator, creator.heat ?? 1)
+    const idleVideoUrl = findLevelIdleVideoUrl(creator)
     const profileImageUrl = creator.profileImageUrl || null
     const revision = creator.mediaRevision
     if (
@@ -289,12 +289,14 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
         if (vid.fileName) {
           return {
             ...vid,
+            level: 1,
             file: undefined,
             url: mediaUrl(characterId, 'video', vid.fileName, vid.fileSize),
           }
         }
         return {
           ...vid,
+          level: 1,
           file: undefined,
           url: vid.url || '',
         }
@@ -315,7 +317,7 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
         return {
           id: vid.id,
           keys: vid.keys,
-          level: vid.level,
+          level: 1,
           stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
           fileName: safeName,
           fileSize: vid.file.size,
@@ -453,6 +455,8 @@ export default function App() {
   const [isEventsLoaded, setIsEventsLoaded] = useState(false)
   /** 데이터 로드 완료 상태 플래그 */
   const [isLoaded, setIsLoaded] = useState(false)
+  /** 인게임에서 1회 이상 시청한 시뮬레이터 이벤트 */
+  const [watchedEventIds, setWatchedEventIds] = useState<string[]>([])
   const [editorReturnScreen, setEditorReturnScreen] = useState<Screen>('main')
   const hasActiveSession = ownedCreators.length > 0
 
@@ -509,7 +513,7 @@ export default function App() {
           fileSize: vid.fileSize,
           url: vid.fileName ? `media://characters/${c.id}/videos/${vid.fileName}` : vid.url,
           keys: vid.keys,
-          level: vid.level,
+          level: 1,
           stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
         })) ?? []
 
@@ -741,7 +745,13 @@ export default function App() {
   function startNewGame() {
     setOwnedCreators([])
     setStudioSlots(createInitialStudioSlots())
+    setWatchedEventIds([])
     setScreen('game')
+  }
+
+  function markEventWatched(eventId: string) {
+    if (!eventId) return
+    setWatchedEventIds((prev) => (prev.includes(eventId) ? prev : [...prev, eventId]))
   }
 
   function continueGame() {
@@ -789,6 +799,8 @@ export default function App() {
         onScout={handleScout}
         onBack={() => setScreen('main')}
         onOpenEditor={() => openEditor('game')}
+        watchedEventIds={watchedEventIds}
+        onEventWatched={markEventWatched}
       />
     )
   }

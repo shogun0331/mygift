@@ -59,9 +59,6 @@ export function DateOfferModal({
         <div className="mt-4 rounded-xl border border-amber-400/20 bg-amber-950/30 px-3 py-3 text-[12px] font-semibold text-amber-100">
           {t('date.offerSp').replace('{n}', String(pending.spGain))}
         </div>
-        {pending.step === 'h' ? (
-          <p className="mt-2 text-[11px] leading-relaxed text-slate-400">{t('date.offerHeatHint')}</p>
-        ) : null}
         <div className="mt-5 flex justify-center">
           <button
             type="button"
@@ -78,11 +75,9 @@ export function DateOfferModal({
 
 export function DateResultModal({
   pending,
-  unlockedHeat,
   onConfirm,
 }: {
   pending: DatePending
-  unlockedHeat: boolean
   onConfirm: () => void
 }) {
   const { t } = useTranslation()
@@ -105,9 +100,6 @@ export function DateResultModal({
           <p className="text-[12px] font-semibold text-amber-200">
             {t('date.resultSp').replace('{n}', String(pending.spGain))}
           </p>
-          {unlockedHeat ? (
-            <p className="text-[12px] font-semibold text-pink-200">{t('date.resultHeat')}</p>
-          ) : null}
         </div>
         <div className="mt-5 flex justify-center">
           <button

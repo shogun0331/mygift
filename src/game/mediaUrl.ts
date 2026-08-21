@@ -9,7 +9,11 @@ export function resolveMediaSrc(url: string | null | undefined, cacheKey?: strin
 
   if (resolved.startsWith('media://')) {
     const rel = resolved.slice('media://'.length).replace(/^\/+/, '')
-    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
+    const inElectron = typeof window !== 'undefined' && Boolean(window.electronAPI)
+    if (inElectron) {
+      // 패키징된 asar 안 영상은 file:// 상대경로로 못 읽음 → 커스텀 프로토콜 유지
+      resolved = `media://${rel}`
+    } else if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
       resolved = `/${rel}`
     } else {
       resolved = `./${rel}`
@@ -19,7 +23,8 @@ export function resolveMediaSrc(url: string | null | undefined, cacheKey?: strin
   }
 
   if (cacheKey == null || cacheKey === '') return resolved
-  return `${resolved}?v=${encodeURIComponent(String(cacheKey))}`
+  const joiner = resolved.includes('?') ? '&' : '?'
+  return `${resolved}${joiner}v=${encodeURIComponent(String(cacheKey))}`
 }
 
 export function characterMediaUrl(

@@ -12,6 +12,7 @@ import {
   STAMINA_MAX,
 } from './condition'
 import { estimateDefaultSalaryForGrade } from './salary'
+import { characterMediaUrl } from './mediaUrl'
 import { creatorVisuals } from './studioSlots'
 
 export type Grade = 'S' | 'A' | 'B' | 'C'
@@ -31,8 +32,8 @@ export type CharacterVideo = {
   fileName?: string        // 물리 저장용 파일명
   fileSize?: number
   url: string              // media:// 또는 blob:
-  level: number            // 수위 레벨 (그룹: LV.1~4 등)
-  stage: number            // 수위 단계 (해당 레벨 그룹 안의 단계 숫자)
+  level: number            // 수위 영상은 LV.1만 사용
+  stage: number            // 해당 레벨 그룹 안의 단계 숫자
   keys: string[]           // 예: ['idle'] — 기본 대기 표시용
 }
 
@@ -174,7 +175,7 @@ export function normalizeRegisteredCharacter(
     profileImageId: raw.profileImageId ?? null,
     profileVideoId: raw.profileVideoId ?? null,
     images: raw.images ?? [],
-    videos: raw.videos ?? [],
+    videos: (raw.videos ?? []).map((video) => ({ ...video, level: 1 })),
     mediaRevision: raw.mediaRevision,
   }
 }
@@ -286,30 +287,33 @@ export function scoutCandidates(
   return registered.filter((c) => !ownedIds.has(c.id))
 }
 
-/** 수위 레벨의 기본 대기(idle) 영상 URL */
+/** 기본 대기(idle) 영상 URL — 수위 영상은 LV.1만 사용 */
 export function findLevelIdleVideoUrl(
-  creator: { videos?: CharacterVideo[] | null },
-  level = 1,
+  creator: { id?: string; videos?: CharacterVideo[] | null },
+  _level = 1,
 ): string | null {
-  const match = (creator.videos ?? []).find(
-    (video) => video.level === level && video.keys?.includes('idle') && Boolean(video.url),
-  )
-  return match?.url ?? null
+  const match = (creator.videos ?? []).find((video) => video.keys?.includes('idle'))
+  return resolveCharacterVideoUrl(creator, match)
 }
 
-/**
- * 방송용 클립: 해당 수위 레벨에서 idle이 아닌 영상.
- */
+/** 방송용 클립: idle이 아닌 영상 */
 export function listBroadcastPlayVideos(
-  creator: { videos?: CharacterVideo[] | null },
-  level = 1,
+  creator: { id?: string; videos?: CharacterVideo[] | null },
+  _level = 1,
 ): CharacterVideo[] {
   return (creator.videos ?? []).filter(
-    (video) =>
-      video.level === level &&
-      !video.keys?.includes('idle') &&
-      Boolean(video.url),
+    (video) => !video.keys?.includes('idle') && Boolean(resolveCharacterVideoUrl(creator, video)),
   )
+}
+
+function resolveCharacterVideoUrl(
+  creator: { id?: string },
+  video?: CharacterVideo | null,
+): string | null {
+  if (!video) return null
+  if (video.url) return video.url
+  if (creator.id && video.fileName) return characterMediaUrl(creator.id, 'video', video.fileName)
+  return null
 }
 
 /**
@@ -317,20 +321,20 @@ export function listBroadcastPlayVideos(
  * avoidUrl이 있고 후보가 2개 이상이면 직전 클립은 빼서 같은 영상이 연속되지 않게 한다.
  */
 export function pickRandomBroadcastVideoUrl(
-  creator: { videos?: CharacterVideo[] | null },
+  creator: { id?: string; videos?: CharacterVideo[] | null },
   level = 1,
   avoidUrl?: string | null,
 ): string | null {
   let playlist = listBroadcastPlayVideos(creator, level)
   if (avoidUrl && playlist.length > 1) {
-    const without = playlist.filter((video) => video.url !== avoidUrl)
+    const without = playlist.filter((video) => resolveCharacterVideoUrl(creator, video) !== avoidUrl)
     if (without.length > 0) playlist = without
   }
   if (playlist.length === 0) {
     return findLevelIdleVideoUrl(creator, level)
   }
   const index = Math.floor(Math.random() * playlist.length)
-  return playlist[index]?.url ?? findLevelIdleVideoUrl(creator, level)
+  return resolveCharacterVideoUrl(creator, playlist[index]) ?? findLevelIdleVideoUrl(creator, level)
 }
 
 export function toStudioHandCard(creator: OwnedCreator) {
@@ -343,7 +347,7 @@ export function toStudioHandCard(creator: OwnedCreator) {
     staminaMax: creator.staminaMax,
     conditionScore: scoreOf(creator),
     profileImageUrl: creator.profileImageUrl || null,
-    idleVideoUrl: findLevelIdleVideoUrl(creator, creator.heat ?? 1),
+    idleVideoUrl: findLevelIdleVideoUrl(creator),
     mediaRevision: creator.mediaRevision,
   }
 }

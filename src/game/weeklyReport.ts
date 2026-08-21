@@ -25,6 +25,12 @@ export type WeeklyCreatorLine = {
   name: string
   broadcastHours: number
   revenueWon: number
+  /** 해당 크리에이터 월급 (연봉/12) */
+  salaryWon: number
+  /** 해당 크리에이터 컨디션 케어비 */
+  careWon: number
+  /** 매출 − 월급 − 케어 */
+  profitWon: number
 }
 
 export type SettlementExpenseLine = {
@@ -170,14 +176,56 @@ export function buildWeeklyStatement(opts: {
   annualRevenueForTaxWon?: number
 }): WeeklyStatement {
   const { week, issuedDate, previousNetProfitWon } = opts
-  const lines = [...week.byCreator.values()]
-    .map((row) => ({
-      creatorId: row.creatorId,
-      name: row.name,
-      broadcastHours: row.weeksBroadcast * HOURS_PER_BROADCAST_WEEK,
-      revenueWon: row.revenueWon,
-    }))
-    .sort((a, b) => b.revenueWon - a.revenueWon)
+
+  const salaryById = new Map<string, { name: string; salaryWon: number }>()
+  for (const creator of opts.payroll) {
+    const monthly = monthlySalaryFromAnnual(creator.salary)
+    if (monthly <= 0) continue
+    salaryById.set(creator.id, { name: creator.name, salaryWon: monthly })
+  }
+
+  const careById = new Map<string, { name: string; careWon: number }>()
+  const unattributedCare: SettlementCareExpense[] = []
+  for (const care of week.careExpenses) {
+    if (care.amountWon <= 0) continue
+    if (!care.creatorId) {
+      unattributedCare.push(care)
+      continue
+    }
+    const prev = careById.get(care.creatorId)
+    careById.set(care.creatorId, {
+      name: care.name,
+      careWon: (prev?.careWon ?? 0) + care.amountWon,
+    })
+  }
+
+  const rowIds = new Set<string>()
+  for (const id of week.byCreator.keys()) rowIds.add(id)
+  for (const id of salaryById.keys()) rowIds.add(id)
+  for (const id of careById.keys()) rowIds.add(id)
+
+  const lines: WeeklyCreatorLine[] = [...rowIds]
+    .map((creatorId) => {
+      const broadcast = week.byCreator.get(creatorId)
+      const salaryWon = salaryById.get(creatorId)?.salaryWon ?? 0
+      const careWon = careById.get(creatorId)?.careWon ?? 0
+      const name =
+        broadcast?.name ??
+        salaryById.get(creatorId)?.name ??
+        careById.get(creatorId)?.name ??
+        creatorId
+      const revenueWon = broadcast?.revenueWon ?? 0
+      return {
+        creatorId,
+        name,
+        broadcastHours: (broadcast?.weeksBroadcast ?? 0) * HOURS_PER_BROADCAST_WEEK,
+        revenueWon,
+        salaryWon,
+        careWon,
+        profitWon: revenueWon - salaryWon - careWon,
+      }
+    })
+    .sort((a, b) => b.revenueWon - a.revenueWon || b.profitWon - a.profitWon)
 
   const expenses: SettlementExpenseLine[] = []
   const slotCount = Math.max(0, Math.round(opts.unlockedSlotCount))
@@ -197,20 +245,9 @@ export function buildWeeklyStatement(opts: {
     })
   }
 
-  for (const creator of opts.payroll) {
-    const monthly = monthlySalaryFromAnnual(creator.salary)
-    if (monthly <= 0) continue
+  for (const [index, care] of unattributedCare.entries()) {
     expenses.push({
-      id: `salary-${creator.id}`,
-      label: `월급 (${creator.name})`,
-      amountWon: monthly,
-    })
-  }
-
-  for (const [index, care] of week.careExpenses.entries()) {
-    if (care.amountWon <= 0) continue
-    expenses.push({
-      id: `care-${care.creatorId}-${index}`,
+      id: `care-misc-${index}`,
       label: `컨디션 케어 (${care.name})`,
       amountWon: care.amountWon,
     })
@@ -229,8 +266,12 @@ export function buildWeeklyStatement(opts: {
     })
   }
 
+  const salaryTotalWon = [...salaryById.values()].reduce((sum, row) => sum + row.salaryWon, 0)
+  const careTotalWon = [...careById.values()].reduce((sum, row) => sum + row.careWon, 0)
+  const miscExpenseWon = expenses.reduce((sum, row) => sum + row.amountWon, 0)
+
   const totalRevenueWon = week.totalRevenueWon
-  const totalExpenseWon = expenses.reduce((sum, row) => sum + row.amountWon, 0)
+  const totalExpenseWon = salaryTotalWon + careTotalWon + miscExpenseWon
   const netProfitWon = totalRevenueWon - totalExpenseWon
 
   let profitChangePct: number | null = null

@@ -1,6 +1,5 @@
-const { app, BrowserWindow, protocol, net, Menu } = require('electron')
+const { app, BrowserWindow, protocol, Menu } = require('electron')
 const path = require('path')
-const { pathToFileURL } = require('url')
 const fs = require('fs')
 
 // 이벤트 대사 파일 키 (src/events/eventLocales.ts 와 동일)
@@ -74,25 +73,108 @@ function parseJsonFile(buffer) {
 
 const isDev = process.env.ELECTRON_DEV === '1'
 
-function getProjectRoot() {
-  if (app.isPackaged) {
-    const unpacked = path.join(process.resourcesPath, 'app.asar.unpacked')
-    if (fs.existsSync(path.join(unpacked, 'public'))) {
-      return unpacked
-    }
-    return app.getAppPath()
-  }
-  // Mac/Win 공통: getAppPath()가 Electron.app 쪽을 가리키면 public 을 못 찾음
-  return path.join(__dirname, '..')
-}
-
-function publicPath(...segments) {
-  const parts = segments.flatMap((seg) =>
+function splitPublicSegments(segments) {
+  return segments.flatMap((seg) =>
     String(seg)
       .split(/[/\\]+/)
       .filter(Boolean),
   )
-  return path.join(getProjectRoot(), 'public', ...parts)
+}
+
+function getAsarPublicRoot() {
+  if (app.isPackaged) {
+    return path.join(app.getAppPath(), 'public')
+  }
+  return path.join(__dirname, '..', 'public')
+}
+
+function getOverlayPublicRoot() {
+  if (!app.isPackaged) return getAsarPublicRoot()
+  return path.join(app.getPath('userData'), 'public')
+}
+
+function joinPublicRoot(root, segments) {
+  return path.join(root, ...splitPublicSegments(segments))
+}
+
+/** 읽기: 패키징 후 수정본(userData)이 있으면 그걸, 없으면 asar 안의 public */
+function publicPath(...segments) {
+  const overlay = joinPublicRoot(getOverlayPublicRoot(), segments)
+  if (app.isPackaged && fs.existsSync(overlay)) return overlay
+  return joinPublicRoot(getAsarPublicRoot(), segments)
+}
+
+/** 쓰기: asar는 읽기 전용이라 패키징본은 userData/public 에 저장 */
+function publicWritePath(...segments) {
+  return joinPublicRoot(getOverlayPublicRoot(), segments)
+}
+
+function contentTypeFor(filePath) {
+  const ext = path.extname(filePath).toLowerCase()
+  switch (ext) {
+    case '.mp4':
+      return 'video/mp4'
+    case '.webm':
+      return 'video/webm'
+    case '.mov':
+      return 'video/quicktime'
+    case '.png':
+      return 'image/png'
+    case '.jpg':
+    case '.jpeg':
+      return 'image/jpeg'
+    case '.webp':
+      return 'image/webp'
+    case '.gif':
+      return 'image/gif'
+    case '.json':
+      return 'application/json'
+    case '.mp3':
+      return 'audio/mpeg'
+    case '.wav':
+      return 'audio/wav'
+    case '.ogg':
+      return 'audio/ogg'
+    default:
+      return 'application/octet-stream'
+  }
+}
+
+function mediaResponseFromFile(filePath, request) {
+  const data = fs.readFileSync(filePath)
+  const total = data.length
+  const mime = contentTypeFor(filePath)
+  const rangeHeader = request.headers.get('Range') || request.headers.get('range')
+
+  if (rangeHeader) {
+    const match = /bytes=(\d*)-(\d*)/.exec(rangeHeader)
+    if (match) {
+      const start = match[1] ? Number(match[1]) : 0
+      let end = match[2] ? Number(match[2]) : total - 1
+      if (end >= total) end = total - 1
+      if (!Number.isNaN(start) && !Number.isNaN(end) && start <= end && start < total) {
+        const slice = data.subarray(start, end + 1)
+        return new Response(slice, {
+          status: 206,
+          headers: {
+            'Content-Type': mime,
+            'Content-Length': String(slice.length),
+            'Content-Range': `bytes ${start}-${end}/${total}`,
+            'Accept-Ranges': 'bytes',
+          },
+        })
+      }
+    }
+  }
+
+  return new Response(data, {
+    status: 200,
+    headers: {
+      'Content-Type': mime,
+      'Content-Length': String(total),
+      'Accept-Ranges': 'bytes',
+    },
+  })
 }
 
 // video range/stream 지원을 위해 ready 이전에 등록해야 함
@@ -151,7 +233,8 @@ app.whenReady().then(() => {
         return new Response('Not Found', { status: 404 })
       }
 
-      return net.fetch(pathToFileURL(filePath).href)
+      // asar 안 파일은 Chromium file:// 로 못 재생함. Node fs로 읽어 프로토콜로 공급.
+      return mediaResponseFromFile(filePath, request)
     } catch (err) {
       console.error('media protocol error:', err)
       return new Response('Internal Error', { status: 500 })
@@ -172,7 +255,7 @@ const { ipcMain } = require('electron')
 
 ipcMain.handle('save-event-assets', async (event, { eventId, assets }) => {
   try {
-    const baseDir = publicPath('chapter_assets', 'events', String(eventId))
+    const baseDir = publicWritePath('chapter_assets', 'events', String(eventId))
     const folderMap = {
       image: 'images',
       video: 'videos',
@@ -210,7 +293,7 @@ ipcMain.handle('delete-event-file', async (event, { eventId, kind, fileName }) =
       sound: 'sounds',
     }
     const folderName = folderMap[kind] || 'assets'
-    const filePath = publicPath('chapter_assets', 'events', safeId, folderName, safeName)
+    const filePath = publicWritePath('chapter_assets', 'events', safeId, folderName, safeName)
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath)
     }
@@ -226,11 +309,11 @@ ipcMain.handle('delete-event-folder', async (event, { eventId }) => {
     if (!safeId) {
       return { success: false, error: 'invalid path' }
     }
-    const dirPath = publicPath('chapter_assets', 'events', safeId)
+    const dirPath = publicWritePath('chapter_assets', 'events', safeId)
     if (fs.existsSync(dirPath)) {
       fs.rmSync(dirPath, { recursive: true, force: true })
     }
-    const jsonPath = publicPath('chapter_assets', 'events', `${safeId}.json`)
+    const jsonPath = publicWritePath('chapter_assets', 'events', `${safeId}.json`)
     if (fs.existsSync(jsonPath)) {
       fs.unlinkSync(jsonPath)
     }
@@ -242,7 +325,7 @@ ipcMain.handle('delete-event-folder', async (event, { eventId }) => {
 
 ipcMain.handle('save-character-assets', async (event, { characterId, assets }) => {
   try {
-    const baseDir = publicPath('characters', String(characterId))
+    const baseDir = publicWritePath('characters', String(characterId))
     const folderMap = {
       image: 'images',
       video: 'videos',
@@ -287,7 +370,7 @@ ipcMain.handle('save-character-assets', async (event, { characterId, assets }) =
 
 ipcMain.handle('save-characters-json', async (event, { characters }) => {
   try {
-    const dir = publicPath('characters')
+    const dir = publicWritePath('characters')
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true })
     }
@@ -322,7 +405,7 @@ ipcMain.handle('load-characters-json', async (event) => {
 
 ipcMain.handle('save-events-json', async (event, { events }) => {
   try {
-    const assetsDir = publicPath('chapter_assets')
+    const assetsDir = publicWritePath('chapter_assets')
     const eventsDir = path.join(assetsDir, 'events')
 
     if (!fs.existsSync(assetsDir)) {
@@ -453,7 +536,7 @@ ipcMain.handle('delete-character-file', async (event, { characterId, kind, fileN
       video: 'videos',
     }
     const folderName = folderMap[kind] || 'assets'
-    const filePath = publicPath('characters', String(characterId), folderName, fileName)
+    const filePath = publicWritePath('characters', String(characterId), folderName, fileName)
 
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath)
@@ -471,8 +554,8 @@ ipcMain.handle('clone-character-file', async (event, { characterId, kind, source
       video: 'videos',
     }
     const folderName = folderMap[kind] || 'assets'
-    const dir = publicPath('characters', String(characterId), folderName)
-    const sourcePath = path.join(dir, sourceFileName)
+    const dir = publicWritePath('characters', String(characterId), folderName)
+    const sourcePath = publicPath('characters', String(characterId), folderName, sourceFileName)
     const targetPath = path.join(dir, targetFileName)
 
     if (!fs.existsSync(sourcePath)) {
@@ -492,7 +575,7 @@ ipcMain.handle('clone-character-file', async (event, { characterId, kind, source
 
 ipcMain.handle('delete-character-folder', async (event, { characterId }) => {
   try {
-    const dirPath = publicPath('characters', String(characterId))
+    const dirPath = publicWritePath('characters', String(characterId))
     if (fs.existsSync(dirPath)) {
       fs.rmSync(dirPath, { recursive: true, force: true })
     }

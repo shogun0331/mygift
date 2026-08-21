@@ -134,8 +134,7 @@ function specialCell(ring: Ring, spoke: number): Partial<Draft> | null {
   if (ring === 1 && spoke === 0) return { id: 'scout_b2', type: 'scout' }
   if (ring === 2 && spoke === 9) return { id: 'scout_a1', type: 'scout' }
   if (ring === 2 && spoke === 11) return { id: 'scout_a2', type: 'scout' }
-  if (ring === 2 && spoke === 0) return { id: 'scout_a3', type: 'scout' }
-  if (ring === 2 && spoke === 5) return { id: 'scout_a4', type: 'scout' }
+  if (ring === 2 && spoke === 5) return { id: 'scout_a3', type: 'scout' }
   if (ring === 3 && spoke === 9) return { id: 'scout_s1', type: 'scout' }
   if (ring === 3 && spoke === 11) return { id: 'scout_s2', type: 'scout' }
   if (ring === 3 && spoke === 5) return { id: 'scout_s3', type: 'scout' }
@@ -228,7 +227,7 @@ function buildTreeNodes(): EquipNodeDef[] {
 }
 
 /**
- * C는 동서남북 4칸(슬롯 없음). B는 8칸(스카웃 2·슬롯 1). A 슬롯 3·S 슬롯 1.
+ * C는 동서남북 4칸(슬롯 없음). B는 8칸(스카웃 2·슬롯 1). A 스카웃 3·슬롯 3, S 스카웃 3·슬롯 1.
  * 연결: 허브→C, 같은 각도 바깥 링, 같은 링 좌우(원형).
  */
 export const EQUIP_NODE_DEFS: EquipNodeDef[] = [

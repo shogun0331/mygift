@@ -50,7 +50,10 @@ import { formatMoney } from '../game/money'
 import { rollNegotiatedSalary } from '../game/salary'
 import {
   applyAudiencePenalty,
+  companyTierLabelKey,
+  companyTierOf,
   createInitialLeagueState,
+  formatViewers,
   reapplyLeagueGate,
   settleLeagueRank,
   type LeagueState,
@@ -256,6 +259,87 @@ function IconSettings() {
   )
 }
 
+function IconEdit() {
+  return (
+    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M4.5 16.8V19.5H7.2L17.1 9.6l-2.7-2.7L4.5 16.8z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14.1 6.2l2.7 2.7 1.35-1.35a1.9 1.9 0 0 0 0-2.7l-.3-.3a1.9 1.9 0 0 0-2.7 0L14.1 6.2z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function IconHudDate() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3.5" y="5" width="17" height="15" rx="2" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M8 3.5v3M16 3.5v3M3.5 9.5h17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function IconHudRank() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M8 4.5h8v4.2a4 4 0 0 1-8 0V4.5z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8 6.2H5.7A2.4 2.4 0 0 0 8 9M16 6.2h2.3A2.4 2.4 0 0 1 16 9"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 12.7V16.5M9.3 19.5h5.4M10.2 16.5h3.6"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+function IconHudViewers() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M3.5 12s3.2-6 8.5-6 8.5 6 8.5 6-3.2 6-8.5 6-8.5-6-8.5-6z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="2.4" stroke="currentColor" strokeWidth="1.7" />
+    </svg>
+  )
+}
+
+function IconHudAssets() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.7" />
+      <path
+        d="M12 7.2v9.6M9.4 9.2c.6-.8 1.5-1.2 2.6-1.2 1.7 0 2.7.9 2.7 2.1s-1 2-2.8 2.3c-1.8.3-2.8.9-2.8 2.2 0 1.3 1.1 2.2 2.9 2.2 1.2 0 2.1-.4 2.7-1.2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
 const TABS: { id: GameTab; label: string; icon: ReactNode }[] = [
   { id: 'dashboard', label: 'DASHBOARD', icon: <IconDashboard /> },
   { id: 'creator', label: 'CREATOR', icon: <IconCreator /> },
@@ -274,6 +358,8 @@ type InGameProps = {
   onScout: (creator: OwnedCreator) => void
   onBack: () => void
   onOpenEditor?: () => void
+  watchedEventIds?: string[]
+  onEventWatched?: (eventId: string) => void
 }
 
 export function InGame({
@@ -286,21 +372,27 @@ export function InGame({
   onScout,
   onBack,
   onOpenEditor,
+  watchedEventIds = [],
+  onEventWatched,
 }: InGameProps) {
   const { t, locale, setLocale } = useTranslation()
   const [tab, setTab] = useState<GameTab>('dashboard')
-  const [speed, setSpeed] = useState<SpeedOption>('1x')
+  const speed: SpeedOption = '1x'
   const [gameMonth, setGameMonth] = useState(0)
   const [broadcastPhase, setBroadcastPhase] = useState<BroadcastPhase>('prep')
   const [livePlayVideoByCreator, setLivePlayVideoByCreator] = useState<Record<string, string>>({})
   const livePlayVideoByCreatorRef = useRef(livePlayVideoByCreator)
   const [monthWeekIndex, setMonthWeekIndex] = useState(0)
   const [assets, setAssets] = useState(INITIAL_ASSETS)
+  const assetsRef = useRef(assets)
   const [liveEvents, setLiveEvents] = useState<DayEvent[]>([])
   const [conditionCrashes, setConditionCrashes] = useState<ConditionCrashFxItem[]>([])
   const [toxicQteQueue, setToxicQteQueue] = useState<ToxicWhackQteItem[]>([])
   const [liveRevenueByCreator, setLiveRevenueByCreator] = useState<Record<string, number>>({})
   const [weeklyStatement, setWeeklyStatement] = useState<WeeklyStatement | null>(null)
+  const [settlementAssetsAfter, setSettlementAssetsAfter] = useState(0)
+  const [settlementPortraits, setSettlementPortraits] = useState<Record<string, string>>({})
+  const [broadcastEndedNotice, setBroadcastEndedNotice] = useState(false)
   /** 월간 방송 종료 후 명세서 대기·표시 중 — 닫기 전까지 방송 시작 잠금 */
   const [startBroadcastLocked, setStartBroadcastLocked] = useState(false)
   const [openCreatorScout, setOpenCreatorScout] = useState(false)
@@ -326,7 +418,7 @@ export function InGame({
   type SocialUi =
     | { mode: 'dateOffer'; pending: DatePending }
     | { mode: 'dateVn'; pending: DatePending; event: GameEvent }
-    | { mode: 'dateResult'; pending: DatePending; unlockedHeat: boolean }
+    | { mode: 'dateResult'; pending: DatePending }
     | { mode: 'giftOffer'; pending: GiftPending }
     | {
         mode: 'giftResult'
@@ -520,7 +612,8 @@ export function InGame({
 
   function handleScoutEventFinished() {
     if (!scoutEventState) return
-    const { creator } = scoutEventState
+    const { creator, currentEvent } = scoutEventState
+    onEventWatched?.(currentEvent.id)
     setScoutEventState(null)
     beginRecruitPresentation(creator)
   }
@@ -616,6 +709,7 @@ export function InGame({
   const equipmentTreeRef = useRef(equipmentTree)
   studioSlotsRef.current = studioSlots
   ownedCreatorsRef.current = ownedCreators
+  assetsRef.current = assets
   livePlayVideoByCreatorRef.current = livePlayVideoByCreator
   speedRef.current = speed
   onOwnedCreatorsChangeRef.current = onOwnedCreatorsChange
@@ -635,7 +729,7 @@ export function InGame({
       if (slot.status !== 'assigned' || !slot.assignment) continue
       const owned = ownedCreatorsRef.current.find((c) => c.id === slot.assignment!.creatorId)
       if (!owned) continue
-      const url = pickRandomBroadcastVideoUrl(owned, owned.heat ?? 1, prev[owned.id])
+      const url = pickRandomBroadcastVideoUrl(owned, 1, prev[owned.id])
       if (url) next[owned.id] = url
     }
     setLivePlayVideoByCreator(next)
@@ -1035,8 +1129,14 @@ export function InGame({
       0,
     )
     const assetDelta = statement.netProfitWon + careAlreadyPaid
+    const assetsAfter = assetsRef.current + assetDelta
     if (assetDelta !== 0) {
-      setAssets((prev) => prev + assetDelta)
+      setAssets(assetsAfter)
+      assetsRef.current = assetsAfter
+    }
+    const portraits: Record<string, string> = {}
+    for (const creator of nextOwned) {
+      if (creator.profileImageUrl) portraits[creator.id] = creator.profileImageUrl
     }
 
     const broadcastedIds = new Set(weekSnapshot.byCreator.keys())
@@ -1075,14 +1175,18 @@ export function InGame({
     dayStartedAtRef.current = null
     setStartBroadcastLocked(true)
 
-    // 방송 종료 직후 명세서가 덮지 않도록 잠시 대기 (진상 QTE 여유)
+    // 중앙에 '방송 종료'를 먼저 띄운 뒤 명세서 팝업
+    setBroadcastEndedNotice(true)
     if (statementDelayTimerRef.current != null) {
       window.clearTimeout(statementDelayTimerRef.current)
     }
     statementDelayTimerRef.current = window.setTimeout(() => {
       statementDelayTimerRef.current = null
+      setBroadcastEndedNotice(false)
+      setSettlementAssetsAfter(assetsAfter)
+      setSettlementPortraits(portraits)
       setWeeklyStatement(statement)
-    }, 2000)
+    }, 1800)
   }
 
   function continueAfterMonthModals(openScout: boolean) {
@@ -1113,14 +1217,12 @@ export function InGame({
   }
 
   function completeDateEvent(pending: DatePending) {
-    const unlockedHeat = pending.step === 'h'
     patchOwnedCreator(pending.creatorId, (creator) => ({
       ...creator,
       dateArcStep: dateArcAfter(pending.step),
-      heat: unlockedHeat ? Math.max(creator.heat ?? 1, 2) : creator.heat,
     }))
     setSkillPoints((prev) => prev + pending.spGain)
-    setSocialUi({ mode: 'dateResult', pending, unlockedHeat })
+    setSocialUi({ mode: 'dateResult', pending })
   }
 
   function handleDateStart() {
@@ -1352,6 +1454,7 @@ export function InGame({
       window.clearTimeout(statementDelayTimerRef.current)
       statementDelayTimerRef.current = null
     }
+    setBroadcastEndedNotice(false)
     weekFinishedRef.current = false
     setStartBroadcastLocked(false)
     setBroadcastPhase('live')
@@ -1459,14 +1562,38 @@ export function InGame({
   return (
     <main className="game-stage fixed inset-0 grid h-dvh grid-rows-[auto_1fr_auto] overflow-hidden">
       <header className="game-hud relative z-40 flex shrink-0 items-center justify-between gap-4 px-6 pt-6 pb-3">
-        <div className="min-w-0">
-          <p className="game-kicker">STAR BROADCASTING CO.</p>
-          <h1
-            className="game-title mt-1 text-2xl"
-            style={{ letterSpacing: '0.04em' }}
-          >
-            {t(`menu.${tab}`)}
-          </h1>
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex shrink-0 items-center gap-1.5">
+            <button
+              type="button"
+              onClick={onBack}
+              title={t('hud.back')}
+              aria-label={t('hud.back')}
+              className="game-hud-icon-btn"
+            >
+              <IconBack />
+            </button>
+            {import.meta.env.DEV && onOpenEditor ? (
+              <button
+                type="button"
+                onClick={onOpenEditor}
+                title="EDIT"
+                aria-label="EDIT"
+                className="game-hud-icon-btn"
+              >
+                <IconEdit />
+              </button>
+            ) : null}
+          </div>
+          <div className="min-w-0">
+            <p className="game-kicker">STAR BROADCASTING CO.</p>
+            <h1
+              className="game-title mt-1 text-2xl"
+              style={{ letterSpacing: '0.04em' }}
+            >
+              {t(`menu.${tab}`)}
+            </h1>
+          </div>
         </div>
 
         {broadcastPhase === 'live' ? (
@@ -1504,66 +1631,46 @@ export function InGame({
           <div className="hidden flex-1 md:block" />
         )}
 
-        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-          <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(0,245,255,0.04)]">
-            <p className="game-stat-label">{t('hud.dateTime')}</p>
-            <p className="mt-0.5 text-xs font-bold tabular-nums text-slate-100 sm:text-sm">
-              <span>{clock.date}</span>
-              <span className="mx-1.5 text-slate-600">|</span>
-              <span className="neon-text-cyan" style={{ textShadow: '0 0 8px rgba(0, 245, 255, 0.45)' }}>{clock.time}</span>
-            </p>
-          </div>
-
-          <div className="game-panel rounded-xl px-2.5 py-2 sm:px-3 border-indigo-500/25">
-            <p className="game-stat-label mb-1 px-0.5">{t('hud.speed')}</p>
-            <div className="flex gap-1">
-              {SPEED_OPTIONS.map((option) => {
-                const isActive = speed === option
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => setSpeed(option)}
-                    className={`rounded-md px-2.5 py-1 text-xs font-bold transition-all ${
-                      isActive ? 'game-btn-pink' : 'game-btn'
-                    }`}
-                  >
-                    {option}
-                  </button>
-                )
-              })}
+        <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
+          <div className="game-hud-strip min-w-0">
+            <div className="game-hud-cell game-hud-cell--date">
+              <div className="game-hud-cell-head">
+                <IconHudDate />
+                <p className="game-stat-label">{t('hud.dateTime')}</p>
+              </div>
+              <p className="game-stat-value tabular-nums text-slate-100">{clock.date}</p>
+            </div>
+            <div className="game-hud-cell game-hud-cell--rank">
+              <div className="game-hud-cell-head">
+                <IconHudRank />
+                <p className="game-stat-label">{t('hud.stationRank')}</p>
+              </div>
+              <p className="game-stat-value tabular-nums">
+                {league.currentRank}
+                {t('ranking.rankUnit')}
+              </p>
+              <p className="game-hud-rank-company">
+                {t(companyTierLabelKey(companyTierOf(league.currentRank).id))}
+              </p>
+            </div>
+            <div className="game-hud-cell game-hud-cell--viewers">
+              <div className="game-hud-cell-head">
+                <IconHudViewers />
+                <p className="game-stat-label">{t('hud.viewers')}</p>
+              </div>
+              <p className="game-stat-value tabular-nums">
+                {formatViewers(league.viewers)}
+                {t('ranking.viewersUnit')}
+              </p>
+            </div>
+            <div className="game-hud-cell game-hud-cell--assets">
+              <div className="game-hud-cell-head">
+                <IconHudAssets />
+                <p className="game-stat-label">{t('hud.assets')}</p>
+              </div>
+              <p className="game-stat-value tabular-nums">{formatAssets(assets)}</p>
             </div>
           </div>
-
-          <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(251,191,36,0.04)]">
-            <p className="game-stat-label">{t('hud.stationGrade')}</p>
-            <p className="text-sm font-black text-amber-200">{stationGrade}</p>
-          </div>
-
-          <div className="game-panel rounded-xl px-3 py-2 text-right sm:px-4 border-indigo-500/25 shadow-[0_0_15px_rgba(251,191,36,0.04)]">
-            <p className="game-stat-label">{t('hud.assets')}</p>
-            <p className="text-sm font-black text-amber-400" style={{ textShadow: '0 0 8px rgba(251, 191, 36, 0.45)' }}>
-              {formatAssets(assets)}
-            </p>
-          </div>
-
-          {import.meta.env.DEV && onOpenEditor ? (
-            <button
-              type="button"
-              onClick={onOpenEditor}
-              className="game-btn px-4 py-2 text-sm"
-            >
-              EDIT
-            </button>
-          ) : null}
-          <button
-            type="button"
-            onClick={onBack}
-            className="game-btn px-4 py-2 text-sm"
-          >
-            <IconBack />
-            <span>{t('hud.back')}</span>
-          </button>
 
           <button
             type="button"
@@ -1777,9 +1884,17 @@ export function InGame({
         </div>
       </nav>
 
+      {broadcastEndedNotice ? (
+        <div className="broadcast-ended-overlay" role="status" aria-live="polite">
+          <p className="broadcast-ended-title">{t('dashboard.broadcastEnded')}</p>
+        </div>
+      ) : null}
+
       {weeklyStatement ? (
         <WeeklySettlementModal
           statement={weeklyStatement}
+          assetsAfter={settlementAssetsAfter}
+          portraitByCreatorId={settlementPortraits}
           onConfirm={() => {
             setWeeklyStatement(null)
             const pendingRank = pendingRankResultRef.current
@@ -1894,7 +2009,6 @@ export function InGame({
       {socialUi?.mode === 'dateResult' ? (
         <DateResultModal
           pending={socialUi.pending}
-          unlockedHeat={socialUi.unlockedHeat}
           onConfirm={() => {
             setSocialUi(null)
             continueAfterMonthModals(pendingScoutAfterRankRef.current)
@@ -1951,6 +2065,7 @@ export function InGame({
           mode="game"
           onClose={handleScoutEventFinished}
           registeredCharacters={registeredCharacters}
+          allowSkip={watchedEventIds.includes(scoutEventState.currentEvent.id)}
         />
       )}
 
@@ -1961,10 +2076,12 @@ export function InGame({
           mode="game"
           onClose={() => {
             const play = vipEventPlay
+            onEventWatched?.(play.event.id)
             setVipEventPlay(null)
             applyVipAcceptRewards(play.offer, play.spGain, play.staminaMaxLoss)
           }}
           registeredCharacters={registeredCharacters}
+          allowSkip={watchedEventIds.includes(vipEventPlay.event.id)}
         />
       ) : null}
 
@@ -1975,9 +2092,11 @@ export function InGame({
           mode="game"
           onClose={() => {
             if (socialUi.mode !== 'dateVn') return
+            onEventWatched?.(socialUi.event.id)
             completeDateEvent(socialUi.pending)
           }}
           registeredCharacters={registeredCharacters}
+          allowSkip={watchedEventIds.includes(socialUi.event.id)}
         />
       ) : null}
 
@@ -1988,9 +2107,11 @@ export function InGame({
           mode="game"
           onClose={() => {
             if (socialUi.mode !== 'hRetryVn') return
+            onEventWatched?.(socialUi.event.id)
             applyHRetryAccept(socialUi.pending, socialUi.spGain, socialUi.staminaLoss)
           }}
           registeredCharacters={registeredCharacters}
+          allowSkip={watchedEventIds.includes(socialUi.event.id)}
         />
       ) : null}
 
@@ -1999,8 +2120,12 @@ export function InGame({
           key={`salary-${salaryEventPlay.creatorId}-${salaryEventPlay.salaryEvent.id}`}
           event={salaryEventPlay.salaryEvent}
           mode="game"
-          onClose={() => applyPromotedSalary(salaryEventPlay)}
+          onClose={() => {
+            onEventWatched?.(salaryEventPlay.salaryEvent!.id)
+            applyPromotedSalary(salaryEventPlay)
+          }}
           registeredCharacters={registeredCharacters}
+          allowSkip={watchedEventIds.includes(salaryEventPlay.salaryEvent.id)}
         />
       ) : null}
 

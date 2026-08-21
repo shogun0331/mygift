@@ -1,4 +1,6 @@
 import {
+  companyTierLabelKey,
+  companyTierOf,
   formatViewers,
   type RankSettlementResult,
 } from '../game/ranking'
@@ -63,6 +65,15 @@ export function RankChangeModal({ result, onConfirm }: RankChangeModalProps) {
           >
             {changeLabel}
           </span>
+        </p>
+        <p className="mt-1 text-xs font-bold text-pink-200/90">
+          {t(companyTierLabelKey(companyTierOf(result.previousRank).id))}
+          {companyTierOf(result.previousRank).id !== companyTierOf(result.currentRank).id ? (
+            <>
+              <span className="mx-1.5 text-slate-500">→</span>
+              {t(companyTierLabelKey(companyTierOf(result.currentRank).id))}
+            </>
+          ) : null}
         </p>
         <p className="mt-1 text-xs font-semibold text-slate-400">
           {formatViewers(result.viewers)}

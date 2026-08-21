@@ -630,6 +630,7 @@ export function EventManagePanel({
           mode={simulatorMode}
           returnLabel="에디터로 돌아가기"
           onClose={() => setShowSimulator(false)}
+          registeredCharacters={registeredCharacters}
         />
       )}
 
@@ -1017,24 +1018,30 @@ function EventDetail({
   const handleNodeChange = (index: number, fields: Record<string, any>) => {
     const updatedNodes = [...(event.nodes || [])]
     const targetNode = { ...(updatedNodes[index] as Record<string, any>), ...fields }
+    updatedNodes[index] = targetNode
 
-    // 만약 화자(speakerType & speaker)가 변경된 경우,
-    // event.characters에 해당 캐릭터가 매핑되어 있어야 EventSimulator의 getCharacterName에서 참조함.
-    if (fields.speakerType === 'character' && fields.speaker) {
-      const charInfo = registeredCharacters.find((c) => c.id === fields.speaker)
+    let nextCharacters = event.characters || []
+    const speakerId = typeof fields.speaker === 'string' ? fields.speaker : targetNode.speaker
+    const speakerType = fields.speakerType ?? targetNode.speakerType
+    if (speakerType === 'character' && speakerId) {
+      const charInfo = registeredCharacters.find((c) => c.id === speakerId)
       if (charInfo) {
-        const exist = event.characters.some((c) => c.id === charInfo.id)
-        if (!exist) {
-          event.characters.push({
-            id: charInfo.id,
-            name: charInfo.name,
-          })
+        nextCharacters = [...nextCharacters]
+        const existIdx = nextCharacters.findIndex((c) => c.id === charInfo.id)
+        const mapped = {
+          id: charInfo.id,
+          name: charInfo.name,
+          names: charInfo.names,
+        }
+        if (existIdx >= 0) {
+          nextCharacters[existIdx] = { ...nextCharacters[existIdx], ...mapped }
+        } else {
+          nextCharacters.push(mapped)
         }
       }
     }
 
-    updatedNodes[index] = targetNode
-    const nextEvent: GameEvent = { ...event, nodes: updatedNodes }
+    const nextEvent: GameEvent = { ...event, nodes: updatedNodes, characters: nextCharacters }
     if (typeof fields.text === 'string' && targetNode.type === 'text') {
       const textKey = String(targetNode.text_key || targetNode.id || '')
       const lang = normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE)

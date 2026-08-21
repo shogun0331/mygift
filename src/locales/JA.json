@@ -20,7 +20,7 @@
     "savedData": "(SAVED DATA)"
   },
   "hud": {
-    "dateTime": "年月 · 時間",
+    "dateTime": "年月日",
     "speed": "倍速",
     "assets": "資産",
     "back": "戻る"

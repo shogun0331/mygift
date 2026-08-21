@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
 import KO from './KO.json'
 import EN from './EN.json'
@@ -9,6 +9,16 @@ import ES from './ES.json'
 import DE from './DE.json'
 
 export type Locale = 'KO' | 'EN' | 'JA' | 'ZH-CN' | 'RU' | 'ES' | 'DE'
+
+const HTML_LANG: Record<Locale, string> = {
+  KO: 'ko',
+  EN: 'en',
+  JA: 'ja',
+  'ZH-CN': 'zh-CN',
+  RU: 'ru',
+  ES: 'es',
+  DE: 'de',
+}
 
 const RESOURCES: Record<Locale, any> = {
   KO,
@@ -38,6 +48,11 @@ function getValueByPath(obj: unknown, path: string): string | null {
   return typeof current === 'string' ? current : null
 }
 
+function applyLocaleToDocument(locale: Locale) {
+  document.documentElement.lang = HTML_LANG[locale]
+  document.documentElement.dataset.locale = locale
+}
+
 function translate(locale: Locale, key: string): string {
   const currentPack = RESOURCES[locale]
   let val = getValueByPath(currentPack, key)
@@ -55,8 +70,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
     try {
       const saved = localStorage.getItem('locale') as Locale | null
-      return saved && RESOURCES[saved] ? saved : 'KO'
+      const next = saved && RESOURCES[saved] ? saved : 'KO'
+      applyLocaleToDocument(next)
+      return next
     } catch {
+      applyLocaleToDocument('KO')
       return 'KO'
     }
   })
@@ -70,6 +88,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       // ignore storage failures (private mode / locked profile)
     }
   }
+
+  useEffect(() => {
+    applyLocaleToDocument(locale)
+  }, [locale])
 
   const value: I18nContextType = {
     locale,

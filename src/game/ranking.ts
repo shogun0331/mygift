@@ -116,12 +116,31 @@ export type RankSettlementResult = {
   gameCleared: boolean
 }
 
+/**
+ * 로스터 잠재력 = floor + Σ(pop × skill × 등급배율 / DIV) + 구독 × SUB
+ * 실제 시청자는 잠재력까지 매달 일부만 쌓인다 (랜덤 배율).
+ *
+ * 목표 페이스 (슬롯 2·성장 전)
+ *   시작        150 → 100위
+ *   1~2개월     400~1,200 → 95~99위
+ *   슬롯 2 안정  2,000~4,000 → 85~92위
+ *   B+B 만렙 누적 후 1만 → 50위 문턱
+ */
 const GRADE_VIEWER_MULT: Record<CreatorGrade, number> = {
   C: 1,
   B: 3,
-  A: 12,
-  S: 40,
+  A: 5,
+  S: 14,
 }
+const VIEWER_STAT_DIVISOR = 5
+const SUBSCRIBER_VIEWER_RATE = 0.2
+const VIEWER_GROWTH_RATE = 0.18
+const VIEWER_GROWTH_RANDOM_MIN = 0.55
+const VIEWER_GROWTH_RANDOM_MAX = 1.4
+const IDLE_VIEWER_DECAY = 0.04
+const NPC_VIEWER_FLOOR = 30
+export const LEAGUE_SIZE = 200
+export const STARTING_RANK = 151
 
 const GRADE_RANK: Record<CreatorGrade, number> = {
   C: 0,
@@ -141,8 +160,56 @@ const VIEWER_BANDS: Array<{
   { bestRank: 11, worstRank: 20, minViewers: 100_000, maxViewers: 500_000 },
   { bestRank: 21, worstRank: 30, minViewers: 50_000, maxViewers: 100_000 },
   { bestRank: 31, worstRank: 50, minViewers: 10_000, maxViewers: 50_000 },
-  { bestRank: 51, worstRank: 100, minViewers: 1_000, maxViewers: 10_000 },
+  { bestRank: 51, worstRank: 80, minViewers: 1_500, maxViewers: 10_000 },
+  { bestRank: 81, worstRank: 100, minViewers: 400, maxViewers: 1_500 },
+  { bestRank: 101, worstRank: 150, minViewers: 151, maxViewers: 400 },
+  { bestRank: 151, worstRank: 200, minViewers: 80, maxViewers: 150 },
 ]
+
+export type CompanyTierId = 'top' | 'large' | 'mid' | 'sme' | 'tiny' | 'black'
+
+export type CompanyTier = {
+  id: CompanyTierId
+  bestRank: number
+  worstRank: number | null
+  flex: number
+}
+
+/** 순위 구간 = 기업 규모. 피라미드는 이 순서로 위에서 아래로 쌓인다. */
+export const COMPANY_TIERS: CompanyTier[] = [
+  { id: 'top', bestRank: 1, worstRank: 10, flex: 1 },
+  { id: 'large', bestRank: 11, worstRank: 20, flex: 1 },
+  { id: 'mid', bestRank: 21, worstRank: 50, flex: 1 },
+  { id: 'sme', bestRank: 51, worstRank: 100, flex: 1 },
+  { id: 'tiny', bestRank: 101, worstRank: 150, flex: 1 },
+  { id: 'black', bestRank: 151, worstRank: null, flex: 1 },
+]
+
+export function companyTierOf(rank: number): CompanyTier {
+  const r = Math.max(1, Math.round(rank))
+  return (
+    COMPANY_TIERS.find(
+      (tier) => r >= tier.bestRank && (tier.worstRank == null || r <= tier.worstRank),
+    ) ?? COMPANY_TIERS[COMPANY_TIERS.length - 1]!
+  )
+}
+
+export function companyTierLabelKey(id: CompanyTierId): `ranking.company.${CompanyTierId}` {
+  return `ranking.company.${id}`
+}
+
+/** 해당 등급 구간에 진입했거나 더 위로 올라왔으면 true (아래 층부터 채워 밝힘) */
+export function companyTierReached(rank: number, tier: CompanyTier): boolean {
+  const worst = tier.worstRank ?? LEAGUE_SIZE
+  return Math.max(1, Math.round(rank)) <= worst
+}
+
+/** 0 = 구간 최상위, 1 = 구간 최하위 */
+export function rankOffsetInTier(rank: number, tier: CompanyTier = companyTierOf(rank)): number {
+  const worst = tier.worstRank ?? LEAGUE_SIZE
+  const span = Math.max(1, worst - tier.bestRank)
+  return Math.max(0, Math.min(1, (rank - tier.bestRank) / span))
+}
 
 export const RANK_MILESTONES: RankMilestone[] = [50, 30, 20, 10, 5, 1]
 
@@ -358,9 +425,9 @@ function countAtLeast(creators: RankCreator[], minGrade: CreatorGrade): number {
 }
 
 export function viewersForRank(rank: number): number {
-  const r = Math.max(1, Math.min(100, Math.round(rank)))
+  const r = Math.max(1, Math.min(LEAGUE_SIZE, Math.round(rank)))
   const band = VIEWER_BANDS.find((b) => r >= b.bestRank && r <= b.worstRank)
-  if (!band) return 1_000
+  if (!band) return NPC_VIEWER_FLOOR
   if (band.bestRank === band.worstRank) return band.maxViewers
   const t = (band.worstRank - r) / (band.worstRank - band.bestRank)
   return Math.round(band.minViewers + t * (band.maxViewers - band.minViewers))
@@ -375,9 +442,41 @@ export function calcRosterViewers(
     const skill = Number(creator.skill ?? 25) || 25
     const grade = creator.grade
     const cond = CONDITION_MULT[conditionFromScore(scoreOf(creator))] ?? 1
-    return sum + popularity * skill * GRADE_VIEWER_MULT[grade] * cond
+    return (
+      sum + (popularity * skill * GRADE_VIEWER_MULT[grade] * cond) / VIEWER_STAT_DIVISOR
+    )
   }, 0)
-  return Math.max(VIEWER_FLOOR, Math.round(VIEWER_FLOOR + roster + Math.max(0, subscribers) * 0.4))
+  return Math.max(
+    VIEWER_FLOOR,
+    Math.round(VIEWER_FLOOR + roster + Math.max(0, subscribers) * SUBSCRIBER_VIEWER_RATE),
+  )
+}
+
+function rollViewerGrowthFactor(): number {
+  return (
+    VIEWER_GROWTH_RANDOM_MIN +
+    Math.random() * (VIEWER_GROWTH_RANDOM_MAX - VIEWER_GROWTH_RANDOM_MIN)
+  )
+}
+
+/** 잠재력까지 시청자를 일부만 쌓는다. 무방송이면 소폭 감소. */
+export function growLeagueViewers(
+  current: number,
+  potential: number,
+  didBroadcast: boolean,
+): number {
+  const now = Math.max(VIEWER_FLOOR, Math.round(current))
+  const cap = Math.max(VIEWER_FLOOR, Math.round(potential))
+  if (now > cap) {
+    const drop = Math.max(1, Math.round((now - cap) * 0.25))
+    return Math.max(cap, now - drop)
+  }
+  if (!didBroadcast) {
+    return Math.max(VIEWER_FLOOR, Math.round(now * (1 - IDLE_VIEWER_DECAY)))
+  }
+  if (now >= cap) return cap
+  const gain = Math.round((cap - now) * VIEWER_GROWTH_RATE * rollViewerGrowthFactor())
+  return Math.min(cap, now + Math.max(0, gain))
 }
 
 export function gatedFloorOf(stationGrade: StationGrade): number {
@@ -418,7 +517,7 @@ function creatorsMetOf(checks: RequirementCheck[]): boolean {
 }
 
 export function nextPromotionTarget(currentRank: number): PromotionTarget | null {
-  const rank = Math.max(1, Math.min(100, currentRank))
+  const rank = Math.max(1, Math.min(LEAGUE_SIZE, currentRank))
   if (rank <= 1) return null
   return PROMOTION_TARGETS.find((target) => rank > target.enterRank) ?? null
 }
@@ -484,12 +583,23 @@ function pickUnique<T>(pool: T[], used: Set<T>): T {
   return source[Math.floor(Math.random() * source.length)]!
 }
 
+const STATION_NAME_TAGS = ['HD', 'PLUS', 'LAB', 'ONE', 'MAX', 'PRO']
+
+function stationNamePool(): string[] {
+  const names = [...STATION_NAMES]
+  for (const tag of STATION_NAME_TAGS) {
+    for (const base of STATION_NAMES) names.push(`${base} ${tag}`)
+  }
+  return names
+}
+
 export function generateNpcStations(): NpcStation[] {
   const usedStations = new Set<string>()
   const usedAces = new Set<string>()
+  const names = stationNamePool()
   const npcs: NpcStation[] = []
-  for (let rank = 1; rank <= 99; rank += 1) {
-    const stationName = pickUnique(STATION_NAMES, usedStations)
+  for (let rank = 1; rank <= LEAGUE_SIZE - 1; rank += 1) {
+    const stationName = pickUnique(names, usedStations)
     const aceCreatorName = pickUnique(ACE_NAMES, usedAces)
     usedStations.add(stationName)
     usedAces.add(aceCreatorName)
@@ -500,11 +610,29 @@ export function generateNpcStations(): NpcStation[] {
       stationName,
       aceCreatorName,
       aceCreatorGrade: aceGradeForRank(rank),
-      viewers: Math.max(1_000, Math.round(base * noise)),
+      viewers: Math.max(NPC_VIEWER_FLOOR, Math.round(base * noise)),
       lastRank: rank,
     })
   }
   return npcs
+}
+
+function ensureNpcRoster(npcs: NpcStation[]): NpcStation[] {
+  const need = LEAGUE_SIZE - 1
+  if (npcs.length >= need) return npcs.slice(0, need)
+  const used = new Set(npcs.map((npc) => npc.stationName))
+  const extra: NpcStation[] = []
+  for (const npc of generateNpcStations()) {
+    if (npcs.length + extra.length >= need) break
+    if (used.has(npc.stationName)) continue
+    used.add(npc.stationName)
+    extra.push({
+      ...npc,
+      id: `npc-fill-${extra.length}-${npc.id}`,
+      lastRank: Math.max(npcs.length + extra.length + 1, npc.lastRank),
+    })
+  }
+  return [...npcs, ...extra]
 }
 
 export function jitterNpcViewers(npcs: NpcStation[]): NpcStation[] {
@@ -512,7 +640,7 @@ export function jitterNpcViewers(npcs: NpcStation[]): NpcStation[] {
     const delta = 0.88 + Math.random() * 0.24
     return {
       ...npc,
-      viewers: Math.max(1_000, Math.round(npc.viewers * delta)),
+      viewers: Math.max(NPC_VIEWER_FLOOR, Math.round(npc.viewers * delta)),
     }
   })
 }
@@ -533,6 +661,7 @@ export function assembleLeaderboard(opts: {
   previousPlayerRank: number
   gatedFloor: number
   npcs: NpcStation[]
+  pinRank?: number
 }): { entries: RankEntry[]; npcs: NpcStation[]; playerRank: number } {
   const playerRow = {
     id: 'player',
@@ -549,13 +678,17 @@ export function assembleLeaderboard(opts: {
 
   const unconstrainedIndex = mixed.findIndex((row) => row.isPlayer)
   const unconstrainedRank = unconstrainedIndex + 1
-  const actualRank = Math.max(unconstrainedRank, Math.min(100, opts.gatedFloor))
+  const stationCapped = Math.max(unconstrainedRank, Math.min(LEAGUE_SIZE, opts.gatedFloor))
+  const actualRank = Math.max(
+    1,
+    Math.min(LEAGUE_SIZE, opts.pinRank ?? stationCapped),
+  )
 
   const withoutPlayer = mixed.filter((row) => !row.isPlayer)
   const ordered = [...withoutPlayer]
   ordered.splice(actualRank - 1, 0, playerRow)
 
-  const entries: RankEntry[] = ordered.slice(0, 100).map((row, index) => {
+  const entries: RankEntry[] = ordered.slice(0, LEAGUE_SIZE).map((row, index) => {
     const rank = index + 1
     if (row.isPlayer) {
       return {
@@ -615,7 +748,7 @@ export function createInitialLeagueState(
   creators: RankCreator[] = [],
   stationGrade: StationGrade = 'C',
 ): LeagueState {
-  const viewers = capStationViewers(calcRosterViewers(creators, 0), stationGrade)
+  const viewers = capStationViewers(viewersForRank(STARTING_RANK), stationGrade)
   const npcs = generateNpcStations()
   const ace = playerAce(creators)
   const gatedFloor = gatedFloorOf(stationGrade)
@@ -623,13 +756,14 @@ export function createInitialLeagueState(
     playerViewers: viewers,
     playerAceName: ace.name,
     playerAceGrade: ace.grade,
-    previousPlayerRank: 100,
+    previousPlayerRank: STARTING_RANK,
     gatedFloor,
     npcs,
+    pinRank: STARTING_RANK,
   })
   return {
     currentRank: board.playerRank,
-    previousRank: 100,
+    previousRank: STARTING_RANK,
     viewers,
     subscribers: 0,
     revenueBonusPercent: 0,
@@ -648,15 +782,19 @@ export function settleLeagueRank(
   ownedCreators: RankCreator[] = broadcastedCreators,
   stationGrade: StationGrade = 'C',
 ): { state: LeagueState; result: RankSettlementResult } {
-  const jittered = jitterNpcViewers(state.npcStations)
+  const jittered = jitterNpcViewers(ensureNpcRoster(state.npcStations))
   const organicSubs = Math.round(state.viewers * 0.03)
   let subscribers = state.subscribers + organicSubs
-  /** 시청자 산출: 이번 달 방송 로스터 (무방송이면 보유 로스터) */
-  const viewerRoster =
-    broadcastedCreators.length > 0 ? broadcastedCreators : ownedCreators
+  const didBroadcast = broadcastedCreators.length > 0
+  /** 잠재력: 이번 달 방송 로스터 (무방송이면 보유 로스터로 상한만 맞춤) */
+  const viewerRoster = didBroadcast ? broadcastedCreators : ownedCreators
   /** 승격 게이트: 스펙상 '보유' 크리에이터 */
   const gateRoster = ownedCreators.length > 0 ? ownedCreators : broadcastedCreators
-  let viewers = capStationViewers(calcRosterViewers(viewerRoster, subscribers), stationGrade)
+  const potential = calcRosterViewers(viewerRoster, subscribers)
+  let viewers = capStationViewers(
+    growLeagueViewers(state.viewers, potential, didBroadcast),
+    stationGrade,
+  )
   const ace = playerAce(gateRoster)
   const stationFloor = gatedFloorOf(stationGrade)
 
@@ -689,7 +827,14 @@ export function settleLeagueRank(
   claimAt(board.playerRank)
   if (rewards.subscribersBonus > 0) {
     subscribers += rewards.subscribersBonus
-    viewers = capStationViewers(calcRosterViewers(viewerRoster, subscribers), stationGrade)
+    const nextPotential = calcRosterViewers(viewerRoster, subscribers)
+    viewers = capStationViewers(
+      Math.min(
+        nextPotential,
+        viewers + Math.round(rewards.subscribersBonus * SUBSCRIBER_VIEWER_RATE),
+      ),
+      stationGrade,
+    )
     board = applyBoard(viewers, state.currentRank)
     claimAt(board.playerRank)
   }
@@ -763,7 +908,7 @@ export function reapplyLeagueGate(
       playerAceGrade: ace.grade,
       previousPlayerRank: state.currentRank,
       gatedFloor: gatedFloorOf(stationGrade),
-      npcs: state.npcStations,
+      npcs: ensureNpcRoster(state.npcStations),
     })
 
   let board = apply(viewers)
@@ -779,14 +924,17 @@ export function reapplyLeagueGate(
   }
   if (bonusSubs > 0) {
     subscribers += bonusSubs
-    viewers = capStationViewers(Math.max(viewers, Math.round(viewers + bonusSubs * 0.4)), stationGrade)
+    viewers = capStationViewers(
+      Math.max(viewers, Math.round(viewers + bonusSubs * SUBSCRIBER_VIEWER_RATE)),
+      stationGrade,
+    )
     board = apply(viewers)
     for (const milestone of unclaimedMilestonesFor(board.playerRank, claimed)) {
       claimed.push(milestone)
       const reward = MILESTONE_REWARDS[milestone]
       subscribers += reward.subscribersBonus
       viewers = capStationViewers(
-        Math.max(viewers, Math.round(viewers + reward.subscribersBonus * 0.4)),
+        Math.max(viewers, Math.round(viewers + reward.subscribersBonus * SUBSCRIBER_VIEWER_RATE)),
         stationGrade,
       )
       revenueBonusPercent += reward.revenueBonusPercent
@@ -850,7 +998,7 @@ export function filterRankEntries(
   if (filter === 'top10') return entries.filter((row) => row.rank <= 10)
   if (filter === 'rivals') {
     const player = entries.find((row) => row.isPlayer)
-    const center = player?.rank ?? 100
+    const center = player?.rank ?? LEAGUE_SIZE
     return entries.filter((row) => Math.abs(row.rank - center) <= 5)
   }
   return entries
