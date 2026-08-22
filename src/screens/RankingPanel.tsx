@@ -1,4 +1,4 @@
-import { useMemo, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import {
   COMPANY_TIERS,
   companyTierLabelKey,
@@ -17,14 +17,23 @@ import {
 } from '../game/station'
 import { useTranslation } from '../locales/i18n'
 
+export type RankBubblePlay = {
+  fromRank: number
+  toRank: number
+}
+
 type RankingPanelProps = {
   league: LeagueState
   stationGrade: StationGrade
   nextReviewDate: string
-  weeksUntilSettlement: number
+  turnsUntilRankRefresh: number
+  rankPlay?: RankBubblePlay | null
+  onRankPlayDone?: () => void
   creators: Array<{ grade: StationGrade }>
   onOpenScout: () => void
 }
+
+const RANK_BUBBLE_MS = 1100
 
 const TIER_COUNT = COMPANY_TIERS.length
 
@@ -32,7 +41,9 @@ export function RankingPanel({
   league,
   stationGrade,
   nextReviewDate,
-  weeksUntilSettlement,
+  turnsUntilRankRefresh,
+  rankPlay = null,
+  onRankPlayDone,
   creators,
   onOpenScout,
 }: RankingPanelProps) {
@@ -41,9 +52,48 @@ export function RankingPanel({
     () => getStationReviewStatus(stationGrade, league.viewers, creators),
     [stationGrade, league.viewers, creators],
   )
-  const currentTier = companyTierOf(league.currentRank)
-  const rankUp = league.previousRank > league.currentRank
-  const rankDown = league.previousRank < league.currentRank
+  const [playProgress, setPlayProgress] = useState(1)
+  const playDoneRef = useRef<string | null>(null)
+  const onRankPlayDoneRef = useRef(onRankPlayDone)
+  onRankPlayDoneRef.current = onRankPlayDone
+
+  useEffect(() => {
+    if (!rankPlay) {
+      setPlayProgress(1)
+      return
+    }
+    const playKey = `${rankPlay.fromRank}:${rankPlay.toRank}`
+    playDoneRef.current = null
+    setPlayProgress(0)
+    let raf = 0
+    const started = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - started) / RANK_BUBBLE_MS)
+      const eased = 1 - (1 - t) ** 3
+      setPlayProgress(eased)
+      if (t < 1) {
+        raf = requestAnimationFrame(tick)
+        return
+      }
+      if (playDoneRef.current === playKey) return
+      playDoneRef.current = playKey
+      onRankPlayDoneRef.current?.()
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [rankPlay])
+
+  const displayRank = rankPlay
+    ? Math.round(rankPlay.fromRank + (rankPlay.toRank - rankPlay.fromRank) * playProgress)
+    : league.currentRank
+  const currentTier = companyTierOf(displayRank)
+  const destTier = companyTierOf(league.currentRank)
+  const fromTier = companyTierOf(rankPlay?.fromRank ?? league.previousRank)
+  const riseSlots = COMPANY_TIERS.findIndex((tier) => tier.id === fromTier.id)
+    - COMPANY_TIERS.findIndex((tier) => tier.id === destTier.id)
+  const rankUp = (rankPlay?.fromRank ?? league.previousRank) > displayRank
+  const rankDown = (rankPlay?.fromRank ?? league.previousRank) < displayRank
+  const playing = Boolean(rankPlay)
   const nextMilestone = RANK_MILESTONES.find((rank) => rank < league.currentRank) ?? null
   const reward = nextMilestone ? MILESTONE_REWARDS[nextMilestone] : null
 
@@ -63,7 +113,7 @@ export function RankingPanel({
           <span className="rank-stats-ico rank-stats-ico--rank" aria-hidden />
           <span className="rank-stats-label">{t('ranking.currentRankLabel')}</span>
           <span className="rank-stats-value">
-            {league.currentRank}
+            {displayRank}
             {t('ranking.rankUnit')}
           </span>
           <span className={`rank-stats-tier rank-stats-tier--${currentTier.id}`}>
@@ -77,8 +127,8 @@ export function RankingPanel({
         <div className="rank-pyramid-wrap">
           <div className="rank-layers" aria-hidden={false}>
             {COMPANY_TIERS.map((tier, index) => {
-              const active = tier.id === currentTier.id
-              const filled = companyTierReached(league.currentRank, tier)
+              const active = tier.id === destTier.id
+              const filled = companyTierReached(displayRank, tier)
               return (
                 <div
                   key={tier.id}
@@ -93,7 +143,13 @@ export function RankingPanel({
                   <div className={`rank-layer rank-layer--${tier.id}`} />
                   {filled ? <LayerSparks dense={active} /> : null}
                   {active ? (
-                    <CurrentMarker rank={league.currentRank} cheering={rankUp} />
+                    <CurrentMarker
+                      rank={displayRank}
+                      cheering={rankUp}
+                      rising={playing}
+                      fill={playProgress}
+                      riseSlots={playing ? riseSlots : 0}
+                    />
                   ) : null}
                 </div>
               )
@@ -107,7 +163,7 @@ export function RankingPanel({
               key={tier.id}
               tier={tier}
               active={tier.id === currentTier.id}
-              filled={companyTierReached(league.currentRank, tier)}
+              filled={companyTierReached(displayRank, tier)}
             />
           ))}
         </div>
@@ -115,8 +171,8 @@ export function RankingPanel({
 
       <footer className="rank-foot">
         <p className="rank-foot-meta">
-          {t('ranking.settlementIn')}: {weeksUntilSettlement}
-          {t('hud.weekUnit')}
+          {t('ranking.refreshIn')}: {turnsUntilRankRefresh}
+          {t('ranking.turnUnit')}
           <span className="rank-foot-dot">·</span>
           {t('station.nextReview')}: {nextReviewDate}
         </p>
@@ -165,12 +221,35 @@ function LayerSparks({ dense }: { dense: boolean }) {
   )
 }
 
-function CurrentMarker({ rank, cheering }: { rank: number; cheering: boolean }) {
+function CurrentMarker({
+  rank,
+  cheering,
+  rising = false,
+  fill = 1,
+  riseSlots = 0,
+}: {
+  rank: number
+  cheering: boolean
+  rising?: boolean
+  fill?: number
+  riseSlots?: number
+}) {
   const { t } = useTranslation()
   return (
-    <div className={`rank-tip${cheering ? ' is-up' : ''}`}>
+    <div
+      className={`rank-tip${cheering ? ' is-up' : ''}${rising ? ' is-rising' : ''}`}
+      style={
+        {
+          '--rise-slots': String(riseSlots),
+          '--rise-t': String(fill),
+        } as CSSProperties
+      }
+    >
       {cheering ? <span className="rank-tip-shout">{t('ranking.upShout')}</span> : null}
-      <div className="rank-tip-card">
+      <div
+        className={`rank-tip-card${rising ? ' is-filling' : ''}`}
+        style={{ '--fill': `${Math.round(fill * 100)}%` } as CSSProperties}
+      >
         <p className="rank-tip-kicker">{t('ranking.currentMarker')}</p>
         <p className="rank-tip-rank">
           {rank}

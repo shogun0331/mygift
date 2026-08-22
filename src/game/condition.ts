@@ -249,13 +249,17 @@ export type SlotDrainMults = {
 }
 
 /**
- * 주 종료: 방송자 스테미나 -5 + 컨디션 소모 / 휴식자 스테미나 +20 + 컨디션 회복
+ * 주 종료: 실제 방송자 스테미나 -5 + 컨디션 소모
+ * 슬롯 배정만 하고 못 나간 사람은 회복도 소모도 없음
+ * 슬롯에서 빠진 사람만 스테미나 +20 + 컨디션 회복
  * 방송자는 보유 인원×2% 확률로 진상 사태(컨디션 즉시 급락, 스테미나는 QTE 실패 시 차감)
  */
 export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState & { name?: string }>(
   creators: T[],
   broadcastedIds: ReadonlySet<string>,
   drainMultByCreatorId: Record<string, SlotDrainMults> = {},
+  skipCrashCreatorIds: ReadonlySet<string> = new Set(),
+  assignedSlotIds: ReadonlySet<string> = broadcastedIds,
 ): ConditionCrashResult<T> {
   const crashes: ConditionCrashResult<T>['crashes'] = []
   const crashChance = calcConditionCrashChance(creators.length)
@@ -278,7 +282,11 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
       let condDelta = Math.min(-1, Math.round(rawCond * conditionMult))
 
       let scoreAfterDrain = currentScore + condDelta
-      if (crashChance > 0 && Math.random() < crashChance) {
+      if (
+        crashChance > 0 &&
+        !skipCrashCreatorIds.has(creator.id) &&
+        Math.random() < crashChance
+      ) {
         const drop = rollInt(CONDITION_CRASH_DROP.min, CONDITION_CRASH_DROP.max)
         const staminaDrop = rollInt(
           CONDITION_CRASH_STAMINA_DROP.min,
@@ -298,6 +306,10 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
       }
 
       return withVitals(creator, scoreAfterDrain, staminaAfter, 0)
+    }
+
+    if (assignedSlotIds.has(creator.id)) {
+      return withVitals(creator, currentScore, staminaNow, 0)
     }
 
     const restStreak = (creator.restStreak ?? 0) + 1

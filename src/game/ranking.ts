@@ -460,6 +460,31 @@ function rollViewerGrowthFactor(): number {
 }
 
 /** 잠재력까지 시청자를 일부만 쌓는다. 무방송이면 소폭 감소. */
+/** 방송 턴 N회마다 리그 순위 갱신 */
+export const RANK_REFRESH_TURNS = 3
+
+/**
+ * 순위 갱신 사이 턴 — 시청자만 쌓고 보드/순위는 유지
+ */
+export function growLeagueBetweenRefresh(
+  state: LeagueState,
+  broadcastedCreators: RankCreator[],
+  ownedCreators: RankCreator[] = broadcastedCreators,
+  stationGrade: StationGrade = 'C',
+): LeagueState {
+  const organicSubs = Math.round(state.viewers * 0.03)
+  const subscribers = state.subscribers + organicSubs
+  const didBroadcast = broadcastedCreators.length > 0
+  const viewerRoster = didBroadcast ? broadcastedCreators : ownedCreators
+  const potential = calcRosterViewers(viewerRoster, subscribers)
+  const viewers = capStationViewers(
+    growLeagueViewers(state.viewers, potential, didBroadcast),
+    stationGrade,
+  )
+  if (viewers === state.viewers && subscribers === state.subscribers) return state
+  return { ...state, viewers, subscribers }
+}
+
 export function growLeagueViewers(
   current: number,
   potential: number,

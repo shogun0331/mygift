@@ -24,6 +24,7 @@ import {
   characterDisplayName,
 } from '../game/characterLocales'
 import { creatorVisuals, type StudioSlot } from '../game/studioSlots'
+import type { SlotGear } from '../game/slotGear'
 import { useTranslation, type Locale } from '../locales/i18n'
 import type { BroadcastPhase } from '../game/broadcast'
 import {
@@ -35,6 +36,7 @@ import {
   ConditionCrashFx,
   type ConditionCrashFxItem,
 } from './ConditionCrashFx'
+import { GearFailBurstFx, type GearFailBurstItem } from './GearFailBurstFx'
 import { ToxicWhackQte, type ToxicWhackQteItem } from './ToxicWhackQte'
 import { LiveRankBoard } from './LiveRankBoard'
 
@@ -48,13 +50,17 @@ type DashboardPanelProps = {
   liveRevenueByCreator?: Record<string, number>
   assets?: number
   conditionCrashes?: ConditionCrashFxItem[]
+  gearFailBursts?: GearFailBurstItem[]
   toxicQtes?: ToxicWhackQteItem[]
+  slotGearById?: Record<string, SlotGear>
   /** 명세서 대기/표시 중 — 방송 시작 비활성 */
   startBroadcastLocked?: boolean
   onStartBroadcast: () => void
   onConditionCare?: (creatorId: string) => void
   onConditionCrashDone?: (id: string) => void
+  onGearFailBurstDone?: (id: string) => void
   onToxicQteResolve?: (id: string, success: boolean) => void
+  onRepairSlot?: (slotId: string) => void
 }
 
 type StreamCreatorView = {
@@ -185,12 +191,16 @@ export function DashboardPanel({
   liveRevenueByCreator = {},
   assets = 0,
   conditionCrashes = [],
+  gearFailBursts = [],
   toxicQtes = [],
+  slotGearById = {},
   startBroadcastLocked = false,
   onStartBroadcast,
   onConditionCare,
   onConditionCrashDone,
+  onGearFailBurstDone,
   onToxicQteResolve,
+  onRepairSlot,
 }: DashboardPanelProps) {
   const { t, locale } = useTranslation()
   const reducedMotion = prefersReducedMotion()
@@ -247,27 +257,48 @@ export function DashboardPanel({
   )
   const hasAssigned = assigned.length > 0
 
-  const liveRanking = assigned
-    .map((slot) => {
-      const a = slot.assignment!
-      const owned = ownedById[a.creatorId]
-      const displayName = owned ? characterDisplayName(owned, locale) : a.creatorName
-      const displayJob = owned ? characterDisplayJob(owned, locale) : a.grade
-      const visuals = creatorVisuals(a.creatorId, displayName)
-      const stamina = owned?.stamina ?? 40 + a.popularity
+  const assignedByCreatorId: Record<string, (typeof assigned)[number]> = {}
+  for (const slot of assigned) {
+    const creatorId = slot.assignment?.creatorId
+    if (creatorId) assignedByCreatorId[creatorId] = slot
+  }
+
+  const rankIds = new Set<string>()
+  for (const [creatorId, amount] of Object.entries(liveRevenueByCreator)) {
+    if (amount > 0) rankIds.add(creatorId)
+  }
+  if (isLive) {
+    for (const slot of assigned) {
+      if (slot.assignment) rankIds.add(slot.assignment.creatorId)
+    }
+  }
+
+  const liveRanking = [...rankIds]
+    .map((creatorId) => {
+      const owned = ownedById[creatorId]
+      const assignment = assignedByCreatorId[creatorId]?.assignment
+      if (!owned && !assignment) return null
+      const displayName = owned
+        ? characterDisplayName(owned, locale)
+        : assignment!.creatorName
+      const displayJob = owned ? characterDisplayJob(owned, locale) : assignment!.grade
+      const visuals = creatorVisuals(creatorId, displayName)
+      const stamina = owned?.stamina ?? 40 + (assignment?.popularity ?? 0)
       return {
-        id: a.creatorId,
+        id: creatorId,
         rank: 0,
         name: displayName,
         concept: displayJob,
         avatar: visuals.avatar,
         avatarTone: visuals.avatarTone,
-        profileImageUrl: a.profileImageUrl || null,
-        revenue: liveRevenueByCreator[a.creatorId] ?? 0,
+        profileImageUrl: owned?.profileImageUrl || assignment?.profileImageUrl || null,
+        revenue: liveRevenueByCreator[creatorId] ?? 0,
         viewers: '—',
         blocked: !canBroadcastByStamina(owned?.stamina ?? stamina),
+        placed: Boolean(assignment),
       }
     })
+    .filter((row): row is NonNullable<typeof row> => Boolean(row))
     .sort((a, b) => b.revenue - a.revenue || a.name.localeCompare(b.name, 'ko'))
     .slice(0, 6)
     .map((row, index) => ({ ...row, rank: index + 1 }))
@@ -299,10 +330,14 @@ export function DashboardPanel({
                 ? toxicQtes.find((qte) => qte.creatorId === slot.creator!.id) ?? null
                 : null
             }
+            gearBroken={Boolean(slot.status === 'assigned' && slotGearById[slot.id]?.broken)}
+            gearFailBursts={gearFailBursts.filter((burst) => burst.slotId === slot.id)}
             onBurstDone={dismissBurst}
             onConditionCare={onConditionCare}
             onConditionCrashDone={onConditionCrashDone}
+            onGearFailBurstDone={onGearFailBurstDone}
             onToxicQteResolve={onToxicQteResolve}
+            onRepairSlot={onRepairSlot}
           />
         ))}
       </section>
@@ -345,10 +380,15 @@ export function DashboardPanel({
         <section className={`game-panel live-rank-panel flex min-h-[22rem] flex-[1.35] flex-col rounded-2xl p-3 sm:min-h-[24rem] lg:min-h-0 ${isLive ? 'is-live' : ''}`}>
           <div className="flex shrink-0 items-center justify-between gap-2">
             <h2 className="game-stat-label">{t('dashboard.liveRank')}</h2>
-            {hasAssigned ? (
+            {isLive && hasAssigned ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-pink-400/30 bg-pink-500/10 px-2 py-0.5 text-[10px] font-bold text-pink-300 neon-text-pink">
                 <span className="game-live-dot h-1.5 w-1.5 rounded-full bg-pink-400" />
-                {isLive ? t('dashboard.live') : t('dashboard.ready')}
+                {t('dashboard.live')}
+              </span>
+            ) : liveRanking.length > 0 ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-pink-400/30 bg-pink-500/10 px-2 py-0.5 text-[10px] font-bold text-pink-300 neon-text-pink">
+                <span className="game-live-dot h-1.5 w-1.5 rounded-full bg-pink-400" />
+                {t('dashboard.ready')}
               </span>
             ) : (
               <span className="rounded-full border border-white/10 bg-black/30 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
@@ -399,10 +439,14 @@ function StreamCard({
   revenueBursts = [],
   conditionCrashes = [],
   toxicQte = null,
+  gearBroken = false,
+  gearFailBursts = [],
   onBurstDone,
   onConditionCare,
   onConditionCrashDone,
+  onGearFailBurstDone,
   onToxicQteResolve,
+  onRepairSlot,
 }: {
   slot: BroadcastSlotView
   broadcastPhase: BroadcastPhase
@@ -410,26 +454,35 @@ function StreamCard({
   revenueBursts?: RevenueBurst[]
   conditionCrashes?: ConditionCrashFxItem[]
   toxicQte?: ToxicWhackQteItem | null
+  gearBroken?: boolean
+  gearFailBursts?: GearFailBurstItem[]
   onBurstDone?: (id: string) => void
   onConditionCare?: (creatorId: string) => void
   onConditionCrashDone?: (id: string) => void
+  onGearFailBurstDone?: (id: string) => void
   onToxicQteResolve?: (id: string, success: boolean) => void
+  onRepairSlot?: (slotId: string) => void
 }) {
   const { t } = useTranslation()
   const creator = slot.creator
   const blocked = Boolean(creator && !creator.canBroadcast)
   const badge =
-    blocked
+    gearBroken
       ? {
-          labelKey: 'dashboard.broadcastBlockedBadge',
-          className: 'border-rose-400/40 bg-rose-500/15 text-rose-300',
+          labelKey: 'dashboard.noSignal',
+          className: 'border-amber-400/70 bg-amber-500/20 text-amber-200',
         }
-      : slot.status === 'assigned' && broadcastPhase === 'live'
+      : blocked
         ? {
-            labelKey: 'dashboard.live',
-            className: 'border-pink-500/50 bg-pink-500/15 text-pink-300 neon-text-pink',
+            labelKey: 'dashboard.broadcastBlockedBadge',
+            className: 'border-rose-400/40 bg-rose-500/15 text-rose-300',
           }
-        : STATUS_BADGE[slot.status]
+        : slot.status === 'assigned' && broadcastPhase === 'live'
+          ? {
+              labelKey: 'dashboard.live',
+              className: 'border-pink-500/50 bg-pink-500/15 text-pink-300 neon-text-pink',
+            }
+          : STATUS_BADGE[slot.status]
   const staminaPct =
     creator && creator.staminaMax > 0
       ? Math.max(0, Math.min(100, (creator.stamina / creator.staminaMax) * 100))
@@ -554,6 +607,7 @@ function StreamCard({
     : null
   const isLive = Boolean(creator?.live)
   const crashing = conditionCrashes.length > 0
+  const slamming = gearFailBursts.length > 0
 
   return (
     <article
@@ -561,6 +615,10 @@ function StreamCard({
         isLive ? 'stream-on-air' : ''
       } ${
         crashing ? 'condition-crash-slot' : ''
+      } ${
+        slamming ? 'gear-fail-burst-slot' : ''
+      } ${
+        gearBroken ? 'is-gear-broken' : ''
       }`}
     >
       <div
@@ -570,7 +628,7 @@ function StreamCard({
           <video
             key={playableSrc}
             src={playableSrc}
-            className="absolute inset-0 z-0 h-full w-full object-cover"
+            className={`absolute inset-0 z-0 h-full w-full object-cover${gearBroken ? ' cctv-feed-dead' : ''}`}
             autoPlay
             loop
             muted
@@ -580,12 +638,12 @@ function StreamCard({
         ) : null}
 
         <div
-          className="cctv-scanline"
-          style={playVideoUrl ? { opacity: 0.25 } : undefined}
+          className={`cctv-scanline${gearBroken ? ' is-gear-broken' : ''}`}
+          style={playVideoUrl && !gearBroken ? { opacity: 0.25 } : undefined}
         />
         <div
-          className="cctv-noise"
-          style={playVideoUrl ? { opacity: 0.02 } : undefined}
+          className={`cctv-noise${gearBroken ? ' is-gear-broken' : ''}`}
+          style={playVideoUrl && !gearBroken ? { opacity: 0.02 } : undefined}
         />
         {!playVideoUrl ? (
           <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_35%,rgba(124,77,255,0.15),transparent_60%)]" />
@@ -609,16 +667,26 @@ function StreamCard({
               {t(badge.labelKey)}
             </span>
             <div className="flex items-center gap-1 rounded bg-black/50 border border-white/5 px-1.5 py-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-pink-500 animate-ping" />
-              <span className="text-[8px] font-extrabold text-pink-400 tracking-wider">
-                {isLive ? t('dashboard.live') : t('dashboard.idle')}
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  gearBroken ? 'bg-amber-400' : 'bg-pink-500 animate-ping'
+                }`}
+              />
+              <span
+                className={`text-[8px] font-extrabold tracking-wider ${
+                  gearBroken ? 'text-amber-300' : 'text-pink-400'
+                }`}
+              >
+                {gearBroken ? t('dashboard.noSignal') : isLive ? t('dashboard.live') : t('dashboard.idle')}
               </span>
-              <div className="live-audio-wave ml-1">
-                <span className="audio-bar" />
-                <span className="audio-bar" />
-                <span className="audio-bar" />
-                <span className="audio-bar" />
-              </div>
+              {gearBroken ? null : (
+                <div className="live-audio-wave ml-1">
+                  <span className="audio-bar" />
+                  <span className="audio-bar" />
+                  <span className="audio-bar" />
+                  <span className="audio-bar" />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -629,6 +697,36 @@ function StreamCard({
 
         {crashing && onConditionCrashDone ? (
           <ConditionCrashFx crashes={conditionCrashes} onDone={onConditionCrashDone} />
+        ) : null}
+
+        {slamming && onGearFailBurstDone ? (
+          <GearFailBurstFx
+            bursts={gearFailBursts}
+            title={t('dashboard.gearFail')}
+            subtitle={t('dashboard.gearFailSlamSub')}
+            onDone={onGearFailBurstDone}
+          />
+        ) : null}
+
+        {gearBroken ? (
+          <div className="cctv-gear-fail-fx" aria-hidden>
+            <div className="cctv-gear-fail-dim" />
+            <div className="cctv-gear-fail-static" />
+            <div className="cctv-gear-fail-tear" />
+            <div className="cctv-gear-fail-flash" />
+          </div>
+        ) : null}
+
+        {gearBroken && !toxicQte && onRepairSlot ? (
+          <button
+            type="button"
+            className="cctv-gear-fail-repair"
+            onClick={() => onRepairSlot(slot.id)}
+            aria-label={`${t('dashboard.gearFail')} — ${t('dashboard.gearFailHint')}`}
+          >
+            <span className="cctv-gear-fail-badge">{t('dashboard.gearFail')}</span>
+            <span className="cctv-gear-fail-hint">{t('dashboard.gearFailHint')}</span>
+          </button>
         ) : null}
 
         {toxicQte && onToxicQteResolve ? (

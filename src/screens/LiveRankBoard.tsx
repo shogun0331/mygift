@@ -13,6 +13,7 @@ export type LiveRankRow = {
   profileImageUrl?: string | null
   revenue: number
   blocked?: boolean
+  placed?: boolean
 }
 
 type RankDelta = 'up' | 'down'
@@ -255,7 +256,9 @@ export function LiveRankBoard({
                     <p className="mt-0.5 text-[10px] text-slate-500">
                       {creator.blocked
                         ? t('dashboard.broadcastBlockedBadge')
-                        : t('dashboard.studioPlaced')}
+                        : creator.placed
+                          ? t('dashboard.studioPlaced')
+                          : t('dashboard.yearRankHeld')}
                     </p>
                   </div>
                   {delta ? (

@@ -57,6 +57,7 @@
     "unassignedLinked": "스튜디오 배치와 연동",
     "idle": "IDLE",
     "studioPlaced": "스튜디오 배치",
+    "yearRankHeld": "연간 누적",
     "rankRevenue": "수익",
     "rankUp": "순위 상승",
     "rankDown": "순위 하락",
@@ -65,7 +66,10 @@
     "broadcastBlockedBadge": "REST",
     "restRequiredTitle": "방송 불가",
     "restRequiredBody": "{name}은(는) 휴식이 필요합니다",
-    "restRequiredConfirm": "확인"
+    "restRequiredConfirm": "확인",
+    "gearFail": "장비 고장",
+    "gearFailHint": "클릭하여 수리",
+    "gearFailSlamSub": "신호 끊김 · 클릭하여 수리"
   },
   "condition": {
     "title": "컨디션",
@@ -338,6 +342,8 @@
     "rankUnit": "위",
     "viewersUnit": "명",
     "settlementIn": "정산까지",
+    "refreshIn": "랭킹 갱신까지",
+    "turnUnit": "턴",
     "filterAll": "전체 1~200위",
     "filterRivals": "내 라이벌 ±5",
     "filterTop10": "TOP 10",
@@ -396,7 +402,7 @@
       "mid": "중견기업",
       "sme": "중소기업",
       "tiny": "영세기업",
-      "black": "블랙기업"
+      "black": "일반사업자"
     }
   }
 }

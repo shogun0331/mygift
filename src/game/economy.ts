@@ -18,7 +18,7 @@ export const HEAT_COEF: Record<1 | 2 | 3 | 4, number> = {
 /** @deprecated REVENUE_RAW_TO_USD 사용 */
 export const REVENUE_RAW_TO_WON = REVENUE_RAW_TO_USD
 
-export type DayEventType = 'donation' | 'viewers' | 'popularity' | 'tax' | 'toxic'
+export type DayEventType = 'donation' | 'viewers' | 'popularity' | 'tax' | 'toxic' | 'gear'
 
 export type DayEvent = {
   id: string

@@ -57,6 +57,7 @@
     "unassignedLinked": "Linked to Studio Slots",
     "idle": "IDLE",
     "studioPlaced": "Studio Placed",
+    "yearRankHeld": "Year total",
     "rankRevenue": "Revenue",
     "rankUp": "Rank up",
     "rankDown": "Rank down",
@@ -65,7 +66,10 @@
     "broadcastBlockedBadge": "REST",
     "restRequiredTitle": "Cannot Broadcast",
     "restRequiredBody": "{name} needs rest",
-    "restRequiredConfirm": "OK"
+    "restRequiredConfirm": "OK",
+    "gearFail": "EQUIPMENT FAILURE",
+    "gearFailHint": "Click to repair",
+    "gearFailSlamSub": "SIGNAL LOST · CLICK TO REPAIR"
   },
   "condition": {
     "title": "Condition",
@@ -338,6 +342,8 @@
     "rankUnit": "",
     "viewersUnit": " viewers",
     "settlementIn": "Settlement in",
+    "refreshIn": "Rank update in",
+    "turnUnit": " turns",
     "filterAll": "All 1–200",
     "filterRivals": "Rivals ±5",
     "filterTop10": "TOP 10",
@@ -396,7 +402,7 @@
       "mid": "Mid-size Firm",
       "sme": "SME",
       "tiny": "Tiny Business",
-      "black": "Black Company"
+      "black": "Sole Proprietor"
     }
   }
 }

@@ -616,7 +616,43 @@ function CreatorDetailView({
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden lg:grid-cols-2">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-auto lg:grid-cols-[auto_minmax(0,1fr)] lg:overflow-hidden">
+        <section className="flex justify-center lg:h-full lg:min-h-0 lg:items-center">
+          <article className="game-card relative aspect-[3/4] w-full max-w-[18rem] overflow-hidden lg:max-h-full lg:w-[min(20rem,34vh)]">
+            {creator.profileImageUrl ? (
+              <img
+                src={creator.profileImageUrl}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-b from-slate-700/80 to-slate-950">
+                <div
+                  className={`mb-16 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br text-2xl font-bold text-slate-950 ${creator.avatarTone}`}
+                >
+                  {creator.name.slice(0, 1)}
+                </div>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+            <div className="absolute top-2.5 left-2.5">
+              <span
+                className={`rounded border px-2 py-0.5 text-xs font-bold ${GRADE_STYLE[creator.grade]}`}
+              >
+                {creator.grade}급
+              </span>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 p-3">
+              <p className="text-[10px] font-semibold tracking-wide text-slate-400">{displayJob}</p>
+              <h3 className="text-lg font-bold text-slate-50">{displayName}</h3>
+              <p className="mt-0.5 text-xs text-slate-300">
+                {displayJob}
+                {creator.age ? ` · ${creator.age}세` : ''}
+              </p>
+            </div>
+          </article>
+        </section>
+
         <section className="game-panel flex min-h-0 flex-col overflow-auto rounded-2xl p-4 sm:p-5">
           <h3 className="text-sm font-semibold tracking-wide text-slate-100">핵심 능력치 & 상태</h3>
 
@@ -626,7 +662,7 @@ function CreatorDetailView({
             </p>
           ) : null}
 
-          <div className="mt-4 space-y-3">
+          <div className="mt-3 grid gap-x-4 gap-y-2.5 sm:grid-cols-2">
             <StatBar
               label={t('creator.statPopularity')}
               valueLabel={`${creator.popularity}`}
@@ -670,23 +706,22 @@ function CreatorDetailView({
               percent={Math.min(100, (revenueMult / 2) * 100)}
               barClass="from-amber-400 to-yellow-300"
             />
-
-            <div className="rounded-xl border border-white/8 bg-black/20 px-3 py-3">
+            <div className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5">
               <p className="text-[10px] font-semibold tracking-wide text-slate-500">현재 연봉</p>
-              <p className="mt-1 text-lg font-bold tabular-nums text-amber-400">
+              <p className="mt-0.5 text-base font-bold tabular-nums text-amber-400">
                 {formatSalary(creator.salary)}
               </p>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-0.5 text-xs text-slate-400">
                 남은 계약: {formatContract(creator.contractWeeks)}
               </p>
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4">
             <h3 className="text-sm font-semibold tracking-wide text-slate-100">
               {t('creator.careTitle')}
             </h3>
-            <div className="mt-3 space-y-2">
+            <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
               <button
                 type="button"
                 disabled={!canVacation}
@@ -738,41 +773,6 @@ function CreatorDetailView({
                 ) : null}
               </button>
             </div>
-          </div>
-        </section>
-
-        <section className="game-panel relative flex min-h-[20rem] flex-col justify-end overflow-hidden rounded-2xl lg:min-h-0">
-          {creator.profileImageUrl ? (
-            <>
-              <img
-                src={creator.profileImageUrl}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
-            </>
-          ) : (
-            <>
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(129,140,248,0.28),transparent_50%)]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-transparent" />
-            </>
-          )}
-
-          <div className="relative z-20 p-5">
-            {!creator.profileImageUrl && (
-              <div
-                className={`mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br text-2xl font-bold text-slate-950 ${creator.avatarTone}`}
-              >
-                {creator.name.slice(0, 1)}
-              </div>
-            )}
-            <p className="text-xs font-semibold tracking-wide text-slate-400">{displayJob}</p>
-            <h3 className="mt-1 text-2xl font-bold text-slate-50">{displayName}</h3>
-            <p className="mt-2 text-sm text-slate-300">
-              {displayJob}
-              {creator.age ? ` · ${creator.age}세` : ''}
-            </p>
           </div>
         </section>
       </div>

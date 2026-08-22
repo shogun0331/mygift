@@ -10,6 +10,14 @@ import {
 import type { StudioSlot } from '../game/studioSlots'
 import { unlockNextStudioSlot } from '../game/studioSlots'
 import {
+  applyWeeklySlotGear,
+  createSlotGearMapFromSlots,
+  ensureUnlockedSlotGear,
+  isCreatorSlotBroken,
+  repairSlotGear,
+  type SlotGear,
+} from '../game/slotGear'
+import {
   createInitialEquipmentTree,
   getEquipNode,
   getConditionCostMult,
@@ -54,6 +62,8 @@ import {
   companyTierOf,
   createInitialLeagueState,
   formatViewers,
+  growLeagueBetweenRefresh,
+  RANK_REFRESH_TURNS,
   reapplyLeagueGate,
   settleLeagueRank,
   type LeagueState,
@@ -89,6 +99,7 @@ import {
   type WeeklyStatement,
 } from '../game/weeklyReport'
 import { type ConditionCrashFxItem } from './ConditionCrashFx'
+import { type GearFailBurstItem } from './GearFailBurstFx'
 import { type ToxicWhackQteItem } from './ToxicWhackQte'
 import { CreatorPanel } from './CreatorPanel'
 import { DashboardPanel } from './DashboardPanel'
@@ -387,8 +398,12 @@ export function InGame({
   const assetsRef = useRef(assets)
   const [liveEvents, setLiveEvents] = useState<DayEvent[]>([])
   const [conditionCrashes, setConditionCrashes] = useState<ConditionCrashFxItem[]>([])
+  const [gearFailBursts, setGearFailBursts] = useState<GearFailBurstItem[]>([])
   const [toxicQteQueue, setToxicQteQueue] = useState<ToxicWhackQteItem[]>([])
   const [liveRevenueByCreator, setLiveRevenueByCreator] = useState<Record<string, number>>({})
+  const [slotGearById, setSlotGearById] = useState<Record<string, SlotGear>>(() =>
+    createSlotGearMapFromSlots(studioSlots),
+  )
   const [weeklyStatement, setWeeklyStatement] = useState<WeeklyStatement | null>(null)
   const [settlementAssetsAfter, setSettlementAssetsAfter] = useState(0)
   const [settlementPortraits, setSettlementPortraits] = useState<Record<string, string>>({})
@@ -399,6 +414,11 @@ export function InGame({
   const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(1)
   const [league, setLeague] = useState<LeagueState>(() => createInitialLeagueState([], 'S'))
   const [rankSettlement, setRankSettlement] = useState<RankSettlementResult | null>(null)
+  const [rankRefreshTurnsLeft, setRankRefreshTurnsLeft] = useState(RANK_REFRESH_TURNS)
+  const [rankBubblePlay, setRankBubblePlay] = useState<{
+    fromRank: number
+    toRank: number
+  } | null>(null)
   /** TODO: 테스트 시작값. 배포 전 C / 0 으로 되돌릴 것 */
   const [stationGrade, setStationGrade] = useState<StationGrade>('B')
   const [skillPoints, setSkillPoints] = useState(1000)
@@ -691,6 +711,8 @@ export function InGame({
   const leagueRef = useRef(league)
   const pendingScoutAfterRankRef = useRef(false)
   const pendingRankResultRef = useRef<RankSettlementResult | null>(null)
+  const pendingRankAfterBubbleRef = useRef<RankSettlementResult | null>(null)
+  const rankRefreshTurnsLeftRef = useRef(RANK_REFRESH_TURNS)
   const pendingStationReviewRef = useRef(false)
   const pendingGameClearRef = useRef(false)
   const pendingSocialQueueRef = useRef<SocialPending[]>([])
@@ -700,6 +722,7 @@ export function InGame({
   const broadcastMonthsTowardSpRef = useRef(broadcastMonthsTowardSp)
   const annualRevenueByYearRef = useRef<Record<number, number>>({})
   const studioSlotsRef = useRef(studioSlots)
+  const slotGearByIdRef = useRef(slotGearById)
   const ownedCreatorsRef = useRef(ownedCreators)
   const speedRef = useRef(speed)
   const onOwnedCreatorsChangeRef = useRef(onOwnedCreatorsChange)
@@ -708,7 +731,16 @@ export function InGame({
   const broadcastMonthNumberRef = useRef(broadcastMonthNumber)
   const equipmentTreeRef = useRef(equipmentTree)
   studioSlotsRef.current = studioSlots
+  slotGearByIdRef.current = slotGearById
   ownedCreatorsRef.current = ownedCreators
+
+  useEffect(() => {
+    setSlotGearById((prev) => {
+      const next = ensureUnlockedSlotGear(prev, studioSlots)
+      slotGearByIdRef.current = next
+      return next
+    })
+  }, [studioSlots])
   assetsRef.current = assets
   livePlayVideoByCreatorRef.current = livePlayVideoByCreator
   speedRef.current = speed
@@ -768,6 +800,11 @@ export function InGame({
       const nextSlots = unlockNextStudioSlot(studioSlotsRef.current)
       studioSlotsRef.current = nextSlots
       onStudioSlotsChange(nextSlots)
+      setSlotGearById((prev) => {
+        const next = ensureUnlockedSlotGear(prev, nextSlots)
+        slotGearByIdRef.current = next
+        return next
+      })
     }
   }
 
@@ -830,7 +867,12 @@ export function InGame({
   }
 
   function creditLiveDonations(events: DayEvent[]) {
-    const donations = events.filter((event) => event.type === 'donation' && event.amount > 0)
+    const donations = events.filter(
+      (event) =>
+        event.type === 'donation' &&
+        event.amount > 0 &&
+        !isCreatorSlotBroken(studioSlotsRef.current, slotGearByIdRef.current, event.creatorId),
+    )
     if (donations.length === 0) return
     setLiveRevenueByCreator((prev) => {
       const next = { ...prev }
@@ -841,14 +883,39 @@ export function InGame({
     })
   }
 
+  /** 고장난 칸의 후원은 로그/수익/FX에 넣지 않고 소멸(공개된 것으로 표시) */
+  function takeRevealableEvents(events: DayEvent[]) {
+    const visible: DayEvent[] = []
+    for (const event of events) {
+      if (revealedIdsRef.current.has(event.id)) continue
+      if (
+        event.type === 'donation' &&
+        isCreatorSlotBroken(studioSlotsRef.current, slotGearByIdRef.current, event.creatorId)
+      ) {
+        revealedIdsRef.current.add(event.id)
+        continue
+      }
+      revealedIdsRef.current.add(event.id)
+      visible.push(event)
+    }
+    return visible
+  }
+
   function flushRemainingEvents(plan: StudioDayPlan) {
-    const pending = plan.plans
-      .flatMap((p) => p.events)
-      .filter((event) => !revealedIdsRef.current.has(event.id))
+    const pending = takeRevealableEvents(plan.plans.flatMap((p) => p.events))
     if (pending.length === 0) return
-    pending.forEach((event) => revealedIdsRef.current.add(event.id))
     creditLiveDonations(pending)
     setLiveEvents((prev) => [...pending.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+  }
+
+  function repairBrokenSlot(slotId: string) {
+    setSlotGearById((prev) => {
+      const current = prev[slotId]
+      if (!current?.broken) return prev
+      const next = { ...prev, [slotId]: repairSlotGear(current) }
+      slotGearByIdRef.current = next
+      return next
+    })
   }
 
   function settleCurrentDay() {
@@ -856,15 +923,67 @@ export function InGame({
     if (!plan || settledDayKeyRef.current === plan.dayKey) return
     settledDayKeyRef.current = plan.dayKey
     flushRemainingEvents(plan)
+    // 주 종료: 실제 방송 칸만 장비 고장 판정(진상과 슬롯 단위 무중첩) + 내구도 소모
+    const broadcastedIds = new Set(plan.plans.map((p) => p.creatorId))
+    const toxicCreatorIds = new Set(toxicQteQueueRef.current.map((row) => row.creatorId))
+    const prevGear = slotGearByIdRef.current
+    const nextGear = applyWeeklySlotGear(
+      prevGear,
+      studioSlotsRef.current,
+      broadcastedIds,
+      {
+        skipAllFails: toxicQteQueueRef.current.length > 0,
+        skipFailCreatorIds: toxicCreatorIds,
+      },
+    )
+    slotGearByIdRef.current = nextGear
+    setSlotGearById(nextGear)
+
+    const newlyBrokenSlots = studioSlotsRef.current.filter(
+      (slot) =>
+        slot.status === 'assigned' &&
+        Boolean(nextGear[slot.id]?.broken) &&
+        !prevGear[slot.id]?.broken,
+    )
+    if (newlyBrokenSlots.length > 0) {
+      setTab('dashboard')
+      setGearFailBursts((prev) => [
+        ...prev,
+        ...newlyBrokenSlots.map((slot) => ({
+          id: `gear-fail-fx-${slot.id}-${plan.dayKey}`,
+          slotId: slot.id,
+        })),
+      ])
+      const failEvents: DayEvent[] = newlyBrokenSlots.map((slot) => ({
+        id: `gear-fail-${slot.id}-${plan.dayKey}`,
+        creatorId: slot.assignment?.creatorId ?? slot.id,
+        creatorName: slot.assignment?.creatorName ?? slot.label,
+        type: 'gear',
+        amount: 0,
+        text: `${slot.assignment?.creatorName ?? slot.label} 장비 고장! 후원 중단 · 클릭하여 수리`,
+        atMs: 0,
+        tone: 'bg-amber-400',
+      }))
+      setLiveEvents((prev) => [...failEvents.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+    }
+
+    const plansForLedger = plan.plans.map((row) => {
+      if (!isCreatorSlotBroken(studioSlotsRef.current, nextGear, row.creatorId)) return row
+      return {
+        ...row,
+        weekRevenueWon: 0,
+        events: row.events.filter((event) => event.type !== 'donation'),
+      }
+    })
+    const weekRevenueWon = plansForLedger.reduce((sum, row) => sum + row.weekRevenueWon, 0)
     // 자산은 턴(월) 종료 정산에서만 반영 — 방송 중 실시간 가산 없음
-    if (plan.totalRevenueWon > 0) {
+    if (weekRevenueWon > 0) {
       const year = monthToCalendarDate(GAME_EPOCH, gameMonthRef.current).getFullYear()
       annualRevenueByYearRef.current[year] =
-        (annualRevenueByYearRef.current[year] ?? 0) + plan.totalRevenueWon
+        (annualRevenueByYearRef.current[year] ?? 0) + weekRevenueWon
     }
-    weekAccumRef.current = recordDayIntoWeek(weekAccumRef.current, plan.plans)
+    weekAccumRef.current = recordDayIntoWeek(weekAccumRef.current, plansForLedger)
     // 주 종료: 실제 방송자만 스테미나/컨디션 소모(+진상 시 컨디션 급락, 스테미나는 QTE)
-    const broadcastedIds = new Set(plan.plans.map((p) => p.creatorId))
     const tree = equipmentTreeRef.current
     const staminaMult = getStaminaCostMult(tree)
     const conditionMult = getConditionCostMult(tree)
@@ -875,10 +994,22 @@ export function InGame({
     for (const creatorId of broadcastedIds) {
       drainMultByCreatorId[creatorId] = { staminaMult, conditionMult }
     }
+    const skipCrashCreatorIds = new Set(
+      [...broadcastedIds].filter((creatorId) =>
+        isCreatorSlotBroken(studioSlotsRef.current, nextGear, creatorId),
+      ),
+    )
+    const assignedSlotIds = new Set(
+      studioSlotsRef.current
+        .filter((slot) => slot.status === 'assigned' && slot.assignment)
+        .map((slot) => slot.assignment!.creatorId),
+    )
     const { creators: nextOwned, crashes } = applyWeeklyStaminaAndCondition(
       ownedCreatorsRef.current,
       broadcastedIds,
       drainMultByCreatorId,
+      skipCrashCreatorIds,
+      assignedSlotIds,
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
@@ -1091,6 +1222,10 @@ export function InGame({
       salary: creator.salary,
     }))
     const nextDate = monthToCalendarDate(GAME_EPOCH, nextMonth)
+    const prevDate = monthToCalendarDate(GAME_EPOCH, nextMonth - 1)
+    if (nextDate.getFullYear() !== prevDate.getFullYear()) {
+      setLiveRevenueByCreator({})
+    }
     let annualTaxWon = 0
     let taxYear: number | undefined
     let annualRevenueForTaxWon = 0
@@ -1144,19 +1279,36 @@ export function InGame({
     const broadcastedCreators = ownedRankCreators.filter((creator) =>
       broadcastedIds.has(creator.id),
     )
-    const settled = settleLeagueRank(
-      leagueRef.current,
-      broadcastedCreators,
-      ownedRankCreators,
-      stationGradeRef.current,
-    )
-    leagueRef.current = settled.state
-    setLeague(settled.state)
-    pendingRankResultRef.current = settled.result
+    const nextRefreshTurns = rankRefreshTurnsLeftRef.current - 1
+    if (nextRefreshTurns <= 0) {
+      rankRefreshTurnsLeftRef.current = RANK_REFRESH_TURNS
+      setRankRefreshTurnsLeft(RANK_REFRESH_TURNS)
+      const settled = settleLeagueRank(
+        leagueRef.current,
+        broadcastedCreators,
+        ownedRankCreators,
+        stationGradeRef.current,
+      )
+      leagueRef.current = settled.state
+      setLeague(settled.state)
+      pendingRankResultRef.current = settled.result
+    } else {
+      rankRefreshTurnsLeftRef.current = nextRefreshTurns
+      setRankRefreshTurnsLeft(nextRefreshTurns)
+      const grown = growLeagueBetweenRefresh(
+        leagueRef.current,
+        broadcastedCreators,
+        ownedRankCreators,
+        stationGradeRef.current,
+      )
+      leagueRef.current = grown
+      setLeague(grown)
+      pendingRankResultRef.current = null
+    }
     pendingStationReviewRef.current = isAnnualReviewMonth(nextDate, GAME_EPOCH)
 
     const socialBlocked =
-      pendingStationReviewRef.current || Boolean(settled.result.gameCleared)
+      pendingStationReviewRef.current || Boolean(pendingRankResultRef.current?.gameCleared)
     const socialRoll = advanceAndPickSocialEvent(
       socialSpawnRef.current,
       ownedCreatorsRef.current,
@@ -1464,8 +1616,8 @@ export function InGame({
     monthWeekIndexRef.current = 0
     // 방송 시작 시 후원/시청 이벤트는 초기화, 세금 알림은 유지
     setLiveEvents((prev) => prev.filter((event) => event.type === 'tax'))
-    setLiveRevenueByCreator({})
     setConditionCrashes([])
+    setGearFailBursts([])
     toxicQteQueueRef.current = []
     setToxicQteQueue([])
     pendingWeekAdvanceAfterToxicRef.current = false
@@ -1526,12 +1678,13 @@ export function InGame({
       const startedAt = dayStartedAtRef.current
       if (!plan || startedAt == null) return
       const elapsed = performance.now() - startedAt
-      const due = plan.plans
-        .flatMap((p) => p.events)
-        .filter((event) => event.atMs <= elapsed && !revealedIdsRef.current.has(event.id))
-        .sort((a, b) => a.atMs - b.atMs)
+      const due = takeRevealableEvents(
+        plan.plans
+          .flatMap((p) => p.events)
+          .filter((event) => event.atMs <= elapsed)
+          .sort((a, b) => a.atMs - b.atMs),
+      )
       if (due.length === 0) return
-      due.forEach((event) => revealedIdsRef.current.add(event.id))
       creditLiveDonations(due)
       setLiveEvents((prev) => [...due.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
     }, 50)
@@ -1729,13 +1882,19 @@ export function InGame({
             liveEvents={liveEvents}
             liveRevenueByCreator={liveRevenueByCreator}
             conditionCrashes={conditionCrashes}
+            gearFailBursts={gearFailBursts}
             toxicQtes={toxicQteQueue}
+            slotGearById={slotGearById}
             assets={assets}
             startBroadcastLocked={startBroadcastLocked}
             onStartBroadcast={handleStartBroadcast}
             onConditionCare={handleConditionCare}
+            onRepairSlot={repairBrokenSlot}
             onConditionCrashDone={(id) =>
               setConditionCrashes((prev) => prev.filter((row) => row.id !== id))
+            }
+            onGearFailBurstDone={(id) =>
+              setGearFailBursts((prev) => prev.filter((row) => row.id !== id))
             }
             onToxicQteResolve={resolveToxicQte}
           />
@@ -1774,11 +1933,14 @@ export function InGame({
                 .date
             }
             creators={toRankCreators(ownedCreators)}
-            weeksUntilSettlement={
-              broadcastPhase === 'live'
-                ? Math.max(0, WEEKS_PER_MONTH - (monthWeekIndex + 1))
-                : WEEKS_PER_MONTH
-            }
+            turnsUntilRankRefresh={rankRefreshTurnsLeft}
+            rankPlay={rankBubblePlay}
+            onRankPlayDone={() => {
+              setRankBubblePlay(null)
+              const pending = pendingRankAfterBubbleRef.current
+              pendingRankAfterBubbleRef.current = null
+              if (pending) setRankSettlement(pending)
+            }}
             onOpenScout={openScoutFromRanking}
           />
         ) : tab === 'equipment' ? (
@@ -1918,6 +2080,18 @@ export function InGame({
               Boolean(scoutSystemRef.current.activeOffer)
             if (pendingRank) {
               pendingScoutAfterRankRef.current = openScout
+              const tierMoved =
+                companyTierOf(pendingRank.previousRank).id !==
+                companyTierOf(pendingRank.currentRank).id
+              if (pendingRank.rankChange !== 0 || tierMoved) {
+                pendingRankAfterBubbleRef.current = pendingRank
+                setTab('ranking')
+                setRankBubblePlay({
+                  fromRank: pendingRank.previousRank,
+                  toRank: pendingRank.currentRank,
+                })
+                return
+              }
               setRankSettlement(pendingRank)
               return
             }

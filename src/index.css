@@ -697,6 +697,322 @@ html.theme-on-air .game-kicker {
   animation: noise-anim 0.25s steps(4) infinite;
 }
 
+.cctv-feed-dead {
+  filter: grayscale(1) brightness(0.08) contrast(1.55) saturate(0);
+  transform: scale(1.04);
+}
+
+.cctv-scanline.is-gear-broken {
+  z-index: 26;
+  opacity: 1;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0) 35%,
+    rgba(0, 0, 0, 0.85) 50%
+  );
+  background-size: 100% 2px;
+}
+
+.cctv-scanline.is-gear-broken::before {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(220, 220, 220, 0.28) 8%,
+    transparent 16%
+  );
+  animation: scanline-anim 1.4s linear infinite;
+}
+
+.cctv-noise.is-gear-broken {
+  z-index: 27;
+  opacity: 0.72;
+  animation-duration: 0.06s;
+  mix-blend-mode: screen;
+}
+
+.neon-glow-card.is-gear-broken,
+.game-stage.is-on-air .stream-on-air.neon-glow-card.is-gear-broken,
+html.theme-on-air .stream-on-air.neon-glow-card.is-gear-broken {
+  border-color: rgba(251, 191, 36, 0.85) !important;
+  background: #050300 !important;
+  box-shadow:
+    0 0 0 1px rgba(180, 83, 9, 0.9),
+    0 0 22px rgba(180, 83, 9, 0.45),
+    inset 0 0 40px rgba(0, 0, 0, 0.55) !important;
+}
+
+.cctv-gear-fail-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 28;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cctv-gear-fail-dim {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(12, 8, 0, 0.35), rgba(0, 0, 0, 0.94) 62%),
+    rgba(0, 0, 0, 0.78);
+  animation: gear-fail-blackout 1.1s steps(3) infinite;
+}
+
+.cctv-gear-fail-static {
+  position: absolute;
+  inset: -20%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.55;
+  mix-blend-mode: overlay;
+  animation: noise-anim 0.05s steps(3) infinite;
+}
+
+.cctv-gear-fail-tear {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 18%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.18),
+    transparent
+  );
+  animation: gear-fail-tear 0.85s steps(4) infinite;
+}
+
+.cctv-gear-fail-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 244, 200, 0.16);
+  animation: gear-fail-flash 0.7s steps(2) infinite;
+}
+
+.cctv-gear-fail-repair {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 0;
+  background: transparent;
+  text-align: center;
+}
+
+.cctv-gear-fail-badge {
+  pointer-events: none;
+  border: 2px solid rgba(252, 211, 77, 0.9);
+  border-radius: 0.55rem;
+  background: rgba(180, 83, 9, 0.92);
+  padding: 0.4rem 0.75rem;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  color: #fff7ed;
+  text-transform: uppercase;
+  box-shadow: 0 0 22px rgba(245, 158, 11, 0.7);
+  animation: gear-fail-badge-pulse 0.9s ease-in-out infinite;
+}
+
+.cctv-gear-fail-hint {
+  pointer-events: none;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #fde68a;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.85);
+}
+
+@keyframes gear-fail-blackout {
+  0%, 100% { opacity: 1; }
+  40% { opacity: 0.82; }
+  55% { opacity: 1; }
+  70% { opacity: 0.7; }
+}
+
+@keyframes gear-fail-tear {
+  0% { top: -20%; transform: translateX(0); }
+  40% { top: 38%; transform: translateX(-3%); }
+  70% { top: 62%; transform: translateX(4%); }
+  100% { top: 110%; transform: translateX(-2%); }
+}
+
+@keyframes gear-fail-flash {
+  0%, 80%, 100% { opacity: 0; }
+  10% { opacity: 0.55; }
+  18% { opacity: 0; }
+  22% { opacity: 0.28; }
+}
+
+@keyframes gear-fail-badge-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 18px rgba(245, 158, 11, 0.55); }
+  50% { transform: scale(1.06); box-shadow: 0 0 28px rgba(251, 191, 36, 0.85); }
+}
+
+.gear-fail-burst-slot {
+  animation: gear-fail-slam-shake 0.72s cubic-bezier(0.22, 0.9, 0.3, 1);
+  z-index: 6;
+}
+
+.gear-fail-slam-wash {
+  background: rgba(8, 4, 0, 0.92);
+  animation: gear-fail-slam-wash 0.82s ease-out forwards;
+}
+
+.gear-fail-slam-flash {
+  background: radial-gradient(
+    circle at 50% 42%,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 214, 80, 0.85) 28%,
+    rgba(180, 83, 9, 0.35) 58%,
+    transparent 74%
+  );
+  animation: gear-fail-slam-flash 0.82s ease-out forwards;
+}
+
+.gear-fail-slam-ring {
+  box-shadow:
+    inset 0 0 0 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 0 rgba(251, 191, 36, 0.7);
+  animation: gear-fail-slam-ring 0.82s ease-out forwards;
+}
+
+.gear-fail-slam-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 2px,
+    rgba(255, 244, 200, 0.16) 2px,
+    rgba(255, 244, 200, 0.16) 3px
+  );
+  mix-blend-mode: overlay;
+  animation: gear-fail-slam-scan 0.82s linear forwards;
+}
+
+.gear-fail-slam-border {
+  box-shadow:
+    inset 0 0 0 4px rgba(251, 191, 36, 0.98),
+    inset 0 0 60px rgba(180, 83, 9, 0.75);
+  animation: gear-fail-slam-border 0.82s ease-out forwards;
+}
+
+.gear-fail-slam-copy {
+  animation: gear-fail-slam-copy 0.82s ease-out forwards;
+}
+
+.gear-fail-slam-badge {
+  border: 3px solid #fff4c2;
+  border-radius: 0.65rem;
+  background: #b45309;
+  padding: 0.55rem 0.9rem;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: #fff7ed;
+  text-transform: uppercase;
+  box-shadow: 0 0 36px rgba(251, 191, 36, 0.95);
+  animation: gear-fail-slam-stamp 0.82s cubic-bezier(0.18, 0.9, 0.22, 1) forwards;
+}
+
+.gear-fail-slam-sub {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #fde68a;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.9);
+  animation: gear-fail-slam-stamp 0.82s cubic-bezier(0.18, 0.9, 0.22, 1) 0.06s both;
+}
+
+@keyframes gear-fail-slam-shake {
+  0%,
+  100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+  6% { transform: translate3d(-14px, 8px, 0) rotate(-2.2deg) scale(1.03); }
+  14% { transform: translate3d(16px, -9px, 0) rotate(2.4deg) scale(1.05); }
+  22% { transform: translate3d(-12px, 6px, 0) rotate(-1.8deg) scale(1.02); }
+  32% { transform: translate3d(11px, -5px, 0) rotate(1.4deg) scale(1.01); }
+  44% { transform: translate3d(-7px, 3px, 0) rotate(-0.8deg) scale(1); }
+  58% { transform: translate3d(5px, -2px, 0) rotate(0.5deg) scale(1); }
+  72% { transform: translate3d(-3px, 1px, 0) rotate(-0.2deg) scale(1); }
+}
+
+@keyframes gear-fail-slam-wash {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  70% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+@keyframes gear-fail-slam-flash {
+  0% { opacity: 0; transform: scale(0.55); }
+  7% { opacity: 1; transform: scale(1.15); }
+  22% { opacity: 0.7; transform: scale(1.35); }
+  100% { opacity: 0; transform: scale(1.7); }
+}
+
+@keyframes gear-fail-slam-ring {
+  0% {
+    box-shadow:
+      inset 0 0 0 18px rgba(255, 255, 255, 0.95),
+      inset 0 0 0 0 rgba(251, 191, 36, 0);
+  }
+  100% {
+    box-shadow:
+      inset 0 0 0 0 rgba(255, 255, 255, 0),
+      inset 0 0 80px rgba(251, 191, 36, 0);
+  }
+}
+
+@keyframes gear-fail-slam-scan {
+  0% { opacity: 0; transform: translateY(-20%); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(20%); }
+}
+
+@keyframes gear-fail-slam-border {
+  0% { opacity: 1; }
+  100% { opacity: 0.15; }
+}
+
+@keyframes gear-fail-slam-copy {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes gear-fail-slam-stamp {
+  0% { opacity: 0; transform: scale(2.6) rotate(-12deg); }
+  10% { opacity: 1; transform: scale(0.92) rotate(3deg); }
+  18% { transform: scale(1.08) rotate(-2deg); }
+  28% { transform: scale(1) rotate(0deg); }
+  80% { opacity: 1; transform: scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: scale(1.04) rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cctv-gear-fail-dim,
+  .cctv-gear-fail-static,
+  .cctv-gear-fail-tear,
+  .cctv-gear-fail-flash,
+  .cctv-gear-fail-badge,
+  .cctv-scanline.is-gear-broken::before,
+  .cctv-noise.is-gear-broken,
+  .gear-fail-burst-slot,
+  .gear-fail-slam-wash,
+  .gear-fail-slam-flash,
+  .gear-fail-slam-ring,
+  .gear-fail-slam-scan,
+  .gear-fail-slam-border,
+  .gear-fail-slam-copy,
+  .gear-fail-slam-badge,
+  .gear-fail-slam-sub {
+    animation: none;
+  }
+}
+
 /* ── Neon Buttons & Gradients ── */
 .game-btn-pink {
   border: 1px solid rgba(255, 42, 116, 0.45);
@@ -2249,6 +2565,31 @@ html.theme-on-air .game-kicker {
   align-items: flex-end;
   transform: translate(-100%, -50%);
   pointer-events: none;
+}
+
+.rank-tip.is-rising {
+  top: calc(50% + (1 - var(--rise-t, 1)) * var(--rise-slots, 0) * 100%);
+}
+
+.rank-tip-card.is-filling {
+  overflow: hidden;
+}
+
+.rank-tip-card.is-filling::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--fill, 0%);
+  background: linear-gradient(180deg, rgba(110, 231, 183, 0.42), rgba(16, 185, 129, 0.2));
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rank-tip-card.is-filling > * {
+  position: relative;
+  z-index: 1;
 }
 
 .rank-tip-card {
