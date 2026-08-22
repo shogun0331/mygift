@@ -1457,6 +1457,7 @@ export function InGame({
     setBroadcastEndedNotice(false)
     weekFinishedRef.current = false
     setStartBroadcastLocked(false)
+    setTab('dashboard')
     setBroadcastPhase('live')
     rollLivePlayVideos()
     setMonthWeekIndex(0)
@@ -1554,13 +1555,24 @@ export function InGame({
     return () => window.clearInterval(timer)
   }, [broadcastPhase, speed, toxicQteActive])
 
+  useEffect(() => {
+    document.documentElement.classList.toggle('theme-on-air', broadcastPhase === 'live')
+    return () => document.documentElement.classList.remove('theme-on-air')
+  }, [broadcastPhase])
+
   const clock = formatGameClock(monthToCalendarDate(GAME_EPOCH, gameMonth))
   const broadcastWeekCurrent = monthWeekIndex + 1
   const broadcastWeeksLeft = Math.max(0, WEEKS_PER_MONTH - broadcastWeekCurrent)
   const broadcastMonthPct = Math.round((broadcastWeekCurrent / WEEKS_PER_MONTH) * 100)
 
   return (
-    <main className="game-stage fixed inset-0 grid h-dvh grid-rows-[auto_1fr_auto] overflow-hidden">
+    <main
+      className={`game-stage fixed inset-0 grid h-dvh overflow-hidden ${
+        broadcastPhase === 'live'
+          ? 'is-on-air grid-rows-[auto_1fr]'
+          : 'grid-rows-[auto_1fr_auto]'
+      }`}
+    >
       <header className="game-hud relative z-40 flex shrink-0 items-center justify-between gap-4 px-6 pt-6 pb-3">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex shrink-0 items-center gap-1.5">
@@ -1863,6 +1875,7 @@ export function InGame({
         )}
       </section>
 
+      {broadcastPhase === 'live' ? null : (
       <nav className="game-dock z-20 shrink-0 px-6 py-3" aria-label="인게임 메뉴">
         <div className="mx-auto flex w-full max-w-6xl gap-1.5 sm:gap-2">
           {TABS.map((item) => {
@@ -1883,6 +1896,7 @@ export function InGame({
           })}
         </div>
       </nav>
+      )}
 
       {broadcastEndedNotice ? (
         <div className="broadcast-ended-overlay" role="status" aria-live="polite">

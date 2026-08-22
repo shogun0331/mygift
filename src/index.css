@@ -85,6 +85,7 @@ select {
     radial-gradient(ellipse 70% 55% at 15% 10%, rgba(99, 102, 241, 0.16), transparent 55%),
     radial-gradient(ellipse 55% 45% at 90% 85%, rgba(251, 191, 36, 0.06), transparent 50%),
     linear-gradient(160deg, #080d1a 0%, #0b1220 45%, #070a14 100%);
+  transition: background 0.7s ease;
 }
 
 .game-stage::before {
@@ -99,6 +100,112 @@ select {
   mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black, transparent 85%);
   opacity: 0.7;
   z-index: 0;
+  transition: opacity 0.95s ease;
+}
+
+.game-stage.is-on-air,
+html.theme-on-air .game-stage {
+  --panel: rgba(12, 0, 8, 0.92);
+  --panel-strong: rgba(6, 0, 4, 0.96);
+  --line: rgba(255, 42, 116, 0.5);
+  --line-soft: rgba(255, 42, 116, 0.28);
+  --accent: #ff6b9d;
+  --accent-strong: #ff2a74;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -8%, rgba(180, 12, 70, 0.55), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 100% 110%, rgba(90, 0, 40, 0.5), transparent 52%),
+    #000000;
+}
+
+html.theme-on-air,
+html.theme-on-air body {
+  background: #000000;
+}
+
+.game-stage.is-on-air::before,
+html.theme-on-air .game-stage::before {
+  opacity: 0.08;
+}
+
+.game-hud,
+.game-dock,
+.game-panel,
+.game-hud-strip {
+  transition:
+    background 0.7s ease,
+    border-color 0.7s ease,
+    box-shadow 0.7s ease;
+}
+
+.game-stage.is-on-air .game-hud,
+html.theme-on-air .game-hud {
+  background: rgba(0, 0, 0, 0.94);
+  border-bottom: 1px solid rgba(255, 42, 116, 0.42);
+  box-shadow: 0 12px 32px rgba(255, 42, 116, 0.12);
+}
+
+.game-stage.is-on-air .game-hud-strip,
+html.theme-on-air .game-hud-strip {
+  border-color: rgba(255, 42, 116, 0.5);
+  background: linear-gradient(180deg, rgba(70, 8, 32, 0.85), rgba(10, 0, 8, 0.95));
+  box-shadow:
+    0 0 0 1px rgba(255, 42, 116, 0.18),
+    0 10px 28px rgba(0, 0, 0, 0.45);
+}
+
+.game-stage.is-on-air .game-dock,
+html.theme-on-air .game-dock {
+  background: #000000;
+  border-top: 1px solid rgba(255, 42, 116, 0.42);
+  box-shadow: 0 -16px 40px rgba(80, 0, 30, 0.35);
+}
+
+.game-stage.is-on-air .game-panel,
+html.theme-on-air .game-panel {
+  border-color: rgba(255, 42, 116, 0.28);
+  background: linear-gradient(180deg, rgba(42, 6, 22, 0.78), rgba(6, 0, 6, 0.94));
+}
+
+.game-stage.is-on-air .game-btn-tab.is-active,
+html.theme-on-air .game-btn-tab.is-active {
+  border-color: rgba(255, 120, 170, 0.45);
+  background: linear-gradient(180deg, #ff4d88 0%, #c2185b 100%);
+  box-shadow: 0 10px 24px rgba(255, 42, 116, 0.4);
+}
+
+.game-stage.is-on-air .stream-on-air.neon-glow-card,
+html.theme-on-air .stream-on-air.neon-glow-card {
+  border-color: rgba(255, 90, 150, 0.85) !important;
+  background: #080105 !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 42, 116, 0.65),
+    0 0 24px rgba(255, 42, 116, 0.5),
+    0 0 56px rgba(180, 0, 70, 0.38) !important;
+}
+
+.game-stage.is-on-air .live-rank-panel,
+html.theme-on-air .live-rank-panel {
+  border-color: rgba(255, 90, 150, 0.55);
+  background: linear-gradient(180deg, rgba(56, 8, 28, 0.88), rgba(8, 0, 6, 0.96));
+  box-shadow:
+    0 0 0 1px rgba(255, 42, 116, 0.28),
+    0 0 36px rgba(255, 42, 116, 0.28);
+}
+
+.game-stage.is-on-air .game-kicker,
+html.theme-on-air .game-kicker {
+  color: #ff6b9d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-stage,
+  .game-stage::before,
+  .game-hud,
+  .game-dock,
+  .game-panel,
+  .game-hud-strip {
+    transition: none;
+  }
 }
 
 /* ── Surfaces ── */
@@ -617,11 +724,10 @@ select {
 
 .neon-glow-card:hover {
   border-color: rgba(255, 42, 116, 0.55) !important;
-  box-shadow: 
+  box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.55),
     0 0 18px rgba(255, 42, 116, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-  transform: translateY(-3px);
 }
 
 .neon-text-pink {

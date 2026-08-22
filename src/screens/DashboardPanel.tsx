@@ -342,7 +342,7 @@ export function DashboardPanel({
           )}
         </section>
 
-        <section className="game-panel flex min-h-[22rem] flex-[1.35] flex-col rounded-2xl p-3 sm:min-h-[24rem] lg:min-h-0">
+        <section className={`game-panel live-rank-panel flex min-h-[22rem] flex-[1.35] flex-col rounded-2xl p-3 sm:min-h-[24rem] lg:min-h-0 ${isLive ? 'is-live' : ''}`}>
           <div className="flex shrink-0 items-center justify-between gap-2">
             <h2 className="game-stat-label">{t('dashboard.liveRank')}</h2>
             {hasAssigned ? (
@@ -558,6 +558,8 @@ function StreamCard({
   return (
     <article
       className={`neon-glow-card relative flex flex-col overflow-hidden rounded-2xl bg-slate-950/40 ${
+        isLive ? 'stream-on-air' : ''
+      } ${
         crashing ? 'condition-crash-slot' : ''
       }`}
     >
