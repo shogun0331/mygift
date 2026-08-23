@@ -134,6 +134,7 @@ export function CreatorPanel({
   managerState,
   onHireStaff,
   hiredStaffSalaries,
+  staffScoutCooldown,
   scoutedStaffCandidate,
   onScoutStaff,
   studioSlots,
@@ -425,14 +426,15 @@ export function CreatorPanel({
                   const hasAvailableStaffToScout = registeredStaff.some(
                     (s) => !managerState.hiredStaffIds.includes(s.id)
                   )
+                  const isCooldown = staffScoutCooldown > 0
                   return (
                     <button
                       type="button"
-                      disabled={!hasAvailableStaffToScout}
+                      disabled={isCooldown || !hasAvailableStaffToScout}
                       onClick={handleScoutStaffClick}
                       className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      {hasAvailableStaffToScout ? '스카우트 시도' : '스카우트 완료'}
+                      {hasAvailableStaffToScout ? '영입 제안' : '스카우트 완료'}
                     </button>
                   )
                 })()}
@@ -452,7 +454,6 @@ export function CreatorPanel({
                     <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase">
                       <th className="px-3 py-2.5 font-semibold sm:px-4">이름</th>
                       <th className="px-3 py-2.5 font-semibold">분야</th>
-                      <th className="px-3 py-2.5 font-semibold">영입 비용</th>
                       <th className="px-3 py-2.5 font-semibold">연봉</th>
                       <th className="px-3 py-2.5 font-semibold">배치</th>
                       <th className="px-3 py-2.5 font-semibold sm:px-4">업무 배치</th>
@@ -499,9 +500,6 @@ export function CreatorPanel({
                             <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-slate-300">
                               {t(STAFF_KIND_LABEL_KEY[staff.kind])}
                             </span>
-                          </td>
-                          <td className="px-3 py-2.5 font-semibold tabular-nums text-slate-500">
-                            -
                           </td>
                           <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
                             {salary > 0 ? formatSalary(salary) : '-'}

@@ -572,7 +572,7 @@ export function InGame({
   const [skillPoints, setSkillPoints] = useState(1000)
   const [broadcastMonthsTowardSp, setBroadcastMonthsTowardSp] = useState(0)
   
-  const staffScoutCooldown = 0
+  const [staffScoutCooldown, setStaffScoutCooldown] = useState(3)
   const [scoutedStaffCandidate, setScoutedStaffCandidate] = useState<ScoutedStaffCandidate | null>(null)
   const [hiredStaffSalaries, setHiredStaffSalaries] = useState<Record<string, number>>({})
   const hiredStaffSalariesRef = useRef(hiredStaffSalaries)
@@ -1523,6 +1523,7 @@ export function InGame({
   }
 
   function handleScoutStaff() {
+    setStaffScoutCooldown(3)
     const hiredIds = managerStateRef.current.hiredStaffIds
     const pool = registeredStaff.filter((s) => !hiredIds.includes(s.id))
     if (pool.length > 0) {
@@ -1822,6 +1823,8 @@ export function InGame({
     const staffPayrollTotal = Object.entries(hiredStaffSalariesRef.current)
       .filter(([id]) => managerState.hiredStaffIds.includes(id))
       .reduce((sum, [_, salary]) => sum + Math.max(0, Math.round(Number(salary) / 12) || 0), 0)
+
+    setStaffScoutCooldown((prev) => Math.max(0, prev - 1))
 
 
 
