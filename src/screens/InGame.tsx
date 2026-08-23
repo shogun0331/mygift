@@ -2723,6 +2723,9 @@ export function InGame({
             onVacation={handleVacation}
             onProductionTraining={handleProductionTraining}
             onSnsCompose={handleSnsCompose}
+            registeredStaff={registeredStaff}
+            managerState={managerState}
+            onHireStaff={handleHireStaff}
           />
         ) : tab === 'schedule' ? (
           <SchedulePanel
