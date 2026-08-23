@@ -577,6 +577,9 @@ export function InGame({
   const [hiredStaffSalaries, setHiredStaffSalaries] = useState<Record<string, number>>({})
   const hiredStaffSalariesRef = useRef(hiredStaffSalaries)
   hiredStaffSalariesRef.current = hiredStaffSalaries
+  const [hiredStaffStartMonths, setHiredStaffStartMonths] = useState<Record<string, number>>({})
+  const hiredStaffStartMonthsRef = useRef(hiredStaffStartMonths)
+  hiredStaffStartMonthsRef.current = hiredStaffStartMonths
   const [staffSalaryRaiseRequest, setStaffSalaryRaiseRequest] = useState<{
     staffId: string
     staffName: string
@@ -1550,6 +1553,10 @@ export function InGame({
       ...prev,
       [staffId]: salary,
     }))
+    setHiredStaffStartMonths((prev) => ({
+      ...prev,
+      [staffId]: gameMonth,
+    }))
     const next = hireStaff(managerStateRef.current, staffId)
     managerStateRef.current = next
     onManagerStateChangeRef.current(next)
@@ -2043,9 +2050,14 @@ export function InGame({
       const maxSalary = Math.max(...salaries)
       const minSalary = Math.min(...salaries)
       if (maxSalary - minSalary >= 15000) {
-        const underpaidStaffIds = hiredStaffIds.filter(
-          (id) => (hiredStaffSalariesRef.current[id] ?? 0) === minSalary,
-        )
+        const underpaidStaffIds = hiredStaffIds.filter((id) => {
+          const salary = hiredStaffSalariesRef.current[id] ?? 0
+          if (salary !== minSalary) return false
+
+          const startMonth = hiredStaffStartMonthsRef.current[id] ?? 0
+          const elapsed = gameMonth - startMonth
+          return elapsed > 0 && elapsed % 12 === 0
+        })
         const targetStaffId = underpaidStaffIds[Math.floor(Math.random() * underpaidStaffIds.length)]
         const targetStaff = registeredStaff.find((s) => s.id === targetStaffId)
         if (targetStaff) {
