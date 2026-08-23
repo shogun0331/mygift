@@ -103,12 +103,19 @@ export function repairSlotGear(gear: SlotGear): SlotGear {
   return { ...gear, broken: false }
 }
 
+export function tryBreakSlotGear(gear: SlotGear): SlotGear {
+  if (gear.broken) return gear
+  if (Math.random() < gearFailChance(gear)) {
+    return { ...gear, broken: true }
+  }
+  return gear
+}
+
 export function applyWeeklySlotGear(
   gearById: Record<string, SlotGear>,
   slots: StudioSlot[],
   broadcastedCreatorIds: ReadonlySet<string>,
   opts: {
-    skipAllFails?: boolean
     skipFailCreatorIds?: ReadonlySet<string>
   } = {},
 ): Record<string, SlotGear> {
@@ -121,13 +128,10 @@ export function applyWeeklySlotGear(
 
     const current = next[slot.id] ?? createInitialSlotGear()
     let updated = current
-    const skipFail =
-      Boolean(opts.skipAllFails) ||
-      skipFailIds.has(slot.assignment.creatorId) ||
-      updated.broken
+    const skipFail = skipFailIds.has(slot.assignment.creatorId) || updated.broken
 
-    if (!skipFail && Math.random() < gearFailChance(updated)) {
-      updated = { ...updated, broken: true }
+    if (!skipFail) {
+      updated = tryBreakSlotGear(updated)
     }
 
     updated = wearSlotGear(updated)

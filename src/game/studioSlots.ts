@@ -4,7 +4,7 @@ export type StudioSlotAssignment = {
   creatorId: string
   creatorName: string
   grade: string
-  popularity: number
+  statType?: string
   profileImageUrl?: string | null
   /** 대시보드 대기 루프용 — 수위 레벨 1 idle 영상 */
   idleVideoUrl?: string | null
@@ -24,10 +24,10 @@ export type StudioHandCard = {
   id: string
   name: string
   grade: string
-  popularity: number
   stamina: number
   staminaMax: number
   conditionScore: number
+  statType?: string
   profileImageUrl?: string | null
   idleVideoUrl?: string | null
   mediaRevision?: number
@@ -123,7 +123,7 @@ export function assignCreatorToSlot(
         creatorId: card.id,
         creatorName: card.name,
         grade: card.grade,
-        popularity: card.popularity,
+        statType: card.statType,
         profileImageUrl: card.profileImageUrl || null,
         idleVideoUrl: card.idleVideoUrl || null,
         mediaRevision: card.mediaRevision,

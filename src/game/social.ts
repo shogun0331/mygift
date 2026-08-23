@@ -15,7 +15,7 @@ export type SocialSpawnSpec = {
 export const DATE_SPAWN: SocialSpawnSpec = { minWait: 2, maxWait: 5, chance: 0.5 }
 /** H 완료 캐릭터만. 선물/돈 요구 */
 export const GIFT_SPAWN: SocialSpawnSpec = { minWait: 2, maxWait: 4, chance: 0.4 }
-/** 인기 30↑ */
+/** 보유 크리에이터 대상 */
 export const VIP_SPAWN: SocialSpawnSpec = { minWait: 3, maxWait: 6, chance: 0.5 }
 /** 데이트 1·2차 완료 후 H(첫 회) 및 이후 H 재요청 */
 export const H_SPAWN: SocialSpawnSpec = { minWait: 3, maxWait: 6, chance: 0.5 }

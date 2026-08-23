@@ -48,6 +48,10 @@ type DashboardPanelProps = {
   liveEvents?: DayEvent[]
   /** 방송 월간 누적 실시간 수익 (크리에이터 id → USD) */
   liveRevenueByCreator?: Record<string, number>
+  /** 이번 주 경과 0~1. 스테미나 미리보기용 */
+  liveWeekProgress?: number
+  /** 이번 주 종료 시 깎일 스테미나 (크리에이터 id) */
+  liveStaminaDrainByCreatorId?: Record<string, number>
   assets?: number
   conditionCrashes?: ConditionCrashFxItem[]
   gearFailBursts?: GearFailBurstItem[]
@@ -91,12 +95,25 @@ type BroadcastSlotView = {
   creator?: StreamCreatorView
 }
 
+function previewLiveStamina(
+  stamina: number,
+  staminaMax: number,
+  weeklyDrain: number,
+  progress: number,
+) {
+  const p = Math.max(0, Math.min(1, progress))
+  const next = stamina - Math.max(0, weeklyDrain) * p
+  return Math.max(0, Math.min(staminaMax, next))
+}
+
 function toBroadcastSlot(
   slot: StudioSlot,
   owned: OwnedCreator | undefined,
   broadcastPhase: BroadcastPhase,
   locale: Locale,
   livePlayUrl?: string | null,
+  weekProgress = 0,
+  weeklyDrain = 0,
 ): BroadcastSlotView {
   const streamLabel = `STREAM ${String(slot.index).padStart(2, '0')}`
   if (slot.status !== 'assigned' || !slot.assignment) {
@@ -113,9 +130,13 @@ function toBroadcastSlot(
   const displayJob = owned ? characterDisplayJob(owned, locale) : ''
   const visuals = creatorVisuals(slot.assignment.creatorId, displayName)
   const staminaMax = owned?.staminaMax ?? 100
-  const stamina = owned
+  const baseStamina = owned
     ? Math.min(staminaMax, owned.stamina)
-    : Math.min(staminaMax, 40 + slot.assignment.popularity)
+    : staminaMax
+  const stamina =
+    broadcastPhase === 'live' && weeklyDrain > 0
+      ? previewLiveStamina(baseStamina, staminaMax, weeklyDrain, weekProgress)
+      : baseStamina
   const idleVideoUrl =
     (owned ? findLevelIdleVideoUrl(owned) : null) ||
     slot.assignment.idleVideoUrl ||
@@ -142,7 +163,7 @@ function toBroadcastSlot(
       mediaRevision,
       stamina,
       staminaMax,
-      canBroadcast: canBroadcastByStamina(stamina),
+      canBroadcast: canBroadcastByStamina(baseStamina),
       grade: (() => {
         const g = owned?.grade ?? slot.assignment.grade
         return g === 'S' || g === 'A' || g === 'B' || g === 'C' ? g : 'C'
@@ -189,6 +210,8 @@ export function DashboardPanel({
   livePlayVideoByCreator = {},
   liveEvents = [],
   liveRevenueByCreator = {},
+  liveWeekProgress = 0,
+  liveStaminaDrainByCreatorId = {},
   assets = 0,
   conditionCrashes = [],
   gearFailBursts = [],
@@ -250,6 +273,8 @@ export function DashboardPanel({
       broadcastPhase,
       locale,
       creatorId ? livePlayVideoByCreator[creatorId] : undefined,
+      liveWeekProgress,
+      creatorId ? liveStaminaDrainByCreatorId[creatorId] ?? 0 : 0,
     )
   })
   const assigned = studioSlots.filter(
@@ -283,7 +308,7 @@ export function DashboardPanel({
         : assignment!.creatorName
       const displayJob = owned ? characterDisplayJob(owned, locale) : assignment!.grade
       const visuals = creatorVisuals(creatorId, displayName)
-      const stamina = owned?.stamina ?? 40 + (assignment?.popularity ?? 0)
+      const stamina = owned?.stamina ?? 100
       return {
         id: creatorId,
         rank: 0,
@@ -804,12 +829,14 @@ function StreamCard({
           <div className="mb-1 flex items-center justify-between gap-2 text-[10px]">
             <span className="font-semibold tracking-wide text-slate-400">Stamina</span>
             <span className={`font-semibold ${blocked ? 'text-rose-300' : 'text-cyan-300'}`}>
-              {creator ? `${creator.stamina}/${creator.staminaMax}` : '—'}
+              {creator
+                ? `${Math.round(creator.stamina)}/${creator.staminaMax}`
+                : '—'}
             </span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
             <div
-              className={`h-full rounded-full bg-gradient-to-r ${
+              className={`h-full rounded-full bg-gradient-to-r transition-[width] duration-150 ease-linear ${
                 blocked ? 'from-rose-400 to-orange-300' : 'from-cyan-400 to-teal-300'
               }`}
               style={{ width: `${staminaPct}%` }}

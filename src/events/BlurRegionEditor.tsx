@@ -136,12 +136,16 @@ type DragMode =
   | { kind: 'move'; id: string; ox: number; oy: number; startX: number; startY: number }
   | { kind: 'resize'; id: string; corner: 'nw' | 'ne' | 'sw' | 'se'; orig: BlurRegion }
 
+type BlurMediaAsset = Pick<EventMediaAsset, 'kind' | 'url'>
+
 type BlurRegionEditorProps = {
-  asset: EventMediaAsset | null
+  asset: BlurMediaAsset | null
   regions: BlurRegion[]
   blurDefault: number
   onChange: (next: { blurRegions: BlurRegion[]; blurDefault: number }) => void
   onClose: () => void
+  /** cover: 이벤트 그래픽(16:9 크롭). fit: SNS처럼 원본 비율 유지 */
+  layout?: 'cover' | 'fit'
 }
 
 export function BlurRegionEditor({
@@ -150,6 +154,7 @@ export function BlurRegionEditor({
   blurDefault,
   onChange,
   onClose,
+  layout = 'cover',
 }: BlurRegionEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null)
   const [mode, setMode] = useState<'draw' | 'select'>('draw')
@@ -331,33 +336,48 @@ export function BlurRegionEditor({
             </span>
           </div>
 
-          <div
-            ref={stageRef}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
-            className={`relative mx-auto aspect-video w-full max-w-3xl overflow-hidden rounded-xl border border-white/10 bg-black ${
-              !asset ? 'cursor-not-allowed' : mode === 'draw' ? 'cursor-crosshair' : 'cursor-default'
-            }`}
-          >
-            {asset ? (
-              asset.kind === 'video' ? (
-                <video src={asset.url} muted loop playsInline autoPlay className="h-full w-full object-cover" />
+          <div className={layout === 'fit' ? 'flex justify-center' : undefined}>
+            <div
+              ref={stageRef}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              className={`${
+                layout === 'fit'
+                  ? 'relative inline-block max-h-[70vh] max-w-full overflow-hidden rounded-xl border border-white/10 bg-black'
+                  : 'relative mx-auto aspect-video w-full max-w-3xl overflow-hidden rounded-xl border border-white/10 bg-black'
+              } ${!asset ? 'cursor-not-allowed' : mode === 'draw' ? 'cursor-crosshair' : 'cursor-default'}`}
+            >
+              {asset ? (
+                asset.kind === 'video' ? (
+                  <video
+                    src={asset.url}
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    className={layout === 'fit' ? 'block max-h-[70vh] max-w-full' : 'h-full w-full object-cover'}
+                  />
+                ) : (
+                  <img
+                    src={asset.url}
+                    alt=""
+                    className={layout === 'fit' ? 'block max-h-[70vh] max-w-full' : 'h-full w-full object-cover'}
+                  />
+                )
               ) : (
-                <img src={asset.url} alt="" className="h-full w-full object-cover" />
-              )
-            ) : (
-              <div className="flex h-full items-center justify-center text-sm text-slate-500">
-                미디어를 먼저 연결하세요
-              </div>
-            )}
-            <BlurRegionOverlay
-              regions={regions}
-              selectedId={selectedId}
-              showHandles={mode === 'select'}
-              draft={draft}
-            />
+                <div className="flex h-48 w-full items-center justify-center text-sm text-slate-500">
+                  미디어를 먼저 연결하세요
+                </div>
+              )}
+              <BlurRegionOverlay
+                regions={regions}
+                selectedId={selectedId}
+                showHandles={mode === 'select'}
+                draft={draft}
+              />
+            </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

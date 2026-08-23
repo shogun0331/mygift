@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
+import { createPortal } from 'react-dom'
 import { characterDisplayName } from '../game/characterLocales'
 import type { RegisteredCharacter } from '../game/characters'
 import { useTranslation } from '../locales/i18n'
@@ -748,14 +749,14 @@ export function EventSimulator({
     </>
   )
 
-  return (
-    <div className={`fixed inset-0 z-50 flex flex-col text-slate-100 font-sans ${
+  const shell = (
+    <div className={`fixed inset-0 z-[80] flex flex-col text-slate-100 font-sans ${
       isGame ? 'bg-black' : 'bg-slate-950'
     }`}>
       {/* 전체 화면 페이드 (시작: 검정→투명 / 종료: 투명→검정) */}
       <div
         aria-hidden
-        className={`fixed inset-0 z-[70] bg-black transition-opacity ease-out ${
+        className={`fixed inset-0 z-[90] bg-black transition-opacity ease-out ${
           fadeOpacity > 0.02 || isClosing ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
         style={{
@@ -764,49 +765,17 @@ export function EventSimulator({
         }}
       />
 
-      {!isGame ? (
-        <header className="flex shrink-0 items-center justify-between border-b border-indigo-500/15 bg-slate-900/60 px-6 py-4">
-          <div className="flex items-center gap-4">
-            <span className="rounded bg-indigo-500/20 px-2 py-0.5 text-xs font-semibold text-indigo-300">
-              SIMULATOR
-            </span>
-            <div>
-              <h2 className="text-base font-semibold">{event.title}</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {event.projectTitle} · ch{event.chapterId} · 노드 총 {flatNodes.length}개
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {langVolumeControls}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                triggerClose()
-              }}
-              className="rounded-lg border border-emerald-500/40 bg-emerald-600/15 px-4 py-1.5 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-600/30"
-            >
-              ← {exitLabel}
-            </button>
-          </div>
-        </header>
-      ) : null}
-
       {/* Main Body */}
-      <div className={`grid min-h-0 flex-1 grid-cols-1 ${isGame ? '' : 'lg:grid-cols-[1fr_380px]'}`}>
+      <div className={`grid min-h-0 flex-1 grid-cols-1 ${isGame ? '' : 'lg:grid-cols-[minmax(0,1fr)_380px]'}`}>
         {/* Left: Visual Novel Player */}
-        <div className="relative flex min-h-0 flex-col items-center justify-center overflow-auto bg-black/40 p-4">
+        <div className="relative flex min-h-0 flex-col overflow-hidden bg-black">
           <div
-            className={`relative flex aspect-video w-full flex-col justify-end overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl ${
-              isGame ? 'vn-frame' : ''
-            } ${choices.length === 0 && !playbackFinished ? 'cursor-pointer' : ''}`}
-            style={{ maxWidth: 'min(100%, 94vw, calc(82vh * 16 / 9))' }}
+            className={`relative flex h-full w-full flex-col justify-end overflow-hidden bg-black vn-frame ${
+              choices.length === 0 && !playbackFinished ? 'cursor-pointer' : ''
+            }`}
             onClick={() => handleBoxClick()}
           >
-            {isGame ? (
-              <div className="vn-chrome" onClick={(e) => e.stopPropagation()}>
+            <div className="vn-chrome" onClick={(e) => e.stopPropagation()}>
                 <button
                   type="button"
                   onClick={(e) => {
@@ -835,7 +804,6 @@ export function EventSimulator({
                   {langVolumeControls}
                 </div>
               </div>
-            ) : null}
             {/* 1. 미디어 화면 (배경) */}
             <div
               className="absolute inset-0 z-0 flex items-center justify-center bg-black"
@@ -874,15 +842,8 @@ export function EventSimulator({
               }}
             />
 
-            {!isGame ? (
-              <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 rounded-full border border-indigo-400/40 bg-indigo-500/20 px-2.5 py-1 text-[10px] font-bold tracking-wider text-indigo-200">
-                <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                EVENT PREVIEW
-              </div>
-            ) : null}
-
             {!isGame && (channelNames.voice || channelNames.bgm || channelNames.sfx) ? (
-              <div className="absolute top-4 right-4 z-10 flex max-w-[220px] flex-col gap-1 rounded bg-black/60 border border-white/10 px-2 py-1 text-[10px] text-slate-300">
+              <div className="absolute top-14 right-4 z-10 flex max-w-[220px] flex-col gap-1 rounded bg-black/60 border border-white/10 px-2 py-1 text-[10px] text-slate-300">
                 {channelNames.voice ? <span className="truncate font-mono">VO {channelNames.voice}</span> : null}
                 {channelNames.bgm ? <span className="truncate font-mono">BGM {channelNames.bgm}</span> : null}
                 {channelNames.sfx ? <span className="truncate font-mono">SFX {channelNames.sfx}</span> : null}
@@ -1241,4 +1202,7 @@ export function EventSimulator({
       </div>
     </div>
   )
+
+  if (typeof document === 'undefined') return shell
+  return createPortal(shell, document.body)
 }

@@ -1,7 +1,9 @@
 import { useEffect, useId, useRef, useState, type DragEvent, type FormEvent, type ReactNode, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
+import { CommonEventPanel } from '../events/CommonEventPanel'
 import { EventManagePanel } from '../events/EventManagePanel'
 import { EventSimulator } from '../events/EventSimulator'
+import { CharacterSnsEditor } from './CharacterSnsEditor'
 import {
   CHARACTER_EVENT_SLOTS,
   emptyCharacterEventLinks,
@@ -10,7 +12,13 @@ import {
   type CharacterEventSlotKey,
   type GameEvent,
 } from '../events/types'
-import type { RegisteredCharacter } from '../game/characters'
+import type { CommonEventLinks } from '../events/commonEventLinks'
+import {
+  CREATOR_STAT_TYPES,
+  normalizeCreatorStatType,
+  type CreatorStatType,
+  type RegisteredCharacter,
+} from '../game/characters'
 import {
   CHARACTER_DEFAULT_LOCALE,
   mergeCharacterLocaleText,
@@ -18,8 +26,8 @@ import {
 } from '../game/characterLocales'
 import { resolveMediaSrc } from '../game/mediaUrl'
 
-type EditorTab = 'character' | 'notification' | 'event'
-type CharacterView = 'list' | 'add' | 'edit'
+type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent'
+type CharacterView = 'list' | 'add' | 'edit' | 'sns'
 
 type EditorScreenProps = {
   registeredCharacters: RegisteredCharacter[]
@@ -30,11 +38,20 @@ type EditorScreenProps = {
   isEventsLoaded: boolean
   onEventsChange: (events: GameEvent[]) => void
   onSaveEventsManual?: () => void
+  commonEventLinks: CommonEventLinks
+  onCommonEventLinksChange: (links: CommonEventLinks) => void
   onBack: () => void
 }
 
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif'
 const VIDEO_ACCEPT = 'video/mp4,video/webm,video/ogg,video/quicktime'
+
+const STAT_TYPE_LABEL: Record<CreatorStatType, string> = {
+  sexy: '섹시',
+  communication: '소통',
+  elegance: '기품',
+  performance: '퍼포먼스',
+}
 
 function isImageFile(file: File | undefined | null): file is File {
   return Boolean(file && file.type.startsWith('image/'))
@@ -61,6 +78,8 @@ export function EditorScreen({
   isEventsLoaded,
   onEventsChange,
   onSaveEventsManual,
+  commonEventLinks,
+  onCommonEventLinksChange,
   onBack,
 }: EditorScreenProps) {
   const [tab, setTab] = useState<EditorTab>('character')
@@ -98,15 +117,17 @@ export function EditorScreen({
 
   return (
     <main className="game-stage fixed inset-0 grid h-dvh grid-rows-[auto_1fr] overflow-hidden">
-      <header className="game-hud z-20 flex shrink-0 items-center justify-between px-6 py-3">
-        <div>
-          <p className="game-kicker">DEV ONLY</p>
-          <h1 className="game-title mt-1 text-2xl">EDITOR</h1>
-        </div>
-        <button type="button" onClick={onBack} className="game-btn px-4 py-2 text-sm">
-          뒤로가기
-        </button>
-      </header>
+      {showSimulator ? null : (
+        <header className="game-hud z-20 flex shrink-0 items-center justify-between px-6 py-3">
+          <div>
+            <p className="game-kicker">DEV ONLY</p>
+            <h1 className="game-title mt-1 text-2xl">EDITOR</h1>
+          </div>
+          <button type="button" onClick={onBack} className="game-btn px-4 py-2 text-sm">
+            뒤로가기
+          </button>
+        </header>
+      )}
 
       <div className="grid min-h-0 grid-cols-[240px_1fr]">
         <aside className="game-dock z-10 flex min-h-0 flex-col gap-2 border-r border-indigo-500/15 px-3 py-4">
@@ -140,6 +161,15 @@ export function EditorScreen({
             }`}
           >
             이벤트 관리
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('commonEvent')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'commonEvent' ? 'is-active' : ''
+            }`}
+          >
+            공통이벤트
           </button>
         </aside>
 
@@ -189,9 +219,14 @@ export function EditorScreen({
                           </div>
                         )}
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold text-slate-100">
-                            {character.name}
-                          </p>
+                          <div className="flex min-w-0 items-center gap-1.5">
+                            <p className="truncate text-sm font-semibold text-slate-100">
+                              {character.name}
+                            </p>
+                            <span className="shrink-0 rounded border border-indigo-400/30 bg-indigo-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-200">
+                              {STAT_TYPE_LABEL[normalizeCreatorStatType(character.statType)]}
+                            </span>
+                          </div>
                           <p className="truncate text-xs text-slate-500">
                             {character.grade}급 · {character.concept}
                             {character.age ? ` · ${character.age}세` : ''}
@@ -207,6 +242,16 @@ export function EditorScreen({
                             className="game-btn rounded-lg px-2.5 py-1.5 text-xs"
                           >
                             수정
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingCharacter(character)
+                              setCharacterView('sns')
+                            }}
+                            className="game-btn rounded-lg px-2.5 py-1.5 text-xs"
+                          >
+                            SNS
                           </button>
                           <button
                             type="button"
@@ -241,6 +286,37 @@ export function EditorScreen({
                   openCharacterList()
                 }}
                 onSimulateLinkedEvent={handleSimulateLinkedEvent}
+              />
+            ) : characterView === 'sns' && editingCharacter ? (
+              <CharacterSnsEditor
+                key={`sns-${editingCharacter.id}`}
+                character={editingCharacter}
+                onCancel={openCharacterList}
+                onSave={async (next) => {
+                  await onUpdateCharacter(editingCharacter.id, {
+                    name: editingCharacter.name,
+                    names: editingCharacter.names,
+                    age: editingCharacter.age,
+                    job: editingCharacter.job,
+                    jobs: editingCharacter.jobs,
+                    bust: editingCharacter.bust,
+                    weight: editingCharacter.weight,
+                    statType: editingCharacter.statType,
+                    characterIconId: editingCharacter.characterIconId ?? null,
+                    characterIllustrationId: editingCharacter.characterIllustrationId ?? null,
+                    profileImageId: editingCharacter.profileImageId ?? null,
+                    profileVideoId: editingCharacter.profileVideoId ?? null,
+                    eventLinks: editingCharacter.eventLinks,
+                    images: next.images,
+                    videos: next.videos.map((video) => ({
+                      ...video,
+                      level: 1,
+                      stage: video.stage ?? 1,
+                    })),
+                    snsPosts: next.snsPosts,
+                  })
+                  openCharacterList()
+                }}
               />
             ) : (
               <AddCharacterPanel
@@ -279,6 +355,13 @@ export function EditorScreen({
               onEventsChange={onEventsChange}
               registeredCharacters={registeredCharacters}
               onSaveEventsManual={onSaveEventsManual}
+            />
+          ) : tab === 'commonEvent' ? (
+            <CommonEventPanel
+              events={events}
+              links={commonEventLinks}
+              onLinksChange={onCommonEventLinksChange}
+              registeredCharacters={registeredCharacters}
             />
           ) : null}
         </section>
@@ -322,6 +405,7 @@ export type AddCharacterPayload = {
   jobs: CharacterLocaleText
   bust: string
   weight: string
+  statType: CreatorStatType
   characterIconId: string | null
   characterIllustrationId: string | null
   profileImageId: string | null
@@ -345,6 +429,7 @@ export type AddCharacterPayload = {
     level: number
     stage: number
   }>
+  snsPosts?: import('../game/sns').SnsPostDef[]
 }
 
 type AddCharacterPanelProps = {
@@ -377,6 +462,9 @@ function AddCharacterPanel({
   const [job, setJob] = useState(initialCharacter?.job ?? '')
   const [bust, setBust] = useState(initialCharacter?.bust ?? '')
   const [weight, setWeight] = useState(initialCharacter?.weight ?? '')
+  const [statType, setStatType] = useState<CreatorStatType>(() =>
+    normalizeCreatorStatType(initialCharacter?.statType),
+  )
   const [eventLinks, setEventLinks] = useState<CharacterEventLinks>(() => ({
     ...emptyCharacterEventLinks(),
     ...(initialCharacter?.eventLinks ?? {}),
@@ -637,6 +725,7 @@ function AddCharacterPanel({
         jobs,
         bust: bust.trim(),
         weight: weight.trim(),
+        statType,
         characterIconId,
         characterIllustrationId,
         profileImageId,
@@ -660,6 +749,7 @@ function AddCharacterPanel({
           level: 1,
           stage: video.stage,
         })),
+        snsPosts: initialCharacter?.snsPosts ?? [],
       })
     } finally {
       setSaving(false)
@@ -677,7 +767,6 @@ function AddCharacterPanel({
     }
     return {
       grade: 'C',
-      popularity: 0,
       concept: job.trim() || '뉴비',
       salary: 0,
       avatarTone: '',
@@ -693,13 +782,14 @@ function AddCharacterPanel({
       jobs,
       bust,
       weight,
+      statType,
       eventLinks,
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="game-panel rounded-2xl p-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="sticky top-0 z-20 -mx-6 -mt-6 mb-2 flex items-start justify-between gap-4 border-b border-white/8 bg-slate-950/90 px-6 py-4 backdrop-blur-sm">
         <div>
           <p className="game-kicker">CHARACTER</p>
           <h2 className="mt-1 text-lg font-semibold text-slate-100">
@@ -711,9 +801,23 @@ function AddCharacterPanel({
               : '프로필, 기본 정보, 이미지·영상, 이벤트를 등록합니다.'}
           </p>
         </div>
-        <button type="button" onClick={onCancel} className="game-btn shrink-0 rounded-xl px-4 py-2 text-sm">
-          목록으로
-        </button>
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={saving}
+            className="game-btn rounded-xl px-4 py-2 text-sm disabled:opacity-40"
+          >
+            목록으로
+          </button>
+          <button
+            type="submit"
+            disabled={!name.trim() || saving}
+            className="game-btn-primary rounded-xl px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {saving ? '저장 중…' : isEditing ? '저장' : '추가'}
+          </button>
+        </div>
       </div>
 
       <div className="mt-6 max-w-3xl space-y-8">
@@ -812,6 +916,32 @@ function AddCharacterPanel({
                 className={fieldClassName}
               />
             </label>
+
+            <div className="sm:col-span-2">
+              <span className="game-stat-label">특화 타입</span>
+              <p className="mt-1 text-[11px] text-slate-500">
+                영입 시 해당 스탯이 높게 시작하며, 이후 강화로 더 올릴 수 있습니다.
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {CREATOR_STAT_TYPES.map((type) => {
+                  const selected = statType === type
+                  return (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setStatType(type)}
+                      className={`rounded-xl border px-3 py-2 text-sm font-semibold transition ${
+                        selected
+                          ? 'border-indigo-400/50 bg-indigo-500/20 text-indigo-100'
+                          : 'border-white/10 bg-black/25 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                      }`}
+                    >
+                      {STAT_TYPE_LABEL[type]}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -953,23 +1083,6 @@ function AddCharacterPanel({
           </div>
         </section>
 
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={saving}
-            className="game-btn rounded-xl px-4 py-2 text-sm disabled:opacity-40"
-          >
-            취소
-          </button>
-          <button
-            type="submit"
-            disabled={!name.trim() || saving}
-            className="game-btn-primary rounded-xl px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {saving ? '저장 중…' : isEditing ? '저장' : '추가'}
-          </button>
-        </div>
       </div>
     </form>
   )

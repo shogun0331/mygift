@@ -24,6 +24,8 @@ export type WeeklyCreatorLine = {
   creatorId: string
   name: string
   broadcastHours: number
+  /** 이번 달 이 크리에이터가 끌어온 시청자 */
+  viewersGained: number
   revenueWon: number
   /** 해당 크리에이터 월급 (연봉/12) */
   salaryWon: number
@@ -52,6 +54,12 @@ export type WeeklyStatement = {
   netProfitWon: number
   profitChangePct: number | null
   highlights: string[]
+  /** 이번 달 시작 보유 시청자 */
+  viewersBefore: number
+  /** 정산 후 보유 시청자 */
+  viewersAfter: number
+  /** 이번 달 획득(증감) 시청자 */
+  viewersGained: number
 }
 
 export type WeeklyCreatorAccum = {
@@ -116,13 +124,6 @@ export function pickDayHighlights(events: DayEvent[]): string[] {
   }
 
   for (const event of events) {
-    if (event.type === 'popularity') {
-      highlights.push(`${event.creatorName} 인기 폭발!`)
-      break
-    }
-  }
-
-  for (const event of events) {
     if (event.type === 'viewers') {
       highlights.push(`${event.creatorName} 시청자 급증!`)
       break
@@ -174,6 +175,8 @@ export function buildWeeklyStatement(opts: {
   taxYear?: number
   /** 해당 연도 연간 수익 (세금 산출 기준) */
   annualRevenueForTaxWon?: number
+  viewersBefore?: number
+  viewersAfter?: number
 }): WeeklyStatement {
   const { week, issuedDate, previousNetProfitWon } = opts
 
@@ -219,6 +222,7 @@ export function buildWeeklyStatement(opts: {
         creatorId,
         name,
         broadcastHours: (broadcast?.weeksBroadcast ?? 0) * HOURS_PER_BROADCAST_WEEK,
+        viewersGained: 0,
         revenueWon,
         salaryWon,
         careWon,
@@ -308,6 +312,11 @@ export function buildWeeklyStatement(opts: {
     netProfitWon,
     profitChangePct,
     highlights: highlights.slice(0, 8),
+    viewersBefore: Math.max(0, Math.round(opts.viewersBefore ?? 0)),
+    viewersAfter: Math.max(0, Math.round(opts.viewersAfter ?? opts.viewersBefore ?? 0)),
+    viewersGained:
+      Math.max(0, Math.round(opts.viewersAfter ?? opts.viewersBefore ?? 0)) -
+      Math.max(0, Math.round(opts.viewersBefore ?? 0)),
   }
 }
 

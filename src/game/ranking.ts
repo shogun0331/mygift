@@ -1,9 +1,5 @@
 import type { Grade } from './characters'
-import {
-  CONDITION_MULT,
-  conditionFromScore,
-  scoreOf,
-} from './condition'
+import { gradeViewerMult } from './stats'
 import {
   capStationViewers,
   gatedFloorOfStation,
@@ -19,10 +15,9 @@ export type RankCreator = {
   id: string
   name: string
   grade: CreatorGrade
-  popularity?: number
-  skill?: number
   condition?: string
   conditionScore?: number
+  statCommunication?: number
 }
 
 export type NpcStation = {
@@ -116,23 +111,8 @@ export type RankSettlementResult = {
   gameCleared: boolean
 }
 
-/**
- * 로스터 잠재력 = floor + Σ(pop × skill × 등급배율 / DIV) + 구독 × SUB
- * 실제 시청자는 잠재력까지 매달 일부만 쌓인다 (랜덤 배율).
- *
- * 목표 페이스 (슬롯 2·성장 전)
- *   시작        150 → 100위
- *   1~2개월     400~1,200 → 95~99위
- *   슬롯 2 안정  2,000~4,000 → 85~92위
- *   B+B 만렙 누적 후 1만 → 50위 문턱
- */
-const GRADE_VIEWER_MULT: Record<CreatorGrade, number> = {
-  C: 1,
-  B: 3,
-  A: 5,
-  S: 14,
-}
-const VIEWER_STAT_DIVISOR = 5
+/** 로스터 잠재력 = floor + Σ(소통 × 단가 × 등급배율) + 구독 */
+const VIEWER_PER_COMM_POINT = 50
 const SUBSCRIBER_VIEWER_RATE = 0.2
 const VIEWER_GROWTH_RATE = 0.18
 const VIEWER_GROWTH_RANDOM_MIN = 0.55
@@ -433,19 +413,72 @@ export function viewersForRank(rank: number): number {
   return Math.round(band.minViewers + t * (band.maxViewers - band.minViewers))
 }
 
+function clampCommunication(value: unknown): number {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return 0
+  return Math.max(0, Math.min(100, n))
+}
+
+/** 소통 0~100 → 시청자 잠재력 1.0~2.0배 */
+export function communicationMultOf(communication = 0): number {
+  return 1 + clampCommunication(communication) / 100
+}
+
+export function averageCommunication(creators: RankCreator[]): number {
+  if (creators.length === 0) return 0
+  const sum = creators.reduce((acc, creator) => acc + clampCommunication(creator.statCommunication), 0)
+  return sum / creators.length
+}
+
+/** 소통이 높을수록 이탈이 줄어듦. 0 → 1.0, 100 → 0.5 */
+function communicationRetainOf(communication = 0): number {
+  return 1 - clampCommunication(communication) / 200
+}
+
+/** 로스터 잠재력·배분 가중치 = 소통 × 등급 배율 */
+export function creatorViewerWeight(creator: RankCreator): number {
+  return (
+    clampCommunication(creator.statCommunication) *
+    VIEWER_PER_COMM_POINT *
+    gradeViewerMult(creator.grade)
+  )
+}
+
+/** 회사 획득 시청자를 가중치 비율로 나눠 합이 gained와 같게 맞춤 */
+export function allocateViewersGained(
+  gained: number,
+  shares: Array<{ id: string; weight: number }>,
+): Record<string, number> {
+  const result: Record<string, number> = {}
+  for (const share of shares) result[share.id] = 0
+  const totalGained = Math.round(gained)
+  const eligible = shares.filter((share) => share.weight > 0)
+  if (totalGained === 0 || eligible.length === 0) return result
+
+  const weightSum = eligible.reduce((sum, share) => sum + share.weight, 0)
+  const rows = eligible.map((share) => {
+    const exact = (totalGained * share.weight) / weightSum
+    const n = totalGained >= 0 ? Math.floor(exact) : Math.ceil(exact)
+    return { id: share.id, n, frac: exact - n }
+  })
+  let assigned = rows.reduce((sum, row) => sum + row.n, 0)
+  let leftover = totalGained - assigned
+  rows.sort((a, b) => (totalGained >= 0 ? b.frac - a.frac : a.frac - b.frac))
+  for (const row of rows) {
+    if (leftover === 0) break
+    const step = leftover > 0 ? 1 : -1
+    row.n += step
+    leftover -= step
+  }
+  for (const row of rows) result[row.id] = row.n
+  return result
+}
+
 export function calcRosterViewers(
   creators: RankCreator[],
   subscribers: number,
 ): number {
-  const roster = creators.reduce((sum, creator) => {
-    const popularity = Number(creator.popularity) || 0
-    const skill = Number(creator.skill ?? 25) || 25
-    const grade = creator.grade
-    const cond = CONDITION_MULT[conditionFromScore(scoreOf(creator))] ?? 1
-    return (
-      sum + (popularity * skill * GRADE_VIEWER_MULT[grade] * cond) / VIEWER_STAT_DIVISOR
-    )
-  }, 0)
+  const roster = creators.reduce((sum, creator) => sum + creatorViewerWeight(creator), 0)
   return Math.max(
     VIEWER_FLOOR,
     Math.round(VIEWER_FLOOR + roster + Math.max(0, subscribers) * SUBSCRIBER_VIEWER_RATE),
@@ -478,7 +511,12 @@ export function growLeagueBetweenRefresh(
   const viewerRoster = didBroadcast ? broadcastedCreators : ownedCreators
   const potential = calcRosterViewers(viewerRoster, subscribers)
   const viewers = capStationViewers(
-    growLeagueViewers(state.viewers, potential, didBroadcast),
+    growLeagueViewers(
+      state.viewers,
+      potential,
+      didBroadcast,
+      averageCommunication(viewerRoster),
+    ),
     stationGrade,
   )
   if (viewers === state.viewers && subscribers === state.subscribers) return state
@@ -489,15 +527,17 @@ export function growLeagueViewers(
   current: number,
   potential: number,
   didBroadcast: boolean,
+  communication = 0,
 ): number {
   const now = Math.max(VIEWER_FLOOR, Math.round(current))
   const cap = Math.max(VIEWER_FLOOR, Math.round(potential))
+  const retain = communicationRetainOf(communication)
   if (now > cap) {
-    const drop = Math.max(1, Math.round((now - cap) * 0.25))
+    const drop = Math.max(1, Math.round((now - cap) * 0.25 * retain))
     return Math.max(cap, now - drop)
   }
   if (!didBroadcast) {
-    return Math.max(VIEWER_FLOOR, Math.round(now * (1 - IDLE_VIEWER_DECAY)))
+    return Math.max(VIEWER_FLOOR, Math.round(now * (1 - IDLE_VIEWER_DECAY * retain)))
   }
   if (now >= cap) return cap
   const gain = Math.round((cap - now) * VIEWER_GROWTH_RATE * rollViewerGrowthFactor())
@@ -817,7 +857,12 @@ export function settleLeagueRank(
   const gateRoster = ownedCreators.length > 0 ? ownedCreators : broadcastedCreators
   const potential = calcRosterViewers(viewerRoster, subscribers)
   let viewers = capStationViewers(
-    growLeagueViewers(state.viewers, potential, didBroadcast),
+    growLeagueViewers(
+      state.viewers,
+      potential,
+      didBroadcast,
+      averageCommunication(viewerRoster),
+    ),
     stationGrade,
   )
   const ace = playerAce(gateRoster)

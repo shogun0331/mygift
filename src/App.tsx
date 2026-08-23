@@ -1,6 +1,18 @@
 import { useState, useEffect } from 'react'
-import { saveEvents, loadEvents, saveCharacters, loadCharacters } from './events/db'
+import {
+  saveEvents,
+  loadEvents,
+  saveCharacters,
+  loadCharacters,
+  saveCommonEventLinks,
+  loadCommonEventLinks,
+} from './events/db'
 import type { GameEvent } from './events/types'
+import {
+  emptyCommonEventLinks,
+  normalizeCommonEventLinks,
+  type CommonEventLinks,
+} from './events/commonEventLinks'
 import { normalizeOwnerCharacterId } from './events/types'
 import {
   createRegisteredCharacter,
@@ -136,7 +148,6 @@ function syncOwnedWithRegistered(
   const next = owned.map((creator) => {
     const normalized = normalizeOwnedCreator(creator)
     if (
-      normalized.skill !== creator.skill ||
       normalized.heat !== creator.heat ||
       normalized.trust !== creator.trust ||
       normalized.revenueMult !== creator.revenueMult
@@ -148,6 +159,7 @@ function syncOwnedWithRegistered(
     if (
       source.videos === creator.videos &&
       source.images === creator.images &&
+      source.snsPosts === creator.snsPosts &&
       source.profileImageUrl === creator.profileImageUrl &&
       source.name === creator.name &&
       source.names === creator.names &&
@@ -178,6 +190,7 @@ function syncOwnedWithRegistered(
       profileVideoId: source.profileVideoId,
       images: source.images,
       videos: source.videos,
+      snsPosts: source.snsPosts,
       mediaRevision: source.mediaRevision,
     })
   })
@@ -199,7 +212,7 @@ function syncStudioSlotsWithOwned(slots: StudioSlot[], owned: OwnedCreator[]): S
       slot.assignment.mediaRevision === revision &&
       slot.assignment.creatorName === creator.name &&
       slot.assignment.grade === creator.grade &&
-      slot.assignment.popularity === creator.popularity
+      slot.assignment.statType === creator.statType
     ) {
       return slot
     }
@@ -210,7 +223,7 @@ function syncStudioSlotsWithOwned(slots: StudioSlot[], owned: OwnedCreator[]): S
         ...slot.assignment,
         creatorName: creator.name,
         grade: creator.grade,
-        popularity: creator.popularity,
+        statType: creator.statType,
         profileImageUrl,
         idleVideoUrl,
         mediaRevision: revision,
@@ -453,6 +466,8 @@ export default function App() {
   const [events, setEvents] = useState<GameEvent[]>([])
   /** 이벤트 로드 완료 상태 플래그 */
   const [isEventsLoaded, setIsEventsLoaded] = useState(false)
+  const [commonEventLinks, setCommonEventLinks] = useState<CommonEventLinks>(emptyCommonEventLinks)
+  const [isCommonEventLinksLoaded, setIsCommonEventLinksLoaded] = useState(false)
   /** 데이터 로드 완료 상태 플래그 */
   const [isLoaded, setIsLoaded] = useState(false)
   /** 인게임에서 1회 이상 시청한 시뮬레이터 이벤트 */
@@ -491,7 +506,24 @@ export default function App() {
         console.error('Failed to load characters:', err)
         setIsLoaded(true)
       })
+
+    loadCommonEventLinks()
+      .then((links) => {
+        setCommonEventLinks(normalizeCommonEventLinks(links))
+        setIsCommonEventLinksLoaded(true)
+      })
+      .catch((err) => {
+        console.error('Failed to load common event links:', err)
+        setIsCommonEventLinksLoaded(true)
+      })
   }, [])
+
+  useEffect(() => {
+    if (!isCommonEventLinksLoaded) return
+    saveCommonEventLinks(commonEventLinks).catch((err) => {
+      console.error('Failed to save common event links:', err)
+    })
+  }, [commonEventLinks, isCommonEventLinksLoaded])
 
   // 3. 캐릭터 상태 변경 시 자동 저장
   useEffect(() => {
@@ -530,7 +562,7 @@ export default function App() {
           bust: c.bust,
           weight: c.weight,
           grade: c.grade,
-          popularity: c.popularity,
+          statType: c.statType,
           concept: c.concept,
           salary: c.salary,
           eventLinks: c.eventLinks,
@@ -543,6 +575,16 @@ export default function App() {
           mediaRevision: c.mediaRevision,
           images: cleanImages,
           videos: cleanVideos,
+          snsPosts: (c.snsPosts ?? []).map((post) => ({
+            id: post.id,
+            heat: post.heat,
+            imageId: post.imageId,
+            videoId: post.videoId ?? null,
+            captions: post.captions,
+            captionLine: post.captionLine,
+            blurRegions: post.blurRegions ?? [],
+            blurDefault: post.blurDefault ?? 4,
+          })),
         }
       })
       window.electronAPI.saveCharactersJson(cleanCharacters)
@@ -589,6 +631,7 @@ export default function App() {
           jobs: savedPayload.jobs,
           bust: savedPayload.bust,
           weight: savedPayload.weight,
+          statType: savedPayload.statType,
           eventLinks: savedPayload.eventLinks,
           profileImageUrl,
           profileBlob: null,
@@ -598,6 +641,7 @@ export default function App() {
           profileVideoId: savedPayload.profileVideoId,
           images: savedPayload.images,
           videos: savedPayload.videos as CharacterVideo[],
+          snsPosts: savedPayload.snsPosts,
           mediaRevision: Date.now(),
         }),
       ])
@@ -637,6 +681,17 @@ export default function App() {
         }
       }
 
+      if (window.electronAPI?.pruneCharacterFiles) {
+        await window.electronAPI.pruneCharacterFiles(id, {
+          image: savedPayload.images
+            .map((image) => image.fileName)
+            .filter((name): name is string => Boolean(name)),
+          video: savedPayload.videos
+            .map((video) => video.fileName)
+            .filter((name): name is string => Boolean(name)),
+        })
+      }
+
       const profile =
         savedPayload.profileImageId != null
           ? savedPayload.images.find((image) => image.id === savedPayload.profileImageId)
@@ -652,6 +707,7 @@ export default function App() {
         jobs: savedPayload.jobs,
         bust: savedPayload.bust,
         weight: savedPayload.weight,
+        statType: savedPayload.statType,
         eventLinks: savedPayload.eventLinks,
         profileImageUrl,
         profileBlob: null,
@@ -661,6 +717,7 @@ export default function App() {
         profileVideoId: savedPayload.profileVideoId,
         images: savedPayload.images,
         videos: savedPayload.videos as CharacterVideo[],
+        snsPosts: savedPayload.snsPosts ?? oldChar?.snsPosts ?? [],
         mediaRevision: Date.now(),
       })
 
@@ -686,7 +743,6 @@ export default function App() {
             ...c,
             ...nextCharacter,
             grade: c.grade,
-            popularity: c.popularity,
             salary: c.salary,
             avatarTone: c.avatarTone,
           }
@@ -782,6 +838,8 @@ export default function App() {
         isEventsLoaded={isEventsLoaded}
         onEventsChange={setEvents}
         onSaveEventsManual={handleSaveEventsManual}
+        commonEventLinks={commonEventLinks}
+        onCommonEventLinksChange={setCommonEventLinks}
         onBack={() => setScreen(editorReturnScreen === 'game' ? 'game' : 'main')}
       />
     )

@@ -1,9 +1,8 @@
 import type { Grade, OwnedCreator } from './characters'
 import { rollInt } from './stats'
 
-/** 스폰 주기(3~6턴, 50%)는 social.ts VIP_SPAWN. 인기 30 이상인 보유 캐릭터만 */
+/** 스폰 주기(3~6턴, 50%)는 social.ts VIP_SPAWN. 보유 캐릭터 중 선택 */
 export const VIP_SPAWN_CHANCE = 0.5
-export const VIP_POPULARITY_MIN = 30
 
 export const VIP_ACCEPT_BY_GRADE: Record<
   Grade,
@@ -33,10 +32,7 @@ export function pickVipTarget(
   creators: OwnedCreator[],
   exclude: Set<string> = new Set(),
 ): OwnedCreator | null {
-  const eligible = creators.filter(
-    (creator) =>
-      !exclude.has(creator.id) && (Number(creator.popularity) || 0) >= VIP_POPULARITY_MIN,
-  )
+  const eligible = creators.filter((creator) => !exclude.has(creator.id))
   if (eligible.length === 0) return null
   return eligible[Math.floor(Math.random() * eligible.length)] ?? null
 }

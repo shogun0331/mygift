@@ -1,7 +1,14 @@
 import { fetchPublicJson } from '../game/publicJson'
 import { EVENT_LOCALES, mergeEventLocalization } from './eventLocales'
+import {
+  normalizeCommonEventLinks,
+  type CommonEventLinks,
+} from './commonEventLinks'
 import { normalizeOwnerCharacterId, type GameEvent } from './types'
 import type { RegisteredCharacter } from '../game/characters'
+
+const COMMON_EVENT_LINKS_KEY = 'broadcast-common-event-links'
+const COMMON_EVENT_LINKS_PUBLIC = '/chapter_assets/common_event_links.json'
 
 function withOwner(events: GameEvent[]): GameEvent[] {
   return events.map((event) => ({
@@ -197,4 +204,33 @@ export async function loadCharacters(): Promise<DbCharacterRecord[]> {
 
     request.onerror = () => reject(request.error)
   })
+}
+
+export async function saveCommonEventLinks(links: CommonEventLinks): Promise<void> {
+  const normalized = normalizeCommonEventLinks(links)
+  if (window.electronAPI?.saveCommonEventLinksJson) {
+    const res = await window.electronAPI.saveCommonEventLinksJson(normalized)
+    if (!res.success) throw new Error(res.error || 'Failed to save common event links')
+    return
+  }
+  try {
+    localStorage.setItem(COMMON_EVENT_LINKS_KEY, JSON.stringify(normalized))
+  } catch {
+    // ignore quota
+  }
+}
+
+export async function loadCommonEventLinks(): Promise<CommonEventLinks> {
+  if (window.electronAPI?.loadCommonEventLinksJson) {
+    const res = await window.electronAPI.loadCommonEventLinksJson()
+    if (res.success) return normalizeCommonEventLinks(res.links)
+  }
+  try {
+    const raw = localStorage.getItem(COMMON_EVENT_LINKS_KEY)
+    if (raw) return normalizeCommonEventLinks(JSON.parse(raw))
+  } catch {
+    // ignore
+  }
+  const fromPublic = await fetchPublicJson<unknown>(COMMON_EVENT_LINKS_PUBLIC)
+  return normalizeCommonEventLinks(fromPublic)
 }

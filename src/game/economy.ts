@@ -1,24 +1,24 @@
-import type { Grade, OwnedCreator } from './characters'
+import type { OwnedCreator } from './characters'
 import {
-  CONDITION_MULT,
   conditionFromScore,
   scoreOf,
   type CreatorCondition,
 } from './condition'
 import { formatMoney, roundMoney, REVENUE_RAW_TO_USD } from './money'
-import { GRADE_CAPS, GRADE_REVENUE_BONUS, rollInt } from './stats'
+import {
+  REVENUE_PER_STAT_POINT,
+  gradeRevenueMult,
+  rollInt,
+  statRevenueBonusOf,
+  viewerBonusOf,
+} from './stats'
 
-export const HEAT_COEF: Record<1 | 2 | 3 | 4, number> = {
-  1: 1.0,
-  2: 1.3,
-  3: 1.7,
-  4: 3.0,
-}
+export { statRevenueBonusOf, viewerBonusOf }
 
 /** @deprecated REVENUE_RAW_TO_USD 사용 */
 export const REVENUE_RAW_TO_WON = REVENUE_RAW_TO_USD
 
-export type DayEventType = 'donation' | 'viewers' | 'popularity' | 'tax' | 'toxic' | 'gear'
+export type DayEventType = 'donation' | 'viewers' | 'tax' | 'toxic' | 'gear'
 
 export type DayEvent = {
   id: string
@@ -46,61 +46,30 @@ export type StudioDayPlan = {
   totalRevenueWon: number
 }
 
-function heatCoefOf(heat: number) {
-  const h = Math.max(1, Math.min(2, Math.round(heat || 1))) as 1 | 2 | 3 | 4
-  return HEAT_COEF[h]
-}
-
-function randomFactor() {
-  return 0.9 + Math.random() * 0.2
-}
-
-function gradeOf(creator: { grade?: string }): Grade | null {
-  const g = creator.grade
-  if (g === 'S' || g === 'A' || g === 'B' || g === 'C') return g
-  return null
-}
-
 /**
- * 주간 총수익(USD)
- * 기본 = pop × skill × heatCoef × revenueMult(등급) × gradeBonus × random
- * 최종 = round(기본 × REVENUE_RAW_TO_USD) × conditionMult
- * ※ 가변 수익 배율은 컨디션(CONDITION_MULT)만 적용. 스테미나는 수익에 영향 없음.
+ * 주간 총수익(USD) = (섹시 + 퍼포먼스) × 시청자보너스 × 단가 × 등급배율
  */
 export function calcWeekRevenueWon(
   creator: {
-    popularity: number
-    skill?: number
-    heat?: number
-    revenueMult?: number
-    condition?: string
-    conditionScore?: number
     grade?: string
+    statSexy?: number
+    statPerformance?: number
   },
-  stationRevenueBonusPercent = 0,
-  equipmentRevenueMult = 1,
+  _stationRevenueBonusPercent = 0,
+  _equipmentRevenueMult = 1,
+  companyViewers = 0,
 ): number {
-  const popularity = Number(creator.popularity) || 0
-  const skill = Number(creator.skill ?? 25) || 25
-  const heat = Number(creator.heat ?? 1) || 1
-  const grade = gradeOf(creator)
-  const revenueMult = grade
-    ? GRADE_CAPS[grade].revenueMult
-    : Number(creator.revenueMult ?? 1) || 1
-  const gradeBonus = grade ? GRADE_REVENUE_BONUS[grade] : 1
-  // 컨디션만 — 스테미나/기타 상태 배율 없음
-  const conditionMult = CONDITION_MULT[conditionFromScore(scoreOf(creator))]
-  const stationMult = 1 + Math.max(0, stationRevenueBonusPercent) / 100
-  const equipMult = Math.max(0.1, equipmentRevenueMult)
-
-  const baseRaw =
-    popularity * skill * heatCoefOf(heat) * revenueMult * gradeBonus * randomFactor()
-  let baseUsd = Math.max(0, Math.round(baseRaw) * REVENUE_RAW_TO_USD)
-  // S급 목표 구간: 기본 수익 $200K 이상 (구 2억 원)
-  if (grade === 'S') {
-    baseUsd = Math.max(baseUsd, 200_000)
-  }
-  return Math.max(0, Math.round(baseUsd * conditionMult * stationMult * equipMult))
+  const sexy = Math.max(0, Math.min(100, Number(creator.statSexy) || 0))
+  const performance = Math.max(0, Math.min(100, Number(creator.statPerformance) || 0))
+  return Math.max(
+    0,
+    Math.round(
+      (sexy + performance) *
+        viewerBonusOf(companyViewers) *
+        REVENUE_PER_STAT_POINT *
+        gradeRevenueMult(creator.grade),
+    ),
+  )
 }
 
 /**
@@ -192,27 +161,15 @@ function buildFlavorEvents(
 ): Array<Omit<DayEvent, 'atMs' | 'id'>> {
   const out: Array<Omit<DayEvent, 'atMs' | 'id'>> = []
   for (let i = 0; i < count; i += 1) {
-    if (Math.random() < 0.5) {
-      const n = rollInt(10, 80)
-      out.push({
-        creatorId,
-        creatorName,
-        type: 'viewers',
-        amount: 0,
-        text: `📈 시청자 ${n}명 증가! (${creatorName})`,
-        tone: 'bg-cyan-400',
-      })
-    } else {
-      const n = rollInt(1, 3)
-      out.push({
-        creatorId,
-        creatorName,
-        type: 'popularity',
-        amount: 0,
-        text: `🔥 인기 +${n} 상승! (${creatorName})`,
-        tone: 'bg-orange-400',
-      })
-    }
+    const n = rollInt(10, 80)
+    out.push({
+      creatorId,
+      creatorName,
+      type: 'viewers',
+      amount: 0,
+      text: `📈 시청자 ${n}명 증가! (${creatorName})`,
+      tone: 'bg-cyan-400',
+    })
   }
   return out
 }
@@ -223,11 +180,13 @@ export function buildCreatorDayPlan(
   dayKey: string,
   stationRevenueBonusPercent = 0,
   equipmentRevenueMult = 1,
+  companyViewers = 0,
 ): CreatorDayPlan {
   const weekRevenueWon = calcWeekRevenueWon(
     creator,
     stationRevenueBonusPercent,
     equipmentRevenueMult,
+    companyViewers,
   )
   const amounts = splitDayRevenueAmounts(weekRevenueWon)
   const flavorCount = Math.min(3, rollInt(0, 3))
@@ -268,6 +227,7 @@ export function buildStudioDayPlan(
   dayKey: string,
   stationRevenueBonusPercent = 0,
   revenueMultByCreatorId: Record<string, number> = {},
+  companyViewers = 0,
 ): StudioDayPlan {
   const plans = creators.map((creator) =>
     buildCreatorDayPlan(
@@ -276,6 +236,7 @@ export function buildStudioDayPlan(
       dayKey,
       stationRevenueBonusPercent,
       revenueMultByCreatorId[creator.id] ?? 1,
+      companyViewers,
     ),
   )
   const totalRevenueWon = plans.reduce((sum, plan) => sum + plan.weekRevenueWon, 0)

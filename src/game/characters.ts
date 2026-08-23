@@ -13,9 +13,32 @@ import {
 } from './condition'
 import { estimateDefaultSalaryForGrade } from './salary'
 import { characterMediaUrl } from './mediaUrl'
+import {
+  normalizeSnsPosts,
+  normalizeSnsPublishedPosts,
+  type SnsPendingPost,
+  type SnsPostDef,
+  type SnsPublishedPost,
+} from './sns'
 import { creatorVisuals } from './studioSlots'
 
 export type Grade = 'S' | 'A' | 'B' | 'C'
+
+/** 에디터에서 고르는 특화 타입. 영입 시 해당 스탯이 높게 시작 */
+export const CREATOR_STAT_TYPES = ['sexy', 'communication', 'elegance', 'performance'] as const
+export type CreatorStatType = (typeof CREATOR_STAT_TYPES)[number]
+
+export function normalizeCreatorStatType(raw: unknown): CreatorStatType {
+  if (
+    raw === 'sexy' ||
+    raw === 'communication' ||
+    raw === 'elegance' ||
+    raw === 'performance'
+  ) {
+    return raw
+  }
+  return 'sexy'
+}
 
 export type CharacterImage = {
   id: string
@@ -52,7 +75,8 @@ export type RegisteredCharacter = {
   bust: string
   weight: string
   grade: Grade
-  popularity: number
+  /** 특화 타입 — 영입 롤의 주력 스탯 */
+  statType: CreatorStatType
   concept: string
   salary: number
   eventLinks: CharacterEventLinks
@@ -66,6 +90,8 @@ export type RegisteredCharacter = {
   profileVideoId?: string | null
   images?: CharacterImage[]
   videos?: CharacterVideo[]
+  /** 에디터 SNS 피드. 수위별 순차 오픈 */
+  snsPosts?: SnsPostDef[]
   /** 미디어 교체 시 증가 — 영상 캐시/리마운트용 */
   mediaRevision?: number
 }
@@ -74,12 +100,15 @@ export type RegisteredCharacter = {
 export type OwnedCreator = RegisteredCharacter & {
   contractWeeks: number
   nextPayTurns: number
-  skill: number
   heat: number
   trust: number
   stamina: number
   staminaMax: number
   revenueMult: number
+  statSexy: number
+  statElegance: number
+  statCommunication: number
+  statPerformance: number
   /** 컨디션 티어 (conditionScore에서 파생) */
   condition: string
   /** 컨디션 점수 0~100 */
@@ -90,6 +119,9 @@ export type OwnedCreator = RegisteredCharacter & {
   lastVacationMonth?: number | null
   /** 데이트 아크: 0=데이트1 대기, 1=데이트2, 2=H, 3=H 완료 */
   dateArcStep?: 0 | 1 | 2 | 3
+  snsPublishedIds?: string[]
+  snsFeed?: SnsPublishedPost[]
+  snsPending?: SnsPendingPost | null
   /** @deprecated trust 사용. 구 세이브 호환용 */
   loyalty?: number
 }
@@ -103,6 +135,7 @@ export type CharacterDraft = {
   jobs?: Partial<Record<string, string>> | CharacterLocaleText
   bust: string
   weight: string
+  statType?: CreatorStatType
   eventLinks: CharacterEventLinks
   profileImageUrl?: string | null
   profileBlob?: Blob | null
@@ -112,6 +145,7 @@ export type CharacterDraft = {
   profileVideoId?: string | null
   images?: CharacterImage[]
   videos?: CharacterVideo[]
+  snsPosts?: SnsPostDef[]
   mediaRevision?: number
 }
 
@@ -125,19 +159,6 @@ function defaultGradeFromJob(_job: string): Grade {
 
 function defaultSalary(grade: Grade) {
   return estimateDefaultSalaryForGrade(grade)
-}
-
-function defaultPopularity(grade: Grade) {
-  switch (grade) {
-    case 'S':
-      return 80
-    case 'A':
-      return 65
-    case 'B':
-      return 45
-    default:
-      return 25
-  }
 }
 
 /** 로드·세이브 직전 닉네임/직업 로케일 정규화 */
@@ -163,7 +184,7 @@ export function normalizeRegisteredCharacter(
     bust: String(raw.bust ?? ''),
     weight: String(raw.weight ?? ''),
     grade,
-    popularity: Number(raw.popularity ?? defaultPopularity(grade)) || defaultPopularity(grade),
+    statType: normalizeCreatorStatType(raw.statType),
     concept: named.concept,
     salary: Number(raw.salary ?? defaultSalary(grade)) || defaultSalary(grade),
     eventLinks: raw.eventLinks ?? emptyCharacterEventLinks(),
@@ -176,6 +197,7 @@ export function normalizeRegisteredCharacter(
     profileVideoId: raw.profileVideoId ?? null,
     images: raw.images ?? [],
     videos: (raw.videos ?? []).map((video) => ({ ...video, level: 1 })),
+    snsPosts: normalizeSnsPosts(raw.snsPosts),
     mediaRevision: raw.mediaRevision,
   }
 }
@@ -194,6 +216,7 @@ export function createRegisteredCharacter(draft: CharacterDraft): RegisteredChar
     age: draft.age,
     job,
     jobs,
+    statType: draft.statType,
     eventLinks: draft.eventLinks ?? emptyCharacterEventLinks(),
     profileImageUrl: draft.profileImageUrl ?? null,
     profileBlob: draft.profileBlob || null,
@@ -203,6 +226,7 @@ export function createRegisteredCharacter(draft: CharacterDraft): RegisteredChar
     profileVideoId: draft.profileVideoId ?? null,
     images: draft.images ?? [],
     videos: draft.videos ?? [],
+    snsPosts: normalizeSnsPosts(draft.snsPosts),
     mediaRevision: draft.mediaRevision,
   })
 }
@@ -214,23 +238,32 @@ export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
     ...character,
     contractWeeks: 12,
     nextPayTurns: 4,
-    skill: 25,
     heat: 1,
     trust: 50,
     stamina: STAMINA_MAX,
     staminaMax: STAMINA_MAX,
     revenueMult: 1.0,
+    statSexy: 25,
+    statElegance: 25,
+    statCommunication: 25,
+    statPerformance: 25,
     conditionScore,
     condition: conditionFromScore(conditionScore),
     restStreak: 0,
     lastVacationMonth: null,
     dateArcStep: 0,
+    snsPublishedIds: [],
+    snsFeed: [],
+    snsPending: null,
   }
 }
 
 /** 구 세이브(loyalty 등) → 신규 능력치 필드 보정 */
-export function normalizeOwnedCreator(raw: OwnedCreator & { loyalty?: number }): OwnedCreator {
-  const base = normalizeRegisteredCharacter(raw)
+export function normalizeOwnedCreator(
+  raw: OwnedCreator & { loyalty?: number; skill?: number; popularity?: number },
+): OwnedCreator {
+  const { skill: _skill, popularity: _popularity, ...rest } = raw
+  const base = normalizeRegisteredCharacter(rest)
   const trust = Math.max(0, Math.min(100, Number(raw.trust ?? raw.loyalty ?? 50) || 50))
   const staminaMax = Math.min(
     STAMINA_MAX,
@@ -261,20 +294,33 @@ export function normalizeOwnedCreator(raw: OwnedCreator & { loyalty?: number }):
   const lastVacationMonthRaw = Number(raw.lastVacationMonth)
   const arcRaw = Math.round(Number(raw.dateArcStep ?? 0) || 0)
   const dateArcStep: 0 | 1 | 2 | 3 = arcRaw <= 0 ? 0 : arcRaw === 1 ? 1 : arcRaw === 2 ? 2 : 3
+  const personalityOf = (value: unknown) => {
+    const n = Number(value)
+    if (Number.isFinite(n)) return Math.max(0, Math.min(100, Math.round(n)))
+    return 25
+  }
   return {
-    ...raw,
+    ...rest,
     ...base,
-    skill: Math.max(0, Math.min(100, Number(raw.skill ?? 25) || 25)),
     heat: Math.max(1, Math.min(2, Number(raw.heat ?? 1) || 1)),
     dateArcStep,
     trust,
     stamina,
     staminaMax,
     revenueMult: Number(raw.revenueMult ?? 1) || 1,
+    statSexy: personalityOf(raw.statSexy),
+    statElegance: personalityOf(raw.statElegance),
+    statCommunication: personalityOf(raw.statCommunication),
+    statPerformance: personalityOf(raw.statPerformance),
     conditionScore,
     condition: conditionFromScore(conditionScore),
     restStreak: Math.max(0, Math.round(Number(raw.restStreak ?? 0) || 0)),
     lastVacationMonth: Number.isFinite(lastVacationMonthRaw) ? lastVacationMonthRaw : null,
+    snsPublishedIds: Array.isArray(raw.snsPublishedIds)
+      ? raw.snsPublishedIds.map(String)
+      : [],
+    snsFeed: normalizeSnsPublishedPosts(raw.snsFeed),
+    snsPending: raw.snsPending && typeof raw.snsPending === 'object' ? raw.snsPending : null,
     loyalty: undefined,
   }
 }
@@ -342,10 +388,10 @@ export function toStudioHandCard(creator: OwnedCreator) {
     id: creator.id,
     name: creator.name,
     grade: creator.grade,
-    popularity: creator.popularity,
     stamina: creator.stamina,
     staminaMax: creator.staminaMax,
     conditionScore: scoreOf(creator),
+    statType: normalizeCreatorStatType(creator.statType),
     profileImageUrl: creator.profileImageUrl || null,
     idleVideoUrl: findLevelIdleVideoUrl(creator),
     mediaRevision: creator.mediaRevision,

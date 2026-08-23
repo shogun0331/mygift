@@ -403,6 +403,32 @@ ipcMain.handle('load-characters-json', async (event) => {
   }
 })
 
+ipcMain.handle('save-common-event-links-json', async (event, { links }) => {
+  try {
+    const dir = publicWritePath('chapter_assets')
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    writeJson(path.join(dir, 'common_event_links.json'), links ?? {})
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('load-common-event-links-json', async (event) => {
+  try {
+    const filePath = publicPath('chapter_assets', 'common_event_links.json')
+    if (!fs.existsSync(filePath)) {
+      return { success: true, links: {} }
+    }
+    const links = parseJsonFile(fs.readFileSync(filePath)) || {}
+    return { success: true, links }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
 ipcMain.handle('save-events-json', async (event, { events }) => {
   try {
     const assetsDir = publicWritePath('chapter_assets')
@@ -529,17 +555,52 @@ ipcMain.handle('load-events-json', async (event) => {
   }
 })
 
+function safeCharacterFileName(fileName) {
+  const base = path.basename(String(fileName || ''))
+  if (!base || base === '.' || base === '..') return null
+  return base
+}
+
 ipcMain.handle('delete-character-file', async (event, { characterId, kind, fileName }) => {
   try {
     const folderMap = {
       image: 'images',
       video: 'videos',
     }
+    const safeName = safeCharacterFileName(fileName)
+    if (!safeName) return { success: true }
     const folderName = folderMap[kind] || 'assets'
-    const filePath = publicWritePath('characters', String(characterId), folderName, fileName)
+    const filePath = publicWritePath('characters', String(characterId), folderName, safeName)
 
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath)
+    }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('prune-character-files', async (event, { characterId, keep }) => {
+  try {
+    const folders = [
+      { kind: 'image', dirName: 'images', keep: keep?.image ?? [] },
+      { kind: 'video', dirName: 'videos', keep: keep?.video ?? [] },
+    ]
+    for (const folder of folders) {
+      const dir = publicWritePath('characters', String(characterId), folder.dirName)
+      if (!fs.existsSync(dir)) continue
+      const keepSet = new Set(
+        (Array.isArray(folder.keep) ? folder.keep : [])
+          .map((name) => safeCharacterFileName(name))
+          .filter(Boolean),
+      )
+      for (const name of fs.readdirSync(dir)) {
+        const safeName = safeCharacterFileName(name)
+        if (!safeName || keepSet.has(safeName)) continue
+        const filePath = path.join(dir, safeName)
+        if (fs.statSync(filePath).isFile()) fs.unlinkSync(filePath)
+      }
     }
     return { success: true }
   } catch (err) {

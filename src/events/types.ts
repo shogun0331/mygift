@@ -109,6 +109,11 @@ export function eventUsableInCharacterSlot(
   return owner === null || owner === characterId
 }
 
+/** 캐릭터 전용이 아닌 공용 이벤트 */
+export function isCommonEvent(event: GameEvent): boolean {
+  return normalizeOwnerCharacterId(event.ownerCharacterId) === null
+}
+
 export function revokeEventMedia(event: GameEvent) {
   for (const asset of event.media) {
     URL.revokeObjectURL(asset.url)

@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from '../locales/i18n'
 import {
+  normalizeCreatorStatType,
+  type CreatorStatType,
+} from '../game/characters'
+import {
   canBroadcastByStamina,
   CONDITION_DOT_CLASS,
   CONDITION_ICON,
@@ -21,6 +25,44 @@ const GRADE_BADGE: Record<string, string> = {
   A: 'border-indigo-400/50 bg-gradient-to-br from-indigo-400/30 to-indigo-700/20 text-indigo-100 shadow-[0_0_12px_rgba(99,102,241,0.3)]',
   B: 'border-slate-400/45 bg-gradient-to-br from-slate-400/25 to-slate-700/30 text-slate-100',
   C: 'border-slate-500/40 bg-gradient-to-br from-slate-600/30 to-slate-900/40 text-slate-200',
+}
+
+const STAT_TYPE_STYLE: Record<
+  CreatorStatType,
+  { labelKey: string; frame: string; card: string; badge: string; text: string }
+> = {
+  sexy: {
+    labelKey: 'creator.typeSexy',
+    frame: 'border-rose-400 shadow-[0_0_18px_rgba(244,63,94,0.45)]',
+    card: '!border-2 !border-rose-400 hover:!border-rose-300 !shadow-[0_0_16px_rgba(244,63,94,0.5)]',
+    badge: 'border-rose-400/55 bg-rose-500/30 text-rose-100',
+    text: 'text-rose-200',
+  },
+  communication: {
+    labelKey: 'creator.typeCommunication',
+    frame: 'border-cyan-400 shadow-[0_0_18px_rgba(34,211,238,0.45)]',
+    card: '!border-2 !border-cyan-400 hover:!border-cyan-300 !shadow-[0_0_16px_rgba(34,211,238,0.5)]',
+    badge: 'border-cyan-400/55 bg-cyan-500/30 text-cyan-100',
+    text: 'text-cyan-200',
+  },
+  elegance: {
+    labelKey: 'creator.typeElegance',
+    frame: 'border-violet-300 shadow-[0_0_18px_rgba(167,139,250,0.5)]',
+    card: '!border-2 !border-violet-300 hover:!border-violet-200 !shadow-[0_0_16px_rgba(167,139,250,0.5)]',
+    badge: 'border-violet-300/55 bg-violet-500/30 text-violet-100',
+    text: 'text-violet-200',
+  },
+  performance: {
+    labelKey: 'creator.typePerformance',
+    frame: 'border-amber-400 shadow-[0_0_18px_rgba(251,191,36,0.45)]',
+    card: '!border-2 !border-amber-400 hover:!border-amber-300 !shadow-[0_0_16px_rgba(251,191,36,0.5)]',
+    badge: 'border-amber-400/55 bg-amber-500/30 text-amber-100',
+    text: 'text-amber-200',
+  },
+}
+
+function typeStyleOf(raw?: string) {
+  return STAT_TYPE_STYLE[normalizeCreatorStatType(raw)]
 }
 
 function GradeCornerBadge({ grade, size = 'md' }: { grade: string; size?: 'sm' | 'md' }) {
@@ -136,6 +178,9 @@ export function SchedulePanel({
                 : undefined
               const needsRemove =
                 Boolean(handForSlot) && !canBroadcastByStamina(handForSlot!.stamina)
+              const typeStyle = filled
+                ? typeStyleOf(slot.assignment?.statType ?? handForSlot?.statType)
+                : null
               const canPlace = Boolean(selectedCard) && !locked && !placementLocked
               const isDragSource = !placementLocked && draggingSlotId === slot.id
               const canDropFromSlot =
@@ -153,7 +198,7 @@ export function SchedulePanel({
                       ? filled
                         ? needsRemove
                           ? 'border-rose-400/55 bg-rose-950/25'
-                          : 'border-white/12 bg-black/30'
+                          : `${typeStyle?.frame ?? 'border-white/12'} bg-black/30`
                         : locked
                           ? 'border-rose-950/30 bg-slate-950/80 opacity-40'
                           : 'border-dashed border-indigo-500/20 bg-indigo-950/5 opacity-80'
@@ -170,7 +215,7 @@ export function SchedulePanel({
                                 : filled
                                   ? needsRemove
                                     ? 'studio-slot-needs-remove border-rose-400/70 bg-rose-950/30 shadow-[0_0_16px_rgba(244,63,94,0.28)]'
-                                    : 'border-white/12 bg-black/30'
+                                    : `${typeStyle?.frame ?? 'border-white/12'} bg-black/30`
                                   : 'border-dashed border-indigo-500/25 bg-indigo-950/5 shadow-[0_0_10px_rgba(99,102,241,0.03)] hover:border-indigo-400/50 hover:bg-indigo-500/5 hover:shadow-[0_0_15px_rgba(99,102,241,0.15)]'
                   }`}
                   onDragOver={(e) => {
@@ -252,9 +297,9 @@ export function SchedulePanel({
                       locked
                         ? 'cursor-default border-rose-950/30'
                         : placementLocked
-                          ? 'cursor-not-allowed border-rose-950/30'
+                          ? `cursor-not-allowed ${typeStyle?.card ?? 'border-rose-950/30'}`
                           : filled
-                            ? 'cursor-grab active:cursor-grabbing hover:border-white/20'
+                            ? `cursor-grab active:cursor-grabbing ${typeStyle?.card ?? 'hover:border-white/20'}`
                             : canPlace
                               ? 'hover:border-indigo-400/55 hover:ring-1 hover:ring-indigo-400/35'
                               : 'border-dashed border-indigo-500/30 hover:border-indigo-400/60 hover:bg-indigo-500/5'
@@ -352,6 +397,13 @@ export function SchedulePanel({
                               <p className="w-full truncate text-center text-[10px] font-semibold text-slate-100 sm:text-[11px]">
                                 {slot.assignment.creatorName}
                               </p>
+                              {typeStyle ? (
+                                <p
+                                  className={`mt-0.5 w-full truncate text-center text-[8px] font-bold tracking-wide sm:text-[9px] ${typeStyle.text}`}
+                                >
+                                  {t(typeStyle.labelKey)}
+                                </p>
+                              ) : null}
                             </>
                           ) : (
                             <>
@@ -407,6 +459,7 @@ export function SchedulePanel({
                 const isPending = pendingHandCreatorId === card.id
                 const isSpotlight = spotlightCreatorId === card.id
                 const blocked = !canBroadcastByStamina(card.stamina)
+                const typeStyle = typeStyleOf(card.statType)
                 const conditionScore = Math.max(0, Math.min(100, Math.round(card.conditionScore)))
                 const condition = conditionFromScore(conditionScore)
                 const staminaPct = Math.max(
@@ -442,13 +495,13 @@ export function SchedulePanel({
                       isPending
                         ? ''
                         : isSpotlight
-                          ? 'border-indigo-300 ring-2 ring-indigo-400/50 shadow-[0_0_22px_rgba(99,102,241,0.55)] scale-[1.03] z-10'
+                          ? `${typeStyle.card} ring-2 ring-indigo-400/50 scale-[1.03] z-10`
                           : isSelected && !placementLocked
-                            ? 'border-indigo-400 ring-2 ring-indigo-400/40 shadow-[0_0_18px_rgba(99,102,241,0.5)] scale-[1.02] animate-pulse z-10'
+                            ? `${typeStyle.card} ring-2 ring-indigo-400/40 scale-[1.02] animate-pulse z-10`
                             : blocked
                               ? 'border-rose-400/30'
-                              : 'hover:scale-[1.01] hover:border-white/20'
-                    } ${assigned && !isPending ? 'opacity-70' : ''}`}
+                              : `${typeStyle.card} hover:scale-[1.01]`
+                    }`}
                   >
                     <div className="relative flex h-full w-full flex-col items-center justify-end overflow-hidden rounded-md">
                       {card.profileImageUrl && (
@@ -457,14 +510,26 @@ export function SchedulePanel({
                             src={card.profileImageUrl}
                             alt=""
                             draggable={false}
-                            className="pointer-events-none absolute inset-0 h-full w-full object-cover object-top"
+                            className={`pointer-events-none absolute inset-0 h-full w-full object-cover object-top ${
+                              assigned ? 'brightness-[0.45] saturate-[0.65]' : ''
+                            }`}
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
+                          <div
+                            className={`absolute inset-0 bg-gradient-to-t ${
+                              assigned
+                                ? 'from-black/90 via-black/55 to-black/35'
+                                : 'from-black/95 via-black/35 to-transparent'
+                            }`}
+                          />
                         </>
                       )}
 
+                      {assigned && !card.profileImageUrl ? (
+                        <div className="absolute inset-0 bg-black/48" />
+                      ) : null}
+
                       {assigned ? (
-                        <span className="absolute top-1 right-1 z-20 rounded border border-indigo-400/30 bg-indigo-500/20 px-1 py-0.5 text-[7px] font-bold text-indigo-200">
+                        <span className="absolute top-1 right-1 z-20 rounded border border-slate-400/40 bg-black/75 px-1 py-0.5 text-[7px] font-bold text-slate-200">
                           IN
                         </span>
                       ) : blocked ? (
@@ -494,6 +559,11 @@ export function SchedulePanel({
                             {t('dashboard.broadcastBlocked')}
                           </p>
                         ) : null}
+                        <p
+                          className={`truncate text-center text-[8px] font-bold tracking-wide ${typeStyle.text}`}
+                        >
+                          {t(typeStyle.labelKey)}
+                        </p>
                         <HandStatRow
                           label={t('condition.title')}
                           icon={CONDITION_ICON[condition]}

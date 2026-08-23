@@ -1,3 +1,4 @@
+import { WEEKS_PER_MONTH } from './broadcast'
 import type { Grade } from './characters'
 import { rollInt } from './stats'
 
@@ -33,7 +34,12 @@ export const CONDITION_SCORE_RANGE: Record<
 }
 
 export const STAMINA_MAX = 100
-export const STAMINA_BROADCAST_COST = 5
+/** 방송 턴(월) 기본 스테미나 소모. 기품으로 감소. 주 정산 때는 1/4만 깎음 */
+export const STAMINA_BROADCAST_COST = 40
+/** 기품 감쇠 후에도 이 값 미만으로 내려가지 않음 (월간) */
+export const STAMINA_BROADCAST_COST_MIN = 8
+/** 기품 1당 방송 스테미나 소모 감소. 0.2는 C급 구간이 주당 반올림에 묻힘 */
+export const ELEGANCE_STAMINA_REDUCTION = 0.5
 export const STAMINA_REST_GAIN = 20
 export const STAMINA_VACATION_GAIN = 30
 /** 이 값 이하면 방송 불가 */
@@ -60,6 +66,18 @@ export const CONDITION_CRASH_QTE_MS = 2000
 export function calcConditionCrashChance(ownedCount: number): number {
   const n = Math.max(0, Math.round(ownedCount))
   return n * CONDITION_CRASH_CHANCE_PER_OWNED
+}
+
+/** 방송 중 개별 검사. 실패하면 진상 수치, 아니면 null */
+export function rollToxicIncident(ownedCount: number): {
+  drop: number
+  staminaDrop: number
+} | null {
+  if (Math.random() >= calcConditionCrashChance(ownedCount)) return null
+  return {
+    drop: rollInt(CONDITION_CRASH_DROP.min, CONDITION_CRASH_DROP.max),
+    staminaDrop: rollInt(CONDITION_CRASH_STAMINA_DROP.min, CONDITION_CRASH_STAMINA_DROP.max),
+  }
 }
 
 /**
@@ -190,6 +208,20 @@ export function canBroadcastByStamina(stamina: number) {
   return Math.round(stamina) >= STAMINA_BROADCAST_MIN
 }
 
+/** 방송 턴(월) 스테미나 소모. 40 − 기품×0.5, 최소 8 */
+export function calcBroadcastStaminaCost(elegance = 0): number {
+  const stat = Math.max(0, Math.min(100, Number(elegance) || 0))
+  return Math.max(
+    STAMINA_BROADCAST_COST_MIN,
+    STAMINA_BROADCAST_COST - stat * ELEGANCE_STAMINA_REDUCTION,
+  )
+}
+
+/** 주 종료 차감. 한 턴=4주이므로 월간 소모의 1/4 */
+export function calcWeeklyBroadcastStaminaCost(elegance = 0): number {
+  return Math.max(1, Math.round(calcBroadcastStaminaCost(elegance) / WEEKS_PER_MONTH))
+}
+
 export function calcVacationCost(annualSalary: number, grade: Grade) {
   const rate = VACATION_SALARY_RATE[grade] ?? VACATION_SALARY_RATE.C
   return Math.max(0, Math.round(annualSalary * rate))
@@ -202,6 +234,7 @@ type StaminaConditionState = {
   restStreak?: number
   stamina?: number
   staminaMax?: number
+  statElegance?: number
 }
 
 function withVitals<T extends StaminaConditionState>(
@@ -249,10 +282,10 @@ export type SlotDrainMults = {
 }
 
 /**
- * 주 종료: 실제 방송자 스테미나 -5 + 컨디션 소모
- * 슬롯 배정만 하고 못 나간 사람은 회복도 소모도 없음
+ * 주 종료: 실제 방송자 스테미나 −월간(40 − 기품×0.5, 최소 8)/4 + 컨디션 소모
+ * 슬롯 배정만 하고 못 나간 사람(스테미나 부족 등)도 스테미나는 0까지 소모, 컨디션은 유지
  * 슬롯에서 빠진 사람만 스테미나 +20 + 컨디션 회복
- * 방송자는 보유 인원×2% 확률로 진상 사태(컨디션 즉시 급락, 스테미나는 QTE 실패 시 차감)
+ * 방송자는 보유 인원×2% 확률로 진상 사태(캐릭터당 주 1회, 이미 고장난 칸은 제외)
  */
 export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState & { name?: string }>(
   creators: T[],
@@ -273,7 +306,10 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
       const drain = drainMultByCreatorId[creator.id]
       const staminaMult = Math.max(0.5, Math.min(1, drain?.staminaMult ?? 1))
       const conditionMult = Math.max(0.5, Math.min(1, drain?.conditionMult ?? 1))
-      const staminaCost = Math.max(1, Math.round(STAMINA_BROADCAST_COST * staminaMult))
+      const staminaCost = Math.max(
+        1,
+        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * staminaMult),
+      )
       const staminaAfter = clampStamina(staminaNow - staminaCost, staminaMax)
       const rawCond =
         staminaAfter < STAMINA_LOW_THRESHOLD
@@ -309,7 +345,13 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
     }
 
     if (assignedSlotIds.has(creator.id)) {
-      return withVitals(creator, currentScore, staminaNow, 0)
+      const drain = drainMultByCreatorId[creator.id]
+      const staminaMult = Math.max(0.5, Math.min(1, drain?.staminaMult ?? 1))
+      const staminaCost = Math.max(
+        1,
+        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * staminaMult),
+      )
+      return withVitals(creator, currentScore, staminaNow - staminaCost, 0)
     }
 
     const restStreak = (creator.restStreak ?? 0) + 1

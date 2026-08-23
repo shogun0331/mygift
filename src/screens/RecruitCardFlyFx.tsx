@@ -4,7 +4,6 @@ export type RecruitFlyCard = {
   id: string
   name: string
   grade: string
-  popularity: number
   profileImageUrl: string | null
 }
 
@@ -100,7 +99,7 @@ export function RecruitCardFlyFx({ card, onDone }: RecruitCardFlyFxProps) {
           )}
           <p className="w-full truncate text-center text-sm font-bold text-slate-50">{card.name}</p>
           <p className="mt-0.5 text-[11px] font-semibold text-amber-300">
-            {card.grade} · {card.popularity}
+            {card.grade}급
           </p>
           <p className="mt-2 text-[10px] font-bold tracking-[0.2em] text-indigo-300">NEW RECRUIT</p>
         </div>

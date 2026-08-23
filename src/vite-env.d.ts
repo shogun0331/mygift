@@ -1,5 +1,10 @@
 /// <reference types="vite/client" />
 
+declare module '*.txt?raw' {
+  const content: string
+  export default content
+}
+
 interface ElectronAPI {
   platform: string
   saveEventAssets?: (
@@ -20,6 +25,11 @@ interface ElectronAPI {
   ) => Promise<{ success: boolean; error?: string }>
   loadEventsJson?: (
   ) => Promise<{ success: boolean; events?: any[]; error?: string }>
+  saveCommonEventLinksJson?: (
+    links: Record<string, string | null>
+  ) => Promise<{ success: boolean; error?: string }>
+  loadCommonEventLinksJson?: (
+  ) => Promise<{ success: boolean; links?: Record<string, string | null>; error?: string }>
   deleteEventFile?: (
     eventId: string,
     kind: 'image' | 'video' | 'sound',
@@ -32,6 +42,10 @@ interface ElectronAPI {
     characterId: string,
     kind: 'image' | 'video',
     fileName: string
+  ) => Promise<{ success: boolean; error?: string }>
+  pruneCharacterFiles?: (
+    characterId: string,
+    keep: { image: string[]; video: string[] }
   ) => Promise<{ success: boolean; error?: string }>
   deleteCharacterFolder?: (
     characterId: string

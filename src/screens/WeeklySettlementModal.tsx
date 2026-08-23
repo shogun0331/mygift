@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { WeeklyStatement } from '../game/weeklyReport'
 import { formatStatementWon } from '../game/weeklyReport'
+import { formatViewers } from '../game/ranking'
 import { formatMoneySigned } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { useTranslation } from '../locales/i18n'
@@ -119,21 +120,44 @@ export function WeeklySettlementModal({
                 {t('settlement.monthSuffix')}
               </p>
             </div>
-            <div className="ml-auto text-right">
-              <p className="game-stat-label">{t('settlement.totalRevenue')}</p>
-              <p className="statement-amt-pos mt-1 text-xl font-bold tabular-nums tracking-tight sm:text-2xl">
-                {formatStatementWon(countedRevenue)}
-              </p>
+            <div className="ml-auto flex flex-wrap items-end justify-end gap-x-8 gap-y-3 text-right">
+              <div>
+                <p className="game-stat-label">{t('settlement.viewersGained')}</p>
+                <p
+                  className={`mt-1 text-xl font-bold tabular-nums tracking-tight sm:text-2xl ${
+                    statement.viewersGained > 0
+                      ? 'statement-amt-pos'
+                      : statement.viewersGained < 0
+                        ? 'statement-amt-neg'
+                        : 'text-slate-100'
+                  }`}
+                >
+                  {statement.viewersGained > 0 ? '+' : statement.viewersGained < 0 ? '−' : ''}
+                  {Math.abs(Math.round(statement.viewersGained)).toLocaleString('en-US')}
+                  {t('settlement.viewersUnit')}
+                </p>
+                <p className="mt-1 text-[11px] text-slate-500">
+                  {t('settlement.viewersHeld')} {formatViewers(statement.viewersAfter)}
+                  {t('settlement.viewersUnit')}
+                </p>
+              </div>
+              <div>
+                <p className="game-stat-label">{t('settlement.totalRevenue')}</p>
+                <p className="statement-amt-pos mt-1 text-xl font-bold tabular-nums tracking-tight sm:text-2xl">
+                  {formatStatementWon(countedRevenue)}
+                </p>
+              </div>
             </div>
           </header>
 
           <div className="mt-4 min-h-0 flex-1 overflow-auto">
-            <table className="statement-table w-full min-w-[640px] border-collapse text-left">
+            <table className="statement-table w-full min-w-[760px] border-collapse text-left">
               <thead>
                 <tr>
                   <th className="w-10">{t('settlement.colRank')}</th>
                   <th>{t('settlement.colCreator')}</th>
                   <th className="text-right">{t('settlement.colHours')}</th>
+                  <th className="text-right">{t('settlement.colViewers')}</th>
                   <th className="text-right">{t('settlement.colRevenue')}</th>
                   <th className="text-right">{t('settlement.colLabor')}</th>
                   <th className="text-right">{t('settlement.colProfit')}</th>
@@ -142,7 +166,7 @@ export function WeeklySettlementModal({
               <tbody>
                 {statement.lines.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-sm text-slate-500">
+                    <td colSpan={7} className="py-8 text-center text-sm text-slate-500">
                       {t('settlement.noBroadcast')}
                     </td>
                   </tr>
@@ -179,6 +203,19 @@ export function WeeklySettlementModal({
                         <td className="tabular-nums text-slate-400">
                           {line.broadcastHours}
                           {t('settlement.hoursUnit')}
+                        </td>
+                        <td
+                          className={`tabular-nums ${
+                            line.viewersGained > 0
+                              ? 'statement-amt-pos'
+                              : line.viewersGained < 0
+                                ? 'statement-amt-neg'
+                                : 'text-slate-500'
+                          }`}
+                        >
+                          {line.viewersGained > 0 ? '+' : line.viewersGained < 0 ? '−' : ''}
+                          {Math.abs(Math.round(line.viewersGained)).toLocaleString('en-US')}
+                          {t('settlement.viewersUnit')}
                         </td>
                         <td className={`tabular-nums ${amountClass(line.revenueWon, 'plain')}`}>
                           {formatStatementWon(line.revenueWon)}

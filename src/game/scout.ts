@@ -61,7 +61,7 @@ function pickRandomTemplate(
 }
 
 export function createScoutOffer(template: RegisteredCharacter, grade: Grade): ScoutOffer {
-  const stats = rollStatsForGrade(grade)
+  const stats = rollStatsForGrade(grade, template.statType)
   return {
     template,
     grade,
@@ -215,8 +215,9 @@ export function markScoutViewed(state: ScoutSystemState): ScoutSystemState {
 export function canHireScoutOffer(
   offer: ScoutOffer,
   assets: number,
+  freeHire = false,
 ): { ok: true } | { ok: false; reason: 'assets' } {
-  if (assets < offer.salary) return { ok: false, reason: 'assets' }
+  if (!freeHire && assets < offer.salary) return { ok: false, reason: 'assets' }
   return { ok: true }
 }
 
@@ -229,14 +230,16 @@ export function hireScoutOffer(offer: ScoutOffer): OwnedCreator {
   return {
     ...template,
     grade: offer.grade,
-    popularity: stats.popularity,
     salary: offer.salary,
-    skill: stats.skill,
     heat: 1,
     trust: stats.trust,
     stamina: staminaMax,
     staminaMax,
     revenueMult: stats.revenueMult,
+    statSexy: stats.statSexy,
+    statElegance: stats.statElegance,
+    statCommunication: stats.statCommunication,
+    statPerformance: stats.statPerformance,
     contractWeeks: 12,
     nextPayTurns: 4,
     conditionScore,
@@ -244,5 +247,8 @@ export function hireScoutOffer(offer: ScoutOffer): OwnedCreator {
     restStreak: 0,
     lastVacationMonth: null,
     dateArcStep: 0,
+    snsPublishedIds: [],
+    snsFeed: [],
+    snsPending: null,
   }
 }

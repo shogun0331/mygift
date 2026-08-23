@@ -15,6 +15,7 @@ import {
   ensureUnlockedSlotGear,
   isCreatorSlotBroken,
   repairSlotGear,
+  tryBreakSlotGear,
   type SlotGear,
 } from '../game/slotGear'
 import {
@@ -42,8 +43,10 @@ import {
   applyToxicStaminaPenalty,
   applyWeeklyStaminaAndCondition,
   applyVacationRecovery,
+  rollToxicIncident,
   calcConditionFullCareCost,
   calcVacationCost,
+  calcWeeklyBroadcastStaminaCost,
   canBroadcastByStamina,
   scoreOf,
 } from '../game/condition'
@@ -53,14 +56,31 @@ import {
   type DayEvent,
   type StudioDayPlan,
 } from '../game/economy'
-import { applyBroadcastGrowth } from '../game/growth'
 import { formatMoney } from '../game/money'
 import { rollNegotiatedSalary } from '../game/salary'
 import {
+  applyPromotionExamResult,
+  isPromotionExamReady,
+  resolvePromotionExam,
+  type PromotionExamResult,
+} from '../game/promotionExam'
+import { applyProductionTraining, calcPromotionExamCost, calcTrainingCost } from '../game/training'
+import {
+  SNS_HEAT_COST,
+  nextSnsPost,
+  resolveSnsPending,
+  snsCaptionOf,
+  snsPostMedia,
+  type SnsHeat,
+  type SnsResult,
+} from '../game/sns'
+import {
+  allocateViewersGained,
   applyAudiencePenalty,
   companyTierLabelKey,
   companyTierOf,
   createInitialLeagueState,
+  creatorViewerWeight,
   formatViewers,
   growLeagueBetweenRefresh,
   RANK_REFRESH_TURNS,
@@ -106,11 +126,14 @@ import { DashboardPanel } from './DashboardPanel'
 import { EquipmentPanel } from './EquipmentPanel'
 import { RecruitCardFlyFx, type RecruitFlyCard } from './RecruitCardFlyFx'
 import { RestRequiredModal } from './RestRequiredModal'
+import { PromotionSlotModal } from './PromotionSlotModal'
+import { SnsResultModal } from './SnsResultModal'
 import { SalaryNegotiateModal } from './SalaryNegotiateModal'
 import { SchedulePanel } from './SchedulePanel'
 import { GameClearModal } from './GameClearModal'
 import {
   applyStationReview,
+  capStationViewers,
   isAnnualReviewMonth,
   nextJanuaryAfter,
   type StationGrade,
@@ -160,6 +183,83 @@ type SpeedOption = (typeof SPEED_OPTIONS)[number]
 
 const INITIAL_ASSETS = 100_000
 const MAX_RECENT_EVENTS = 40
+/** 이 인원 이상이면 후원을 모아 1명일 때와 비슷한 속도로 로그에 냄 */
+const FEED_BATCH_MIN_CREATORS = 2
+const SOLO_FEED_EVENTS_PER_WEEK = 10
+
+type WeekInspection = {
+  creatorId: string
+  slotId: string
+  atMs: number
+  done: boolean
+}
+
+function pickInspectionTimes(count: number, weekMs: number): number[] {
+  if (count <= 0 || weekMs <= 0) return []
+  const lo = weekMs * 0.16
+  const hi = weekMs * 0.86
+  const span = Math.max(80, hi - lo)
+  const gap = Math.min(weekMs * 0.1, span / count)
+  const bucket = span / count
+  const times = Array.from({ length: count }, (_, index) => {
+    const start = lo + bucket * index
+    return start + Math.random() * Math.max(40, bucket * 0.85)
+  })
+  for (let i = 1; i < times.length; i++) {
+    if (times[i]! - times[i - 1]! < gap) {
+      times[i] = Math.min(hi, times[i - 1]! + gap)
+    }
+  }
+  for (let i = times.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const swap = times[i]!
+    times[i] = times[j]!
+    times[j] = swap
+  }
+  return times
+}
+
+type DonationBatch = {
+  creatorId: string
+  creatorName: string
+  amount: number
+}
+
+function addDonationToBatch(map: Map<string, DonationBatch>, event: DayEvent) {
+  const prev = map.get(event.creatorId)
+  if (prev) {
+    prev.amount += event.amount
+    prev.creatorName = event.creatorName
+    return
+  }
+  map.set(event.creatorId, {
+    creatorId: event.creatorId,
+    creatorName: event.creatorName,
+    amount: event.amount,
+  })
+}
+
+function takeLargestDonationBatch(map: Map<string, DonationBatch>): DonationBatch | null {
+  let best: DonationBatch | null = null
+  for (const row of map.values()) {
+    if (!best || row.amount > best.amount) best = row
+  }
+  if (best) map.delete(best.creatorId)
+  return best
+}
+
+function donationEventFromBatch(batch: DonationBatch, stamp: string): DayEvent {
+  return {
+    id: `donation-batch-${batch.creatorId}-${stamp}`,
+    creatorId: batch.creatorId,
+    creatorName: batch.creatorName,
+    type: 'donation',
+    amount: batch.amount,
+    text: `💰 ${formatMoney(batch.amount)} 후원! (${batch.creatorName})`,
+    atMs: 0,
+    tone: batch.amount >= 1_000 ? 'bg-amber-400' : 'bg-pink-400',
+  }
+}
 
 function speedMultiplierOf(speed: SpeedOption) {
   if (speed === '2x') return 2
@@ -401,6 +501,10 @@ export function InGame({
   const [gearFailBursts, setGearFailBursts] = useState<GearFailBurstItem[]>([])
   const [toxicQteQueue, setToxicQteQueue] = useState<ToxicWhackQteItem[]>([])
   const [liveRevenueByCreator, setLiveRevenueByCreator] = useState<Record<string, number>>({})
+  const [liveWeekProgress, setLiveWeekProgress] = useState(0)
+  const [liveStaminaDrainByCreatorId, setLiveStaminaDrainByCreatorId] = useState<
+    Record<string, number>
+  >({})
   const [slotGearById, setSlotGearById] = useState<Record<string, SlotGear>>(() =>
     createSlotGearMapFromSlots(studioSlots),
   )
@@ -491,6 +595,15 @@ export function InGame({
   )
   const [promoteQueue, setPromoteQueue] = useState<PromoteSalaryNego[]>([])
   const [salaryEventPlay, setSalaryEventPlay] = useState<PromoteSalaryNego | null>(null)
+  const [promotionExam, setPromotionExam] = useState<{
+    creatorId: string
+    creatorName: string
+    result: PromotionExamResult
+  } | null>(null)
+  const [snsResultQueue, setSnsResultQueue] = useState<SnsResult[]>([])
+  const snsResultQueueRef = useRef<SnsResult[]>([])
+  const promotionExamRef = useRef(promotionExam)
+  promotionExamRef.current = promotionExam
   const [recruitFlyCard, setRecruitFlyCard] = useState<RecruitFlyCard | null>(null)
   const [spotlightCreatorId, setSpotlightCreatorId] = useState<string | null>(null)
   const spotlightTimerRef = useRef<number | null>(null)
@@ -509,7 +622,6 @@ export function InGame({
       id: creator.id,
       name: creator.name,
       grade: creator.grade,
-      popularity: creator.popularity,
       profileImageUrl: creator.profileImageUrl || null,
     })
   }
@@ -532,7 +644,9 @@ export function InGame({
 
   function applyPromotedSalary(item: PromoteSalaryNego) {
     const nextOwned = ownedCreatorsRef.current.map((creator) =>
-      creator.id === item.creatorId ? { ...creator, salary: item.proposedSalary } : creator,
+      creator.id === item.creatorId
+        ? { ...creator, salary: item.proposedSalary, grade: item.newGrade }
+        : creator,
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
@@ -582,7 +696,8 @@ export function InGame({
       vipEventPlay ||
       socialUi ||
       startBroadcastLocked ||
-      openCreatorScout
+      openCreatorScout ||
+      promotionExam
     ) {
       return
     }
@@ -604,6 +719,7 @@ export function InGame({
     socialUi,
     startBroadcastLocked,
     openCreatorScout,
+    promotionExam,
   ])
 
   const activePromotePopup =
@@ -617,15 +733,19 @@ export function InGame({
     !vipEventPlay &&
     !socialUi &&
     !startBroadcastLocked &&
-    !openCreatorScout
+    !openCreatorScout &&
+    !promotionExam
       ? promoteQueue.find((row) => !row.salaryEvent) ?? null
       : null
 
   function handleCreatorScoutHire(offer: ScoutOffer) {
-    const check = canHireScoutOffer(offer, assets)
+    const freeHire = ownedCreatorsRef.current.length === 0
+    const check = canHireScoutOffer(offer, assets, freeHire)
     if (!check.ok) return
     const creator = hireScoutOffer(offer)
-    setAssets((prev) => prev - offer.salary)
+    if (!freeHire) {
+      setAssets((prev) => prev - offer.salary)
+    }
     setScoutSystem((prev) => clearScoutOfferAfterHire(prev))
     beginScoutVisualNovel(creator)
   }
@@ -678,7 +798,8 @@ export function InGame({
       vipEventPlay ||
       socialUi ||
       scoutEventState ||
-      openCreatorScout
+      openCreatorScout ||
+      snsResultQueue.length > 0
     ) {
       return
     }
@@ -697,15 +818,20 @@ export function InGame({
     socialUi,
     scoutEventState,
     openCreatorScout,
+    snsResultQueue.length,
   ])
   const dayPlanRef = useRef<StudioDayPlan | null>(null)
   const dayStartedAtRef = useRef<number | null>(null)
   const revealedIdsRef = useRef(new Set<string>())
+  const donationBatchRef = useRef(new Map<string, DonationBatch>())
+  const feedExtraQueueRef = useRef<DayEvent[]>([])
+  const lastFeedEmitAtRef = useRef(0)
   const settledDayKeyRef = useRef<string | null>(null)
   const weekAccumRef = useRef<WeekAccumulator>(createWeekAccumulator(1))
   const prevWeekRevenueRef = useRef<number | null>(null)
   const weekFinishedRef = useRef(false)
   const toxicQteQueueRef = useRef<ToxicWhackQteItem[]>([])
+  const weekInspectionsRef = useRef<WeekInspection[]>([])
   const pendingWeekAdvanceAfterToxicRef = useRef(false)
   const statementDelayTimerRef = useRef<number | null>(null)
   const leagueRef = useRef(league)
@@ -808,12 +934,15 @@ export function InGame({
     }
   }
 
-  function assignedCreatorsFrom(list: OwnedCreator[]) {
+  function slottedCreatorsFrom(list: OwnedCreator[]) {
     return studioSlotsRef.current
       .filter((slot) => slot.status === 'assigned' && slot.assignment)
       .map((slot) => list.find((c) => c.id === slot.assignment!.creatorId))
       .filter((c): c is OwnedCreator => Boolean(c))
-      .filter((c) => canBroadcastByStamina(c.stamina))
+  }
+
+  function assignedCreatorsFrom(list: OwnedCreator[]) {
+    return slottedCreatorsFrom(list).filter((c) => canBroadcastByStamina(c.stamina))
   }
 
   function toRankCreators(list: OwnedCreator[]): RankCreator[] {
@@ -821,10 +950,9 @@ export function InGame({
       id: creator.id,
       name: creator.name,
       grade: creator.grade,
-      popularity: creator.popularity,
-      skill: creator.skill,
       condition: creator.condition,
       conditionScore: creator.conditionScore,
+      statCommunication: creator.statCommunication,
     }))
   }
 
@@ -859,11 +987,41 @@ export function InGame({
       dayKey,
       leagueRef.current.revenueBonusPercent,
       revenueMultByCreatorId,
+      leagueRef.current.viewers,
     )
     dayPlanRef.current = plan
     dayStartedAtRef.current = performance.now()
     revealedIdsRef.current = new Set()
     settledDayKeyRef.current = null
+    const staminaMult = getStaminaCostMult(tree)
+    const drainByCreatorId: Record<string, number> = {}
+    for (const creator of slottedCreatorsFrom(ownedCreatorsRef.current)) {
+      drainByCreatorId[creator.id] = Math.max(
+        1,
+        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * staminaMult),
+      )
+    }
+    setLiveStaminaDrainByCreatorId(drainByCreatorId)
+    setLiveWeekProgress(0)
+    donationBatchRef.current = new Map()
+    feedExtraQueueRef.current = []
+    lastFeedEmitAtRef.current = 0
+    const lastWeekOfTurn = monthWeekIndexRef.current >= WEEKS_PER_MONTH - 1
+    const inspectSlots = lastWeekOfTurn
+      ? []
+      : studioSlotsRef.current.filter(
+          (slot) =>
+            slot.status === 'assigned' &&
+            slot.assignment &&
+            assigned.some((creator) => creator.id === slot.assignment!.creatorId),
+        )
+    const inspectTimes = pickInspectionTimes(inspectSlots.length, weekMs)
+    weekInspectionsRef.current = inspectSlots.map((slot, index) => ({
+      creatorId: slot.assignment!.creatorId,
+      slotId: slot.id,
+      atMs: inspectTimes[index] ?? weekMs * 0.5,
+      done: false,
+    }))
   }
 
   function creditLiveDonations(events: DayEvent[]) {
@@ -903,9 +1061,197 @@ export function InGame({
 
   function flushRemainingEvents(plan: StudioDayPlan) {
     const pending = takeRevealableEvents(plan.plans.flatMap((p) => p.events))
-    if (pending.length === 0) return
-    creditLiveDonations(pending)
-    setLiveEvents((prev) => [...pending.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+    ingestLiveFeedEvents(pending, plan, true)
+  }
+
+  function pushLiveFeed(events: DayEvent[]) {
+    if (events.length === 0) return
+    creditLiveDonations(events)
+    setLiveEvents((prev) => [...events.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+  }
+
+  function ingestLiveFeedEvents(due: DayEvent[], plan: StudioDayPlan, force: boolean) {
+    const hasBuffered =
+      donationBatchRef.current.size > 0 || feedExtraQueueRef.current.length > 0
+    if (due.length === 0 && !hasBuffered) return
+
+    if (plan.plans.length < FEED_BATCH_MIN_CREATORS) {
+      if (due.length > 0) pushLiveFeed(due)
+      return
+    }
+
+    for (const event of due) {
+      if (event.type === 'donation' && event.amount > 0) {
+        addDonationToBatch(donationBatchRef.current, event)
+      } else {
+        feedExtraQueueRef.current.push(event)
+      }
+    }
+
+    const now = performance.now()
+    const emit: DayEvent[] = []
+    if (force) {
+      let stamp = 0
+      while (donationBatchRef.current.size > 0) {
+        const batch = takeLargestDonationBatch(donationBatchRef.current)
+        if (!batch) break
+        emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${stamp}`))
+        stamp += 1
+      }
+      emit.push(...feedExtraQueueRef.current)
+      feedExtraQueueRef.current = []
+      lastFeedEmitAtRef.current = now
+      pushLiveFeed(emit)
+      return
+    }
+
+    const gapMs = Math.max(280, weekDurationMs() / SOLO_FEED_EVENTS_PER_WEEK)
+    if (lastFeedEmitAtRef.current > 0 && now - lastFeedEmitAtRef.current < gapMs) return
+
+    const batch = takeLargestDonationBatch(donationBatchRef.current)
+    if (batch) {
+      emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${Math.round(now)}`))
+    } else {
+      const extra = feedExtraQueueRef.current.shift()
+      if (extra) emit.push(extra)
+    }
+    if (emit.length === 0) return
+    lastFeedEmitAtRef.current = now
+    pushLiveFeed(emit)
+  }
+
+  function presentGearFails(
+    plan: StudioDayPlan,
+    newlyBrokenSlots: Array<{
+      id: string
+      label: string
+      assignment?: { creatorId: string; creatorName: string } | null
+    }>,
+  ) {
+    if (newlyBrokenSlots.length === 0) return
+    setTab('dashboard')
+    setGearFailBursts((prev) => [
+      ...prev,
+      ...newlyBrokenSlots.map((slot) => ({
+        id: `gear-fail-fx-${slot.id}-${plan.dayKey}-${Math.round(performance.now())}`,
+        slotId: slot.id,
+      })),
+    ])
+    const failEvents: DayEvent[] = newlyBrokenSlots.map((slot) => ({
+      id: `gear-fail-${slot.id}-${plan.dayKey}-${Math.round(performance.now())}`,
+      creatorId: slot.assignment?.creatorId ?? slot.id,
+      creatorName: slot.assignment?.creatorName ?? slot.label,
+      type: 'gear',
+      amount: 0,
+      text: `${slot.assignment?.creatorName ?? slot.label} 장비 고장! 후원 중단 · 클릭하여 수리`,
+      atMs: 0,
+      tone: 'bg-amber-400',
+    }))
+    setLiveEvents((prev) => [...failEvents.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+  }
+
+  function presentToxicCrashes(
+    plan: StudioDayPlan,
+    crashes: Array<{
+      creatorId: string
+      creatorName: string
+      drop: number
+      staminaDrop: number
+    }>,
+  ) {
+    if (crashes.length === 0) return
+    setTab('dashboard')
+    const toxicEvents: DayEvent[] = crashes.map((crash) => ({
+      id: `toxic-${crash.creatorId}-${plan.dayKey}-${Math.round(performance.now())}`,
+      creatorId: crash.creatorId,
+      creatorName: crash.creatorName,
+      type: 'toxic',
+      amount: crash.drop,
+      text: `${crash.creatorName} 진상 시청자! 컨디션 −${crash.drop} · 클릭으로 스테미나 방어!`,
+      atMs: 0,
+      tone: 'bg-rose-500',
+    }))
+    setLiveEvents((prev) => [...toxicEvents.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+    setConditionCrashes((prev) => [
+      ...prev,
+      ...crashes.map((crash) => ({
+        id: `crash-fx-${crash.creatorId}-${plan.dayKey}-${crash.drop}-${Math.round(performance.now())}`,
+        creatorId: crash.creatorId,
+        drop: crash.drop,
+        staminaDrop: crash.staminaDrop,
+      })),
+    ])
+    const qteItems: ToxicWhackQteItem[] = crashes.map((crash) => ({
+      id: `toxic-qte-${crash.creatorId}-${plan.dayKey}-${crash.staminaDrop}-${Math.round(performance.now())}`,
+      creatorId: crash.creatorId,
+      creatorName: crash.creatorName,
+      drop: crash.drop,
+      staminaDrop: crash.staminaDrop,
+    }))
+    toxicQteQueueRef.current = [...toxicQteQueueRef.current, ...qteItems]
+    setToxicQteQueue(toxicQteQueueRef.current)
+    for (const crash of crashes) {
+      weekAccumRef.current = {
+        ...weekAccumRef.current,
+        highlights: [
+          `${crash.creatorName} 진상 사태로 컨디션 −${crash.drop}`,
+          ...weekAccumRef.current.highlights,
+        ],
+      }
+    }
+  }
+
+  function runCreatorInspection(inspection: WeekInspection) {
+    const plan = dayPlanRef.current
+    if (!plan) return
+    const creator = ownedCreatorsRef.current.find((row) => row.id === inspection.creatorId)
+    if (!creator) return
+    if (isCreatorSlotBroken(studioSlotsRef.current, slotGearByIdRef.current, creator.id)) return
+
+    const toxic = rollToxicIncident(ownedCreatorsRef.current.length)
+    if (toxic) {
+      const nextOwned = ownedCreatorsRef.current.map((row) =>
+        row.id === creator.id ? applyVitalsDelta(row, { condition: -toxic.drop }) : row,
+      )
+      ownedCreatorsRef.current = nextOwned
+      onOwnedCreatorsChangeRef.current(nextOwned)
+      presentToxicCrashes(plan, [
+        {
+          creatorId: creator.id,
+          creatorName: creator.name,
+          drop: toxic.drop,
+          staminaDrop: toxic.staminaDrop,
+        },
+      ])
+      return
+    }
+
+    const currentGear = slotGearByIdRef.current[inspection.slotId]
+    if (!currentGear || currentGear.broken) return
+    const nextGearState = tryBreakSlotGear(currentGear)
+    if (!nextGearState.broken) return
+    const nextGear = { ...slotGearByIdRef.current, [inspection.slotId]: nextGearState }
+    slotGearByIdRef.current = nextGear
+    setSlotGearById(nextGear)
+    const slot = studioSlotsRef.current.find((row) => row.id === inspection.slotId)
+    if (!slot) return
+    presentGearFails(plan, [slot])
+  }
+
+  function runDueInspections(elapsed: number) {
+    for (const inspection of weekInspectionsRef.current) {
+      if (inspection.done || elapsed < inspection.atMs) continue
+      inspection.done = true
+      runCreatorInspection(inspection)
+    }
+  }
+
+  function flushRemainingInspections() {
+    for (const inspection of weekInspectionsRef.current) {
+      if (inspection.done) continue
+      inspection.done = true
+      runCreatorInspection(inspection)
+    }
   }
 
   function repairBrokenSlot(slotId: string) {
@@ -923,49 +1269,43 @@ export function InGame({
     if (!plan || settledDayKeyRef.current === plan.dayKey) return
     settledDayKeyRef.current = plan.dayKey
     flushRemainingEvents(plan)
-    // 주 종료: 실제 방송 칸만 장비 고장 판정(진상과 슬롯 단위 무중첩) + 내구도 소모
+    flushRemainingInspections()
     const broadcastedIds = new Set(plan.plans.map((p) => p.creatorId))
-    const toxicCreatorIds = new Set(toxicQteQueueRef.current.map((row) => row.creatorId))
     const prevGear = slotGearByIdRef.current
+    // 주 종료: 스테미나/컨디션·내구 소모만. 진상·고장은 주중 랜덤 검사에서 처리
+    const tree = equipmentTreeRef.current
+    const staminaMult = getStaminaCostMult(tree)
+    const conditionMult = getConditionCostMult(tree)
+    const drainMultByCreatorId: Record<
+      string,
+      { staminaMult: number; conditionMult: number }
+    > = {}
+    const assignedSlotIds = new Set(
+      studioSlotsRef.current
+        .filter((slot) => slot.status === 'assigned' && slot.assignment)
+        .map((slot) => slot.assignment!.creatorId),
+    )
+    for (const creatorId of assignedSlotIds) {
+      drainMultByCreatorId[creatorId] = { staminaMult, conditionMult }
+    }
+    const { creators: nextOwned } = applyWeeklyStaminaAndCondition(
+      ownedCreatorsRef.current,
+      broadcastedIds,
+      drainMultByCreatorId,
+      broadcastedIds,
+      assignedSlotIds,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+
     const nextGear = applyWeeklySlotGear(
       prevGear,
       studioSlotsRef.current,
       broadcastedIds,
-      {
-        skipAllFails: toxicQteQueueRef.current.length > 0,
-        skipFailCreatorIds: toxicCreatorIds,
-      },
+      { skipFailCreatorIds: broadcastedIds },
     )
     slotGearByIdRef.current = nextGear
     setSlotGearById(nextGear)
-
-    const newlyBrokenSlots = studioSlotsRef.current.filter(
-      (slot) =>
-        slot.status === 'assigned' &&
-        Boolean(nextGear[slot.id]?.broken) &&
-        !prevGear[slot.id]?.broken,
-    )
-    if (newlyBrokenSlots.length > 0) {
-      setTab('dashboard')
-      setGearFailBursts((prev) => [
-        ...prev,
-        ...newlyBrokenSlots.map((slot) => ({
-          id: `gear-fail-fx-${slot.id}-${plan.dayKey}`,
-          slotId: slot.id,
-        })),
-      ])
-      const failEvents: DayEvent[] = newlyBrokenSlots.map((slot) => ({
-        id: `gear-fail-${slot.id}-${plan.dayKey}`,
-        creatorId: slot.assignment?.creatorId ?? slot.id,
-        creatorName: slot.assignment?.creatorName ?? slot.label,
-        type: 'gear',
-        amount: 0,
-        text: `${slot.assignment?.creatorName ?? slot.label} 장비 고장! 후원 중단 · 클릭하여 수리`,
-        atMs: 0,
-        tone: 'bg-amber-400',
-      }))
-      setLiveEvents((prev) => [...failEvents.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
-    }
 
     const plansForLedger = plan.plans.map((row) => {
       if (!isCreatorSlotBroken(studioSlotsRef.current, nextGear, row.creatorId)) return row
@@ -983,77 +1323,6 @@ export function InGame({
         (annualRevenueByYearRef.current[year] ?? 0) + weekRevenueWon
     }
     weekAccumRef.current = recordDayIntoWeek(weekAccumRef.current, plansForLedger)
-    // 주 종료: 실제 방송자만 스테미나/컨디션 소모(+진상 시 컨디션 급락, 스테미나는 QTE)
-    const tree = equipmentTreeRef.current
-    const staminaMult = getStaminaCostMult(tree)
-    const conditionMult = getConditionCostMult(tree)
-    const drainMultByCreatorId: Record<
-      string,
-      { staminaMult: number; conditionMult: number }
-    > = {}
-    for (const creatorId of broadcastedIds) {
-      drainMultByCreatorId[creatorId] = { staminaMult, conditionMult }
-    }
-    const skipCrashCreatorIds = new Set(
-      [...broadcastedIds].filter((creatorId) =>
-        isCreatorSlotBroken(studioSlotsRef.current, nextGear, creatorId),
-      ),
-    )
-    const assignedSlotIds = new Set(
-      studioSlotsRef.current
-        .filter((slot) => slot.status === 'assigned' && slot.assignment)
-        .map((slot) => slot.assignment!.creatorId),
-    )
-    const { creators: nextOwned, crashes } = applyWeeklyStaminaAndCondition(
-      ownedCreatorsRef.current,
-      broadcastedIds,
-      drainMultByCreatorId,
-      skipCrashCreatorIds,
-      assignedSlotIds,
-    )
-    ownedCreatorsRef.current = nextOwned
-    onOwnedCreatorsChangeRef.current(nextOwned)
-
-    if (crashes.length > 0) {
-      const toxicEvents: DayEvent[] = crashes.map((crash) => ({
-        id: `toxic-${crash.creatorId}-${plan.dayKey}`,
-        creatorId: crash.creatorId,
-        creatorName: crash.creatorName,
-        type: 'toxic',
-        amount: crash.drop,
-        text: `${crash.creatorName} 진상 시청자! 컨디션 −${crash.drop} · 클릭으로 스테미나 방어!`,
-        atMs: 0,
-        tone: 'bg-rose-500',
-      }))
-      setLiveEvents((prev) => [...toxicEvents.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
-      setConditionCrashes((prev) => [
-        ...prev,
-        ...crashes.map((crash) => ({
-          id: `crash-fx-${crash.creatorId}-${plan.dayKey}-${crash.drop}`,
-          creatorId: crash.creatorId,
-          drop: crash.drop,
-          staminaDrop: crash.staminaDrop,
-        })),
-      ])
-      const qteItems: ToxicWhackQteItem[] = crashes.map((crash) => ({
-        id: `toxic-qte-${crash.creatorId}-${plan.dayKey}-${crash.staminaDrop}`,
-        creatorId: crash.creatorId,
-        creatorName: crash.creatorName,
-        drop: crash.drop,
-        staminaDrop: crash.staminaDrop,
-      }))
-      toxicQteQueueRef.current = [...toxicQteQueueRef.current, ...qteItems]
-      setToxicQteQueue(toxicQteQueueRef.current)
-      for (const crash of crashes) {
-        weekAccumRef.current = {
-          ...weekAccumRef.current,
-          highlights: [
-            `${crash.creatorName} 진상 사태로 컨디션 −${crash.drop}`,
-            ...weekAccumRef.current.highlights,
-          ],
-        }
-      }
-    }
   }
 
   function resolveToxicQte(itemId: string, success: boolean) {
@@ -1147,7 +1416,6 @@ export function InGame({
     setGameMonth(nextMonth)
 
     const weekSnapshot = weekAccumRef.current
-    // 월간 1회: 해당 월에 방송한 크리에이터만 성장
     const monthBroadcastIds = new Set(weekSnapshot.byCreator.keys())
     // 실제 방송 3개월당 SP +1. VIP·데이트·선물·H재요청은 이벤트 보상으로 별도 지급.
     if (monthBroadcastIds.size > 0) {
@@ -1161,53 +1429,7 @@ export function InGame({
         setBroadcastMonthsTowardSp(nextToward)
       }
     }
-    const growthHighlights: string[] = []
-    const promoteBatch: PromoteSalaryNego[] = []
-    let nextOwned = ownedCreatorsRef.current.map((creator) => {
-      if (!monthBroadcastIds.has(creator.id)) return creator
-      const result = applyBroadcastGrowth(creator)
-      growthHighlights.push(
-        `${creator.name} 성장 인기 +${result.popularityGain} / 스킬 +${result.skillGain}`,
-      )
-      if (result.promotedTo) {
-        growthHighlights.push(
-          `${creator.name} ${result.previousGrade}→${result.promotedTo} 등급 상승!`,
-        )
-        const previousSalary = result.creator.salary
-        const proposedSalary = rollNegotiatedSalary(
-          {
-            popularity: result.creator.popularity,
-            skill: result.creator.skill,
-            heat: result.creator.heat,
-            trust: result.creator.trust,
-            stamina: result.creator.stamina,
-            staminaMax: result.creator.staminaMax,
-            revenueMult: result.creator.revenueMult,
-          },
-          result.promotedTo,
-        )
-        const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
-        const salaryEventId = charDef?.eventLinks?.salary
-        const salaryEvent = salaryEventId
-          ? eventsRef.current.find((e) => e.id === salaryEventId) ?? null
-          : null
-        promoteBatch.push({
-          creatorId: result.creator.id,
-          creatorName: result.creator.name,
-          previousGrade: result.previousGrade,
-          newGrade: result.promotedTo,
-          previousSalary,
-          proposedSalary,
-          salaryEvent,
-        })
-      }
-      return result.creator
-    })
-    ownedCreatorsRef.current = nextOwned
-    onOwnedCreatorsChangeRef.current(nextOwned)
-    if (promoteBatch.length > 0) {
-      setPromoteQueue((prev) => [...prev, ...promoteBatch])
-    }
+    const nextOwned = ownedCreatorsRef.current
 
     const issued = formatGameClock(monthToCalendarDate(GAME_EPOCH, nextMonth)).date.replace(
       /\./g,
@@ -1244,10 +1466,11 @@ export function InGame({
       )
     }
 
-    const statement = buildWeeklyStatement({
+    const viewersBefore = leagueRef.current.viewers
+    const statementDraft = buildWeeklyStatement({
       week: {
         ...weekSnapshot,
-        highlights: [...growthHighlights, ...weekSnapshot.highlights],
+        highlights: [...weekSnapshot.highlights],
       },
       issuedDate: issued,
       previousNetProfitWon: prevWeekRevenueRef.current,
@@ -1257,13 +1480,13 @@ export function InGame({
       taxYear,
       annualRevenueForTaxWon,
     })
-    prevWeekRevenueRef.current = statement.netProfitWon
+    prevWeekRevenueRef.current = statementDraft.netProfitWon
     // 케어비는 이미 즉시 차감됐으므로, 명세서 net에 포함된 케어분을 환산 보정
     const careAlreadyPaid = weekSnapshot.careExpenses.reduce(
       (sum, row) => sum + row.amountWon,
       0,
     )
-    const assetDelta = statement.netProfitWon + careAlreadyPaid
+    const assetDelta = statementDraft.netProfitWon + careAlreadyPaid
     const assetsAfter = assetsRef.current + assetDelta
     if (assetDelta !== 0) {
       setAssets(assetsAfter)
@@ -1307,6 +1530,87 @@ export function InGame({
     }
     pendingStationReviewRef.current = isAnnualReviewMonth(nextDate, GAME_EPOCH)
 
+    const snsResults: SnsResult[] = []
+    let extraViewers = 0
+    const afterSnsOwned = ownedCreatorsRef.current.map((creator) => {
+      const pending = creator.snsPending
+      if (!pending) return creator
+      const rolled = resolveSnsPending(pending.heat)
+      extraViewers += rolled.viewersGained
+      const post = (creator.snsPosts ?? []).find((row) => row.id === pending.postId)
+      const media = snsPostMedia(
+        creator.snsPosts ?? [],
+        creator.images,
+        creator.videos,
+        pending.postId,
+      )
+      snsResults.push({
+        creatorId: creator.id,
+        creatorName: creator.name,
+        postId: pending.postId,
+        heat: pending.heat,
+        imageUrl: media?.url ?? null,
+        mediaKind: media?.kind ?? null,
+        blurRegions: post?.blurRegions ?? [],
+        caption: post ? snsCaptionOf(post, locale) : '',
+        likes: rolled.likes,
+        comments: rolled.comments,
+        viewersGained: rolled.viewersGained,
+      })
+      return {
+        ...creator,
+        snsPending: null,
+        snsPublishedIds: [...(creator.snsPublishedIds ?? []), pending.postId],
+        snsFeed: [
+          ...(creator.snsFeed ?? []),
+          {
+            postId: pending.postId,
+            heat: pending.heat,
+            likes: rolled.likes,
+            comments: rolled.comments,
+            publishedMonth: broadcastMonthNumberRef.current,
+          },
+        ],
+      }
+    })
+    if (snsResults.length > 0) {
+      ownedCreatorsRef.current = afterSnsOwned
+      onOwnedCreatorsChangeRef.current(afterSnsOwned)
+      if (extraViewers > 0) {
+        const nextViewers = capStationViewers(
+          leagueRef.current.viewers + extraViewers,
+          stationGradeRef.current,
+        )
+        leagueRef.current = { ...leagueRef.current, viewers: nextViewers }
+        setLeague(leagueRef.current)
+      }
+      snsResultQueueRef.current = snsResults
+      setSnsResultQueue(snsResults)
+    }
+
+    const viewersGained = leagueRef.current.viewers - viewersBefore
+    const viewersByCreator = allocateViewersGained(
+      viewersGained,
+      statementDraft.lines.map((line) => {
+        const creator = ownedRankCreators.find((row) => row.id === line.creatorId)
+        return {
+          id: line.creatorId,
+          weight:
+            line.broadcastHours > 0 && creator ? creatorViewerWeight(creator) : 0,
+        }
+      }),
+    )
+    const statement = {
+      ...statementDraft,
+      lines: statementDraft.lines.map((line) => ({
+        ...line,
+        viewersGained: viewersByCreator[line.creatorId] ?? 0,
+      })),
+      viewersBefore,
+      viewersAfter: leagueRef.current.viewers,
+      viewersGained,
+    }
+
     const socialBlocked =
       pendingStationReviewRef.current || Boolean(pendingRankResultRef.current?.gameCleared)
     const socialRoll = advanceAndPickSocialEvent(
@@ -1323,6 +1627,8 @@ export function InGame({
     weekAccumRef.current = createWeekAccumulator(nextMonthNumber)
     setBroadcastPhase('prep')
     setLivePlayVideoByCreator({})
+    setLiveWeekProgress(0)
+    setLiveStaminaDrainByCreatorId({})
     dayPlanRef.current = null
     dayStartedAtRef.current = null
     setStartBroadcastLocked(true)
@@ -1341,6 +1647,41 @@ export function InGame({
     }, 1800)
   }
 
+  function finishWeeklyStatementFollowup() {
+    const pendingRank = pendingRankResultRef.current
+    pendingRankResultRef.current = null
+    const openScout =
+      ownedCreatorsRef.current.length === 0 &&
+      Boolean(scoutSystemRef.current.activeOffer)
+    if (pendingRank) {
+      pendingScoutAfterRankRef.current = openScout
+      const tierMoved =
+        companyTierOf(pendingRank.previousRank).id !==
+        companyTierOf(pendingRank.currentRank).id
+      if (pendingRank.rankChange !== 0 || tierMoved) {
+        pendingRankAfterBubbleRef.current = pendingRank
+        setTab('ranking')
+        setRankBubblePlay({
+          fromRank: pendingRank.previousRank,
+          toRank: pendingRank.currentRank,
+        })
+        return
+      }
+      setRankSettlement(pendingRank)
+      return
+    }
+    continueAfterMonthModals(openScout)
+  }
+
+  function releaseMonthEndLock(openScout: boolean) {
+    pendingScoutAfterRankRef.current = false
+    setStartBroadcastLocked(false)
+    if (openScout && scoutSystemRef.current.activeOffer) {
+      setTab('creator')
+      setOpenCreatorScout(true)
+    }
+  }
+
   function continueAfterMonthModals(openScout: boolean) {
     const next = pendingSocialQueueRef.current.shift() ?? null
     if (next) {
@@ -1352,12 +1693,12 @@ export function InGame({
       else setSocialUi({ mode: 'hRetryOffer', pending: next })
       return
     }
-    pendingScoutAfterRankRef.current = false
-    setStartBroadcastLocked(false)
-    if (openScout && scoutSystemRef.current.activeOffer) {
-      setTab('creator')
-      setOpenCreatorScout(true)
+    if (snsResultQueueRef.current.length > 0) {
+      pendingScoutAfterRankRef.current = openScout
+      setStartBroadcastLocked(true)
+      return
     }
+    releaseMonthEndLock(openScout)
   }
 
   function patchOwnedCreator(creatorId: string, patch: (creator: OwnedCreator) => OwnedCreator) {
@@ -1557,6 +1898,131 @@ export function InGame({
     onOwnedCreatorsChangeRef.current(nextOwned)
   }
 
+  function queuePromotionSalary(
+    creator: OwnedCreator,
+    previousGrade: Grade,
+    newGrade: Grade,
+  ) {
+    const previousSalary = creator.salary
+    const rolled = rollNegotiatedSalary(
+      {
+        heat: creator.heat,
+        trust: creator.trust,
+        stamina: creator.stamina,
+        staminaMax: creator.staminaMax,
+        revenueMult: creator.revenueMult,
+        statSexy: creator.statSexy,
+        statElegance: creator.statElegance,
+        statCommunication: creator.statCommunication,
+        statPerformance: creator.statPerformance,
+      },
+      newGrade,
+    )
+    const proposedSalary = Math.max(Math.round(previousSalary * 1.12), rolled)
+    const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
+    const salaryEventId = charDef?.eventLinks?.salary
+    const salaryEvent = salaryEventId
+      ? eventsRef.current.find((e) => e.id === salaryEventId) ?? null
+      : null
+    setPromoteQueue((prev) => [
+      ...prev,
+      {
+        creatorId: creator.id,
+        creatorName: creator.name,
+        previousGrade,
+        newGrade,
+        previousSalary,
+        proposedSalary,
+        salaryEvent,
+      },
+    ])
+  }
+
+  function handleProductionTraining(creatorId: string) {
+    if (promotionExamRef.current) return
+    const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
+    if (!target) return
+
+    if (isPromotionExamReady(target)) {
+      const examCost = calcPromotionExamCost(target)
+      if (assetsRef.current < examCost) return
+      const result = resolvePromotionExam(target, examCost)
+      if (!result) return
+      if (examCost > 0) {
+        const nextAssets = assetsRef.current - examCost
+        assetsRef.current = nextAssets
+        setAssets(nextAssets)
+      }
+      const exam = {
+        creatorId: target.id,
+        creatorName: target.name,
+        result,
+      }
+      promotionExamRef.current = exam
+      setPromotionExam(exam)
+      return
+    }
+
+    const result = applyProductionTraining(target)
+    const totalGain =
+      result.gains.statSexy +
+      result.gains.statElegance +
+      result.gains.statCommunication +
+      result.gains.statPerformance
+    if (totalGain <= 0) return
+    const trainingCost = calcTrainingCost(target)
+    if (assetsRef.current < trainingCost) return
+    if (trainingCost > 0) {
+      const nextAssets = assetsRef.current - trainingCost
+      assetsRef.current = nextAssets
+      setAssets(nextAssets)
+    }
+    const nextOwned = ownedCreatorsRef.current.map((creator) =>
+      creator.id === creatorId ? result.creator : creator,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+  }
+
+  function confirmPromotionExam() {
+    const play = promotionExamRef.current
+    if (!play) return
+    promotionExamRef.current = null
+    setPromotionExam(null)
+    if (play.result.refund > 0) {
+      const nextAssets = assetsRef.current + play.result.refund
+      assetsRef.current = nextAssets
+      setAssets(nextAssets)
+    }
+    if (play.result.kind === 'fail') return
+    const target = ownedCreatorsRef.current.find((c) => c.id === play.creatorId)
+    if (!target) return
+    const promoted = applyPromotionExamResult(target, play.result)
+    const nextOwned = ownedCreatorsRef.current.map((creator) =>
+      creator.id === play.creatorId ? promoted : creator,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+    queuePromotionSalary(promoted, play.result.fromGrade, play.result.toGrade)
+  }
+
+  function handleSnsCompose(creatorId: string, heat: SnsHeat) {
+    const target = ownedCreatorsRef.current.find((creator) => creator.id === creatorId)
+    if (!target || target.snsPending) return
+    const published = target.snsPublishedIds ?? []
+    const post = nextSnsPost(target.snsPosts ?? [], published, heat)
+    const cost = SNS_HEAT_COST[heat]
+    if (!post || assetsRef.current < cost) return
+    const nextAssets = assetsRef.current - cost
+    assetsRef.current = nextAssets
+    setAssets(nextAssets)
+    const nextOwned = ownedCreatorsRef.current.map((creator) =>
+      creator.id === creatorId ? { ...creator, snsPending: { postId: post.id, heat } } : creator,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+  }
+
   function handleVacation(creatorId: string) {
     const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
     if (!target) return
@@ -1616,6 +2082,9 @@ export function InGame({
     monthWeekIndexRef.current = 0
     // 방송 시작 시 후원/시청 이벤트는 초기화, 세금 알림은 유지
     setLiveEvents((prev) => prev.filter((event) => event.type === 'tax'))
+    donationBatchRef.current = new Map()
+    feedExtraQueueRef.current = []
+    lastFeedEmitAtRef.current = 0
     setConditionCrashes([])
     setGearFailBursts([])
     toxicQteQueueRef.current = []
@@ -1669,6 +2138,22 @@ export function InGame({
     advanceBroadcastWeek()
   }, [toxicQteActive, broadcastPhase])
 
+  // CCTV 스테미나: 한 주 동안 소모량을 서서히 반영
+  useEffect(() => {
+    if (broadcastPhase !== 'live') {
+      setLiveWeekProgress(0)
+      return
+    }
+    const id = window.setInterval(() => {
+      const plan = dayPlanRef.current
+      const startedAt = dayStartedAtRef.current
+      if (!plan || startedAt == null || plan.dayMs <= 0) return
+      const elapsed = performance.now() - startedAt
+      setLiveWeekProgress(Math.max(0, Math.min(1, elapsed / plan.dayMs)))
+    }, 80)
+    return () => window.clearInterval(id)
+  }, [broadcastPhase, toxicQteActive])
+
   // 주 진행: 이벤트 공개
   useEffect(() => {
     if (broadcastPhase !== 'live') return
@@ -1684,9 +2169,8 @@ export function InGame({
           .filter((event) => event.atMs <= elapsed)
           .sort((a, b) => a.atMs - b.atMs),
       )
-      if (due.length === 0) return
-      creditLiveDonations(due)
-      setLiveEvents((prev) => [...due.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+      ingestLiveFeedEvents(due, plan, false)
+      runDueInspections(elapsed)
     }, 50)
     return () => window.clearInterval(id)
   }, [broadcastPhase, toxicQteActive])
@@ -1881,6 +2365,8 @@ export function InGame({
             livePlayVideoByCreator={livePlayVideoByCreator}
             liveEvents={liveEvents}
             liveRevenueByCreator={liveRevenueByCreator}
+            liveWeekProgress={liveWeekProgress}
+            liveStaminaDrainByCreatorId={liveStaminaDrainByCreatorId}
             conditionCrashes={conditionCrashes}
             gearFailBursts={gearFailBursts}
             toxicQtes={toxicQteQueue}
@@ -1914,6 +2400,8 @@ export function InGame({
             onScoutHire={handleCreatorScoutHire}
             onConditionCare={handleConditionCare}
             onVacation={handleVacation}
+            onProductionTraining={handleProductionTraining}
+            onSnsCompose={handleSnsCompose}
           />
         ) : tab === 'schedule' ? (
           <SchedulePanel
@@ -2066,6 +2554,32 @@ export function InGame({
         </div>
       ) : null}
 
+      {snsResultQueue[0] &&
+      !weeklyStatement &&
+      !broadcastEndedNotice &&
+      !rankSettlement &&
+      !rankBubblePlay &&
+      !stationReview &&
+      !showGameClear &&
+      !vipOffer &&
+      !vipResult &&
+      !vipEventPlay &&
+      !socialUi &&
+      !salaryEventPlay &&
+      !scoutEventState &&
+      !promotionExam &&
+      promoteQueue.length === 0 ? (
+        <SnsResultModal
+          result={snsResultQueue[0]}
+          onConfirm={() => {
+            const rest = snsResultQueueRef.current.slice(1)
+            snsResultQueueRef.current = rest
+            setSnsResultQueue(rest)
+            if (rest.length === 0) releaseMonthEndLock(pendingScoutAfterRankRef.current)
+          }}
+        />
+      ) : null}
+
       {weeklyStatement ? (
         <WeeklySettlementModal
           statement={weeklyStatement}
@@ -2073,29 +2587,7 @@ export function InGame({
           portraitByCreatorId={settlementPortraits}
           onConfirm={() => {
             setWeeklyStatement(null)
-            const pendingRank = pendingRankResultRef.current
-            pendingRankResultRef.current = null
-            const openScout =
-              ownedCreatorsRef.current.length === 0 &&
-              Boolean(scoutSystemRef.current.activeOffer)
-            if (pendingRank) {
-              pendingScoutAfterRankRef.current = openScout
-              const tierMoved =
-                companyTierOf(pendingRank.previousRank).id !==
-                companyTierOf(pendingRank.currentRank).id
-              if (pendingRank.rankChange !== 0 || tierMoved) {
-                pendingRankAfterBubbleRef.current = pendingRank
-                setTab('ranking')
-                setRankBubblePlay({
-                  fromRank: pendingRank.previousRank,
-                  toRank: pendingRank.currentRank,
-                })
-                return
-              }
-              setRankSettlement(pendingRank)
-              return
-            }
-            continueAfterMonthModals(openScout)
+            finishWeeklyStatementFollowup()
           }}
         />
       ) : null}
@@ -2314,6 +2806,14 @@ export function InGame({
           }}
           registeredCharacters={registeredCharacters}
           allowSkip={watchedEventIds.includes(salaryEventPlay.salaryEvent.id)}
+        />
+      ) : null}
+
+      {promotionExam ? (
+        <PromotionSlotModal
+          creatorName={promotionExam.creatorName}
+          result={promotionExam.result}
+          onConfirm={confirmPromotionExam}
         />
       ) : null}
 
