@@ -65,6 +65,7 @@ type CreatorPanelProps = {
   managerState: SlotManagerState
   onHireStaff: (staffId: string, hireCost: number, salary: number) => boolean
   hiredStaffSalaries: Record<string, number>
+  hiredStaffStartMonths: Record<string, number>
   staffScoutCooldown: number
   scoutedStaffCandidate: ScoutedStaffCandidate | null
   onScoutStaff: () => void
@@ -134,6 +135,7 @@ export function CreatorPanel({
   managerState,
   onHireStaff,
   hiredStaffSalaries,
+  hiredStaffStartMonths,
   staffScoutCooldown,
   scoutedStaffCandidate,
   onScoutStaff,
@@ -454,6 +456,7 @@ export function CreatorPanel({
                     <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase">
                       <th className="px-3 py-2.5 font-semibold sm:px-4">이름</th>
                       <th className="px-3 py-2.5 font-semibold">분야</th>
+                      <th className="px-3 py-2.5 font-semibold">입사 연월</th>
                       <th className="px-3 py-2.5 font-semibold">연봉</th>
                       <th className="px-3 py-2.5 font-semibold">배치</th>
                       <th className="px-3 py-2.5 font-semibold sm:px-4">업무 배치</th>
@@ -500,6 +503,15 @@ export function CreatorPanel({
                             <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-slate-300">
                               {t(STAFF_KIND_LABEL_KEY[staff.kind])}
                             </span>
+                          </td>
+                          <td className="px-3 py-2.5 font-semibold text-slate-300">
+                            {(() => {
+                              const startMonth = hiredStaffStartMonths[staff.id] ?? 0
+                              const totalMonths = 2026 * 12 + 8 + startMonth
+                              const y = Math.floor(totalMonths / 12)
+                              const m = (totalMonths % 12) + 1
+                              return `${y}년 ${m}월`
+                            })()}
                           </td>
                           <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
                             {salary > 0 ? formatSalary(salary) : '-'}

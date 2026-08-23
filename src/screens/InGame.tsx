@@ -2881,6 +2881,7 @@ export function InGame({
             managerState={managerState}
             onHireStaff={handleHireStaff}
             hiredStaffSalaries={hiredStaffSalaries}
+            hiredStaffStartMonths={hiredStaffStartMonths}
             staffScoutCooldown={staffScoutCooldown}
             scoutedStaffCandidate={scoutedStaffCandidate}
             onScoutStaff={handleScoutStaff}
