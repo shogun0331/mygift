@@ -124,7 +124,7 @@ export function normalizeSnsPosts(raw: unknown): SnsPostDef[] {
             : undefined,
         blurRegions: readBlurRegions(row),
         blurDefault: clampBlur(Number(row.blurDefault ?? BLUR_DEFAULT)),
-      } satisfies SnsPostDef
+      } as SnsPostDef
     })
     .filter((row): row is SnsPostDef => Boolean(row))
 }

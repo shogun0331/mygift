@@ -84,13 +84,6 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
   const postCount = feed.length + (pending ? 1 : 0)
 
   const feedItems = [
-    ...feed.map((item) => ({
-      key: item.postId,
-      postId: item.postId,
-      likes: item.likes,
-      comments: item.comments ?? [],
-      pending: false,
-    })),
     ...(pending
       ? [
           {
@@ -102,6 +95,13 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
           },
         ]
       : []),
+    ...[...feed].reverse().map((item) => ({
+      key: item.postId,
+      postId: item.postId,
+      likes: item.likes,
+      comments: item.comments ?? [],
+      pending: false,
+    })),
   ]
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
     requestAnimationFrame(() => {
       const scroller = feedScrollRef.current
       if (!scroller) return
-      scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' })
+      scroller.scrollTo({ top: 0, behavior: 'smooth' })
     })
   }, [pending])
 
@@ -285,7 +285,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
                         {HEATS.map((heat) => {
                           const cost = SNS_HEAT_COST[heat]
                           const stock = nextSnsPost(posts, publishedIds, heat)
-                          const progress = snsHeatProgress(posts, publishedIds, heat, pending?.postId)
+                          const progress = snsHeatProgress(posts, publishedIds, heat, undefined)
                           const broke = assets < cost
                           const disabled = !stock || broke
                           const selected = pickedHeat === heat
