@@ -19,7 +19,7 @@
   "promotions": {
     "sme": {
       "to": "sme",
-      "requiredViewers": 1000,
+      "requiredViewers": 5000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 1
@@ -33,7 +33,7 @@
           "id": "b1",
           "minGrade": "B",
           "count": 1,
-          "enabled": true
+          "enabled": false
         }
       ],
       "spReward": 3,
@@ -41,7 +41,7 @@
     },
     "mid": {
       "to": "mid",
-      "requiredViewers": 10000,
+      "requiredViewers": 100000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 2
@@ -63,7 +63,7 @@
     },
     "large": {
       "to": "large",
-      "requiredViewers": 50000,
+      "requiredViewers": 1000000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 3
@@ -85,7 +85,7 @@
     },
     "top": {
       "to": "top",
-      "requiredViewers": 100000,
+      "requiredViewers": 8000000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 4

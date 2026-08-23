@@ -1149,6 +1149,18 @@ export function InGame({
     }
   }
 
+  function isCreatorInspectionBlocked(creatorId: string, atMs: number) {
+    const plan = dayPlanRef.current
+    if (!plan || plan.dayMs <= 0) return false
+    const creator = ownedCreatorsRef.current.find((row) => row.id === creatorId)
+    if (!creator) return true
+    const progress = atMs / plan.dayMs
+    const blockProgress = broadcastBlockedSinceRef.current[creatorId]
+    if (blockProgress != null && progress >= blockProgress) return true
+    const drain = liveStaminaDrainByCreatorIdRef.current[creatorId] ?? 0
+    return isCreatorBroadcastBlockedLive(creator, drain, progress)
+  }
+
   function creditLiveDonations(events: DayEvent[]) {
     const donations = events.filter(
       (event) =>
@@ -1452,6 +1464,9 @@ export function InGame({
     const creator = ownedCreatorsRef.current.find((row) => row.id === inspection.creatorId)
     if (!creator) return
 
+    // 방송 불가(스테미나 고갈) 구간 — 진상·장비 고장 검사 없음
+    if (isCreatorInspectionBlocked(creator.id, inspection.atMs)) return
+
     const managers = managerStateRef.current
     const security = staffBonusOf(managers, inspection.slotId, 'security')
     const repair = staffBonusOf(managers, inspection.slotId, 'repair')
@@ -1504,16 +1519,16 @@ export function InGame({
         )
         ownedCreatorsRef.current = nextOwned
         onOwnedCreatorsChangeRef.current(nextOwned)
-        if (!tryCareRestore(creator.id, inspection.slotId)) {
-          presentToxicCrashes(plan, [
-            {
-              creatorId: creator.id,
-              creatorName: creator.name,
-              drop,
-              staminaDrop,
-            },
-          ])
-        }
+        presentToxicCrashes(plan, [
+          {
+            creatorId: creator.id,
+            creatorName: creator.name,
+            drop,
+            staminaDrop,
+          },
+        ])
+        // 케어: 진상 QTE는 그대로 두고, 컨디션만 추가 회복
+        tryCareRestore(creator.id, inspection.slotId)
       }
       blockedOrResolved = true
     }
