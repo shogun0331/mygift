@@ -21,6 +21,7 @@ import {
   type SnsPublishedPost,
 } from './sns'
 import { creatorVisuals } from './studioSlots'
+import type { RegisteredStaff } from './staff'
 
 export type Grade = 'S' | 'A' | 'B' | 'C'
 
@@ -396,4 +397,9 @@ export function toStudioHandCard(creator: OwnedCreator) {
     idleVideoUrl: findLevelIdleVideoUrl(creator),
     mediaRevision: creator.mediaRevision,
   }
+}
+
+export type ScoutedStaffCandidate = RegisteredStaff & {
+  proposedSalary: number
+  proposedHireCost: number
 }

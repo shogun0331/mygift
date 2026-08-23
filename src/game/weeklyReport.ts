@@ -177,6 +177,7 @@ export function buildWeeklyStatement(opts: {
   annualRevenueForTaxWon?: number
   viewersBefore?: number
   viewersAfter?: number
+  staffPayrollTotal?: number
 }): WeeklyStatement {
   const { week, issuedDate, previousNetProfitWon } = opts
 
@@ -246,6 +247,14 @@ export function buildWeeklyStatement(opts: {
         ? `무배치 방송 (${Math.round(EMPTY_BROADCAST_OP_COST_RATE * 100)}%)`
         : undefined,
       amountWon: opCost,
+    })
+  }
+
+  if (opts.staffPayrollTotal && opts.staffPayrollTotal > 0) {
+    expenses.push({
+      id: 'staff-payroll',
+      label: '스탭 인건비',
+      amountWon: opts.staffPayrollTotal,
     })
   }
 

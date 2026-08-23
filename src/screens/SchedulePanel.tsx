@@ -116,8 +116,6 @@ type SchedulePanelProps = {
   placementLocked?: boolean
   registeredStaff?: RegisteredStaff[]
   managerState?: SlotManagerState
-  assets?: number
-  onHireStaff?: (staffId: string) => boolean
   onEquipStaff?: (slotId: string, kind: StaffKind, staffId: string) => void
   onUnequipStaff?: (slotId: string, kind: StaffKind) => void
 }
@@ -131,14 +129,11 @@ export function SchedulePanel({
   placementLocked = false,
   registeredStaff = [],
   managerState,
-  assets = 0,
-  onHireStaff,
   onEquipStaff,
   onUnequipStaff,
 }: SchedulePanelProps) {
   const { t, locale } = useTranslation()
   const [studioMode, setStudioMode] = useState<'creator' | 'staff'>('creator')
-  const [hireOpen, setHireOpen] = useState(false)
   const [selectedCard, setSelectedCard] = useState<string | null>(null)
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null)
   const [dragOverSlotId, setDragOverSlotId] = useState<string | null>(null)
@@ -146,7 +141,6 @@ export function SchedulePanel({
   const [draggingStaffId, setDraggingStaffId] = useState<string | null>(null)
 
   const hiredStaff = registeredStaff.filter((row) => managerState?.hiredStaffIds.includes(row.id))
-  const hireableStaff = registeredStaff.filter((row) => !managerState?.hiredStaffIds.includes(row.id))
   const placeableStaff = hiredStaff.filter(
     (row) => !managerState || !findSlotIdForStaff(managerState, row.id),
   )
@@ -165,7 +159,6 @@ export function SchedulePanel({
     setStudioMode(next)
     setSelectedCard(null)
     setSelectedStaffId(null)
-    setHireOpen(false)
     setDragOverSlotId(null)
     setDraggingSlotId(null)
     setDraggingStaffId(null)
@@ -589,62 +582,24 @@ export function SchedulePanel({
             <div className="min-w-0">
               <p className="text-xs font-semibold tracking-wide text-slate-400">
                 {staffMode
-                  ? hireOpen
-                    ? t('studio.hireStaff')
-                    : t('studio.managerHandTitle')
+                  ? t('studio.managerHandTitle')
                   : t('studio.placementTitle')}
               </p>
               <p className="mt-0.5 text-[10px] leading-snug text-slate-500">
                 {staffMode
-                  ? hireOpen
-                    ? t('studio.hireStaffDesc')
-                    : placementLocked
-                      ? t('studio.managerHandLockedDesc')
-                      : t('studio.managerHandDesc')
+                  ? placementLocked
+                    ? t('studio.managerHandLockedDesc')
+                    : t('studio.managerHandDesc')
                   : placementLocked
                     ? t('studio.placementLockedDesc')
                     : t('studio.placementDesc')}
               </p>
             </div>
-            {staffMode ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setHireOpen((prev) => !prev)
-                  setSelectedStaffId(null)
-                }}
-                className="shrink-0 rounded-lg border border-indigo-400/40 bg-indigo-500/20 px-2 py-1 text-[9px] font-black text-indigo-100"
-              >
-                {hireOpen ? t('studio.hireBack') : t('studio.hireStaff')}
-              </button>
-            ) : null}
           </div>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-0.5">
-          {staffMode && hireOpen ? (
-            hireableStaff.length === 0 ? (
-              <div className="flex h-full min-h-[8rem] items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-3">
-                <p className="text-center text-[10px] leading-relaxed text-slate-500">
-                  {t('studio.noHireable')}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 content-start items-start gap-2">
-                {hireableStaff.map((staff) => (
-                  <StaffHandCard
-                    key={staff.id}
-                    staff={staff}
-                    locale={locale}
-                    hireable
-                    assets={assets}
-                    placementLocked={placementLocked}
-                    onHire={() => onHireStaff?.(staff.id)}
-                  />
-                ))}
-              </div>
-            )
-          ) : staffMode ? (
+          {staffMode ? (
             placeableStaff.length === 0 ? (
               <div className="flex h-full min-h-[8rem] items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-3">
                 <p className="text-center text-[10px] leading-relaxed text-slate-500">

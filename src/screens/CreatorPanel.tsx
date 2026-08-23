@@ -42,6 +42,7 @@ import { staffDisplayName, staffIconUrl, STAFF_KIND_LABEL_KEY } from '../game/st
 import type { SlotManagerState } from '../game/slotManagers'
 import { STAFF_HIRE_COST } from '../game/slotManagers'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import type { ScoutedStaffCandidate } from '../game/characters'
 
 type CreatorPanelProps = {
   ownedCreators: OwnedCreator[]
@@ -61,7 +62,11 @@ type CreatorPanelProps = {
   onSnsCompose: (creatorId: string, heat: 1 | 2 | 3) => void
   registeredStaff: RegisteredStaff[]
   managerState: SlotManagerState
-  onHireStaff: (staffId: string) => boolean
+  onHireStaff: (staffId: string, hireCost: number, salary: number) => boolean
+  hiredStaffSalaries: Record<string, number>
+  staffScoutCooldown: number
+  scoutedStaffCandidate: ScoutedStaffCandidate | null
+  onScoutStaff: () => void
 }
 
 const GRADE_FILTERS: Array<'ALL' | Grade> = ['ALL', 'S', 'A', 'B', 'C']
@@ -125,6 +130,10 @@ export function CreatorPanel({
   registeredStaff,
   managerState,
   onHireStaff,
+  hiredStaffSalaries,
+  staffScoutCooldown,
+  scoutedStaffCandidate,
+  onScoutStaff,
 }: CreatorPanelProps) {
   const { t, locale } = useTranslation()
   const [view, setView] = useState<'roster' | 'scout'>('roster')
@@ -361,106 +370,137 @@ export function CreatorPanel({
         </div>
       </section>
 
-      <section className="game-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 px-3 py-2.5 sm:px-4">
-          <div>
-            <p className="text-xs font-semibold tracking-wide text-slate-200">스탭 관리</p>
-            <p className="mt-0.5 text-[10px] text-slate-500">분야별 스탭 목록 · 영입</p>
-          </div>
-          <span className="game-chip text-[10px]">{registeredStaff.length}명</span>
-        </div>
+      {(() => {
+        const displayStaffs = [
+          ...registeredStaff.filter((s) => managerState.hiredStaffIds.includes(s.id)),
+          ...(scoutedStaffCandidate ? [scoutedStaffCandidate] : []),
+        ]
 
-        <div className="min-h-0 flex-1 overflow-auto">
-          {registeredStaff.length === 0 ? (
-            <div className="flex h-full min-h-[12rem] flex-col items-center justify-center gap-2 px-4 text-center">
-              <p className="text-sm text-slate-400">등록된 스탭이 없습니다.</p>
+        return (
+          <section className="game-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
+            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 px-3 py-2.5 sm:px-4">
+              <div>
+                <p className="text-xs font-semibold tracking-wide text-slate-200">스탭 관리</p>
+                <p className="mt-0.5 text-[10px] text-slate-500">스카우트 및 고용 스탭 관리</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={staffScoutCooldown > 0}
+                  onClick={onScoutStaff}
+                  className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {staffScoutCooldown > 0 ? `스카우트 대기 (${staffScoutCooldown}턴)` : '스카우트 시도'}
+                </button>
+                <span className="game-chip text-[10px]">{displayStaffs.length}명</span>
+              </div>
             </div>
-          ) : (
-            <table className="w-full min-w-[56rem] border-collapse text-left text-sm">
-              <thead className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur-sm">
-                <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase">
-                  <th className="px-3 py-2.5 font-semibold sm:px-4">이름</th>
-                  <th className="px-3 py-2.5 font-semibold">분야</th>
-                  <th className="px-3 py-2.5 font-semibold">영입 비용</th>
-                  <th className="px-3 py-2.5 font-semibold">상태</th>
-                  <th className="px-3 py-2.5 font-semibold sm:px-4">액션</th>
-                </tr>
-              </thead>
-              <tbody>
-                {registeredStaff.map((staff, index) => {
-                  const hired = managerState.hiredStaffIds.includes(staff.id)
-                  const displayName = staffDisplayName(staff, locale)
-                  const icon = staffIconUrl(staff)
-                  const genderLabel = staff.gender === 'male' ? '남성' : '여성'
-                  return (
-                    <tr
-                      key={staff.id}
-                      className={`border-b border-white/6 transition hover:bg-indigo-500/8 ${
-                        index % 2 === 0 ? 'bg-black/10' : 'bg-transparent'
-                      }`}
-                    >
-                      <td className="px-3 py-2.5 sm:px-4">
-                        <div className="flex items-center gap-2">
-                          {icon ? (
-                            <img
-                              src={resolveMediaSrc(icon, staff.mediaRevision)}
-                              alt={displayName}
-                              className="h-7 w-7 rounded-full object-cover ring-1 ring-white/10"
-                            />
-                          ) : (
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-700 text-[10px] font-bold text-white">
-                              {displayName.slice(0, 1)}
-                            </div>
-                          )}
-                          <div>
-                            <p className="font-semibold text-slate-100">{displayName}</p>
-                            <p className="text-[10px] text-slate-500">{genderLabel}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-3 py-2.5">
-                        <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-slate-300">
-                          {t(STAFF_KIND_LABEL_KEY[staff.kind])}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
-                        {formatSalary(STAFF_HIRE_COST)}
-                      </td>
-                      <td className="px-3 py-2.5">
-                        {hired ? (
-                          <span className="text-[11px] font-semibold text-emerald-400">고용 완료</span>
-                        ) : (
-                          <span className="text-[11px] text-slate-500">미고용</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2.5 sm:px-4">
-                        {hired ? (
-                          <button
-                            type="button"
-                            disabled
-                            className="game-btn rounded-lg px-2.5 py-1 text-xs opacity-50 cursor-not-allowed"
-                          >
-                            영입 완료
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            disabled={assets < STAFF_HIRE_COST}
-                            onClick={() => onHireStaff(staff.id)}
-                            className="game-btn game-btn-primary rounded-lg px-2.5 py-1 text-xs disabled:opacity-40"
-                          >
-                            영입하기
-                          </button>
-                        )}
-                      </td>
+
+            <div className="min-h-0 flex-1 overflow-auto">
+              {displayStaffs.length === 0 ? (
+                <div className="flex h-full min-h-[12rem] flex-col items-center justify-center gap-2 px-4 text-center">
+                  <p className="text-sm text-slate-400">고용된 스탭이 없습니다.</p>
+                  <p className="text-xs text-slate-500">우측 상단의 스카우트 시도 버튼을 눌러 스탭 후보를 찾아보세요.</p>
+                </div>
+              ) : (
+                <table className="w-full min-w-[56rem] border-collapse text-left text-sm">
+                  <thead className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur-sm">
+                    <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase">
+                      <th className="px-3 py-2.5 font-semibold sm:px-4">이름</th>
+                      <th className="px-3 py-2.5 font-semibold">분야</th>
+                      <th className="px-3 py-2.5 font-semibold">영입 비용</th>
+                      <th className="px-3 py-2.5 font-semibold">연봉</th>
+                      <th className="px-3 py-2.5 font-semibold">상태</th>
+                      <th className="px-3 py-2.5 font-semibold sm:px-4">액션</th>
                     </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </section>
+                  </thead>
+                  <tbody>
+                    {displayStaffs.map((staff, index) => {
+                      const hired = managerState.hiredStaffIds.includes(staff.id)
+                      const displayName = staffDisplayName(staff, locale)
+                      const icon = staffIconUrl(staff)
+                      const genderLabel = staff.gender === 'male' ? '남성' : '여성'
+
+                      // 비용 및 연봉 책정
+                      const hireCost = hired ? 0 : (staff as any).proposedHireCost ?? STAFF_HIRE_COST
+                      const salary = hired
+                        ? hiredStaffSalaries[staff.id] ?? 0
+                        : (staff as any).proposedSalary ?? 0
+
+                      return (
+                        <tr
+                          key={staff.id}
+                          className={`border-b border-white/6 transition hover:bg-indigo-500/8 ${
+                            index % 2 === 0 ? 'bg-black/10' : 'bg-transparent'
+                          }`}
+                        >
+                          <td className="px-3 py-2.5 sm:px-4">
+                            <div className="flex items-center gap-2">
+                              {icon ? (
+                                <img
+                                  src={resolveMediaSrc(icon, staff.mediaRevision)}
+                                  alt={displayName}
+                                  className="h-7 w-7 rounded-full object-cover ring-1 ring-white/10"
+                                />
+                              ) : (
+                                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-700 text-[10px] font-bold text-white">
+                                  {displayName.slice(0, 1)}
+                                </div>
+                              )}
+                              <div>
+                                <p className="font-semibold text-slate-100">{displayName}</p>
+                                <p className="text-[10px] text-slate-500">{genderLabel}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-3 py-2.5">
+                            <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-slate-300">
+                              {t(STAFF_KIND_LABEL_KEY[staff.kind])}
+                            </span>
+                          </td>
+                          <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
+                            {hired ? '-' : formatSalary(hireCost)}
+                          </td>
+                          <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
+                            {salary > 0 ? formatSalary(salary) : '-'}
+                          </td>
+                          <td className="px-3 py-2.5">
+                            {hired ? (
+                              <span className="text-[11px] font-semibold text-emerald-400">고용 완료</span>
+                            ) : (
+                              <span className="text-[11px] text-amber-300">스카우트 제안됨</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2.5 sm:px-4">
+                            {hired ? (
+                              <button
+                                type="button"
+                                disabled
+                                className="game-btn rounded-lg px-2.5 py-1 text-xs opacity-50 cursor-not-allowed"
+                              >
+                                영입 완료
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                disabled={assets < hireCost}
+                                onClick={() => onHireStaff(staff.id, hireCost, salary)}
+                                className="game-btn game-btn-primary rounded-lg px-2.5 py-1 text-xs disabled:opacity-40"
+                              >
+                                영입하기
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </section>
+        )
+      })()}
       {snsCreator ? (
         <SnsFeedModal
           creator={snsCreator}

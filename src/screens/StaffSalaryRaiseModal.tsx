@@ -1,0 +1,68 @@
+import { createPortal } from 'react-dom'
+
+type StaffSalaryRaiseModalProps = {
+  staffName: string
+  currentSalary: number
+  requestedSalary: number
+  onAccept: () => void
+  onReject: () => void
+}
+
+export function StaffSalaryRaiseModal({
+  staffName,
+  currentSalary,
+  requestedSalary,
+  onAccept,
+  onReject,
+}: StaffSalaryRaiseModalProps) {
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4">
+      <div
+        className="game-panel w-full max-w-md rounded-2xl p-5 text-center shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
+        style={{
+          background: 'linear-gradient(165deg, #2b2f3a 0%, #151821 100%)',
+          border: '1px border rgba(255,255,255,0.08)',
+        }}
+      >
+        <p className="game-kicker text-amber-400 font-extrabold uppercase tracking-widest text-[10px]">
+          연봉 인상 요구
+        </p>
+        <h3 className="mt-2 text-lg font-black text-slate-100">{staffName} 스탭</h3>
+        
+        <div className="mt-4 rounded-xl bg-black/30 p-4 border border-white/5 space-y-3">
+          <p className="text-[12px] leading-5 text-slate-400">
+            "다른 스탭들과 제 연봉 차이가 너무 많이 납니다. 연봉을 제안된 금액으로 올려주지 않으시면 이 회사에서 더 일하기 어려울 것 같습니다."
+          </p>
+          <div className="pt-2.5 border-t border-white/5 flex justify-around text-xs">
+            <div>
+              <span className="block text-[10px] text-slate-500 font-semibold">현재 연봉</span>
+              <span className="text-slate-300 font-bold tabular-nums">${currentSalary.toLocaleString()}/yr</span>
+            </div>
+            <div className="text-emerald-400 font-extrabold">
+              <span className="block text-[10px] text-slate-500 font-semibold">요구 연봉</span>
+              <span className="tabular-nums font-black">${requestedSalary.toLocaleString()}/yr</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5 flex gap-3">
+          <button
+            type="button"
+            onClick={onReject}
+            className="flex-1 game-btn rounded-xl py-2.5 text-xs font-bold text-rose-400 border border-rose-500/20 hover:bg-rose-500/10 transition"
+          >
+            거절 (퇴사)
+          </button>
+          <button
+            type="button"
+            onClick={onAccept}
+            className="flex-1 game-btn game-btn-primary rounded-xl py-2.5 text-xs font-bold transition"
+          >
+            수락 (인상)
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}

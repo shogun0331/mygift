@@ -23,11 +23,11 @@ import {
 import { staffDisplayName, type RegisteredStaff } from '../game/staff'
 import {
   CARE_STAMINA_MULT,
-  STAFF_HIRE_COST,
   ensureUnlockedSlotManagers,
   equipStaff,
   hireStaff,
   productionViewerBonus,
+  removeStaffFromState,
   staffBonusOf,
   unequipStaff,
   type SlotManagerState,
@@ -144,6 +144,8 @@ import { type StaffActionFxItem } from './StaffActionFx'
 import { type ToxicWhackQteItem } from './ToxicWhackQte'
 import { CreatorPanel } from './CreatorPanel'
 import { DashboardPanel } from './DashboardPanel'
+import { StaffSalaryRaiseModal } from './StaffSalaryRaiseModal'
+import { type ScoutedStaffCandidate } from '../game/characters'
 import { EquipmentPanel } from './EquipmentPanel'
 import { RecruitCardFlyFx, type RecruitFlyCard } from './RecruitCardFlyFx'
 import { RestRequiredModal } from './RestRequiredModal'
@@ -555,6 +557,19 @@ export function InGame({
   const [stationGrade, setStationGrade] = useState<StationGrade>('B')
   const [skillPoints, setSkillPoints] = useState(1000)
   const [broadcastMonthsTowardSp, setBroadcastMonthsTowardSp] = useState(0)
+  
+  const [staffScoutCooldown, setStaffScoutCooldown] = useState(0)
+  const [scoutedStaffCandidate, setScoutedStaffCandidate] = useState<ScoutedStaffCandidate | null>(null)
+  const [hiredStaffSalaries, setHiredStaffSalaries] = useState<Record<string, number>>({})
+  const hiredStaffSalariesRef = useRef(hiredStaffSalaries)
+  hiredStaffSalariesRef.current = hiredStaffSalaries
+  const [staffSalaryRaiseRequest, setStaffSalaryRaiseRequest] = useState<{
+    staffId: string
+    staffName: string
+    currentSalary: number
+    requestedSalary: number
+  } | null>(null)
+
   const [stationReview, setStationReview] = useState<{
     promoted: boolean
     status: StationReviewStatus
@@ -1493,13 +1508,45 @@ export function InGame({
     })
   }
 
-  function handleHireStaff(staffId: string) {
+  function handleScoutStaff() {
+    setStaffScoutCooldown(3)
+    const success = Math.random() < 0.5
+    if (success) {
+      const hiredIds = managerStateRef.current.hiredStaffIds
+      const pool = registeredStaff.filter((s) => !hiredIds.includes(s.id))
+      if (pool.length > 0) {
+        const picked = pool[Math.floor(Math.random() * pool.length)]
+        const hiredCount = hiredIds.length
+        const proposedHireCost = Math.round(15000 * Math.pow(1.8, hiredCount))
+        const proposedSalary = Math.round(20000 * Math.pow(1.5, hiredCount))
+        setScoutedStaffCandidate({
+          ...picked,
+          proposedHireCost,
+          proposedSalary,
+        })
+        alert(`${staffDisplayName(picked, locale)} 스탭 후보가 스카우트 제안에 응했습니다!`)
+      } else {
+        setScoutedStaffCandidate(null)
+        alert('더 이상 영입 가능한 스탭이 없습니다.')
+      }
+    } else {
+      setScoutedStaffCandidate(null)
+      alert('아무도 스카우트 제안에 응하지 않았습니다.')
+    }
+  }
+
+  function handleHireStaff(staffId: string, hireCost: number, salary: number) {
     if (managerStateRef.current.hiredStaffIds.includes(staffId)) return false
-    if (assetsRef.current < STAFF_HIRE_COST) return false
-    setAssets((prev) => prev - STAFF_HIRE_COST)
+    if (assetsRef.current < hireCost) return false
+    setAssets((prev) => prev - hireCost)
+    setHiredStaffSalaries((prev) => ({
+      ...prev,
+      [staffId]: salary,
+    }))
     const next = hireStaff(managerStateRef.current, staffId)
     managerStateRef.current = next
     onManagerStateChangeRef.current(next)
+    setScoutedStaffCandidate(null)
     return true
   }
 
@@ -1752,6 +1799,12 @@ export function InGame({
       )
     }
 
+    const staffPayrollTotal = Object.entries(hiredStaffSalariesRef.current)
+      .filter(([id]) => managerState.hiredStaffIds.includes(id))
+      .reduce((sum, [_, salary]) => sum + Math.max(0, Math.round(Number(salary) / 12) || 0), 0)
+
+    setStaffScoutCooldown((prev) => Math.max(0, prev - 1))
+
     const viewersBefore = leagueRef.current.viewers
     const statementDraft = buildWeeklyStatement({
       week: {
@@ -1765,6 +1818,7 @@ export function InGame({
       annualTaxWon,
       taxYear,
       annualRevenueForTaxWon,
+      staffPayrollTotal,
     })
     prevWeekRevenueRef.current = statementDraft.netProfitWon
     // 케어비는 이미 즉시 차감됐으므로, 명세서 net에 포함된 케어분을 환산 보정
@@ -1959,8 +2013,66 @@ export function InGame({
     continueAfterMonthModals(openScout)
   }
 
+  function checkStaffSalaryRaise() {
+    const hiredStaffIds = managerStateRef.current.hiredStaffIds
+    if (hiredStaffIds.length >= 2) {
+      const salaries = hiredStaffIds.map((id) => hiredStaffSalariesRef.current[id] ?? 0)
+      const maxSalary = Math.max(...salaries)
+      const minSalary = Math.min(...salaries)
+      if (maxSalary - minSalary >= 15000) {
+        const underpaidStaffIds = hiredStaffIds.filter(
+          (id) => (hiredStaffSalariesRef.current[id] ?? 0) === minSalary,
+        )
+        const targetStaffId = underpaidStaffIds[Math.floor(Math.random() * underpaidStaffIds.length)]
+        const targetStaff = registeredStaff.find((s) => s.id === targetStaffId)
+        if (targetStaff) {
+          const requestedSalary = Math.round(maxSalary * 0.9)
+          setStaffSalaryRaiseRequest({
+            staffId: targetStaffId,
+            staffName: staffDisplayName(targetStaff, locale),
+            currentSalary: minSalary,
+            requestedSalary: requestedSalary,
+          })
+          setStartBroadcastLocked(true)
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  function handleAcceptStaffSalaryRaise() {
+    if (!staffSalaryRaiseRequest) return
+    const { staffId, requestedSalary } = staffSalaryRaiseRequest
+    setHiredStaffSalaries((prev) => ({
+      ...prev,
+      [staffId]: requestedSalary,
+    }))
+    setStaffSalaryRaiseRequest(null)
+    setStartBroadcastLocked(false)
+  }
+
+  function handleRejectStaffSalaryRaise() {
+    if (!staffSalaryRaiseRequest) return
+    const { staffId, staffName } = staffSalaryRaiseRequest
+    setHiredStaffSalaries((prev) => {
+      const next = { ...prev }
+      delete next[staffId]
+      return next
+    })
+    const next = removeStaffFromState(managerStateRef.current, staffId)
+    managerStateRef.current = next
+    onManagerStateChangeRef.current(next)
+    alert(`${staffName} 스탭이 퇴사하였습니다.`)
+    setStaffSalaryRaiseRequest(null)
+    setStartBroadcastLocked(false)
+  }
+
   function releaseMonthEndLock(openScout: boolean) {
     pendingScoutAfterRankRef.current = false
+    if (checkStaffSalaryRaise()) {
+      return
+    }
     setStartBroadcastLocked(false)
     if (openScout && scoutSystemRef.current.activeOffer) {
       setTab('creator')
@@ -2726,6 +2838,10 @@ export function InGame({
             registeredStaff={registeredStaff}
             managerState={managerState}
             onHireStaff={handleHireStaff}
+            hiredStaffSalaries={hiredStaffSalaries}
+            staffScoutCooldown={staffScoutCooldown}
+            scoutedStaffCandidate={scoutedStaffCandidate}
+            onScoutStaff={handleScoutStaff}
           />
         ) : tab === 'schedule' ? (
           <SchedulePanel
@@ -2737,8 +2853,6 @@ export function InGame({
             placementLocked={broadcastPhase === 'live'}
             registeredStaff={registeredStaff}
             managerState={managerState}
-            assets={assets}
-            onHireStaff={handleHireStaff}
             onEquipStaff={handleEquipStaff}
             onUnequipStaff={handleUnequipStaff}
           />
@@ -3166,6 +3280,16 @@ export function InGame({
 
       {recruitFlyCard ? (
         <RecruitCardFlyFx card={recruitFlyCard} onDone={finishRecruitFly} />
+      ) : null}
+
+      {staffSalaryRaiseRequest ? (
+        <StaffSalaryRaiseModal
+          staffName={staffSalaryRaiseRequest.staffName}
+          currentSalary={staffSalaryRaiseRequest.currentSalary}
+          requestedSalary={staffSalaryRaiseRequest.requestedSalary}
+          onAccept={handleAcceptStaffSalaryRaise}
+          onReject={handleRejectStaffSalaryRaise}
+        />
       ) : null}
     </main>
   )
