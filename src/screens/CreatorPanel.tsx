@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState, useRef, type CSSProperties } from 'react'
 import {
   normalizeCreatorStatType,
   type CreatorStatType,
@@ -148,11 +148,19 @@ export function CreatorPanel({
     setView('scout')
   }, [openScout])
 
+  const isScoutingRef = useRef(false)
+
   useEffect(() => {
-    if (scoutedStaffCandidate && view === 'roster') {
+    if (scoutedStaffCandidate && isScoutingRef.current) {
+      isScoutingRef.current = false
       setView('staffScout')
     }
-  }, [scoutedStaffCandidate, view])
+  }, [scoutedStaffCandidate])
+
+  const handleScoutStaffClick = () => {
+    isScoutingRef.current = true
+    onScoutStaff()
+  }
 
   function leaveScout() {
     setView('roster')
@@ -407,7 +415,7 @@ export function CreatorPanel({
                 <button
                   type="button"
                   disabled={staffScoutCooldown > 0}
-                  onClick={onScoutStaff}
+                  onClick={handleScoutStaffClick}
                   className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {staffScoutCooldown > 0 ? `스카우트 대기 (${staffScoutCooldown}턴)` : '스카우트 시도'}
