@@ -510,7 +510,8 @@ export function CreatorPanel({
                               const totalMonths = 2026 * 12 + 8 + startMonth
                               const y = Math.floor(totalMonths / 12)
                               const m = (totalMonths % 12) + 1
-                              return `${y}년 ${m}월`
+                              const mm = String(m).padStart(2, '0')
+                              return `${y}.${mm}`
                             })()}
                           </td>
                           <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
