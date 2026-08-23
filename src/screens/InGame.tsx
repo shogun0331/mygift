@@ -20,7 +20,13 @@ import {
   tryBreakSlotGear,
   type SlotGear,
 } from '../game/slotGear'
-import { staffDisplayName, type RegisteredStaff } from '../game/staff'
+import {
+  staffDisplayName,
+  staffCardUrl,
+  staffIconUrl,
+  STAFF_KIND_LABEL_KEY,
+  type RegisteredStaff,
+} from '../game/staff'
 import {
   CARE_STAMINA_MULT,
   ensureUnlockedSlotManagers,
@@ -1554,6 +1560,20 @@ export function InGame({
     managerStateRef.current = next
     onManagerStateChangeRef.current(next)
     setScoutedStaffCandidate(null)
+
+    const staff = registeredStaff.find((s) => s.id === staffId)
+    if (staff) {
+      setRecruitFlyCard({
+        id: staff.id,
+        name: staffDisplayName(staff, locale),
+        kind: t(STAFF_KIND_LABEL_KEY[staff.kind]) + ' 스탭',
+        profileImageUrl: staffCardUrl(staff) || staffIconUrl(staff),
+        isStaff: true,
+      })
+      setScheduleStudioMode('staff')
+      setTab('schedule')
+    }
+
     return true
   }
 

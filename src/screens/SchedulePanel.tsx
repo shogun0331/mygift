@@ -627,7 +627,7 @@ export function SchedulePanel({
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 content-start items-start gap-2">
+              <div data-studio-staff-bay-target className="grid grid-cols-2 content-start items-start gap-2">
                 {placeableStaff.map((staff) => (
                   <StaffHandCard
                     key={staff.id}
@@ -854,7 +854,7 @@ function StaffSlotFace({
           {t('studio.managersTitle')}
         </span>
       </div>
-      <div className="grid h-full min-h-0 grid-cols-2 grid-rows-2 gap-1 p-1 pt-6">
+      <div data-studio-staff-target className="grid h-full min-h-0 grid-cols-2 grid-rows-2 gap-1 p-1 pt-6">
         {STAFF_SLOT_KINDS.map((kind) => {
           const equippedId = managerState.equippedBySlotId[slotId]?.[kind] ?? null
           const staff = equippedId
@@ -951,6 +951,7 @@ function StaffHandCard({
   return (
     <button
       type="button"
+      data-studio-staff-bay-card={staff.id}
       draggable={!hireable && !placementLocked}
       onDragStart={(event) => {
         if (hireable || placementLocked) {
