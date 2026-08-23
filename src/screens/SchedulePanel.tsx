@@ -104,7 +104,7 @@ function parseSlotDragPayload(raw: string) {
   return raw.slice('slot:'.length) || null
 }
 
-type SchedulePanelProps = {
+interface SchedulePanelProps {
   slots: StudioSlot[]
   handCards: StudioHandCard[]
   onSlotsChange: (slots: StudioSlot[]) => void
@@ -118,6 +118,9 @@ type SchedulePanelProps = {
   managerState?: SlotManagerState
   onEquipStaff?: (slotId: string, kind: StaffKind, staffId: string) => void
   onUnequipStaff?: (slotId: string, kind: StaffKind) => void
+  defaultStudioMode?: 'creator' | 'staff'
+  defaultSelectedStaffId?: string | null
+  onResetDefaultMode?: () => void
 }
 
 export function SchedulePanel({
@@ -131,6 +134,9 @@ export function SchedulePanel({
   managerState,
   onEquipStaff,
   onUnequipStaff,
+  defaultStudioMode,
+  defaultSelectedStaffId,
+  onResetDefaultMode,
 }: SchedulePanelProps) {
   const { t, locale } = useTranslation()
   const [studioMode, setStudioMode] = useState<'creator' | 'staff'>('creator')
@@ -139,6 +145,20 @@ export function SchedulePanel({
   const [dragOverSlotId, setDragOverSlotId] = useState<string | null>(null)
   const [draggingSlotId, setDraggingSlotId] = useState<string | null>(null)
   const [draggingStaffId, setDraggingStaffId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (defaultStudioMode) {
+      setStudioMode(defaultStudioMode)
+      onResetDefaultMode?.()
+    }
+  }, [defaultStudioMode, onResetDefaultMode])
+
+  useEffect(() => {
+    if (defaultSelectedStaffId) {
+      setSelectedStaffId(defaultSelectedStaffId)
+      onResetDefaultMode?.()
+    }
+  }, [defaultSelectedStaffId, onResetDefaultMode])
 
   const hiredStaff = registeredStaff.filter((row) => managerState?.hiredStaffIds.includes(row.id))
   const placeableStaff = hiredStaff.filter(

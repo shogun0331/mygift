@@ -40,8 +40,10 @@ import { SnsFeedModal } from './SnsFeedModal'
 import type { RegisteredStaff, StaffKind } from '../game/staff'
 import { staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
+import { findSlotIdForStaff } from '../game/slotManagers'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import type { ScoutedStaffCandidate } from '../game/characters'
+import type { StudioSlot } from '../game/studioSlots'
 
 type CreatorPanelProps = {
   ownedCreators: OwnedCreator[]
@@ -66,6 +68,8 @@ type CreatorPanelProps = {
   staffScoutCooldown: number
   scoutedStaffCandidate: ScoutedStaffCandidate | null
   onScoutStaff: () => void
+  studioSlots: StudioSlot[]
+  onAssignStaffPlacement: (staffId: string) => void
 }
 
 const GRADE_FILTERS: Array<'ALL' | Grade> = ['ALL', 'S', 'A', 'B', 'C']
@@ -133,6 +137,8 @@ export function CreatorPanel({
   staffScoutCooldown,
   scoutedStaffCandidate,
   onScoutStaff,
+  studioSlots,
+  onAssignStaffPlacement,
 }: CreatorPanelProps) {
   const { t, locale } = useTranslation()
   const [view, setView] = useState<'roster' | 'scout' | 'staffScout'>('roster')
@@ -444,8 +450,8 @@ export function CreatorPanel({
                       <th className="px-3 py-2.5 font-semibold">분야</th>
                       <th className="px-3 py-2.5 font-semibold">영입 비용</th>
                       <th className="px-3 py-2.5 font-semibold">연봉</th>
-                      <th className="px-3 py-2.5 font-semibold">상태</th>
-                      <th className="px-3 py-2.5 font-semibold sm:px-4">액션</th>
+                      <th className="px-3 py-2.5 font-semibold">배치</th>
+                      <th className="px-3 py-2.5 font-semibold sm:px-4">업무 배치</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -454,6 +460,10 @@ export function CreatorPanel({
                       const icon = staffIconUrl(staff)
                       const genderLabel = staff.gender === 'male' ? '남성' : '여성'
                       const salary = hiredStaffSalaries[staff.id] ?? 0
+
+                      const slotId = findSlotIdForStaff(managerState, staff.id)
+                      const slot = slotId ? studioSlots.find((s) => s.id === slotId) : null
+                      const locationLabel = slot ? slot.label : '미배치'
 
                       return (
                         <tr
@@ -492,16 +502,16 @@ export function CreatorPanel({
                           <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
                             {salary > 0 ? formatSalary(salary) : '-'}
                           </td>
-                          <td className="px-3 py-2.5">
-                            <span className="text-[11px] font-semibold text-emerald-400">고용 완료</span>
+                          <td className="px-3 py-2.5 font-semibold text-slate-300">
+                            {locationLabel}
                           </td>
                           <td className="px-3 py-2.5 sm:px-4">
                             <button
                               type="button"
-                              disabled
-                              className="game-btn rounded-lg px-2.5 py-1 text-xs opacity-50 cursor-not-allowed"
+                              onClick={() => onAssignStaffPlacement(staff.id)}
+                              className="game-btn game-btn-primary rounded-lg px-2.5 py-1 text-xs hover:bg-slate-800 transition"
                             >
-                              영입 완료
+                              업무 배치
                             </button>
                           </td>
                         </tr>

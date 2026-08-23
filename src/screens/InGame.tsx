@@ -517,6 +517,14 @@ export function InGame({
 }: InGameProps) {
   const { t, locale, setLocale } = useTranslation()
   const [tab, setTab] = useState<GameTab>('dashboard')
+  const [scheduleStudioMode, setScheduleStudioMode] = useState<'creator' | 'staff' | undefined>(undefined)
+  const [scheduleSelectedStaffId, setScheduleSelectedStaffId] = useState<string | null>(null)
+
+  function handleAssignStaffPlacement(staffId: string) {
+    setScheduleStudioMode('staff')
+    setScheduleSelectedStaffId(staffId)
+    setTab('schedule')
+  }
   const speed: SpeedOption = '1x'
   const [gameMonth, setGameMonth] = useState(0)
   const [broadcastPhase, setBroadcastPhase] = useState<BroadcastPhase>('prep')
@@ -2857,6 +2865,8 @@ export function InGame({
             staffScoutCooldown={staffScoutCooldown}
             scoutedStaffCandidate={scoutedStaffCandidate}
             onScoutStaff={handleScoutStaff}
+            studioSlots={studioSlots}
+            onAssignStaffPlacement={handleAssignStaffPlacement}
           />
         ) : tab === 'schedule' ? (
           <SchedulePanel
@@ -2870,6 +2880,12 @@ export function InGame({
             managerState={managerState}
             onEquipStaff={handleEquipStaff}
             onUnequipStaff={handleUnequipStaff}
+            defaultStudioMode={scheduleStudioMode}
+            defaultSelectedStaffId={scheduleSelectedStaffId}
+            onResetDefaultMode={() => {
+              setScheduleStudioMode(undefined)
+              setScheduleSelectedStaffId(null)
+            }}
           />
         ) : tab === 'ranking' ? (
           <RankingPanel
