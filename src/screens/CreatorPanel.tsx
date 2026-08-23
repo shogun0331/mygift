@@ -40,7 +40,6 @@ import { SnsFeedModal } from './SnsFeedModal'
 import type { RegisteredStaff, StaffKind } from '../game/staff'
 import { staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
-import { STAFF_HIRE_COST } from '../game/slotManagers'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import type { ScoutedStaffCandidate } from '../game/characters'
 
@@ -399,10 +398,7 @@ export function CreatorPanel({
       </section>
 
       {(() => {
-        const displayStaffs = [
-          ...registeredStaff.filter((s) => managerState.hiredStaffIds.includes(s.id)),
-          ...(scoutedStaffCandidate ? [scoutedStaffCandidate] : []),
-        ]
+        const displayStaffs = registeredStaff.filter((s) => managerState.hiredStaffIds.includes(s.id))
 
         return (
           <section className="game-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
@@ -412,14 +408,24 @@ export function CreatorPanel({
                 <p className="mt-0.5 text-[10px] text-slate-500">스카우트 및 고용 스탭 관리</p>
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  disabled={staffScoutCooldown > 0}
-                  onClick={handleScoutStaffClick}
-                  className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {staffScoutCooldown > 0 ? `스카우트 대기 (${staffScoutCooldown}턴)` : '스카우트 시도'}
-                </button>
+                {scoutedStaffCandidate ? (
+                  <button
+                    type="button"
+                    onClick={() => setView('staffScout')}
+                    className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition"
+                  >
+                    영입 제안 확인
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={staffScoutCooldown > 0}
+                    onClick={handleScoutStaffClick}
+                    className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {staffScoutCooldown > 0 ? `스카우트 대기 (${staffScoutCooldown}턴)` : '스카우트 시도'}
+                  </button>
+                )}
                 <span className="game-chip text-[10px]">{displayStaffs.length}명</span>
               </div>
             </div>
@@ -444,16 +450,10 @@ export function CreatorPanel({
                   </thead>
                   <tbody>
                     {displayStaffs.map((staff, index) => {
-                      const hired = managerState.hiredStaffIds.includes(staff.id)
                       const displayName = staffDisplayName(staff, locale)
                       const icon = staffIconUrl(staff)
                       const genderLabel = staff.gender === 'male' ? '남성' : '여성'
-
-                      // 비용 및 연봉 책정
-                      const hireCost = hired ? 0 : (staff as any).proposedHireCost ?? STAFF_HIRE_COST
-                      const salary = hired
-                        ? hiredStaffSalaries[staff.id] ?? 0
-                        : (staff as any).proposedSalary ?? 0
+                      const salary = hiredStaffSalaries[staff.id] ?? 0
 
                       return (
                         <tr
@@ -486,47 +486,23 @@ export function CreatorPanel({
                               {t(STAFF_KIND_LABEL_KEY[staff.kind])}
                             </span>
                           </td>
-                          <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
-                            {hired ? '-' : formatSalary(hireCost)}
+                          <td className="px-3 py-2.5 font-semibold tabular-nums text-slate-500">
+                            -
                           </td>
                           <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
                             {salary > 0 ? formatSalary(salary) : '-'}
                           </td>
                           <td className="px-3 py-2.5">
-                            {hired ? (
-                              <span className="text-[11px] font-semibold text-emerald-400">고용 완료</span>
-                            ) : (
-                              <span className="text-[11px] text-amber-300">스카우트 제안됨</span>
-                            )}
+                            <span className="text-[11px] font-semibold text-emerald-400">고용 완료</span>
                           </td>
                           <td className="px-3 py-2.5 sm:px-4">
-                            {hired ? (
-                              <button
-                                type="button"
-                                disabled
-                                className="game-btn rounded-lg px-2.5 py-1 text-xs opacity-50 cursor-not-allowed"
-                              >
-                                영입 완료
-                              </button>
-                            ) : (
-                              <div className="flex gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => setView('staffScout')}
-                                  className="game-btn rounded-lg px-2.5 py-1 text-xs hover:bg-slate-800 transition"
-                                >
-                                  상세보기
-                                </button>
-                                <button
-                                  type="button"
-                                  disabled={assets < hireCost}
-                                  onClick={() => onHireStaff(staff.id, hireCost, salary)}
-                                  className="game-btn game-btn-primary rounded-lg px-2.5 py-1 text-xs disabled:opacity-40"
-                                >
-                                  영입하기
-                                </button>
-                              </div>
-                            )}
+                            <button
+                              type="button"
+                              disabled
+                              className="game-btn rounded-lg px-2.5 py-1 text-xs opacity-50 cursor-not-allowed"
+                            >
+                              영입 완료
+                            </button>
                           </td>
                         </tr>
                       )
