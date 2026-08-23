@@ -13,6 +13,7 @@ import {
   CONDITION_LABEL_KEY,
   CONDITION_ROW_CLASS,
   conditionFromScore,
+  previewLiveStamina,
   scoreOf,
   type CreatorCondition,
 } from '../game/condition'
@@ -103,17 +104,6 @@ type BroadcastSlotView = {
   creator?: StreamCreatorView
 }
 
-function previewLiveStamina(
-  stamina: number,
-  staminaMax: number,
-  weeklyDrain: number,
-  progress: number,
-) {
-  const p = Math.max(0, Math.min(1, progress))
-  const next = stamina - Math.max(0, weeklyDrain) * p
-  return Math.max(0, Math.min(staminaMax, next))
-}
-
 function toBroadcastSlot(
   slot: StudioSlot,
   owned: OwnedCreator | undefined,
@@ -171,7 +161,7 @@ function toBroadcastSlot(
       mediaRevision,
       stamina,
       staminaMax,
-      canBroadcast: canBroadcastByStamina(baseStamina),
+      canBroadcast: canBroadcastByStamina(stamina),
       grade: (() => {
         const g = owned?.grade ?? slot.assignment.grade
         return g === 'S' || g === 'A' || g === 'B' || g === 'C' ? g : 'C'
@@ -667,22 +657,20 @@ function StreamCard({
     ? resolveMediaSrc(playVideoUrl, mediaRevision ?? playVideoUrl)
     : null
   const isLive = Boolean(creator?.live)
+  const feedOff = gearBroken || (isLive && blocked)
   const crashing = conditionCrashes.length > 0
-  const slamming = gearFailBursts.length > 0
   const staffing = staffActions.length > 0
 
   return (
     <article
       className={`neon-glow-card relative flex flex-col overflow-hidden rounded-2xl bg-slate-950/40 ${
-        isLive ? 'stream-on-air' : ''
+        isLive && !feedOff ? 'stream-on-air' : ''
       } ${
         crashing ? 'condition-crash-slot' : ''
       } ${
-        slamming ? 'gear-fail-burst-slot' : ''
-      } ${
         staffing ? 'staff-action-slot' : ''
       } ${
-        gearBroken ? 'is-gear-broken' : ''
+        gearBroken ? 'is-gear-broken' : blocked && isLive ? 'is-cctv-rest-off' : ''
       }`}
     >
       <div
@@ -692,7 +680,7 @@ function StreamCard({
           <video
             key={playableSrc}
             src={playableSrc}
-            className={`absolute inset-0 z-0 h-full w-full object-cover${gearBroken ? ' cctv-feed-dead' : ''}`}
+            className={`absolute inset-0 z-0 h-full w-full object-cover${feedOff ? ' cctv-feed-dead' : ''}`}
             autoPlay
             loop
             muted
@@ -702,12 +690,12 @@ function StreamCard({
         ) : null}
 
         <div
-          className={`cctv-scanline${gearBroken ? ' is-gear-broken' : ''}`}
-          style={playVideoUrl && !gearBroken ? { opacity: 0.25 } : undefined}
+          className={`cctv-scanline${feedOff ? ' is-gear-broken' : ''}`}
+          style={playVideoUrl && !feedOff ? { opacity: 0.25 } : undefined}
         />
         <div
-          className={`cctv-noise${gearBroken ? ' is-gear-broken' : ''}`}
-          style={playVideoUrl && !gearBroken ? { opacity: 0.02 } : undefined}
+          className={`cctv-noise${feedOff ? ' is-gear-broken' : ''}`}
+          style={playVideoUrl && !feedOff ? { opacity: 0.02 } : undefined}
         />
         {!playVideoUrl ? (
           <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_35%,rgba(124,77,255,0.15),transparent_60%)]" />
@@ -733,17 +721,17 @@ function StreamCard({
             <div className="flex items-center gap-1 rounded bg-black/50 border border-white/5 px-1.5 py-0.5">
               <span
                 className={`h-1.5 w-1.5 rounded-full ${
-                  gearBroken ? 'bg-amber-400' : 'bg-pink-500 animate-ping'
+                  feedOff ? (gearBroken ? 'bg-amber-400' : 'bg-rose-400') : 'bg-pink-500 animate-ping'
                 }`}
               />
               <span
                 className={`text-[8px] font-extrabold tracking-wider ${
-                  gearBroken ? 'text-amber-300' : 'text-pink-400'
+                  feedOff ? (gearBroken ? 'text-amber-300' : 'text-rose-300') : 'text-pink-400'
                 }`}
               >
-                {gearBroken ? t('dashboard.noSignal') : isLive ? t('dashboard.live') : t('dashboard.idle')}
+                {feedOff ? t('dashboard.noSignal') : isLive ? t('dashboard.live') : t('dashboard.idle')}
               </span>
-              {gearBroken ? null : (
+              {feedOff ? null : (
                 <div className="live-audio-wave ml-1">
                   <span className="audio-bar" />
                   <span className="audio-bar" />
@@ -763,7 +751,7 @@ function StreamCard({
           <ConditionCrashFx crashes={conditionCrashes} onDone={onConditionCrashDone} />
         ) : null}
 
-        {slamming && onGearFailBurstDone ? (
+        {gearFailBursts.length > 0 && onGearFailBurstDone ? (
           <GearFailBurstFx
             bursts={gearFailBursts}
             title={t('dashboard.gearFail')}
@@ -780,6 +768,20 @@ function StreamCard({
             <div className="cctv-gear-fail-static" />
             <div className="cctv-gear-fail-tear" />
             <div className="cctv-gear-fail-flash" />
+          </div>
+        ) : blocked && isLive ? (
+          <div className="cctv-gear-fail-fx" aria-hidden>
+            <div className="cctv-gear-fail-dim" />
+            <div className="cctv-gear-fail-static" />
+          </div>
+        ) : null}
+
+        {blocked && isLive && !gearBroken ? (
+          <div className="pointer-events-none absolute inset-0 z-[29] flex flex-col items-center justify-center gap-1 px-3 text-center">
+            <span className="rounded border border-rose-400/45 bg-black/75 px-2 py-0.5 text-[9px] font-black tracking-[0.18em] text-rose-200">
+              {t('dashboard.noSignal')}
+            </span>
+            <p className="text-[10px] font-semibold text-rose-200/90">{t('dashboard.broadcastBlocked')}</p>
           </div>
         ) : null}
 

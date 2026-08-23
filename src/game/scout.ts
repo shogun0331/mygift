@@ -1,7 +1,6 @@
 import type { Grade, OwnedCreator, RegisteredCharacter } from './characters'
 import { conditionFromScore } from './condition'
 import { rollNegotiatedSalary } from './salary'
-import type { StationGrade } from './station'
 import { clampStats, rollInt, rollStatsForGrade, type CharacterStats } from './stats'
 
 export type ScoutOffer = {
@@ -74,7 +73,7 @@ export function createScoutOffer(template: RegisteredCharacter, grade: Grade): S
 export function createRandomScoutOffer(
   registered: RegisteredCharacter[],
   ownedIds: Iterable<string>,
-  offerGrade: StationGrade,
+  offerGrade: Grade,
 ): ScoutOffer | null {
   const template = pickRandomTemplate(registered, new Set(ownedIds))
   if (!template) return null

@@ -1,94 +1,96 @@
 import type { Grade } from './characters'
+import {
+  defaultStationGradeConfig,
+  evaluateStationPromotion,
+  meetsStationTierForEquip,
+  nextStationTier,
+  stationSpecOf,
+  stationTierRank,
+  STATION_TIER_LABEL,
+  STATION_TIER_ORDER,
+  type StationGradeConfig,
+  type StationGrade,
+  type StationReviewCheck,
+  type StationSpec,
+} from './stationGradeConfig'
 
-type GradedCreator = { grade: Grade }
-
-export type StationGrade = 'C' | 'B' | 'A' | 'S'
-
-export const STATION_GRADE_ORDER: StationGrade[] = ['C', 'B', 'A', 'S']
+export type { StationGrade, StationSpec, StationReviewCheck, StationGradeConfig }
+export {
+  STATION_TIER_ORDER as STATION_GRADE_ORDER,
+  STATION_TIER_LABEL,
+  defaultStationGradeConfig,
+  normalizeStationGradeConfig,
+} from './stationGradeConfig'
 
 export const VIEWER_FLOOR = 150
 
-export type StationSpec = {
-  grade: StationGrade
-  slots: number
-  maxRank: number
-  viewerCap: number | null
+const LEGACY_STATION_MAP: Record<string, StationGrade> = {
+  C: 'tiny',
+  B: 'sme',
+  A: 'mid',
+  S: 'top',
 }
 
-export const STATION_SPECS: Record<StationGrade, StationSpec> = {
-  C: { grade: 'C', slots: 2, maxRank: 50, viewerCap: 1_000 },
-  B: { grade: 'B', slots: 2, maxRank: 30, viewerCap: 10_000 },
-  A: { grade: 'A', slots: 4, maxRank: 10, viewerCap: 100_000 },
-  S: { grade: 'S', slots: 6, maxRank: 1, viewerCap: null },
+let activeConfig: StationGradeConfig = defaultStationGradeConfig()
+
+export function setStationGradeConfig(config: StationGradeConfig): void {
+  activeConfig = config
 }
 
-export type StationPromotionDef = {
-  to: StationGrade
-  viewers: number
-  minCreatorGrade: Grade
-  minCreators: number
-  spReward: number
-  unlockSlotIndexes: number[]
+export function getStationGradeConfig(): StationGradeConfig {
+  return activeConfig
 }
 
-export const STATION_PROMOTIONS: Record<'B' | 'A' | 'S', StationPromotionDef> = {
-  B: {
-    to: 'B',
-    viewers: 1_000,
-    minCreatorGrade: 'B',
-    minCreators: 1,
-    spReward: 3,
-    unlockSlotIndexes: [],
-  },
-  A: {
-    to: 'A',
-    viewers: 10_000,
-    minCreatorGrade: 'A',
-    minCreators: 2,
-    spReward: 5,
-    unlockSlotIndexes: [],
-  },
-  S: {
-    to: 'S',
-    viewers: 100_000,
-    minCreatorGrade: 'S',
-    minCreators: 2,
-    spReward: 10,
-    unlockSlotIndexes: [],
-  },
+export function normalizeStationGrade(raw: unknown): StationGrade {
+  if (typeof raw === 'string' && STATION_TIER_ORDER.includes(raw as StationGrade)) {
+    return raw as StationGrade
+  }
+  if (typeof raw === 'string' && raw in LEGACY_STATION_MAP) {
+    return LEGACY_STATION_MAP[raw]!
+  }
+  return 'sme'
 }
-
-const GRADE_RANK: Record<Grade, number> = { C: 0, B: 1, A: 2, S: 3 }
 
 export function stationGradeRank(grade: StationGrade): number {
-  return GRADE_RANK[grade]
+  return stationTierRank(grade)
 }
 
-export function nextStationGrade(current: StationGrade): 'B' | 'A' | 'S' | null {
-  if (current === 'C') return 'B'
-  if (current === 'B') return 'A'
-  if (current === 'A') return 'S'
-  return null
+export function nextStationGrade(current: StationGrade): Exclude<StationGrade, 'tiny'> | null {
+  return nextStationTier(current)
 }
 
-export function meetsStationGrade(current: StationGrade, required: StationGrade): boolean {
-  return stationGradeRank(current) >= stationGradeRank(required)
+/** 장비 트리 게이트 — 노드의 C/B/A/S 요구와 방송국 티어 순위 비교 */
+export function meetsStationGrade(current: StationGrade, required: Grade): boolean {
+  return meetsStationTierForEquip(current, required)
 }
 
-export function gatedFloorOfStation(grade: StationGrade): number {
-  return STATION_SPECS[grade].maxRank
+export function stationSpec(grade: StationGrade, config: StationGradeConfig = activeConfig): StationSpec {
+  return stationSpecOf(config, grade)
 }
 
-export function capStationViewers(raw: number, grade: StationGrade): number {
+export function gatedFloorOfStation(
+  grade: StationGrade,
+  config: StationGradeConfig = activeConfig,
+): number {
+  return stationSpecOf(config, grade).maxRank
+}
+
+export function capStationViewers(
+  raw: number,
+  grade: StationGrade,
+  config: StationGradeConfig = activeConfig,
+): number {
   const cappedFloor = Math.max(VIEWER_FLOOR, Math.round(raw))
-  const cap = STATION_SPECS[grade].viewerCap
+  const cap = stationSpecOf(config, grade).viewerCap
   if (cap == null) return cappedFloor
   return Math.min(cap, cappedFloor)
 }
 
-export function countCreatorsAtLeast(creators: GradedCreator[], minGrade: Grade): number {
-  const min = GRADE_RANK[minGrade]
-  return creators.filter((c) => GRADE_RANK[c.grade] >= min).length
+export type StationReviewContext = {
+  viewers: number
+  unlockedSlotCount: number
+  assets: number
+  creators: Array<{ grade: Grade }>
 }
 
 export type StationReviewStatus = {
@@ -101,57 +103,72 @@ export type StationReviewStatus = {
   creatorCurrent: number
   creatorRequired: number
   creatorsMet: boolean
+  checks: StationReviewCheck[]
   eligible: boolean
   maxRank: number
   viewerCap: number | null
   spReward: number
   unlockSlotIndexes: number[]
+  nextSlots: number
+}
+
+function legacyCreatorFields(checks: StationReviewCheck[]): {
+  creatorGrade: Grade
+  creatorCurrent: number
+  creatorRequired: number
+  creatorsMet: boolean
+} {
+  const creatorChecks = checks.filter((check) => check.id !== 'viewers' && check.id !== 'slots' && check.id !== 'assets')
+  if (creatorChecks.length === 0) {
+    return { creatorGrade: 'S', creatorCurrent: 0, creatorRequired: 0, creatorsMet: true }
+  }
+  const first = creatorChecks[0]!
+  const match = first.detail.match(/^(\d+)\s*\/\s*(\d+)/)
+  const creatorCurrent = match ? Number(match[1]) : 0
+  const creatorRequired = match ? Number(match[2]) : 0
+  const gradeMatch = first.label.match(/^([CABS])/)
+  return {
+    creatorGrade: (gradeMatch?.[1] as Grade | undefined) ?? 'B',
+    creatorCurrent,
+    creatorRequired,
+    creatorsMet: creatorChecks.every((check) => check.met),
+  }
 }
 
 export function getStationReviewStatus(
   grade: StationGrade,
   viewers: number,
-  creators: GradedCreator[],
+  creators: Array<{ grade: Grade }>,
+  ctx: Omit<StationReviewContext, 'viewers' | 'creators'> = { unlockedSlotCount: 0, assets: 0 },
+  config: StationGradeConfig = activeConfig,
 ): StationReviewStatus {
-  const spec = STATION_SPECS[grade]
-  const next = nextStationGrade(grade)
-  if (!next) {
-    return {
-      current: grade,
-      next: null,
-      viewers,
-      requiredViewers: viewers,
-      viewersMet: true,
-      creatorGrade: 'S',
-      creatorCurrent: countCreatorsAtLeast(creators, 'S'),
-      creatorRequired: 0,
-      creatorsMet: true,
-      eligible: false,
-      maxRank: spec.maxRank,
-      viewerCap: spec.viewerCap,
-      spReward: 0,
-      unlockSlotIndexes: [],
-    }
-  }
-  const promo = STATION_PROMOTIONS[next]
-  const creatorCurrent = countCreatorsAtLeast(creators, promo.minCreatorGrade)
-  const viewersMet = viewers >= promo.viewers
-  const creatorsMet = creatorCurrent >= promo.minCreators
+  const spec = stationSpecOf(config, grade)
+  const evaluation = evaluateStationPromotion(config, grade, {
+    viewers,
+    unlockedSlotCount: ctx.unlockedSlotCount,
+    assets: ctx.assets,
+    creators,
+  })
+  const viewersCheck = evaluation.checks.find((check) => check.id === 'viewers')
+  const requiredViewers =
+    evaluation.next != null ? config.promotions[evaluation.next].requiredViewers : viewers
+  const legacy = legacyCreatorFields(evaluation.checks)
+  const nextSpec = evaluation.next ? stationSpecOf(config, evaluation.next) : null
+
   return {
     current: grade,
-    next,
+    next: evaluation.next,
     viewers,
-    requiredViewers: promo.viewers,
-    viewersMet,
-    creatorGrade: promo.minCreatorGrade,
-    creatorCurrent,
-    creatorRequired: promo.minCreators,
-    creatorsMet,
-    eligible: viewersMet && creatorsMet,
+    requiredViewers,
+    viewersMet: viewersCheck?.met ?? true,
+    ...legacy,
+    checks: evaluation.checks,
+    eligible: evaluation.eligible,
     maxRank: spec.maxRank,
     viewerCap: spec.viewerCap,
-    spReward: promo.spReward,
-    unlockSlotIndexes: promo.unlockSlotIndexes,
+    spReward: evaluation.spReward,
+    unlockSlotIndexes: evaluation.unlockSlotIndexes,
+    nextSlots: nextSpec?.slots ?? spec.slots,
   }
 }
 
@@ -159,9 +176,11 @@ export function getStationReviewStatus(
 export function applyStationReview(
   grade: StationGrade,
   viewers: number,
-  creators: GradedCreator[],
+  creators: Array<{ grade: Grade }>,
+  ctx: Omit<StationReviewContext, 'viewers' | 'creators'> = { unlockedSlotCount: 0, assets: 0 },
+  config: StationGradeConfig = activeConfig,
 ): { grade: StationGrade; promoted: boolean; status: StationReviewStatus } {
-  const status = getStationReviewStatus(grade, viewers, creators)
+  const status = getStationReviewStatus(grade, viewers, creators, ctx, config)
   if (!status.next || !status.eligible) {
     return { grade, promoted: false, status }
   }
@@ -176,4 +195,8 @@ export function isAnnualReviewMonth(date: Date, epoch: Date): boolean {
 export function nextJanuaryAfter(from: Date, epoch: Date): Date {
   const firstReviewYear = epoch.getFullYear() + 1
   return new Date(Math.max(firstReviewYear, from.getFullYear() + 1), 0, 1)
+}
+
+export function stationGradeLabel(grade: StationGrade): string {
+  return STATION_TIER_LABEL[grade]
 }

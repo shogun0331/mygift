@@ -164,6 +164,9 @@ export function SchedulePanel({
   const placeableStaff = hiredStaff.filter(
     (row) => !managerState || !findSlotIdForStaff(managerState, row.id),
   )
+  const placeableHandCards = handCards.filter(
+    (card) => !slots.some((slot) => slot.assignment?.creatorId === card.id),
+  )
   const staffMode = studioMode === 'staff'
 
   useEffect(() => {
@@ -645,17 +648,16 @@ export function SchedulePanel({
                 ))}
               </div>
             )
-          ) : handCards.length === 0 ? (
+          ) : placeableHandCards.length === 0 ? (
             <div className="flex h-full min-h-[8rem] items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-3">
               <p className="text-center text-[10px] leading-relaxed text-slate-500">
-                {t('studio.noCreators')}
+                {t(handCards.length === 0 ? 'studio.noCreators' : 'studio.noIdleCreators')}
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-2 content-start items-start gap-2">
-              {handCards.map((card) => {
+              {placeableHandCards.map((card) => {
                 const isSelected = selectedCard === card.id
-                const assigned = slots.some((slot) => slot.assignment?.creatorId === card.id)
                 const isPending = pendingHandCreatorId === card.id
                 const isSpotlight = spotlightCreatorId === card.id
                 const blocked = !canBroadcastByStamina(card.stamina)
@@ -710,29 +712,13 @@ export function SchedulePanel({
                             src={card.profileImageUrl}
                             alt=""
                             draggable={false}
-                            className={`pointer-events-none absolute inset-0 h-full w-full object-cover object-top ${
-                              assigned ? 'brightness-[0.45] saturate-[0.65]' : ''
-                            }`}
+                            className="pointer-events-none absolute inset-0 h-full w-full object-cover object-top"
                           />
-                          <div
-                            className={`absolute inset-0 bg-gradient-to-t ${
-                              assigned
-                                ? 'from-black/90 via-black/55 to-black/35'
-                                : 'from-black/95 via-black/35 to-transparent'
-                            }`}
-                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
                         </>
                       )}
 
-                      {assigned && !card.profileImageUrl ? (
-                        <div className="absolute inset-0 bg-black/48" />
-                      ) : null}
-
-                      {assigned ? (
-                        <span className="absolute top-1 right-1 z-20 rounded border border-slate-400/40 bg-black/75 px-1 py-0.5 text-[7px] font-bold text-slate-200">
-                          IN
-                        </span>
-                      ) : blocked ? (
+                      {blocked ? (
                         <span className="absolute top-1 right-1 z-20 rounded border border-rose-400/40 bg-rose-500/20 px-1 py-0.5 text-[7px] font-bold text-rose-200">
                           REST
                         </span>

@@ -1,7 +1,8 @@
 /** 장비 스킬트리 — 자산+SP, 국 등급 게이트. 슬롯은 트리 노드로 1칸씩 개방 */
 
+import type { Grade } from './characters'
+import { meetsStationTierForEquip } from './stationGradeConfig'
 import type { StationGrade } from './station'
-import { meetsStationGrade } from './station'
 
 export type EquipNodeType = 'hub' | 'revenue' | 'stamina' | 'condition' | 'scout' | 'slot_unlock'
 
@@ -14,7 +15,7 @@ export type EquipNodeDef = {
   slotIndex?: number
   cost: number
   spCost: number
-  minStationGrade: StationGrade
+  minStationGrade: Grade
   requires: string[]
   /** 정규화 좌표 0~1 */
   x: number
@@ -37,7 +38,7 @@ export const DRAIN_REDUCTION_CAP_PERCENT = 50
 /** 동심원 반경 — 안쪽부터 C / B / A / S, 간격 균등 */
 export const EQUIP_TREE_RING_RADII = [0.2, 0.315, 0.415, 0.495] as const
 const R = EQUIP_TREE_RING_RADII
-export const EQUIP_RING_MIN_GRADE: StationGrade[] = ['C', 'B', 'A', 'S']
+export const EQUIP_RING_MIN_GRADE: Grade[] = ['C', 'B', 'A', 'S']
 
 /** 12방향 30° 격자. C 동서남북 4칸, B는 스카웃 2·슬롯 1 포함 8칸 */
 export const EQUIP_SPOKE_COUNT = 12
@@ -277,13 +278,13 @@ export function canPurchaseNode(
   nodeId: string,
   assets: number,
   skillPoints = 0,
-  stationGrade: StationGrade = 'C',
+  stationGrade: StationGrade = 'tiny',
 ): { ok: boolean; reason?: 'missing' | 'owned' | 'locked' | 'funds' | 'sp' | 'grade' } {
   const node = NODE_BY_ID.get(nodeId)
   if (!node) return { ok: false, reason: 'missing' }
   if (isNodeOwned(state, nodeId)) return { ok: false, reason: 'owned' }
   if (!isNodeUnlocked(state, nodeId)) return { ok: false, reason: 'locked' }
-  if (!meetsStationGrade(stationGrade, node.minStationGrade)) {
+  if (!meetsStationTierForEquip(stationGrade, node.minStationGrade)) {
     return { ok: false, reason: 'grade' }
   }
   if (skillPoints < node.spCost) return { ok: false, reason: 'sp' }

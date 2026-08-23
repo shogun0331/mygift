@@ -30,6 +30,11 @@ interface ElectronAPI {
   ) => Promise<{ success: boolean; error?: string }>
   loadCommonEventLinksJson?: (
   ) => Promise<{ success: boolean; links?: Record<string, string | null>; error?: string }>
+  saveStationGradeConfigJson?: (
+    config: Record<string, unknown>
+  ) => Promise<{ success: boolean; error?: string }>
+  loadStationGradeConfigJson?: (
+  ) => Promise<{ success: boolean; config?: Record<string, unknown>; error?: string }>
   deleteEventFile?: (
     eventId: string,
     kind: 'image' | 'video' | 'sound',

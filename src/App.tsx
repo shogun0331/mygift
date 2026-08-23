@@ -6,6 +6,8 @@ import {
   loadCharacters,
   saveCommonEventLinks,
   loadCommonEventLinks,
+  saveStationGradeConfig,
+  loadStationGradeConfig,
 } from './events/db'
 import type { GameEvent } from './events/types'
 import {
@@ -13,6 +15,12 @@ import {
   normalizeCommonEventLinks,
   type CommonEventLinks,
 } from './events/commonEventLinks'
+import {
+  defaultStationGradeConfig,
+  normalizeStationGradeConfig,
+  type StationGradeConfig,
+} from './game/stationGradeConfig'
+import { setStationGradeConfig } from './game/station'
 import { normalizeOwnerCharacterId } from './events/types'
 import {
   createRegisteredCharacter,
@@ -592,6 +600,10 @@ export default function App() {
   const [isEventsLoaded, setIsEventsLoaded] = useState(false)
   const [commonEventLinks, setCommonEventLinks] = useState<CommonEventLinks>(emptyCommonEventLinks)
   const [isCommonEventLinksLoaded, setIsCommonEventLinksLoaded] = useState(false)
+  const [stationGradeConfig, setStationGradeConfigState] = useState<StationGradeConfig>(
+    defaultStationGradeConfig,
+  )
+  const [isStationGradeConfigLoaded, setIsStationGradeConfigLoaded] = useState(false)
   /** 데이터 로드 완료 상태 플래그 */
   const [isLoaded, setIsLoaded] = useState(false)
   /** 인게임에서 1회 이상 시청한 시뮬레이터 이벤트 */
@@ -641,6 +653,18 @@ export default function App() {
         setIsCommonEventLinksLoaded(true)
       })
 
+    loadStationGradeConfig()
+      .then((config) => {
+        const normalized = normalizeStationGradeConfig(config)
+        setStationGradeConfigState(normalized)
+        setStationGradeConfig(normalized)
+        setIsStationGradeConfigLoaded(true)
+      })
+      .catch((err) => {
+        console.error('Failed to load station grade config:', err)
+        setIsStationGradeConfigLoaded(true)
+      })
+
     loadRegisteredStaffFromDisk()
       .then((rows) => {
         setRegisteredStaff(rows)
@@ -658,6 +682,14 @@ export default function App() {
       console.error('Failed to save common event links:', err)
     })
   }, [commonEventLinks, isCommonEventLinksLoaded])
+
+  useEffect(() => {
+    if (!isStationGradeConfigLoaded) return
+    setStationGradeConfig(stationGradeConfig)
+    saveStationGradeConfig(stationGradeConfig).catch((err) => {
+      console.error('Failed to save station grade config:', err)
+    })
+  }, [stationGradeConfig, isStationGradeConfigLoaded])
 
   // 3. 캐릭터 상태 변경 시 자동 저장
   useEffect(() => {
@@ -1087,6 +1119,8 @@ export default function App() {
         onSaveEventsManual={handleSaveEventsManual}
         commonEventLinks={commonEventLinks}
         onCommonEventLinksChange={setCommonEventLinks}
+        stationGradeConfig={stationGradeConfig}
+        onStationGradeConfigChange={setStationGradeConfigState}
         registeredStaff={registeredStaff}
         onRegisterStaff={handleRegisterStaff}
         onUpdateStaff={handleUpdateStaff}
@@ -1113,6 +1147,7 @@ export default function App() {
         onOpenEditor={() => openEditor('game')}
         watchedEventIds={watchedEventIds}
         onEventWatched={markEventWatched}
+        stationGradeConfig={stationGradeConfig}
       />
     )
   }

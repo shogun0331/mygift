@@ -8,7 +8,7 @@ import {
   type RegisteredCharacter,
 } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
-import { unlockNextStudioSlot } from '../game/studioSlots'
+import { countUnlockedSlots, unlockNextStudioSlot } from '../game/studioSlots'
 import {
   applyWeeklySlotGear,
   createSlotGearMapFromSlots,
@@ -72,6 +72,7 @@ import {
   calcVacationCost,
   calcWeeklyBroadcastStaminaCost,
   canBroadcastByStamina,
+  isCreatorBroadcastBlockedLive,
   CONDITION_SCORE_RANGE,
   scoreOf,
 } from '../game/condition'
@@ -79,6 +80,7 @@ import { rollInt } from '../game/stats'
 import {
   buildStudioDayPlan,
   scaleDayPlanTimes,
+  applyBroadcastBlockToCreatorPlan,
   type DayEvent,
   type StudioDayPlan,
 } from '../game/economy'
@@ -90,13 +92,16 @@ import {
   resolvePromotionExam,
   type PromotionExamResult,
 } from '../game/promotionExam'
+import { characterDisplayName } from '../game/characterLocales'
 import { applyProductionTraining, calcPromotionExamCost, calcTrainingCost } from '../game/training'
 import {
   SNS_HEAT_COST,
   nextSnsPost,
+  previewBulkSnsCompose,
   resolveSnsPending,
   snsCaptionOf,
   snsPostMedia,
+  type BulkSnsRevealEntry,
   type SnsHeat,
   type SnsResult,
 } from '../game/sns'
@@ -165,9 +170,11 @@ import {
   capStationViewers,
   isAnnualReviewMonth,
   nextJanuaryAfter,
+  setStationGradeConfig,
   type StationGrade,
   type StationReviewStatus,
 } from '../game/station'
+import type { StationGradeConfig } from '../game/stationGradeConfig'
 import {
   rollVipAcceptSp,
   rollVipRejectViewers,
@@ -503,6 +510,7 @@ type InGameProps = {
   onOpenEditor?: () => void
   watchedEventIds?: string[]
   onEventWatched?: (eventId: string) => void
+  stationGradeConfig: StationGradeConfig
 }
 
 export function InGame({
@@ -520,8 +528,13 @@ export function InGame({
   onOpenEditor,
   watchedEventIds = [],
   onEventWatched,
+  stationGradeConfig,
 }: InGameProps) {
   const { t, locale, setLocale } = useTranslation()
+
+  useEffect(() => {
+    setStationGradeConfig(stationGradeConfig)
+  }, [stationGradeConfig])
   const [tab, setTab] = useState<GameTab>('dashboard')
   const [scheduleStudioMode, setScheduleStudioMode] = useState<'creator' | 'staff' | undefined>(undefined)
   const [scheduleSelectedStaffId, setScheduleSelectedStaffId] = useState<string | null>(null)
@@ -560,7 +573,7 @@ export function InGame({
   const [startBroadcastLocked, setStartBroadcastLocked] = useState(false)
   const [openCreatorScout, setOpenCreatorScout] = useState(false)
   const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(1)
-  const [league, setLeague] = useState<LeagueState>(() => createInitialLeagueState([], 'S'))
+  const [league, setLeague] = useState<LeagueState>(() => createInitialLeagueState([], 'sme'))
   const [rankSettlement, setRankSettlement] = useState<RankSettlementResult | null>(null)
   const [rankRefreshTurnsLeft, setRankRefreshTurnsLeft] = useState(RANK_REFRESH_TURNS)
   const [rankBubblePlay, setRankBubblePlay] = useState<{
@@ -568,11 +581,14 @@ export function InGame({
     toRank: number
   } | null>(null)
   /** TODO: 테스트 시작값. 배포 전 C / 0 으로 되돌릴 것 */
-  const [stationGrade, setStationGrade] = useState<StationGrade>('B')
+  const [stationGrade, setStationGrade] = useState<StationGrade>('sme')
   const [skillPoints, setSkillPoints] = useState(1000)
   const [broadcastMonthsTowardSp, setBroadcastMonthsTowardSp] = useState(0)
   
-  const [staffScoutCooldown, setStaffScoutCooldown] = useState(3)
+  const [, setStaffScoutCooldown] = useState(3)
+  const [staffScoutAvailable, setStaffScoutAvailable] = useState(false)
+  const staffScoutAvailableRef = useRef(staffScoutAvailable)
+  staffScoutAvailableRef.current = staffScoutAvailable
   const [scoutedStaffCandidate, setScoutedStaffCandidate] = useState<ScoutedStaffCandidate | null>(null)
   const [hiredStaffSalaries, setHiredStaffSalaries] = useState<Record<string, number>>({})
   const hiredStaffSalariesRef = useRef(hiredStaffSalaries)
@@ -583,6 +599,9 @@ export function InGame({
   const [staffSalaryRaiseRequest, setStaffSalaryRaiseRequest] = useState<{
     staffId: string
     staffName: string
+    staffKind: StaffKind
+    iconUrl: string | null
+    mediaRevision?: number
     currentSalary: number
     requestedSalary: number
   } | null>(null)
@@ -893,6 +912,8 @@ export function InGame({
   const toxicQteQueueRef = useRef<ToxicWhackQteItem[]>([])
   const weekInspectionsRef = useRef<WeekInspection[]>([])
   const productionBonusShownRef = useRef(new Set<string>())
+  const broadcastBlockedSinceRef = useRef<Record<string, number>>({})
+  const liveStaminaDrainByCreatorIdRef = useRef<Record<string, number>>({})
   const pendingWeekAdvanceAfterToxicRef = useRef(false)
   const statementDelayTimerRef = useRef<number | null>(null)
   const leagueRef = useRef(league)
@@ -916,6 +937,7 @@ export function InGame({
   const speedRef = useRef(speed)
   const onOwnedCreatorsChangeRef = useRef(onOwnedCreatorsChange)
   const gameMonthRef = useRef(gameMonth)
+  const broadcastPhaseRef = useRef(broadcastPhase)
   const monthWeekIndexRef = useRef(monthWeekIndex)
   const broadcastMonthNumberRef = useRef(broadcastMonthNumber)
   const equipmentTreeRef = useRef(equipmentTree)
@@ -937,6 +959,7 @@ export function InGame({
   speedRef.current = speed
   onOwnedCreatorsChangeRef.current = onOwnedCreatorsChange
   gameMonthRef.current = gameMonth
+  broadcastPhaseRef.current = broadcastPhase
   monthWeekIndexRef.current = monthWeekIndex
   broadcastMonthNumberRef.current = broadcastMonthNumber
   leagueRef.current = league
@@ -1077,7 +1100,9 @@ export function InGame({
         Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * combined),
       )
     }
+    liveStaminaDrainByCreatorIdRef.current = drainByCreatorId
     setLiveStaminaDrainByCreatorId(drainByCreatorId)
+    broadcastBlockedSinceRef.current = {}
     setLiveWeekProgress(0)
     donationBatchRef.current = new Map()
     feedExtraQueueRef.current = []
@@ -1099,12 +1124,37 @@ export function InGame({
     }))
   }
 
+  function isCreatorDonationBlocked(creatorId: string, atMs?: number) {
+    if (isCreatorSlotBroken(studioSlotsRef.current, slotGearByIdRef.current, creatorId)) {
+      return true
+    }
+    const blockProgress = broadcastBlockedSinceRef.current[creatorId]
+    if (blockProgress == null) return false
+    const plan = dayPlanRef.current
+    if (!plan || atMs == null) return true
+    return atMs / plan.dayMs >= blockProgress
+  }
+
+  function trackBroadcastBlocks(elapsed: number) {
+    const plan = dayPlanRef.current
+    if (!plan || plan.dayMs <= 0) return
+    const progress = elapsed / plan.dayMs
+    for (const creator of slottedCreatorsFrom(ownedCreatorsRef.current)) {
+      if (broadcastBlockedSinceRef.current[creator.id] != null) continue
+      const drain = liveStaminaDrainByCreatorIdRef.current[creator.id] ?? 0
+      if (isCreatorBroadcastBlockedLive(creator, drain, progress)) {
+        broadcastBlockedSinceRef.current[creator.id] = progress
+        donationBatchRef.current.delete(creator.id)
+      }
+    }
+  }
+
   function creditLiveDonations(events: DayEvent[]) {
     const donations = events.filter(
       (event) =>
         event.type === 'donation' &&
         event.amount > 0 &&
-        !isCreatorSlotBroken(studioSlotsRef.current, slotGearByIdRef.current, event.creatorId),
+        !isCreatorDonationBlocked(event.creatorId, event.atMs),
     )
     if (donations.length === 0) return
     setLiveRevenueByCreator((prev) => {
@@ -1121,6 +1171,13 @@ export function InGame({
     const visible: DayEvent[] = []
     for (const event of events) {
       if (revealedIdsRef.current.has(event.id)) continue
+      if (
+        event.type === 'donation' &&
+        isCreatorDonationBlocked(event.creatorId, event.atMs)
+      ) {
+        revealedIdsRef.current.add(event.id)
+        continue
+      }
       if (
         event.type === 'donation' &&
         isCreatorSlotBroken(studioSlotsRef.current, slotGearByIdRef.current, event.creatorId)
@@ -1140,9 +1197,14 @@ export function InGame({
   }
 
   function pushLiveFeed(events: DayEvent[]) {
-    if (events.length === 0) return
-    creditLiveDonations(events)
-    setLiveEvents((prev) => [...events.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+    const visible = events.filter(
+      (event) =>
+        event.type !== 'donation' ||
+        !isCreatorDonationBlocked(event.creatorId, event.atMs),
+    )
+    if (visible.length === 0) return
+    creditLiveDonations(visible)
+    setLiveEvents((prev) => [...visible.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
   }
 
   function ingestLiveFeedEvents(due: DayEvent[], plan: StudioDayPlan, force: boolean) {
@@ -1157,6 +1219,7 @@ export function InGame({
 
     for (const event of due) {
       if (event.type === 'donation' && event.amount > 0) {
+        if (isCreatorDonationBlocked(event.creatorId, event.atMs)) continue
         addDonationToBatch(donationBatchRef.current, event)
       } else {
         feedExtraQueueRef.current.push(event)
@@ -1170,6 +1233,7 @@ export function InGame({
       while (donationBatchRef.current.size > 0) {
         const batch = takeLargestDonationBatch(donationBatchRef.current)
         if (!batch) break
+        if (isCreatorDonationBlocked(batch.creatorId)) continue
         emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${stamp}`))
         stamp += 1
       }
@@ -1184,8 +1248,11 @@ export function InGame({
     if (lastFeedEmitAtRef.current > 0 && now - lastFeedEmitAtRef.current < gapMs) return
 
     const batch = takeLargestDonationBatch(donationBatchRef.current)
-    if (batch) {
+    if (batch && !isCreatorDonationBlocked(batch.creatorId)) {
       emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${Math.round(now)}`))
+    } else if (batch) {
+      // blocked creator batch — drop and retry next tick
+      return
     } else {
       const extra = feedExtraQueueRef.current.shift()
       if (extra) emit.push(extra)
@@ -1516,6 +1583,7 @@ export function InGame({
   }
 
   function repairBrokenSlot(slotId: string) {
+    setGearFailBursts((prev) => prev.filter((row) => row.slotId !== slotId))
     setSlotGearById((prev) => {
       const current = prev[slotId]
       if (!current?.broken) return prev
@@ -1526,26 +1594,23 @@ export function InGame({
   }
 
   function handleScoutStaff() {
-    setStaffScoutCooldown(3)
+    if (!staffScoutAvailableRef.current) return
+
     const hiredIds = managerStateRef.current.hiredStaffIds
     const pool = registeredStaff.filter((s) => !hiredIds.includes(s.id))
     if (pool.length > 0) {
-      const isFirstStaff = hiredIds.length === 0
-      const success = isFirstStaff || Math.random() < 0.5
+      const picked = pool[Math.floor(Math.random() * pool.length)]
+      const hiredCount = hiredIds.length
+      const proposedHireCost = Math.round(15000 * Math.pow(1.8, hiredCount))
+      const proposedSalary = Math.round(20000 * Math.pow(1.5, hiredCount))
+      setScoutedStaffCandidate({
+        ...picked,
+        proposedHireCost,
+        proposedSalary,
+      })
 
-      if (success) {
-        const picked = pool[Math.floor(Math.random() * pool.length)]
-        const hiredCount = hiredIds.length
-        const proposedHireCost = Math.round(15000 * Math.pow(1.8, hiredCount))
-        const proposedSalary = Math.round(20000 * Math.pow(1.5, hiredCount))
-        setScoutedStaffCandidate({
-          ...picked,
-          proposedHireCost,
-          proposedSalary,
-        })
-      } else {
-        setScoutedStaffCandidate(null)
-      }
+      setStaffScoutAvailable(false)
+      setStaffScoutCooldown(3)
     } else {
       setScoutedStaffCandidate(null)
       alert('더 이상 영입 가능한 스탭이 없습니다.')
@@ -1676,12 +1741,18 @@ export function InGame({
     setSlotGearById(nextGear)
 
     const plansForLedger = plan.plans.map((row) => {
-      if (!isCreatorSlotBroken(studioSlotsRef.current, nextGear, row.creatorId)) return row
-      return {
-        ...row,
-        weekRevenueWon: 0,
-        events: row.events.filter((event) => event.type !== 'donation'),
+      if (isCreatorSlotBroken(studioSlotsRef.current, nextGear, row.creatorId)) {
+        return {
+          ...row,
+          weekRevenueWon: 0,
+          events: row.events.filter((event) => event.type !== 'donation'),
+        }
       }
+      const blockProgress = broadcastBlockedSinceRef.current[row.creatorId]
+      if (blockProgress != null) {
+        return applyBroadcastBlockToCreatorPlan(row, blockProgress, plan.dayMs)
+      }
+      return row
     })
     const weekRevenueWon = plansForLedger.reduce((sum, row) => sum + row.weekRevenueWon, 0)
     // 자산은 턴(월) 종료 정산에서만 반영 — 방송 중 실시간 가산 없음
@@ -1773,9 +1844,24 @@ export function InGame({
     beginDayPlan(`m${broadcastMonthNumberRef.current}-w${nextMonthWeek}`, weekMs)
   }
 
+  function recoverStuckLiveBroadcast() {
+    if (broadcastPhaseRef.current !== 'live') return
+    setBroadcastPhase('prep')
+    setLivePlayVideoByCreator({})
+    setLiveWeekProgress(0)
+    setLiveStaminaDrainByCreatorId({})
+    dayPlanRef.current = null
+    dayStartedAtRef.current = null
+    setMonthWeekIndex(0)
+    monthWeekIndexRef.current = 0
+  }
+
   function finishBroadcastMonth() {
     // Strict Mode / 중복 틱 방어: 한 달(턴) 종료는 1회만
-    if (weekFinishedRef.current) return
+    if (weekFinishedRef.current) {
+      recoverStuckLiveBroadcast()
+      return
+    }
     weekFinishedRef.current = true
 
     // 턴 종료 → 무조건 다음 달
@@ -1834,11 +1920,43 @@ export function InGame({
       )
     }
 
-    const staffPayrollTotal = Object.entries(hiredStaffSalariesRef.current)
-      .filter(([id]) => managerState.hiredStaffIds.includes(id))
-      .reduce((sum, [_, salary]) => sum + Math.max(0, Math.round(Number(salary) / 12) || 0), 0)
+    const staffPayroll = managerStateRef.current.hiredStaffIds
+      .map((id) => {
+        const staff = registeredStaff.find((s) => s.id === id)
+        if (!staff) return null
+        const annual = hiredStaffSalariesRef.current[id] ?? 0
+        const salaryWon = Math.max(0, Math.round(Number(annual) / 12) || 0)
+        if (salaryWon <= 0) return null
+        return {
+          id,
+          name: staffDisplayName(staff, locale),
+          kind: staff.kind,
+          kindLabel: t(STAFF_KIND_LABEL_KEY[staff.kind]),
+          iconUrl: staffIconUrl(staff) || null,
+          mediaRevision: staff.mediaRevision,
+          salaryWon,
+        }
+      })
+      .filter((row): row is NonNullable<typeof row> => row != null)
 
-    setStaffScoutCooldown((prev) => Math.max(0, prev - 1))
+    setStaffScoutCooldown((prev) => {
+      if (staffScoutAvailableRef.current) return 0
+
+      const nextCooldown = Math.max(0, prev - 1)
+      if (nextCooldown === 0) {
+        const pool = registeredStaff.filter((s) => !managerStateRef.current.hiredStaffIds.includes(s.id))
+        if (pool.length === 0) return 3
+
+        const isFirstStaff = managerStateRef.current.hiredStaffIds.length === 0
+        const success = isFirstStaff || Math.random() < 0.5
+        if (success) {
+          setStaffScoutAvailable(true)
+          return 0
+        }
+        return 3
+      }
+      return nextCooldown
+    })
 
 
 
@@ -1855,7 +1973,7 @@ export function InGame({
       annualTaxWon,
       taxYear,
       annualRevenueForTaxWon,
-      staffPayrollTotal,
+      staffPayroll,
     })
     prevWeekRevenueRef.current = statementDraft.netProfitWon
     // 케어비는 이미 즉시 차감됐으므로, 명세서 net에 포함된 케어분을 환산 보정
@@ -2072,6 +2190,9 @@ export function InGame({
           setStaffSalaryRaiseRequest({
             staffId: targetStaffId,
             staffName: staffDisplayName(targetStaff, locale),
+            staffKind: targetStaff.kind,
+            iconUrl: staffIconUrl(targetStaff) || null,
+            mediaRevision: targetStaff.mediaRevision,
             currentSalary: minSalary,
             requestedSalary: requestedSalary,
           })
@@ -2463,6 +2584,40 @@ export function InGame({
     onOwnedCreatorsChangeRef.current(nextOwned)
   }
 
+  function handleBulkSnsCompose(heat: SnsHeat): BulkSnsRevealEntry[] {
+    const preview = previewBulkSnsCompose(ownedCreatorsRef.current, heat)
+    const costPer = SNS_HEAT_COST[heat]
+    const totalCost = preview.eligibleIds.length * costPer
+    if (preview.eligibleIds.length === 0 || assetsRef.current < totalCost) return []
+
+    const eligibleSet = new Set(preview.eligibleIds)
+    const nextAssets = assetsRef.current - totalCost
+    assetsRef.current = nextAssets
+    setAssets(nextAssets)
+
+    const posted: BulkSnsRevealEntry[] = []
+    const nextOwned = ownedCreatorsRef.current.map((creator) => {
+      if (!eligibleSet.has(creator.id)) return creator
+      const post = nextSnsPost(creator.snsPosts ?? [], creator.snsPublishedIds ?? [], heat)
+      if (!post) return creator
+      const media = snsPostMedia(creator.snsPosts ?? [], creator.images, creator.videos, post.id)
+      posted.push({
+        creatorId: creator.id,
+        postId: post.id,
+        heat,
+        displayName: characterDisplayName(creator, locale),
+        avatarUrl: creator.profileImageUrl,
+        caption: snsCaptionOf(post, locale),
+        media,
+        blurRegions: post.blurRegions ?? [],
+      })
+      return { ...creator, snsPending: { postId: post.id, heat } }
+    })
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+    return posted
+  }
+
   function handleVacation(creatorId: string) {
     const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
     if (!target) return
@@ -2632,6 +2787,7 @@ export function InGame({
       const startedAt = dayStartedAtRef.current
       if (!plan || startedAt == null) return
       const elapsed = performance.now() - startedAt
+      trackBroadcastBlocks(elapsed)
       const due = takeRevealableEvents(
         plan.plans
           .flatMap((p) => p.events)
@@ -2665,6 +2821,49 @@ export function InGame({
     document.documentElement.classList.toggle('theme-on-air', broadcastPhase === 'live')
     return () => document.documentElement.classList.remove('theme-on-air')
   }, [broadcastPhase])
+
+  // 월간 정산·모달 흐름이 끝났는데 잠금만 남은 경우 복구
+  useEffect(() => {
+    if (broadcastPhase !== 'prep' || !startBroadcastLocked) return
+    const monthEndUiOpen = Boolean(
+      weeklyStatement ||
+        broadcastEndedNotice ||
+        rankSettlement ||
+        rankBubblePlay ||
+        stationReview ||
+        showGameClear ||
+        vipOffer ||
+        vipResult ||
+        vipEventPlay ||
+        socialUi ||
+        salaryEventPlay ||
+        scoutEventState ||
+        promotionExam ||
+        staffSalaryRaiseRequest ||
+        snsResultQueue.length > 0,
+    )
+    if (!monthEndUiOpen) {
+      setStartBroadcastLocked(false)
+    }
+  }, [
+    broadcastPhase,
+    startBroadcastLocked,
+    weeklyStatement,
+    broadcastEndedNotice,
+    rankSettlement,
+    rankBubblePlay,
+    stationReview,
+    showGameClear,
+    vipOffer,
+    vipResult,
+    vipEventPlay,
+    socialUi,
+    salaryEventPlay,
+    scoutEventState,
+    promotionExam,
+    staffSalaryRaiseRequest,
+    snsResultQueue.length,
+  ])
 
   const clock = formatGameClock(monthToCalendarDate(GAME_EPOCH, gameMonth))
   const broadcastWeekCurrent = monthWeekIndex + 1
@@ -2877,12 +3076,13 @@ export function InGame({
             onVacation={handleVacation}
             onProductionTraining={handleProductionTraining}
             onSnsCompose={handleSnsCompose}
+            onBulkSnsCompose={handleBulkSnsCompose}
             registeredStaff={registeredStaff}
             managerState={managerState}
             onHireStaff={handleHireStaff}
             hiredStaffSalaries={hiredStaffSalaries}
             hiredStaffStartMonths={hiredStaffStartMonths}
-            staffScoutCooldown={staffScoutCooldown}
+            staffScoutAvailable={staffScoutAvailable}
             scoutedStaffCandidate={scoutedStaffCandidate}
             onScoutStaff={handleScoutStaff}
             studioSlots={studioSlots}
@@ -2911,6 +3111,8 @@ export function InGame({
           <RankingPanel
             league={league}
             stationGrade={stationGrade}
+            unlockedSlotCount={countUnlockedSlots(studioSlots)}
+            assets={assets}
             nextReviewDate={
               formatGameClock(nextJanuaryAfter(monthToCalendarDate(GAME_EPOCH, gameMonth), GAME_EPOCH))
                 .date
@@ -3101,6 +3303,10 @@ export function InGame({
                 stationGradeRef.current,
                 leagueRef.current.viewers,
                 ownedCreatorsRef.current,
+                {
+                  unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
+                  assets: assetsRef.current,
+                },
               )
               setStationReview({ promoted: review.promoted, status: review.status })
               return
@@ -3336,6 +3542,9 @@ export function InGame({
       {staffSalaryRaiseRequest ? (
         <StaffSalaryRaiseModal
           staffName={staffSalaryRaiseRequest.staffName}
+          staffKind={staffSalaryRaiseRequest.staffKind}
+          iconUrl={staffSalaryRaiseRequest.iconUrl}
+          mediaRevision={staffSalaryRaiseRequest.mediaRevision}
           currentSalary={staffSalaryRaiseRequest.currentSalary}
           requestedSalary={staffSalaryRaiseRequest.requestedSalary}
           onAccept={handleAcceptStaffSalaryRaise}

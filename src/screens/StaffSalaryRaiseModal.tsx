@@ -1,7 +1,13 @@
 import { createPortal } from 'react-dom'
+import type { StaffKind } from '../game/staff'
+import { resolveMediaSrc } from '../game/mediaUrl'
+import { StaffKindIcon } from './StaffManagerUi'
 
 type StaffSalaryRaiseModalProps = {
   staffName: string
+  staffKind: StaffKind
+  iconUrl?: string | null
+  mediaRevision?: number
   currentSalary: number
   requestedSalary: number
   onAccept: () => void
@@ -10,6 +16,9 @@ type StaffSalaryRaiseModalProps = {
 
 export function StaffSalaryRaiseModal({
   staffName,
+  staffKind,
+  iconUrl,
+  mediaRevision,
   currentSalary,
   requestedSalary,
   onAccept,
@@ -24,6 +33,19 @@ export function StaffSalaryRaiseModal({
           border: '1px border rgba(255,255,255,0.08)',
         }}
       >
+        <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full ring-2 ring-amber-400/35 bg-black/30">
+          {iconUrl ? (
+            <img
+              src={resolveMediaSrc(iconUrl, mediaRevision)}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-slate-700/80 text-xl font-bold text-white">
+              <StaffKindIcon kind={staffKind} className="h-7 w-7" />
+            </div>
+          )}
+        </div>
         <p className="game-kicker text-amber-400 font-extrabold uppercase tracking-widest text-[10px]">
           연봉 인상 요구
         </p>

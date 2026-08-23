@@ -1,5 +1,6 @@
 import type { DayEvent } from './economy'
 import { formatMoney } from './money'
+import type { StaffKind } from './staff'
 
 export const STATION_NAME = '스타라이트 방송국'
 /** 방송 1주 환산 시간 (기존 일×6시간 × 7일) */
@@ -35,6 +36,17 @@ export type WeeklyCreatorLine = {
   profitWon: number
 }
 
+export type WeeklyStaffLine = {
+  staffId: string
+  name: string
+  kind: StaffKind
+  kindLabel: string
+  iconUrl: string | null
+  mediaRevision?: number
+  /** 해당 스탭 월급 (연봉/12) */
+  salaryWon: number
+}
+
 export type SettlementExpenseLine = {
   id: string
   label: string
@@ -48,6 +60,7 @@ export type WeeklyStatement = {
   issuedDate: string
   stationName: string
   lines: WeeklyCreatorLine[]
+  staffLines: WeeklyStaffLine[]
   expenses: SettlementExpenseLine[]
   totalRevenueWon: number
   totalExpenseWon: number
@@ -177,7 +190,15 @@ export function buildWeeklyStatement(opts: {
   annualRevenueForTaxWon?: number
   viewersBefore?: number
   viewersAfter?: number
-  staffPayrollTotal?: number
+  staffPayroll?: Array<{
+    id: string
+    name: string
+    kind: StaffKind
+    kindLabel: string
+    iconUrl: string | null
+    mediaRevision?: number
+    salaryWon: number
+  }>
 }): WeeklyStatement {
   const { week, issuedDate, previousNetProfitWon } = opts
 
@@ -232,6 +253,19 @@ export function buildWeeklyStatement(opts: {
     })
     .sort((a, b) => b.revenueWon - a.revenueWon || b.profitWon - a.profitWon)
 
+  const staffLines: WeeklyStaffLine[] = (opts.staffPayroll ?? [])
+    .filter((row) => row.salaryWon > 0)
+    .map((row) => ({
+      staffId: row.id,
+      name: row.name,
+      kind: row.kind,
+      kindLabel: row.kindLabel,
+      iconUrl: row.iconUrl,
+      mediaRevision: row.mediaRevision,
+      salaryWon: row.salaryWon,
+    }))
+    .sort((a, b) => b.salaryWon - a.salaryWon || a.name.localeCompare(b.name, 'ko'))
+
   const expenses: SettlementExpenseLine[] = []
   const slotCount = Math.max(0, Math.round(opts.unlockedSlotCount))
   const fullOpCost = calcMonthlySlotOperatingCost(slotCount)
@@ -250,11 +284,13 @@ export function buildWeeklyStatement(opts: {
     })
   }
 
-  if (opts.staffPayrollTotal && opts.staffPayrollTotal > 0) {
+  const staffPayrollTotal = staffLines.reduce((sum, row) => sum + row.salaryWon, 0)
+  if (staffPayrollTotal > 0) {
     expenses.push({
       id: 'staff-payroll',
       label: '스탭 인건비',
-      amountWon: opts.staffPayrollTotal,
+      detail: `${staffLines.length}명`,
+      amountWon: staffPayrollTotal,
     })
   }
 
@@ -315,6 +351,7 @@ export function buildWeeklyStatement(opts: {
     issuedDate,
     stationName: opts.stationName ?? STATION_NAME,
     lines,
+    staffLines,
     expenses,
     totalRevenueWon,
     totalExpenseWon,

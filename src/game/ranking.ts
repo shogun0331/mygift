@@ -503,7 +503,7 @@ export function growLeagueBetweenRefresh(
   state: LeagueState,
   broadcastedCreators: RankCreator[],
   ownedCreators: RankCreator[] = broadcastedCreators,
-  stationGrade: StationGrade = 'C',
+  stationGrade: StationGrade = 'tiny',
 ): LeagueState {
   const organicSubs = Math.round(state.viewers * 0.03)
   const subscribers = state.subscribers + organicSubs
@@ -591,7 +591,7 @@ export function checkPromotionEligible(
   currentRank: number,
   viewers: number,
   creators: RankCreator[],
-  stationGrade: StationGrade = 'C',
+  stationGrade: StationGrade = 'tiny',
 ): PromotionStatus {
   const gatedFloor = gatedFloorOf(stationGrade)
   const target = nextPromotionTarget(currentRank)
@@ -811,7 +811,7 @@ export function unclaimedMilestonesFor(
 
 export function createInitialLeagueState(
   creators: RankCreator[] = [],
-  stationGrade: StationGrade = 'C',
+  stationGrade: StationGrade = 'tiny',
 ): LeagueState {
   const viewers = capStationViewers(viewersForRank(STARTING_RANK), stationGrade)
   const npcs = generateNpcStations()
@@ -845,7 +845,7 @@ export function settleLeagueRank(
   state: LeagueState,
   broadcastedCreators: RankCreator[],
   ownedCreators: RankCreator[] = broadcastedCreators,
-  stationGrade: StationGrade = 'C',
+  stationGrade: StationGrade = 'tiny',
 ): { state: LeagueState; result: RankSettlementResult } {
   const jittered = jitterNpcViewers(ensureNpcRoster(state.npcStations))
   const organicSubs = Math.round(state.viewers * 0.03)
@@ -931,7 +931,7 @@ export function settleLeagueRank(
     scoutRateUp: state.scoutRateUp || Boolean(rewards.scoutRateUp),
     hiddenEventUnlocked: state.hiddenEventUnlocked || Boolean(rewards.specialEventUnlock),
     gameCleared:
-      state.gameCleared || (Boolean(rewards.isGameClear) && stationGrade === 'S'),
+      state.gameCleared || (Boolean(rewards.isGameClear) && stationGrade === 'top'),
   }
 
   return {
@@ -959,7 +959,7 @@ export function settleLeagueRank(
 export function reapplyLeagueGate(
   state: LeagueState,
   ownedCreators: RankCreator[],
-  stationGrade: StationGrade = 'C',
+  stationGrade: StationGrade = 'tiny',
 ): LeagueState {
   const gateRoster = ownedCreators
   const ace = playerAce(gateRoster)
@@ -990,7 +990,7 @@ export function reapplyLeagueGate(
     revenueBonusPercent += reward.revenueBonusPercent
     scoutRateUp = scoutRateUp || Boolean(reward.scoutRateUp)
     hiddenEventUnlocked = hiddenEventUnlocked || Boolean(reward.specialEventUnlock)
-    gameCleared = gameCleared || (Boolean(reward.isGameClear) && stationGrade === 'S')
+    gameCleared = gameCleared || (Boolean(reward.isGameClear) && stationGrade === 'top')
   }
   if (bonusSubs > 0) {
     subscribers += bonusSubs
@@ -1010,7 +1010,7 @@ export function reapplyLeagueGate(
       revenueBonusPercent += reward.revenueBonusPercent
       scoutRateUp = scoutRateUp || Boolean(reward.scoutRateUp)
       hiddenEventUnlocked = hiddenEventUnlocked || Boolean(reward.specialEventUnlock)
-      gameCleared = gameCleared || (Boolean(reward.isGameClear) && stationGrade === 'S')
+      gameCleared = gameCleared || (Boolean(reward.isGameClear) && stationGrade === 'top')
       board = apply(viewers)
     }
   }

@@ -700,6 +700,7 @@ html.theme-on-air .game-kicker {
 .cctv-feed-dead {
   filter: grayscale(1) brightness(0.08) contrast(1.55) saturate(0);
   transform: scale(1.04);
+  transition: filter 0.25s ease, transform 0.25s ease;
 }
 
 .cctv-scanline.is-gear-broken {
@@ -738,6 +739,17 @@ html.theme-on-air .stream-on-air.neon-glow-card.is-gear-broken {
     0 0 0 1px rgba(180, 83, 9, 0.9),
     0 0 22px rgba(180, 83, 9, 0.45),
     inset 0 0 40px rgba(0, 0, 0, 0.55) !important;
+}
+
+.neon-glow-card.is-cctv-rest-off,
+.game-stage.is-on-air .neon-glow-card.is-cctv-rest-off,
+html.theme-on-air .neon-glow-card.is-cctv-rest-off {
+  border-color: rgba(244, 63, 94, 0.75) !important;
+  background: #070205 !important;
+  box-shadow:
+    0 0 0 1px rgba(190, 24, 93, 0.55),
+    0 0 18px rgba(190, 24, 93, 0.28),
+    inset 0 0 36px rgba(0, 0, 0, 0.62) !important;
 }
 
 .cctv-gear-fail-fx {
@@ -852,8 +864,11 @@ html.theme-on-air .stream-on-air.neon-glow-card.is-gear-broken {
   50% { transform: scale(1.06); box-shadow: 0 0 28px rgba(251, 191, 36, 0.85); }
 }
 
-.gear-fail-burst-slot {
+.gear-fail-slam-shake-layer {
   animation: gear-fail-slam-shake 0.72s cubic-bezier(0.22, 0.9, 0.3, 1);
+}
+
+.gear-fail-burst-slot {
   z-index: 6;
 }
 
@@ -1228,6 +1243,7 @@ html.theme-on-air .stream-on-air.neon-glow-card.is-gear-broken {
   .cctv-scanline.is-gear-broken::before,
   .cctv-noise.is-gear-broken,
   .gear-fail-burst-slot,
+  .gear-fail-slam-shake-layer,
   .staff-action-burst,
   .staff-action-wash,
   .staff-action-flash,
@@ -1420,8 +1436,17 @@ html.theme-on-air .stream-on-air.neon-glow-card.is-gear-broken {
 }
 
 .statement-table th.text-right,
-.statement-table td:nth-child(n + 3) {
+.statement-table--creators td:nth-child(n + 3) {
   text-align: right;
+}
+
+.statement-table--staff th.text-right,
+.statement-table--staff td:last-child {
+  text-align: right;
+}
+
+.statement-table--staff td:nth-child(3) {
+  text-align: left;
 }
 
 .statement-row-top td:first-child {
@@ -3638,5 +3663,130 @@ html.theme-on-air .stream-on-air.neon-glow-card.is-gear-broken {
 
   .promotion-reel-strip.is-spinning {
     filter: none;
+  }
+}
+
+/* SNS bulk post reveal stream */
+.sns-bulk-reveal-overlay {
+  animation: sns-bulk-reveal-overlay-in 0.35s ease-out both;
+}
+
+.sns-bulk-reveal-phone {
+  animation: sns-bulk-reveal-phone-in 0.45s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+.sns-bulk-reveal-feed {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 10%,
+    #000 88%,
+    transparent 100%
+  );
+}
+
+.sns-bulk-reveal-card {
+  animation: sns-bulk-reveal-card-in 0.42s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+.sns-bulk-reveal-media {
+  animation: sns-bulk-reveal-media-in 0.38s cubic-bezier(0.22, 0.9, 0.3, 1) 0.08s both;
+}
+
+.sns-bulk-reveal-badge {
+  animation: sns-bulk-reveal-badge-in 0.32s ease-out 0.12s both;
+}
+
+.sns-bulk-reveal-live-dot {
+  animation: sns-bulk-reveal-live-pulse 1s ease-in-out infinite;
+}
+
+.sns-bulk-reveal-progress {
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.45);
+}
+
+@keyframes sns-bulk-reveal-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sns-bulk-reveal-phone-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sns-bulk-reveal-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+    filter: blur(2px);
+  }
+  70% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes sns-bulk-reveal-media-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sns-bulk-reveal-badge-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sns-bulk-reveal-live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sns-bulk-reveal-overlay,
+  .sns-bulk-reveal-phone,
+  .sns-bulk-reveal-card,
+  .sns-bulk-reveal-media,
+  .sns-bulk-reveal-badge,
+  .sns-bulk-reveal-live-dot {
+    animation: none;
+  }
+
+  .sns-bulk-reveal-feed {
+    mask-image: none;
   }
 }

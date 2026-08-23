@@ -16,7 +16,7 @@ type GearFailBurstFxProps = {
 export function GearFailBurstFx({ bursts, title, subtitle, onDone }: GearFailBurstFxProps) {
   if (bursts.length === 0) return null
   return (
-    <div className="pointer-events-none absolute inset-0 z-[35] overflow-hidden rounded-[inherit]">
+    <div className="gear-fail-slam-shake-layer pointer-events-none absolute inset-0 z-[35] overflow-hidden rounded-[inherit]">
       {bursts.map((burst) => (
         <GearFailSlam key={burst.id} burst={burst} title={title} subtitle={subtitle} onDone={onDone} />
       ))}

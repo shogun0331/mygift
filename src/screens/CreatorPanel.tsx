@@ -37,6 +37,9 @@ import {
 } from '../game/characterLocales'
 import { useTranslation } from '../locales/i18n'
 import { SnsFeedModal } from './SnsFeedModal'
+import { SnsBulkComposeModal } from './SnsBulkComposeModal'
+import { SnsBulkPostRevealModal } from './SnsBulkPostRevealModal'
+import type { BulkSnsRevealEntry } from '../game/sns'
 import type { RegisteredStaff, StaffKind } from '../game/staff'
 import { staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
@@ -61,12 +64,13 @@ type CreatorPanelProps = {
   onVacation: (creatorId: string) => void
   onProductionTraining: (creatorId: string) => void
   onSnsCompose: (creatorId: string, heat: 1 | 2 | 3) => void
+  onBulkSnsCompose: (heat: 1 | 2 | 3) => BulkSnsRevealEntry[]
   registeredStaff: RegisteredStaff[]
   managerState: SlotManagerState
   onHireStaff: (staffId: string, hireCost: number, salary: number) => boolean
   hiredStaffSalaries: Record<string, number>
   hiredStaffStartMonths: Record<string, number>
-  staffScoutCooldown: number
+  staffScoutAvailable: boolean
   scoutedStaffCandidate: ScoutedStaffCandidate | null
   onScoutStaff: () => void
   studioSlots: StudioSlot[]
@@ -131,12 +135,13 @@ export function CreatorPanel({
   onVacation,
   onProductionTraining,
   onSnsCompose,
+  onBulkSnsCompose,
   registeredStaff,
   managerState,
   onHireStaff,
   hiredStaffSalaries,
   hiredStaffStartMonths,
-  staffScoutCooldown,
+  staffScoutAvailable,
   scoutedStaffCandidate,
   onScoutStaff,
   studioSlots,
@@ -148,6 +153,8 @@ export function CreatorPanel({
   const [gradeFilter, setGradeFilter] = useState<'ALL' | Grade>('ALL')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [snsCreatorId, setSnsCreatorId] = useState<string | null>(null)
+  const [bulkSnsOpen, setBulkSnsOpen] = useState(false)
+  const [bulkRevealEntries, setBulkRevealEntries] = useState<BulkSnsRevealEntry[] | null>(null)
 
   useEffect(() => {
     if (!openScout) return
@@ -300,7 +307,18 @@ export function CreatorPanel({
             <p className="text-xs font-semibold tracking-wide text-slate-200">크리에이터 관리</p>
             <p className="mt-0.5 text-[10px] text-slate-500">연봉순 정렬 · 엑셀 스타일 테이블</p>
           </div>
-          <span className="game-chip text-[10px]">{sortedBySalary.length}명</span>
+          <div className="flex items-center gap-2">
+            {ownedCreators.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => setBulkSnsOpen(true)}
+                className="game-btn rounded-lg px-3 py-1 text-xs"
+              >
+                📱 {t('sns.bulkCompose')}
+              </button>
+            ) : null}
+            <span className="game-chip text-[10px]">{sortedBySalary.length}명</span>
+          </div>
         </div>
 
         <div className="min-h-0 flex-1 overflow-auto">
@@ -428,15 +446,20 @@ export function CreatorPanel({
                   const hasAvailableStaffToScout = registeredStaff.some(
                     (s) => !managerState.hiredStaffIds.includes(s.id)
                   )
-                  const isCooldown = staffScoutCooldown > 0
+                  const canScout = staffScoutAvailable && hasAvailableStaffToScout
+                  const scoutLabel = !hasAvailableStaffToScout ? '스카우트 완료' : '영입 제안'
                   return (
                     <button
                       type="button"
-                      disabled={isCooldown || !hasAvailableStaffToScout}
+                      disabled={!canScout}
                       onClick={handleScoutStaffClick}
-                      className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                      className={`game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed ${
+                        canScout
+                          ? 'border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition'
+                          : ''
+                      }`}
                     >
-                      {hasAvailableStaffToScout ? '영입 제안' : '스카우트 완료'}
+                      {scoutLabel}
                     </button>
                   )
                 })()}
@@ -456,7 +479,7 @@ export function CreatorPanel({
                     <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase">
                       <th className="px-3 py-2.5 font-semibold sm:px-4">이름</th>
                       <th className="px-3 py-2.5 font-semibold">분야</th>
-                      <th className="px-3 py-2.5 font-semibold">입사 연월</th>
+                      <th className="px-3 py-2.5 font-semibold">입사 년월</th>
                       <th className="px-3 py-2.5 font-semibold">연봉</th>
                       <th className="px-3 py-2.5 font-semibold">배치</th>
                       <th className="px-3 py-2.5 font-semibold sm:px-4">업무 배치</th>
@@ -545,6 +568,27 @@ export function CreatorPanel({
           assets={assets}
           onClose={() => setSnsCreatorId(null)}
           onCompose={(heat) => onSnsCompose(snsCreator.id, heat)}
+        />
+      ) : null}
+      {bulkSnsOpen ? (
+        <SnsBulkComposeModal
+          creators={ownedCreators}
+          assets={assets}
+          onClose={() => setBulkSnsOpen(false)}
+          onCompose={(heat) => {
+            const posted = onBulkSnsCompose(heat)
+            if (posted.length > 0) {
+              setBulkSnsOpen(false)
+              setBulkRevealEntries(posted)
+            }
+            return posted
+          }}
+        />
+      ) : null}
+      {bulkRevealEntries && bulkRevealEntries.length > 0 ? (
+        <SnsBulkPostRevealModal
+          entries={bulkRevealEntries}
+          onDone={() => setBulkRevealEntries(null)}
         />
       ) : null}
     </div>

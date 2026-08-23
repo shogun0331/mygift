@@ -1,5 +1,4 @@
-import { formatViewers } from '../game/ranking'
-import { STATION_SPECS, type StationReviewStatus } from '../game/station'
+import { stationGradeLabel, type StationReviewStatus } from '../game/station'
 import { useTranslation } from '../locales/i18n'
 
 type StationReviewModalProps = {
@@ -29,42 +28,30 @@ export function StationReviewModal({ promoted, status, onConfirm }: StationRevie
               : t('station.reviewFail')}
         </h2>
         <p className="mt-3 text-2xl font-black tabular-nums text-amber-200">
-          {status.current}
+          {stationGradeLabel(status.current)}
           {promoted && status.next ? (
             <>
               <span className="mx-2 text-slate-500">→</span>
-              {status.next}
+              {stationGradeLabel(status.next)}
             </>
           ) : null}
         </p>
 
         {!maxed ? (
           <ul className="mt-4 space-y-1.5">
-            <li
-              className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
-                status.viewersMet
-                  ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
-                  : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
-              }`}
-            >
-              <span className="mr-1">{status.viewersMet ? '[v]' : '[x]'}</span>
-              {t('station.needViewers')} ({formatViewers(status.viewers)} /{' '}
-              {formatViewers(status.requiredViewers)}
-              {t('ranking.viewersUnit')})
-            </li>
-            <li
-              className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
-                status.creatorsMet
-                  ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
-                  : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
-              }`}
-            >
-              <span className="mr-1">{status.creatorsMet ? '[v]' : '[x]'}</span>
-              {t('station.needCreators')
-                .replace('{grade}', status.creatorGrade)
-                .replace('{count}', String(status.creatorRequired))}{' '}
-              ({status.creatorCurrent}/{status.creatorRequired})
-            </li>
+            {status.checks.map((check) => (
+              <li
+                key={check.id}
+                className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
+                  check.met
+                    ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
+                    : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
+                }`}
+              >
+                <span className="mr-1">{check.met ? '[v]' : '[x]'}</span>
+                {check.label} ({check.detail})
+              </li>
+            ))}
           </ul>
         ) : (
           <p className="mt-4 text-xs font-semibold leading-relaxed text-slate-300">
@@ -83,14 +70,11 @@ export function StationReviewModal({ promoted, status, onConfirm }: StationRevie
             {status.unlockSlotIndexes.length > 0 ? (
               <p className="mt-1 text-[11px] font-semibold text-slate-200">
                 -{' '}
-                {t('station.rewardSlots').replace(
-                  '{n}',
-                  String(STATION_SPECS[status.next].slots),
-                )}
+                {t('station.rewardSlots').replace('{n}', String(status.nextSlots))}
               </p>
             ) : null}
             <p className="mt-1 text-[11px] font-semibold text-slate-200">
-              - {t(`station.rewardScout.${status.next}`)}
+              - {t(`station.rewardScout.${status.next}` as 'station.rewardScout.sme')}
             </p>
           </div>
         ) : null}

@@ -8,7 +8,6 @@ import {
   type StaffKind,
 } from '../game/slotManagers'
 import {
-  STAFF_KIND_INITIAL,
   STAFF_KIND_LABEL_KEY,
   staffCardUrl,
   staffDisplayName,
@@ -26,6 +25,53 @@ export const KIND_TONE: Record<StaffKind, string> = {
 
 const KIND_EMPTY = 'border-white/10 bg-black/30 text-slate-500'
 
+export function StaffKindIcon({ kind, className }: { kind: StaffKind; className?: string }) {
+  const cn = className ?? 'h-3 w-3'
+  switch (kind) {
+    case 'security':
+      return (
+        <svg className={cn} viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path
+            d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )
+    case 'repair':
+      return (
+        <svg className={cn} viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path
+            d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-1.5 1.5-2.8-2.8 1.5-1.5z"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )
+    case 'care':
+      return (
+        <svg className={cn} viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path
+            d="M12 20s-6.5-4.5-6.5-9a3.5 3.5 0 0 1 6-2 3.5 3.5 0 0 1 6 2c0 4.5-6.5 9-6.5 9z"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )
+    case 'production':
+      return (
+        <svg className={cn} viewBox="0 0 24 24" fill="none" aria-hidden>
+          <rect x="3" y="6" width="18" height="13" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
+          <path d="M7 6V4h10v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M10 11h4M10 14h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      )
+  }
+}
+
 export function StaffSlotIcons({
   slotId,
   managerState,
@@ -37,8 +83,9 @@ export function StaffSlotIcons({
   registeredStaff: RegisteredStaff[]
   size?: 'sm' | 'md'
 }) {
-  const { locale } = useTranslation()
+  const { t, locale } = useTranslation()
   const box = size === 'sm' ? 'h-5 w-5 text-[8px]' : 'h-6 w-6 text-[9px]'
+  const iconSize = size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5'
   return (
     <div className="flex items-center gap-1">
       {STAFF_SLOT_KINDS.map((kind) => {
@@ -50,7 +97,7 @@ export function StaffSlotIcons({
         return (
           <div
             key={kind}
-            title={staffDisplayName(staff, locale)}
+            title={staff ? staffDisplayName(staff, locale) : t(STAFF_KIND_LABEL_KEY[kind])}
             className={`flex items-center justify-center overflow-hidden rounded-md border ${box} ${
               bonus.equipped ? KIND_TONE[kind] : KIND_EMPTY
             }`}
@@ -58,7 +105,7 @@ export function StaffSlotIcons({
             {icon ? (
               <img src={resolveMediaSrc(icon, staff?.mediaRevision)} alt="" className="h-full w-full object-cover" />
             ) : (
-              <span className="font-black">{STAFF_KIND_INITIAL[kind]}</span>
+              <StaffKindIcon kind={kind} className={iconSize} />
             )}
           </div>
         )

@@ -208,6 +208,29 @@ export function canBroadcastByStamina(stamina: number) {
   return Math.round(stamina) >= STAMINA_BROADCAST_MIN
 }
 
+/** CCTV 주간 진행률에 따른 스테미나 미리보기 */
+export function previewLiveStamina(
+  stamina: number,
+  staminaMax: number,
+  weeklyDrain: number,
+  progress: number,
+) {
+  const p = Math.max(0, Math.min(1, progress))
+  const next = stamina - Math.max(0, weeklyDrain) * p
+  return Math.max(0, Math.min(staminaMax, next))
+}
+
+export function isCreatorBroadcastBlockedLive(
+  creator: { stamina: number; staminaMax?: number },
+  weeklyDrain: number,
+  weekProgress: number,
+) {
+  const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
+  const baseStamina = Math.min(staminaMax, creator.stamina)
+  const preview = previewLiveStamina(baseStamina, staminaMax, weeklyDrain, weekProgress)
+  return !canBroadcastByStamina(preview)
+}
+
 /** 방송 턴(월) 스테미나 소모. 40 − 기품×0.5, 최소 8 */
 export function calcBroadcastStaminaCost(elegance = 0): number {
   const stat = Math.max(0, Math.min(100, Number(elegance) || 0))

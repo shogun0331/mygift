@@ -6,7 +6,14 @@ import {
 } from './commonEventLinks'
 import { normalizeOwnerCharacterId, type GameEvent } from './types'
 import type { RegisteredCharacter } from '../game/characters'
+import {
+  defaultStationGradeConfig,
+  normalizeStationGradeConfig,
+  type StationGradeConfig,
+} from '../game/stationGradeConfig'
 
+const STATION_GRADE_CONFIG_KEY = 'broadcast-station-grade-config'
+const STATION_GRADE_CONFIG_PUBLIC = '/chapter_assets/station_grade_config.json'
 const COMMON_EVENT_LINKS_KEY = 'broadcast-common-event-links'
 const COMMON_EVENT_LINKS_PUBLIC = '/chapter_assets/common_event_links.json'
 
@@ -233,4 +240,34 @@ export async function loadCommonEventLinks(): Promise<CommonEventLinks> {
   }
   const fromPublic = await fetchPublicJson<unknown>(COMMON_EVENT_LINKS_PUBLIC)
   return normalizeCommonEventLinks(fromPublic)
+}
+
+export async function saveStationGradeConfig(config: StationGradeConfig): Promise<void> {
+  const normalized = normalizeStationGradeConfig(config)
+  if (window.electronAPI?.saveStationGradeConfigJson) {
+    const res = await window.electronAPI.saveStationGradeConfigJson(normalized)
+    if (!res.success) throw new Error(res.error || 'Failed to save station grade config')
+    return
+  }
+  try {
+    localStorage.setItem(STATION_GRADE_CONFIG_KEY, JSON.stringify(normalized))
+  } catch {
+    // ignore quota
+  }
+}
+
+export async function loadStationGradeConfig(): Promise<StationGradeConfig> {
+  if (window.electronAPI?.loadStationGradeConfigJson) {
+    const res = await window.electronAPI.loadStationGradeConfigJson()
+    if (res.success) return normalizeStationGradeConfig(res.config)
+  }
+  try {
+    const raw = localStorage.getItem(STATION_GRADE_CONFIG_KEY)
+    if (raw) return normalizeStationGradeConfig(JSON.parse(raw))
+  } catch {
+    // ignore
+  }
+  const fromPublic = await fetchPublicJson<unknown>(STATION_GRADE_CONFIG_PUBLIC)
+  if (fromPublic) return normalizeStationGradeConfig(fromPublic)
+  return defaultStationGradeConfig()
 }

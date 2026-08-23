@@ -1,0 +1,109 @@
+{
+  "tiers": {
+    "tiny": {
+      "slots": 2
+    },
+    "sme": {
+      "slots": 2
+    },
+    "mid": {
+      "slots": 4
+    },
+    "large": {
+      "slots": 5
+    },
+    "top": {
+      "slots": 6
+    }
+  },
+  "promotions": {
+    "sme": {
+      "to": "sme",
+      "requiredViewers": 1000,
+      "minUnlockedSlots": {
+        "enabled": false,
+        "value": 1
+      },
+      "minAssets": {
+        "enabled": false,
+        "value": 0
+      },
+      "creatorRequirements": [
+        {
+          "id": "b1",
+          "minGrade": "B",
+          "count": 1,
+          "enabled": true
+        }
+      ],
+      "spReward": 3,
+      "unlockSlotIndexes": []
+    },
+    "mid": {
+      "to": "mid",
+      "requiredViewers": 10000,
+      "minUnlockedSlots": {
+        "enabled": false,
+        "value": 2
+      },
+      "minAssets": {
+        "enabled": false,
+        "value": 0
+      },
+      "creatorRequirements": [
+        {
+          "id": "a2",
+          "minGrade": "A",
+          "count": 2,
+          "enabled": true
+        }
+      ],
+      "spReward": 5,
+      "unlockSlotIndexes": []
+    },
+    "large": {
+      "to": "large",
+      "requiredViewers": 50000,
+      "minUnlockedSlots": {
+        "enabled": false,
+        "value": 3
+      },
+      "minAssets": {
+        "enabled": false,
+        "value": 0
+      },
+      "creatorRequirements": [
+        {
+          "id": "a3",
+          "minGrade": "A",
+          "count": 3,
+          "enabled": true
+        }
+      ],
+      "spReward": 7,
+      "unlockSlotIndexes": []
+    },
+    "top": {
+      "to": "top",
+      "requiredViewers": 100000,
+      "minUnlockedSlots": {
+        "enabled": false,
+        "value": 4
+      },
+      "minAssets": {
+        "enabled": false,
+        "value": 0
+      },
+      "creatorRequirements": [
+        {
+          "id": "s2",
+          "minGrade": "S",
+          "count": 2,
+          "enabled": true
+        }
+      ],
+      "spReward": 10,
+      "unlockSlotIndexes": []
+    }
+  }
+}

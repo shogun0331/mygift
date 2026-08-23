@@ -260,6 +260,22 @@ export function scaleDayPlanTimes(plan: StudioDayPlan, nextDayMs: number): Studi
   }
 }
 
+/** 방송 불가 시점 이후 후원은 정산·피드에서 제외 */
+export function applyBroadcastBlockToCreatorPlan(
+  plan: CreatorDayPlan,
+  blockProgress: number,
+  dayMs: number,
+): CreatorDayPlan {
+  const blockAtMs = Math.max(0, Math.min(dayMs, blockProgress * dayMs))
+  const events = plan.events.filter(
+    (event) => event.type !== 'donation' || event.atMs < blockAtMs,
+  )
+  const weekRevenueWon = events
+    .filter((event) => event.type === 'donation')
+    .reduce((sum, event) => sum + event.amount, 0)
+  return { ...plan, events, weekRevenueWon }
+}
+
 export function conditionOf(creator: {
   condition?: string
   conditionScore?: number

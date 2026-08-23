@@ -13,6 +13,7 @@ import {
   type GameEvent,
 } from '../events/types'
 import type { CommonEventLinks } from '../events/commonEventLinks'
+import type { StationGradeConfig } from '../game/stationGradeConfig'
 import {
   CREATOR_STAT_TYPES,
   normalizeCreatorStatType,
@@ -27,8 +28,9 @@ import {
 import { resolveMediaSrc } from '../game/mediaUrl'
 import type { AddStaffPayload, RegisteredStaff } from '../game/staff'
 import { StaffEditorPanel } from './StaffEditorPanel'
+import { StationGradeEditorPanel } from './StationGradeEditorPanel'
 
-type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent' | 'staff'
+type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent' | 'stationGrade' | 'staff'
 type CharacterView = 'list' | 'add' | 'edit' | 'sns'
 
 type EditorScreenProps = {
@@ -42,6 +44,8 @@ type EditorScreenProps = {
   onSaveEventsManual?: () => void
   commonEventLinks: CommonEventLinks
   onCommonEventLinksChange: (links: CommonEventLinks) => void
+  stationGradeConfig: StationGradeConfig
+  onStationGradeConfigChange: (config: StationGradeConfig) => void
   registeredStaff: RegisteredStaff[]
   onRegisterStaff: (payload: AddStaffPayload) => void | Promise<void>
   onUpdateStaff: (id: string, payload: AddStaffPayload) => void | Promise<void>
@@ -86,6 +90,8 @@ export function EditorScreen({
   onSaveEventsManual,
   commonEventLinks,
   onCommonEventLinksChange,
+  stationGradeConfig,
+  onStationGradeConfigChange,
   registeredStaff,
   onRegisterStaff,
   onUpdateStaff,
@@ -183,6 +189,15 @@ export function EditorScreen({
           </button>
           <button
             type="button"
+            onClick={() => setTab('stationGrade')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'stationGrade' ? 'is-active' : ''
+            }`}
+          >
+            방송국 등급
+          </button>
+          <button
+            type="button"
             onClick={() => setTab('staff')}
             className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
               tab === 'staff' ? 'is-active' : ''
@@ -203,14 +218,16 @@ export function EditorScreen({
                       등록된 캐릭터는 인게임 스카우트 목록에 등장합니다. ({registeredCharacters.length}명)
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setCharacterView('add')}
-                    className="game-btn-primary shrink-0 rounded-xl px-4 py-2 text-sm"
-                  >
-                    <span aria-hidden>＋</span>
-                    캐릭터 추가
-                  </button>
+                  <div className="flex shrink-0 flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setCharacterView('add')}
+                      className="game-btn-primary shrink-0 rounded-xl px-4 py-2 text-sm"
+                    >
+                      <span aria-hidden>＋</span>
+                      캐릭터 추가
+                    </button>
+                  </div>
                 </div>
 
                 {registeredCharacters.length === 0 ? (
@@ -381,6 +398,11 @@ export function EditorScreen({
               links={commonEventLinks}
               onLinksChange={onCommonEventLinksChange}
               registeredCharacters={registeredCharacters}
+            />
+          ) : tab === 'stationGrade' ? (
+            <StationGradeEditorPanel
+              config={stationGradeConfig}
+              onConfigChange={onStationGradeConfigChange}
             />
           ) : tab === 'staff' ? (
             <StaffEditorPanel

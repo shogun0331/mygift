@@ -429,6 +429,32 @@ ipcMain.handle('load-common-event-links-json', async (event) => {
   }
 })
 
+ipcMain.handle('save-station-grade-config-json', async (event, { config }) => {
+  try {
+    const dir = publicWritePath('chapter_assets')
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    writeJson(path.join(dir, 'station_grade_config.json'), config ?? {})
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('load-station-grade-config-json', async (event) => {
+  try {
+    const filePath = publicPath('chapter_assets', 'station_grade_config.json')
+    if (!fs.existsSync(filePath)) {
+      return { success: true, config: null }
+    }
+    const config = parseJsonFile(fs.readFileSync(filePath)) || null
+    return { success: true, config }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
 ipcMain.handle('save-events-json', async (event, { events }) => {
   try {
     const assetsDir = publicWritePath('chapter_assets')

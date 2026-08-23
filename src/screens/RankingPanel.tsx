@@ -15,6 +15,7 @@ import {
   getStationReviewStatus,
   type StationGrade,
 } from '../game/station'
+import type { Grade } from '../game/characters'
 import { useTranslation } from '../locales/i18n'
 
 export type RankBubblePlay = {
@@ -25,11 +26,13 @@ export type RankBubblePlay = {
 type RankingPanelProps = {
   league: LeagueState
   stationGrade: StationGrade
+  unlockedSlotCount: number
+  assets: number
   nextReviewDate: string
   turnsUntilRankRefresh: number
   rankPlay?: RankBubblePlay | null
   onRankPlayDone?: () => void
-  creators: Array<{ grade: StationGrade }>
+  creators: Array<{ grade: Grade }>
   onOpenScout: () => void
 }
 
@@ -40,6 +43,8 @@ const TIER_COUNT = COMPANY_TIERS.length
 export function RankingPanel({
   league,
   stationGrade,
+  unlockedSlotCount,
+  assets,
   nextReviewDate,
   turnsUntilRankRefresh,
   rankPlay = null,
@@ -49,8 +54,12 @@ export function RankingPanel({
 }: RankingPanelProps) {
   const { t } = useTranslation()
   const review = useMemo(
-    () => getStationReviewStatus(stationGrade, league.viewers, creators),
-    [stationGrade, league.viewers, creators],
+    () =>
+      getStationReviewStatus(stationGrade, league.viewers, creators, {
+        unlockedSlotCount,
+        assets,
+      }),
+    [stationGrade, league.viewers, creators, unlockedSlotCount, assets],
   )
   const [playProgress, setPlayProgress] = useState(1)
   const playDoneRef = useRef<string | null>(null)
@@ -80,7 +89,13 @@ export function RankingPanel({
       onRankPlayDoneRef.current?.()
     }
     raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+    return () => {
+      cancelAnimationFrame(raf)
+      if (playDoneRef.current !== playKey) {
+        playDoneRef.current = playKey
+        onRankPlayDoneRef.current?.()
+      }
+    }
   }, [rankPlay])
 
   const displayRank = rankPlay

@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadEventsJson: () => ipcRenderer.invoke('load-events-json'),
   saveCommonEventLinksJson: (links) => ipcRenderer.invoke('save-common-event-links-json', { links }),
   loadCommonEventLinksJson: () => ipcRenderer.invoke('load-common-event-links-json'),
+  saveStationGradeConfigJson: (config) => ipcRenderer.invoke('save-station-grade-config-json', { config }),
+  loadStationGradeConfigJson: () => ipcRenderer.invoke('load-station-grade-config-json'),
   deleteEventFile: (eventId, kind, fileName) =>
     ipcRenderer.invoke('delete-event-file', { eventId, kind, fileName }),
   deleteEventFolder: (eventId) => ipcRenderer.invoke('delete-event-folder', { eventId }),

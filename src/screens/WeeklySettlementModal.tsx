@@ -5,6 +5,7 @@ import { formatViewers } from '../game/ranking'
 import { formatMoneySigned } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { useTranslation } from '../locales/i18n'
+import { KIND_TONE, StaffKindIcon } from './StaffManagerUi'
 
 function prefersReducedMotion() {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -151,7 +152,7 @@ export function WeeklySettlementModal({
           </header>
 
           <div className="mt-4 min-h-0 flex-1 overflow-auto">
-            <table className="statement-table w-full min-w-[760px] border-collapse text-left">
+            <table className="statement-table statement-table--creators w-full min-w-[760px] border-collapse text-left">
               <thead>
                 <tr>
                   <th className="w-10">{t('settlement.colRank')}</th>
@@ -241,6 +242,73 @@ export function WeeklySettlementModal({
                 )}
               </tbody>
             </table>
+
+            {statement.staffLines.length > 0 ? (
+              <section className="mt-6">
+                <h3 className="game-stat-label">{t('settlement.staffSection')}</h3>
+                <table className="statement-table statement-table--staff mt-3 w-full min-w-[560px] border-collapse text-left">
+                  <thead>
+                    <tr>
+                      <th className="w-10">{t('settlement.colRank')}</th>
+                      <th>{t('settlement.colStaff')}</th>
+                      <th className="w-[120px]">{t('settlement.colStaffKind')}</th>
+                      <th className="text-right">{t('settlement.colStaffSalary')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {statement.staffLines.map((line, index) => {
+                      const iconSrc = line.iconUrl
+                        ? resolveMediaSrc(line.iconUrl, line.mediaRevision ?? line.iconUrl)
+                        : ''
+                      return (
+                      <tr key={line.staffId}>
+                        <td className="tabular-nums text-slate-500">{index + 1}</td>
+                        <td>
+                          <div className="flex min-w-0 items-center gap-2.5">
+                            {iconSrc ? (
+                              <img src={iconSrc} alt="" className="statement-portrait" />
+                            ) : (
+                              <span
+                                className={`statement-portrait-fallback ${KIND_TONE[line.kind]}`}
+                                aria-hidden
+                              >
+                                <StaffKindIcon kind={line.kind} className="h-4 w-4" />
+                              </span>
+                            )}
+                            <span className="truncate font-medium text-slate-100">{line.name}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <span
+                            className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold ${KIND_TONE[line.kind]}`}
+                          >
+                            {line.kindLabel}
+                          </span>
+                        </td>
+                        <td className="tabular-nums">
+                          <span className="statement-amt-neg">
+                            -{formatStatementWon(line.salaryWon)}
+                          </span>
+                        </td>
+                      </tr>
+                      )
+                    })}
+                    <tr className="border-t border-white/8">
+                      <td colSpan={3} className="pt-2 text-right text-xs font-semibold text-slate-400">
+                        {t('settlement.staffSubtotal')}
+                      </td>
+                      <td className="pt-2 text-right tabular-nums font-semibold">
+                        <span className="statement-amt-neg">
+                          -{formatStatementWon(
+                            statement.staffLines.reduce((sum, row) => sum + row.salaryWon, 0),
+                          )}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+            ) : null}
 
             {statement.highlights.length > 0 ? (
               <section className="statement-highlights">

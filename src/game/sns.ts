@@ -150,6 +150,52 @@ export function nextSnsPost(
   return pool[rollInt(0, pool.length - 1)] ?? null
 }
 
+export type SnsComposeCandidate = {
+  id: string
+  snsPosts?: SnsPostDef[]
+  snsPublishedIds?: readonly string[]
+  snsPending?: SnsPendingPost | null
+}
+
+export type BulkSnsComposePreview = {
+  eligibleIds: string[]
+  skippedPending: number
+  skippedNoStock: number
+}
+
+export type BulkSnsRevealEntry = {
+  creatorId: string
+  postId: string
+  heat: SnsHeat
+  displayName: string
+  avatarUrl?: string | null
+  caption: string
+  media: { kind: 'image' | 'video'; url: string } | null
+  blurRegions: BlurRegion[]
+}
+
+export function previewBulkSnsCompose(
+  creators: readonly SnsComposeCandidate[],
+  heat: SnsHeat,
+): BulkSnsComposePreview {
+  const eligibleIds: string[] = []
+  let skippedPending = 0
+  let skippedNoStock = 0
+  for (const creator of creators) {
+    if (creator.snsPending) {
+      skippedPending += 1
+      continue
+    }
+    const post = nextSnsPost(creator.snsPosts ?? [], creator.snsPublishedIds ?? [], heat)
+    if (!post) {
+      skippedNoStock += 1
+      continue
+    }
+    eligibleIds.push(creator.id)
+  }
+  return { eligibleIds, skippedPending, skippedNoStock }
+}
+
 export function snsHeatProgress(
   posts: SnsPostDef[],
   publishedIds: readonly string[],
