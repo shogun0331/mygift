@@ -558,7 +558,7 @@ export function InGame({
   const [skillPoints, setSkillPoints] = useState(1000)
   const [broadcastMonthsTowardSp, setBroadcastMonthsTowardSp] = useState(0)
   
-  const [staffScoutCooldown, setStaffScoutCooldown] = useState(0)
+  const [staffScoutCooldown, setStaffScoutCooldown] = useState(3)
   const [scoutedStaffCandidate, setScoutedStaffCandidate] = useState<ScoutedStaffCandidate | null>(null)
   const [hiredStaffSalaries, setHiredStaffSalaries] = useState<Record<string, number>>({})
   const hiredStaffSalariesRef = useRef(hiredStaffSalaries)
@@ -1803,7 +1803,23 @@ export function InGame({
       .filter(([id]) => managerState.hiredStaffIds.includes(id))
       .reduce((sum, [_, salary]) => sum + Math.max(0, Math.round(Number(salary) / 12) || 0), 0)
 
-    setStaffScoutCooldown((prev) => Math.max(0, prev - 1))
+    setStaffScoutCooldown((prev) => {
+      const nextCooldown = Math.max(0, prev - 1)
+      if (nextCooldown === 0 && managerState.hiredStaffIds.length === 0 && !scoutedStaffCandidate) {
+        setTimeout(() => {
+          const pool = registeredStaff.filter((s) => !managerState.hiredStaffIds.includes(s.id))
+          if (pool.length > 0) {
+            const picked = pool[Math.floor(Math.random() * pool.length)]
+            setScoutedStaffCandidate({
+              ...picked,
+              proposedHireCost: 15000,
+              proposedSalary: 20000,
+            })
+          }
+        }, 0)
+      }
+      return nextCooldown
+    })
 
     const viewersBefore = leagueRef.current.viewers
     const statementDraft = buildWeeklyStatement({
