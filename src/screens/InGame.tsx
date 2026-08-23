@@ -1530,15 +1530,22 @@ export function InGame({
     const hiredIds = managerStateRef.current.hiredStaffIds
     const pool = registeredStaff.filter((s) => !hiredIds.includes(s.id))
     if (pool.length > 0) {
-      const picked = pool[Math.floor(Math.random() * pool.length)]
-      const hiredCount = hiredIds.length
-      const proposedHireCost = Math.round(15000 * Math.pow(1.8, hiredCount))
-      const proposedSalary = Math.round(20000 * Math.pow(1.5, hiredCount))
-      setScoutedStaffCandidate({
-        ...picked,
-        proposedHireCost,
-        proposedSalary,
-      })
+      const isFirstStaff = hiredIds.length === 0
+      const success = isFirstStaff || Math.random() < 0.5
+
+      if (success) {
+        const picked = pool[Math.floor(Math.random() * pool.length)]
+        const hiredCount = hiredIds.length
+        const proposedHireCost = Math.round(15000 * Math.pow(1.8, hiredCount))
+        const proposedSalary = Math.round(20000 * Math.pow(1.5, hiredCount))
+        setScoutedStaffCandidate({
+          ...picked,
+          proposedHireCost,
+          proposedSalary,
+        })
+      } else {
+        setScoutedStaffCandidate(null)
+      }
     } else {
       setScoutedStaffCandidate(null)
       alert('더 이상 영입 가능한 스탭이 없습니다.')
