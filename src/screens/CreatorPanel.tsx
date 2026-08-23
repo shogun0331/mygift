@@ -20,7 +20,7 @@ import {
   conditionFromScore,
   scoreOf,
 } from '../game/condition'
-import { formatMoney, formatMoneyPerYear, formatMoneySigned } from '../game/money'
+import { formatMoney, formatMoneySigned } from '../game/money'
 import { isPromotionExamReady } from '../game/promotionExam'
 import {
   TRAINING_MAIN_GAIN,
@@ -88,10 +88,6 @@ const STAT_VALUE_LABEL_KEY: Record<CreatorStatType, string> = {
 
 function formatSalary(value: number) {
   return formatMoney(value)
-}
-
-function formatSalaryShort(value: number) {
-  return formatMoneyPerYear(value)
 }
 
 function formatContract(weeks: number) {
@@ -242,62 +238,6 @@ export function CreatorPanel({
           </span>
         </label>
       </div>
-
-      <section className="shrink-0">
-        <div className="mb-2 flex items-center justify-between gap-2 px-0.5">
-          <p className="text-xs font-semibold tracking-wide text-slate-400">보유 크리에이터 카드</p>
-          <p className="text-[10px] text-slate-500">좌우 스크롤 · 클릭 시 상세</p>
-        </div>
-        <div className="flex gap-2.5 overflow-x-auto pb-1">
-          {filtered.map((creator) => {
-            const displayName = characterDisplayName(creator, locale)
-            return (
-            <button
-              key={creator.id}
-              type="button"
-              onClick={() => setSelectedId(creator.id)}
-              className="game-card w-[7.5rem] shrink-0 text-left sm:w-[8.25rem]"
-            >
-              <div className="relative flex aspect-[3/4] items-end justify-center bg-gradient-to-b from-slate-700/80 to-slate-950">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(99,102,241,0.22),transparent_55%)]" />
-                <div className="absolute top-1.5 left-1.5">
-                  <span
-                    className={`rounded border px-1.5 py-0.5 text-[10px] font-bold tracking-wide ${GRADE_STYLE[creator.grade]}`}
-                  >
-                    {creator.grade}급
-                  </span>
-                </div>
-                {creator.profileImageUrl ? (
-                  <img
-                    src={creator.profileImageUrl}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className={`relative mb-2 flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br text-sm font-bold text-slate-950 ${creator.avatarTone}`}
-                  >
-                    {displayName.slice(0, 1)}
-                  </div>
-                )}
-              </div>
-              <div className="border-t border-white/8 px-2 py-2">
-                <h3 className="truncate text-xs font-semibold text-slate-100">{displayName}</h3>
-                <p className="mt-0.5 text-[10px] font-semibold text-amber-400">
-                  {formatSalaryShort(creator.salary)}
-                </p>
-              </div>
-            </button>
-            )
-          })}
-          {filtered.length === 0 ? (
-            <div className="flex min-h-[10rem] w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-black/20 px-4 text-center">
-              <p className="text-sm text-slate-400">보유 캐릭터가 없습니다.</p>
-              <p className="text-xs text-slate-500">월간 명세서 이후 스카우트 기회가 열립니다.</p>
-            </div>
-          ) : null}
-        </div>
-      </section>
 
       <section className="game-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 px-3 py-2.5 sm:px-4">
