@@ -646,6 +646,95 @@ ipcMain.handle('delete-character-folder', async (event, { characterId }) => {
   }
 })
 
+ipcMain.handle('save-staff-assets', async (event, { staffId, assets }) => {
+  try {
+    const baseDir = publicWritePath('staff', String(staffId))
+    for (const asset of assets) {
+      const targetDir = path.join(baseDir, 'images')
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true })
+      }
+      const filePath = path.join(targetDir, asset.fileName)
+
+      let rawBuffer
+      if (Buffer.isBuffer(asset.buffer)) {
+        rawBuffer = asset.buffer
+      } else if (asset.buffer instanceof ArrayBuffer) {
+        rawBuffer = Buffer.from(asset.buffer)
+      } else if (ArrayBuffer.isView(asset.buffer)) {
+        rawBuffer = Buffer.from(asset.buffer.buffer, asset.buffer.byteOffset, asset.buffer.byteLength)
+      } else if (asset.buffer && typeof asset.buffer === 'object' && asset.buffer.type === 'Buffer') {
+        rawBuffer = Buffer.from(asset.buffer.data)
+      } else {
+        throw new Error(`Invalid buffer for asset ${asset.fileName}`)
+      }
+
+      if (!rawBuffer.length) {
+        throw new Error(`Empty buffer for asset ${asset.fileName}`)
+      }
+
+      fs.writeFileSync(filePath, rawBuffer)
+    }
+    return { success: true, path: baseDir }
+  } catch (err) {
+    console.error('save-staff-assets error:', err)
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('save-staff-json', async (event, { staff }) => {
+  try {
+    const dir = publicWritePath('staff')
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    const filePath = path.join(dir, 'staff.json')
+    writeJson(filePath, Array.isArray(staff) ? staff : [])
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('load-staff-json', async () => {
+  try {
+    const filePath = publicPath('staff', 'staff.json')
+    if (!fs.existsSync(filePath)) {
+      return { success: true, staff: [] }
+    }
+    const staff = parseJsonFile(fs.readFileSync(filePath)) || []
+    return { success: true, staff }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('delete-staff-file', async (event, { staffId, fileName }) => {
+  try {
+    const safeName = safeCharacterFileName(fileName)
+    if (!safeName) return { success: true }
+    const filePath = publicWritePath('staff', String(staffId), 'images', safeName)
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath)
+    }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('delete-staff-folder', async (event, { staffId }) => {
+  try {
+    const dirPath = publicWritePath('staff', String(staffId))
+    if (fs.existsSync(dirPath)) {
+      fs.rmSync(dirPath, { recursive: true, force: true })
+    }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
 app.on('window-all-closed', () => {
   app.quit()
 })

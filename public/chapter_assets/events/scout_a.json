@@ -5,335 +5,295 @@
   "chapterId": 1,
   "titleKey": "scout_a",
   "title": "스카웃_승무원",
-  "startNode": "node_1786840794368_0_utba",
+  "startNode": "node_1787102874671_0_xe9k",
   "nodes": [
     {
-      "id": "node_1786840794368_0_utba",
+      "id": "node_1787102874671_0_xe9k",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "단정한 유니폼이 오히려 더 야하다. 화이트 블라우스가 가슴을 팽팽하게 받치고, 펜슬 스커트가 엉덩이 곡선을 그대로 드러낸다. 저 몸이 방송에 나오면 시청자들이 미칠 거다.",
+      "text_key": "node_1787102874671_0_xe9k"
+    },
+    {
+      "id": "node_1787102874671_1_gk7d",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미야자와 씨가 승객 안내를 하고 있다. 프로다운 표정, 흐트러짐 없는 자세다. 나는 그녀에게 다가가기로 마음먹는다.",
+      "text_key": "node_1787102874671_1_gk7d"
+    },
+    {
+      "id": "node_1787102874671_2_vayg",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-18_00029_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786840794368_1_tdx0",
+      "id": "node_1787102874671_3_5392",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "공항 라운지. 크리에이터를 스카웃하러 이곳저곳 돌아다니던 중, 한 승무원이 눈에 들어온다.",
-      "text_key": "node_1786840794368_1_tdx0"
+      "text": "라운지 한쪽. 잠시 자리를 비운 틈에 다가가 말을 건다.",
+      "text_key": "node_1787102874671_3_5392"
     },
     {
-      "id": "node_1786840794368_2_1s8p",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "눈에 띄는 얼굴이다. 단정한 유니폼이 오히려 더 야하다. 화이트 블라우스가 가슴을 팽팽하게 받치고 있고, 펜슬 스커트가 엉덩이 곡선을 그대로 드러낸다. 저 몸이 방송에 나오면 시청자들이 미칠 거다.",
-      "text_key": "node_1786840794368_2_1s8p"
-    },
-    {
-      "id": "node_1786840794368_3_00f3",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미야자와 씨가 라운지 한쪽에서 승객 안내를 하고 있다. 프로다운 표정, 흐트러짐 없는 자세다.",
-      "text_key": "node_1786840794368_3_00f3"
-    },
-    {
-      "id": "node_1786840794368_4_5hf1",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "저기서 허리로 이어지는 라인, 스커트에 감싸인 엉덩이. 스카웃 감이다. 아니, 저건 스카웃이 아니라 예술이다.",
-      "text_key": "node_1786840794368_4_5hf1"
-    },
-    {
-      "id": "node_1786840794368_5_0og3",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "나는 그녀에게 다가가기로 마음먹는다.",
-      "text_key": "node_1786840794368_5_0og3"
-    },
-    {
-      "id": "node_1786840794368_6_gwf4",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786840794368_7_ue68",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "라운지 한쪽. 미야자와 씨가 잠시 자리를 비운 틈에, 나는 그녀에게 다가가 말을 건다.",
-      "text_key": "node_1786840794368_7_ue68"
-    },
-    {
-      "id": "node_1786840794368_8_4daj",
+      "id": "node_1787102874671_4_te8j",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "실례합니다, 잠시 괜찮을까요.",
-      "text_key": "node_1786840794368_8_4daj"
+      "text_key": "node_1787102874671_4_te8j"
     },
     {
-      "id": "node_1786840794368_9_bg26",
+      "id": "node_1787102874671_5_ki2w",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "네, 말씀하세요. (고개를 살짝 숙인다)",
-      "text_key": "node_1786840794368_9_bg26"
+      "text_key": "node_1787102874671_5_ki2w"
     },
     {
-      "id": "node_1786840794368_10_2z1t",
+      "id": "node_1787102874671_6_546u",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "제가 방송국을 운영하는 사람인데요. 갑자기 실례지만, 쪽… 아니, 쪽에 꼭 드릴 제안이 있어서요.",
-      "text_key": "node_1786840794368_10_2z1t"
+      "text": "제가 방송국을 운영하는 사람인데요. 미야자와 씨께 꼭 드릴 제안이 있어서요.",
+      "text_key": "node_1787102874671_6_546u"
     },
     {
-      "id": "node_1786840794368_11_jdiu",
+      "id": "node_1787102874671_7_7akn",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "제안이요? (눈을 가늘게 뜬다)",
-      "text_key": "node_1786840794368_11_jdiu"
+      "text_key": "node_1787102874671_7_7akn"
     },
     {
-      "id": "node_1786840794368_12_2zb8",
+      "id": "node_1787102874671_8_zifq",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "우리 방송국에서, 크리에이터로 활동해 보시지 않겠습니까.",
-      "text_key": "node_1786840794368_12_2zb8"
+      "text": "우리 방송국에서 크리에이터로 활동해 보시지 않겠습니까.",
+      "text_key": "node_1787102874671_8_zifq"
     },
     {
-      "id": "node_1786840794368_13_73p9",
+      "id": "node_1787102874671_9_eamt",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "…크리에이터요. 저는 승무원인데요. (살짝 당황한 표정)",
-      "text_key": "node_1786840794368_13_73p9"
+      "text_key": "node_1787102874671_9_eamt"
     },
     {
-      "id": "node_1786840794368_14_mslu",
+      "id": "node_1787102874671_10_ydsk",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "가까이서 보니 더하다. 목 스카프 아래로 드러난 쇄골, 블라우스 단추가 가슴에 팽팽하게 당겨진다. 저 단정한 얼굴이 방송에서 웃으면 생각만 해도 자지가 반응한다.",
-      "text_key": "node_1786840794368_14_mslu"
+      "text": "가까이서 보니 더하다. 목 스카프 아래 쇄골, 가슴에 팽팽하게 당겨진 블라우스 단추. 저 단정한 얼굴이 방송에서 웃으면 생각만 해도 자지가 반응한다.",
+      "text_key": "node_1787102874671_10_ydsk"
     },
     {
-      "id": "node_1786840794368_15_7lh3",
+      "id": "node_1787102874671_11_7b93",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "승무원으로서의 단정함과 프로 의식, 그게 저희 방송에선 최고의 무기가 됩니다.",
-      "text_key": "node_1786840794368_15_7lh3"
+      "text_key": "node_1787102874671_11_7b93"
     },
     {
-      "id": "node_1786840794368_16_d8w6",
+      "id": "node_1787102874671_12_l5kv",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "방송… 혹시 어떤 방송국인가요?",
-      "text_key": "node_1786840794368_16_d8w6"
+      "text_key": "node_1787102874671_12_l5kv"
     },
     {
-      "id": "node_1786840794368_17_3s6m",
+      "id": "node_1787102874671_13_2zol",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "성인 방송국입니다. 솔직히 말씀드리죠. (정면을 본다)",
-      "text_key": "node_1786840794368_17_3s6m"
+      "text_key": "node_1787102874671_13_2zol"
     },
     {
-      "id": "node_1786840794368_18_ide0",
+      "id": "node_1787102874671_14_xa4w",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "…! (말을 잃는다)",
-      "text_key": "node_1786840794368_18_ide0"
+      "text_key": "node_1787102874671_14_xa4w"
     },
     {
-      "id": "node_1786840794368_19_6v0y",
+      "id": "node_1787102874671_15_nalt",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "놀란 표정도 예쁘다. 저 입술이 방송에서 시청자들을 상대로 무슨 말을 할지 상상만으로도 흥분된다. 하지만 지금은 참아야 한다. 첫인상이 전부니까.",
-      "text_key": "node_1786840794368_19_6v0y"
+      "text": "놀란 표정도 예쁘다. 하지만 지금은 참아야 한다. 첫인상이 전부니까.",
+      "text_key": "node_1787102874671_15_nalt"
     },
     {
-      "id": "node_1786840794368_20_cqbr",
+      "id": "node_1787102874671_16_dmiu",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "그런 방송에, 저 같은 사람이… (고개를 젓는다)",
-      "text_key": "node_1786840794368_20_cqbr"
+      "text_key": "node_1787102874671_16_dmiu"
     },
     {
-      "id": "node_1786840794368_21_bqhl",
+      "id": "node_1787102874671_17_vpdg",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "쪽 같은 사람이니까요. 다른 사람이 아니라. (단호히)",
-      "text_key": "node_1786840794368_21_bqhl"
+      "text": "미야자와 씨 같은 사람이니까요. (단호히)",
+      "text_key": "node_1787102874671_17_vpdg"
     },
     {
-      "id": "node_1786840794368_22_0y9w",
+      "id": "node_1787102874671_18_q4lm",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "…… (잠시 생각에 잠긴다)",
-      "text_key": "node_1786840794368_22_0y9w"
+      "text_key": "node_1787102874671_18_q4lm"
     },
     {
-      "id": "node_1786840794368_23_cef9",
+      "id": "node_1787102874671_19_t3v0",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "갑자기 이런 말씀 드려서 죄송합니다. 다만, 그쪽의 그 단정한 모습을 보자마자 확신했어요.",
-      "text_key": "node_1786840794368_23_cef9"
+      "text": "갑자기 이런 말씀 드려 죄송합니다. 다만, 미야자와 씨의 그 단정한 모습을 보자마자 확신했어요.",
+      "text_key": "node_1787102874671_19_t3v0"
     },
     {
-      "id": "node_1786840794368_24_p5yq",
+      "id": "node_1787102874671_20_pfgd",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "확신… (내 눈을 바라본다)",
-      "text_key": "node_1786840794368_24_p5yq"
+      "text_key": "node_1787102874671_20_pfgd"
     },
     {
-      "id": "node_1786840794368_25_pcmo",
+      "id": "node_1787102874671_21_62ha",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "고민하고 있다. 저 긴장한 손끝, 스커트를 살짝 움켜쥔 손. 그녀의 엉덩이가 스커트 안에서 조용히 떨리는 게 보인다. 아니, 내가 미쳐가고 있는 건가.",
-      "text_key": "node_1786840794368_25_pcmo"
+      "text_key": "node_1787102874671_21_62ha"
     },
     {
-      "id": "node_1786840794368_26_b7vk",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786840794368_27_p0ao",
+      "id": "node_1787102874671_22_4ikr",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "라운지 한쪽. 미야자와 씨가 고민 끝에 얼굴을 든다.",
-      "text_key": "node_1786840794368_27_p0ao"
+      "text_key": "node_1787102874671_22_4ikr"
     },
     {
-      "id": "node_1786840794368_28_b1rw",
+      "id": "node_1787102874671_23_48qy",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "…제가, 할 수 있을까요. (조용히)",
-      "text_key": "node_1786840794368_28_b1rw"
+      "text_key": "node_1787102874671_23_48qy"
     },
     {
-      "id": "node_1786840794368_29_9tc2",
+      "id": "node_1787102874671_24_g7ik",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "할 수 있어요. 아니, 쪽이 아니면 안 됩니다. (또박또박)",
-      "text_key": "node_1786840794368_29_9tc2"
+      "text": "할 수 있어요. 미야자와 씨가 아니면 안 됩니다. (또박또박)",
+      "text_key": "node_1787102874671_24_g7ik"
     },
     {
-      "id": "node_1786840794368_30_mifa",
+      "id": "node_1787102874671_25_ij4k",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "그렇게까지 말씀하시니… (살짝 웃는다)",
-      "text_key": "node_1786840794368_30_mifa"
+      "text_key": "node_1787102874671_25_ij4k"
     },
     {
-      "id": "node_1786840794368_31_8w20",
+      "id": "node_1787102874671_26_d6z7",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "그럼, 승낙으로 받아들여도 되겠습니까.",
-      "text_key": "node_1786840794368_31_8w20"
+      "text_key": "node_1787102874671_26_d6z7"
     },
     {
-      "id": "node_1786840794368_32_86z5",
+      "id": "node_1787102874671_27_ubxu",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "네. 조건만 괜찮다면요. (고개를 끄덕인다)",
-      "text_key": "node_1786840794368_32_86z5"
+      "text_key": "node_1787102874671_27_ubxu"
     },
     {
-      "id": "node_1786840794368_33_v523",
+      "id": "node_1787102874671_28_u14m",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "물론입니다. 그쪽에게 불리한 조건은 절대 없어요.",
-      "text_key": "node_1786840794368_33_v523"
+      "text": "물론입니다. 미야자와 씨에게 불리한 조건은 절대 없어요.",
+      "text_key": "node_1787102874671_28_u14m"
     },
     {
-      "id": "node_1786840794368_34_nlx3",
+      "id": "node_1787102874671_29_2754",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "…그럼, 잘 부탁드립니다. (허리를 숙여 인사한다)",
-      "text_key": "node_1786840794368_34_nlx3"
+      "text_key": "node_1787102874671_29_2754"
     },
     {
-      "id": "node_1786840794368_35_szh1",
+      "id": "node_1787102874671_30_vq5e",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "성공했다. 저 단정한 승무원이, 이제 내 방송국의 크리에이터다. 저 유니폼이 방송 세트로 바뀌는 날을 생각하니, 참고 있던 흥분이 다시 올라온다. 하지만 오늘은 여기까지. 첫만남은, 여기까지가 정답이다.",
-      "text_key": "node_1786840794368_35_szh1"
+      "text": "성공했다. 저 단정한 승무원이, 이제 내 방송국의 크리에이터다. 오늘은 여기까지. 첫만남은, 여기까지가 정답이다.",
+      "text_key": "node_1787102874671_30_vq5e"
     },
     {
-      "id": "node_1786840794368_36_jbmu",
+      "id": "node_1787102874671_31_0fjg",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "저야말로, 잘 부탁드립니다. 미야자와 씨. (미소 짓는다)",
-      "text_key": "node_1786840794368_36_jbmu"
+      "text": "미야자와 씨야말로, 잘 부탁드립니다. (미소 짓는다)",
+      "text_key": "node_1787102874671_31_0fjg"
     },
     {
-      "id": "node_1786840794368_37_yprd",
+      "id": "node_1787102874671_32_9v5m",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "…성함, 어떻게 부르면 될까요. (시선을 올린다)",
-      "text_key": "node_1786840794368_37_yprd"
+      "text_key": "node_1787102874671_32_9v5m"
     },
     {
-      "id": "node_1786840794368_38_zl3g",
+      "id": "node_1787102874671_33_mzuw",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "사장, 이라고 불러 주세요. 앞으로 그렇게 될 테니까요.",
-      "text_key": "node_1786840794368_38_zl3g"
+      "text_key": "node_1787102874671_33_mzuw"
     },
     {
-      "id": "node_1786840794368_39_nqib",
+      "id": "node_1787102874671_34_0v2l",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "네, 사장님. (입꼬리를 올린다)",
-      "text_key": "node_1786840794368_39_nqib"
+      "text_key": "node_1787102874671_34_0v2l"
     },
     {
-      "id": "node_1786840794368_40_z541",
+      "id": "node_1787102874671_35_evwx",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "그녀가 다시 라운지 업무로 돌아간다. 나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
-      "text_key": "node_1786840794368_40_z541"
+      "text_key": "node_1787102874671_35_evwx"
     }
   ],
   "defaultLanguage": "ko",
@@ -344,7 +304,16 @@
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "id": "1787102916012-79s4q8a",
+      "fileName": "2026-08-18_00029_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-18_00029_.png",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-18_00029_.png",
+      "size": 2107056
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T00:38:15.784Z",
   "ownerCharacterId": "1786792656193-i7isvfo"

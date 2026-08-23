@@ -5,1103 +5,551 @@
   "chapterId": 1,
   "titleKey": "55a714c6-13aa-41bf-a4f4-a511956c6079",
   "title": "데이트2",
-  "startNode": "node_1786860377743_0_0ecx",
+  "startNode": "node_1787132568339_1_wwzx",
   "nodes": [
     {
-      "id": "node_1786860377743_0_0ecx",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786860377743_1_6ppa",
+      "id": "node_1787132568339_1_wwzx",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "야간의 프라이빗 요트. 도시 불빛이 수면에 반짝인다. 리나가 먼저 도착해 난간에 기대어 기다리고 있다. 화이트 원피스 차림.",
-      "text_key": "node_1786860377743_1_6ppa"
+      "text_key": "node_1787132568339_1_wwzx"
     },
     {
-      "id": "node_1786860377743_2_qaa7",
+      "id": "node_1787132568339_0_ucnk",
+      "type": "graphic",
+      "image": "2026-08-19_00126_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787132568339_2_93hw",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "…오셨네요. 와주셔서 감사합니다. (살짝 고개를 숙인다)",
-      "text_key": "node_1786860377743_2_qaa7"
+      "text_key": "node_1787132568339_2_93hw"
     },
     {
-      "id": "node_1786860377743_3_yvjf",
+      "id": "node_1787132568339_3_jy5d",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "늦었죠? 미안합니다.",
-      "text_key": "node_1786860377743_3_yvjf"
+      "text_key": "node_1787132568339_3_jy5d"
     },
     {
-      "id": "node_1786860377743_4_f5zs",
+      "id": "node_1787132568339_4_mxkd",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "아니에요. 제가 일찍 온 거예요. (입꼬리를 올린다)",
-      "text_key": "node_1786860377743_4_f5zs"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "아니에요. 제가 일찍 온 거예요.",
+      "text_key": "node_1787132568339_4_mxkd"
     },
     {
-      "id": "node_1786860377743_5_azpr",
+      "id": "node_1787132568339_5_26pn",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "요트를 통째로 빌리다니, 준비가 대단하네요.",
-      "text_key": "node_1786860377743_5_azpr"
+      "text": "요트를 통째로 빌리시다니, 준비가 대단하네요.",
+      "text_key": "node_1787132568339_5_26pn"
     },
     {
-      "id": "node_1786860377743_6_i7vd",
+      "id": "node_1787132568339_6_d6s1",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "사장님을 모시려면 이 정도는 해야죠. (바다 쪽으로 턱짓)",
-      "text_key": "node_1786860377743_6_i7vd"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "사장님을 모시려면 이 정도는 해야죠.",
+      "text_key": "node_1787132568339_6_d6s1"
     },
     {
-      "id": "node_1786860377743_7_djrc",
+      "id": "node_1787132568339_7_3ul2",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "모시다니… 정말 데이트 신청을 한 건 너잖아요.",
-      "text_key": "node_1786860377743_7_djrc"
+      "text": "모시시다니… 데이트 신청을 하신 건 센노 씨잖아요.",
+      "text_key": "node_1787132568339_7_3ul2"
     },
     {
-      "id": "node_1786860377743_8_7hb5",
+      "id": "node_1787132568339_8_jbhk",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "네. 오늘은 제가 사장님을 모시는 날이에요. (또박또박)",
-      "text_key": "node_1786860377743_8_7hb5"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "네. 오늘은 제가 사장님을 모시는 날이에요.",
+      "text_key": "node_1787132568339_8_jbhk"
     },
     {
-      "id": "node_1786860377743_9_gby8",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "평소 방송국에서 우아하게 웃던 얼굴인데, 화이트 원피스 차림은 처음이다. 저 몸매가… 아니, 나는 대표니까.",
-      "text_key": "node_1786860377743_9_gby8"
-    },
-    {
-      "id": "node_1786860377743_10_boh2",
+      "id": "node_1787132568339_9_2evo",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "그런데 왜 하필 저를? 크리에이터가 사장을 부를 이유는 없잖아요.",
-      "text_key": "node_1786860377743_10_boh2"
+      "text": "그런데 왜 하필 저를요? 크리에이터가 사장을 부르실 이유는 없잖아요.",
+      "text_key": "node_1787132568339_9_2evo"
     },
     {
-      "id": "node_1786860377743_11_uos2",
+      "id": "node_1787132568339_10_akgs",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "그런 건 오늘, 천천히 말해도 되죠. (한 걸음 다가선다)",
-      "text_key": "node_1786860377743_11_uos2"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "그런 건 오늘, 천천히 말해도 되죠.",
+      "text_key": "node_1787132568339_10_akgs"
     },
     {
-      "id": "node_1786860377743_12_wmaj",
+      "id": "node_1787132568339_11_cker",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…분위기가 심상치 않네요.",
-      "text_key": "node_1786860377743_12_wmaj"
+      "text_key": "node_1787132568339_11_cker"
     },
     {
-      "id": "node_1786860377743_13_fc5i",
+      "id": "node_1787132568339_12_qezm",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "심상치 않을 만큼, 제가 진심이라는 거예요. (눈을 가늘게 뜬다)",
-      "text_key": "node_1786860377743_13_fc5i"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "심상치 않을 만큼, 제가 진심이라는 거예요.",
+      "text_key": "node_1787132568339_12_qezm"
     },
     {
-      "id": "node_1786860377743_14_nin4",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "저 입술이 방송에서 시청자들한테 무슨 말을 하는지 다 알고 있다. 그런 입이 지금 나한테 '진심'이라고… 심장이 빨리 뛴다. 그리고 저 옷차림, 이 장소, 전부 계산된 것처럼 완벽하다.",
-      "text_key": "node_1786860377743_14_nin4"
-    },
-    {
-      "id": "node_1786860377743_15_90lm",
+      "id": "node_1787132568339_13_3xww",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "진심이라니, 무슨 진심인지 알겠어요?",
-      "text_key": "node_1786860377743_15_90lm"
+      "text": "…오늘은 센노 씨 뜻에 맞춰 드릴게요. 어차피 부르신 건 센노 씨니까.",
+      "text_key": "node_1787132568339_13_3xww"
     },
     {
-      "id": "node_1786860377743_16_56zu",
+      "id": "node_1787132568339_14_5hpr",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "알고 계시면서. (입꼬리만 살짝)",
-      "text_key": "node_1786860377743_16_56zu"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "좋아요. 그럼 들어가요.",
+      "text_key": "node_1787132568339_14_5hpr"
     },
     {
-      "id": "node_1786860377743_17_92dy",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…오늘은 네 뜻에 맞춰 드릴게요. 어차피 부른 건 너니까.",
-      "text_key": "node_1786860377743_17_92dy"
-    },
-    {
-      "id": "node_1786860377743_18_aaxh",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "좋아요. 그럼 들어가요. (몸을 돌려 앞장선다)",
-      "text_key": "node_1786860377743_18_aaxh"
-    },
-    {
-      "id": "node_1786860377743_19_fkdo",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "요트는 처음 봐요. 정말 프라이빗이네.",
-      "text_key": "node_1786860377743_19_fkdo"
-    },
-    {
-      "id": "node_1786860377743_20_alur",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "둘만 있으려고 빌렸어요. (어깨너머로 나를 본다)",
-      "text_key": "node_1786860377743_20_alur"
-    },
-    {
-      "id": "node_1786860377743_21_ff47",
+      "id": "node_1787132568339_15_u9f4",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "둘만. 저 말 한마디에 등줄기가 뜨거워진다. 화이트 원피스가 도시 불빛에 드러나서, 몸의 라인이 은근히 드러난다. 참아라.",
-      "text_key": "node_1786860377743_21_ff47"
+      "text": "리나가 요트 난간에 손을 얹고 선다. 바람에 화이트 원피스가 흔들린다.",
+      "text_key": "node_1787132568339_15_u9f4"
     },
     {
-      "id": "node_1786860377743_22_x54x",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…둘만, 이라.",
-      "text_key": "node_1786860377743_22_x54x"
-    },
-    {
-      "id": "node_1786860377743_23_fx5s",
+      "id": "node_1787132568339_16_sqc3",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "네. 오늘 여기엔 저와 사장님, 둘뿐이에요. (정면을 바라보며)",
-      "text_key": "node_1786860377743_23_fx5s"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "…바람, 정말 좋네요.",
+      "text_key": "node_1787132568339_16_sqc3"
     },
     {
-      "id": "node_1786860377743_24_qzmr",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "리나가 요트 난간 쪽으로 걸어간다. 나는 그 뒷모습을 따라가며, 시선을 뗄 수 없다.",
-      "text_key": "node_1786860377743_24_qzmr"
-    },
-    {
-      "id": "node_1786860377743_25_qce7",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786860377743_26_l0b3",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "요트 데크. 리나가 난간에 손을 얹고 서 있다. 화이트 원피스가 바람에 흔들린다.",
-      "text_key": "node_1786860377743_26_l0b3"
-    },
-    {
-      "id": "node_1786860377743_27_put8",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "…바람, 정말 좋네요. (원피스가 바람에 날린다)",
-      "text_key": "node_1786860377743_27_put8"
-    },
-    {
-      "id": "node_1786860377743_28_lb9k",
+      "id": "node_1787132568339_17_ovnj",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "그러게요. 야경도 예쁘고.",
-      "text_key": "node_1786860377743_28_lb9k"
+      "text_key": "node_1787132568339_17_ovnj"
     },
     {
-      "id": "node_1786860377743_29_1zic",
+      "id": "node_1787132568339_18_jcee",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "사장님, 이쪽 와 보세요. (난간 쪽으로 손을 뻗는다)",
-      "text_key": "node_1786860377743_29_1zic"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "사장님, 이쪽 와 보세요.",
+      "text_key": "node_1787132568339_18_jcee"
     },
     {
-      "id": "node_1786860377743_30_2b6v",
+      "id": "node_1787132568339_19_02vs",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…알겠어요. (다가선다)",
-      "text_key": "node_1786860377743_30_2b6v"
+      "text": "…알겠어요.",
+      "text_key": "node_1787132568339_19_02vs"
     },
     {
-      "id": "node_1786860377743_31_90uc",
+      "id": "node_1787132568339_20_1sqm",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "어때요. 도시 불빛, 생각보다 아름답죠? (몸을 조금 기울인다)",
-      "text_key": "node_1786860377743_31_90uc"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "어때요. 도시 불빛, 생각보다 아름답죠?",
+      "text_key": "node_1787132568339_20_1sqm"
     },
     {
-      "id": "node_1786860377743_32_45on",
+      "id": "node_1787132568339_21_blop",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "그러네요.",
-      "text_key": "node_1786860377743_32_45on"
+      "text_key": "node_1787132568339_21_blop"
     },
     {
-      "id": "node_1786860377743_33_3fr7",
+      "id": "node_1787132568339_22_4ip8",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "사장님, 시선이 자꾸… 제 몸에 가시네요. (입꼬리 올린다)",
-      "text_key": "node_1786860377743_33_3fr7"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "사장님, 제가 왜 오늘 이렇게 했는지 아세요?",
+      "text_key": "node_1787132568339_22_4ip8"
     },
     {
-      "id": "node_1786860377743_34_z2vw",
+      "id": "node_1787132568339_23_c1x6",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "오해하지 마요.",
-      "text_key": "node_1786860377743_34_z2vw"
+      "text": "모르겠네요. 말해 주세요.",
+      "text_key": "node_1787132568339_23_c1x6"
     },
     {
-      "id": "node_1786860377743_35_0645",
+      "id": "node_1787132568339_24_f6wy",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "오해가 아니면 뭐예요? (한 걸음 다가선다)",
-      "text_key": "node_1786860377743_35_0645"
-    },
-    {
-      "id": "node_1786860377743_36_dkvh",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "바람이 불 때마다 화이트 원피스가 몸에 달라붙어, 가슴과 허리 라인이 드러난다. 도시 불빛에 몸의 실루엣이 드러나는 게… 눈을 뗄 수가 없다.",
-      "text_key": "node_1786860377743_36_dkvh"
-    },
-    {
-      "id": "node_1786860377743_37_9g3e",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…바다 구경이나 하러 온 거잖아요.",
-      "text_key": "node_1786860377743_37_9g3e"
-    },
-    {
-      "id": "node_1786860377743_38_67h4",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "바다 구경만 하러 온 건 아니잖아요. (낮게)",
-      "text_key": "node_1786860377743_38_67h4"
-    },
-    {
-      "id": "node_1786860377743_39_0x7x",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "……",
-      "text_key": "node_1786860377743_39_0x7x"
-    },
-    {
-      "id": "node_1786860377743_40_s23r",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "사장님, 제가 왜 오늘 이렇게 했는지 아세요? (원피스 끝을 살짝 들어 올리며)",
-      "text_key": "node_1786860377743_40_s23r"
-    },
-    {
-      "id": "node_1786860377743_41_59oz",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "모르겠네요. 말해줘요.",
-      "text_key": "node_1786860377743_41_59oz"
-    },
-    {
-      "id": "node_1786860377743_42_4oh5",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "사장님이 저를 여자로 봐주셨으면 해서요. (또박또박)",
-      "text_key": "node_1786860377743_42_4oh5"
+      "text_key": "node_1787132568339_24_f6wy"
     },
     {
-      "id": "node_1786860377743_43_3otj",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786860377743_44_owlm",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…그게 왜 중요한데요.",
-      "text_key": "node_1786860377743_44_owlm"
-    },
-    {
-      "id": "node_1786860377743_45_bjzx",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "중요하니까, 데이트를 신청했죠. (내 쪽으로 다가온다)",
-      "text_key": "node_1786860377743_45_bjzx"
-    },
-    {
-      "id": "node_1786860377743_46_iykd",
+      "id": "node_1787132568339_25_r6wt",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀의 몸이 닿을 듯 가까워진다. 화이트 원피스에 감싸인 몸이 도시 불빛에 드러나, 가슴 골이 은근히 드러난다. 자지가 반응하는 걸 겨우 참는다.",
-      "text_key": "node_1786860377743_46_iykd"
+      "text": "리나가 내 쪽으로 다가온다.",
+      "text_key": "node_1787132568339_25_r6wt"
     },
     {
-      "id": "node_1786860377743_47_fhs5",
+      "id": "node_1787132568339_26_pzc7",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "센노 씨, 너무 가까워요.",
-      "text_key": "node_1786860377743_47_fhs5"
+      "text_key": "node_1787132568339_26_pzc7"
     },
     {
-      "id": "node_1786860377743_48_yjf3",
+      "id": "node_1787132568339_27_fceh",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "싫으세요? (눈을 맞춘다)",
-      "text_key": "node_1786860377743_48_yjf3"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "싫으세요?",
+      "text_key": "node_1787132568339_27_fceh"
     },
     {
-      "id": "node_1786860377743_49_vrf6",
+      "id": "node_1787132568339_28_q0sd",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "싫은 게 아니라, 곤란하죠.",
-      "text_key": "node_1786860377743_49_vrf6"
+      "text_key": "node_1787132568339_28_q0sd"
     },
     {
-      "id": "node_1786860377743_50_pcui",
+      "id": "node_1787132568339_29_ezw8",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "오늘만큼은, 곤란해지셔도 돼요. (내 손목을 잡는다)",
-      "text_key": "node_1786860377743_50_pcui"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "오늘만큼은, 곤란해지셔도 돼요.",
+      "text_key": "node_1787132568339_29_ezw8"
     },
     {
-      "id": "node_1786860377743_51_h9dc",
+      "id": "node_1787132568339_30_nqk3",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀의 손이 내 손목을 잡는다. 심장이 크게 뛴다.",
-      "text_key": "node_1786860377743_51_h9dc"
+      "text": "리나가 요트 데크 의자에 앉으며, 어깨 끈에 손을 댄다.",
+      "text_key": "node_1787132568339_30_nqk3"
     },
     {
-      "id": "node_1786860377743_52_kvnl",
+      "id": "node_1787132568339_31_wa4k",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…… (숨을 멈춘다)",
-      "text_key": "node_1786860377743_52_kvnl"
+      "text": "센노 씨, 지금 뭐 하시는 거예요.",
+      "text_key": "node_1787132568339_31_wa4k"
     },
     {
-      "id": "node_1786860377743_53_w0dq",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786860377743_54_6blo",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "요트 데크 의자. 리나가 앉아 있다. 화이트 원피스가 도시 불빛에 드러나 있다.",
-      "text_key": "node_1786860377743_54_6blo"
-    },
-    {
-      "id": "node_1786860377743_55_ztnx",
+      "id": "node_1787132568339_32_8fjw",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "…사장님, 여기 앉아 보세요. (옆자리를 두드린다)",
-      "text_key": "node_1786860377743_55_ztnx"
-    },
-    {
-      "id": "node_1786860377743_56_wug3",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "뭐 하려고요.",
-      "text_key": "node_1786860377743_56_wug3"
-    },
-    {
-      "id": "node_1786860377743_57_9vzw",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "뭐 하려는지, 보시면 알아요. (어깨 끈에 손을 댄다)",
-      "text_key": "node_1786860377743_57_9vzw"
-    },
-    {
-      "id": "node_1786860377743_58_uaaj",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "어깨 끈이 느슨해지고, 화이트 원피스가 흘러내릴 듯해진다.",
-      "text_key": "node_1786860377743_58_uaaj"
-    },
-    {
-      "id": "node_1786860377743_59_5uc9",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "센노 씨, 지금 뭐 하는 거예요.",
-      "text_key": "node_1786860377743_59_5uc9"
-    },
-    {
-      "id": "node_1786860377743_60_tuqt",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "더우니까요. (앞을 가린 채, 나를 본다)",
-      "text_key": "node_1786860377743_60_tuqt"
+      "text_key": "node_1787132568339_32_8fjw"
     },
     {
-      "id": "node_1786860377743_61_8jad",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "원피스가 흘러내려, 가슴이 비칠 듯 매달려 있다. 저 손만 치우면… 젠장, 보고 싶어서 미칠 것 같다.",
-      "text_key": "node_1786860377743_61_8jad"
-    },
-    {
-      "id": "node_1786860377743_62_xm3g",
+      "id": "node_1787132568339_33_ynqp",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…그게 더위 때문이에요?",
-      "text_key": "node_1786860377743_62_xm3g"
+      "text_key": "node_1787132568339_33_ynqp"
     },
     {
-      "id": "node_1786860377743_63_32lg",
+      "id": "node_1787132568339_34_ze9d",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "아니요. 사장님 때문이에요. (앞을 가린 손을 천천히 내린다)",
-      "text_key": "node_1786860377743_63_32lg"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "아니요. 사장님 때문이에요.",
+      "text_key": "node_1787132568339_34_ze9d"
     },
     {
-      "id": "node_1786860377743_64_3xev",
+      "id": "node_1787132568339_35_gai0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "앞을 가린 손을 천천히 내린다.",
+      "text_key": "node_1787132568339_35_gai0"
+    },
+    {
+      "id": "node_1787132568339_36_d1w5",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00120_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786860377743_65_hqat",
+      "id": "node_1787132568339_37_ksbc",
       "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "화이트 원피스 상의가 흘러내리고, 맨가슴이 도시 불빛에 드러난다.",
-      "text_key": "node_1786860377743_65_hqat"
+      "speakerType": "character",
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠?",
+      "text_key": "node_1787132568339_37_ksbc"
     },
     {
-      "id": "node_1786860377743_66_arrc",
+      "id": "node_1787132568339_38_bqh4",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "! (말을 잃는다)",
-      "text_key": "node_1786860377743_66_arrc"
+      "text": "…이러시면 안 돼요.",
+      "text_key": "node_1787132568339_38_bqh4"
     },
     {
-      "id": "node_1786860377743_67_xfwo",
+      "id": "node_1787132568339_39_ph3t",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠? (가슴을 살짝 내민다)",
-      "text_key": "node_1786860377743_67_xfwo"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "왜요. 저는 지금, 참을 수 없을 만큼 두근거리는데.",
+      "text_key": "node_1787132568339_39_ph3t"
     },
     {
-      "id": "node_1786860377743_68_ig52",
+      "id": "node_1787132568339_40_dk6p",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "방송에서는 감춰져 있던 젖가슴이 그대로 드러난다. 도시 불빛에 반짝이는 피부, 선명한 젖꼭지까지. 입으로 빨고 싶고, 손으로 움켜쥐고 싶다.",
-      "text_key": "node_1786860377743_68_ig52"
+      "text": "내 손을 잡아 가슴 위에 얹는다. 손끝에 맨살이 닿는다.",
+      "text_key": "node_1787132568339_40_dk6p"
     },
     {
-      "id": "node_1786860377743_69_ecwu",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…이러면 안 돼요.",
-      "text_key": "node_1786860377743_69_ecwu"
-    },
-    {
-      "id": "node_1786860377743_70_hdc7",
+      "id": "node_1787132568339_41_nksi",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "왜요. 저는 지금, 참을 수 없을 만큼 두근거리는데. (내 손을 잡아 가슴 위에 얹는다)",
-      "text_key": "node_1786860377743_70_hdc7"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "만져요. 마음은 이미 정해졌으니까.",
+      "text_key": "node_1787132568339_41_nksi"
     },
     {
-      "id": "node_1786860377743_71_uqu2",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "손끝에 맨살이 닿는다. 따뜻한 가슴.",
-      "text_key": "node_1786860377743_71_uqu2"
-    },
-    {
-      "id": "node_1786860377743_72_y83g",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…… (손가락이 떨린다)",
-      "text_key": "node_1786860377743_72_y83g"
-    },
-    {
-      "id": "node_1786860377743_73_3bkk",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "만져요. 마음은 이미 완벽하게 정해졌으니까. (내 손 위에 손을 포갠다)",
-      "text_key": "node_1786860377743_73_3bkk"
-    },
-    {
-      "id": "node_1786860377743_74_m8ds",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "손바닥에 그녀의 가슴이 차오른다. 부드럽고 탄력 있는 무게. 손가락으로 젖꼭지를 스치자 그녀가 몸을 떤다. 이건 일이 아니다.",
-      "text_key": "node_1786860377743_74_m8ds"
-    },
-    {
-      "id": "node_1786860377743_75_ioja",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…이건 안 돼요. (손을 거두려 한다)",
-      "text_key": "node_1786860377743_75_ioja"
-    },
-    {
-      "id": "node_1786860377743_76_o0mr",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "도망가지 마요. (내 손을 꼭 잡는다)",
-      "text_key": "node_1786860377743_76_o0mr"
-    },
-    {
-      "id": "node_1786860377743_77_5ezr",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "오늘, 저는 사장님을 원해요.",
-      "text_key": "node_1786860377743_77_5ezr"
-    },
-    {
-      "id": "node_1786860377743_78_oalb",
+      "id": "node_1787132568339_42_4ngn",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "센노 씨…",
-      "text_key": "node_1786860377743_78_oalb"
+      "text_key": "node_1787132568339_42_4ngn"
     },
     {
-      "id": "node_1786860377743_79_mugn",
+      "id": "node_1787132568339_43_0n7v",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "제가 오늘 왜 이랬는지, 이제 알려드릴게요. (나를 똑바로 본다)",
-      "text_key": "node_1786860377743_79_mugn"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "제가 오늘 왜 이랬는지, 이제 알려드릴게요.",
+      "text_key": "node_1787132568339_43_0n7v"
     },
     {
-      "id": "node_1786860377743_80_iurv",
+      "id": "node_1787132568339_44_q4tx",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀가 내 몸 쪽으로 다가와, 무릎을 꿇는다.",
-      "text_key": "node_1786860377743_80_iurv"
+      "text": "그녀가 내 몸 쪽으로 다가와, 무릎을 꿇는다. 팬티만 입은 맨몸이다.",
+      "text_key": "node_1787132568339_44_q4tx"
     },
     {
-      "id": "node_1786860377743_81_9gwi",
+      "id": "node_1787132568339_45_lwh7",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "사장님을, 제가 모시고 싶어요. (낮게, 눈빛만은 뜨겁게)",
-      "text_key": "node_1786860377743_81_9gwi"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "사장님을, 제가 모시고 싶어요.",
+      "text_key": "node_1787132568339_45_lwh7"
     },
     {
-      "id": "node_1786860377743_82_okha",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786860377743_83_bk2o",
+      "id": "node_1787132568339_46_eon8",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "요트 데크. 리나가 원피스를 벗고 팬티만 입은 채, 내 앞에 무릎을 꿇고 앉아 있다.",
-      "text_key": "node_1786860377743_83_bk2o"
+      "text": "내 바지 위로 손을 올린다.",
+      "text_key": "node_1787132568339_46_eon8"
     },
     {
-      "id": "node_1786860377743_84_pudu",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "…괜찮죠? (내 바지 위로 손을 올린다)",
-      "text_key": "node_1786860377743_84_pudu"
-    },
-    {
-      "id": "node_1786860377743_85_vzi4",
+      "id": "node_1787132568339_47_muna",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "센노 씨, 거기까지는…",
-      "text_key": "node_1786860377743_85_vzi4"
+      "text_key": "node_1787132568339_47_muna"
     },
     {
-      "id": "node_1786860377743_86_5shp",
+      "id": "node_1787132568339_48_b8ev",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "저, 하고 싶어요. (눈을 올려 나를 본다)",
-      "text_key": "node_1786860377743_86_5shp"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "저, 하고 싶어요.",
+      "text_key": "node_1787132568339_48_b8ev"
     },
     {
-      "id": "node_1786860377743_87_k3mh",
+      "id": "node_1787132568339_49_9p62",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀의 손이 내 바지 위를 더듬는다. 이미 반응해버린 자지가 그 손끝에 닿는다. 대표니까 물려야 하는데, 몸이 말을 듣지 않는다.",
-      "text_key": "node_1786860377743_87_k3mh"
+      "text": "내 바지를 천천히 내린다.",
+      "text_key": "node_1787132568339_49_9p62"
     },
     {
-      "id": "node_1786860377743_88_kmcn",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "…이미 이렇게 돼 있잖아요. (지퍼에 손을 댄다)",
-      "text_key": "node_1786860377743_88_kmcn"
-    },
-    {
-      "id": "node_1786860377743_89_3ul8",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…… (숨을 들이쉰다)",
-      "text_key": "node_1786860377743_89_3ul8"
-    },
-    {
-      "id": "node_1786860377743_90_f0vw",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 바지를 천천히 내린다. 발기한 자지가 그대로 드러난다.",
-      "text_key": "node_1786860377743_90_f0vw"
-    },
-    {
-      "id": "node_1786860377743_91_mp5m",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "대단해요… (자지를 두 손으로 감싼다)",
-      "text_key": "node_1786860377743_91_mp5m"
-    },
-    {
-      "id": "node_1786860377743_92_nid4",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "하…… (거친 숨)",
-      "text_key": "node_1786860377743_92_nid4"
-    },
-    {
-      "id": "node_1786860377743_93_fu45",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 손이 내 자지를 감싼다. 차가운 손이 뜨거운 자지에 닿자 전기가 흐른다. 이게 내 크리에이터의 손이라는 게 믿기지 않는다.",
-      "text_key": "node_1786860377743_93_fu45"
-    },
-    {
-      "id": "node_1786860377743_94_ts3m",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "맛있게 해드릴게요. (혀를 내밀어 귀두를 핥는다)",
-      "text_key": "node_1786860377743_94_ts3m"
-    },
-    {
-      "id": "node_1786860377743_95_r8b8",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "읏…… (몸이 움찔)",
-      "text_key": "node_1786860377743_95_r8b8"
-    },
-    {
-      "id": "node_1786860377743_96_339a",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "혀로 자지 전체를 천천히 핥는다.",
-      "text_key": "node_1786860377743_96_339a"
-    },
-    {
-      "id": "node_1786860377743_97_dufn",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 혀가 내 자지를 핥아 올린다. 따뜻하고 축축한 혀끝이 귀두를 감돈다. 저 맨가슴이 내 앞에서 흔들리는 게 보인다.",
-      "text_key": "node_1786860377743_97_dufn"
-    },
-    {
-      "id": "node_1786860377743_98_d5bs",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "입에 넣을게요… (입을 벌려 귀두를 물어 넣는다)",
-      "text_key": "node_1786860377743_98_d5bs"
-    },
-    {
-      "id": "node_1786860377743_99_5sru",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입술이 귀두를 감싸고, 그녀가 천천히 머리를 앞으로 움직인다.",
-      "text_key": "node_1786860377743_99_5sru"
-    },
-    {
-      "id": "node_1786860377743_100_shl6",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "아…… 센노 씨… (손으로 그녀의 머리를 감싼다)",
-      "text_key": "node_1786860377743_100_shl6"
-    },
-    {
-      "id": "node_1786860377743_101_9029",
+      "id": "node_1787132568339_50_tet1",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00122_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786860377743_102_wry5",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "머리를 깊게 움직인다.",
-      "text_key": "node_1786860377743_102_wry5"
-    },
-    {
-      "id": "node_1786860377743_103_gomx",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입속이 뜨겁고 좁다. 혀가 자지를 감싸고, 입술이 귀두를 조인다. 저 맨가슴이 내 허벅지에 닿을 듯 흔들린다. 참을 수 없다.",
-      "text_key": "node_1786860377743_103_gomx"
-    },
-    {
-      "id": "node_1786860377743_104_4h7b",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…더 깊이… (허리를 살짝 내민다)",
-      "text_key": "node_1786860377743_104_4h7b"
-    },
-    {
-      "id": "node_1786860377743_105_sp04",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "머리를 더 깊이 움직인다. 그녀가 눈을 감고, 내 자지를 깊이 받아들인다. 맨가슴이 위아래로 출렁인다.",
-      "text_key": "node_1786860377743_105_sp04"
-    },
-    {
-      "id": "node_1786860377743_106_i0ag",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "센노 씨… 나… 곧… (숨을 헐떡인다)",
-      "text_key": "node_1786860377743_106_i0ag"
-    },
-    {
-      "id": "node_1786860377743_107_4lmv",
+      "id": "node_1787132568339_51_su8r",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "그대로, 입에… 내주세요. (자지를 입에 문 채, 눈으로 내게 말한다)",
-      "text_key": "node_1786860377743_107_4lmv"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "맛있게 해드릴게요.",
+      "text_key": "node_1787132568339_51_su8r"
     },
     {
-      "id": "node_1786860377743_108_otzr",
+      "id": "node_1787132568339_52_wyqi",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그 눈빛에, 참고 있던 게 무너진다. 그녀의 입속, 혀 위에, 모든 걸 쏟아내고 싶다. 이제는 멈출 수 없다.",
-      "text_key": "node_1786860377743_108_otzr"
+      "text": "혀를 내밀어 귀두를 핥고, 입을 벌려 천천히 물어 넣는다.",
+      "text_key": "node_1787132568339_52_wyqi"
     },
     {
-      "id": "node_1786860377743_109_wld2",
+      "id": "node_1787132568339_53_7dwo",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "아… 나온다…! (허리가 떨린다)",
-      "text_key": "node_1786860377743_109_wld2"
+      "text": "아…… 센노 씨…",
+      "text_key": "node_1787132568339_53_7dwo"
     },
     {
-      "id": "node_1786860377743_110_o292",
+      "id": "node_1787132568339_54_36o4",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "입으로 자지를 꽉 물고, 목울대로 삼킨다. 그녀가 내 정액을 한 방울도 흘리지 않고, 천천히 삼킨다.",
-      "text_key": "node_1786860377743_110_o292"
+      "text": "그녀가 눈을 감고, 내 자지를 깊이 받아들인다.",
+      "text_key": "node_1787132568339_54_36o4"
     },
     {
-      "id": "node_1786860377743_111_mj6w",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "맛있었어요. (입을 떼고, 혀로 입술을 닦는다)",
-      "text_key": "node_1786860377743_111_mj6w"
-    },
-    {
-      "id": "node_1786860377743_112_zceq",
+      "id": "node_1787132568339_55_nyv8",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "하…… 하…… (숨을 몰아쉰다)",
-      "text_key": "node_1786860377743_112_zceq"
+      "text": "나… 곧…",
+      "text_key": "node_1787132568339_55_nyv8"
     },
     {
-      "id": "node_1786860377743_113_mign",
+      "id": "node_1787132568339_56_49o4",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "잘하셨어요. (입꼬리를 올린다)",
-      "text_key": "node_1786860377743_113_mign"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "그대로, 얼굴에 내주세요.",
+      "text_key": "node_1787132568339_56_49o4"
     },
     {
-      "id": "node_1786860377743_114_0gky",
+      "id": "node_1787132568339_57_zlu0",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀가 내 정액을 다 삼켰다. 맨가슴을 드러낸 채, 내 앞에서 우아하게 웃고 있다. 나는 지금, 내 크리에이터에게 입으로 봉사를 받았다. 정신이 아득하다.",
-      "text_key": "node_1786860377743_114_0gky"
+      "text": "입을 떼고, 얼굴을 내 쪽으로 든다.",
+      "text_key": "node_1787132568339_57_zlu0"
     },
     {
-      "id": "node_1786860377743_115_s3cn",
+      "id": "node_1787132568339_58_wvvo",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아… 나온다…!",
+      "text_key": "node_1787132568339_58_wvvo"
+    },
+    {
+      "id": "node_1787132568339_59_dx9b",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00124_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786860377743_116_xqdl",
+      "id": "node_1787132568339_60_p947",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "…대단하세요.",
+      "text_key": "node_1787132568339_60_p947"
+    },
+    {
+      "id": "node_1787132568339_61_2alr",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "요트 데크 의자. 리나는 원피스를 다시 입고, 나는 옷을 정리하고 있다. 도시 불빛은 여전히 반짝인다. 평온한 표정.",
-      "text_key": "node_1786860377743_116_xqdl"
+      "text": "우아하게 입꼬리를 올린다.",
+      "text_key": "node_1787132568339_61_2alr"
     },
     {
-      "id": "node_1786860377743_117_a0ry",
+      "id": "node_1787132568339_62_bl8d",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "오늘, 정말 좋은 시간이었어요. (정면을 보며)",
-      "text_key": "node_1786860377743_117_a0ry"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "오늘, 정말 좋은 시간이었어요.",
+      "text_key": "node_1787132568339_62_bl8d"
     },
     {
-      "id": "node_1786860377743_118_9okx",
+      "id": "node_1787132568339_63_frpu",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "나도요. …솔직히, 이렇게 될 줄은 몰랐지만.",
-      "text_key": "node_1786860377743_118_9okx"
+      "text": "저도요.",
+      "text_key": "node_1787132568339_63_frpu"
     },
     {
-      "id": "node_1786860377743_119_ycz1",
+      "id": "node_1787132568339_64_sb9i",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "후회는 없으시죠? (입꼬리를 올린다)",
-      "text_key": "node_1786860377743_119_ycz1"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "다음에 또, 불러도 돼요?",
+      "text_key": "node_1787132568339_64_sb9i"
     },
     {
-      "id": "node_1786860377743_120_datd",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "없어요. 아주, 없어요. (작게 웃는다)",
-      "text_key": "node_1786860377743_120_datd"
-    },
-    {
-      "id": "node_1786860377743_121_7y2g",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "다행이네요. (의자에서 일어선다)",
-      "text_key": "node_1786860377743_121_7y2g"
-    },
-    {
-      "id": "node_1786860377743_122_7vaz",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…벌써 가려고?",
-      "text_key": "node_1786860377743_122_7vaz"
-    },
-    {
-      "id": "node_1786860377743_123_gzjj",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "이쯤이면 됐어요. 야경도 충분히 봤고요. (바다를 본다)",
-      "text_key": "node_1786860377743_123_gzjj"
-    },
-    {
-      "id": "node_1786860377743_124_lt7b",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "그렇네요.",
-      "text_key": "node_1786860377743_124_lt7b"
-    },
-    {
-      "id": "node_1786860377743_125_je4v",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "회사에선, 평소처럼 대할게요. (또박또박)",
-      "text_key": "node_1786860377743_125_je4v"
-    },
-    {
-      "id": "node_1786860377743_126_zuk6",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "그래요. 평소처럼.",
-      "text_key": "node_1786860377743_126_zuk6"
-    },
-    {
-      "id": "node_1786860377743_127_yk0n",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "아쉽다. 저 화이트 원피스가 다시 단정해졌다는 게, 저 몸이 내 손끝에서 멀어졌다는 게. 하지만 이게 대표로서의 선이다.",
-      "text_key": "node_1786860377743_127_yk0n"
-    },
-    {
-      "id": "node_1786860377743_128_yloy",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "그럼 저는, 이쪽으로. (요트 출구를 가리킨다)",
-      "text_key": "node_1786860377743_128_yloy"
-    },
-    {
-      "id": "node_1786860377743_129_3suf",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "배웅해 줄까요?",
-      "text_key": "node_1786860377743_129_3suf"
-    },
-    {
-      "id": "node_1786860377743_130_98ov",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "괜찮아요. 여기서 헤어져요. (한 걸음 물러선다)",
-      "text_key": "node_1786860377743_130_98ov"
-    },
-    {
-      "id": "node_1786860377743_131_3698",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "리나가 등을 돌려 걸어가다, 잠시 멈춘다.",
-      "text_key": "node_1786860377743_131_3698"
-    },
-    {
-      "id": "node_1786860377743_132_zvhv",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "리나",
-      "text": "사장님, 다음에 또 불러도 돼요?",
-      "text_key": "node_1786860377743_132_zvhv"
-    },
-    {
-      "id": "node_1786860377743_133_6ual",
+      "id": "node_1787132568339_65_ino3",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…나중에 생각해 볼게요.",
-      "text_key": "node_1786860377743_133_6ual"
+      "text_key": "node_1787132568339_65_ino3"
     },
     {
-      "id": "node_1786860377743_134_l1hr",
+      "id": "node_1787132568339_66_1mco",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "좋아요. 그럼. (걸어간다)",
-      "text_key": "node_1786860377743_134_l1hr"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "좋아요. 그럼.",
+      "text_key": "node_1787132568339_66_1mco"
     },
     {
-      "id": "node_1786860377743_135_hucw",
+      "id": "node_1787132568339_67_t4x8",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "리나가 요트 출구 쪽으로 걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
-      "text_key": "node_1786860377743_135_hucw"
-    },
-    {
-      "id": "node_1786860377743_136_z9kn",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "결국, 그녀는 나를 '모셨다'. 저 화이트 원피스, 방금 내 앞에서 흔들리던 맨가슴이. 아, 정말로 아쉽다.",
-      "text_key": "node_1786860377743_136_z9kn"
+      "text": "리나가 요트 출구 쪽으로 걸어간다. 나는 그 뒷모습이 사라질 때까지 서서 바라본다.",
+      "text_key": "node_1787132568339_67_t4x8"
     }
   ],
   "defaultLanguage": "ko",
@@ -1109,10 +557,51 @@
     {
       "id": "리나",
       "name": "리나"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    },
+    {
+      "id": "1786851109772-o2n3dj3",
+      "name": "센노 리나"
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "id": "1787132778287-pj4wf0z",
+      "fileName": "2026-08-19_00120_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/55a714c6-13aa-41bf-a4f4-a511956c6079/images/2026-08-19_00120_.png",
+      "url": "media://chapter_assets/events/55a714c6-13aa-41bf-a4f4-a511956c6079/images/2026-08-19_00120_.png",
+      "size": 2512728
+    },
+    {
+      "id": "1787132929749-wv9369f",
+      "fileName": "2026-08-19_00122_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/55a714c6-13aa-41bf-a4f4-a511956c6079/images/2026-08-19_00122_.png",
+      "url": "media://chapter_assets/events/55a714c6-13aa-41bf-a4f4-a511956c6079/images/2026-08-19_00122_.png",
+      "size": 2742733
+    },
+    {
+      "id": "1787133065000-wtjb2l8",
+      "fileName": "2026-08-19_00124_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/55a714c6-13aa-41bf-a4f4-a511956c6079/images/2026-08-19_00124_.png",
+      "url": "media://chapter_assets/events/55a714c6-13aa-41bf-a4f4-a511956c6079/images/2026-08-19_00124_.png",
+      "size": 2537084
+    },
+    {
+      "id": "1787133503266-rv0wvw1",
+      "fileName": "2026-08-19_00126_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/55a714c6-13aa-41bf-a4f4-a511956c6079/images/2026-08-19_00126_.png",
+      "url": "media://chapter_assets/events/55a714c6-13aa-41bf-a4f4-a511956c6079/images/2026-08-19_00126_.png",
+      "size": 2227791
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T06:06:11.358Z",
   "ownerCharacterId": "1786851109772-o2n3dj3"

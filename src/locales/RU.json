@@ -75,5 +75,13 @@
     "placementTitle": "배치할 크리에이터",
     "placementDesc": "카드를 선택해 해금된 슬롯에 배치",
     "noCreators": "보유 캐릭터가 없습니다. 캐릭터를 확보하면 여기에 나타납니다."
+  },
+  "staff": {
+    "kindSecurity": "Охрана",
+    "kindRepair": "Ремонт",
+    "kindCare": "Уход",
+    "kindProduction": "Продакшн",
+    "genderMale": "М",
+    "genderFemale": "Ж"
   }
 }

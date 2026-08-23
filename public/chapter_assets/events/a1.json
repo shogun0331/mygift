@@ -5,1471 +5,623 @@
   "chapterId": 1,
   "titleKey": "a1",
   "title": "데이트2",
-  "startNode": "node_1786843149822_0_qyup",
+  "startNode": "node_1787097515369_1_k392",
   "nodes": [
     {
-      "id": "node_1786843149822_0_qyup",
+      "id": "node_1787097515369_1_k392",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "고급 호텔 프라이빗 수영장 입구. 미야자와 리나가 먼저 도착해 기다리고 있다. 빨간 비키니 차림. 루프영상 — 미야자와 씨 상반신 (씬5와 동일 영상 재사용).",
-      "text_key": "node_1786843149822_0_qyup"
+      "text": "고급 호텔 프라이빗 수영장. 미야자와 리나가 먼저 도착해 기다리고 있다.",
+      "text_key": "node_1787097515369_1_k392"
     },
     {
-      "id": "node_1786843149822_1_bx8s",
+      "id": "node_1787097515369_0_s6at",
+      "type": "graphic",
+      "image": "2026-08-18_00043_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787097515369_2_fyxg",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"…오셨네요. 와주셔서 감사합니다.\"",
-      "text_key": "node_1786843149822_1_bx8s"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "…오셨네요. 와주셔서 감사합니다.",
+      "text_key": "node_1787097515369_2_fyxg"
     },
     {
-      "id": "node_1786843149822_2_hkjc",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "살짝 고개를 숙인다.",
-      "text_key": "node_1786843149822_2_hkjc"
-    },
-    {
-      "id": "node_1786843149822_3_npuv",
+      "id": "node_1787097515369_3_oncx",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"늦었죠? 미안합니다.\"",
-      "text_key": "node_1786843149822_3_npuv"
+      "text": "늦었죠? 미안합니다.",
+      "text_key": "node_1787097515369_3_oncx"
     },
     {
-      "id": "node_1786843149822_4_s0xn",
+      "id": "node_1787097515369_4_6r9q",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"아니에요. 제가 일찍 온 거니까요.\"",
-      "text_key": "node_1786843149822_4_s0xn"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "아니에요. 제가 일찍 온 거니까요.",
+      "text_key": "node_1787097515369_4_6r9q"
     },
     {
-      "id": "node_1786843149822_5_7472",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입꼬리를 올린다.",
-      "text_key": "node_1786843149822_5_7472"
-    },
-    {
-      "id": "node_1786843149822_6_uov9",
+      "id": "node_1787097515369_5_4pzw",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"이런 데를 통째로 빌리다니, 준비가 대단하네요.\"",
-      "text_key": "node_1786843149822_6_uov9"
+      "text": "이런 데를 통째로 빌리시다니, 준비가 대단하네요.",
+      "text_key": "node_1787097515369_5_4pzw"
     },
     {
-      "id": "node_1786843149822_7_up9t",
+      "id": "node_1787097515369_6_rgi6",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"사장님을 모시려면 이 정도는 해야죠.\"",
-      "text_key": "node_1786843149822_7_up9t"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님을 모시려면 이 정도는 해야죠.",
+      "text_key": "node_1787097515369_6_rgi6"
     },
     {
-      "id": "node_1786843149822_8_lcap",
+      "id": "node_1787097515369_7_3pou",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "모시시다니… 데이트 신청을 하신 건 미야자와 씨잖아요.",
+      "text_key": "node_1787097515369_7_3pou"
+    },
+    {
+      "id": "node_1787097515369_8_dsmb",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "네. 오늘은 제가 사장님을 모시는 날이에요.",
+      "text_key": "node_1787097515369_8_dsmb"
+    },
+    {
+      "id": "node_1787097515369_9_u553",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "그런데 왜 하필 저를요? 크리에이터가 사장을 부르실 이유는 없잖아요.",
+      "text_key": "node_1787097515369_9_u553"
+    },
+    {
+      "id": "node_1787097515369_10_zage",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "그런 건 오늘, 천천히 말해도 되죠.",
+      "text_key": "node_1787097515369_10_zage"
+    },
+    {
+      "id": "node_1787097515369_11_qjck",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "수영장 쪽으로 턱짓.",
-      "text_key": "node_1786843149822_8_lcap"
+      "text_key": "node_1787097515369_11_qjck"
     },
     {
-      "id": "node_1786843149822_9_sq33",
+      "id": "node_1787097515369_12_povl",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"모시다니… 정말 데이트 신청을 한 건 너잖아요.\"",
-      "text_key": "node_1786843149822_9_sq33"
+      "text": "…분위기가 심상치 않네요.",
+      "text_key": "node_1787097515369_12_povl"
     },
     {
-      "id": "node_1786843149822_10_wgah",
+      "id": "node_1787097515369_13_efta",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"네. 오늘은 제가 사장님을 모시는 날이에요.\"",
-      "text_key": "node_1786843149822_10_wgah"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "심상치 않을 만큼, 제가 진심이라는 거예요.",
+      "text_key": "node_1787097515369_13_efta"
     },
     {
-      "id": "node_1786843149822_11_hxo2",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "또박또박.",
-      "text_key": "node_1786843149822_11_hxo2"
-    },
-    {
-      "id": "node_1786843149822_12_2tbx",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "평소 방송국에서 사무적으로 마주치던 얼굴인데, 빨간 비키니 차림은 처음이다. 저 몸매가… 아니, 나는 대표니까.",
-      "text_key": "node_1786843149822_12_2tbx"
-    },
-    {
-      "id": "node_1786843149822_13_icdc",
+      "id": "node_1787097515369_14_kce4",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"그런데 왜 하필 저를? 크리에이터가 사장을 부를 이유는 없잖아요.\"",
-      "text_key": "node_1786843149822_13_icdc"
+      "text": "…오늘은 미야자와 씨 뜻에 맞춰 드릴게요.",
+      "text_key": "node_1787097515369_14_kce4"
     },
     {
-      "id": "node_1786843149822_14_w1aa",
+      "id": "node_1787097515369_15_71ha",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"그런 건 오늘, 천천히 말해도 되죠.\"",
-      "text_key": "node_1786843149822_14_w1aa"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "좋아요. 그럼 들어가요.",
+      "text_key": "node_1787097515369_15_71ha"
     },
     {
-      "id": "node_1786843149822_15_kd22",
+      "id": "node_1787097515369_16_tf6w",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "한 걸음 다가선다.",
-      "text_key": "node_1786843149822_15_kd22"
+      "text": "둘이 나란히 물에 들어간다. 물이 몸에 닿자 비키니가 젖어 피부에 달라붙는다.",
+      "text_key": "node_1787097515369_16_tf6w"
     },
     {
-      "id": "node_1786843149822_16_l26l",
+      "id": "node_1787097515369_17_cyod",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님, 제가 왜 오늘 이렇게 했는지 아세요?",
+      "text_key": "node_1787097515369_17_cyod"
+    },
+    {
+      "id": "node_1787097515369_18_gt92",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"…분위기가 심상치 않네요.\"",
-      "text_key": "node_1786843149822_16_l26l"
+      "text": "모르겠네요. 말해 주세요.",
+      "text_key": "node_1787097515369_18_gt92"
     },
     {
-      "id": "node_1786843149822_17_a719",
+      "id": "node_1787097515369_19_bdtx",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"심상치 않을 만큼, 제가 진심이라는 거예요.\"",
-      "text_key": "node_1786843149822_17_a719"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님이 저를 여자로 봐주셨으면 해서요.",
+      "text_key": "node_1787097515369_19_bdtx"
     },
     {
-      "id": "node_1786843149822_18_8zud",
+      "id": "node_1787097515369_20_3wio",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "눈을 가늘게 뜬다.",
-      "text_key": "node_1786843149822_18_8zud"
+      "text": "또박또박. 내 쪽으로 다가온다.",
+      "text_key": "node_1787097515369_20_3wio"
     },
     {
-      "id": "node_1786843149822_19_y3k5",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "저 입술이 방송에서 시청자들한테 무슨 말을 하는지 다 알고 있다. 그런 입이 지금 나한테 '진심'이라고… 심장이 빨리 뛴다.",
-      "text_key": "node_1786843149822_19_y3k5"
-    },
-    {
-      "id": "node_1786843149822_20_5og1",
+      "id": "node_1787097515369_21_br0m",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"진심이라니, 무슨 진심인지 알겠어요?\"",
-      "text_key": "node_1786843149822_20_5og1"
+      "text": "미야자와 씨, 너무 가까워요.",
+      "text_key": "node_1787097515369_21_br0m"
     },
     {
-      "id": "node_1786843149822_21_hkem",
+      "id": "node_1787097515369_22_2lqg",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"알고 계시면서.\"",
-      "text_key": "node_1786843149822_21_hkem"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "싫으세요?",
+      "text_key": "node_1787097515369_22_2lqg"
     },
     {
-      "id": "node_1786843149822_22_dcrx",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입꼬리만 살짝.",
-      "text_key": "node_1786843149822_22_dcrx"
-    },
-    {
-      "id": "node_1786843149822_23_tsqz",
+      "id": "node_1787097515369_23_vk7j",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"…오늘은 네 뜻에 맞춰 드릴게요. 어차피 부른 건 너니까.\"",
-      "text_key": "node_1786843149822_23_tsqz"
+      "text": "싫은 게 아니라, 곤란하죠.",
+      "text_key": "node_1787097515369_23_vk7j"
     },
     {
-      "id": "node_1786843149822_24_wafk",
+      "id": "node_1787097515369_24_866h",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"좋아요. 그럼 들어가요.\"",
-      "text_key": "node_1786843149822_24_wafk"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "오늘만큼은, 곤란해지셔도 돼요.",
+      "text_key": "node_1787097515369_24_866h"
     },
     {
-      "id": "node_1786843149822_25_dlxz",
+      "id": "node_1787097515369_25_gr4r",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "몸을 돌려 앞장선다.",
-      "text_key": "node_1786843149822_25_dlxz"
+      "text": "물에서 나와 수영장 가장자리에 앉으며, 등 뒤로 손을 돌려 비키니 끈을 푼다.",
+      "text_key": "node_1787097515369_25_gr4r"
     },
     {
-      "id": "node_1786843149822_26_ipny",
+      "id": "node_1787097594290_0gze",
+      "type": "graphic",
+      "image": "2026-08-18_00045_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787097515369_26_8lyi",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"수영장은 처음 봐요. 정말 프라이빗이네.\"",
-      "text_key": "node_1786843149822_26_ipny"
+      "text": "미야자와 씨, 지금 뭐 하시는 거예요.",
+      "text_key": "node_1787097515369_26_8lyi"
     },
     {
-      "id": "node_1786843149822_27_lre7",
+      "id": "node_1787097515369_27_sz5i",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"둘만 있으려고 빌렸어요.\"",
-      "text_key": "node_1786843149822_27_lre7"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "더우니까요.",
+      "text_key": "node_1787097515369_27_sz5i"
     },
     {
-      "id": "node_1786843149822_28_ok93",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "어깨너머로 나를 본다.",
-      "text_key": "node_1786843149822_28_ok93"
-    },
-    {
-      "id": "node_1786843149822_29_mqvb",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "둘만. 저 말 한마디에 등줄기가 뜨거워진다. 빨간 비키니가 저 햇살에 비쳐서, 몸의 라인이 더 선명하게 드러난다. 참아라.",
-      "text_key": "node_1786843149822_29_mqvb"
-    },
-    {
-      "id": "node_1786843149822_30_4mu3",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"…둘만, 이라.\"",
-      "text_key": "node_1786843149822_30_4mu3"
-    },
-    {
-      "id": "node_1786843149822_31_revo",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"네. 오늘 여기엔 저와 사장님, 둘뿐이에요.\"",
-      "text_key": "node_1786843149822_31_revo"
-    },
-    {
-      "id": "node_1786843149822_32_zc2m",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "정면을 바라보며. 미야자와 씨가 수영장 가장자리로 걸어간다. 나는 그 뒷모습을 따라가며, 시선을 뗄 수 없다.",
-      "text_key": "node_1786843149822_32_zc2m"
-    },
-    {
-      "id": "node_1786843149822_33_rmbk",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "수영장 가장자리. 미야자와 씨가 난간에 손을 얹고 서 있다. 빨간 비키니가 몸에 밀착되어 있다. 정지 이미지 — 미야자와 씨 상반신~허벅지, 빨간 비키니.",
-      "text_key": "node_1786843149822_33_rmbk"
-    },
-    {
-      "id": "node_1786843149822_34_eduo",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"…안 들어오세요?\"",
-      "text_key": "node_1786843149822_34_eduo"
-    },
-    {
-      "id": "node_1786843149822_35_nfgq",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "수영장을 가리킨다.",
-      "text_key": "node_1786843149822_35_nfgq"
-    },
-    {
-      "id": "node_1786843149822_36_9qyk",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"물이 좀 차가워 보여서요.\"",
-      "text_key": "node_1786843149822_36_9qyk"
-    },
-    {
-      "id": "node_1786843149822_37_zptz",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"그럼 제가 먼저 들어갈게요.\"",
-      "text_key": "node_1786843149822_37_zptz"
-    },
-    {
-      "id": "node_1786843149822_38_m46j",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "난간을 잡고 천천히 물에 들어간다. 물이 몸에 닿자 비키니가 젖어 피부에 달라붙는다.",
-      "text_key": "node_1786843149822_38_m46j"
-    },
-    {
-      "id": "node_1786843149822_39_nzxe",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "젖은 빨간 비키니가 몸에 착 달라붙어, 가슴과 허리 라인이 그대로 드러난다. 물방울이 쇄골을 타고 흘러내리는 게… 눈을 뗄 수가 없다.",
-      "text_key": "node_1786843149822_39_nzxe"
-    },
-    {
-      "id": "node_1786843149822_40_oarl",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"사장님, 이쪽 와 보세요.\"",
-      "text_key": "node_1786843149822_40_oarl"
-    },
-    {
-      "id": "node_1786843149822_41_xrjh",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "물속에서 손을 뻗는다.",
-      "text_key": "node_1786843149822_41_xrjh"
-    },
-    {
-      "id": "node_1786843149822_42_3w8h",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"…알겠어요.\"",
-      "text_key": "node_1786843149822_42_3w8h"
-    },
-    {
-      "id": "node_1786843149822_43_mdce",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "물에 들어간다.",
-      "text_key": "node_1786843149822_43_mdce"
-    },
-    {
-      "id": "node_1786843149822_44_7blk",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"어때요. 물, 생각보다 괜찮죠?\"",
-      "text_key": "node_1786843149822_44_7blk"
-    },
-    {
-      "id": "node_1786843149822_45_212s",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "몸을 조금 기울인다.",
-      "text_key": "node_1786843149822_45_212s"
-    },
-    {
-      "id": "node_1786843149822_46_bhv1",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"그러네요.\"",
-      "text_key": "node_1786843149822_46_bhv1"
-    },
-    {
-      "id": "node_1786843149822_47_9q97",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"사장님, 시선이 자꾸… 제 몸에 가시네요.\"",
-      "text_key": "node_1786843149822_47_9q97"
-    },
-    {
-      "id": "node_1786843149822_48_93ng",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입꼬리 올린다.",
-      "text_key": "node_1786843149822_48_93ng"
-    },
-    {
-      "id": "node_1786843149822_49_nkoc",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"오해하지 마요.\"",
-      "text_key": "node_1786843149822_49_nkoc"
-    },
-    {
-      "id": "node_1786843149822_50_aayc",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"오해가 아니면 뭐예요?\"",
-      "text_key": "node_1786843149822_50_aayc"
-    },
-    {
-      "id": "node_1786843149822_51_ll9i",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "한 걸음 다가선다.",
-      "text_key": "node_1786843149822_51_ll9i"
-    },
-    {
-      "id": "node_1786843149822_52_si5w",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "젖은 비키니 사이로 가슴 골이 깊게 파인다. 물속에서 그녀의 몸이 흔들릴 때마다… 나는 지금 내 크리에이터를 보고 있다. 대표니까 참아야 해.",
-      "text_key": "node_1786843149822_52_si5w"
-    },
-    {
-      "id": "node_1786843149822_53_wcah",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"…수영이나 하러 온 거잖아요.\"",
-      "text_key": "node_1786843149822_53_wcah"
-    },
-    {
-      "id": "node_1786843149822_54_sv7w",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"수영만 하러 온 건 아니잖아요.\"",
-      "text_key": "node_1786843149822_54_sv7w"
-    },
-    {
-      "id": "node_1786843149822_55_sqi9",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "낮게.",
-      "text_key": "node_1786843149822_55_sqi9"
-    },
-    {
-      "id": "node_1786843149822_56_yma0",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"……\"",
-      "text_key": "node_1786843149822_56_yma0"
-    },
-    {
-      "id": "node_1786843149822_57_7f8u",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"사장님, 제가 왜 오늘 이렇게 했는지 아세요?\"",
-      "text_key": "node_1786843149822_57_7f8u"
-    },
-    {
-      "id": "node_1786843149822_58_vbop",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "물을 살짝 튕기며.",
-      "text_key": "node_1786843149822_58_vbop"
-    },
-    {
-      "id": "node_1786843149822_59_omww",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"모르겠네요. 말해줘요.\"",
-      "text_key": "node_1786843149822_59_omww"
-    },
-    {
-      "id": "node_1786843149822_60_14ha",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"사장님이 저를 여자로 봐주셨으면 해서요.\"",
-      "text_key": "node_1786843149822_60_14ha"
-    },
-    {
-      "id": "node_1786843149822_61_tte8",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "또박또박.",
-      "text_key": "node_1786843149822_61_tte8"
-    },
-    {
-      "id": "node_1786843149822_62_no8q",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "정지 이미지 — 미야자와 씨 상반신, 젖은 빨간 비키니, 가슴 골 클로즈업.",
-      "text_key": "node_1786843149822_62_no8q"
-    },
-    {
-      "id": "node_1786843149822_63_diix",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"…그게 왜 중요한데요.\"",
-      "text_key": "node_1786843149822_63_diix"
-    },
-    {
-      "id": "node_1786843149822_64_w1cf",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"중요하니까, 데이트를 신청했죠.\"",
-      "text_key": "node_1786843149822_64_w1cf"
-    },
-    {
-      "id": "node_1786843149822_65_66je",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "내 쪽으로 다가온다.",
-      "text_key": "node_1786843149822_65_66je"
-    },
-    {
-      "id": "node_1786843149822_66_api2",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "물속에서 그녀의 몸이 닿을 듯 가까워진다. 젖은 비키니에 감싸인 가슴이 눈앞에 있다. 자지가 반응하는 걸 겨우 참는다.",
-      "text_key": "node_1786843149822_66_api2"
-    },
-    {
-      "id": "node_1786843149822_67_27zp",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"미야자와 씨, 너무 가까워요.\"",
-      "text_key": "node_1786843149822_67_27zp"
-    },
-    {
-      "id": "node_1786843149822_68_p0bc",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"싫으세요?\"",
-      "text_key": "node_1786843149822_68_p0bc"
-    },
-    {
-      "id": "node_1786843149822_69_c2y9",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "눈을 맞춘다.",
-      "text_key": "node_1786843149822_69_c2y9"
-    },
-    {
-      "id": "node_1786843149822_70_uktk",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"싫은 게 아니라, 곤란하죠.\"",
-      "text_key": "node_1786843149822_70_uktk"
-    },
-    {
-      "id": "node_1786843149822_71_d1rb",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"오늘만큼은, 곤란해지셔도 돼요.\"",
-      "text_key": "node_1786843149822_71_d1rb"
-    },
-    {
-      "id": "node_1786843149822_72_02r6",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "내 손목을 잡는다. 그녀의 젖은 손이 내 손목을 잡는다. 심장이 크게 뛴다.",
-      "text_key": "node_1786843149822_72_02r6"
-    },
-    {
-      "id": "node_1786843149822_73_2kmg",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"……\"",
-      "text_key": "node_1786843149822_73_2kmg"
-    },
-    {
-      "id": "node_1786843149822_74_6unb",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "숨을 멈춘다.",
-      "text_key": "node_1786843149822_74_6unb"
-    },
-    {
-      "id": "node_1786843149822_75_o8xi",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "수영장 가장자리 계단. 미야자와 씨가 물에서 나와 앉아 있다. 빨간 비키니가 젖어 있다. 정지 이미지 — 미야자와 씨, 물에서 나와 앉아 비키니 상의 끈에 손을 댄 순간.",
-      "text_key": "node_1786843149822_75_o8xi"
-    },
-    {
-      "id": "node_1786843149822_76_yz8t",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"…사장님, 여기 앉아 보세요.\"",
-      "text_key": "node_1786843149822_76_yz8t"
-    },
-    {
-      "id": "node_1786843149822_77_ldru",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "옆자리를 두드린다.",
-      "text_key": "node_1786843149822_77_ldru"
-    },
-    {
-      "id": "node_1786843149822_78_vn24",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"뭐 하려고요.\"",
-      "text_key": "node_1786843149822_78_vn24"
-    },
-    {
-      "id": "node_1786843149822_79_j3q7",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"뭐 하려는지, 보시면 알아요.\"",
-      "text_key": "node_1786843149822_79_j3q7"
-    },
-    {
-      "id": "node_1786843149822_80_5gad",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "등 뒤로 손을 돌려 비키니 끈을 푼다. 등 뒤의 끈이 풀리고, 빨간 비키니 상의가 느슨해진다.",
-      "text_key": "node_1786843149822_80_5gad"
-    },
-    {
-      "id": "node_1786843149822_81_bmov",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"미야자와 씨, 지금 뭐 하는 거예요.\"",
-      "text_key": "node_1786843149822_81_bmov"
-    },
-    {
-      "id": "node_1786843149822_82_ws43",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"더우니까요.\"",
-      "text_key": "node_1786843149822_82_ws43"
-    },
-    {
-      "id": "node_1786843149822_83_yzfv",
+      "id": "node_1787097515369_28_r3m0",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "앞을 가린 채, 나를 본다.",
-      "text_key": "node_1786843149822_83_yzfv"
+      "text_key": "node_1787097515369_28_r3m0"
     },
     {
-      "id": "node_1786843149822_84_47no",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "비키니 상의가 풀려, 가슴이 흘러나올 듯 매달려 있다. 저 손만 치우면… 젠장, 보고 싶어서 미칠 것 같다.",
-      "text_key": "node_1786843149822_84_47no"
-    },
-    {
-      "id": "node_1786843149822_85_axma",
+      "id": "node_1787097515369_29_wwrt",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"…그게 더위 때문이에요?\"",
-      "text_key": "node_1786843149822_85_axma"
+      "text": "…그게 더위 때문이에요?",
+      "text_key": "node_1787097515369_29_wwrt"
     },
     {
-      "id": "node_1786843149822_86_fvsa",
+      "id": "node_1787097515369_30_hat8",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"아니요. 사장님 때문이에요.\"",
-      "text_key": "node_1786843149822_86_fvsa"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "아니요. 사장님 때문이에요.",
+      "text_key": "node_1787097515369_30_hat8"
     },
     {
-      "id": "node_1786843149822_87_o1xx",
+      "id": "node_1787097515369_33_ue4x",
       "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "앞을 가린 손을 천천히 내린다.",
-      "text_key": "node_1786843149822_87_o1xx"
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠?",
+      "text_key": "node_1787097515369_33_ue4x"
     },
     {
-      "id": "node_1786843149822_88_xq9q",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "정지 이미지 — 미야자와 씨 상반신, 비키니 상의를 벗어 맨가슴 노출. 빨간 비키니 상의가 벗겨지고, 젖은 맨가슴이 그대로 드러난다.",
-      "text_key": "node_1786843149822_88_xq9q"
-    },
-    {
-      "id": "node_1786843149822_89_zp3o",
+      "id": "node_1787097515369_34_z834",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"!\"",
-      "text_key": "node_1786843149822_89_zp3o"
+      "text": "…이러시면 안 돼요.",
+      "text_key": "node_1787097515369_34_z834"
     },
     {
-      "id": "node_1786843149822_90_zaa9",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "말을 잃는다.",
-      "text_key": "node_1786843149822_90_zaa9"
-    },
-    {
-      "id": "node_1786843149822_91_yu96",
+      "id": "node_1787097515369_35_u7oj",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"어때요, 제 몸. 방송에서 보는 것보다 낫죠?\"",
-      "text_key": "node_1786843149822_91_yu96"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "왜요. 저는 지금, 되게 두근거리는데.",
+      "text_key": "node_1787097515369_35_u7oj"
     },
     {
-      "id": "node_1786843149822_92_rlb9",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "가슴을 살짝 내민다.",
-      "text_key": "node_1786843149822_92_rlb9"
-    },
-    {
-      "id": "node_1786843149822_93_wtu9",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "방송에서는 감춰져 있던 젖가슴이 그대로 드러난다. 물에 젖어 반짝이는 피부, 선명한 젖꼭지까지. 입으로 빨고 싶고, 손으로 움켜쥐고 싶다.",
-      "text_key": "node_1786843149822_93_wtu9"
-    },
-    {
-      "id": "node_1786843149822_94_0lwh",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"…이러면 안 돼요.\"",
-      "text_key": "node_1786843149822_94_0lwh"
-    },
-    {
-      "id": "node_1786843149822_95_c0pd",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"왜요. 저는 지금, 되게 두근거리는데.\"",
-      "text_key": "node_1786843149822_95_c0pd"
-    },
-    {
-      "id": "node_1786843149822_96_qaje",
+      "id": "node_1787097515369_36_zxcx",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "내 손을 잡아 가슴 위에 얹는다. 손끝에 맨살이 닿는다. 젖고 따뜻한 가슴.",
-      "text_key": "node_1786843149822_96_qaje"
+      "text_key": "node_1787097515369_36_zxcx"
     },
     {
-      "id": "node_1786843149822_97_g6u9",
+      "id": "node_1787097515369_37_jhsj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "제가 오늘 왜 이랬는지, 이제 알려드릴게요.",
+      "text_key": "node_1787097515369_37_jhsj"
+    },
+    {
+      "id": "node_1787097515369_38_wghv",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 몸 쪽으로 다가와, 내 앞에 무릎을 꿇는다.",
+      "text_key": "node_1787097515369_38_wghv"
+    },
+    {
+      "id": "node_1787097515369_40_nwzl",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님을, 제가 모시고 싶어요.",
+      "text_key": "node_1787097515369_40_nwzl"
+    },
+    {
+      "id": "node_1787097515369_42_kl7b",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"……\"",
-      "text_key": "node_1786843149822_97_g6u9"
+      "text": "미야자와 씨, 거기까지는…",
+      "text_key": "node_1787097515369_42_kl7b"
     },
     {
-      "id": "node_1786843149822_98_ptpw",
+      "id": "node_1787097515369_43_pw8j",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "저, 하고 싶어요.",
+      "text_key": "node_1787097515369_43_pw8j"
+    },
+    {
+      "id": "node_1787097515369_44_ksj7",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "손가락이 떨린다.",
-      "text_key": "node_1786843149822_98_ptpw"
+      "text": "눈을 올려 나를 본다. 내 바지를 천천히 내린다.",
+      "text_key": "node_1787097515369_44_ksj7"
     },
     {
-      "id": "node_1786843149822_99_p2aq",
+      "id": "node_1787097515369_45_0lqo",
+      "type": "graphic",
+      "image": "2026-08-19_00001_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787097515369_46_05e0",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"만져요. 제가 허락했으니까.\"",
-      "text_key": "node_1786843149822_99_p2aq"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "맛있게 해드릴게요.",
+      "text_key": "node_1787097515369_46_05e0"
     },
     {
-      "id": "node_1786843149822_100_lhcj",
+      "id": "node_1787097515369_47_v3ti",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "내 손 위에 손을 포갠다.",
-      "text_key": "node_1786843149822_100_lhcj"
+      "text": "혀를 내밀어 귀두를 핥고, 입을 벌려 천천히 물어 넣는다. 머리를 앞뒤로 움직인다.",
+      "text_key": "node_1787097515369_47_v3ti"
     },
     {
-      "id": "node_1786843149822_101_wl2w",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "손바닥에 그녀의 가슴이 차오른다. 부드럽고 탄력 있는 무게. 손가락으로 젖꼭지를 스치자 그녀가 몸을 떤다. 이건 일이 아니다.",
-      "text_key": "node_1786843149822_101_wl2w"
-    },
-    {
-      "id": "node_1786843149822_102_eck5",
+      "id": "node_1787097515369_48_t4vw",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"…이건 안 돼요.\"",
-      "text_key": "node_1786843149822_102_eck5"
+      "text": "아…… 미야자와 씨…",
+      "text_key": "node_1787097515369_48_t4vw"
     },
     {
-      "id": "node_1786843149822_103_l3e7",
+      "id": "node_1787097515369_49_zqfq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "입에 넣을게요…",
+      "text_key": "node_1787097515369_49_zqfq"
+    },
+    {
+      "id": "node_1787097515369_50_nouz",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "손을 거두려 한다.",
-      "text_key": "node_1786843149822_103_l3e7"
+      "text": "눈을 감고, 자지를 깊이 받아들인다.",
+      "text_key": "node_1787097515369_50_nouz"
     },
     {
-      "id": "node_1786843149822_104_099n",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"도망가지 마요.\"",
-      "text_key": "node_1786843149822_104_099n"
-    },
-    {
-      "id": "node_1786843149822_105_bvah",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "내 손을 꼭 잡는다.",
-      "text_key": "node_1786843149822_105_bvah"
-    },
-    {
-      "id": "node_1786843149822_106_khsv",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"오늘, 저는 사장님을 원해요.\"",
-      "text_key": "node_1786843149822_106_khsv"
-    },
-    {
-      "id": "node_1786843149822_107_mlxg",
+      "id": "node_1787097515369_51_3nnx",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"미야자와 씨…\"",
-      "text_key": "node_1786843149822_107_mlxg"
+      "text": "미야자와 씨… 나… 곧…",
+      "text_key": "node_1787097515369_51_3nnx"
     },
     {
-      "id": "node_1786843149822_108_k4u9",
+      "id": "node_1787097515369_52_7qc2",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"제가 오늘 왜 이랬는지, 이제 알려드릴게요.\"",
-      "text_key": "node_1786843149822_108_k4u9"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "그대로, 얼굴에… 내주세요.",
+      "text_key": "node_1787097515369_52_7qc2"
     },
     {
-      "id": "node_1786843149822_109_lcc5",
+      "id": "node_1787097515369_53_f459",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "나를 똑바로 본다. 그녀가 내 몸 쪽으로 다가와, 무릎을 꿇는다.",
-      "text_key": "node_1786843149822_109_lcc5"
+      "text": "입을 떼고, 얼굴을 내 쪽으로 든다.",
+      "text_key": "node_1787097515369_53_f459"
     },
     {
-      "id": "node_1786843149822_110_zub8",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"사장님을, 제가 모시고 싶어요.\"",
-      "text_key": "node_1786843149822_110_zub8"
-    },
-    {
-      "id": "node_1786843149822_111_2syg",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "낮게.",
-      "text_key": "node_1786843149822_111_2syg"
-    },
-    {
-      "id": "node_1786843149822_112_g04x",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "수영장 가장자리. 미야자와 씨가 내 앞에 무릎을 꿇고 앉아 있다. 상의를 벗은 맨가슴 차림. 정지 이미지 — 미야자와 씨, 맨가슴 차림으로 무릎 꿇고, 남성의 허리춤을 바라보는 구도.",
-      "text_key": "node_1786843149822_112_g04x"
-    },
-    {
-      "id": "node_1786843149822_113_cfwr",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"…괜찮죠?\"",
-      "text_key": "node_1786843149822_113_cfwr"
-    },
-    {
-      "id": "node_1786843149822_114_bjoi",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "내 바지 위로 손을 올린다.",
-      "text_key": "node_1786843149822_114_bjoi"
-    },
-    {
-      "id": "node_1786843149822_115_wptf",
+      "id": "node_1787097515369_54_gyux",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"미야자와 씨, 거기까지는…\"",
-      "text_key": "node_1786843149822_115_wptf"
+      "text": "아… 나온다…!",
+      "text_key": "node_1787097515369_54_gyux"
     },
     {
-      "id": "node_1786843149822_116_gbx0",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"저, 하고 싶어요.\"",
-      "text_key": "node_1786843149822_116_gbx0"
-    },
-    {
-      "id": "node_1786843149822_117_j68a",
+      "id": "node_1787097515369_55_npma",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "눈을 올려 나를 본다.",
-      "text_key": "node_1786843149822_117_j68a"
+      "text": "허리가 떨린다.",
+      "text_key": "node_1787097515369_55_npma"
     },
     {
-      "id": "node_1786843149822_118_9hcc",
+      "id": "node_1787097515369_56_ujf7",
+      "type": "graphic",
+      "image": "2026-08-19_00003_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787097515369_57_ra49",
       "type": "text",
       "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "그녀의 손이 내 바지 위를 더듬는다. 이미 반응해버린 자지가 그 손끝에 닿는다. 대표니까 물려야 하는데, 몸이 말을 듣지 않는다.",
-      "text_key": "node_1786843149822_118_9hcc"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "…대단하세요.",
+      "text_key": "node_1787097515369_57_ra49"
     },
     {
-      "id": "node_1786843149822_119_8wwd",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"…이미 이렇게 돼 있잖아요.\"",
-      "text_key": "node_1786843149822_119_8wwd"
-    },
-    {
-      "id": "node_1786843149822_120_a5t9",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "지퍼에 손을 댄다.",
-      "text_key": "node_1786843149822_120_a5t9"
-    },
-    {
-      "id": "node_1786843149822_121_joq3",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"……\" (1/2)",
-      "text_key": "node_1786843149822_121_joq3"
-    },
-    {
-      "id": "node_1786843149822_122_fncg",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "숨을 들이쉰다. 그녀가 내 바지를 천천히 내린다. 발기한 자지가 그대로 드러난다.",
-      "text_key": "node_1786843149822_122_fncg"
-    },
-    {
-      "id": "node_1786843149822_123_zi66",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"대단해요…\"",
-      "text_key": "node_1786843149822_123_zi66"
-    },
-    {
-      "id": "node_1786843149822_124_lfni",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "자지를 두 손으로 감싼다.",
-      "text_key": "node_1786843149822_124_lfni"
-    },
-    {
-      "id": "node_1786843149822_125_zb8m",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"하……\"",
-      "text_key": "node_1786843149822_125_zb8m"
-    },
-    {
-      "id": "node_1786843149822_126_z4ge",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "거친 숨.",
-      "text_key": "node_1786843149822_126_z4ge"
-    },
-    {
-      "id": "node_1786843149822_127_tyb7",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "그녀의 손이 내 자지를 감싼다. 차가운 손이 뜨거운 자지에 닿자 전기가 흐른다. 이게 내 크리에이터의 손이라는 게 믿기지 않는다.",
-      "text_key": "node_1786843149822_127_tyb7"
-    },
-    {
-      "id": "node_1786843149822_128_4amd",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"맛있게 해드릴게요.\"",
-      "text_key": "node_1786843149822_128_4amd"
-    },
-    {
-      "id": "node_1786843149822_129_5ii3",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "혀를 내밀어 귀두를 핥는다.",
-      "text_key": "node_1786843149822_129_5ii3"
-    },
-    {
-      "id": "node_1786843149822_130_ems7",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"읏……\"",
-      "text_key": "node_1786843149822_130_ems7"
-    },
-    {
-      "id": "node_1786843149822_131_si7f",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "몸이 움찔. 혀로 자지 전체를 천천히 핥는다.",
-      "text_key": "node_1786843149822_131_si7f"
-    },
-    {
-      "id": "node_1786843149822_132_2r7e",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "그녀의 혀가 내 자지를 핥아 올린다. 따뜻하고 축축한 혀끝이 귀두를 감돈다. 저 맨가슴이 내 앞에서 흔들리는 게 보인다.",
-      "text_key": "node_1786843149822_132_2r7e"
-    },
-    {
-      "id": "node_1786843149822_133_wb54",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"입에 넣을게요…\"",
-      "text_key": "node_1786843149822_133_wb54"
-    },
-    {
-      "id": "node_1786843149822_134_s341",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입을 벌려 귀두를 물어 넣는다. 입술이 귀두를 감싸고, 그녀가 천천히 머리를 앞으로 움직인다.",
-      "text_key": "node_1786843149822_134_s341"
-    },
-    {
-      "id": "node_1786843149822_135_x49m",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"아…… 미야자와 씨…\"",
-      "text_key": "node_1786843149822_135_x49m"
-    },
-    {
-      "id": "node_1786843149822_136_tf4g",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "손으로 그녀의 머리를 감싼다.",
-      "text_key": "node_1786843149822_136_tf4g"
-    },
-    {
-      "id": "node_1786843149822_137_tg25",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "정지 이미지 — 미야자와 씨가 남성 성기를 입으로 깊이 물고 있는 클로즈업, 삽입 구도. 머리를 깊게 움직인다.",
-      "text_key": "node_1786843149822_137_tg25"
-    },
-    {
-      "id": "node_1786843149822_138_57kz",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "입속이 뜨겁고 좁다. 혀가 자지를 감싸고, 입술이 귀두를 조인다. 저 맨가슴이 내 허벅지에 닿을 듯 흔들린다. 참을 수 없다.",
-      "text_key": "node_1786843149822_138_57kz"
-    },
-    {
-      "id": "node_1786843149822_139_kvcx",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"…더 깊이…\"",
-      "text_key": "node_1786843149822_139_kvcx"
-    },
-    {
-      "id": "node_1786843149822_140_dd9l",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "허리를 살짝 내민다. 머리를 더 깊이 움직인다. 그녀가 눈을 감고, 내 자지를 깊이 받아들인다. 맨가슴이 위아래로 출렁인다.",
-      "text_key": "node_1786843149822_140_dd9l"
-    },
-    {
-      "id": "node_1786843149822_141_8ewy",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"미야자와 씨… 나… 곧…\"",
-      "text_key": "node_1786843149822_141_8ewy"
-    },
-    {
-      "id": "node_1786843149822_142_4j4r",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "숨을 헐떡인다.",
-      "text_key": "node_1786843149822_142_4j4r"
-    },
-    {
-      "id": "node_1786843149822_143_09q0",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"그대로, 입에… 내주세요.\"",
-      "text_key": "node_1786843149822_143_09q0"
-    },
-    {
-      "id": "node_1786843149822_144_hfwg",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "자지를 입에 문 채, 눈으로 내게 말한다.",
-      "text_key": "node_1786843149822_144_hfwg"
-    },
-    {
-      "id": "node_1786843149822_145_rbmf",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "그 눈빛에, 참고 있던 게 무너진다. 그녀의 입속, 혀 위에, 모든 걸 쏟아내고 싶다. 이제는 멈출 수 없다.",
-      "text_key": "node_1786843149822_145_rbmf"
-    },
-    {
-      "id": "node_1786843149822_146_wyx6",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"아… 나온다…!\"",
-      "text_key": "node_1786843149822_146_wyx6"
-    },
-    {
-      "id": "node_1786843149822_147_vo9e",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "허리가 떨린다. 입으로 자지를 꽉 물고, 목울대로 삼킨다. 그녀가 내 정액을 한 방울도 흘리지 않고, 천천히 삼킨다.",
-      "text_key": "node_1786843149822_147_vo9e"
-    },
-    {
-      "id": "node_1786843149822_148_6i8s",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"맛있었어요.\"",
-      "text_key": "node_1786843149822_148_6i8s"
-    },
-    {
-      "id": "node_1786843149822_149_7agz",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입을 떼고, 혀로 입술을 닦는다.",
-      "text_key": "node_1786843149822_149_7agz"
-    },
-    {
-      "id": "node_1786843149822_150_dda3",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"하…… 하……\"",
-      "text_key": "node_1786843149822_150_dda3"
-    },
-    {
-      "id": "node_1786843149822_151_xx7h",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "숨을 몰아쉰다.",
-      "text_key": "node_1786843149822_151_xx7h"
-    },
-    {
-      "id": "node_1786843149822_152_yjo1",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"잘하셨어요.\"",
-      "text_key": "node_1786843149822_152_yjo1"
-    },
-    {
-      "id": "node_1786843149822_153_aj81",
+      "id": "node_1787097515369_58_muqs",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "입꼬리를 올린다.",
-      "text_key": "node_1786843149822_153_aj81"
+      "text_key": "node_1787097515369_58_muqs"
     },
     {
-      "id": "node_1786843149822_154_2izy",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "그녀가 내 정액을 다 삼켰다. 맨가슴을 드러낸 채, 내 앞에서 웃고 있다. 나는 지금, 내 크리에이터에게 입으로 봉사를 받았다. 정신이 아득하다.",
-      "text_key": "node_1786843149822_154_2izy"
+      "id": "node_1787097515369_59_skin",
+      "type": "graphic",
+      "image": "2026-08-18_00043_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
-      "id": "node_1786843149822_155_fehd",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "수영장 옆 선베드. 미야자와 씨는 비키니 상의를 다시 입고, 나는 옷을 정리하고 있다. 평온한 표정. 루프영상 — 미야자와 씨 상반신 (씬1과 동일 영상 재사용).",
-      "text_key": "node_1786843149822_155_fehd"
-    },
-    {
-      "id": "node_1786843149822_156_0n94",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"오늘, 정말 좋은 시간이었어요.\"",
-      "text_key": "node_1786843149822_156_0n94"
-    },
-    {
-      "id": "node_1786843149822_157_rsuj",
+      "id": "node_1787097515369_60_wbky",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "정면을 보며.",
-      "text_key": "node_1786843149822_157_rsuj"
+      "text": "수영장 옆 선베드. 미야자와 리나는 비키니 상의를 다시 입고, 나는 옷을 정리하고 있다. 평온한 표정.",
+      "text_key": "node_1787097515369_60_wbky"
     },
     {
-      "id": "node_1786843149822_158_x4cu",
+      "id": "node_1787097515369_61_00j8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "오늘, 정말 좋은 시간이었어요.",
+      "text_key": "node_1787097515369_61_00j8"
+    },
+    {
+      "id": "node_1787097515369_62_06gb",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"나도요. …솔직히, 이렇게 될 줄은 몰랐지만.\"",
-      "text_key": "node_1786843149822_158_x4cu"
+      "text": "저도요. …솔직히, 이렇게 될 줄은 몰랐지만요.",
+      "text_key": "node_1787097515369_62_06gb"
     },
     {
-      "id": "node_1786843149822_159_vy3v",
+      "id": "node_1787097515369_63_fvhe",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"후회는 없으시죠?\"",
-      "text_key": "node_1786843149822_159_vy3v"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "후회는 없으시죠?",
+      "text_key": "node_1787097515369_63_fvhe"
     },
     {
-      "id": "node_1786843149822_160_atgt",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입꼬리를 올린다.",
-      "text_key": "node_1786843149822_160_atgt"
-    },
-    {
-      "id": "node_1786843149822_161_o8iq",
+      "id": "node_1787097515369_64_7ti5",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"없어요. 아주, 없어요.\"",
-      "text_key": "node_1786843149822_161_o8iq"
+      "text": "없어요.",
+      "text_key": "node_1787097515369_64_7ti5"
     },
     {
-      "id": "node_1786843149822_162_0v74",
+      "id": "node_1787097515369_65_fyzj",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "작게 웃는다.",
-      "text_key": "node_1786843149822_162_0v74"
+      "text": "작게 웃는다. 미야자와 리나가 선베드에서 일어선다.",
+      "text_key": "node_1787097515369_65_fyzj"
     },
     {
-      "id": "node_1786843149822_163_pfpx",
+      "id": "node_1787097515369_66_vcap",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"다행이네요.\"",
-      "text_key": "node_1786843149822_163_pfpx"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "이쯤이면 됐어요. 해도 지고 있고요.",
+      "text_key": "node_1787097515369_66_vcap"
     },
     {
-      "id": "node_1786843149822_164_xsg8",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "선베드에서 일어선다.",
-      "text_key": "node_1786843149822_164_xsg8"
-    },
-    {
-      "id": "node_1786843149822_165_h71a",
+      "id": "node_1787097515369_67_abt7",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"…벌써 가려고?\"",
-      "text_key": "node_1786843149822_165_h71a"
+      "text": "그렇네요.",
+      "text_key": "node_1787097515369_67_abt7"
     },
     {
-      "id": "node_1786843149822_166_28nf",
+      "id": "node_1787097515369_68_hwce",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"이쯤이면 됐어요. 해도 지고 있고요.\"",
-      "text_key": "node_1786843149822_166_28nf"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "회사에선, 평소처럼 대할게요.",
+      "text_key": "node_1787097515369_68_hwce"
     },
     {
-      "id": "node_1786843149822_167_4feq",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "하늘을 본다.",
-      "text_key": "node_1786843149822_167_4feq"
-    },
-    {
-      "id": "node_1786843149822_168_w12c",
+      "id": "node_1787097515369_69_hv85",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"그렇네요.\"",
-      "text_key": "node_1786843149822_168_w12c"
+      "text": "그래요. 평소처럼.",
+      "text_key": "node_1787097515369_69_hv85"
     },
     {
-      "id": "node_1786843149822_169_il18",
+      "id": "node_1787097515369_70_foba",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"회사에선, 평소처럼 대할게요.\"",
-      "text_key": "node_1786843149822_169_il18"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "그럼 저는, 이쪽으로.",
+      "text_key": "node_1787097515369_70_foba"
     },
     {
-      "id": "node_1786843149822_170_59og",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "또박또박.",
-      "text_key": "node_1786843149822_170_59og"
-    },
-    {
-      "id": "node_1786843149822_171_m8c0",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
-      "text": "\"그래요. 평소처럼.\"",
-      "text_key": "node_1786843149822_171_m8c0"
-    },
-    {
-      "id": "node_1786843149822_172_8gn6",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
-      "text": "아쉽다. 저 빨간 비키니가 다시 단정해졌다는 게, 저 몸이 내 손끝에서 멀어졌다는 게. 하지만 이게 대표로서의 선이다.",
-      "text_key": "node_1786843149822_172_8gn6"
-    },
-    {
-      "id": "node_1786843149822_173_q7ck",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"그럼 저는, 이쪽으로.\"",
-      "text_key": "node_1786843149822_173_q7ck"
-    },
-    {
-      "id": "node_1786843149822_174_4az2",
+      "id": "node_1787097515369_71_3iny",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "수영장 출구를 가리킨다.",
-      "text_key": "node_1786843149822_174_4az2"
+      "text_key": "node_1787097515369_71_3iny"
     },
     {
-      "id": "node_1786843149822_175_1rxn",
+      "id": "node_1787097515369_72_5msi",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"배웅해 줄까요?\"",
-      "text_key": "node_1786843149822_175_1rxn"
+      "text": "배웅해 드릴까요?",
+      "text_key": "node_1787097515369_72_5msi"
     },
     {
-      "id": "node_1786843149822_176_3a87",
+      "id": "node_1787097515369_73_keu8",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"괜찮아요. 여기서 헤어져요.\"",
-      "text_key": "node_1786843149822_176_3a87"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "괜찮아요. 여기서 헤어져요.",
+      "text_key": "node_1787097515369_73_keu8"
     },
     {
-      "id": "node_1786843149822_177_70wl",
+      "id": "node_1787097515369_74_exay",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "한 걸음 물러선다. 미야자와 씨가 등을 돌려 걸어가다, 잠시 멈춘다.",
-      "text_key": "node_1786843149822_177_70wl"
+      "text": "미야자와 리나가 등을 돌려 걸어가다, 잠시 멈춘다.",
+      "text_key": "node_1787097515369_74_exay"
     },
     {
-      "id": "node_1786843149822_178_b7hf",
+      "id": "node_1787097515369_75_qjhj",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"사장님, 다음에 또 불러도 돼요?\"",
-      "text_key": "node_1786843149822_178_b7hf"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님, 다음에 또 불러도 돼요?",
+      "text_key": "node_1787097515369_75_qjhj"
     },
     {
-      "id": "node_1786843149822_179_ucbk",
+      "id": "node_1787097515369_76_dqzp",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장",
-      "text": "\"…나중에 생각해 볼게요.\"",
-      "text_key": "node_1786843149822_179_ucbk"
+      "text": "…나중에 생각해 볼게요.",
+      "text_key": "node_1787097515369_76_dqzp"
     },
     {
-      "id": "node_1786843149822_180_5xcu",
+      "id": "node_1787097515369_77_9kky",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "\"좋아요. 그럼.\"",
-      "text_key": "node_1786843149822_180_5xcu"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "좋아요. 그럼.",
+      "text_key": "node_1787097515369_77_9kky"
     },
     {
-      "id": "node_1786843149822_181_r6sz",
+      "id": "node_1787097515369_78_plul",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "걸어간다. 그녀가 수영장 출구 쪽으로 걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
-      "text_key": "node_1786843149822_181_r6sz"
+      "text": "걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
+      "text_key": "node_1787097515369_78_plul"
     },
     {
-      "id": "node_1786843149822_182_au3g",
+      "id": "node_1787097515369_79_foer",
       "type": "text",
       "speakerType": "character",
       "speaker": "사장(속마음)",
-      "text": "결국, 그녀는 나를 '모셨다'. 저 빨간 비키니가, 방금 내 앞에서 흔들리던 맨가슴이. 아, 정말로 아쉽다.",
-      "text_key": "node_1786843149822_182_au3g"
+      "text": "결국, 그녀는 나를 모셨다. 저 빨간 비키니가, 방금 내 앞에서 흔들리던 맨가슴이. 아, 정말로 아쉽다.",
+      "text_key": "node_1787097515369_79_foer"
     }
   ],
   "defaultLanguage": "ko",
@@ -1485,10 +637,59 @@
     {
       "id": "사장(속마음)",
       "name": "사장(속마음)"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    },
+    {
+      "id": "1786792656193-i7isvfo",
+      "name": "미야자와 리나"
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "id": "1787097441748-5ymp4a3",
+      "fileName": "2026-08-18_00043_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a1/images/2026-08-18_00043_.png",
+      "url": "media://chapter_assets/events/a1/images/2026-08-18_00043_.png",
+      "size": 2365095
+    },
+    {
+      "id": "1787097601614-pt7e0ub",
+      "fileName": "2026-08-18_00045_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a1/images/2026-08-18_00045_.png",
+      "url": "media://chapter_assets/events/a1/images/2026-08-18_00045_.png",
+      "size": 2526438
+    },
+    {
+      "id": "1787097741590-u3wt9vd",
+      "fileName": "2026-08-18_00047_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a1/images/2026-08-18_00047_.png",
+      "url": "media://chapter_assets/events/a1/images/2026-08-18_00047_.png",
+      "size": 2647924
+    },
+    {
+      "id": "1787097848361-0fqmcqf",
+      "fileName": "2026-08-19_00001_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a1/images/2026-08-19_00001_.png",
+      "url": "media://chapter_assets/events/a1/images/2026-08-19_00001_.png",
+      "size": 2691048
+    },
+    {
+      "id": "1787097879133-rloraxt",
+      "fileName": "2026-08-19_00003_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a1/images/2026-08-19_00003_.png",
+      "url": "media://chapter_assets/events/a1/images/2026-08-19_00003_.png",
+      "size": 2841234
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T01:18:57.158Z",
   "ownerCharacterId": "1786792656193-i7isvfo"

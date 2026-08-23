@@ -25,4 +25,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
       sourceFileName,
       targetFileName,
     }),
+  saveStaffAssets: (staffId, assets) => ipcRenderer.invoke('save-staff-assets', { staffId, assets }),
+  saveStaffJson: (staff) => ipcRenderer.invoke('save-staff-json', { staff }),
+  loadStaffJson: () => ipcRenderer.invoke('load-staff-json'),
+  deleteStaffFile: (staffId, fileName) => ipcRenderer.invoke('delete-staff-file', { staffId, fileName }),
+  deleteStaffFolder: (staffId) => ipcRenderer.invoke('delete-staff-folder', { staffId }),
 })

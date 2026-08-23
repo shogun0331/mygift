@@ -25,8 +25,10 @@ import {
   type CharacterLocaleText,
 } from '../game/characterLocales'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import type { AddStaffPayload, RegisteredStaff } from '../game/staff'
+import { StaffEditorPanel } from './StaffEditorPanel'
 
-type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent'
+type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent' | 'staff'
 type CharacterView = 'list' | 'add' | 'edit' | 'sns'
 
 type EditorScreenProps = {
@@ -40,6 +42,10 @@ type EditorScreenProps = {
   onSaveEventsManual?: () => void
   commonEventLinks: CommonEventLinks
   onCommonEventLinksChange: (links: CommonEventLinks) => void
+  registeredStaff: RegisteredStaff[]
+  onRegisterStaff: (payload: AddStaffPayload) => void | Promise<void>
+  onUpdateStaff: (id: string, payload: AddStaffPayload) => void | Promise<void>
+  onDeleteStaff: (id: string) => void
   onBack: () => void
 }
 
@@ -80,6 +86,10 @@ export function EditorScreen({
   onSaveEventsManual,
   commonEventLinks,
   onCommonEventLinksChange,
+  registeredStaff,
+  onRegisterStaff,
+  onUpdateStaff,
+  onDeleteStaff,
   onBack,
 }: EditorScreenProps) {
   const [tab, setTab] = useState<EditorTab>('character')
@@ -170,6 +180,15 @@ export function EditorScreen({
             }`}
           >
             공통이벤트
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('staff')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'staff' ? 'is-active' : ''
+            }`}
+          >
+            스태프 관리
           </button>
         </aside>
 
@@ -362,6 +381,13 @@ export function EditorScreen({
               links={commonEventLinks}
               onLinksChange={onCommonEventLinksChange}
               registeredCharacters={registeredCharacters}
+            />
+          ) : tab === 'staff' ? (
+            <StaffEditorPanel
+              registeredStaff={registeredStaff}
+              onRegisterStaff={onRegisterStaff}
+              onUpdateStaff={onUpdateStaff}
+              onDeleteStaff={onDeleteStaff}
             />
           ) : null}
         </section>

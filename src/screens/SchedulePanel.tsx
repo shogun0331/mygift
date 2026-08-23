@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { useTranslation } from '../locales/i18n'
+import { useEffect, useState, type DragEvent } from 'react'
+import { useTranslation, type Locale } from '../locales/i18n'
 import {
   normalizeCreatorStatType,
   type CreatorStatType,
@@ -17,8 +17,27 @@ import {
   type StudioHandCard,
   type StudioSlot,
 } from '../game/studioSlots'
+import { resolveMediaSrc } from '../game/mediaUrl'
+import {
+  STAFF_GENDER_LABEL_KEY,
+  STAFF_KIND_INITIAL,
+  STAFF_KIND_LABEL_KEY,
+  staffCardUrl,
+  staffDisplayName,
+  staffIconUrl,
+  type RegisteredStaff,
+} from '../game/staff'
+import {
+  findSlotIdForStaff,
+  STAFF_HIRE_COST,
+  STAFF_SLOT_KINDS,
+  type SlotManagerState,
+  type StaffKind,
+} from '../game/slotManagers'
+import { KIND_TONE, StaffSlotIcons } from './StaffManagerUi'
 
 const SLOT_DRAG_MIME = 'application/x-studio-slot'
+const STAFF_DRAG_MIME = 'application/x-studio-staff'
 
 const GRADE_BADGE: Record<string, string> = {
   S: 'border-amber-400/55 bg-gradient-to-br from-amber-400/35 to-amber-600/20 text-amber-100 shadow-[0_0_12px_rgba(251,191,36,0.35)]',
@@ -95,6 +114,12 @@ type SchedulePanelProps = {
   spotlightCreatorId?: string | null
   /** 방송 중 — 배치 변경 불가 */
   placementLocked?: boolean
+  registeredStaff?: RegisteredStaff[]
+  managerState?: SlotManagerState
+  assets?: number
+  onHireStaff?: (staffId: string) => boolean
+  onEquipStaff?: (slotId: string, kind: StaffKind, staffId: string) => void
+  onUnequipStaff?: (slotId: string, kind: StaffKind) => void
 }
 
 export function SchedulePanel({
@@ -104,21 +129,50 @@ export function SchedulePanel({
   pendingHandCreatorId = null,
   spotlightCreatorId = null,
   placementLocked = false,
+  registeredStaff = [],
+  managerState,
+  assets = 0,
+  onHireStaff,
+  onEquipStaff,
+  onUnequipStaff,
 }: SchedulePanelProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
+  const [studioMode, setStudioMode] = useState<'creator' | 'staff'>('creator')
+  const [hireOpen, setHireOpen] = useState(false)
   const [selectedCard, setSelectedCard] = useState<string | null>(null)
+  const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null)
   const [dragOverSlotId, setDragOverSlotId] = useState<string | null>(null)
   const [draggingSlotId, setDraggingSlotId] = useState<string | null>(null)
+  const [draggingStaffId, setDraggingStaffId] = useState<string | null>(null)
+
+  const hiredStaff = registeredStaff.filter((row) => managerState?.hiredStaffIds.includes(row.id))
+  const hireableStaff = registeredStaff.filter((row) => !managerState?.hiredStaffIds.includes(row.id))
+  const placeableStaff = hiredStaff.filter(
+    (row) => !managerState || !findSlotIdForStaff(managerState, row.id),
+  )
+  const staffMode = studioMode === 'staff'
 
   useEffect(() => {
     if (!placementLocked) return
     setSelectedCard(null)
+    setSelectedStaffId(null)
     setDragOverSlotId(null)
     setDraggingSlotId(null)
+    setDraggingStaffId(null)
   }, [placementLocked])
 
+  function switchStudioMode(next: 'creator' | 'staff') {
+    setStudioMode(next)
+    setSelectedCard(null)
+    setSelectedStaffId(null)
+    setHireOpen(false)
+    setDragOverSlotId(null)
+    setDraggingSlotId(null)
+    setDraggingStaffId(null)
+  }
+
   function assignToSlot(slotId: string) {
-    if (placementLocked) return
+    if (staffMode || placementLocked) return
     if (!selectedCard) return
     const card = handCards.find((item) => item.id === selectedCard)
     if (!card) return
@@ -128,8 +182,34 @@ export function SchedulePanel({
   }
 
   function clearSlot(slotId: string) {
-    if (placementLocked) return
+    if (staffMode || placementLocked) return
     onSlotsChange(clearStudioSlot(slots, slotId))
+  }
+
+  function assignStaffToSlot(slotId: string, staffId: string) {
+    if (placementLocked || !managerState || !onEquipStaff) return
+    const staff = hiredStaff.find((row) => row.id === staffId)
+    const slot = slots.find((row) => row.id === slotId)
+    if (!staff || !slot || slot.status === 'locked') return
+    onEquipStaff(slotId, staff.kind, staff.id)
+    setSelectedStaffId(null)
+  }
+
+  function handleStaffDragStart(event: DragEvent, staffId: string) {
+    if (placementLocked) {
+      event.preventDefault()
+      return
+    }
+    event.dataTransfer.setData(STAFF_DRAG_MIME, staffId)
+    event.dataTransfer.setData('text/plain', staffId)
+    event.dataTransfer.effectAllowed = 'move'
+    setDraggingStaffId(staffId)
+    setSelectedStaffId(staffId)
+  }
+
+  function handleStaffDragEnd() {
+    setDraggingStaffId(null)
+    setDragOverSlotId(null)
   }
 
   return (
@@ -141,19 +221,34 @@ export function SchedulePanel({
 
         <div className="relative flex shrink-0 items-center justify-between gap-3 border-b border-indigo-400/15 bg-black/25 px-3 py-2">
           <div className="min-w-0">
-            <p className="game-kicker">Placement Bay</p>
+            <p className="game-kicker">{staffMode ? 'Staff Bay' : 'Placement Bay'}</p>
             <h2 className="truncate text-sm font-semibold tracking-wide text-slate-100">
-              Studio Slots
+              {staffMode ? t('studio.staffBayTitle') : 'Studio Slots'}
               <span className="ml-2 text-[11px] font-medium text-slate-500">
                 {placementLocked
                   ? t('studio.placementLockedHint')
-                  : '드래그로 슬롯 이동 · 대시보드와 연동'}
+                  : staffMode
+                    ? t('studio.staffBayHint')
+                    : '드래그로 슬롯 이동 · 대시보드와 연동'}
               </span>
             </h2>
           </div>
-          <div className="shrink-0 text-right">
-            <p className="text-[10px] font-semibold tracking-wide text-slate-500">GRID</p>
-            <p className="text-xs font-bold text-indigo-300">3 × 2</p>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={() => switchStudioMode(staffMode ? 'creator' : 'staff')}
+              className={`rounded-lg border px-2.5 py-1 text-[10px] font-black tracking-wide ${
+                staffMode
+                  ? 'border-emerald-400/50 bg-emerald-500/20 text-emerald-100'
+                  : 'border-indigo-400/40 bg-indigo-500/20 text-indigo-100'
+              }`}
+            >
+              {staffMode ? t('studio.creatorPlace') : t('studio.staffManage')}
+            </button>
+            <div className="text-right">
+              <p className="text-[10px] font-semibold tracking-wide text-slate-500">GRID</p>
+              <p className="text-xs font-bold text-indigo-300">3 × 2</p>
+            </div>
           </div>
         </div>
 
@@ -181,9 +276,12 @@ export function SchedulePanel({
               const typeStyle = filled
                 ? typeStyleOf(slot.assignment?.statType ?? handForSlot?.statType)
                 : null
-              const canPlace = Boolean(selectedCard) && !locked && !placementLocked
-              const isDragSource = !placementLocked && draggingSlotId === slot.id
+              const canPlace = staffMode
+                ? Boolean(selectedStaffId) && !locked && !placementLocked
+                : Boolean(selectedCard) && !locked && !placementLocked
+              const isDragSource = !staffMode && !placementLocked && draggingSlotId === slot.id
               const canDropFromSlot =
+                !staffMode &&
                 !placementLocked &&
                 Boolean(draggingSlotId) &&
                 draggingSlotId !== slot.id &&
@@ -193,7 +291,7 @@ export function SchedulePanel({
               return (
                 <div
                   key={slot.id}
-                  className={`min-h-0 min-w-0 rounded-lg border p-0.5 transition sm:rounded-xl sm:p-1 ${
+                  className={`relative min-h-0 min-w-0 rounded-lg border p-0.5 transition sm:rounded-xl sm:p-1 ${
                     placementLocked
                       ? filled
                         ? needsRemove
@@ -220,7 +318,10 @@ export function SchedulePanel({
                   }`}
                   onDragOver={(e) => {
                     if (placementLocked || locked) return
-                    if (draggingSlotId === slot.id) return
+                    if (!staffMode && draggingSlotId === slot.id) return
+                    if (staffMode && !draggingStaffId && !e.dataTransfer.types.includes(STAFF_DRAG_MIME)) {
+                      return
+                    }
                     e.preventDefault()
                     e.dataTransfer.dropEffect = 'move'
                     if (dragOverSlotId !== slot.id) {
@@ -235,6 +336,16 @@ export function SchedulePanel({
                   onDrop={(e) => {
                     if (placementLocked || locked) return
                     e.preventDefault()
+                    if (staffMode) {
+                      const staffId =
+                        draggingStaffId ||
+                        e.dataTransfer.getData(STAFF_DRAG_MIME) ||
+                        e.dataTransfer.getData('text/plain')
+                      setDragOverSlotId(null)
+                      setDraggingStaffId(null)
+                      if (staffId) assignStaffToSlot(slot.id, staffId)
+                      return
+                    }
                     const sourceSlotId =
                       draggingSlotId ||
                       e.dataTransfer.getData(SLOT_DRAG_MIME) ||
@@ -257,9 +368,9 @@ export function SchedulePanel({
                   <button
                     type="button"
                     disabled={locked || placementLocked}
-                    draggable={filled && !placementLocked}
+                    draggable={!staffMode && filled && !placementLocked}
                     onDragStart={(e) => {
-                      if (placementLocked || !filled || !slot.assignment) {
+                      if (staffMode || placementLocked || !filled || !slot.assignment) {
                         e.preventDefault()
                         return
                       }
@@ -271,10 +382,15 @@ export function SchedulePanel({
                     }}
                     onDragEnd={() => {
                       setDraggingSlotId(null)
+                      setDraggingStaffId(null)
                       setDragOverSlotId(null)
                     }}
                     onClick={() => {
                       if (locked || placementLocked) return
+                      if (staffMode) {
+                        if (selectedStaffId) assignStaffToSlot(slot.id, selectedStaffId)
+                        return
+                      }
                       if (selectedCard) {
                         assignToSlot(slot.id)
                         return
@@ -297,15 +413,34 @@ export function SchedulePanel({
                       locked
                         ? 'cursor-default border-rose-950/30'
                         : placementLocked
-                          ? `cursor-not-allowed ${typeStyle?.card ?? 'border-rose-950/30'}`
-                          : filled
-                            ? `cursor-grab active:cursor-grabbing ${typeStyle?.card ?? 'hover:border-white/20'}`
-                            : canPlace
+                          ? `cursor-not-allowed ${staffMode ? '' : typeStyle?.card ?? 'border-rose-950/30'}`
+                          : staffMode
+                            ? canPlace
                               ? 'hover:border-indigo-400/55 hover:ring-1 hover:ring-indigo-400/35'
-                              : 'border-dashed border-indigo-500/30 hover:border-indigo-400/60 hover:bg-indigo-500/5'
+                              : 'hover:border-indigo-400/40'
+                            : filled
+                              ? `cursor-grab active:cursor-grabbing ${typeStyle?.card ?? 'hover:border-white/20'}`
+                              : canPlace
+                                ? 'hover:border-indigo-400/55 hover:ring-1 hover:ring-indigo-400/35'
+                                : 'border-dashed border-indigo-500/30 hover:border-indigo-400/60 hover:bg-indigo-500/5'
                     }`}
                   >
                     <div className="relative flex h-full min-h-0 flex-col">
+                      {staffMode && !locked && managerState ? (
+                        <StaffSlotFace
+                          slotId={slot.id}
+                          slotLabel={slot.label}
+                          managerState={managerState}
+                          registeredStaff={registeredStaff}
+                          placementLocked={placementLocked}
+                          selectedStaffId={selectedStaffId}
+                          onPlaceSelected={() => {
+                            if (selectedStaffId) assignStaffToSlot(slot.id, selectedStaffId)
+                          }}
+                          onUnequip={(kind) => onUnequipStaff?.(slot.id, kind)}
+                        />
+                      ) : (
+                      <>
                       <div className="absolute top-1 right-1 left-1 z-10 flex items-start justify-between gap-1">
                         {filled && slot.assignment ? (
                           <GradeCornerBadge grade={slot.assignment.grade} />
@@ -364,7 +499,9 @@ export function SchedulePanel({
                         ) : null}
 
                         <div
-                          className={`relative z-10 flex w-full flex-col items-center px-1.5 pb-2 pt-6 ${
+                          className={`relative z-10 flex w-full flex-col items-center px-1.5 ${
+                            locked ? 'pb-2' : 'pb-8'
+                          } pt-6 ${
                             locked || !slot.assignment?.profileImageUrl
                               ? `h-full bg-gradient-to-b ${
                                   locked
@@ -420,8 +557,20 @@ export function SchedulePanel({
                           )}
                         </div>
                       </div>
+                      </>
+                      )}
                     </div>
                   </button>
+                    {staffMode || locked || !managerState ? null : (
+                      <div className="absolute inset-x-1 bottom-1 z-20 flex items-center justify-center rounded-md bg-black/55 px-1 py-0.5 backdrop-blur-sm">
+                        <StaffSlotIcons
+                          slotId={slot.id}
+                          managerState={managerState}
+                          registeredStaff={registeredStaff}
+                          size="sm"
+                        />
+                      </div>
+                    )}
                 </div>
               )
             })}
@@ -430,22 +579,98 @@ export function SchedulePanel({
         </div>
       </section>
 
-      {/* 오른쪽: 배치할 크리에이터 */}
+      {/* 오른쪽: 배치할 크리에이터 / 매니저 */}
       <section
         data-studio-hand-target
         className="game-panel flex min-h-0 min-w-0 flex-col rounded-2xl p-2.5 sm:p-3"
       >
         <div className="mb-2.5 shrink-0">
-          <p className="text-xs font-semibold tracking-wide text-slate-400">
-            {t('studio.placementTitle')}
-          </p>
-          <p className="mt-0.5 text-[10px] leading-snug text-slate-500">
-            {placementLocked ? t('studio.placementLockedDesc') : t('studio.placementDesc')}
-          </p>
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold tracking-wide text-slate-400">
+                {staffMode
+                  ? hireOpen
+                    ? t('studio.hireStaff')
+                    : t('studio.managerHandTitle')
+                  : t('studio.placementTitle')}
+              </p>
+              <p className="mt-0.5 text-[10px] leading-snug text-slate-500">
+                {staffMode
+                  ? hireOpen
+                    ? t('studio.hireStaffDesc')
+                    : placementLocked
+                      ? t('studio.managerHandLockedDesc')
+                      : t('studio.managerHandDesc')
+                  : placementLocked
+                    ? t('studio.placementLockedDesc')
+                    : t('studio.placementDesc')}
+              </p>
+            </div>
+            {staffMode ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setHireOpen((prev) => !prev)
+                  setSelectedStaffId(null)
+                }}
+                className="shrink-0 rounded-lg border border-indigo-400/40 bg-indigo-500/20 px-2 py-1 text-[9px] font-black text-indigo-100"
+              >
+                {hireOpen ? t('studio.hireBack') : t('studio.hireStaff')}
+              </button>
+            ) : null}
+          </div>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-0.5">
-          {handCards.length === 0 ? (
+          {staffMode && hireOpen ? (
+            hireableStaff.length === 0 ? (
+              <div className="flex h-full min-h-[8rem] items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-3">
+                <p className="text-center text-[10px] leading-relaxed text-slate-500">
+                  {t('studio.noHireable')}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 content-start items-start gap-2">
+                {hireableStaff.map((staff) => (
+                  <StaffHandCard
+                    key={staff.id}
+                    staff={staff}
+                    locale={locale}
+                    hireable
+                    assets={assets}
+                    placementLocked={placementLocked}
+                    onHire={() => onHireStaff?.(staff.id)}
+                  />
+                ))}
+              </div>
+            )
+          ) : staffMode ? (
+            placeableStaff.length === 0 ? (
+              <div className="flex h-full min-h-[8rem] items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-3">
+                <p className="text-center text-[10px] leading-relaxed text-slate-500">
+                  {t(hiredStaff.length === 0 ? 'studio.noManagers' : 'studio.noIdleManagers')}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 content-start items-start gap-2">
+                {placeableStaff.map((staff) => (
+                  <StaffHandCard
+                    key={staff.id}
+                    staff={staff}
+                    locale={locale}
+                    selected={selectedStaffId === staff.id}
+                    dragging={draggingStaffId === staff.id}
+                    placementLocked={placementLocked}
+                    onSelect={() =>
+                      setSelectedStaffId((prev) => (prev === staff.id ? null : staff.id))
+                    }
+                    onDragStart={(event) => handleStaffDragStart(event, staff.id)}
+                    onDragEnd={handleStaffDragEnd}
+                  />
+                ))}
+              </div>
+            )
+          ) : handCards.length === 0 ? (
             <div className="flex h-full min-h-[8rem] items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-3">
               <p className="text-center text-[10px] leading-relaxed text-slate-500">
                 {t('studio.noCreators')}
@@ -586,7 +811,6 @@ export function SchedulePanel({
           )}
         </div>
       </section>
-
     </div>
   )
 }
@@ -618,6 +842,237 @@ function HandStatRow({
         <div className={`h-full rounded-full ${barClass}`} style={{ width: `${width}%` }} />
       </div>
     </div>
+  )
+}
+
+function StaffSlotFace({
+  slotId,
+  slotLabel,
+  managerState,
+  registeredStaff,
+  placementLocked,
+  selectedStaffId,
+  onPlaceSelected,
+  onUnequip,
+}: {
+  slotId: string
+  slotLabel: string
+  managerState: SlotManagerState
+  registeredStaff: RegisteredStaff[]
+  placementLocked: boolean
+  selectedStaffId: string | null
+  onPlaceSelected: () => void
+  onUnequip: (kind: StaffKind) => void
+}) {
+  const { t, locale } = useTranslation()
+  const selectedStaff = selectedStaffId
+    ? registeredStaff.find((row) => row.id === selectedStaffId) ?? null
+    : null
+
+  return (
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="absolute top-1 right-1 left-1 z-10 flex items-start justify-between gap-1">
+        <span className="rounded-md border border-white/10 bg-black/50 px-1 py-0.5 text-[8px] font-bold tracking-[0.1em] text-slate-300 backdrop-blur-sm">
+          {slotLabel.replace('SLOT ', '')}
+        </span>
+        <span className="rounded-md border border-indigo-400/25 bg-indigo-500/10 px-1 py-0.5 text-[8px] font-bold text-indigo-300">
+          {t('studio.managersTitle')}
+        </span>
+      </div>
+      <div className="grid h-full min-h-0 grid-cols-2 grid-rows-2 gap-1 p-1 pt-6">
+        {STAFF_SLOT_KINDS.map((kind) => {
+          const equippedId = managerState.equippedBySlotId[slotId]?.[kind] ?? null
+          const staff = equippedId
+            ? registeredStaff.find((row) => row.id === equippedId) ?? null
+            : null
+          const icon = staffIconUrl(staff)
+          const card = staffCardUrl(staff)
+          const image = icon || card
+          const canReceive = Boolean(selectedStaff && selectedStaff.kind === kind)
+          const displayName = staffDisplayName(staff, locale)
+          return (
+            <button
+              key={kind}
+              type="button"
+              disabled={placementLocked}
+              onClick={(event) => {
+                event.stopPropagation()
+                if (placementLocked) return
+                if (staff) {
+                  onUnequip(kind)
+                  return
+                }
+                if (selectedStaffId) onPlaceSelected()
+              }}
+              className={`relative min-h-0 overflow-hidden rounded-md border text-left transition ${
+                staff
+                  ? KIND_TONE[kind]
+                  : canReceive
+                    ? 'border-indigo-400/80 bg-indigo-500/15 shadow-[0_0_10px_rgba(99,102,241,0.35)]'
+                    : 'border-dashed border-white/15 bg-black/25 text-slate-500'
+              } ${placementLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+            >
+              {image ? (
+                <img
+                  src={resolveMediaSrc(image, staff?.mediaRevision)}
+                  alt=""
+                  draggable={false}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : null}
+              <div
+                className={`absolute inset-0 ${
+                  image ? 'bg-gradient-to-t from-black/85 via-black/25 to-black/10' : ''
+                }`}
+              />
+              <div className="relative z-10 flex h-full flex-col justify-between p-1">
+                <span className="text-[7px] font-black tracking-wide text-slate-200">
+                  {STAFF_KIND_INITIAL[kind]}
+                </span>
+                <p className="truncate text-[8px] font-bold text-slate-100">
+                  {staff ? displayName : t(STAFF_KIND_LABEL_KEY[kind])}
+                </p>
+              </div>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function StaffHandCard({
+  staff,
+  locale,
+  assignedSlotLabel,
+  selected = false,
+  dragging = false,
+  hireable = false,
+  assets = 0,
+  placementLocked,
+  onSelect,
+  onHire,
+  onDragStart,
+  onDragEnd,
+}: {
+  staff: RegisteredStaff
+  locale: Locale
+  assignedSlotLabel?: string
+  selected?: boolean
+  dragging?: boolean
+  hireable?: boolean
+  assets?: number
+  placementLocked: boolean
+  onSelect?: () => void
+  onHire?: () => boolean | void
+  onDragStart?: (event: DragEvent) => void
+  onDragEnd?: () => void
+}) {
+  const { t } = useTranslation()
+  const card = staffCardUrl(staff)
+  const displayName = staffDisplayName(staff, locale)
+  const canHire = assets >= STAFF_HIRE_COST
+
+  return (
+    <button
+      type="button"
+      draggable={!hireable && !placementLocked}
+      onDragStart={(event) => {
+        if (hireable || placementLocked) {
+          event.preventDefault()
+          return
+        }
+        onDragStart?.(event)
+      }}
+      onDragEnd={onDragEnd}
+      onClick={() => {
+        if (hireable) {
+          if (!placementLocked && canHire) onHire?.()
+          return
+        }
+        if (!placementLocked) onSelect?.()
+      }}
+      className={`game-card relative aspect-[3/4] w-full self-start text-left transition-all ${
+        hireable
+          ? placementLocked || !canHire
+            ? 'cursor-not-allowed opacity-55'
+            : 'cursor-pointer hover:scale-[1.01]'
+          : placementLocked
+            ? 'cursor-not-allowed'
+            : 'cursor-grab active:cursor-grabbing'
+      } ${
+        selected && !hireable
+          ? 'border-cyan-400 shadow-[0_0_16px_rgba(34,211,238,0.25)] ring-2 ring-cyan-400/40 scale-[1.02]'
+          : hireable
+            ? 'border-dashed border-white/20'
+            : 'border-white/10 hover:border-white/25'
+      } ${dragging ? 'opacity-40' : ''}`}
+    >
+      <div className="relative flex h-full w-full flex-col items-center justify-end overflow-hidden rounded-md">
+        {card ? (
+          <>
+            <img
+              src={resolveMediaSrc(card, staff.mediaRevision)}
+              alt=""
+              draggable={false}
+              className={`pointer-events-none absolute inset-0 h-full w-full object-cover object-top ${
+                assignedSlotLabel ? 'brightness-[0.55] saturate-[0.7]' : ''
+              }`}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-700/70 to-slate-950" />
+        )}
+
+        <div className="absolute top-1 left-1 z-20">
+          <span
+            className={`inline-flex h-5 min-w-5 items-center justify-center rounded-md border px-1 text-[9px] font-black ${KIND_TONE[staff.kind]}`}
+          >
+            {STAFF_KIND_INITIAL[staff.kind]}
+          </span>
+        </div>
+
+        {assignedSlotLabel ? (
+          <span className="absolute top-1 right-1 z-20 rounded border border-slate-400/40 bg-black/75 px-1 py-0.5 text-[7px] font-bold text-slate-200">
+            IN
+          </span>
+        ) : hireable ? (
+          <span className="absolute top-1 right-1 z-20 rounded border border-indigo-400/40 bg-indigo-500/20 px-1 py-0.5 text-[7px] font-bold text-indigo-100">
+            {t('studio.managerHire')}
+          </span>
+        ) : null}
+
+        <div className="relative z-10 flex w-full flex-col justify-end gap-1 px-1.5 pb-1.5 pt-4">
+          {!card ? (
+            <div className="mb-auto flex h-8 w-8 items-center justify-center self-center rounded-full border border-indigo-300/25 bg-indigo-500/10 text-xs font-bold text-indigo-50">
+              {displayName.slice(0, 1)}
+            </div>
+          ) : null}
+          <p className="truncate text-center text-[10px] font-semibold text-slate-100">{displayName}</p>
+          <p className="truncate text-center text-[8px] font-bold tracking-wide text-indigo-200">
+            {t(STAFF_KIND_LABEL_KEY[staff.kind])}
+          </p>
+          {hireable ? (
+            <p
+              className={`truncate text-center text-[8px] font-black tabular-nums ${
+                canHire ? 'text-emerald-200' : 'text-rose-300'
+              }`}
+            >
+              ${STAFF_HIRE_COST.toLocaleString()}
+            </p>
+          ) : assignedSlotLabel ? (
+            <span className="mx-auto inline-flex max-w-full truncate rounded-md border border-indigo-400/30 bg-indigo-500/15 px-1.5 py-0.5 text-[8px] font-black text-indigo-100">
+              {assignedSlotLabel}
+            </span>
+          ) : (
+            <p className="truncate text-center text-[8px] font-semibold text-slate-400">
+              {t(STAFF_GENDER_LABEL_KEY[staff.gender])}
+            </p>
+          )}
+        </div>
+      </div>
+    </button>
   )
 }
 

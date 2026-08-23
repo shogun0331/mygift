@@ -35,3 +35,7 @@ export function characterMediaUrl(
   const folder = kind === 'image' ? 'images' : 'videos'
   return resolveMediaSrc(`media://characters/${characterId}/${folder}/${fileName}`)
 }
+
+export function staffMediaUrl(staffId: string, fileName: string): string {
+  return resolveMediaSrc(`media://staff/${staffId}/images/${fileName}`)
+}

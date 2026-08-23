@@ -69,7 +69,15 @@
     "restRequiredConfirm": "확인",
     "gearFail": "장비 고장",
     "gearFailHint": "클릭하여 수리",
-    "gearFailSlamSub": "신호 끊김 · 클릭하여 수리"
+    "gearFailSlamSub": "신호 끊김 · 클릭하여 수리",
+    "staffBlockSecurity": "보안 차단",
+    "staffBlockSecuritySub": "진상 시청자를 막아냈다",
+    "staffBlockRepair": "수리 방어",
+    "staffBlockRepairSub": "장비 고장을 막아냈다",
+    "staffCare": "케어 회복",
+    "staffCareSub": "컨디션을 최고로 되돌렸다",
+    "staffProd": "프로덕션 보너스",
+    "staffProdSub": "수익·시청자 보너스"
   },
   "condition": {
     "title": "컨디션",
@@ -278,7 +286,44 @@
     "unlockConfirmBody": "{price}에 슬롯을 개방하시겠습니까?",
     "unlockConfirmOk": "개방",
     "unlockConfirmCancel": "취소",
-    "unlockNeedAssets": "자산이 부족합니다"
+    "unlockNeedAssets": "자산이 부족합니다",
+    "staffManage": "스태프 관리",
+    "creatorPlace": "크리에이터 배치",
+    "staffBayTitle": "Staff Slots",
+    "staffBayHint": "매니저 카드를 선택해 슬롯에 장착",
+    "managerHandTitle": "배치할 매니저",
+    "managerHandDesc": "카드를 선택해 해금된 슬롯에 장착",
+    "managerHandLockedDesc": "방송이 끝날 때까지 장착을 변경할 수 없습니다.",
+    "noManagers": "고용한 매니저가 없습니다. 스태프 영입으로 확보하세요.",
+    "noIdleManagers": "장착되지 않은 매니저가 없습니다.",
+    "hireStaff": "스태프 영입",
+    "hireStaffDesc": "에디터에 등록된 스태프를 고용합니다.",
+    "hireBack": "보유 매니저",
+    "noHireable": "고용할 수 있는 스태프가 없습니다.",
+    "managersButton": "매니저",
+    "managersTitle": "슬롯 매니저",
+    "managersDesc": "보유한 스태프를 역할마다 한 명씩 장착합니다. 같은 스태프는 한 칸에만 둘 수 있습니다.",
+    "managersClose": "닫기",
+    "managersEmptyKind": "이 역할의 스태프가 없습니다. 에디터에서 등록한 뒤 고용하세요.",
+    "managersLocked": "방송 중에는 조회만 가능합니다",
+    "managerEquip": "장착",
+    "managerUnequip": "해제",
+    "managerEquipped": "장착 중",
+    "managerHire": "고용",
+    "managerFx": {
+      "security": "진상 사건 차단",
+      "repair": "장비 고장 차단",
+      "care": "스테미나 소모 절반 · 좋음까지 떨어지면 최고로 케어",
+      "production": "후원 수익 +25% · 시청자 보너스"
+    }
+  },
+  "staff": {
+    "kindSecurity": "보안",
+    "kindRepair": "수리",
+    "kindCare": "케어",
+    "kindProduction": "프로덕션",
+    "genderMale": "남",
+    "genderFemale": "여"
   },
   "settlement": {
     "title": "월간 정산 명세서",

@@ -75,5 +75,13 @@
     "placementTitle": "配置するクリエイター",
     "placementDesc": "カードを選択して解放されたスロットに配置",
     "noCreators": "所有しているキャラクターがいません。キャラクターを獲得するとここに表示されます。"
+  },
+  "staff": {
+    "kindSecurity": "警備",
+    "kindRepair": "修理",
+    "kindCare": "ケア",
+    "kindProduction": "制作",
+    "genderMale": "男",
+    "genderFemale": "女"
   }
 }

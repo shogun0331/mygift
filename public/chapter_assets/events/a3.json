@@ -5,1039 +5,583 @@
   "chapterId": 1,
   "titleKey": "a3",
   "title": "승무원 섹스씬",
-  "startNode": "node_1786843203782_0_1fgp",
+  "startNode": "node_1787100604876_1_stsk",
   "nodes": [
     {
-      "id": "node_1786843203782_0_1fgp",
+      "id": "node_1787100604876_1_stsk",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미야자와 리나의 아늑한 집. 낮. 초인종을 누르자 문이 열리고, 미야자와 리나가 검은색 속옷 차림으로 나를 맞이한다.",
+      "text_key": "node_1787100604876_1_stsk"
+    },
+    {
+      "id": "node_1787100604876_0_iacj",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00004_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786843203782_1_akd6",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미야자와 리나의 아늑한 집. 낮. 초인종을 누르자 문이 열리고, 미야자와 씨가 핑크 속옷 차림으로 나를 맞이한다.",
-      "text_key": "node_1786843203782_1_akd6"
-    },
-    {
-      "id": "node_1786843203782_2_1hck",
+      "id": "node_1787100604876_2_haz1",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "…어서 오세요, 사장님.",
-      "text_key": "node_1786843203782_2_1hck"
+      "text_key": "node_1787100604876_2_haz1"
     },
     {
-      "id": "node_1786843203782_3_wu4c",
+      "id": "node_1787100604876_3_610x",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "왔어요. 그런데… 그 차림은 뭡니까.",
-      "text_key": "node_1786843203782_3_wu4c"
+      "text_key": "node_1787100604876_3_610x"
     },
     {
-      "id": "node_1786843203782_4_eul5",
+      "id": "node_1787100604876_4_xuqx",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "집에선 편하게 있으라고 말씀드렸잖아요.",
-      "text_key": "node_1786843203782_4_eul5"
+      "text_key": "node_1787100604876_4_xuqx"
     },
     {
-      "id": "node_1786843203782_5_1jsq",
+      "id": "node_1787100604876_5_p50b",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "편하게라도, 그건 좀…",
-      "text_key": "node_1786843203782_5_1jsq"
+      "text_key": "node_1787100604876_5_p50b"
     },
     {
-      "id": "node_1786843203782_6_e3pv",
+      "id": "node_1787100604876_6_pkyd",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "싫으세요?",
-      "text_key": "node_1786843203782_6_e3pv"
+      "text_key": "node_1787100604876_6_pkyd"
     },
     {
-      "id": "node_1786843203782_7_hy0a",
+      "id": "node_1787100604876_7_p0sg",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "싫다기보다, 곤란하죠.",
-      "text_key": "node_1786843203782_7_hy0a"
+      "text_key": "node_1787100604876_7_p0sg"
     },
     {
-      "id": "node_1786843203782_8_nx24",
+      "id": "node_1787100604876_8_ex2g",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "일단 들어와요. 여기서 계속 서 있을 거예요?",
-      "text_key": "node_1786843203782_8_nx24"
+      "text_key": "node_1787100604876_8_ex2g"
     },
     {
-      "id": "node_1786843203782_9_1wvd",
+      "id": "node_1787100604876_10_x4ex",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "나는 어쩔 수 없이 현관에 들어선다. 핑크 레이스 속옷만 걸친 그녀가 눈앞에 있다.",
-      "text_key": "node_1786843203782_9_1wvd"
+      "text": "나는 어쩔 수 없이 현관에 들어선다. 검은 레이스 속옷만 걸친 그녀가 눈앞에 있다.",
+      "text_key": "node_1787100604876_10_x4ex"
     },
     {
-      "id": "node_1786843203782_10_effh",
+      "id": "node_1787100604876_11_o53h",
       "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "핑크 속옷만 걸친 크리에이터가, 대표인 나를 집으로 불러들였다. 레이스가 가슴과 허벅지를 간신히 가리고 있다. 시선을 둘 곳이 없다.",
-      "text_key": "node_1786843203782_10_effh"
-    },
-    {
-      "id": "node_1786843203782_11_sefx",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "…미야자와 씨. 오늘은 대체 무슨 일이에요.",
-      "text_key": "node_1786843203782_11_sefx"
+      "text_key": "node_1787100604876_11_o53h"
     },
     {
-      "id": "node_1786843203782_12_nkkx",
+      "id": "node_1787100604876_12_lled",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "무슨 일이긴요. 사장님을 모시고 싶어서 부른 거죠.",
-      "text_key": "node_1786843203782_12_nkkx"
+      "text_key": "node_1787100604876_12_lled"
     },
     {
-      "id": "node_1786843203782_13_azr7",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "모시다니, 그런 차림으로요?",
-      "text_key": "node_1786843203782_13_azr7"
-    },
-    {
-      "id": "node_1786843203782_14_87dc",
+      "id": "node_1787100604876_13_vsjx",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "사장",
+      "text": "모시시다니, 그런 차림으로요?",
+      "text_key": "node_1787100604876_13_vsjx"
+    },
+    {
+      "id": "node_1787100604876_14_fbdt",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
       "text": "이 차림이 편하니까요.",
-      "text_key": "node_1786843203782_14_87dc"
+      "text_key": "node_1787100604876_14_fbdt"
     },
     {
-      "id": "node_1786843203782_15_7dvx",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "가까이 오니, 핑크 레이스 아래로 가슴 골이 그대로 드러난다. 저 속옷은 입었는지 안 입었는지 모를 만큼 얇다. 자지가 반응하는 걸 겨우 참는다.",
-      "text_key": "node_1786843203782_15_7dvx"
-    },
-    {
-      "id": "node_1786843203782_16_4710",
+      "id": "node_1787100604876_15_hu4q",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "사장님, 시선이 자꾸 제 몸에 가시네요.",
-      "text_key": "node_1786843203782_16_4710"
+      "text_key": "node_1787100604876_15_hu4q"
     },
     {
-      "id": "node_1786843203782_17_bqos",
+      "id": "node_1787100604876_16_2syc",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "…그 차림이면 당연히 가죠.",
-      "text_key": "node_1786843203782_17_bqos"
+      "text_key": "node_1787100604876_16_2syc"
     },
     {
-      "id": "node_1786843203782_18_dswa",
+      "id": "node_1787100604876_17_qxa6",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "좋아요. 오늘은 실컷 봐도 돼요.",
-      "text_key": "node_1786843203782_18_dswa"
+      "text_key": "node_1787100604876_17_qxa6"
     },
     {
-      "id": "node_1786843203782_19_c989",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "미야자와 씨…",
-      "text_key": "node_1786843203782_19_c989"
-    },
-    {
-      "id": "node_1786843203782_20_5eqo",
+      "id": "node_1787100604876_18_bu1r",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "오늘만큼은, 저를 크리에이터가 아니라 여자로 봐주세요.",
-      "text_key": "node_1786843203782_20_5eqo"
+      "text_key": "node_1787100604876_18_bu1r"
     },
     {
-      "id": "node_1786843203782_21_84i5",
+      "id": "node_1787100604876_19_br6i",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "……",
-      "text_key": "node_1786843203782_21_84i5"
+      "text_key": "node_1787100604876_19_br6i"
     },
     {
-      "id": "node_1786843203782_22_92vq",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 나를 똑바로 본다. 저 눈빛은 장난이 아니다. 이 집에 부른 것도, 이 차림도, 전부 각오한 것이라는 게 느껴진다.",
-      "text_key": "node_1786843203782_22_92vq"
-    },
-    {
-      "id": "node_1786843203782_23_wzkz",
+      "id": "node_1787100604876_20_d9yf",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "거절하실 건가요?",
-      "text_key": "node_1786843203782_23_wzkz"
+      "text_key": "node_1787100604876_20_d9yf"
     },
     {
-      "id": "node_1786843203782_24_8cdm",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…거절하면, 어떻게 하려고요.",
-      "text_key": "node_1786843203782_24_8cdm"
-    },
-    {
-      "id": "node_1786843203782_25_5l1t",
+      "id": "node_1787100604876_21_56zt",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "거절 못 하게 만들 거예요.",
-      "text_key": "node_1786843203782_25_5l1t"
+      "speaker": "사장",
+      "text": "…거절하면, 어떻게 하시려고요.",
+      "text_key": "node_1787100604876_21_56zt"
     },
     {
-      "id": "node_1786843203782_26_hduu",
+      "id": "node_1787100604876_22_dc2c",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "거절 못 하게 만들 거예요.",
+      "text_key": "node_1787100604876_22_dc2c"
+    },
+    {
+      "id": "node_1787100604876_23_6b53",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "그녀가 내 넥타이를 당기고, 몸을 밀착시켜 온다.",
-      "text_key": "node_1786843203782_26_hduu"
+      "text_key": "node_1787100604876_23_6b53"
     },
     {
-      "id": "node_1786843203782_27_9jqh",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "!",
-      "text_key": "node_1786843203782_27_9jqh"
-    },
-    {
-      "id": "node_1786843203782_28_wdow",
+      "id": "node_1787100604876_24_nidu",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "이제부터, 사장님은 제 거예요.",
-      "text_key": "node_1786843203782_28_wdow"
+      "text_key": "node_1787100604876_24_nidu"
     },
     {
-      "id": "node_1786843203782_29_f5hw",
+      "id": "node_1787100604876_25_xqjg",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00007_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786843203782_30_hty6",
+      "id": "node_1787100604876_26_2cd0",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "거실. 미야자와 씨가 내 앞에 무릎을 꿇고 앉아 있다. 핑크 속옷 차림.",
-      "text_key": "node_1786843203782_30_hty6"
+      "text": "그녀가 검은 브라를 벗어 내린다. 가슴이 그대로 드러난다.",
+      "text_key": "node_1787100604876_26_2cd0"
     },
     {
-      "id": "node_1786843203782_31_a6nj",
+      "id": "node_1787100604876_27_6bkj",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "…괜찮죠?",
-      "text_key": "node_1786843203782_31_a6nj"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠?",
+      "text_key": "node_1787100604876_27_6bkj"
     },
     {
-      "id": "node_1786843203782_32_tyx5",
+      "id": "node_1787100604876_28_2wa0",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 앞에 무릎을 꿇는다.",
+      "text_key": "node_1787100604876_28_2wa0"
+    },
+    {
+      "id": "node_1787100604876_29_ngup",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "…사장님을, 제가 모시고 싶어요.",
+      "text_key": "node_1787100604876_29_ngup"
+    },
+    {
+      "id": "node_1787100604876_30_ves8",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "내 바지 위로 손을 올린다.",
+      "text_key": "node_1787100604876_30_ves8"
+    },
+    {
+      "id": "node_1787100604876_31_hsyw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "미야자와 씨, 거기까지는…",
-      "text_key": "node_1786843203782_32_tyx5"
+      "text_key": "node_1787100604876_31_hsyw"
     },
     {
-      "id": "node_1786843203782_33_mwju",
+      "id": "node_1787100604876_32_363e",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "저, 하고 싶어요.",
-      "text_key": "node_1786843203782_33_mwju"
+      "text_key": "node_1787100604876_32_363e"
     },
     {
-      "id": "node_1786843203782_34_aiyj",
+      "id": "node_1787100604876_33_lscl",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀의 손이 내 바지 위를 더듬는다. 이미 반응해버린 자지가 그 손끝에 닿는다. 대표니까 물려야 하는데, 몸이 말을 듣지 않는다.",
-      "text_key": "node_1786843203782_34_aiyj"
+      "text": "내 바지를 천천히 내린다. 발기한 자지가 그대로 드러난다.",
+      "text_key": "node_1787100604876_33_lscl"
     },
     {
-      "id": "node_1786843203782_35_h4wc",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "…이미 이렇게 돼 있잖아요.",
-      "text_key": "node_1786843203782_35_h4wc"
-    },
-    {
-      "id": "node_1786843203782_36_puzx",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "……",
-      "text_key": "node_1786843203782_36_puzx"
-    },
-    {
-      "id": "node_1786843203782_37_bgxp",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 바지를 천천히 내린다. 발기한 자지가 그대로 드러난다.",
-      "text_key": "node_1786843203782_37_bgxp"
-    },
-    {
-      "id": "node_1786843203782_38_et74",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "대단해요…",
-      "text_key": "node_1786843203782_38_et74"
-    },
-    {
-      "id": "node_1786843203782_39_yki8",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "하……",
-      "text_key": "node_1786843203782_39_yki8"
-    },
-    {
-      "id": "node_1786843203782_40_zh2u",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 손이 내 자지를 감싼다. 차가운 손이 뜨거운 자지에 닿자 전기가 흐른다. 이게 내 크리에이터의 손이라는 게 믿기지 않는다.",
-      "text_key": "node_1786843203782_40_zh2u"
-    },
-    {
-      "id": "node_1786843203782_41_mhfa",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "맛있게 해드릴게요.",
-      "text_key": "node_1786843203782_41_mhfa"
-    },
-    {
-      "id": "node_1786843203782_42_gckr",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "읏……",
-      "text_key": "node_1786843203782_42_gckr"
-    },
-    {
-      "id": "node_1786843203782_43_je3x",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 혀로 자지 전체를 천천히 핥아 올린다.",
-      "text_key": "node_1786843203782_43_je3x"
-    },
-    {
-      "id": "node_1786843203782_44_xwj3",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "입에 넣을게요.",
-      "text_key": "node_1786843203782_44_xwj3"
-    },
-    {
-      "id": "node_1786843203782_45_7ne4",
+      "id": "node_1787100604876_34_ggoj",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00014_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786843203782_46_b36f",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입술이 귀두를 감싸고, 그녀가 천천히 머리를 앞으로 움직인다.",
-      "text_key": "node_1786843203782_46_b36f"
-    },
-    {
-      "id": "node_1786843203782_47_k4vt",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "아…… 미야자와 씨…",
-      "text_key": "node_1786843203782_47_k4vt"
-    },
-    {
-      "id": "node_1786843203782_48_4ag6",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입속이 뜨겁고 좁다. 혀가 자지를 감싸고, 입술이 귀두를 조인다. 저 핑크 속옷에 감싸인 가슴이 내 앞에서 흔들린다. 참을 수 없다.",
-      "text_key": "node_1786843203782_48_4ag6"
-    },
-    {
-      "id": "node_1786843203782_49_lasa",
+      "id": "node_1787100604876_35_apno",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "사장님, 더 깊이 넣어도 돼요.",
-      "text_key": "node_1786843203782_49_lasa"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "맛있게 해드릴게요.",
+      "text_key": "node_1787100604876_35_apno"
     },
     {
-      "id": "node_1786843203782_50_1ftm",
+      "id": "node_1787100604876_36_dfg8",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…미야자와 씨…",
-      "text_key": "node_1786843203782_50_1ftm"
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "혀를 내밀어 귀두를 핥고, 입을 벌려 천천히 물어 넣는다.",
+      "text_key": "node_1787100604876_36_dfg8"
     },
     {
-      "id": "node_1786843203782_51_pkj7",
+      "id": "node_1787100604876_37_zaol",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "아…… 미야자와 씨…",
+      "text_key": "node_1787100604876_37_zaol"
+    },
+    {
+      "id": "node_1787100604876_38_7ni0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님, 더 깊이 넣어도 돼요.",
+      "text_key": "node_1787100604876_38_7ni0"
+    },
+    {
+      "id": "node_1787100604876_39_ko35",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "그녀가 눈을 감고, 내 자지를 깊이 받아들인다.",
-      "text_key": "node_1786843203782_51_pkj7"
+      "text_key": "node_1787100604876_39_ko35"
     },
     {
-      "id": "node_1786843203782_52_4r3f",
+      "id": "node_1787100604876_40_ga5f",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "나… 곧…",
-      "text_key": "node_1786843203782_52_4r3f"
+      "text_key": "node_1787100604876_40_ga5f"
     },
     {
-      "id": "node_1786843203782_53_6us9",
+      "id": "node_1787100604876_41_lex3",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "그대로, 입에 내주세요.",
-      "text_key": "node_1786843203782_53_6us9"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "그대로, 얼굴에 내주세요.",
+      "text_key": "node_1787100604876_41_lex3"
     },
     {
-      "id": "node_1786843203782_54_xy13",
+      "id": "node_1787100604876_42_q4th",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그 눈빛에, 참고 있던 게 무너진다. 그녀의 입속, 혀 위에, 모든 걸 쏟아내고 싶다. 이제는 멈출 수 없다.",
-      "text_key": "node_1786843203782_54_xy13"
+      "text": "입을 떼고, 얼굴을 내 쪽으로 든다.",
+      "text_key": "node_1787100604876_42_q4th"
     },
     {
-      "id": "node_1786843203782_55_dd6g",
+      "id": "node_1787100604876_43_lrcj",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "아… 나온다…!",
-      "text_key": "node_1786843203782_55_dd6g"
+      "text_key": "node_1787100604876_43_lrcj"
     },
     {
-      "id": "node_1786843203782_56_e6d4",
+      "id": "node_1787100604876_44_udmn",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00009_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786843203782_57_frys",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 입으로 자지를 꽉 물고, 정액을 삼킨다.",
-      "text_key": "node_1786843203782_57_frys"
-    },
-    {
-      "id": "node_1786843203782_58_e7f9",
+      "id": "node_1787100604876_45_xp6q",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "맛있었어요.",
-      "text_key": "node_1786843203782_58_e7f9"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "…대단하세요.",
+      "text_key": "node_1787100604876_45_xp6q"
     },
     {
-      "id": "node_1786843203782_59_2mxn",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "하…… 하……",
-      "text_key": "node_1786843203782_59_2mxn"
-    },
-    {
-      "id": "node_1786843203782_60_j2wo",
+      "id": "node_1787100604876_46_h23a",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "아직이에요. 이제부터가 진짜니까.",
-      "text_key": "node_1786843203782_60_j2wo"
+      "text_key": "node_1787100604876_46_h23a"
     },
     {
-      "id": "node_1786843203782_61_qmnw",
+      "id": "node_1787100604876_47_dnps",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀가 내 정액을 삼키고도, 아직 만족하지 않았다는 듯 웃는다. 저 눈빛은, 이제부터 본론이라는 뜻이다.",
-      "text_key": "node_1786843203782_61_qmnw"
+      "text": "침실. 미야자와 리나가 침대에 눕고, 다리를 벌린다. 완전히 벗은 맨몸이다.",
+      "text_key": "node_1787100604876_47_dnps"
     },
     {
-      "id": "node_1786843203782_62_p6vn",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786843203782_63_60zp",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "거실 소파 위. 미야자와 씨가 나를 밀어 눕히고, 핑크 속옷의 팬티를 스스로 벗어 내린다.",
-      "text_key": "node_1786843203782_63_60zp"
-    },
-    {
-      "id": "node_1786843203782_64_nj4r",
+      "id": "node_1787100604876_48_j3hc",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "이제, 저를 안아주세요.",
-      "text_key": "node_1786843203782_64_nj4r"
+      "text_key": "node_1787100604876_48_j3hc"
     },
     {
-      "id": "node_1786843203782_65_p9s4",
+      "id": "node_1787100604876_49_uxhx",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "미야자와 씨… 정말 괜찮아요?",
-      "text_key": "node_1786843203782_65_p9s4"
+      "text_key": "node_1787100604876_49_uxhx"
     },
     {
-      "id": "node_1786843203782_66_guzu",
+      "id": "node_1787100604876_50_e9sy",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "괜찮은 게 아니라, 원해요.",
-      "text_key": "node_1786843203782_66_guzu"
+      "text_key": "node_1787100604876_50_e9sy"
     },
     {
-      "id": "node_1786843203782_67_uqmz",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "하……",
-      "text_key": "node_1786843203782_67_uqmz"
-    },
-    {
-      "id": "node_1786843203782_68_4j8y",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 자지 위에 보지를 문지른다. 이미 젖어 있어서, 귀두가 미끄러지듯 닿는다. 저 뜨거운 열기가 그대로 전해진다.",
-      "text_key": "node_1786843203782_68_4j8y"
-    },
-    {
-      "id": "node_1786843203782_69_t27j",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "넣어줘요, 사장님.",
-      "text_key": "node_1786843203782_69_t27j"
-    },
-    {
-      "id": "node_1786843203782_70_a80r",
+      "id": "node_1787100604876_51_5ujw",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00034_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786843203782_71_s5tz",
+      "id": "node_1787100604876_52_fw7t",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "내 자지를 그녀의 다리 사이에 문지른다. 이미 젖어 있어서, 귀두가 미끄러지듯 닿는다.",
+      "text_key": "node_1787100604876_52_fw7t"
+    },
+    {
+      "id": "node_1787100604876_53_8why",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "넣어줘요, 사장님.",
+      "text_key": "node_1787100604876_53_8why"
+    },
+    {
+      "id": "node_1787100604876_54_0dao",
+      "type": "graphic",
+      "image": "2026-08-19_00031_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787100604876_55_rlsc",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "귀두가 보지 입구를 벌리며 천천히 안으로 들어간다.",
-      "text_key": "node_1786843203782_71_s5tz"
+      "text_key": "node_1787100604876_55_rlsc"
     },
     {
-      "id": "node_1786843203782_72_t1ne",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "으읏……",
-      "text_key": "node_1786843203782_72_t1ne"
-    },
-    {
-      "id": "node_1786843203782_73_3y8a",
+      "id": "node_1787100604876_56_you0",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "들어갔어요… 사장님이, 제 안에…",
-      "text_key": "node_1786843203782_73_3y8a"
+      "text_key": "node_1787100604876_56_you0"
     },
     {
-      "id": "node_1786843203782_74_w6m8",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 안이 내 자지를 뜨겁게 감싼다. 꽉 조여와서, 사정할 뻔한다. 젖은 보지가 내 자지 전체를 물고 놓지 않는다.",
-      "text_key": "node_1786843203782_74_w6m8"
-    },
-    {
-      "id": "node_1786843203782_75_9x3w",
+      "id": "node_1787100604876_57_ig48",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "기분 좋아요… 사장님 자지, 제 안에서 커지고 있어요…",
-      "text_key": "node_1786843203782_75_9x3w"
-    },
-    {
-      "id": "node_1786843203782_76_k9lb",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "미야자와 씨… 너무…",
-      "text_key": "node_1786843203782_76_k9lb"
-    },
-    {
-      "id": "node_1786843203782_77_o5ce",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "제 안, 뜨거워요?",
-      "text_key": "node_1786843203782_77_o5ce"
-    },
-    {
-      "id": "node_1786843203782_78_2rvv",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…뜨거워요. 꽉 조여서…",
-      "text_key": "node_1786843203782_78_2rvv"
-    },
-    {
-      "id": "node_1786843203782_79_g7kz",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "더 느껴주세요. 저도, 사장님을 느끼고 있으니까요.",
-      "text_key": "node_1786843203782_79_g7kz"
-    },
-    {
-      "id": "node_1786843203782_80_ifxo",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 위에서 허리를 움직일 때마다, 핑크 브라에 감싸인 가슴이 크게 흔들린다.",
-      "text_key": "node_1786843203782_80_ifxo"
-    },
-    {
-      "id": "node_1786843203782_81_32mj",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 위에서 허리를 흔든다. 핑크 브라 사이로 가슴이 출렁이고, 젖은 보지가 내 자지를 삼켰다 뱉는다. 정신이 아득하다.",
-      "text_key": "node_1786843203782_81_32mj"
-    },
-    {
-      "id": "node_1786843203782_82_c73z",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "사장님, 제 가슴 만져주세요.",
-      "text_key": "node_1786843203782_82_c73z"
-    },
-    {
-      "id": "node_1786843203782_83_cl20",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "……",
-      "text_key": "node_1786843203782_83_cl20"
-    },
-    {
-      "id": "node_1786843203782_84_yesq",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "좋아요… 더 세게…",
-      "text_key": "node_1786843203782_84_yesq"
-    },
-    {
-      "id": "node_1786843203782_85_g1a3",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786843203782_86_bvhx",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미야자와 씨가 내 위에서 자세를 바꿔, 나를 깊이 물고 위아래로 허리를 움직인다.",
-      "text_key": "node_1786843203782_86_bvhx"
-    },
-    {
-      "id": "node_1786843203782_87_jm5y",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "이 자세, 제가 좋아해요.",
-      "text_key": "node_1786843203782_87_jm5y"
-    },
-    {
-      "id": "node_1786843203782_88_awek",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "아…… 미야자와 씨…",
-      "text_key": "node_1786843203782_88_awek"
-    },
-    {
-      "id": "node_1786843203782_89_npv6",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 위에서 격렬하게 허리를 흔든다. 보지가 내 자지를 뿌리까지 삼켰다가, 귀두까지 뽑아 올린다. 저 움직임 하나하나가 미칠 것 같다.",
-      "text_key": "node_1786843203782_89_npv6"
-    },
-    {
-      "id": "node_1786843203782_90_7u3b",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "사장님, 어디가 좋아요?",
-      "text_key": "node_1786843203782_90_7u3b"
-    },
-    {
-      "id": "node_1786843203782_91_gfkb",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "전부… 안쪽이…",
-      "text_key": "node_1786843203782_91_gfkb"
-    },
-    {
-      "id": "node_1786843203782_92_4gzv",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "저도요. 사장님 자지, 제 안 깊은 곳까지 닿아요.",
-      "text_key": "node_1786843203782_92_4gzv"
-    },
-    {
-      "id": "node_1786843203782_93_q22v",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786843203782_94_o2s0",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 몸을 뒤로 젖히고, 내 자지를 더 깊이 받아들인다.",
-      "text_key": "node_1786843203782_94_o2s0"
-    },
-    {
-      "id": "node_1786843203782_95_uwil",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "봐주세요, 사장님. 제가 사장님을 먹고 있어요.",
-      "text_key": "node_1786843203782_95_uwil"
-    },
-    {
-      "id": "node_1786843203782_96_ixy8",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "하……",
-      "text_key": "node_1786843203782_96_ixy8"
-    },
-    {
-      "id": "node_1786843203782_97_zj37",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 위에서 몸을 뒤로 젖힌다. 내 자지가 그녀의 보지에 완전히 삼켜진 게 보인다. 저 음란한 표정이, 저 허리 움직임이, 나를 미치게 만든다.",
-      "text_key": "node_1786843203782_97_zj37"
-    },
-    {
-      "id": "node_1786843203782_98_hv9u",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "사장님, 가슴 만지면서… 계속 봐주세요.",
-      "text_key": "node_1786843203782_98_hv9u"
-    },
-    {
-      "id": "node_1786843203782_99_l5xu",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "……",
-      "text_key": "node_1786843203782_99_l5xu"
-    },
-    {
-      "id": "node_1786843203782_100_f4aw",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "좋아요… 이대로, 제가 사장님을 가게 해드릴게요.",
-      "text_key": "node_1786843203782_100_f4aw"
-    },
-    {
-      "id": "node_1786843203782_101_3ch8",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "으읏… 미야자와 씨… 나… 곧…",
-      "text_key": "node_1786843203782_101_3ch8"
-    },
-    {
-      "id": "node_1786843203782_102_n0fv",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "아직이에요. 조금만 참아주세요.",
-      "text_key": "node_1786843203782_102_n0fv"
-    },
-    {
-      "id": "node_1786843203782_103_7lqn",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "하…… 하……",
-      "text_key": "node_1786843203782_103_7lqn"
-    },
-    {
-      "id": "node_1786843203782_104_rjsc",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "이제, 자세 바꿔요.",
-      "text_key": "node_1786843203782_104_rjsc"
-    },
-    {
-      "id": "node_1786843203782_105_dl64",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786843203782_106_o5l3",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미야자와 씨가 소파에 네 발로 엎드리고, 엉덩이를 나에게 향한다. 핑크 브라만 걸친 채다.",
-      "text_key": "node_1786843203782_106_o5l3"
-    },
-    {
-      "id": "node_1786843203782_107_qxs8",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "…뒤에서 해주세요, 사장님.",
-      "text_key": "node_1786843203782_107_qxs8"
-    },
-    {
-      "id": "node_1786843203782_108_igr8",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "미야자와 씨…",
-      "text_key": "node_1786843203782_108_igr8"
-    },
-    {
-      "id": "node_1786843203782_109_32zw",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 네 발로 엎드렸다. 젖은 보지가 애액으로 반짝이고, 핑크 브라가 가슴을 간신히 받치고 있다. 이제는 참을 이유가 없다.",
-      "text_key": "node_1786843203782_109_32zw"
-    },
-    {
-      "id": "node_1786843203782_110_jl8l",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "넣어주세요. 제 안에, 다시…",
-      "text_key": "node_1786843203782_110_jl8l"
-    },
-    {
-      "id": "node_1786843203782_111_j3uj",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786843203782_112_lhta",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "내 자지가 그녀의 보지를 뒤에서 밀어 넣는다.",
-      "text_key": "node_1786843203782_112_lhta"
-    },
-    {
-      "id": "node_1786843203782_113_2nfg",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speaker": "사장",
       "text": "으읏……",
-      "text_key": "node_1786843203782_113_2nfg"
+      "text_key": "node_1787100604876_57_ig48"
     },
     {
-      "id": "node_1786843203782_114_kaoc",
+      "id": "node_1787100604876_58_o712",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "깊어요… 사장님, 제 안 깊은 곳까지…",
-      "text_key": "node_1786843203782_114_kaoc"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "기분 좋아요… 사장님 자지, 제 안에서 커지고 있어요…",
+      "text_key": "node_1787100604876_58_o712"
     },
     {
-      "id": "node_1786843203782_115_zost",
+      "id": "node_1787100604876_59_u2qi",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "뒤에서 넣자, 더 깊이 들어간다. 그녀의 보지가 내 자지를 꽉 조이고, 애액이 허벅지를 타고 흘러내린다. 나는 그녀의 허리를 잡고, 격렬하게 허리를 움직인다.",
-      "text_key": "node_1786843203782_115_zost"
+      "text": "내가 허리를 움직일 때마다 그녀의 가슴이 크게 출렁인다.",
+      "text_key": "node_1787100604876_59_u2qi"
     },
     {
-      "id": "node_1786843203782_116_r38x",
+      "id": "node_1787100604876_60_n5o0",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "좋아요… 더 세게… 제 안, 부숴줘요…",
-      "text_key": "node_1786843203782_116_r38x"
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님, 제 가슴 만져주세요.",
+      "text_key": "node_1787100604876_60_n5o0"
     },
     {
-      "id": "node_1786843203782_117_m2bb",
+      "id": "node_1787100604876_61_73an",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "……",
+      "text_key": "node_1787100604876_61_73an"
+    },
+    {
+      "id": "node_1787100604876_62_b5ix",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "좋아요… 더 세게…",
+      "text_key": "node_1787100604876_62_b5ix"
+    },
+    {
+      "id": "node_1787100604876_63_e0ct",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "저도요. 사장님 자지, 제 안 깊은 곳까지 닿아요.",
+      "text_key": "node_1787100604876_63_e0ct"
+    },
+    {
+      "id": "node_1787100604876_64_wo49",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "아…… 미야자와 씨… 나… 이제…",
-      "text_key": "node_1786843203782_117_m2bb"
+      "text_key": "node_1787100604876_64_wo49"
     },
     {
-      "id": "node_1786843203782_118_s7xc",
+      "id": "node_1787100604876_65_3x2g",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "나와요, 사장님. 저도 갈 거예요.",
-      "text_key": "node_1786843203782_118_s7xc"
+      "text_key": "node_1787100604876_65_3x2g"
     },
     {
-      "id": "node_1786843203782_119_rw5d",
+      "id": "node_1787100604876_66_6k1f",
       "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 보지가 쥐어짜듯 내 자지를 조여온다. 그녀도 가까워진 게 느껴진다. 나는 마지막으로 깊이 찔러 넣고, 안에 쏟아낸다.",
-      "text_key": "node_1786843203782_119_rw5d"
-    },
-    {
-      "id": "node_1786843203782_120_crgu",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
+      "speakerType": "character",
+      "speaker": "사장",
       "text": "아…… 나온다……!",
-      "text_key": "node_1786843203782_120_crgu"
+      "text_key": "node_1787100604876_66_6k1f"
     },
     {
-      "id": "node_1786843203782_121_k62b",
+      "id": "node_1787100604876_67_8jfm",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "사장님… 저도…",
-      "text_key": "node_1786843203782_121_k62b"
+      "text_key": "node_1787100604876_67_8jfm"
     },
     {
-      "id": "node_1786843203782_122_oood",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 안에 정액을 전부 쏟아내고, 천천히 자지를 뽑는다. 그녀가 몸을 돌려 나를 마주 본다.",
-      "text_key": "node_1786843203782_122_oood"
-    },
-    {
-      "id": "node_1786843203782_123_w72q",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미야자와",
-      "text": "…이제, 제 몸에 부어주세요.",
-      "text_key": "node_1786843203782_123_w72q"
-    },
-    {
-      "id": "node_1786843203782_124_d0h1",
+      "id": "node_1787100604876_68_g1ri",
       "type": "graphic",
-      "image": "",
+      "image": "simpligen_00032_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786843203782_125_3xzv",
+      "id": "node_1787100604876_69_pxbu",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "나는 마지막 남은 정액을 그녀의 가슴과 얼굴, 몸 위에 쏟아낸다. 온몸이 정액으로 뒤덮인다.",
-      "text_key": "node_1786843203782_125_3xzv"
+      "text": "그녀가 침대에 몸을 눕힌 채, 나는 마지막 남은 정액을 그녀의 가슴과 얼굴, 몸 위에 쏟아낸다. 온몸이 정액으로 뒤덮인다.",
+      "text_key": "node_1787100604876_69_pxbu"
     },
     {
-      "id": "node_1786843203782_126_xrl3",
+      "id": "node_1787100604876_70_k9hz",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "1786792656193-i7isvfo",
       "text": "하…… 사장님의… 전부…",
-      "text_key": "node_1786843203782_126_xrl3"
+      "text_key": "node_1787100604876_70_k9hz"
     },
     {
-      "id": "node_1786843203782_127_ezaa",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "하…… 하……",
-      "text_key": "node_1786843203782_127_ezaa"
-    },
-    {
-      "id": "node_1786843203782_128_3nqd",
+      "id": "node_1787100604876_71_1ykl",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미야자와",
+      "speaker": "사장",
+      "text": "하…… 하……",
+      "text_key": "node_1787100604876_71_1ykl"
+    },
+    {
+      "id": "node_1787100604876_72_h7jc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
       "text": "정말, 대단했어요.",
-      "text_key": "node_1786843203782_128_3nqd"
+      "text_key": "node_1787100604876_72_h7jc"
     }
   ],
   "defaultLanguage": "ko",
@@ -1045,10 +589,103 @@
     {
       "id": "미야자와",
       "name": "미야자와"
+    },
+    {
+      "id": "1786792656193-i7isvfo",
+      "name": "미야자와 리나"
+    },
+    {
+      "id": "사장",
+      "name": "사장"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "id": "1787098483540-rfmye0n",
+      "fileName": "2026-08-19_00004_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a3/images/2026-08-19_00004_.png",
+      "url": "media://chapter_assets/events/a3/images/2026-08-19_00004_.png",
+      "size": 1998492
+    },
+    {
+      "id": "1787098628839-1sx4swn",
+      "fileName": "2026-08-19_00007_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a3/images/2026-08-19_00007_.png",
+      "url": "media://chapter_assets/events/a3/images/2026-08-19_00007_.png",
+      "size": 1864780
+    },
+    {
+      "id": "1787098782380-3tdbixq",
+      "fileName": "2026-08-19_00009_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a3/images/2026-08-19_00009_.png",
+      "url": "media://chapter_assets/events/a3/images/2026-08-19_00009_.png",
+      "size": 2373371
+    },
+    {
+      "id": "1787098899015-gqvmixr",
+      "fileName": "2026-08-19_00011_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a3/images/2026-08-19_00011_.png",
+      "url": "media://chapter_assets/events/a3/images/2026-08-19_00011_.png",
+      "size": 2160799
+    },
+    {
+      "id": "1787098916884-r0u5x6v",
+      "fileName": "2026-08-19_00010_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a3/images/2026-08-19_00010_.png",
+      "url": "media://chapter_assets/events/a3/images/2026-08-19_00010_.png",
+      "size": 2280832
+    },
+    {
+      "id": "1787099009382-doh97oh",
+      "fileName": "2026-08-19_00012_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a3/images/2026-08-19_00012_.png",
+      "url": "media://chapter_assets/events/a3/images/2026-08-19_00012_.png",
+      "size": 2223258
+    },
+    {
+      "id": "1787099203825-405k0rb",
+      "fileName": "2026-08-19_00014_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a3/images/2026-08-19_00014_.png",
+      "url": "media://chapter_assets/events/a3/images/2026-08-19_00014_.png",
+      "size": 2580836
+    },
+    {
+      "id": "1787101123355-yc6mged",
+      "fileName": "2026-08-19_00034_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a3/images/2026-08-19_00034_.png",
+      "url": "media://chapter_assets/events/a3/images/2026-08-19_00034_.png",
+      "size": 2265485
+    },
+    {
+      "id": "1787101211081-m5hdw6b",
+      "fileName": "2026-08-19_00031_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a3/images/2026-08-19_00031_.png",
+      "url": "media://chapter_assets/events/a3/images/2026-08-19_00031_.png",
+      "size": 2473927
+    },
+    {
+      "id": "1787101725000-xdtr2kp",
+      "fileName": "simpligen_00032_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a3/images/simpligen_00032_.png",
+      "url": "media://chapter_assets/events/a3/images/simpligen_00032_.png",
+      "size": 1053000
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T01:19:44.542Z",
   "ownerCharacterId": "1786792656193-i7isvfo"

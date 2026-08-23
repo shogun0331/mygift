@@ -5,911 +5,431 @@
   "chapterId": 1,
   "titleKey": "527c3f8b-f496-4c25-9fd1-91096ec45330",
   "title": "데이트1",
-  "startNode": "node_1786844343284_0_o1ke",
+  "startNode": "node_1787112506729_0_ucct",
   "nodes": [
     {
-      "id": "node_1786844343284_0_o1ke",
+      "id": "node_1787112506729_0_ucct",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00052_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786844343284_1_dzv8",
+      "id": "node_1787112506729_1_99cj",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "낮의 야외 카페. 따뜻한 햇살과 초록 식물이 어우러진 감성적인 테라스. 미사키가 먼저 도착해 자리에 앉아 기다리고 있다. 흰 크롭탑에 블랙 레깅스.",
-      "text_key": "node_1786844343284_1_dzv8"
+      "text": "낮의 야외 카페. 따뜻한 햇살과 초록 식물이 어우러진 테라스. 미사키가 먼저 도착해 앉아 기다리고 있다. 흰 크롭탑에 블랙 레깅스.",
+      "text_key": "node_1787112506729_1_99cj"
     },
     {
-      "id": "node_1786844343284_2_j31c",
+      "id": "node_1787112506729_2_np6e",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
+      "speaker": "1786833964287-iflkqh2",
       "text": "사장님~! 여기예요! (손을 크게 흔든다)",
-      "text_key": "node_1786844343284_2_j31c"
+      "text_key": "node_1787112506729_2_np6e"
     },
     {
-      "id": "node_1786844343284_3_g0ub",
+      "id": "node_1787112506729_3_fsvh",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "기다렸어요? 늦어서 미안합니다.",
-      "text_key": "node_1786844343284_3_g0ub"
+      "text_key": "node_1787112506729_3_fsvh"
     },
     {
-      "id": "node_1786844343284_4_yyc6",
+      "id": "node_1787112506729_4_7hpy",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "아니에요! 제가 좀 일찍 왔어요. 오늘 날씨 너무 좋죠? (활짝 웃는다)",
-      "text_key": "node_1786844343284_4_yyc6"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "아니에요! 제가 좀 일찍 왔어요. 오늘 날씨 너무 좋죠?",
+      "text_key": "node_1787112506729_4_7hpy"
     },
     {
-      "id": "node_1786844343284_5_jhrb",
+      "id": "node_1787112506729_5_wc5q",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "그러네요. 데이트 하기 딱 좋은 날씨예요.",
-      "text_key": "node_1786844343284_5_jhrb"
+      "text_key": "node_1787112506729_5_wc5q"
     },
     {
-      "id": "node_1786844343284_6_y6hc",
+      "id": "node_1787112506729_6_xl2n",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "와주셔서 감사해요. 사실 혹시 안 오시면 어쩌나 했거든요. (머리를 긁적이며)",
-      "text_key": "node_1786844343284_6_y6hc"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "와주셔서 감사해요. 사실 혹시 안 오시면 어쩌나 했거든요.",
+      "text_key": "node_1787112506729_6_xl2n"
     },
     {
-      "id": "node_1786844343284_7_z93h",
+      "id": "node_1787112506729_7_k3di",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "제가 왜 안 와요. 부른 건 너잖아요.",
-      "text_key": "node_1786844343284_7_z93h"
+      "text": "제가 왜 안 와요. 부르신 건 타치바나 씨잖아요.",
+      "text_key": "node_1787112506729_7_k3di"
     },
     {
-      "id": "node_1786844343284_8_8dxs",
+      "id": "node_1787112506729_8_143j",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "크리에이터가 사장님한테 데이트 신청하는 거, 좀 이상하죠? (눈을 반짝인다)",
-      "text_key": "node_1786844343284_8_8dxs"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "크리에이터가 사장님한테 데이트 신청하는 거, 좀 이상하죠?",
+      "text_key": "node_1787112506729_8_143j"
     },
     {
-      "id": "node_1786844343284_9_ldnt",
+      "id": "node_1787112506729_9_814g",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "이상하진 않아요. 다만… 조금 놀랐을 뿐.",
-      "text_key": "node_1786844343284_9_ldnt"
+      "text_key": "node_1787112506729_9_814g"
     },
     {
-      "id": "node_1786844343284_10_92wr",
+      "id": "node_1787112506729_10_1qjs",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "저, 사장님하고 단둘이 얘기해 보고 싶었어요. (또박또박)",
-      "text_key": "node_1786844343284_10_92wr"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "저, 사장님하고 단둘이 얘기해 보고 싶었어요.",
+      "text_key": "node_1787112506729_10_1qjs"
     },
     {
-      "id": "node_1786844343284_11_dnj0",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "평소 방송국에서 밝게 웃던 얼굴인데, 이렇게 사적인 자리에서 보니 더 반짝인다. 저 크롭탑과 레깅스 차림이 오히려 더 신경 쓰인다. 참아라, 나는 대표니까.",
-      "text_key": "node_1786844343284_11_dnj0"
-    },
-    {
-      "id": "node_1786844343284_12_3a5w",
+      "id": "node_1787112506729_11_9g3c",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "단둘이 얘기하고 싶었다니, 무슨 얘기인지 궁금하네요.",
-      "text_key": "node_1786844343284_12_3a5w"
+      "text_key": "node_1787112506729_11_9g3c"
     },
     {
-      "id": "node_1786844343284_13_dljv",
+      "id": "node_1787112506729_12_u1gl",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "그건… 조금 있다가요. (입꼬리를 올린다)",
-      "text_key": "node_1786844343284_13_dljv"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "그건… 조금 있다가요.",
+      "text_key": "node_1787112506729_12_u1gl"
     },
     {
-      "id": "node_1786844343284_14_9e8v",
+      "id": "node_1787112506729_13_ftxv",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "분위기 잡는 거예요?",
-      "text_key": "node_1786844343284_14_9e8v"
+      "text_key": "node_1787112506729_13_ftxv"
     },
     {
-      "id": "node_1786844343284_15_dpnj",
+      "id": "node_1787112506729_14_9ljr",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "네. 감성적인 카페에서 분위기 좀 잡아야죠. (장난스럽게)",
-      "text_key": "node_1786844343284_15_dpnj"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "네. 감성적인 카페에서 분위기 좀 잡아야죠.",
+      "text_key": "node_1787112506729_14_9ljr"
     },
     {
-      "id": "node_1786844343284_16_o6e4",
+      "id": "node_1787112506729_15_6gxd",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…알겠어요. 오늘은 네 뜻에 맞출게요.",
-      "text_key": "node_1786844343284_16_o6e4"
+      "text": "…알겠어요. 오늘은 타치바나 씨 뜻에 맞출게요.",
+      "text_key": "node_1787112506729_15_6gxd"
     },
     {
-      "id": "node_1786844343284_17_hko8",
+      "id": "node_1787112506729_16_ai44",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "좋아요! 그럼 일단 메뉴 봐요. (메뉴판을 펼친다)",
-      "text_key": "node_1786844343284_17_hko8"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "좋아요! 그럼 일단 메뉴 봐요.",
+      "text_key": "node_1787112506729_16_ai44"
     },
     {
-      "id": "node_1786844343284_18_d93b",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "너는 뭐 마실래요?",
-      "text_key": "node_1786844343284_18_d93b"
-    },
-    {
-      "id": "node_1786844343284_19_vwc7",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "저는 아이스티요. 사장님은요? (몸을 앞으로 기울인다)",
-      "text_key": "node_1786844343284_19_vwc7"
-    },
-    {
-      "id": "node_1786844343284_20_r54k",
+      "id": "node_1787112506729_17_ywe8",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "몸을 기울이자 크롭탑 사이로 태닝된 허리가 드러난다. 저 밝은 미소에 자꾸 시선이 간다. 대표니까, 참아야 한다.",
-      "text_key": "node_1786844343284_20_r54k"
+      "text": "음료가 나오고, 미사키가 몸을 앞으로 기울인다. 크롭탑 사이로 태닝된 허리가 드러난다.",
+      "text_key": "node_1787112506729_17_ywe8"
     },
     {
-      "id": "node_1786844343284_21_v5yb",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "저는 아메리카노로 할게요.",
-      "text_key": "node_1786844343284_21_v5yb"
-    },
-    {
-      "id": "node_1786844343284_22_p5dz",
+      "id": "node_1787112506729_18_exjs",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "역시 사장님은 아메리카노죠. (씩 웃는다)",
-      "text_key": "node_1786844343284_22_p5dz"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "사장님, 제가 요가 가르쳐 드릴까요?",
+      "text_key": "node_1787112506729_18_exjs"
     },
     {
-      "id": "node_1786844343284_23_5ay0",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "왜요, 딱 보니 아메리카노 스타일이에요?",
-      "text_key": "node_1786844343284_23_5ay0"
-    },
-    {
-      "id": "node_1786844343284_24_evhw",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "네. 단호하고, 직진하는 느낌이요. (또박또박)",
-      "text_key": "node_1786844343284_24_evhw"
-    },
-    {
-      "id": "node_1786844343284_25_d9bo",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…그건 칭찬인가요?",
-      "text_key": "node_1786844343284_25_d9bo"
-    },
-    {
-      "id": "node_1786844343284_26_lpl8",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "칭찬이에요. 최고의 칭찬. (활짝 웃는다)",
-      "text_key": "node_1786844343284_26_lpl8"
-    },
-    {
-      "id": "node_1786844343284_27_50rx",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "주문을 마치고, 두 사람은 마주 앉아 커피와 아이스티를 기다린다. 서로의 시선이 테라스 밖 풍경을 향한다.",
-      "text_key": "node_1786844343284_27_50rx"
-    },
-    {
-      "id": "node_1786844343284_28_63uc",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786844343284_29_pdqt",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "테라스 테이블. 음료가 나오고, 미사키가 자세를 바꾸며 앉는다. 블랙 레깅스가 몸에 밀착되어 있다.",
-      "text_key": "node_1786844343284_29_pdqt"
-    },
-    {
-      "id": "node_1786844343284_30_9xcq",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "아, 이 카페 진짜 좋네요. 분위기 완전 취향이에요. (두리번거린다)",
-      "text_key": "node_1786844343284_30_9xcq"
-    },
-    {
-      "id": "node_1786844343284_31_rtc9",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "네가 고른 데잖아요.",
-      "text_key": "node_1786844343284_31_rtc9"
-    },
-    {
-      "id": "node_1786844343284_32_3et8",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "맞아요. 제가 골랐죠. (씩 웃는다)",
-      "text_key": "node_1786844343284_32_3et8"
-    },
-    {
-      "id": "node_1786844343284_33_iif7",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미사키가 의자에 깊이 앉으며 다리를 꼰다. 레깅스가 엉덩이와 허벅지 곡선을 그대로 드러낸다.",
-      "text_key": "node_1786844343284_33_iif7"
-    },
-    {
-      "id": "node_1786844343284_34_0kn5",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…너, 요가 할 때도 그 레깅스예요?",
-      "text_key": "node_1786844343284_34_0kn5"
-    },
-    {
-      "id": "node_1786844343284_35_q8ju",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "네. 요가복이에요. 편해서 자주 입어요. (다리를 풀었다 다시 꼰다)",
-      "text_key": "node_1786844343284_35_q8ju"
-    },
-    {
-      "id": "node_1786844343284_36_d716",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "레깅스가 엉덩이 곡선을 그대로 드러낸다. 다리를 꼴 때마다 탄탄한 허벅지가 꽉 조여오고, 그 아래로 팬티 라인이 살짝 비친다. 저 몸이 방송에 나오면… 시청자들이 미칠 거다.",
-      "text_key": "node_1786844343284_36_d716"
-    },
-    {
-      "id": "node_1786844343284_37_fvhf",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…몸매 관리가 대단하네요.",
-      "text_key": "node_1786844343284_37_fvhf"
-    },
-    {
-      "id": "node_1786844343284_38_s7qz",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "요가 덕분이에요. 사장님도 한번 해보세요? (밝게)",
-      "text_key": "node_1786844343284_38_s7qz"
-    },
-    {
-      "id": "node_1786844343284_39_axyy",
+      "id": "node_1787112506729_19_9q0b",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "저는 유연하지가 않아서요.",
-      "text_key": "node_1786844343284_39_axyy"
+      "text_key": "node_1787112506729_19_9q0b"
     },
     {
-      "id": "node_1786844343284_40_84hq",
+      "id": "node_1787112506729_20_rhy0",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "그럼 제가 가르쳐 드릴까요? (몸을 기울인다)",
-      "text_key": "node_1786844343284_40_84hq"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "그럼 제가 가르쳐 드릴게요.",
+      "text_key": "node_1787112506729_20_rhy0"
     },
     {
-      "id": "node_1786844343284_41_a993",
+      "id": "node_1787112506729_21_pbvm",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "몸을 기울인 탓에 크롭탑 아래로 태닝된 허리가 더 드러나고, 레깅스가 엉덩이를 팽팽하게 감싼다.",
-      "text_key": "node_1786844343284_41_a993"
+      "text": "미사키가 자리에서 일어나, 크롭탑을 살짝 들어 올린다.",
+      "text_key": "node_1787112506729_21_pbvm"
     },
     {
-      "id": "node_1786844343284_42_je0q",
+      "id": "node_1787112506729_22_ey6a",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00055_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786844343284_43_g0zi",
+      "id": "node_1787112506729_23_xgq4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786833964287-iflkqh2",
+      "text": "어때요? 제 몸매, 요가 덕분이에요.",
+      "text_key": "node_1787112506729_23_xgq4"
+    },
+    {
+      "id": "node_1787112506729_24_f6f7",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…네가 가르쳐 주는 거면, 해볼까요.",
-      "text_key": "node_1786844343284_43_g0zi"
+      "text": "타치바나 씨, 이러시면 안 돼요.",
+      "text_key": "node_1787112506729_24_f6f7"
     },
     {
-      "id": "node_1786844343284_44_3tho",
+      "id": "node_1787112506729_25_kt5d",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "좋아요! 다음에 꼭요. (환하게 웃는다)",
-      "text_key": "node_1786844343284_44_3tho"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "오늘은 사장님이 아니라, 그냥 남자로 와주세요.",
+      "text_key": "node_1787112506729_25_kt5d"
     },
     {
-      "id": "node_1786844343284_45_7nqc",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "저 엉덩이 라인을 보고 있자니, 요가 수업 상상만으로도 위험하다. 레깅스에 감싸인 저 골반이, 의자에서 일어날 때마다 탄력 있게 흔들린다. 참을 수 없다.",
-      "text_key": "node_1786844343284_45_7nqc"
-    },
-    {
-      "id": "node_1786844343284_46_l5fd",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "사장님, 시선이 자꾸 아래로 가시네요. (입꼬리 올린다)",
-      "text_key": "node_1786844343284_46_l5fd"
-    },
-    {
-      "id": "node_1786844343284_47_u04u",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…아니에요.",
-      "text_key": "node_1786844343284_47_u04u"
-    },
-    {
-      "id": "node_1786844343284_48_2x47",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "레깅스, 신경 쓰여요? (눈을 가늘게 뜬다)",
-      "text_key": "node_1786844343284_48_2x47"
-    },
-    {
-      "id": "node_1786844343284_49_eywd",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "그런 거 아니에요.",
-      "text_key": "node_1786844343284_49_eywd"
-    },
-    {
-      "id": "node_1786844343284_50_nx53",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "거짓말. (씩 웃으며 다리를 살짝 벌렸다가 다시 꼰다)",
-      "text_key": "node_1786844343284_50_nx53"
-    },
-    {
-      "id": "node_1786844343284_51_ffm5",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "일부러다. 저 밝은 얼굴로 저렇게 노골적으로… 다리 사이, 레깅스 위로 팬티 라인이 선명하다. 보고 싶어서 미칠 것 같다.",
-      "text_key": "node_1786844343284_51_ffm5"
-    },
-    {
-      "id": "node_1786844343284_52_2phk",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786844343284_53_e4oa",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "테라스 한쪽. 미사키가 허리를 숙여 떨어진 냅킨을 줍는 척하며, 엉덩이를 나 쪽으로 향한다.",
-      "text_key": "node_1786844343284_53_e4oa"
-    },
-    {
-      "id": "node_1786844343284_54_kd7m",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "어머, 냅킨 떨어졌네요. (허리를 숙인다)",
-      "text_key": "node_1786844343284_54_kd7m"
-    },
-    {
-      "id": "node_1786844343284_55_7koo",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "허리를 숙이자 레깅스가 엉덩이를 더 팽팽하게 감싸고, 팬티 라인이 그대로 드러난다.",
-      "text_key": "node_1786844343284_55_7koo"
-    },
-    {
-      "id": "node_1786844343284_56_aimb",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…제가 주울게요.",
-      "text_key": "node_1786844343284_56_aimb"
-    },
-    {
-      "id": "node_1786844343284_57_sn49",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "괜찮아요, 제가. (일부러 천천히 줍는다)",
-      "text_key": "node_1786844343284_57_sn49"
-    },
-    {
-      "id": "node_1786844343284_58_qcow",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "레깅스 위로 팬티 라인이 그대로 드러난다. 저 엉덩이가 내 쪽으로 향해 있다. 일부러다. 저 밝은 얼굴로, 이렇게 치명적일 줄은 몰랐다.",
-      "text_key": "node_1786844343284_58_qcow"
-    },
-    {
-      "id": "node_1786844343284_59_c9mt",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "사장님, 뭐 보고 계세요? (어깨너머로 나를 본다)",
-      "text_key": "node_1786844343284_59_c9mt"
-    },
-    {
-      "id": "node_1786844343284_60_kugl",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…아무것도 아니에요.",
-      "text_key": "node_1786844343284_60_kugl"
-    },
-    {
-      "id": "node_1786844343284_61_14d2",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "거짓말. 제 엉덩이 보고 있었죠? (씩 웃는다)",
-      "text_key": "node_1786844343284_61_14d2"
-    },
-    {
-      "id": "node_1786844343284_62_tpm7",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "미사키 씨…",
-      "text_key": "node_1786844343284_62_tpm7"
-    },
-    {
-      "id": "node_1786844343284_63_cegr",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "요가 하면서 엉덩이 근육 많이 키웠거든요. 자랑 좀 할래요. (자리로 돌아와 앉는다)",
-      "text_key": "node_1786844343284_63_cegr"
-    },
-    {
-      "id": "node_1786844343284_64_aqey",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "자랑이라기보다, 그건…",
-      "text_key": "node_1786844343284_64_aqey"
-    },
-    {
-      "id": "node_1786844343284_65_tsev",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "어때요? 탄탄해 보여요? (의자에 앉으며 엉덩이를 살짝 내민다)",
-      "text_key": "node_1786844343284_65_tsev"
-    },
-    {
-      "id": "node_1786844343284_66_op38",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786844343284_67_crk1",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "레깅스가 엉덩이 곡선을 그대로 드러내고, 팬티 라인이 선명하다. 저 탄탄한 엉덩이를 손으로 움켜쥐고 싶다. 대표니까, 참아야 한다.",
-      "text_key": "node_1786844343284_67_crk1"
-    },
-    {
-      "id": "node_1786844343284_68_gd4b",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…제가 그런 걸 평가할 처지가 아니에요.",
-      "text_key": "node_1786844343284_68_gd4b"
-    },
-    {
-      "id": "node_1786844343284_69_fk22",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "왜요. 오늘은 사장님이 아니라, 그냥 남자로 와주세요. (눈을 맞춘다)",
-      "text_key": "node_1786844343284_69_fk22"
-    },
-    {
-      "id": "node_1786844343284_70_mz3h",
+      "id": "node_1787112506729_26_6scy",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "그게 제일 어려운 부탁인데.",
-      "text_key": "node_1786844343284_70_mz3h"
+      "text_key": "node_1787112506729_26_6scy"
     },
     {
-      "id": "node_1786844343284_71_nfc5",
+      "id": "node_1787112506729_27_ddjh",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "알아요. 그래도, 오늘만요. (또박또박)",
-      "text_key": "node_1786844343284_71_nfc5"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "알아요. 그래도, 오늘만요.",
+      "text_key": "node_1787112506729_27_ddjh"
     },
     {
-      "id": "node_1786844343284_72_uob0",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786844343284_73_h02b",
+      "id": "node_1787112506729_28_cubb",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "테라스 안쪽, 사람 눈에 잘 띄지 않는 구석. 미사키가 내 앞에 서서, 몸을 살짝 돌린다.",
-      "text_key": "node_1786844343284_73_h02b"
+      "text": "내 손을 잡아 가슴 위에 얹는다.",
+      "text_key": "node_1787112506729_28_cubb"
     },
     {
-      "id": "node_1786844343284_74_ngz9",
+      "id": "node_1787112506729_29_w8qg",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "사장님, 만져보실래요? (엉덩이를 살짝 내민다)",
-      "text_key": "node_1786844343284_74_ngz9"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "좋아요? 그럼 좀 더 만져도 돼요.",
+      "text_key": "node_1787112506729_29_w8qg"
     },
     {
-      "id": "node_1786844343284_75_z48o",
+      "id": "node_1787112506729_30_jt9h",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…뭐라고요?",
-      "text_key": "node_1786844343284_75_z48o"
+      "text": "…됐어요.",
+      "text_key": "node_1787112506729_30_jt9h"
     },
     {
-      "id": "node_1786844343284_76_l245",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "제 엉덩이요. 요가로 다져진 거, 확인해 보세요. (낮게)",
-      "text_key": "node_1786844343284_76_l245"
-    },
-    {
-      "id": "node_1786844343284_77_mmd8",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "이러면 안 돼요.",
-      "text_key": "node_1786844343284_77_mmd8"
-    },
-    {
-      "id": "node_1786844343284_78_nevy",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "오늘만이에요. 제가 허락했으니까. (내 손을 잡아 엉덩이 위에 얹는다)",
-      "text_key": "node_1786844343284_78_nevy"
-    },
-    {
-      "id": "node_1786844343284_79_lvai",
+      "id": "node_1787112506729_31_zol5",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "손바닥에 레깅스 너머로 탄탄한 엉덩이가 닿는다.",
-      "text_key": "node_1786844343284_79_lvai"
+      "text": "손을 거둔다.",
+      "text_key": "node_1787112506729_31_zol5"
     },
     {
-      "id": "node_1786844343284_80_f9vc",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "! (숨이 멎는다)",
-      "text_key": "node_1786844343284_80_f9vc"
-    },
-    {
-      "id": "node_1786844343284_81_pqtd",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "손바닥에 그녀의 엉덩이가 닿는다. 레깅스 너머로도 탄력이 그대로 전해진다. 이게 요가로 다져진 몸이란 게 믿기지 않는다. 자지가 바지를 찢을 것 같다.",
-      "text_key": "node_1786844343284_81_pqtd"
-    },
-    {
-      "id": "node_1786844343284_82_n555",
+      "id": "node_1787112506729_32_pqxj",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "어때요? 탄탄하죠? (엉덩이를 살짝 꽉 준다)",
-      "text_key": "node_1786844343284_82_n555"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "왜요. 아직 시작도 안 했는데.",
+      "text_key": "node_1787112506729_32_pqxj"
     },
     {
-      "id": "node_1786844343284_83_40nt",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…네. 그런데, 이건…",
-      "text_key": "node_1786844343284_83_40nt"
-    },
-    {
-      "id": "node_1786844343284_84_1vwc",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "좋아요? 그럼 좀 더 만져도 돼요. (내 손 위에 손을 포갠다)",
-      "text_key": "node_1786844343284_84_1vwc"
-    },
-    {
-      "id": "node_1786844343284_85_8gpg",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "레깅스 위로 엉덩이 곡선을 손으로 더듬는다. 팬티 라인이 손끝에 닿는다. 이대로 레깅스를 내리면… 아니, 여기까지다. 대표니까.",
-      "text_key": "node_1786844343284_85_8gpg"
-    },
-    {
-      "id": "node_1786844343284_86_tahq",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…됐어요. (손을 거둔다)",
-      "text_key": "node_1786844343284_86_tahq"
-    },
-    {
-      "id": "node_1786844343284_87_j751",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미사키",
-      "text": "왜요. 아직 시작도 안 했는데. (입을 삐죽인다)",
-      "text_key": "node_1786844343284_87_j751"
-    },
-    {
-      "id": "node_1786844343284_88_atgi",
+      "id": "node_1787112506729_33_e4g5",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "여기까지예요. 이 이상은, 우리 둘 다 못 돌아가요.",
-      "text_key": "node_1786844343284_88_atgi"
+      "text_key": "node_1787112506729_33_e4g5"
     },
     {
-      "id": "node_1786844343284_89_ax56",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미사키가 잠시 나를 바라보다, 환하게 웃는다.",
-      "text_key": "node_1786844343284_89_ax56"
-    },
-    {
-      "id": "node_1786844343284_90_ady2",
+      "id": "node_1787112506729_34_66yd",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "…역시, 사장님은 참는 사람이에요. 그게 좋아요. (또박또박)",
-      "text_key": "node_1786844343284_90_ady2"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "…역시, 사장님은 좋은 사람이에요. 그게 좋아요.",
+      "text_key": "node_1787112506729_34_66yd"
     },
     {
-      "id": "node_1786844343284_91_83gh",
+      "id": "node_1787112506729_35_z42s",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00052_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786844343284_92_cl77",
+      "id": "node_1787112506729_36_07s6",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "테라스 테이블. 미사키는 자세를 고쳐 앉고, 나는 커피를 마저 마신다. 해가 조금 기울었다. 평온한 표정.",
-      "text_key": "node_1786844343284_92_cl77"
+      "text": "테라스 테이블. 미사키는 자세를 고쳐 앉고, 나는 커피를 마저 마신다. 해가 조금 기울었다.",
+      "text_key": "node_1787112506729_36_07s6"
     },
     {
-      "id": "node_1786844343284_93_8hoy",
+      "id": "node_1787112506729_37_8kdq",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "오늘, 정말 재밌었어요. (정면을 보며)",
-      "text_key": "node_1786844343284_93_8hoy"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "오늘, 정말 재밌었어요.",
+      "text_key": "node_1787112506729_37_8kdq"
     },
     {
-      "id": "node_1786844343284_94_p6xq",
+      "id": "node_1787112506729_38_8kpo",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "나도요.",
-      "text_key": "node_1786844343284_94_p6xq"
+      "text_key": "node_1787112506729_38_8kpo"
     },
     {
-      "id": "node_1786844343284_95_dm40",
+      "id": "node_1787112506729_39_oldi",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "후회는 없으시죠? (입꼬리를 올린다)",
-      "text_key": "node_1786844343284_95_dm40"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "후회는 없으시죠?",
+      "text_key": "node_1787112506729_39_oldi"
     },
     {
-      "id": "node_1786844343284_96_tya9",
+      "id": "node_1787112506729_40_fb29",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "없어요. 아주, 없어요. (작게 웃는다)",
-      "text_key": "node_1786844343284_96_tya9"
+      "text": "없어요.",
+      "text_key": "node_1787112506729_40_fb29"
     },
     {
-      "id": "node_1786844343284_97_ysg3",
+      "id": "node_1787112506729_41_pxga",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "다행이에요. (자리에서 일어선다)",
-      "text_key": "node_1786844343284_97_ysg3"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "다행이에요.",
+      "text_key": "node_1787112506729_41_pxga"
     },
     {
-      "id": "node_1786844343284_98_2132",
+      "id": "node_1787112506729_42_vlmt",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…벌써 가려고?",
-      "text_key": "node_1786844343284_98_2132"
+      "text": "…벌써 가시려고요?",
+      "text_key": "node_1787112506729_42_vlmt"
     },
     {
-      "id": "node_1786844343284_99_ry0a",
+      "id": "node_1787112506729_43_l3sh",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "해가 지려고 하네요. 이쯤이면 됐어요. (하늘을 본다)",
-      "text_key": "node_1786844343284_99_ry0a"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "해가 지려고 하네요. 이쯤이면 됐어요.",
+      "text_key": "node_1787112506729_43_l3sh"
     },
     {
-      "id": "node_1786844343284_100_ltir",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "그렇네요.",
-      "text_key": "node_1786844343284_100_ltir"
-    },
-    {
-      "id": "node_1786844343284_101_du0t",
+      "id": "node_1787112506729_44_9y4g",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "회사에선, 평소처럼 밝게 대할게요. (또박또박)",
-      "text_key": "node_1786844343284_101_du0t"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "회사에선, 평소처럼 밝게 대할게요.",
+      "text_key": "node_1787112506729_44_9y4g"
     },
     {
-      "id": "node_1786844343284_102_d448",
+      "id": "node_1787112506729_45_764i",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "그래요. 평소처럼.",
-      "text_key": "node_1786844343284_102_d448"
+      "text_key": "node_1787112506729_45_764i"
     },
     {
-      "id": "node_1786844343284_103_shyk",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "아쉽다. 저 레깅스가 다시 단정해졌다는 게, 저 몸이 내 손끝에서 멀어졌다는 게. 하지만 이게 대표로서의 선이다.",
-      "text_key": "node_1786844343284_103_shyk"
-    },
-    {
-      "id": "node_1786844343284_104_zr6t",
+      "id": "node_1787112506729_46_igpw",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "그럼 저는, 이쪽으로. (카페 출구를 가리킨다)",
-      "text_key": "node_1786844343284_104_zr6t"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "그럼 저는, 이쪽으로.",
+      "text_key": "node_1787112506729_46_igpw"
     },
     {
-      "id": "node_1786844343284_105_79ax",
+      "id": "node_1787112506729_47_jt2g",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "배웅해 줄까요?",
-      "text_key": "node_1786844343284_105_79ax"
+      "text": "배웅해 드릴까요?",
+      "text_key": "node_1787112506729_47_jt2g"
     },
     {
-      "id": "node_1786844343284_106_7spz",
+      "id": "node_1787112506729_48_zcsf",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
-      "text": "괜찮아요. 여기서 헤어져요. (한 걸음 물러선다)",
-      "text_key": "node_1786844343284_106_7spz"
+      "speaker": "1786833964287-iflkqh2",
+      "text": "괜찮아요. 여기서 헤어져요.",
+      "text_key": "node_1787112506729_48_zcsf"
     },
     {
-      "id": "node_1786844343284_107_42ld",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미사키가 등을 돌려 걸어가다, 잠시 멈춘다.",
-      "text_key": "node_1786844343284_107_42ld"
-    },
-    {
-      "id": "node_1786844343284_108_w1pz",
+      "id": "node_1787112506729_49_gsg8",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
+      "speaker": "1786833964287-iflkqh2",
       "text": "사장님, 다음에 또 불러도 돼요?",
-      "text_key": "node_1786844343284_108_w1pz"
+      "text_key": "node_1787112506729_49_gsg8"
     },
     {
-      "id": "node_1786844343284_109_o3ow",
+      "id": "node_1787112506729_50_1qb8",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…나중에 생각해 볼게요.",
-      "text_key": "node_1786844343284_109_o3ow"
+      "text_key": "node_1787112506729_50_1qb8"
     },
     {
-      "id": "node_1786844343284_110_mn4x",
+      "id": "node_1787112506729_51_n60n",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미사키",
+      "speaker": "1786833964287-iflkqh2",
       "text": "네! 그럼. (손을 흔들며 걸어간다)",
-      "text_key": "node_1786844343284_110_mn4x"
+      "text_key": "node_1787112506729_51_n60n"
     },
     {
-      "id": "node_1786844343284_111_4isi",
+      "id": "node_1787112506729_52_jgpf",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "미사키가 카페 출구 쪽으로 걸어간다. 나는 그 뒷모습이 사라질 때까지 서서 바라본다.",
-      "text_key": "node_1786844343284_111_4isi"
-    },
-    {
-      "id": "node_1786844343284_112_byig",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "결국 아무 일도 없었다. 그런데 왜, 가슴 한구석이 이렇게 텅 비는 걸까. 저 레깅스 아래, 방금 내 손에 있던 탄력이. 아, 정말로 아쉽다.",
-      "text_key": "node_1786844343284_112_byig"
+      "text": "나는 그 뒷모습이 사라질 때까지 서서 바라본다.",
+      "text_key": "node_1787112506729_52_jgpf"
     }
   ],
   "defaultLanguage": "ko",
@@ -917,10 +437,35 @@
     {
       "id": "미사키",
       "name": "미사키"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    },
+    {
+      "id": "1786833964287-iflkqh2",
+      "name": "타치바나 미사키"
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "id": "1787350168880-qg9f9bh",
+      "fileName": "2026-08-19_00052_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/527c3f8b-f496-4c25-9fd1-91096ec45330/images/2026-08-19_00052_.png",
+      "url": "blob:http://localhost:5173/b8b7b2c7-911b-4625-afb9-5d12f562b48a",
+      "size": 2451690
+    },
+    {
+      "id": "1787350191029-1z9fspz",
+      "fileName": "2026-08-19_00055_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/527c3f8b-f496-4c25-9fd1-91096ec45330/images/2026-08-19_00055_.png",
+      "url": "blob:http://localhost:5173/aa547e35-d95b-4f52-809e-ca17ab919bdc",
+      "size": 2405319
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T01:38:53.275Z",
   "ownerCharacterId": "1786833964287-iflkqh2"

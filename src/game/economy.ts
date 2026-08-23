@@ -67,7 +67,8 @@ export function calcWeekRevenueWon(
       (sexy + performance) *
         viewerBonusOf(companyViewers) *
         REVENUE_PER_STAT_POINT *
-        gradeRevenueMult(creator.grade),
+        gradeRevenueMult(creator.grade) *
+        Math.max(0, Number(_equipmentRevenueMult) || 1),
     ),
   )
 }

@@ -1,0 +1,794 @@
+[
+  {
+    "id": "staff-security-01",
+    "name": "타카하시 아야",
+    "names": {
+      "ko": "타카하시 아야",
+      "en": "Aya Takahashi",
+      "ja": "高橋 彩",
+      "zh-cn": "高桥 彩",
+      "ru": "Ая Такахаси",
+      "es": "Aya Takahashi",
+      "de": "Aya Takahashi"
+    },
+    "nameKey": "takahashi-aya",
+    "gender": "female",
+    "kind": "security",
+    "iconImageId": "1787451718541-jqkhqn1",
+    "cardImageId": "1787451720074-fyfpvjl",
+    "mediaRevision": 1787451722676,
+    "images": [
+      {
+        "id": "1787451718541-jqkhqn1",
+        "fileName": "1787451718541-jqkhqn1__2026-08-23_00001.png",
+        "fileSize": 2199383,
+        "url": "media://staff/staff-security-01/images/1787451718541-jqkhqn1__2026-08-23_00001.png"
+      },
+      {
+        "id": "1787451720074-fyfpvjl",
+        "fileName": "1787451720074-fyfpvjl__2026-08-23_00002.png",
+        "fileSize": 2069609,
+        "url": "media://staff/staff-security-01/images/1787451720074-fyfpvjl__2026-08-23_00002.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-security-02",
+    "name": "타나카 하루토",
+    "names": {
+      "ko": "타나카 하루토",
+      "en": "Haruto Tanaka",
+      "ja": "田中 陽翔",
+      "zh-cn": "田中 阳翔",
+      "ru": "Харуто Танака",
+      "es": "Haruto Tanaka",
+      "de": "Haruto Tanaka"
+    },
+    "nameKey": "tanaka-haruto",
+    "gender": "male",
+    "kind": "security",
+    "iconImageId": "1787451801385-lk9ia74",
+    "cardImageId": "1787451805152-9xdidv8",
+    "mediaRevision": 1787451807106,
+    "images": [
+      {
+        "id": "1787451801385-lk9ia74",
+        "fileName": "1787451801385-lk9ia74__2026-08-23_00009.png",
+        "fileSize": 1997166,
+        "url": "media://staff/staff-security-02/images/1787451801385-lk9ia74__2026-08-23_00009.png"
+      },
+      {
+        "id": "1787451805152-9xdidv8",
+        "fileName": "1787451805152-9xdidv8__2026-08-23_00010.png",
+        "fileSize": 2033611,
+        "url": "media://staff/staff-security-02/images/1787451805152-9xdidv8__2026-08-23_00010.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-security-03",
+    "name": "스즈키 하나",
+    "names": {
+      "ko": "스즈키 하나",
+      "en": "Hana Suzuki",
+      "ja": "鈴木 花",
+      "zh-cn": "铃木 花",
+      "ru": "Хана Судзуки",
+      "es": "Hana Suzuki",
+      "de": "Hana Suzuki"
+    },
+    "nameKey": "suzuki-hana",
+    "gender": "female",
+    "kind": "security",
+    "iconImageId": "1787451762657-hj3870h",
+    "cardImageId": "1787451764650-2mrm7ik",
+    "mediaRevision": 1787451766507,
+    "images": [
+      {
+        "id": "1787451762657-hj3870h",
+        "fileName": "1787451762657-hj3870h__2026-08-23_00005.png",
+        "fileSize": 2362484,
+        "url": "media://staff/staff-security-03/images/1787451762657-hj3870h__2026-08-23_00005.png"
+      },
+      {
+        "id": "1787451764650-2mrm7ik",
+        "fileName": "1787451764650-2mrm7ik__2026-08-23_00006.png",
+        "fileSize": 2004974,
+        "url": "media://staff/staff-security-03/images/1787451764650-2mrm7ik__2026-08-23_00006.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-security-04",
+    "name": "이노우에 렌",
+    "names": {
+      "ko": "이노우에 렌",
+      "en": "Ren Inoue",
+      "ja": "井上 蓮",
+      "zh-cn": "井上 莲",
+      "ru": "Рен Иноуэ",
+      "es": "Ren Inoue",
+      "de": "Ren Inoue"
+    },
+    "nameKey": "inoue-ren",
+    "gender": "male",
+    "kind": "security",
+    "iconImageId": "1787451813658-pbpdqte",
+    "cardImageId": "1787451814921-fgmmrop",
+    "mediaRevision": 1787451816472,
+    "images": [
+      {
+        "id": "1787451813658-pbpdqte",
+        "fileName": "1787451813658-pbpdqte__2026-08-23_00011.png",
+        "fileSize": 2072383,
+        "url": "media://staff/staff-security-04/images/1787451813658-pbpdqte__2026-08-23_00011.png"
+      },
+      {
+        "id": "1787451814921-fgmmrop",
+        "fileName": "1787451814921-fgmmrop__2026-08-23_00012.png",
+        "fileSize": 1841672,
+        "url": "media://staff/staff-security-04/images/1787451814921-fgmmrop__2026-08-23_00012.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-security-05",
+    "name": "와타나베 린",
+    "names": {
+      "ko": "와타나베 린",
+      "en": "Rin Watanabe",
+      "ja": "渡辺 凛",
+      "zh-cn": "渡边 凛",
+      "ru": "Рин Ватанабэ",
+      "es": "Rin Watanabe",
+      "de": "Rin Watanabe"
+    },
+    "nameKey": "watanabe-rin",
+    "gender": "female",
+    "kind": "security",
+    "iconImageId": "1787451791379-wg300hx",
+    "cardImageId": "1787451792921-eo0qzmi",
+    "mediaRevision": 1787451795691,
+    "images": [
+      {
+        "id": "1787451791379-wg300hx",
+        "fileName": "1787451791379-wg300hx__2026-08-23_00007.png",
+        "fileSize": 2002514,
+        "url": "media://staff/staff-security-05/images/1787451791379-wg300hx__2026-08-23_00007.png"
+      },
+      {
+        "id": "1787451792921-eo0qzmi",
+        "fileName": "1787451792921-eo0qzmi__2026-08-23_00008.png",
+        "fileSize": 1985218,
+        "url": "media://staff/staff-security-05/images/1787451792921-eo0qzmi__2026-08-23_00008.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-security-06",
+    "name": "키무라 소타",
+    "names": {
+      "ko": "키무라 소타",
+      "en": "Sota Kimura",
+      "ja": "木村 颯太",
+      "zh-cn": "木村 飒太",
+      "ru": "Сота Кимура",
+      "es": "Sota Kimura",
+      "de": "Sota Kimura"
+    },
+    "nameKey": "kimura-sota",
+    "gender": "male",
+    "kind": "security",
+    "iconImageId": "1787451822939-dgjlrbc",
+    "cardImageId": "1787451824886-jtbpplc",
+    "mediaRevision": 1787451826329,
+    "images": [
+      {
+        "id": "1787451822939-dgjlrbc",
+        "fileName": "1787451822939-dgjlrbc__2026-08-23_00013.png",
+        "fileSize": 2184994,
+        "url": "media://staff/staff-security-06/images/1787451822939-dgjlrbc__2026-08-23_00013.png"
+      },
+      {
+        "id": "1787451824886-jtbpplc",
+        "fileName": "1787451824886-jtbpplc__2026-08-23_00014.png",
+        "fileSize": 1831094,
+        "url": "media://staff/staff-security-06/images/1787451824886-jtbpplc__2026-08-23_00014.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-repair-01",
+    "name": "하야시 카이토",
+    "names": {
+      "ko": "하야시 카이토",
+      "en": "Kaito Hayashi",
+      "ja": "林 海斗",
+      "zh-cn": "林 海斗",
+      "ru": "Кайто Хаяси",
+      "es": "Kaito Hayashi",
+      "de": "Kaito Hayashi"
+    },
+    "nameKey": "hayashi-kaito",
+    "gender": "male",
+    "kind": "repair",
+    "iconImageId": "1787451840488-md37w41",
+    "cardImageId": "1787451841793-6kiyyex",
+    "mediaRevision": 1787451843881,
+    "images": [
+      {
+        "id": "1787451840488-md37w41",
+        "fileName": "1787451840488-md37w41__2026-08-23_00025.png",
+        "fileSize": 2106598,
+        "url": "media://staff/staff-repair-01/images/1787451840488-md37w41__2026-08-23_00025.png"
+      },
+      {
+        "id": "1787451841793-6kiyyex",
+        "fileName": "1787451841793-6kiyyex__2026-08-23_00026.png",
+        "fileSize": 2091999,
+        "url": "media://staff/staff-repair-01/images/1787451841793-6kiyyex__2026-08-23_00026.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-repair-02",
+    "name": "이토 사키",
+    "names": {
+      "ko": "이토 사키",
+      "en": "Saki Ito",
+      "ja": "伊藤 咲",
+      "zh-cn": "伊藤 咲",
+      "ru": "Саки Ито",
+      "es": "Saki Ito",
+      "de": "Saki Ito"
+    },
+    "nameKey": "ito-saki",
+    "gender": "female",
+    "kind": "repair",
+    "iconImageId": "1787451850076-udwrgo9",
+    "cardImageId": "1787451851465-n2qy1ee",
+    "mediaRevision": 1787451853514,
+    "images": [
+      {
+        "id": "1787451850076-udwrgo9",
+        "fileName": "1787451850076-udwrgo9__2026-08-23_00015.png",
+        "fileSize": 2417724,
+        "url": "media://staff/staff-repair-02/images/1787451850076-udwrgo9__2026-08-23_00015.png"
+      },
+      {
+        "id": "1787451851465-n2qy1ee",
+        "fileName": "1787451851465-n2qy1ee__2026-08-23_00016.png",
+        "fileSize": 2255668,
+        "url": "media://staff/staff-repair-02/images/1787451851465-n2qy1ee__2026-08-23_00016.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-repair-03",
+    "name": "시미즈 유토",
+    "names": {
+      "ko": "시미즈 유토",
+      "en": "Yuto Shimizu",
+      "ja": "清水 悠人",
+      "zh-cn": "清水 悠人",
+      "ru": "Юто Симидзу",
+      "es": "Yuto Shimizu",
+      "de": "Yuto Shimizu"
+    },
+    "nameKey": "shimizu-yuto",
+    "gender": "male",
+    "kind": "repair",
+    "iconImageId": "1787451872784-c577vm0",
+    "cardImageId": "1787451874048-g7lvfzg",
+    "mediaRevision": 1787451875336,
+    "images": [
+      {
+        "id": "1787451872784-c577vm0",
+        "fileName": "1787451872784-c577vm0__2026-08-23_00021.png",
+        "fileSize": 2281979,
+        "url": "media://staff/staff-repair-03/images/1787451872784-c577vm0__2026-08-23_00021.png"
+      },
+      {
+        "id": "1787451874048-g7lvfzg",
+        "fileName": "1787451874048-g7lvfzg__2026-08-23_00022.png",
+        "fileSize": 2161652,
+        "url": "media://staff/staff-repair-03/images/1787451874048-g7lvfzg__2026-08-23_00022.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-repair-04",
+    "name": "야마모토 유이",
+    "names": {
+      "ko": "야마모토 유이",
+      "en": "Yui Yamamoto",
+      "ja": "山本 結衣",
+      "zh-cn": "山本 结衣",
+      "ru": "Юи Ямамото",
+      "es": "Yui Yamamoto",
+      "de": "Yui Yamamoto"
+    },
+    "nameKey": "yamamoto-yui",
+    "gender": "female",
+    "kind": "repair",
+    "iconImageId": "1787451860075-fy53w8f",
+    "cardImageId": "1787451861305-cykwwbw",
+    "mediaRevision": 1787451861938,
+    "images": [
+      {
+        "id": "1787451860075-fy53w8f",
+        "fileName": "1787451860075-fy53w8f__2026-08-23_00017.png",
+        "fileSize": 2208561,
+        "url": "media://staff/staff-repair-04/images/1787451860075-fy53w8f__2026-08-23_00017.png"
+      },
+      {
+        "id": "1787451861305-cykwwbw",
+        "fileName": "1787451861305-cykwwbw__2026-08-23_00018.png",
+        "fileSize": 2030917,
+        "url": "media://staff/staff-repair-04/images/1787451861305-cykwwbw__2026-08-23_00018.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-repair-05",
+    "name": "야마구치 히로토",
+    "names": {
+      "ko": "야마구치 히로토",
+      "en": "Hiroto Yamaguchi",
+      "ja": "山口 大翔",
+      "zh-cn": "山口 大翔",
+      "ru": "Хирото Ямагути",
+      "es": "Hiroto Yamaguchi",
+      "de": "Hiroto Yamaguchi"
+    },
+    "nameKey": "yamaguchi-hiroto",
+    "gender": "male",
+    "kind": "repair",
+    "iconImageId": "1787451885784-3ftc85o",
+    "cardImageId": "1787451887746-v1woz8u",
+    "mediaRevision": 1787451888668,
+    "images": [
+      {
+        "id": "1787451885784-3ftc85o",
+        "fileName": "1787451885784-3ftc85o__2026-08-23_00023.png",
+        "fileSize": 2260914,
+        "url": "media://staff/staff-repair-05/images/1787451885784-3ftc85o__2026-08-23_00023.png"
+      },
+      {
+        "id": "1787451887746-v1woz8u",
+        "fileName": "1787451887746-v1woz8u__2026-08-23_00024.png",
+        "fileSize": 2132243,
+        "url": "media://staff/staff-repair-05/images/1787451887746-v1woz8u__2026-08-23_00024.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-repair-06",
+    "name": "나카무라 메이",
+    "names": {
+      "ko": "나카무라 메이",
+      "en": "Mei Nakamura",
+      "ja": "中村 芽衣",
+      "zh-cn": "中村 芽衣",
+      "ru": "Мэй Накамура",
+      "es": "Mei Nakamura",
+      "de": "Mei Nakamura"
+    },
+    "nameKey": "nakamura-mei",
+    "gender": "female",
+    "kind": "repair",
+    "iconImageId": "1787451866683-mxf6etd",
+    "cardImageId": "1787451867968-kc9m0fg",
+    "mediaRevision": 1787451868970,
+    "images": [
+      {
+        "id": "1787451866683-mxf6etd",
+        "fileName": "1787451866683-mxf6etd__2026-08-23_00019.png",
+        "fileSize": 2495643,
+        "url": "media://staff/staff-repair-06/images/1787451866683-mxf6etd__2026-08-23_00019.png"
+      },
+      {
+        "id": "1787451867968-kc9m0fg",
+        "fileName": "1787451867968-kc9m0fg__2026-08-23_00020.png",
+        "fileSize": 2078175,
+        "url": "media://staff/staff-repair-06/images/1787451867968-kc9m0fg__2026-08-23_00020.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-care-01",
+    "name": "코바야시 나오",
+    "names": {
+      "ko": "코바야시 나오",
+      "en": "Nao Kobayashi",
+      "ja": "小林 奈央",
+      "zh-cn": "小林 奈央",
+      "ru": "Нао Кобаяси",
+      "es": "Nao Kobayashi",
+      "de": "Nao Kobayashi"
+    },
+    "nameKey": "kobayashi-nao",
+    "gender": "female",
+    "kind": "care",
+    "iconImageId": "1787451943008-sevatf6",
+    "cardImageId": "1787451944815-f68whu2",
+    "mediaRevision": 1787451945941,
+    "images": [
+      {
+        "id": "1787451943008-sevatf6",
+        "fileName": "1787451943008-sevatf6__2026-08-23_00029.png",
+        "fileSize": 2298754,
+        "url": "media://staff/staff-care-01/images/1787451943008-sevatf6__2026-08-23_00029.png"
+      },
+      {
+        "id": "1787451944815-f68whu2",
+        "fileName": "1787451944815-f68whu2__2026-08-23_00030.png",
+        "fileSize": 2022919,
+        "url": "media://staff/staff-care-01/images/1787451944815-f68whu2__2026-08-23_00030.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-care-02",
+    "name": "마츠모토 렌야",
+    "names": {
+      "ko": "마츠모토 렌야",
+      "en": "Renya Matsumoto",
+      "ja": "松本 蓮也",
+      "zh-cn": "松本 莲也",
+      "ru": "Реня Мацумото",
+      "es": "Renya Matsumoto",
+      "de": "Renya Matsumoto"
+    },
+    "nameKey": "matsumoto-renya",
+    "gender": "male",
+    "kind": "care",
+    "iconImageId": "1787452367583-n7c6djq",
+    "cardImageId": "1787452418001-bhhb29h",
+    "mediaRevision": 1787452419313,
+    "images": [
+      {
+        "id": "1787452367583-n7c6djq",
+        "fileName": "1787452367583-n7c6djq__2026-08-23_00053.png",
+        "fileSize": 2163120,
+        "url": "media://staff/staff-care-02/images/1787452367583-n7c6djq__2026-08-23_00053.png"
+      },
+      {
+        "id": "1787452418001-bhhb29h",
+        "fileName": "1787452418001-bhhb29h__2026-08-23_00054.png",
+        "fileSize": 1713569,
+        "url": "media://staff/staff-care-02/images/1787452418001-bhhb29h__2026-08-23_00054.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-care-03",
+    "name": "카토 리카",
+    "names": {
+      "ko": "카토 리카",
+      "en": "Rika Kato",
+      "ja": "加藤 梨花",
+      "zh-cn": "加藤 梨花",
+      "ru": "Рика Като",
+      "es": "Rika Kato",
+      "de": "Rika Kato"
+    },
+    "nameKey": "kato-rika",
+    "gender": "female",
+    "kind": "care",
+    "iconImageId": "1787451956655-3cmvd7l",
+    "cardImageId": "1787451953960-6c5eq92",
+    "mediaRevision": 1787451957627,
+    "images": [
+      {
+        "id": "1787451953960-6c5eq92",
+        "fileName": "1787451953960-6c5eq92__2026-08-23_00032.png",
+        "fileSize": 1723869,
+        "url": "media://staff/staff-care-03/images/1787451953960-6c5eq92__2026-08-23_00032.png"
+      },
+      {
+        "id": "1787451956655-3cmvd7l",
+        "fileName": "1787451956655-3cmvd7l__2026-08-23_00031.png",
+        "fileSize": 2094342,
+        "url": "media://staff/staff-care-03/images/1787451956655-3cmvd7l__2026-08-23_00031.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-care-04",
+    "name": "아베 켄토",
+    "names": {
+      "ko": "아베 켄토",
+      "en": "Kento Abe",
+      "ja": "阿部 健人",
+      "zh-cn": "阿部 健人",
+      "ru": "Кенто Абэ",
+      "es": "Kento Abe",
+      "de": "Kento Abe"
+    },
+    "nameKey": "abe-kento",
+    "gender": "male",
+    "kind": "care",
+    "iconImageId": "1787453096409-jp1quel",
+    "cardImageId": "1787453106807-wn33g70",
+    "mediaRevision": 1787453107946,
+    "images": [
+      {
+        "id": "1787453096409-jp1quel",
+        "fileName": "1787453096409-jp1quel__2026-08-23_00051.png",
+        "fileSize": 2160903,
+        "url": "media://staff/staff-care-04/images/1787453096409-jp1quel__2026-08-23_00051.png"
+      },
+      {
+        "id": "1787453106807-wn33g70",
+        "fileName": "1787453106807-wn33g70__simpligen_00050.png",
+        "fileSize": 862599,
+        "url": "media://staff/staff-care-04/images/1787453106807-wn33g70__simpligen_00050.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-care-05",
+    "name": "요시다 히나",
+    "names": {
+      "ko": "요시다 히나",
+      "en": "Hina Yoshida",
+      "ja": "吉田 陽菜",
+      "zh-cn": "吉田 阳菜",
+      "ru": "Хина Ёсида",
+      "es": "Hina Yoshida",
+      "de": "Hina Yoshida"
+    },
+    "nameKey": "yoshida-hina",
+    "gender": "female",
+    "kind": "care",
+    "iconImageId": "1787451968088-hm0u43p",
+    "cardImageId": "1787451969905-6g3z7kq",
+    "mediaRevision": 1787451971158,
+    "images": [
+      {
+        "id": "1787451968088-hm0u43p",
+        "fileName": "1787451968088-hm0u43p__2026-08-23_00037.png",
+        "fileSize": 2123982,
+        "url": "media://staff/staff-care-05/images/1787451968088-hm0u43p__2026-08-23_00037.png"
+      },
+      {
+        "id": "1787451969905-6g3z7kq",
+        "fileName": "1787451969905-6g3z7kq__2026-08-23_00038.png",
+        "fileSize": 1844186,
+        "url": "media://staff/staff-care-05/images/1787451969905-6g3z7kq__2026-08-23_00038.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-care-06",
+    "name": "이시다 료",
+    "names": {
+      "ko": "이시다 료",
+      "en": "Ryo Ishida",
+      "ja": "石田 涼",
+      "zh-cn": "石田 凉",
+      "ru": "Рё Исида",
+      "es": "Ryo Ishida",
+      "de": "Ryo Ishida"
+    },
+    "nameKey": "ishida-ryo",
+    "gender": "male",
+    "kind": "care",
+    "iconImageId": "1787453274657-fyen0a4",
+    "cardImageId": "1787453346154-fw1vhnr",
+    "mediaRevision": 1787453347076,
+    "images": [
+      {
+        "id": "1787453274657-fyen0a4",
+        "fileName": "1787453274657-fyen0a4__2026-08-23_00063.png",
+        "fileSize": 2035417,
+        "url": "media://staff/staff-care-06/images/1787453274657-fyen0a4__2026-08-23_00063.png"
+      },
+      {
+        "id": "1787453346154-fw1vhnr",
+        "fileName": "1787453346154-fw1vhnr__2026-08-23_00064.png",
+        "fileSize": 1814324,
+        "url": "media://staff/staff-care-06/images/1787453346154-fw1vhnr__2026-08-23_00064.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-production-01",
+    "name": "모리 다이치",
+    "names": {
+      "ko": "모리 다이치",
+      "en": "Daichi Mori",
+      "ja": "森 大地",
+      "zh-cn": "森 大地",
+      "ru": "Дайти Мори",
+      "es": "Daichi Mori",
+      "de": "Daichi Mori"
+    },
+    "nameKey": "mori-daichi",
+    "gender": "male",
+    "kind": "production",
+    "iconImageId": "1787452886796-deaey08",
+    "cardImageId": "1787452893429-yz3tw8t",
+    "mediaRevision": 1787452894598,
+    "images": [
+      {
+        "id": "1787452886796-deaey08",
+        "fileName": "1787452886796-deaey08__2026-08-23_00059.png",
+        "fileSize": 1966144,
+        "url": "media://staff/staff-production-01/images/1787452886796-deaey08__2026-08-23_00059.png"
+      },
+      {
+        "id": "1787452893429-yz3tw8t",
+        "fileName": "1787452893429-yz3tw8t__2026-08-23_00060.png",
+        "fileSize": 1964448,
+        "url": "media://staff/staff-production-01/images/1787452893429-yz3tw8t__2026-08-23_00060.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-production-02",
+    "name": "야마다 미오",
+    "names": {
+      "ko": "야마다 미오",
+      "en": "Mio Yamada",
+      "ja": "山田 澪",
+      "zh-cn": "山田 澪",
+      "ru": "Мио Ямада",
+      "es": "Mio Yamada",
+      "de": "Mio Yamada"
+    },
+    "nameKey": "yamada-mio",
+    "gender": "female",
+    "kind": "production",
+    "iconImageId": "1787452112652-erz6ecj",
+    "cardImageId": "1787452114247-ejp8i97",
+    "mediaRevision": 1787452115383,
+    "images": [
+      {
+        "id": "1787452112652-erz6ecj",
+        "fileName": "1787452112652-erz6ecj__2026-08-23_00039.png",
+        "fileSize": 2079968,
+        "url": "media://staff/staff-production-02/images/1787452112652-erz6ecj__2026-08-23_00039.png"
+      },
+      {
+        "id": "1787452114247-ejp8i97",
+        "fileName": "1787452114247-ejp8i97__2026-08-23_00040.png",
+        "fileSize": 1876482,
+        "url": "media://staff/staff-production-02/images/1787452114247-ejp8i97__2026-08-23_00040.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-production-03",
+    "name": "이케다 쇼타",
+    "names": {
+      "ko": "이케다 쇼타",
+      "en": "Shota Ikeda",
+      "ja": "池田 翔太",
+      "zh-cn": "池田 翔太",
+      "ru": "Сёта Икэда",
+      "es": "Shota Ikeda",
+      "de": "Shota Ikeda"
+    },
+    "nameKey": "ikeda-shota",
+    "gender": "male",
+    "kind": "production",
+    "iconImageId": "1787453033175-oxo5gy9",
+    "cardImageId": "1787453053316-lwc7ix0",
+    "mediaRevision": 1787453054317,
+    "images": [
+      {
+        "id": "1787453033175-oxo5gy9",
+        "fileName": "1787453033175-oxo5gy9__2026-08-23_00061.png",
+        "fileSize": 2035696,
+        "url": "media://staff/staff-production-03/images/1787453033175-oxo5gy9__2026-08-23_00061.png"
+      },
+      {
+        "id": "1787453053316-lwc7ix0",
+        "fileName": "1787453053316-lwc7ix0__2026-08-23_00062.png",
+        "fileSize": 1927508,
+        "url": "media://staff/staff-production-03/images/1787453053316-lwc7ix0__2026-08-23_00062.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-production-04",
+    "name": "사사키 코토네",
+    "names": {
+      "ko": "사사키 코토네",
+      "en": "Kotone Sasaki",
+      "ja": "佐々木 琴音",
+      "zh-cn": "佐佐木 琴音",
+      "ru": "Котонэ Сасаки",
+      "es": "Kotone Sasaki",
+      "de": "Kotone Sasaki"
+    },
+    "nameKey": "sasaki-kotone",
+    "gender": "female",
+    "kind": "production",
+    "iconImageId": "1787452124730-z00ksq7",
+    "cardImageId": "1787452126182-k6d08y6",
+    "mediaRevision": 1787452127175,
+    "images": [
+      {
+        "id": "1787452124730-z00ksq7",
+        "fileName": "1787452124730-z00ksq7__2026-08-23_00041.png",
+        "fileSize": 2330386,
+        "url": "media://staff/staff-production-04/images/1787452124730-z00ksq7__2026-08-23_00041.png"
+      },
+      {
+        "id": "1787452126182-k6d08y6",
+        "fileName": "1787452126182-k6d08y6__2026-08-23_00042.png",
+        "fileSize": 2268134,
+        "url": "media://staff/staff-production-04/images/1787452126182-k6d08y6__2026-08-23_00042.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-production-05",
+    "name": "후지타 마코토",
+    "names": {
+      "ko": "후지타 마코토",
+      "en": "Makoto Fujita",
+      "ja": "藤田 誠",
+      "zh-cn": "藤田 诚",
+      "ru": "Макото Фудзита",
+      "es": "Makoto Fujita",
+      "de": "Makoto Fujita"
+    },
+    "nameKey": "fujita-makoto",
+    "gender": "male",
+    "kind": "production",
+    "iconImageId": "1787453462090-70h6adw",
+    "cardImageId": "1787453443441-xuzm179",
+    "mediaRevision": 1787453490257,
+    "images": [
+      {
+        "id": "1787453443441-xuzm179",
+        "fileName": "1787453443441-xuzm179__2026-08-23_00065.png",
+        "fileSize": 1846461,
+        "url": "media://staff/staff-production-05/images/1787453443441-xuzm179__2026-08-23_00065.png"
+      },
+      {
+        "id": "1787453462090-70h6adw",
+        "fileName": "1787453462090-70h6adw__2026-08-23_00057.png",
+        "fileSize": 2025577,
+        "url": "media://staff/staff-production-05/images/1787453462090-70h6adw__2026-08-23_00057.png"
+      }
+    ]
+  },
+  {
+    "id": "staff-production-06",
+    "name": "사토 미유",
+    "names": {
+      "ko": "사토 미유",
+      "en": "Miyu Sato",
+      "ja": "佐藤 美優",
+      "zh-cn": "佐藤 美优",
+      "ru": "Мию Сато",
+      "es": "Miyu Sato",
+      "de": "Miyu Sato"
+    },
+    "nameKey": "sato-miyu",
+    "gender": "female",
+    "kind": "production",
+    "iconImageId": "1787452132751-lrej1i4",
+    "cardImageId": "1787452134007-kbltwm6",
+    "mediaRevision": 1787452135190,
+    "images": [
+      {
+        "id": "1787452132751-lrej1i4",
+        "fileName": "1787452132751-lrej1i4__2026-08-23_00043.png",
+        "fileSize": 2046816,
+        "url": "media://staff/staff-production-06/images/1787452132751-lrej1i4__2026-08-23_00043.png"
+      },
+      {
+        "id": "1787452134007-kbltwm6",
+        "fileName": "1787452134007-kbltwm6__2026-08-23_00044.png",
+        "fileSize": 2038270,
+        "url": "media://staff/staff-production-06/images/1787452134007-kbltwm6__2026-08-23_00044.png"
+      }
+    ]
+  }
+]

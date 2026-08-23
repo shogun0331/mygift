@@ -5,447 +5,247 @@
   "chapterId": 1,
   "titleKey": "7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d",
   "title": "VIP",
-  "startNode": "node_1786852017254_0_a6cu",
+  "startNode": "node_1787179099672_2_2y98",
   "nodes": [
     {
-      "id": "node_1786852017254_0_a6cu",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786852017254_1_qqt8",
+      "id": "node_1787179099672_2_2y98",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "고급 호텔룸. 문이 열리고, 치파오 차림의 리메이가 들어온다. 개인 만남을 수락한 것이다.",
-      "text_key": "node_1786852017254_1_qqt8"
+      "text_key": "node_1787179099672_2_2y98"
     },
     {
-      "id": "node_1786852017254_2_frfw",
+      "id": "node_1787179099672_0_4tk7",
+      "type": "graphic",
+      "image": "2026-08-19_00238_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787179099672_3_umsx",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "…안녕하세요. 불러주셔서 감사합니다. (고개를 살짝 숙인다)",
-      "text_key": "node_1786852017254_2_frfw"
+      "text_key": "node_1787179099672_3_umsx"
     },
     {
-      "id": "node_1786852017254_3_1zco",
+      "id": "node_1787179099672_4_6o8o",
       "type": "text",
       "speakerType": "character",
       "speaker": "VIP",
-      "text": "와줘서 고마워요. 방송에서 보던 그대로네요.",
-      "text_key": "node_1786852017254_3_1zco"
+      "text": "와주셔서 고마워요. 방송에서 보던 그대로네요.",
+      "text_key": "node_1787179099672_4_6o8o"
     },
     {
-      "id": "node_1786852017254_4_rczd",
+      "id": "node_1787179099672_5_phlf",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
-      "text": "VIP분과의 개인적인 만남이라고 들었어요. (또박또박)",
-      "text_key": "node_1786852017254_4_rczd"
+      "text": "VIP분과의 개인적인 만남이라고 들었어요.",
+      "text_key": "node_1787179099672_5_phlf"
     },
     {
-      "id": "node_1786852017254_5_onjg",
+      "id": "node_1787179099672_6_nl5p",
       "type": "text",
       "speakerType": "character",
       "speaker": "VIP",
-      "text": "부담 주지 않을게요. 편하게 해요.",
-      "text_key": "node_1786852017254_5_onjg"
+      "text": "부담 드리지 않을게요. 편하게 하세요.",
+      "text_key": "node_1787179099672_6_nl5p"
     },
     {
-      "id": "node_1786852017254_6_6tgz",
+      "id": "node_1787179099672_7_pb3c",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
-      "text": "네. 방송 밖에서 뵙는 건 처음이네요. (입꼬리를 올린다)",
-      "text_key": "node_1786852017254_6_6tgz"
+      "text": "네. 방송 밖에서 뵙는 건 처음이네요.",
+      "text_key": "node_1787179099672_7_pb3c"
     },
     {
-      "id": "node_1786852017254_7_1sfd",
+      "id": "node_1787179099672_8_m4sf",
       "type": "text",
       "speakerType": "character",
       "speaker": "VIP",
       "text": "저도예요. 이렇게 예쁜 분을 가까이서 보니, 방송이랑은 또 다르네요.",
-      "text_key": "node_1786852017254_7_1sfd"
+      "text_key": "node_1787179099672_8_m4sf"
     },
     {
-      "id": "node_1786852017254_8_0tm1",
+      "id": "node_1787179099672_9_csgp",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "과찬이세요. (간결하게)",
-      "text_key": "node_1786852017254_8_0tm1"
+      "text_key": "node_1787179099672_9_csgp"
     },
     {
-      "id": "node_1786852017254_9_ee15",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "다크 블루 실크 치파오가 호텔룸에 어색하게 빛난다. 치파오가 가슴과 허리를 팽팽하게 받치고, 하이 슬릿 사이로 170cm의 긴 다리가 드러난다. 오늘 밤, 이 여자가 내 것이 된다.",
-      "text_key": "node_1786852017254_9_ee15"
-    },
-    {
-      "id": "node_1786852017254_10_ozeg",
+      "id": "node_1787179099672_10_agh5",
       "type": "text",
       "speakerType": "character",
       "speaker": "VIP",
       "text": "오늘은… 제가 원하는 대로 해도 되는 거죠?",
-      "text_key": "node_1786852017254_10_ozeg"
+      "text_key": "node_1787179099672_10_agh5"
     },
     {
-      "id": "node_1786852017254_11_y1xw",
+      "id": "node_1787179099672_11_z9fz",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
-      "text": "네. 오늘만큼은, 고객님의 뜻대로. (눈을 맞춘다)",
-      "text_key": "node_1786852017254_11_y1xw"
+      "text": "네. 오늘만큼은, 고객님의 뜻대로.",
+      "text_key": "node_1787179099672_11_z9fz"
     },
     {
-      "id": "node_1786852017254_12_29fe",
+      "id": "node_1787179099672_12_e9cz",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "리메이가 치파오 상의를 내려 가슴을 드러낸다.",
+      "text_key": "node_1787179099672_12_e9cz"
+    },
+    {
+      "id": "node_1787179099672_13_37r8",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00226_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786852017254_13_k2sl",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "침대 앞. 리메이가 내 앞에 무릎을 꿇는다. 치파오 상의를 내려 가슴을 드러내고, 치파오를 걷어 올린다.",
-      "text_key": "node_1786852017254_13_k2sl"
-    },
-    {
-      "id": "node_1786852017254_14_8psi",
+      "id": "node_1787179099672_14_2oas",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "입으로 모실게요. (내 바지 위로 손을 올린다)",
-      "text_key": "node_1786852017254_14_8psi"
+      "text_key": "node_1787179099672_14_2oas"
     },
     {
-      "id": "node_1786852017254_15_wlzc",
+      "id": "node_1787179099672_15_huqi",
       "type": "text",
       "speakerType": "character",
       "speaker": "VIP",
-      "text": "부탁해요. (숨을 들이쉰다)",
-      "text_key": "node_1786852017254_15_wlzc"
+      "text": "부탁해요.",
+      "text_key": "node_1787179099672_15_huqi"
     },
     {
-      "id": "node_1786852017254_16_l27y",
+      "id": "node_1787179099672_16_g8u3",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀가 치파오 상의를 내려 가슴을 드러내고, 치파오를 걷어 올려 허벅지와 성기가 드러난다.",
-      "text_key": "node_1786852017254_16_l27y"
+      "text": "그녀가 내 앞에 무릎을 꿇고, 내 바지를 천천히 내린다.",
+      "text_key": "node_1787179099672_16_g8u3"
     },
     {
-      "id": "node_1786852017254_17_wxtk",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "방송에서 늘 감춰져 있던 몸이, 이제 내 앞에 드러난다. 드러난 가슴, 걷어 올린 치파오 아래로 젖은 성기. 저 모습만으로도 자지가 터질 것 같다.",
-      "text_key": "node_1786852017254_17_wxtk"
-    },
-    {
-      "id": "node_1786852017254_18_6evl",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 바지를 내리고, 발기한 자지를 두 손으로 감싼다.",
-      "text_key": "node_1786852017254_18_6evl"
-    },
-    {
-      "id": "node_1786852017254_19_hdlk",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "VIP",
-      "text": "하…… (거친 숨)",
-      "text_key": "node_1786852017254_19_hdlk"
-    },
-    {
-      "id": "node_1786852017254_20_wac3",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851291899-dqn64g6",
-      "text": "맛있게 해드릴게요. (입을 벌려 귀두를 물어 넣는다)",
-      "text_key": "node_1786852017254_20_wac3"
-    },
-    {
-      "id": "node_1786852017254_21_e54c",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입술이 귀두를 감싸고, 그녀가 천천히 머리를 움직인다.",
-      "text_key": "node_1786852017254_21_e54c"
-    },
-    {
-      "id": "node_1786852017254_22_4q7c",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "VIP",
-      "text": "아…… 리메이 씨… (손으로 그녀의 머리를 감싼다)",
-      "text_key": "node_1786852017254_22_4q7c"
-    },
-    {
-      "id": "node_1786852017254_23_zv24",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입속이 뜨겁고 좁다. 혀가 자지를 감싸고, 입술이 귀두를 조인다. 드러난 가슴이 내 앞에서 흔들린다. 참을 수 없다.",
-      "text_key": "node_1786852017254_23_zv24"
-    },
-    {
-      "id": "node_1786852017254_24_2st1",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851291899-dqn64g6",
-      "text": "고객님, 입에 그대로… (낮게)",
-      "text_key": "node_1786852017254_24_2st1"
-    },
-    {
-      "id": "node_1786852017254_25_8vn9",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "VIP",
-      "text": "나… 곧… (허리가 떨린다)",
-      "text_key": "node_1786852017254_25_8vn9"
-    },
-    {
-      "id": "node_1786852017254_26_yex4",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "VIP",
-      "text": "아… 나온다…! (허리가 떨리며 정액을 쏟아낸다)",
-      "text_key": "node_1786852017254_26_yex4"
-    },
-    {
-      "id": "node_1786852017254_27_8gvi",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 입으로 정액을 받는다. 입을 벌리자, 가득 찬 정액이 입술 밖으로 흘러내린다.",
-      "text_key": "node_1786852017254_27_8gvi"
-    },
-    {
-      "id": "node_1786852017254_28_ezzp",
+      "id": "node_1787179099672_17_vli8",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00229_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786852017254_29_c8hd",
+      "id": "node_1787179099672_18_q0jd",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
-      "text": "맛있었어요. …이제, 위에서 할게요. (입술을 혀로 닦으며, 입꼬리를 올린다)",
-      "text_key": "node_1786852017254_29_c8hd"
+      "text": "맛있게 해드릴게요.",
+      "text_key": "node_1787179099672_18_q0jd"
     },
     {
-      "id": "node_1786852017254_30_ie0q",
+      "id": "node_1787179099672_19_wfk3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "혀를 내밀어 귀두를 핥고, 입을 벌려 천천히 물어 넣는다.",
+      "text_key": "node_1787179099672_19_wfk3"
+    },
+    {
+      "id": "node_1787179099672_20_7sg8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "아…… 리메이 씨…",
+      "text_key": "node_1787179099672_20_7sg8"
+    },
+    {
+      "id": "node_1787179099672_21_ja3y",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 눈을 감고, 내 자지를 깊이 받아들인다.",
+      "text_key": "node_1787179099672_21_ja3y"
+    },
+    {
+      "id": "node_1787179099672_22_ve0y",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "나… 곧…",
+      "text_key": "node_1787179099672_22_ve0y"
+    },
+    {
+      "id": "node_1787179099672_23_fz8m",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "그대로, 얼굴에 내세요.",
+      "text_key": "node_1787179099672_23_fz8m"
+    },
+    {
+      "id": "node_1787179099672_24_f1ax",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입을 떼고, 얼굴을 내 쪽으로 든다.",
+      "text_key": "node_1787179099672_24_f1ax"
+    },
+    {
+      "id": "node_1787179099672_25_wdjz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "아… 나온다…!",
+      "text_key": "node_1787179099672_25_wdjz"
+    },
+    {
+      "id": "node_1787179099672_26_77nb",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00230_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786852017254_31_vf5t",
+      "id": "node_1787179099672_27_1aor",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851291899-dqn64g6",
+      "text": "…대단하세요.",
+      "text_key": "node_1787179099672_27_1aor"
+    },
+    {
+      "id": "node_1787179099672_28_asck",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "침대. 리메이가 치파오를 벗고, 완전히 드러난 몸으로 내 위에 올라탄다.",
-      "text_key": "node_1786852017254_31_vf5t"
+      "text": "입안 가득 정액을 머금고, 입꼬리를 올린다.",
+      "text_key": "node_1787179099672_28_asck"
     },
     {
-      "id": "node_1786852017254_32_wjm8",
+      "id": "node_1787179099672_29_aiht",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
-      "text": "이제, 제가 안아드릴게요. (내 위에 걸터앉는다)",
-      "text_key": "node_1786852017254_32_wjm8"
+      "text": "오늘 밤은, 여기까지…",
+      "text_key": "node_1787179099672_29_aiht"
     },
     {
-      "id": "node_1786852017254_33_tfnc",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "VIP",
-      "text": "리메이 씨… 정말 예뻐요. (그녀의 허리를 잡는다)",
-      "text_key": "node_1786852017254_33_tfnc"
-    },
-    {
-      "id": "node_1786852017254_34_jgfx",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851291899-dqn64g6",
-      "text": "넣어드릴게요. (허리를 낮춘다)",
-      "text_key": "node_1786852017254_34_jgfx"
-    },
-    {
-      "id": "node_1786852017254_35_muzo",
+      "id": "node_1787179099672_30_bkzy",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "드러난 성기가 내 자지를 천천히 삼킨다.",
-      "text_key": "node_1786852017254_35_muzo"
-    },
-    {
-      "id": "node_1786852017254_36_1299",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "VIP",
-      "text": "으읏…… (몸이 긴장한다)",
-      "text_key": "node_1786852017254_36_1299"
-    },
-    {
-      "id": "node_1786852017254_37_vifh",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851291899-dqn64g6",
-      "text": "들어갔어요… 고객님의, 제 안에… (숨을 들이쉰다)",
-      "text_key": "node_1786852017254_37_vifh"
-    },
-    {
-      "id": "node_1786852017254_38_x5n6",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 안이 내 자지를 뜨겁게 감싼다. 드러난 가슴이 내 앞에서 크게 출렁이고, 젖은 성기가 내 자지를 뿌리까지 삼킨다. 방송의 그녀가, 지금 내 위에서 허리를 흔들고 있다.",
-      "text_key": "node_1786852017254_38_x5n6"
-    },
-    {
-      "id": "node_1786852017254_39_nuye",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851291899-dqn64g6",
-      "text": "기분 좋아요… 고객님 자지, 제 안에서 커지고 있어요… (허리를 움직인다)",
-      "text_key": "node_1786852017254_39_nuye"
-    },
-    {
-      "id": "node_1786852017254_40_psji",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "VIP",
-      "text": "아…… 너무 좋아요… (숨을 헐떡인다)",
-      "text_key": "node_1786852017254_40_psji"
-    },
-    {
-      "id": "node_1786852017254_41_6ei8",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851291899-dqn64g6",
-      "text": "더 느껴요. 저도 느끼고 있으니까요. (허리를 빠르게 움직인다)",
-      "text_key": "node_1786852017254_41_6ei8"
-    },
-    {
-      "id": "node_1786852017254_42_g1rv",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 위에서 격렬하게 허리를 흔든다. 드러난 가슴이 출렁이고, 성기가 내 자지를 삼켰다 뱉는다.",
-      "text_key": "node_1786852017254_42_g1rv"
-    },
-    {
-      "id": "node_1786852017254_43_zu5m",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "VIP",
-      "text": "리메이 씨… 나… 이제… (한계가 온다)",
-      "text_key": "node_1786852017254_43_zu5m"
-    },
-    {
-      "id": "node_1786852017254_44_6l3z",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851291899-dqn64g6",
-      "text": "저도요… 같이… (낮게)",
-      "text_key": "node_1786852017254_44_6l3z"
-    },
-    {
-      "id": "node_1786852017254_45_7aaq",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786852017254_46_811i",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "침대. 리메이가 다리를 벌린 채, 방금 사정한 정액이 성기에서 흘러나온다.",
-      "text_key": "node_1786852017254_46_811i"
-    },
-    {
-      "id": "node_1786852017254_47_73dr",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "VIP",
-      "text": "아…… 나온다……! (허리가 떨리며 질내에 정액을 쏟아낸다)",
-      "text_key": "node_1786852017254_47_73dr"
-    },
-    {
-      "id": "node_1786852017254_48_71w0",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851291899-dqn64g6",
-      "text": "고객님의… 전부… (몸을 떤다)",
-      "text_key": "node_1786852017254_48_71w0"
-    },
-    {
-      "id": "node_1786852017254_49_4ozg",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "질내 사정 후, 천천히 자지를 뽑자 정액이 그녀의 성기에서 흘러나온다.",
-      "text_key": "node_1786852017254_49_4ozg"
-    },
-    {
-      "id": "node_1786852017254_50_grqu",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 성기에서 내 정액이 흘러나온다. 방송에서 늘 당당하던 그 셰프가, 지금은 내 정액으로 젖은 성기를 드러낸 채 누워 있다. 이게 오늘 밤의 끝이다.",
-      "text_key": "node_1786852017254_50_grqu"
-    },
-    {
-      "id": "node_1786852017254_51_tolv",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851291899-dqn64g6",
-      "text": "하…… 고객님… 대단해요… (정액이 흐르는 성기를 드러낸 채, 나를 본다)",
-      "text_key": "node_1786852017254_51_tolv"
-    },
-    {
-      "id": "node_1786852017254_52_go4m",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "VIP",
-      "text": "하…… 하…… (숨을 몰아쉰다)",
-      "text_key": "node_1786852017254_52_go4m"
-    },
-    {
-      "id": "node_1786852017254_53_4zvc",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851291899-dqn64g6",
-      "text": "오늘 밤은, 여기까지… (입꼬리를 올린다)",
-      "text_key": "node_1786852017254_53_4zvc"
-    },
-    {
-      "id": "node_1786852017254_54_qs4i",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 성기에서 정액이 천천히 흘러내린다. 이 히든씬은, 이렇게 끝난다. 하지만 다음 만남을 약속하는 그 미소가, 나를 다시 방송으로 이끈다.",
-      "text_key": "node_1786852017254_54_qs4i"
+      "text": "다음 만남을 약속하는 그 미소가, 나를 다시 방송으로 이끈다.",
+      "text_key": "node_1787179099672_30_bkzy"
     }
   ],
   "defaultLanguage": "ko",
@@ -457,10 +257,47 @@
     {
       "id": "VIP",
       "name": "VIP"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "id": "1787180084967-7mi5ouj",
+      "fileName": "2026-08-19_00238_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-19_00238_.png",
+      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-19_00238_.png",
+      "size": 2022187
+    },
+    {
+      "id": "1787180109969-l154hx3",
+      "fileName": "2026-08-19_00226_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-19_00226_.png",
+      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-19_00226_.png",
+      "size": 1862069
+    },
+    {
+      "id": "1787180125999-2hmtn28",
+      "fileName": "2026-08-19_00229_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-19_00229_.png",
+      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-19_00229_.png",
+      "size": 2140171
+    },
+    {
+      "id": "1787180140254-xeohdtv",
+      "fileName": "2026-08-19_00230_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-19_00230_.png",
+      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-19_00230_.png",
+      "size": 1881440
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T03:46:50.558Z",
   "ownerCharacterId": "1786851291899-dqn64g6"

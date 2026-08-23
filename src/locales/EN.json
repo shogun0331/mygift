@@ -69,7 +69,15 @@
     "restRequiredConfirm": "OK",
     "gearFail": "EQUIPMENT FAILURE",
     "gearFailHint": "Click to repair",
-    "gearFailSlamSub": "SIGNAL LOST · CLICK TO REPAIR"
+    "gearFailSlamSub": "SIGNAL LOST · CLICK TO REPAIR",
+    "staffBlockSecurity": "SECURITY BLOCK",
+    "staffBlockSecuritySub": "Toxic viewers were stopped",
+    "staffBlockRepair": "REPAIR SAVE",
+    "staffBlockRepairSub": "Equipment failure was prevented",
+    "staffCare": "CARE RECOVER",
+    "staffCareSub": "Condition restored to Best",
+    "staffProd": "PRODUCTION BONUS",
+    "staffProdSub": "Revenue and viewer bonus"
   },
   "condition": {
     "title": "Condition",
@@ -278,7 +286,44 @@
     "unlockConfirmBody": "Unlock this slot for {price}?",
     "unlockConfirmOk": "Unlock",
     "unlockConfirmCancel": "Cancel",
-    "unlockNeedAssets": "Not enough assets"
+    "unlockNeedAssets": "Not enough assets",
+    "staffManage": "Staff",
+    "creatorPlace": "Creators",
+    "staffBayTitle": "Staff Slots",
+    "staffBayHint": "Select a manager card and equip it on a slot",
+    "managerHandTitle": "MANAGERS TO PLACE",
+    "managerHandDesc": "Select a card and equip it on an unlocked slot",
+    "managerHandLockedDesc": "You cannot change managers until the broadcast ends.",
+    "noManagers": "No hired managers. Hire staff to add them here.",
+    "noIdleManagers": "No unassigned managers.",
+    "hireStaff": "Hire staff",
+    "hireStaffDesc": "Hire staff registered in the editor.",
+    "hireBack": "Hired managers",
+    "noHireable": "No staff left to hire.",
+    "managersButton": "Staff",
+    "managersTitle": "Slot managers",
+    "managersDesc": "Equip one hired staff member per role. The same staff can occupy only one slot.",
+    "managersClose": "Close",
+    "managersEmptyKind": "No staff of this role. Register them in the editor, then hire.",
+    "managersLocked": "View only while broadcasting",
+    "managerEquip": "Equip",
+    "managerUnequip": "Unequip",
+    "managerEquipped": "Equipped",
+    "managerHire": "Hire",
+    "managerFx": {
+      "security": "Blocks toxic incidents",
+      "repair": "Blocks equipment failures",
+      "care": "Halves stamina drain · restores to Best when it drops to Good",
+      "production": "+25% donations · extra viewers"
+    }
+  },
+  "staff": {
+    "kindSecurity": "Security",
+    "kindRepair": "Repair",
+    "kindCare": "Care",
+    "kindProduction": "Production",
+    "genderMale": "Male",
+    "genderFemale": "Female"
   },
   "settlement": {
     "title": "Monthly Settlement",

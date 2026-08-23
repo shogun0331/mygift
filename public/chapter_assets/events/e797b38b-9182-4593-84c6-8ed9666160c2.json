@@ -5,351 +5,271 @@
   "chapterId": 1,
   "titleKey": "e797b38b-9182-4593-84c6-8ed9666160c2",
   "title": "스카웃",
-  "startNode": "node_1786860354192_0_8vop",
+  "startNode": "node_1787131735813_1_l86p",
   "nodes": [
     {
-      "id": "node_1786860354192_0_8vop",
+      "id": "node_1787131735813_1_l86p",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "야외 공연장. 공연이 끝나고 퇴장하는 한 발레리나가 눈에 들어온다.",
+      "text_key": "node_1787131735813_1_l86p"
+    },
+    {
+      "id": "node_1787131735813_0_t6vr",
       "type": "graphic",
-      "image": "",
+      "image": "02_a.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786860354192_1_j2us",
+      "id": "node_1787131735813_2_5toe",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "야외 공연장. 우연히 발레 공연을 관람한 나는, 공연이 끝나고 퇴장하는 한 발레리나를 눈으로 쫓는다.",
-      "text_key": "node_1786860354192_1_j2us"
+      "text": "하얀 레오타드가 몸에 착 달라붙어 가슴과 허리 라인이 그대로 드러나고, 시스루 튜튜 사이로 길고 가는 다리가 보인다. 저 우아한 몸짓 하나하나가 예술인데, 왜 이렇게 야한 거지.",
+      "text_key": "node_1787131735813_2_5toe"
     },
     {
-      "id": "node_1786860354192_2_cads",
+      "id": "node_1787131735813_3_1vvg",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "눈에 띄는 몸이다. 하얀 레오타드가 몸에 착 달라붙어 가슴과 허리 라인이 그대로 드러나고, 시스루 튜튜 사이로 길고 가는 다리가 보인다. 저 우아한 몸짓 하나하나가… 예술인데, 왜 이렇게 야한 거지.",
-      "text_key": "node_1786860354192_2_cads"
+      "text": "센노 씨가 공연을 마치고, 수건으로 땀을 닦으며 쉬고 있다. 나는 그녀에게 다가가 말을 건다.",
+      "text_key": "node_1787131735813_3_1vvg"
     },
     {
-      "id": "node_1786860354192_3_cokt",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "센노 씨가 무대 뒤에서 목을 풀며 숨을 고른다. 발레리나 특유의 곧은 자세, 흐트러짐 없는 동작이다.",
-      "text_key": "node_1786860354192_3_cokt"
-    },
-    {
-      "id": "node_1786860354192_4_2vto",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "동작을 바꿀 때마다 묶은 머리가 흔들리고, 땀에 젖은 쇄골이 반짝인다. 저 몸이 방송에 나오면… 시청자들이 미칠 거다. 스카웃 감이다.",
-      "text_key": "node_1786860354192_4_2vto"
-    },
-    {
-      "id": "node_1786860354192_5_lbqi",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "나는 그녀에게 다가가기로 마음먹는다.",
-      "text_key": "node_1786860354192_5_lbqi"
-    },
-    {
-      "id": "node_1786860354192_6_xun8",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786860354192_7_l77p",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "야외 공연장 한쪽. 센노 씨가 공연을 마치고, 수건으로 땀을 닦으며 쉬고 있다. 나는 그녀에게 다가가 말을 건다.",
-      "text_key": "node_1786860354192_7_l77p"
-    },
-    {
-      "id": "node_1786860354192_8_q2ia",
+      "id": "node_1787131735813_4_ltcj",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "실례합니다, 잠시 괜찮을까요.",
-      "text_key": "node_1786860354192_8_q2ia"
+      "text_key": "node_1787131735813_4_ltcj"
     },
     {
-      "id": "node_1786860354192_9_ixlp",
+      "id": "node_1787131735813_5_c7fg",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "네, 말씀하세요. (고개를 살짝 숙인다)",
-      "text_key": "node_1786860354192_9_ixlp"
+      "text_key": "node_1787131735813_5_c7fg"
     },
     {
-      "id": "node_1786860354192_10_zv20",
+      "id": "node_1787131735813_6_y34b",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "방금 공연, 정말 아름다웠습니다. 무대에서 네가 제일 눈에 띄었어요.",
-      "text_key": "node_1786860354192_10_zv20"
+      "text": "방금 공연, 정말 아름다웠습니다. 무대에서 센노 씨가 제일 눈에 띄었어요.",
+      "text_key": "node_1787131735813_6_y34b"
     },
     {
-      "id": "node_1786860354192_11_n4xa",
+      "id": "node_1787131735813_7_3cuz",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
-      "text": "감사합니다. …봐주셨군요. (입꼬리를 올린다)",
-      "text_key": "node_1786860354192_11_n4xa"
+      "speaker": "1786851109772-o2n3dj3",
+      "text": "감사합니다. …봐주셨군요.",
+      "text_key": "node_1787131735813_7_3cuz"
     },
     {
-      "id": "node_1786860354192_12_ka0l",
+      "id": "node_1787131735813_8_miit",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "갑자기 실례지만, 제가 방송국을 운영하는 사람인데요. 너에게 꼭 드릴 제안이 있어서요.",
-      "text_key": "node_1786860354192_12_ka0l"
+      "text": "갑자기 실례지만, 제가 방송국을 운영하는 사람인데요. 센노 씨께 꼭 드릴 제안이 있어서요.",
+      "text_key": "node_1787131735813_8_miit"
     },
     {
-      "id": "node_1786860354192_13_i2l3",
+      "id": "node_1787131735813_9_o5s3",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "제안이요? (눈을 가늘게 뜬다)",
-      "text_key": "node_1786860354192_13_i2l3"
+      "text_key": "node_1787131735813_9_o5s3"
     },
     {
-      "id": "node_1786860354192_14_6njc",
+      "id": "node_1787131735813_10_os0q",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "저희 방송국에서, 새로운 크리에이터를 찾고 있습니다. 너의 우아한 분위기와 무대 위의 매력이 정말 필요해요.",
-      "text_key": "node_1786860354192_14_6njc"
+      "text": "저희 방송국에서 새로운 크리에이터를 찾고 있습니다. 센노 씨의 우아한 분위기와 무대 위의 매력이 정말 필요해요.",
+      "text_key": "node_1787131735813_10_os0q"
     },
     {
-      "id": "node_1786860354192_15_inuv",
+      "id": "node_1787131735813_11_n3yi",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "크리에이터요… 저는 발레리나인데요. (살짝 당황한 표정)",
-      "text_key": "node_1786860354192_15_inuv"
+      "text_key": "node_1787131735813_11_n3yi"
     },
     {
-      "id": "node_1786860354192_16_ry5r",
+      "id": "node_1787131735813_12_0qs3",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "그 '발레리나'가 아니거든요. 저 몸짓 하나하나가, 시청자들한테는 최고의 매력이 됩니다.",
-      "text_key": "node_1786860354192_16_ry5r"
+      "text_key": "node_1787131735813_12_0qs3"
     },
     {
-      "id": "node_1786860354192_17_ipsr",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "저 우아한 자세, 레오타드에 감싸인 가냘픈 몸, 시스루 튜튜 아래 드러난 다리. 무대 위의 그 매력이, 성인 방송에서 오히려 더 독하게 먹힌다. 저 몸을 화면에 담는 상상을 하니 자지가 반응한다.",
-      "text_key": "node_1786860354192_17_ipsr"
-    },
-    {
-      "id": "node_1786860354192_18_15wq",
+      "id": "node_1787131735813_13_jhcs",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "그런데… 혹시 어떤 방송국인가요? (조심스럽게)",
-      "text_key": "node_1786860354192_18_15wq"
+      "text_key": "node_1787131735813_13_jhcs"
     },
     {
-      "id": "node_1786860354192_19_62cq",
+      "id": "node_1787131735813_14_bg96",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "성인 방송국입니다. 솔직히 말씀드리죠. (정면을 본다)",
-      "text_key": "node_1786860354192_19_62cq"
+      "text_key": "node_1787131735813_14_bg96"
     },
     {
-      "id": "node_1786860354192_20_v5ys",
+      "id": "node_1787131735813_15_czio",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "…! (말을 잃는다)",
-      "text_key": "node_1786860354192_20_v5ys"
+      "text_key": "node_1787131735813_15_czio"
     },
     {
-      "id": "node_1786860354192_21_13kj",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "놀란 표정도 우아하고 예쁘다. 저 입술이 방송에서 무슨 말을 할지 상상하니 흥분된다. 하지만 지금은 참아야 한다. 첫인상이 전부니까.",
-      "text_key": "node_1786860354192_21_13kj"
-    },
-    {
-      "id": "node_1786860354192_22_u7wa",
+      "id": "node_1787131735813_16_p0r7",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "성인 방송에, 저 같은 사람이… (고개를 젓는다)",
-      "text_key": "node_1786860354192_22_u7wa"
+      "text_key": "node_1787131735813_16_p0r7"
     },
     {
-      "id": "node_1786860354192_23_rd0p",
+      "id": "node_1787131735813_17_nnko",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "너 같은 사람이니까요. 다른 사람이 아니라. (단호히)",
-      "text_key": "node_1786860354192_23_rd0p"
+      "text": "센노 씨 같은 사람이니까요. (단호히)",
+      "text_key": "node_1787131735813_17_nnko"
     },
     {
-      "id": "node_1786860354192_24_pqhl",
+      "id": "node_1787131735813_18_nznr",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "…… (잠시 생각에 잠긴다)",
-      "text_key": "node_1786860354192_24_pqhl"
+      "text_key": "node_1787131735813_18_nznr"
     },
     {
-      "id": "node_1786860354192_25_m70v",
+      "id": "node_1787131735813_19_n487",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "갑자기 이런 말씀 드려서 죄송합니다. 다만, 너의 그 우아하고 단정한 모습을 보자마자 확신했어요.",
-      "text_key": "node_1786860354192_25_m70v"
+      "text": "갑자기 이런 말씀 드려서 죄송합니다. 다만, 센노 씨의 그 우아하고 단정한 모습을 보자마자 확신했어요.",
+      "text_key": "node_1787131735813_19_n487"
     },
     {
-      "id": "node_1786860354192_26_v4h4",
+      "id": "node_1787131735813_20_uzj8",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "확신… (내 눈을 바라본다)",
-      "text_key": "node_1786860354192_26_v4h4"
+      "text_key": "node_1787131735813_20_uzj8"
     },
     {
-      "id": "node_1786860354192_27_2roe",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "고민하고 있다. 수건을 움켜쥔 손끝, 살짝 긴장한 표정. 저 가냘픈 몸이 긴장으로 조용히 떨리는 게 보인다. 아니, 내가 미쳐가고 있는 건가.",
-      "text_key": "node_1786860354192_27_2roe"
-    },
-    {
-      "id": "node_1786860354192_28_tofe",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786860354192_29_3y7l",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "야외 공연장 한쪽. 센노 씨가 고민 끝에 얼굴을 든다.",
-      "text_key": "node_1786860354192_29_3y7l"
-    },
-    {
-      "id": "node_1786860354192_30_8ry9",
+      "id": "node_1787131735813_21_cxcz",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "…제가, 할 수 있을까요. (조용히)",
-      "text_key": "node_1786860354192_30_8ry9"
+      "text_key": "node_1787131735813_21_cxcz"
     },
     {
-      "id": "node_1786860354192_31_xm4z",
+      "id": "node_1787131735813_22_3mua",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "할 수 있어요. 아니, 네가 아니면 안 됩니다. (또박또박)",
-      "text_key": "node_1786860354192_31_xm4z"
+      "text": "할 수 있어요. 아니, 센노 씨가 아니면 안 됩니다. (또박또박)",
+      "text_key": "node_1787131735813_22_3mua"
     },
     {
-      "id": "node_1786860354192_32_0nh1",
+      "id": "node_1787131735813_23_8xqz",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "그렇게까지 말씀하시니… (살짝 웃는다)",
-      "text_key": "node_1786860354192_32_0nh1"
+      "text_key": "node_1787131735813_23_8xqz"
     },
     {
-      "id": "node_1786860354192_33_gki8",
+      "id": "node_1787131735813_24_jrgz",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "그럼, 승낙으로 받아들여도 되겠습니까.",
-      "text_key": "node_1786860354192_33_gki8"
+      "text_key": "node_1787131735813_24_jrgz"
     },
     {
-      "id": "node_1786860354192_34_yji2",
+      "id": "node_1787131735813_25_hyub",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "네. 조건만 괜찮다면요. (고개를 끄덕인다)",
-      "text_key": "node_1786860354192_34_yji2"
+      "text_key": "node_1787131735813_25_hyub"
     },
     {
-      "id": "node_1786860354192_35_unc1",
+      "id": "node_1787131735813_26_zkc7",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "물론입니다. 너에게 불리한 조건은 절대 없어요.",
-      "text_key": "node_1786860354192_35_unc1"
+      "text": "물론입니다. 센노 씨에게 불리한 조건은 절대 없어요.",
+      "text_key": "node_1787131735813_26_zkc7"
     },
     {
-      "id": "node_1786860354192_36_ulq0",
+      "id": "node_1787131735813_27_y9mg",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "…그럼, 잘 부탁드립니다. (허리를 숙여 인사한다)",
-      "text_key": "node_1786860354192_36_ulq0"
+      "text_key": "node_1787131735813_27_y9mg"
     },
     {
-      "id": "node_1786860354192_37_q2n3",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "성공했다. 저 우아한 발레리나가, 이제 내 방송국의 크리에이터다. 저 레오타드와 튜튜가 방송 세트로 바뀌는 날을 생각하니, 참고 있던 흥분이 다시 올라온다. 하지만 오늘은 여기까지. 첫만남은, 여기까지가 정답이다.",
-      "text_key": "node_1786860354192_37_q2n3"
-    },
-    {
-      "id": "node_1786860354192_38_uyha",
+      "id": "node_1787131735813_28_ni6d",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "너야말로, 잘 부탁드립니다. 센노 씨. (미소 짓는다)",
-      "text_key": "node_1786860354192_38_uyha"
+      "text": "센노 씨야말로, 잘 부탁드립니다. (미소 짓는다)",
+      "text_key": "node_1787131735813_28_ni6d"
     },
     {
-      "id": "node_1786860354192_39_l4tn",
+      "id": "node_1787131735813_29_x2re",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "…성함, 어떻게 부르면 될까요. (시선을 올린다)",
-      "text_key": "node_1786860354192_39_l4tn"
+      "text_key": "node_1787131735813_29_x2re"
     },
     {
-      "id": "node_1786860354192_40_kesd",
+      "id": "node_1787131735813_30_jevu",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "사장, 이라고 불러 주세요. 앞으로 그렇게 될 테니까요.",
-      "text_key": "node_1786860354192_40_kesd"
+      "text_key": "node_1787131735813_30_jevu"
     },
     {
-      "id": "node_1786860354192_41_epf2",
+      "id": "node_1787131735813_31_5dgw",
       "type": "text",
       "speakerType": "character",
-      "speaker": "리나",
+      "speaker": "1786851109772-o2n3dj3",
       "text": "네, 사장님. (입꼬리를 올린다)",
-      "text_key": "node_1786860354192_41_epf2"
+      "text_key": "node_1787131735813_31_5dgw"
     },
     {
-      "id": "node_1786860354192_42_fbzg",
+      "id": "node_1787131735813_32_p1e8",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀가 수건을 정리하며 웃는다. 나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
-      "text_key": "node_1786860354192_42_fbzg"
+      "text": "나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
+      "text_key": "node_1787131735813_32_p1e8"
     }
   ],
   "defaultLanguage": "ko",
@@ -357,10 +277,39 @@
     {
       "id": "리나",
       "name": "리나"
+    },
+    {
+      "id": "미야자와",
+      "name": "미야자와"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    },
+    {
+      "id": "1786851109772-o2n3dj3",
+      "name": "센노 리나"
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "id": "1787095225066-rsss0a8",
+      "fileName": "2026-08-18_00028_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/e797b38b-9182-4593-84c6-8ed9666160c2/images/2026-08-18_00028_.png",
+      "url": "media://chapter_assets/events/e797b38b-9182-4593-84c6-8ed9666160c2/images/2026-08-18_00028_.png",
+      "size": 2114798
+    },
+    {
+      "id": "1787131812950-gql44o8",
+      "fileName": "02_a.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/e797b38b-9182-4593-84c6-8ed9666160c2/images/02_a.png",
+      "url": "media://chapter_assets/events/e797b38b-9182-4593-84c6-8ed9666160c2/images/02_a.png",
+      "size": 2480312
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T06:05:23.567Z",
   "ownerCharacterId": "1786851109772-o2n3dj3"

@@ -5,1079 +5,519 @@
   "chapterId": 1,
   "titleKey": "e80cb0f4-8839-45a6-97ca-42f2ed18c988",
   "title": "데이트2",
-  "startNode": "node_1786858430564_0_3n9d",
+  "startNode": "node_1787137107168_0_t4c7",
   "nodes": [
     {
-      "id": "node_1786858430564_0_3n9d",
+      "id": "node_1787137107168_0_t4c7",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00157_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786858430564_1_ecv2",
+      "id": "node_1787137107168_1_358v",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "야간의 전망대. 도시 야경이 내려다보인다. 미호가 먼저 도착해 난간에 기대어 기다리고 있다. 블랙 가죽 자켓에 미니스커트 차림.",
-      "text_key": "node_1786858430564_1_ecv2"
+      "text_key": "node_1787137107168_1_358v"
     },
     {
-      "id": "node_1786858430564_2_si8q",
+      "id": "node_1787137107168_2_0qc8",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
+      "speaker": "1786850998437-g6olmc9",
       "text": "…왔네요. (살짝 고개를 숙인다)",
-      "text_key": "node_1786858430564_2_si8q"
+      "text_key": "node_1787137107168_2_0qc8"
     },
     {
-      "id": "node_1786858430564_3_vot4",
+      "id": "node_1787137107168_3_t0cv",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "늦었죠? 미안합니다.",
-      "text_key": "node_1786858430564_3_vot4"
+      "text_key": "node_1787137107168_3_t0cv"
     },
     {
-      "id": "node_1786858430564_4_laku",
+      "id": "node_1787137107168_4_vcbs",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "아니에요. 제가 일찍 온 거예요. (입꼬리를 올린다)",
-      "text_key": "node_1786858430564_4_laku"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "아니에요. 제가 일찍 온 거예요.",
+      "text_key": "node_1787137107168_4_vcbs"
     },
     {
-      "id": "node_1786858430564_5_ncwh",
+      "id": "node_1787137107168_5_8wlm",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "전망대를 통째로 빌리다니, 준비가 대단하네요.",
-      "text_key": "node_1786858430564_5_ncwh"
+      "text": "전망대를 통째로 빌리시다니, 준비가 대단하네요.",
+      "text_key": "node_1787137107168_5_8wlm"
     },
     {
-      "id": "node_1786858430564_6_8gmy",
+      "id": "node_1787137107168_6_j8d6",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "사장님을 모시려면 이 정도는 해야죠. (야경 쪽으로 턱짓)",
-      "text_key": "node_1786858430564_6_8gmy"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "사장님을 모시려면 이 정도는 해야죠.",
+      "text_key": "node_1787137107168_6_j8d6"
     },
     {
-      "id": "node_1786858430564_7_03uw",
+      "id": "node_1787137107168_7_mm8h",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "모시다니… 정말 데이트 신청을 한 건 너잖아요.",
-      "text_key": "node_1786858430564_7_03uw"
+      "text": "모시시다니… 데이트 신청을 하신 건 아키야마 씨잖아요.",
+      "text_key": "node_1787137107168_7_mm8h"
     },
     {
-      "id": "node_1786858430564_8_w04e",
+      "id": "node_1787137107168_8_hlf1",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "네. 오늘은 제가 사장님을 모시는 날이에요. (또박또박)",
-      "text_key": "node_1786858430564_8_w04e"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "네. 오늘은 제가 사장님을 모시는 날이에요.",
+      "text_key": "node_1787137107168_8_hlf1"
     },
     {
-      "id": "node_1786858430564_9_7ro3",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "평소 방송국에서 짧게 웃던 얼굴인데, 가죽 자켓과 미니스커트 차림은 처음이다. 태닝된 다리가 야경에 반짝인다. 저 몸매가… 아니, 나는 대표니까.",
-      "text_key": "node_1786858430564_9_7ro3"
-    },
-    {
-      "id": "node_1786858430564_10_lc75",
+      "id": "node_1787137107168_9_yerz",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "그런데 왜 하필 저를? 크리에이터가 사장을 부를 이유는 없잖아요.",
-      "text_key": "node_1786858430564_10_lc75"
+      "text": "그런데 왜 하필 저를요? 크리에이터가 사장을 부르실 이유는 없잖아요.",
+      "text_key": "node_1787137107168_9_yerz"
     },
     {
-      "id": "node_1786858430564_11_e16o",
+      "id": "node_1787137107168_10_tx9m",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "그건 오늘, 천천히 말해도 되죠. (한 걸음 다가선다)",
-      "text_key": "node_1786858430564_11_e16o"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "그건 오늘, 천천히 말해도 되죠.",
+      "text_key": "node_1787137107168_10_tx9m"
     },
     {
-      "id": "node_1786858430564_12_qp4n",
+      "id": "node_1787137107168_11_92m1",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…분위기가 심상치 않네요.",
-      "text_key": "node_1786858430564_12_qp4n"
+      "text_key": "node_1787137107168_11_92m1"
     },
     {
-      "id": "node_1786858430564_13_ji8x",
+      "id": "node_1787137107168_12_i38b",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
+      "speaker": "1786850998437-g6olmc9",
       "text": "심상치 않을 만큼, 제가 진심이라는 거예요. (눈을 가늘게 뜬다)",
-      "text_key": "node_1786858430564_13_ji8x"
+      "text_key": "node_1787137107168_12_i38b"
     },
     {
-      "id": "node_1786858430564_14_vduz",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "저 입술이 방송에서 시청자들한테 무슨 말을 하는지 다 알고 있다. 그런 입이 지금 나한테 '진심'이라고… 심장이 빨리 뛴다.",
-      "text_key": "node_1786858430564_14_vduz"
-    },
-    {
-      "id": "node_1786858430564_15_lrdj",
+      "id": "node_1787137107168_13_ftxe",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "진심이라니, 무슨 진심인지 알겠어요?",
-      "text_key": "node_1786858430564_15_lrdj"
+      "text": "…오늘은 아키야마 씨 뜻에 맞춰 드릴게요. 어차피 부르신 건 아키야마 씨니까.",
+      "text_key": "node_1787137107168_13_ftxe"
     },
     {
-      "id": "node_1786858430564_16_l2o5",
+      "id": "node_1787137107168_14_bv7b",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "알고 계시면서. (입꼬리만 살짝)",
-      "text_key": "node_1786858430564_16_l2o5"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "좋아요. 이쪽으로.",
+      "text_key": "node_1787137107168_14_bv7b"
     },
     {
-      "id": "node_1786858430564_17_l54c",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…오늘은 네 뜻에 맞춰 드릴게요. 어차피 부른 건 너니까.",
-      "text_key": "node_1786858430564_17_l54c"
-    },
-    {
-      "id": "node_1786858430564_18_zh5c",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "좋아요. 이쪽으로. (몸을 돌려 앞장선다)",
-      "text_key": "node_1786858430564_18_zh5c"
-    },
-    {
-      "id": "node_1786858430564_19_79b9",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "전망대는 처음 봐요. 야경이 정말 좋네.",
-      "text_key": "node_1786858430564_19_79b9"
-    },
-    {
-      "id": "node_1786858430564_20_uaes",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "둘만 있으려고 빌렸어요. (어깨너머로 나를 본다)",
-      "text_key": "node_1786858430564_20_uaes"
-    },
-    {
-      "id": "node_1786858430564_21_dpfn",
+      "id": "node_1787137107168_15_tucq",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "둘만. 저 말 한마디에 등줄기가 뜨거워진다. 블랙 자켓이 태닝 피부에 어둡게 드리워지고, 미니스커트 아래로 다리가 길게 드러난다. 참아라.",
-      "text_key": "node_1786858430564_21_dpfn"
+      "text": "미호가 전망대 난간에 손을 얹고 선다. 야경이 내려다보인다.",
+      "text_key": "node_1787137107168_15_tucq"
     },
     {
-      "id": "node_1786858430564_22_htnm",
+      "id": "node_1787137107168_16_lg1w",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "야경, 정말 좋네요.",
+      "text_key": "node_1787137107168_16_lg1w"
+    },
+    {
+      "id": "node_1787137107168_17_7imx",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…둘만, 이라.",
-      "text_key": "node_1786858430564_22_htnm"
+      "text": "그러게요. 아키야마 씨가 고르신 데잖아요.",
+      "text_key": "node_1787137107168_17_7imx"
     },
     {
-      "id": "node_1786858430564_23_a1m3",
+      "id": "node_1787137107168_18_15x6",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "네. 오늘 여기엔 저와 사장님, 둘뿐이에요. (정면을 바라보며)",
-      "text_key": "node_1786858430564_23_a1m3"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "네. 제가 골랐어요.",
+      "text_key": "node_1787137107168_18_15x6"
     },
     {
-      "id": "node_1786858430564_24_7qfc",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미호가 전망대 난간 쪽으로 걸어간다. 나는 그 뒷모습을 따라가며, 시선을 뗄 수 없다.",
-      "text_key": "node_1786858430564_24_7qfc"
-    },
-    {
-      "id": "node_1786858430564_25_cpiu",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786858430564_26_vllm",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "전망대 난간. 미호가 난간에 손을 얹고 서 있다. 블랙 가죽 자켓이 야경에 반짝인다.",
-      "text_key": "node_1786858430564_26_vllm"
-    },
-    {
-      "id": "node_1786858430564_27_fw35",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "야경, 정말 좋네요. (난간을 짚는다)",
-      "text_key": "node_1786858430564_27_fw35"
-    },
-    {
-      "id": "node_1786858430564_28_k6us",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "그러게요. 네가 고른 데잖아요.",
-      "text_key": "node_1786858430564_28_k6us"
-    },
-    {
-      "id": "node_1786858430564_29_x67j",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "네. 제가 골랐어요. (살짝 웃는다)",
-      "text_key": "node_1786858430564_29_x67j"
-    },
-    {
-      "id": "node_1786858430564_30_f5af",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미호가 몸을 기울여 야경을 본다. 미니스커트가 허벅지 위로 살짝 올라간다.",
-      "text_key": "node_1786858430564_30_f5af"
-    },
-    {
-      "id": "node_1786858430564_31_qpal",
+      "id": "node_1787137107168_19_9mf2",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…스커트, 짧네요.",
-      "text_key": "node_1786858430564_31_qpal"
+      "text_key": "node_1787137107168_19_9mf2"
     },
     {
-      "id": "node_1786858430564_32_2nxm",
+      "id": "node_1787137107168_20_lfcv",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
+      "speaker": "1786850998437-g6olmc9",
       "text": "그래요. (눈을 가늘게 뜬다)",
-      "text_key": "node_1786858430564_32_2nxm"
+      "text_key": "node_1787137107168_20_lfcv"
     },
     {
-      "id": "node_1786858430564_33_l699",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "가죽 자켓이 어깨에 걸쳐지고, 미니스커트가 태닝된 허벅지를 드러낸다. 몸을 움직일 때마다 스커트 끝이 위로 밀려 올라간다. 저 건조한 표정에 저 몸매라… 자지가 반응하는 걸 겨우 참는다.",
-      "text_key": "node_1786858430564_33_l699"
-    },
-    {
-      "id": "node_1786858430564_34_ovmu",
+      "id": "node_1787137107168_21_qrfp",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…너, 몸매가 예쁘네요.",
-      "text_key": "node_1786858430564_34_ovmu"
+      "text": "…아키야마 씨, 몸매가 예쁘시네요.",
+      "text_key": "node_1787137107168_21_qrfp"
     },
     {
-      "id": "node_1786858430564_35_kjyu",
+      "id": "node_1787137107168_22_qt09",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "과찬이세요. (시선을 살짝 내린다)",
-      "text_key": "node_1786858430564_35_kjyu"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "과찬이세요.",
+      "text_key": "node_1787137107168_22_qt09"
     },
     {
-      "id": "node_1786858430564_36_rf0j",
+      "id": "node_1787137107168_23_b4tq",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "칭찬이에요. 부담 갖지 마요.",
-      "text_key": "node_1786858430564_36_rf0j"
+      "text": "칭찬이에요. 부담 갖지 마세요.",
+      "text_key": "node_1787137107168_23_b4tq"
     },
     {
-      "id": "node_1786858430564_37_tdg3",
+      "id": "node_1787137107168_24_2lwb",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
+      "speaker": "1786850998437-g6olmc9",
       "text": "칭찬이라도. 감사합니다. (짧게)",
-      "text_key": "node_1786858430564_37_tdg3"
+      "text_key": "node_1787137107168_24_2lwb"
     },
     {
-      "id": "node_1786858430564_38_qxpk",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786858430564_39_ibhh",
+      "id": "node_1787137107168_25_v3pz",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…그런데, 왜 저를 부른 건지 이제 말해줘요.",
-      "text_key": "node_1786858430564_39_ibhh"
+      "text": "…그런데, 왜 저를 부르신 건지 이제 말해 주세요.",
+      "text_key": "node_1787137107168_25_v3pz"
     },
     {
-      "id": "node_1786858430564_40_noz9",
+      "id": "node_1787137107168_26_hou7",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
+      "speaker": "1786850998437-g6olmc9",
       "text": "사장님이 저를 여자로 봐주셨으면 해서요. (또박또박)",
-      "text_key": "node_1786858430564_40_noz9"
+      "text_key": "node_1787137107168_26_hou7"
     },
     {
-      "id": "node_1786858430564_41_0904",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…그게 왜 중요한데요.",
-      "text_key": "node_1786858430564_41_0904"
-    },
-    {
-      "id": "node_1786858430564_42_ylap",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "중요하니까, 데이트를 신청했죠. (내 쪽으로 다가온다)",
-      "text_key": "node_1786858430564_42_ylap"
-    },
-    {
-      "id": "node_1786858430564_43_9c07",
+      "id": "node_1787137107168_27_1xd0",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀의 몸이 닿을 듯 가까워진다. 가죽 자켓에 감싸인 몸이 야경에 비쳐, 가슴 골이 은근히 드러난다. 자지가 반응하는 걸 겨우 참는다.",
-      "text_key": "node_1786858430564_43_9c07"
+      "text": "미호가 내 쪽으로 다가온다.",
+      "text_key": "node_1787137107168_27_1xd0"
     },
     {
-      "id": "node_1786858430564_44_abdl",
+      "id": "node_1787137107168_28_owzo",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "아키야마 씨, 너무 가까워요.",
-      "text_key": "node_1786858430564_44_abdl"
+      "text_key": "node_1787137107168_28_owzo"
     },
     {
-      "id": "node_1786858430564_45_1gev",
+      "id": "node_1787137107168_29_44od",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
+      "speaker": "1786850998437-g6olmc9",
       "text": "싫으세요. (눈을 맞춘다)",
-      "text_key": "node_1786858430564_45_1gev"
+      "text_key": "node_1787137107168_29_44od"
     },
     {
-      "id": "node_1786858430564_46_vol1",
+      "id": "node_1787137107168_30_frl2",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "싫은 게 아니라, 곤란하죠.",
-      "text_key": "node_1786858430564_46_vol1"
+      "text_key": "node_1787137107168_30_frl2"
     },
     {
-      "id": "node_1786858430564_47_qm90",
+      "id": "node_1787137107168_31_gb3y",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "오늘만큼은, 곤란해지셔도 돼요. (내 손목을 잡는다)",
-      "text_key": "node_1786858430564_47_qm90"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "오늘만큼은, 곤란해지셔도 돼요.",
+      "text_key": "node_1787137107168_31_gb3y"
     },
     {
-      "id": "node_1786858430564_48_ajh6",
+      "id": "node_1787137107168_32_xbvh",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀의 손이 내 손목을 잡는다. 심장이 크게 뛴다.",
-      "text_key": "node_1786858430564_48_ajh6"
+      "text": "미호가 전망대 벤치에 앉으며, 자켓 지퍼를 천천히 내린다.",
+      "text_key": "node_1787137107168_32_xbvh"
     },
     {
-      "id": "node_1786858430564_49_82mm",
+      "id": "node_1787137107168_33_sayx",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…… (숨을 멈춘다)",
-      "text_key": "node_1786858430564_49_82mm"
+      "text": "아키야마 씨, 지금 뭐 하시는 거예요.",
+      "text_key": "node_1787137107168_33_sayx"
     },
     {
-      "id": "node_1786858430564_50_azlu",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786858430564_51_d0ih",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "전망대 벤치. 미호가 앉아 있다. 블랙 가죽 자켓이 야경에 반짝인다.",
-      "text_key": "node_1786858430564_51_d0ih"
-    },
-    {
-      "id": "node_1786858430564_52_c9jt",
+      "id": "node_1787137107168_34_3msj",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "…사장님, 여기 앉아 보세요. (옆자리를 두드린다)",
-      "text_key": "node_1786858430564_52_c9jt"
-    },
-    {
-      "id": "node_1786858430564_53_6hkz",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "뭐 하려고요.",
-      "text_key": "node_1786858430564_53_6hkz"
-    },
-    {
-      "id": "node_1786858430564_54_6pfi",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "뭐 하려는지, 보시면 알아요. (자켓 지퍼를 천천히 내린다)",
-      "text_key": "node_1786858430564_54_6pfi"
-    },
-    {
-      "id": "node_1786858430564_55_4k9b",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "지퍼가 내려가고, 자켓 사이로 쇄골이 드러난다.",
-      "text_key": "node_1786858430564_55_4k9b"
-    },
-    {
-      "id": "node_1786858430564_56_fxxx",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "아키야마 씨, 지금 뭐 하는 거예요.",
-      "text_key": "node_1786858430564_56_fxxx"
-    },
-    {
-      "id": "node_1786858430564_57_blqz",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
+      "speaker": "1786850998437-g6olmc9",
       "text": "더우니까요. (앞을 가린 채, 나를 본다)",
-      "text_key": "node_1786858430564_57_blqz"
+      "text_key": "node_1787137107168_34_3msj"
     },
     {
-      "id": "node_1786858430564_58_apmh",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "자켓이 벌어져, 가슴이 드러날 듯 매달려 있다. 저 손만 치우면… 젠장, 보고 싶어서 미칠 것 같다.",
-      "text_key": "node_1786858430564_58_apmh"
-    },
-    {
-      "id": "node_1786858430564_59_pcr9",
+      "id": "node_1787137107168_35_hafx",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…그게 더위 때문이에요?",
-      "text_key": "node_1786858430564_59_pcr9"
+      "text_key": "node_1787137107168_35_hafx"
     },
     {
-      "id": "node_1786858430564_60_zxox",
+      "id": "node_1787137107168_36_6iqt",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "아니요. 사장님 때문이에요. (앞을 가린 손을 천천히 내린다)",
-      "text_key": "node_1786858430564_60_zxox"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "아니요. 사장님 때문이에요.",
+      "text_key": "node_1787137107168_36_6iqt"
     },
     {
-      "id": "node_1786858430564_61_iekj",
+      "id": "node_1787137107168_37_um4j",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "앞을 가린 손을 천천히 내린다.",
+      "text_key": "node_1787137107168_37_um4j"
+    },
+    {
+      "id": "node_1787137107168_38_6gg0",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00159_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786858430564_62_38qb",
+      "id": "node_1787137107168_39_3bu8",
       "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "블랙 자켓이 벗겨지고, 태닝된 맨가슴이 야경에 드러난다.",
-      "text_key": "node_1786858430564_62_38qb"
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠.",
+      "text_key": "node_1787137107168_39_3bu8"
     },
     {
-      "id": "node_1786858430564_63_fjfa",
+      "id": "node_1787137107168_40_0bwi",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "! (말을 잃는다)",
-      "text_key": "node_1786858430564_63_fjfa"
+      "text": "…이러시면 안 돼요.",
+      "text_key": "node_1787137107168_40_0bwi"
     },
     {
-      "id": "node_1786858430564_64_jcpt",
+      "id": "node_1787137107168_41_vhco",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠. (가슴을 살짝 내민다)",
-      "text_key": "node_1786858430564_64_jcpt"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "왜요. 저는 지금, 되게 두근거리는데.",
+      "text_key": "node_1787137107168_41_vhco"
     },
     {
-      "id": "node_1786858430564_65_ii2r",
+      "id": "node_1787137107168_42_we2o",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "방송에서는 감춰져 있던 젖가슴이 그대로 드러난다. 태닝된 피부가 야경에 반짝이고, 선명한 젖꼭지까지. 입으로 빨고 싶고, 손으로 움켜쥐고 싶다.",
-      "text_key": "node_1786858430564_65_ii2r"
+      "text": "내 손을 잡아 가슴 위에 얹는다. 손끝에 맨살이 닿는다.",
+      "text_key": "node_1787137107168_42_we2o"
     },
     {
-      "id": "node_1786858430564_66_qxtc",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…이러면 안 돼요.",
-      "text_key": "node_1786858430564_66_qxtc"
-    },
-    {
-      "id": "node_1786858430564_67_2gff",
+      "id": "node_1787137107168_43_wbuh",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "왜요. 저는 지금, 되게 두근거리는데. (내 손을 잡아 가슴 위에 얹는다)",
-      "text_key": "node_1786858430564_67_2gff"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "만져요. 제가 허락했으니까.",
+      "text_key": "node_1787137107168_43_wbuh"
     },
     {
-      "id": "node_1786858430564_68_8g1t",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "손끝에 맨살이 닿는다. 따뜻한 가슴.",
-      "text_key": "node_1786858430564_68_8g1t"
-    },
-    {
-      "id": "node_1786858430564_69_3ton",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…… (손가락이 떨린다)",
-      "text_key": "node_1786858430564_69_3ton"
-    },
-    {
-      "id": "node_1786858430564_70_9yz3",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "만져요. 제가 허락했으니까. (내 손 위에 손을 포갠다)",
-      "text_key": "node_1786858430564_70_9yz3"
-    },
-    {
-      "id": "node_1786858430564_71_7kk2",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "손바닥에 그녀의 가슴이 차오른다. 부드럽고 탄력 있는 무게. 손가락으로 젖꼭지를 스치자 그녀가 몸을 떤다. 이건 일이 아니다.",
-      "text_key": "node_1786858430564_71_7kk2"
-    },
-    {
-      "id": "node_1786858430564_72_ssl0",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…이건 안 돼요. (손을 거두려 한다)",
-      "text_key": "node_1786858430564_72_ssl0"
-    },
-    {
-      "id": "node_1786858430564_73_2b6b",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "도망가지 마요. (내 손을 꼭 잡는다)",
-      "text_key": "node_1786858430564_73_2b6b"
-    },
-    {
-      "id": "node_1786858430564_74_h30v",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "오늘, 저는 사장님을 원해요.",
-      "text_key": "node_1786858430564_74_h30v"
-    },
-    {
-      "id": "node_1786858430564_75_2a6n",
+      "id": "node_1787137107168_44_pj0v",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "아키야마 씨…",
-      "text_key": "node_1786858430564_75_2a6n"
+      "text_key": "node_1787137107168_44_pj0v"
     },
     {
-      "id": "node_1786858430564_76_stj9",
+      "id": "node_1787137107168_45_ttiu",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "제가 오늘 왜 이랬는지, 이제 알려드릴게요. (나를 똑바로 본다)",
-      "text_key": "node_1786858430564_76_stj9"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "제가 오늘 왜 이랬는지, 이제 알려드릴게요.",
+      "text_key": "node_1787137107168_45_ttiu"
     },
     {
-      "id": "node_1786858430564_77_43bx",
+      "id": "node_1787137107168_46_0f48",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "그녀가 내 몸 쪽으로 다가와, 무릎을 꿇는다.",
-      "text_key": "node_1786858430564_77_43bx"
+      "text_key": "node_1787137107168_46_0f48"
     },
     {
-      "id": "node_1786858430564_78_h8cn",
+      "id": "node_1787137107168_47_eir0",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "사장님을, 제가 모시고 싶어요. (낮게)",
-      "text_key": "node_1786858430564_78_h8cn"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "사장님을, 제가 모시고 싶어요.",
+      "text_key": "node_1787137107168_47_eir0"
     },
     {
-      "id": "node_1786858430564_79_frye",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786858430564_80_okfx",
+      "id": "node_1787137107168_48_rkj8",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "전망대 벤치. 미호가 내 앞에 무릎을 꿇고 앉아 있다. 자켓을 벗은 맨가슴 차림.",
-      "text_key": "node_1786858430564_80_okfx"
+      "text": "내 바지 위로 손을 올린다.",
+      "text_key": "node_1787137107168_48_rkj8"
     },
     {
-      "id": "node_1786858430564_81_ztaz",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "…괜찮죠. (내 바지 위로 손을 올린다)",
-      "text_key": "node_1786858430564_81_ztaz"
-    },
-    {
-      "id": "node_1786858430564_82_32tu",
+      "id": "node_1787137107168_49_lxy0",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "아키야마 씨, 거기까지는…",
-      "text_key": "node_1786858430564_82_32tu"
+      "text_key": "node_1787137107168_49_lxy0"
     },
     {
-      "id": "node_1786858430564_83_zn92",
+      "id": "node_1787137107168_50_ze0g",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "저, 하고 싶어요. (눈을 올려 나를 본다)",
-      "text_key": "node_1786858430564_83_zn92"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "저, 하고 싶어요.",
+      "text_key": "node_1787137107168_50_ze0g"
     },
     {
-      "id": "node_1786858430564_84_onci",
+      "id": "node_1787137107168_51_qfkv",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀의 손이 내 바지 위를 더듬는다. 이미 반응해버린 자지가 그 손끝에 닿는다. 대표니까 물려야 하는데, 몸이 말을 듣지 않는다.",
-      "text_key": "node_1786858430564_84_onci"
+      "text": "내 바지를 천천히 내린다.",
+      "text_key": "node_1787137107168_51_qfkv"
     },
     {
-      "id": "node_1786858430564_85_2hoo",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "…이미 이렇게 돼 있잖아요. (지퍼에 손을 댄다)",
-      "text_key": "node_1786858430564_85_2hoo"
-    },
-    {
-      "id": "node_1786858430564_86_ssc6",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…… (숨을 들이쉰다)",
-      "text_key": "node_1786858430564_86_ssc6"
-    },
-    {
-      "id": "node_1786858430564_87_r262",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀가 내 바지를 천천히 내린다. 발기한 자지가 그대로 드러난다.",
-      "text_key": "node_1786858430564_87_r262"
-    },
-    {
-      "id": "node_1786858430564_88_m678",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "대단해요… (자지를 두 손으로 감싼다)",
-      "text_key": "node_1786858430564_88_m678"
-    },
-    {
-      "id": "node_1786858430564_89_hgu5",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "하…… (거친 숨)",
-      "text_key": "node_1786858430564_89_hgu5"
-    },
-    {
-      "id": "node_1786858430564_90_sh9v",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 손이 내 자지를 감싼다. 차가운 손이 뜨거운 자지에 닿자 전기가 흐른다. 이게 내 크리에이터의 손이라는 게 믿기지 않는다.",
-      "text_key": "node_1786858430564_90_sh9v"
-    },
-    {
-      "id": "node_1786858430564_91_fyxe",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "맛있게 해드릴게요. (혀를 내밀어 귀두를 핥는다)",
-      "text_key": "node_1786858430564_91_fyxe"
-    },
-    {
-      "id": "node_1786858430564_92_swxc",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "읏…… (몸이 움찔)",
-      "text_key": "node_1786858430564_92_swxc"
-    },
-    {
-      "id": "node_1786858430564_93_fjfe",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "혀로 자지 전체를 천천히 핥는다.",
-      "text_key": "node_1786858430564_93_fjfe"
-    },
-    {
-      "id": "node_1786858430564_94_1wx1",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "그녀의 혀가 내 자지를 핥아 올린다. 따뜻하고 축축한 혀끝이 귀두를 감돈다. 저 맨가슴이 내 앞에서 흔들리는 게 보인다.",
-      "text_key": "node_1786858430564_94_1wx1"
-    },
-    {
-      "id": "node_1786858430564_95_9qpp",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "입에 넣을게요. (입을 벌려 귀두를 물어 넣는다)",
-      "text_key": "node_1786858430564_95_9qpp"
-    },
-    {
-      "id": "node_1786858430564_96_81v5",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입술이 귀두를 감싸고, 그녀가 천천히 머리를 앞으로 움직인다.",
-      "text_key": "node_1786858430564_96_81v5"
-    },
-    {
-      "id": "node_1786858430564_97_t466",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "아…… 아키야마 씨… (손으로 그녀의 머리를 감싼다)",
-      "text_key": "node_1786858430564_97_t466"
-    },
-    {
-      "id": "node_1786858430564_98_olly",
+      "id": "node_1787137107168_52_2un4",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00160_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786858430564_99_gzgk",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "머리를 깊게 움직인다.",
-      "text_key": "node_1786858430564_99_gzgk"
-    },
-    {
-      "id": "node_1786858430564_100_0wyi",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "입속이 뜨겁고 좁다. 혀가 자지를 감싸고, 입술이 귀두를 조인다. 저 맨가슴이 내 허벅지에 닿을 듯 흔들린다. 참을 수 없다.",
-      "text_key": "node_1786858430564_100_0wyi"
-    },
-    {
-      "id": "node_1786858430564_101_4e9u",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…더 깊이… (허리를 살짝 내민다)",
-      "text_key": "node_1786858430564_101_4e9u"
-    },
-    {
-      "id": "node_1786858430564_102_iamg",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "머리를 더 깊이 움직인다. 그녀가 눈을 감고, 내 자지를 깊이 받아들인다. 맨가슴이 위아래로 출렁인다.",
-      "text_key": "node_1786858430564_102_iamg"
-    },
-    {
-      "id": "node_1786858430564_103_7urj",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "아키야마 씨… 나… 곧… (숨을 헐떡인다)",
-      "text_key": "node_1786858430564_103_7urj"
-    },
-    {
-      "id": "node_1786858430564_104_29ss",
+      "id": "node_1787137107168_53_r9v8",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "그대로, 입에… 내주세요. (자지를 입에 문 채, 눈으로 내게 말한다)",
-      "text_key": "node_1786858430564_104_29ss"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "맛있게 해드릴게요.",
+      "text_key": "node_1787137107168_53_r9v8"
     },
     {
-      "id": "node_1786858430564_105_9q3w",
+      "id": "node_1787137107168_54_k1gm",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그 눈빛에, 참고 있던 게 무너진다. 그녀의 입속, 혀 위에, 모든 걸 쏟아내고 싶다. 이제는 멈출 수 없다.",
-      "text_key": "node_1786858430564_105_9q3w"
+      "text": "혀를 내밀어 귀두를 핥고, 입을 벌려 천천히 물어 넣는다.",
+      "text_key": "node_1787137107168_54_k1gm"
     },
     {
-      "id": "node_1786858430564_106_ou58",
+      "id": "node_1787137107168_55_u2ee",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "아… 나온다…! (허리가 떨린다)",
-      "text_key": "node_1786858430564_106_ou58"
+      "text": "아…… 아키야마 씨…",
+      "text_key": "node_1787137107168_55_u2ee"
     },
     {
-      "id": "node_1786858430564_107_e0f6",
+      "id": "node_1787137107168_56_izeq",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "입으로 자지를 꽉 물고, 목울대로 삼킨다. 그녀가 내 정액을 한 방울도 흘리지 않고, 천천히 삼킨다.",
-      "text_key": "node_1786858430564_107_e0f6"
+      "text": "그녀가 눈을 감고, 내 자지를 깊이 받아들인다.",
+      "text_key": "node_1787137107168_56_izeq"
     },
     {
-      "id": "node_1786858430564_108_njtx",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "맛있었어요. (입을 떼고, 혀로 입술을 닦는다)",
-      "text_key": "node_1786858430564_108_njtx"
-    },
-    {
-      "id": "node_1786858430564_109_o7yt",
+      "id": "node_1787137107168_57_xjk9",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "하…… 하…… (숨을 몰아쉰다)",
-      "text_key": "node_1786858430564_109_o7yt"
+      "text": "나… 곧…",
+      "text_key": "node_1787137107168_57_xjk9"
     },
     {
-      "id": "node_1786858430564_110_tof0",
+      "id": "node_1787137107168_58_ebl8",
       "type": "text",
       "speakerType": "character",
-      "speaker": "미호",
-      "text": "잘하셨어요. (입꼬리를 올린다)",
-      "text_key": "node_1786858430564_110_tof0"
+      "speaker": "1786850998437-g6olmc9",
+      "text": "그대로, 입에 내주세요.",
+      "text_key": "node_1787137107168_58_ebl8"
     },
     {
-      "id": "node_1786858430564_111_7gqd",
+      "id": "node_1787137107168_59_jb16",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "그녀가 내 정액을 다 삼켰다. 맨가슴을 드러낸 채, 내 앞에서 짧게 웃고 있다. 나는 지금, 내 크리에이터에게 입으로 봉사를 받았다. 정신이 아득하다.",
-      "text_key": "node_1786858430564_111_7gqd"
+      "text": "입을 떼고, 얼굴을 내 쪽으로 든다.",
+      "text_key": "node_1787137107168_59_jb16"
     },
     {
-      "id": "node_1786858430564_112_83h0",
+      "id": "node_1787137107168_60_zds4",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아… 나온다…!",
+      "text_key": "node_1787137107168_60_zds4"
+    },
+    {
+      "id": "node_1787137107168_61_2ktn",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00162_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786858430564_113_gm9v",
+      "id": "node_1787137107168_62_hc0b",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "…대단하세요.",
+      "text_key": "node_1787137107168_62_hc0b"
+    },
+    {
+      "id": "node_1787137107168_63_cenj",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "전망대 벤치. 미호는 자켓을 다시 입고, 나는 옷을 정리하고 있다. 야경은 여전히 반짝인다. 평온한 표정.",
-      "text_key": "node_1786858430564_113_gm9v"
-    },
-    {
-      "id": "node_1786858430564_114_kvzo",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "오늘, 정말 좋은 시간이었어요. (정면을 보며)",
-      "text_key": "node_1786858430564_114_kvzo"
-    },
-    {
-      "id": "node_1786858430564_115_a91g",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "나도요. …솔직히, 이렇게 될 줄은 몰랐지만.",
-      "text_key": "node_1786858430564_115_a91g"
-    },
-    {
-      "id": "node_1786858430564_116_1ogq",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "후회는 없으시죠. (입꼬리를 올린다)",
-      "text_key": "node_1786858430564_116_1ogq"
-    },
-    {
-      "id": "node_1786858430564_117_ni76",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "없어요. 아주, 없어요. (작게 웃는다)",
-      "text_key": "node_1786858430564_117_ni76"
-    },
-    {
-      "id": "node_1786858430564_118_1djn",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "다행이네요. (벤치에서 일어선다)",
-      "text_key": "node_1786858430564_118_1djn"
-    },
-    {
-      "id": "node_1786858430564_119_q6ej",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…벌써 가려고?",
-      "text_key": "node_1786858430564_119_q6ej"
-    },
-    {
-      "id": "node_1786858430564_120_06n4",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "이쯤이면 됐어요. 야경도 충분히 봤고요. (야경을 본다)",
-      "text_key": "node_1786858430564_120_06n4"
-    },
-    {
-      "id": "node_1786858430564_121_fbcf",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "그렇네요.",
-      "text_key": "node_1786858430564_121_fbcf"
-    },
-    {
-      "id": "node_1786858430564_122_3lc0",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "회사에선, 평소처럼 대할게요. (또박또박)",
-      "text_key": "node_1786858430564_122_3lc0"
-    },
-    {
-      "id": "node_1786858430564_123_t5b7",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "그래요. 평소처럼.",
-      "text_key": "node_1786858430564_123_t5b7"
-    },
-    {
-      "id": "node_1786858430564_124_v7fv",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "아쉽다. 저 가죽 자켓이 다시 단정해졌다는 게, 저 몸이 내 손끝에서 멀어졌다는 게. 하지만 이게 대표로서의 선이다.",
-      "text_key": "node_1786858430564_124_v7fv"
-    },
-    {
-      "id": "node_1786858430564_125_4m7l",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "그럼 저는, 이쪽으로. (전망대 출구를 가리킨다)",
-      "text_key": "node_1786858430564_125_4m7l"
-    },
-    {
-      "id": "node_1786858430564_126_5fdu",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "배웅해 줄까요?",
-      "text_key": "node_1786858430564_126_5fdu"
-    },
-    {
-      "id": "node_1786858430564_127_76jb",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "괜찮아요. 여기서 헤어져요. (한 걸음 물러선다)",
-      "text_key": "node_1786858430564_127_76jb"
-    },
-    {
-      "id": "node_1786858430564_128_kxvj",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미호가 등을 돌려 걸어가다, 잠시 멈춘다.",
-      "text_key": "node_1786858430564_128_kxvj"
-    },
-    {
-      "id": "node_1786858430564_129_re9b",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "다음에 또, 불러도 돼요.",
-      "text_key": "node_1786858430564_129_re9b"
-    },
-    {
-      "id": "node_1786858430564_130_zygp",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…나중에 생각해 볼게요.",
-      "text_key": "node_1786858430564_130_zygp"
-    },
-    {
-      "id": "node_1786858430564_131_8pa8",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "미호",
-      "text": "좋아요. 그럼. (걸어간다)",
-      "text_key": "node_1786858430564_131_8pa8"
-    },
-    {
-      "id": "node_1786858430564_132_1dh1",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미호가 전망대 출구 쪽으로 걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
-      "text_key": "node_1786858430564_132_1dh1"
-    },
-    {
-      "id": "node_1786858430564_133_kssx",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "결국, 그녀는 나를 '모셨다'. 저 가죽 자켓, 방금 내 앞에서 흔들리던 맨가슴이. 아, 정말로 아쉽다.",
-      "text_key": "node_1786858430564_133_kssx"
+      "text": "입안에 정액을 머금고, 입술 밖으로 흘러내리며 짧게 웃는다.",
+      "text_key": "node_1787137107168_63_cenj"
     }
   ],
   "defaultLanguage": "ko",
@@ -1085,10 +525,51 @@
     {
       "id": "미호",
       "name": "미호"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    },
+    {
+      "id": "1786850998437-g6olmc9",
+      "name": "아키야마 미호"
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "id": "1787137026310-jb08h1u",
+      "fileName": "2026-08-19_00157_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/e80cb0f4-8839-45a6-97ca-42f2ed18c988/images/2026-08-19_00157_.png",
+      "url": "media://chapter_assets/events/e80cb0f4-8839-45a6-97ca-42f2ed18c988/images/2026-08-19_00157_.png",
+      "size": 2275415
+    },
+    {
+      "id": "1787137168772-bpj74bo",
+      "fileName": "2026-08-19_00159_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/e80cb0f4-8839-45a6-97ca-42f2ed18c988/images/2026-08-19_00159_.png",
+      "url": "media://chapter_assets/events/e80cb0f4-8839-45a6-97ca-42f2ed18c988/images/2026-08-19_00159_.png",
+      "size": 2619356
+    },
+    {
+      "id": "1787137194602-fm49z6f",
+      "fileName": "2026-08-19_00160_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/e80cb0f4-8839-45a6-97ca-42f2ed18c988/images/2026-08-19_00160_.png",
+      "url": "media://chapter_assets/events/e80cb0f4-8839-45a6-97ca-42f2ed18c988/images/2026-08-19_00160_.png",
+      "size": 2395330
+    },
+    {
+      "id": "1787137209244-ytdrlh8",
+      "fileName": "2026-08-19_00162_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/e80cb0f4-8839-45a6-97ca-42f2ed18c988/images/2026-08-19_00162_.png",
+      "url": "media://chapter_assets/events/e80cb0f4-8839-45a6-97ca-42f2ed18c988/images/2026-08-19_00162_.png",
+      "size": 2126498
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T05:33:43.109Z",
   "ownerCharacterId": "1786850998437-g6olmc9"

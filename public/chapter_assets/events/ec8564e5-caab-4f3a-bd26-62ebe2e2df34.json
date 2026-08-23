@@ -5,895 +5,543 @@
   "chapterId": 1,
   "titleKey": "ec8564e5-caab-4f3a-bd26-62ebe2e2df34",
   "title": "데이트1",
-  "startNode": "node_1786850035494_0_xi2c",
+  "startNode": "node_1787118174859_1_lbdo",
   "nodes": [
     {
-      "id": "node_1786850035494_0_xi2c",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786850035494_1_f710",
+      "id": "node_1787118174859_1_lbdo",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "야간의 일본식 찻집. 조용하고 차분한 분위기. 메구미가 먼저 도착해 다다미방 한쪽에 앉아 기다리고 있다. 베이지 니트 원피스에 코트를 걸친 차림.",
-      "text_key": "node_1786850035494_1_f710"
+      "text_key": "node_1787118174859_1_lbdo"
     },
     {
-      "id": "node_1786850035494_2_3eua",
+      "id": "node_1787118174859_0_fzuv",
+      "type": "graphic",
+      "image": "01_b.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787118174859_2_g3jj",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "…오, 오셨네요. (살짝 고개를 숙인다)",
-      "text_key": "node_1786850035494_2_3eua"
+      "text_key": "node_1787118174859_2_g3jj"
     },
     {
-      "id": "node_1786850035494_3_a6qf",
+      "id": "node_1787118174859_3_twe4",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "기다렸어요? 늦어서 미안합니다.",
-      "text_key": "node_1786850035494_3_a6qf"
+      "text_key": "node_1787118174859_3_twe4"
     },
     {
-      "id": "node_1786850035494_4_kihs",
+      "id": "node_1787118174859_4_a6zb",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "아니에요. 제가 일찍 온 거예요. (손을 모으고, 시선을 내린다)",
-      "text_key": "node_1786850035494_4_kihs"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "아니에요. 제가 일찍 온 거예요.",
+      "text_key": "node_1787118174859_4_a6zb"
     },
     {
-      "id": "node_1786850035494_5_dmei",
+      "id": "node_1787118174859_5_tnat",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "와줘서 고맙습니다. …솔직히, 아직도 실감이 안 나요.",
-      "text_key": "node_1786850035494_5_dmei"
+      "text": "와주셔서 고맙습니다. …솔직히, 아직도 실감이 안 나요.",
+      "text_key": "node_1787118174859_5_tnat"
     },
     {
-      "id": "node_1786850035494_6_stre",
+      "id": "node_1787118174859_6_yupl",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "뭐가요? (살짝 시선을 올린다)",
-      "text_key": "node_1786850035494_6_stre"
+      "text_key": "node_1787118174859_6_yupl"
     },
     {
-      "id": "node_1786850035494_7_wta1",
+      "id": "node_1787118174859_7_kkvk",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "부끄러움이 많은 네가, 나한테 데이트 신청을 하다니.",
-      "text_key": "node_1786850035494_7_wta1"
+      "text": "부끄러움이 많으신 분이, 저한테 데이트 신청을 하시다니.",
+      "text_key": "node_1787118174859_7_kkvk"
     },
     {
-      "id": "node_1786850035494_8_76p2",
+      "id": "node_1787118174859_8_1b32",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "그게… 그렇게 놀라운 일인가요? (얼굴이 살짝 붉어진다)",
-      "text_key": "node_1786850035494_8_76p2"
+      "text_key": "node_1787118174859_8_1b32"
     },
     {
-      "id": "node_1786850035494_9_qwqt",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "평소 방송국에서 조용히 웃던 얼굴인데, 이렇게 사적인 자리에서 보니 더 부끄러워 보인다. 저 코트 아래 니트 원피스 차림이 오히려 더 신경 쓰인다. 참아라, 나는 대표니까.",
-      "text_key": "node_1786850035494_9_qwqt"
-    },
-    {
-      "id": "node_1786850035494_10_4nfq",
+      "id": "node_1787118174859_9_ez13",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "놀랍다기보다… 회사 밖에서 보니까, 좀 어색해서.",
-      "text_key": "node_1786850035494_10_4nfq"
+      "text": "놀랍다기보다… 회사 밖에서 보니까, 좀 어색해서요.",
+      "text_key": "node_1787118174859_9_ez13"
     },
     {
-      "id": "node_1786850035494_11_g484",
+      "id": "node_1787118174859_10_3yic",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "저도요. 사장님을 사무실 밖에서 보는 건 처음이라. (시선을 옆으로 돌린다)",
-      "text_key": "node_1786850035494_11_g484"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "저도요. 사장님을 사무실 밖에서 보는 건 처음이라.",
+      "text_key": "node_1787118174859_10_3yic"
     },
     {
-      "id": "node_1786850035494_12_fftw",
+      "id": "node_1787118174859_11_aum9",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "그런데 왜 하필 나한테? 크리에이터가 굳이 사장을 부를 이유는 없잖아.",
-      "text_key": "node_1786850035494_12_fftw"
+      "text": "그런데 왜 하필 저한테요? 크리에이터가 굳이 사장을 부르실 이유는 없잖아요.",
+      "text_key": "node_1787118174859_11_aum9"
     },
     {
-      "id": "node_1786850035494_13_s0az",
+      "id": "node_1787118174859_12_dpsq",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "그런 건… 오늘, 천천히 말해도 되죠? (조용히)",
-      "text_key": "node_1786850035494_13_s0az"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "그런 건… 오늘, 천천히 말해도 되죠?",
+      "text_key": "node_1787118174859_12_dpsq"
     },
     {
-      "id": "node_1786850035494_14_1dxg",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "저 입술이 방송에서 시청자들한테 무슨 말을 하는지, 나는 대표니까 다 알고 있다. 그런 입이 지금 나한테 '천천히 말해도 되죠'라고… 심장이 빨리 뛴다.",
-      "text_key": "node_1786850035494_14_1dxg"
-    },
-    {
-      "id": "node_1786850035494_15_vu98",
+      "id": "node_1787118174859_13_g7iz",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…알겠어요. 어차피 부른 건 너니까, 오늘은 네 뜻에 맞출게요.",
-      "text_key": "node_1786850035494_15_vu98"
+      "text": "…알겠어요. 어차피 부르신 건 사토 씨니까, 오늘은 사토 씨 뜻에 맞출게요.",
+      "text_key": "node_1787118174859_13_g7iz"
     },
     {
-      "id": "node_1786850035494_16_35d4",
+      "id": "node_1787118174859_14_lp1t",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "좋아요. 그럼… 일단 차부터 마셔요. (찻잔을 내게 건넨다)",
-      "text_key": "node_1786850035494_16_35d4"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "좋아요. 그럼… 일단 차부터 마셔요.",
+      "text_key": "node_1787118174859_14_lp1t"
     },
     {
-      "id": "node_1786850035494_17_6qag",
+      "id": "node_1787118174859_15_jori",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "회사 일 얘기는 하지 말자는 거죠?",
-      "text_key": "node_1786850035494_17_6qag"
+      "text_key": "node_1787118174859_15_jori"
     },
     {
-      "id": "node_1786850035494_18_qfxr",
+      "id": "node_1787118174859_16_89lf",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "네. 여기선 저도, 사장님도, 그냥 둘뿐이니까요. (또박또박, 얼굴을 붉히며)",
-      "text_key": "node_1786850035494_18_qfxr"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "네. 여기선 저도, 사장님도, 그냥 둘뿐이니까요.",
+      "text_key": "node_1787118174859_16_89lf"
     },
     {
-      "id": "node_1786850035494_19_y8dq",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…그 말, 방송에서 하는 것보다 더 위험하게 들리네요.",
-      "text_key": "node_1786850035494_19_y8dq"
-    },
-    {
-      "id": "node_1786850035494_20_l1nh",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "위험하게 들릴 만큼… 사장님이 제 방송을 잘 보신다는 거잖아요. (입꼬리를 살짝 올린다)",
-      "text_key": "node_1786850035494_20_l1nh"
-    },
-    {
-      "id": "node_1786850035494_21_fvrq",
+      "id": "node_1787118174859_17_1jf2",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "부끄러워하면서도 저렇게 파고들 줄은… 저 순진한 얼굴로 저런 말을 하니, 오히려 더 위험하다. 여기서 넘어가면 안 된다. 나는 그녀의 대표니까.",
-      "text_key": "node_1786850035494_21_fvrq"
+      "text": "메구미가 차를 한 모금 마신다. 나는 그 옆자리에 거리를 두고 앉는다.",
+      "text_key": "node_1787118174859_17_1jf2"
     },
     {
-      "id": "node_1786850035494_22_eqvm",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…대표니까 당연히 봐야죠. 크리에이터 관리는 내 일이니까요.",
-      "text_key": "node_1786850035494_22_eqvm"
-    },
-    {
-      "id": "node_1786850035494_23_k497",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "오늘은 관리도 잊으세요. 사장님이 아니라, 그냥 한 남자로요. (옆모습을 나에게로 돌린다)",
-      "text_key": "node_1786850035494_23_k497"
-    },
-    {
-      "id": "node_1786850035494_24_cf2i",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…그게 제일 어려운 부탁인데. (작게 한숨)",
-      "text_key": "node_1786850035494_24_cf2i"
-    },
-    {
-      "id": "node_1786850035494_25_g9oh",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "알아요. 그래서… 부른 거예요. (또박또박)",
-      "text_key": "node_1786850035494_25_g9oh"
-    },
-    {
-      "id": "node_1786850035494_26_614y",
+      "id": "node_1787118174859_18_1kzn",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "메구미가 차를 한 모금 마시고, 나는 그 옆자리에 거리를 두고 앉는다. 서로의 시선이 찻집의 조용한 풍경을 향한다.",
-      "text_key": "node_1786850035494_26_614y"
+      "text": "메구미가 코트를 벗어 옆에 개어 둔다. 베이지 니트 원피스가 드러난다.",
+      "text_key": "node_1787118174859_18_1kzn"
     },
     {
-      "id": "node_1786850035494_27_cb0m",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786850035494_28_js2n",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "다다미방. 차가 나오고, 메구미가 코트를 벗어 옆에 개어 둔다. 베이지 니트 원피스가 드러난다.",
-      "text_key": "node_1786850035494_28_js2n"
-    },
-    {
-      "id": "node_1786850035494_29_3mxv",
+      "id": "node_1787118174859_19_sfml",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "여기, 분위기가 정말 조용하고 좋네요. (두리번거린다)",
-      "text_key": "node_1786850035494_29_3mxv"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "여기, 분위기가 정말 조용하고 좋네요.",
+      "text_key": "node_1787118174859_19_sfml"
     },
     {
-      "id": "node_1786850035494_30_lbx2",
+      "id": "node_1787118174859_20_bs7l",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "네가 고른 데잖아요.",
-      "text_key": "node_1786850035494_30_lbx2"
+      "text": "사토 씨가 고르신 데잖아요.",
+      "text_key": "node_1787118174859_20_bs7l"
     },
     {
-      "id": "node_1786850035494_31_7wwo",
+      "id": "node_1787118174859_21_wsgc",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "네. 제가 골랐어요. (씩 웃는다)",
-      "text_key": "node_1786850035494_31_7wwo"
+      "text_key": "node_1787118174859_21_wsgc"
     },
     {
-      "id": "node_1786850035494_32_80hf",
+      "id": "node_1787118174859_22_jh0c",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "메구미가 무릎을 모으고 앉으며, 니트 원피스가 몸에 밀착된다.",
-      "text_key": "node_1786850035494_32_80hf"
+      "text_key": "node_1787118174859_22_jh0c"
     },
     {
-      "id": "node_1786850035494_33_j8c2",
+      "id": "node_1787118174859_23_qd6q",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…코트 벗으니까, 분위기가 좀 달라지네요.",
-      "text_key": "node_1786850035494_33_j8c2"
+      "text": "…코트 벗으시니까, 분위기가 좀 달라지네요.",
+      "text_key": "node_1787118174859_23_qd6q"
     },
     {
-      "id": "node_1786850035494_34_58us",
+      "id": "node_1787118174859_24_uuo5",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "그래요? (얼굴이 살짝 붉어진다)",
-      "text_key": "node_1786850035494_34_58us"
+      "text_key": "node_1787118174859_24_uuo5"
     },
     {
-      "id": "node_1786850035494_35_hkzq",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "니트 원피스가 몸에 착 달라붙어, 가슴과 허리 라인이 그대로 드러난다. 무릎을 모을 때마다 원피스가 허벅지를 감싼다. 저 순진한 얼굴에 저 몸매라… 자지가 반응하는 걸 겨우 참는다.",
-      "text_key": "node_1786850035494_35_hkzq"
-    },
-    {
-      "id": "node_1786850035494_36_m3sa",
+      "id": "node_1787118174859_25_4a6f",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…너, 몸매가 예쁘네요.",
-      "text_key": "node_1786850035494_36_m3sa"
+      "text": "…사토 씨, 몸매가 예쁘네요.",
+      "text_key": "node_1787118174859_25_4a6f"
     },
     {
-      "id": "node_1786850035494_37_yawn",
+      "id": "node_1787118174859_26_ebk2",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "네?! 그, 그런 말… (당황하며 시선을 내린다)",
-      "text_key": "node_1786850035494_37_yawn"
+      "text_key": "node_1787118174859_26_ebk2"
     },
     {
-      "id": "node_1786850035494_38_nlnt",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786850035494_39_o186",
+      "id": "node_1787118174859_27_b2f2",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "칭찬이에요. 부끄러워하지 마요.",
-      "text_key": "node_1786850035494_39_o186"
+      "text_key": "node_1787118174859_27_b2f2"
     },
     {
-      "id": "node_1786850035494_40_diqq",
+      "id": "node_1787118174859_28_ivnu",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "칭찬이라도… 부끄러워요. (손으로 얼굴을 감싼다)",
-      "text_key": "node_1786850035494_40_diqq"
+      "text_key": "node_1787118174859_28_ivnu"
     },
     {
-      "id": "node_1786850035494_41_z1y4",
+      "id": "node_1787118174859_29_c4dd",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "부끄러워서 얼굴이 새빨개진 모습이, 오히려 더 치명적이다. 저 반응 하나하나가 시청자들을 미치게 만들 거다. 대표니까 참아야 한다.",
-      "text_key": "node_1786850035494_41_z1y4"
+      "text": "메구미가 차를 따르려 몸을 숙인다. 니트 원피스가 가슴 쪽으로 당겨진다.",
+      "text_key": "node_1787118174859_29_c4dd"
     },
     {
-      "id": "node_1786850035494_42_8d7a",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786850035494_43_2q55",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "다다미방 한쪽. 메구미가 차를 따르려 몸을 숙인다. 니트 원피스가 가슴 쪽으로 당겨진다.",
-      "text_key": "node_1786850035494_43_2q55"
-    },
-    {
-      "id": "node_1786850035494_44_d9hz",
+      "id": "node_1787118174859_30_4210",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "차, 더 드릴게요. (몸을 숙여 찻주전자를 든다)",
-      "text_key": "node_1786850035494_44_d9hz"
+      "text_key": "node_1787118174859_30_4210"
     },
     {
-      "id": "node_1786850035494_45_o8k0",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "몸을 숙이자 니트 원피스가 가슴을 팽팽하게 감싸고, 목선이 살짝 벌어진다.",
-      "text_key": "node_1786850035494_45_o8k0"
-    },
-    {
-      "id": "node_1786850035494_46_t9oy",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…고마워요.",
-      "text_key": "node_1786850035494_46_t9oy"
-    },
-    {
-      "id": "node_1786850035494_47_qjcj",
+      "id": "node_1787118174859_31_vj3q",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "사장님, 시선이 자꾸… (얼굴을 붉히며)",
-      "text_key": "node_1786850035494_47_qjcj"
+      "text_key": "node_1787118174859_31_vj3q"
     },
     {
-      "id": "node_1786850035494_48_2wld",
+      "id": "node_1787118174859_32_ddds",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "니트가… 몸에 잘 맞네요.",
-      "text_key": "node_1786850035494_48_2wld"
+      "text_key": "node_1787118174859_32_ddds"
     },
     {
-      "id": "node_1786850035494_49_d0u0",
+      "id": "node_1787118174859_33_2a5l",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "그런 거, 보지 마요… (고개를 푹 숙인다)",
-      "text_key": "node_1786850035494_49_d0u0"
+      "text_key": "node_1787118174859_33_2a5l"
     },
     {
-      "id": "node_1786850035494_50_uld7",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "니트 원피스가 가슴 골을 따라 팽팽하게 당겨진다. 저 부끄러워하는 모습이, 오히려 더 야하다. 이대로 원피스를 끌어올리고 싶다. 참을 수 없다.",
-      "text_key": "node_1786850035494_50_uld7"
-    },
-    {
-      "id": "node_1786850035494_51_j8q9",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…네가 그런 차림이라서, 당연히 보게 되죠.",
-      "text_key": "node_1786850035494_51_j8q9"
-    },
-    {
-      "id": "node_1786850035494_52_fqib",
+      "id": "node_1787118174859_34_g852",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "부끄러워요… (목소리가 작아진다)",
-      "text_key": "node_1786850035494_52_fqib"
-    },
-    {
-      "id": "node_1786850035494_53_c0uo",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "부끄러워하는 네가, 오히려 예뻐요.",
-      "text_key": "node_1786850035494_53_c0uo"
-    },
-    {
-      "id": "node_1786850035494_54_1uzy",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786850035494_55_e7uu",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "메구미가 자세를 고치며, 니트 원피스 목선이 살짝 벌어져 쇄골이 드러난다.",
-      "text_key": "node_1786850035494_55_e7uu"
-    },
-    {
-      "id": "node_1786850035494_56_n2ds",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "그런 말… 계속 하시면… (시선을 올린다)",
-      "text_key": "node_1786850035494_56_n2ds"
-    },
-    {
-      "id": "node_1786850035494_57_jny4",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "하면요?",
-      "text_key": "node_1786850035494_57_jny4"
-    },
-    {
-      "id": "node_1786850035494_58_n2ba",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "제가, 이상해져요. (또박또박, 얼굴을 붉히며)",
-      "text_key": "node_1786850035494_58_n2ba"
-    },
-    {
-      "id": "node_1786850035494_59_e39u",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "이상해진다고? 저 순진한 입으로 저런 말을 하다니… 니트 아래 가슴이 숨을 쉴 때마다 오르내린다. 보고 싶어서 미칠 것 같다.",
-      "text_key": "node_1786850035494_59_e39u"
-    },
-    {
-      "id": "node_1786850035494_60_ejvr",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786850035494_61_kpyc",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "다다미방 안쪽, 조용한 구석. 메구미가 내 앞에 앉아, 몸을 살짝 돌린다.",
-      "text_key": "node_1786850035494_61_kpyc"
-    },
-    {
-      "id": "node_1786850035494_62_osx9",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "사장님… 이래도, 계속 참으실 거예요? (니트 원피스 어깨 쪽을 살짝 내린다)",
-      "text_key": "node_1786850035494_62_osx9"
+      "text_key": "node_1787118174859_34_g852"
     },
     {
-      "id": "node_1786850035494_63_39ui",
+      "id": "node_1787118174859_35_ioes",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…뭐 하는 거예요.",
-      "text_key": "node_1786850035494_63_39ui"
+      "text": "…뭐 하시는 거예요.",
+      "text_key": "node_1787118174859_35_ioes"
     },
     {
-      "id": "node_1786850035494_64_mdqw",
+      "id": "node_1787118174859_36_c873",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "저, 사장님이 저를 어떻게 보는지… 확인하고 싶어요. (낮게)",
-      "text_key": "node_1786850035494_64_mdqw"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "저, 사장님이 저를 어떻게 보는지… 확인하고 싶어요.",
+      "text_key": "node_1787118174859_36_c873"
     },
     {
-      "id": "node_1786850035494_65_x6tz",
+      "id": "node_1787118174859_37_86vm",
       "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "그게 왜 중요한데요.",
-      "text_key": "node_1786850035494_65_x6tz"
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "메구미가 니트 원피스를 어깨에서 아래로 내린다.",
+      "text_key": "node_1787118174859_37_86vm"
     },
     {
-      "id": "node_1786850035494_66_ihk0",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "중요하니까… 부른 거예요. (니트 원피스를 더 내려 어깨와 쇄골을 드러낸다)",
-      "text_key": "node_1786850035494_66_ihk0"
-    },
-    {
-      "id": "node_1786850035494_67_e3rx",
+      "id": "node_1787118174859_38_ctf2",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-19_00090_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786850035494_68_cmwq",
+      "id": "node_1787118174859_39_9l7d",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "어때요… 제 몸. 방송에서 보는 것보다 낫죠? (부끄러워하며)",
+      "text_key": "node_1787118174859_39_9l7d"
+    },
+    {
+      "id": "node_1787118174859_40_ogs3",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…이러시면 안 돼요.",
+      "text_key": "node_1787118174859_40_ogs3"
+    },
+    {
+      "id": "node_1787118174859_41_l1gw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "왜요. 저는 지금, 되게 두근거리는데.",
+      "text_key": "node_1787118174859_41_l1gw"
+    },
+    {
+      "id": "node_1787118174859_42_0wgk",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "니트 원피스가 흘러내려, 어깨에서 쇄골, 가슴 위 라인이 드러난다.",
-      "text_key": "node_1786850035494_68_cmwq"
+      "text": "내 손을 잡아 가슴 위에 얹는다. 손끝에 맨살이 닿는다.",
+      "text_key": "node_1787118174859_42_0wgk"
     },
     {
-      "id": "node_1786850035494_69_svvr",
+      "id": "node_1787118174859_43_a2ij",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "만져요. 제가 허락했으니까.",
+      "text_key": "node_1787118174859_43_a2ij"
+    },
+    {
+      "id": "node_1787118174859_44_9pu5",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…이러면 안 돼요.",
-      "text_key": "node_1786850035494_69_svvr"
+      "text": "…됐어요.",
+      "text_key": "node_1787118174859_44_9pu5"
     },
     {
-      "id": "node_1786850035494_70_sfkh",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "왜요. 저는 지금, 되게 두근거리는데. (내 손을 잡아 어깨 위에 올린다)",
-      "text_key": "node_1786850035494_70_sfkh"
-    },
-    {
-      "id": "node_1786850035494_71_fmgp",
+      "id": "node_1787118174859_45_2ba7",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "손끝에 맨살이 닿는다.",
-      "text_key": "node_1786850035494_71_fmgp"
+      "text": "손을 거둔다.",
+      "text_key": "node_1787118174859_45_2ba7"
     },
     {
-      "id": "node_1786850035494_72_s7hn",
+      "id": "node_1787118174859_46_pzoc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "왜요. 아직 시작도 안 했는데.",
+      "text_key": "node_1787118174859_46_pzoc"
+    },
+    {
+      "id": "node_1787118174859_47_fz7f",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "! (숨이 멎는다)",
-      "text_key": "node_1786850035494_72_s7hn"
+      "text": "여기까지예요. 이 이상은, 우리 둘 다 못 돌아가요.",
+      "text_key": "node_1787118174859_47_fz7f"
     },
     {
-      "id": "node_1786850035494_73_yjja",
+      "id": "node_1787118174859_48_ihbp",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "어때요… 뜨거워요? (부끄러워하며, 가만히 나를 본다)",
-      "text_key": "node_1786850035494_73_yjja"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "…역시, 사장님은 좋은 사람이에요. (살짝 웃는다)",
+      "text_key": "node_1787118174859_48_ihbp"
     },
     {
-      "id": "node_1786850035494_74_5y8n",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…뜨거워요.",
-      "text_key": "node_1786850035494_74_5y8n"
-    },
-    {
-      "id": "node_1786850035494_75_nn69",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "저도요… (내 손 위에 손을 포갠다)",
-      "text_key": "node_1786850035494_75_nn69"
-    },
-    {
-      "id": "node_1786850035494_76_qrfi",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "손바닥 밑에 그녀의 어깨. 살짝 내려가면 가슴이다. 손가락이 저절로 떨린다. 저 부끄러워하는 얼굴로, 이렇게 치명적일 줄은 몰랐다.",
-      "text_key": "node_1786850035494_76_qrfi"
-    },
-    {
-      "id": "node_1786850035494_77_hojc",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…이건 안 돼요. (손을 거둔다)",
-      "text_key": "node_1786850035494_77_hojc"
-    },
-    {
-      "id": "node_1786850035494_78_u86u",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "지금 여기서, 대표가 무슨 상관이에요. (니트 원피스를 더 내린다)",
-      "text_key": "node_1786850035494_78_u86u"
-    },
-    {
-      "id": "node_1786850035494_79_ljhh",
+      "id": "node_1787118174859_49_gqsw",
       "type": "graphic",
-      "image": "",
+      "image": "01_b.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786850035494_80_r10z",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "니트 원피스가 가슴 위까지 흘러내려, 브라 윗라인이 드러난다.",
-      "text_key": "node_1786850035494_80_r10z"
-    },
-    {
-      "id": "node_1786850035494_81_pqtc",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "메구미 씨…",
-      "text_key": "node_1786850035494_81_pqtc"
-    },
-    {
-      "id": "node_1786850035494_82_72u1",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "오늘 하루만, 일을 그만두세요. (단호히, 얼굴을 붉히며)",
-      "text_key": "node_1786850035494_82_72u1"
-    },
-    {
-      "id": "node_1786850035494_83_hyyr",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…그게 제일 어려운 부탁인데.",
-      "text_key": "node_1786850035494_83_hyyr"
-    },
-    {
-      "id": "node_1786850035494_84_af1r",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "알아요. 그래서… (내 손을 잡아, 흘러내린 니트 안쪽으로 이끈다)",
-      "text_key": "node_1786850035494_84_af1r"
-    },
-    {
-      "id": "node_1786850035494_85_3ku5",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "손끝이 그녀의 가슴 위에 닿는다.",
-      "text_key": "node_1786850035494_85_3ku5"
-    },
-    {
-      "id": "node_1786850035494_86_whgi",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…… (숨을 들이쉰다)",
-      "text_key": "node_1786850035494_86_whgi"
-    },
-    {
-      "id": "node_1786850035494_87_qs2z",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "메구미",
-      "text": "저는 준비돼 있어요. 사장님은요? (눈을 맞추며, 낮게)",
-      "text_key": "node_1786850035494_87_qs2z"
-    },
-    {
-      "id": "node_1786850035494_88_l40j",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "손끝에 그녀의 가슴이 닿는다. 부드럽고 따뜻한 온기. 저 순진하던 간호사가, 지금 내 앞에서 부끄러워하며 몸을 열고 있다. 여기까지다. 대표니까.",
-      "text_key": "node_1786850035494_88_l40j"
-    },
-    {
-      "id": "node_1786850035494_89_45e1",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786850035494_90_zl5m",
+      "id": "node_1787118174859_50_zdrv",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "다다미방. 메구미는 니트 원피스를 정리하고, 나는 자세를 고쳐 앉는다. 찻집은 여전히 조용하다.",
-      "text_key": "node_1786850035494_90_zl5m"
+      "text_key": "node_1787118174859_50_zdrv"
     },
     {
-      "id": "node_1786850035494_91_qnbm",
+      "id": "node_1787118174859_51_mi3o",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "오늘, 정말 좋은 시간이었어요. (정면을 보며)",
-      "text_key": "node_1786850035494_91_qnbm"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "오늘, 정말 좋은 시간이었어요.",
+      "text_key": "node_1787118174859_51_mi3o"
     },
     {
-      "id": "node_1786850035494_92_jial",
+      "id": "node_1787118174859_52_h7r3",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "나도요.",
-      "text_key": "node_1786850035494_92_jial"
+      "text": "저도요.",
+      "text_key": "node_1787118174859_52_h7r3"
     },
     {
-      "id": "node_1786850035494_93_ugmh",
+      "id": "node_1787118174859_53_ypta",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "후회는 없으시죠? (입꼬리를 올린다)",
-      "text_key": "node_1786850035494_93_ugmh"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "후회는 없으시죠?",
+      "text_key": "node_1787118174859_53_ypta"
     },
     {
-      "id": "node_1786850035494_94_47xv",
+      "id": "node_1787118174859_54_rx9a",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "없어요. 아주, 없어요. (작게 웃는다)",
-      "text_key": "node_1786850035494_94_47xv"
+      "text": "없어요.",
+      "text_key": "node_1787118174859_54_rx9a"
     },
     {
-      "id": "node_1786850035494_95_3qvv",
+      "id": "node_1787118174859_55_cj75",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "다행이에요. (코트를 집어 든다)",
-      "text_key": "node_1786850035494_95_3qvv"
+      "text_key": "node_1787118174859_55_cj75"
     },
     {
-      "id": "node_1786850035494_96_8b4n",
+      "id": "node_1787118174859_56_nkbo",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…벌써 가려고?",
-      "text_key": "node_1786850035494_96_8b4n"
+      "text": "…벌써 가시려고요?",
+      "text_key": "node_1787118174859_56_nkbo"
     },
     {
-      "id": "node_1786850035494_97_n4d0",
+      "id": "node_1787118174859_57_hqjp",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "이쯤이면 됐어요. 찻집도 곧 닫을 시간이에요. (시계를 본다)",
-      "text_key": "node_1786850035494_97_n4d0"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "이쯤이면 됐어요. 찻집도 곧 닫을 시간이에요.",
+      "text_key": "node_1787118174859_57_hqjp"
     },
     {
-      "id": "node_1786850035494_98_940e",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "그렇네요.",
-      "text_key": "node_1786850035494_98_940e"
-    },
-    {
-      "id": "node_1786850035494_99_x6m2",
+      "id": "node_1787118174859_58_vzcq",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "회사에선, 평소처럼 대할게요. (또박또박)",
-      "text_key": "node_1786850035494_99_x6m2"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "회사에선, 평소처럼 대할게요.",
+      "text_key": "node_1787118174859_58_vzcq"
     },
     {
-      "id": "node_1786850035494_100_i8g1",
+      "id": "node_1787118174859_59_myo8",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "그래요. 평소처럼.",
-      "text_key": "node_1786850035494_100_i8g1"
+      "text_key": "node_1787118174859_59_myo8"
     },
     {
-      "id": "node_1786850035494_101_lioi",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "아쉽다. 저 니트 원피스가 다시 단정해졌다는 게, 저 몸이 내 손끝에서 멀어졌다는 게. 하지만 이게 대표로서의 선이다.",
-      "text_key": "node_1786850035494_101_lioi"
-    },
-    {
-      "id": "node_1786850035494_102_srdn",
+      "id": "node_1787118174859_60_krbi",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "그럼 저는, 이쪽으로. (찻집 출구를 가리킨다)",
-      "text_key": "node_1786850035494_102_srdn"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "그럼 저는, 이쪽으로.",
+      "text_key": "node_1787118174859_60_krbi"
     },
     {
-      "id": "node_1786850035494_103_61gc",
+      "id": "node_1787118174859_61_f28t",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "배웅해 줄까요?",
-      "text_key": "node_1786850035494_103_61gc"
+      "text": "배웅해 드릴까요?",
+      "text_key": "node_1787118174859_61_f28t"
     },
     {
-      "id": "node_1786850035494_104_n2a9",
+      "id": "node_1787118174859_62_9gf3",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
-      "text": "괜찮아요. 여기서 헤어져요. (한 걸음 물러선다)",
-      "text_key": "node_1786850035494_104_n2a9"
+      "speaker": "1786849140255-p0lxz2i",
+      "text": "괜찮아요. 여기서 헤어져요.",
+      "text_key": "node_1787118174859_62_9gf3"
     },
     {
-      "id": "node_1786850035494_105_l26r",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "메구미가 등을 돌려 걸어가다, 잠시 멈춘다.",
-      "text_key": "node_1786850035494_105_l26r"
-    },
-    {
-      "id": "node_1786850035494_106_fw3t",
+      "id": "node_1787118174859_63_zytk",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "사장님, 다음에 또 불러도 돼요?",
-      "text_key": "node_1786850035494_106_fw3t"
+      "text_key": "node_1787118174859_63_zytk"
     },
     {
-      "id": "node_1786850035494_107_jy7k",
+      "id": "node_1787118174859_64_zj9n",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…나중에 생각해 볼게요.",
-      "text_key": "node_1786850035494_107_jy7k"
+      "text_key": "node_1787118174859_64_zj9n"
     },
     {
-      "id": "node_1786850035494_108_bay6",
+      "id": "node_1787118174859_65_pihs",
       "type": "text",
       "speakerType": "character",
-      "speaker": "메구미",
+      "speaker": "1786849140255-p0lxz2i",
       "text": "네. 그럼… (살짝 웃으며 걸어간다)",
-      "text_key": "node_1786850035494_108_bay6"
+      "text_key": "node_1787118174859_65_pihs"
     },
     {
-      "id": "node_1786850035494_109_b31c",
+      "id": "node_1787118174859_66_gb6d",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "메구미가 찻집 출구 쪽으로 걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
-      "text_key": "node_1786850035494_109_b31c"
-    },
-    {
-      "id": "node_1786850035494_110_zr0g",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "결국 아무 일도 없었다. 그런데 왜, 가슴 한구석이 이렇게 텅 비는 걸까. 저 니트 원피스 아래, 방금 내 손에 있던 온기가. 아, 정말로 아쉽다.",
-      "text_key": "node_1786850035494_110_zr0g"
+      "text": "나는 그 뒷모습이 사라질 때까지 서서 바라본다.",
+      "text_key": "node_1787118174859_66_gb6d"
     }
   ],
   "defaultLanguage": "ko",
@@ -901,10 +549,35 @@
     {
       "id": "메구미",
       "name": "메구미"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    },
+    {
+      "id": "1786849140255-p0lxz2i",
+      "name": "사토 메구미"
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "id": "1787118059317-10xqssp",
+      "fileName": "01_b.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/01_b.png",
+      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/01_b.png",
+      "size": 2705901
+    },
+    {
+      "id": "1787118429421-utt2a3y",
+      "fileName": "2026-08-19_00090_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-08-19_00090_.png",
+      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-08-19_00090_.png",
+      "size": 2455358
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T03:13:46.653Z",
   "ownerCharacterId": "1786849140255-p0lxz2i"

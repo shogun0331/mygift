@@ -5,10 +5,10 @@
   "chapterId": 1,
   "titleKey": "932322e9-444a-4498-a767-c26cab3ed63d",
   "title": "데이트1",
-  "startNode": "node_1786959544443_0_ylgt",
+  "startNode": "node_1787031770896_0_9ay6",
   "nodes": [
     {
-      "id": "node_1786959544443_0_ylgt",
+      "id": "node_1787031770896_0_9ay6",
       "type": "graphic",
       "image": "02_b.png",
       "delay": 2,
@@ -16,167 +16,119 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1786959544443_1_aiyq",
+      "id": "node_1787031770896_1_hiab",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "야간의 광장. 조명이 켜진 넓은 광장. 아야가 먼저 도착해 서서 기다리고 있다. 흰 블라우스에 네이비 H라인 치마 차림.",
-      "text_key": "node_1786959544443_1_aiyq"
+      "text": "야간의 광장. 아야가 먼저 도착해 기다리고 있다. 흰 블라우스에 네이비 H라인 치마 차림.",
+      "text_key": "node_1787031770896_1_hiab"
     },
     {
-      "id": "node_1786959544443_2_kyb3",
+      "id": "node_1787031770896_2_pfwu",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "…오셨네요. (팔짱을 낀 채, 시선만 올려 나를 본다)",
-      "text_key": "node_1786959544443_2_kyb3"
+      "text_key": "node_1787031770896_2_pfwu"
     },
     {
-      "id": "node_1786959544443_3_j9uz",
+      "id": "node_1787031770896_3_kez2",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "기다리셨어요? 늦어서 죄송합니다.",
-      "text_key": "node_1786959544443_3_j9uz"
+      "text_key": "node_1787031770896_3_kez2"
     },
     {
-      "id": "node_1786959544443_4_wsnk",
+      "id": "node_1787031770896_4_4v95",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "아니에요. 제가 일찍 온 거니까요. (무덤덤하게)",
-      "text_key": "node_1786959544443_4_wsnk"
+      "text_key": "node_1787031770896_4_4v95"
     },
     {
-      "id": "node_1786959544443_5_lbnb",
+      "id": "node_1787031770896_5_8ldu",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "와 주셔서 고맙습니다. …솔직히, 아직도 실감이 안 나요.",
-      "text_key": "node_1786959544443_5_lbnb"
+      "text_key": "node_1787031770896_5_8ldu"
     },
     {
-      "id": "node_1786959544443_6_vrtn",
+      "id": "node_1787031770896_6_p0dw",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "뭐가요. (차갑게)",
-      "text_key": "node_1786959544443_6_vrtn"
+      "text_key": "node_1787031770896_6_p0dw"
     },
     {
-      "id": "node_1786959544443_7_tzd9",
+      "id": "node_1787031770896_7_twcw",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "저를 데이트에 불러 주실 줄은 몰랐으니까요.",
-      "text_key": "node_1786959544443_7_tzd9"
+      "text_key": "node_1787031770896_7_twcw"
     },
     {
-      "id": "node_1786959544443_8_hhoi",
+      "id": "node_1787031770896_8_k5lo",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "그게 그렇게 놀라운 일인가요. (눈을 가늘게 뜬다)",
-      "text_key": "node_1786959544443_8_hhoi"
+      "text_key": "node_1787031770896_8_k5lo"
     },
     {
-      "id": "node_1786959544443_9_jg1v",
+      "id": "node_1787031770896_9_zjnd",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "평소 강의실에서 냉철하게 서 있던 얼굴. 이렇게 사적인 자리에서 보니 더 차갑다. 저 흰 블라우스가 가슴에 팽팽하고, 네이비 치마가 단정하다. 참아라, 나는 대표니까.",
-      "text_key": "node_1786959544443_9_jg1v"
+      "text": "평소 강의실에서 냉철하게 서 있던 얼굴. 이렇게 사적인 자리에서 보니 더 차갑다.",
+      "text_key": "node_1787031770896_9_zjnd"
     },
     {
-      "id": "node_1786959544443_10_96pb",
+      "id": "node_1787031770896_10_tzdm",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "놀랍다기보다… 회사 밖에서 뵈니까, 좀 어색해서요.",
-      "text_key": "node_1786959544443_10_96pb"
+      "text": "…알겠습니다. 오늘은 시라카와 씨 뜻에 맞출게요.",
+      "text_key": "node_1787031770896_10_tzdm"
     },
     {
-      "id": "node_1786959544443_11_w3kl",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "저도요. 사장님을 밖에서 보는 건 처음이라. (시선을 돌린다)",
-      "text_key": "node_1786959544443_11_w3kl"
-    },
-    {
-      "id": "node_1786959544443_12_ww2z",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "장소도, 이 차림도, 전부 그녀답게 냉정하다. 이 여자는 데이트조차 감정을 숨기고 왔다. 그 냉정함이 오히려 무섭다.",
-      "text_key": "node_1786959544443_12_ww2z"
-    },
-    {
-      "id": "node_1786959544443_13_fs69",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…알겠습니다. 어차피 불러 주신 건 시라카와 씨니까, 오늘은 시라카와 씨 뜻에 맞출게요.",
-      "text_key": "node_1786959544443_13_fs69"
-    },
-    {
-      "id": "node_1786959544443_14_lax2",
+      "id": "node_1787031770896_11_4i5z",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "좋아요. 그럼 걷죠. (앞장선다)",
-      "text_key": "node_1786959544443_14_lax2"
+      "text_key": "node_1787031770896_11_4i5z"
     },
     {
-      "id": "node_1786959544443_15_2ha0",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "회사 일 이야기 하시려는 건 아닌거죠?",
-      "text_key": "node_1786959544443_15_2ha0"
-    },
-    {
-      "id": "node_1786959544443_16_pieg",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "네. 오늘은 쉬는 날 이니까요. (정면을 바라보며)",
-      "text_key": "node_1786959544443_16_pieg"
-    },
-    {
-      "id": "node_1786959544443_17_3f57",
+      "id": "node_1787031770896_12_jed2",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "오늘은 그냥 저와 대화하며 같이 있어요. (옆모습을 나에게로 돌린다)",
-      "text_key": "node_1786959544443_17_3f57"
+      "text_key": "node_1787031770896_12_jed2"
     },
     {
-      "id": "node_1786959544443_18_1ijv",
+      "id": "node_1787031770896_13_agy5",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…그게 무서운 부탁인데요. (작게 한숨)",
-      "text_key": "node_1786959544443_18_1ijv"
+      "text_key": "node_1787031770896_13_agy5"
     },
     {
-      "id": "node_1786959544443_19_z7x0",
+      "id": "node_1787031770896_14_in2f",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "알아요. 그래서 부른 거예요. (또박또박)",
-      "text_key": "node_1786959544443_19_z7x0"
+      "text_key": "node_1787031770896_14_in2f"
     },
     {
-      "id": "node_1786959544443_20_flbb",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "두 사람이 광장을 천천히 걷기 시작한다. 서로의 시선이 밤의 광장을 향한다.",
-      "text_key": "node_1786959544443_20_flbb"
-    },
-    {
-      "id": "node_1786960793473_2vd3",
+      "id": "node_1787031814464_bk0j",
       "type": "graphic",
       "image": "03_a.png",
       "delay": 2,
@@ -184,103 +136,63 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1786959544443_21_84lc",
+      "id": "node_1787031770896_15_o13v",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "광장을 걷던 아야가 잠시 멈춰, 몸을 기지개 켜듯 살짝 뒤로 젖힌다.",
-      "text_key": "node_1786959544443_21_84lc"
+      "text": "광장을 걷던 아야가 잠시 멈춰, 기지개를 켜듯 몸을 살짝 뒤로 젖힌다. 흰 블라우스가 D컵 가슴에 팽팽하게 당겨진다.",
+      "text_key": "node_1787031770896_15_o13v"
     },
     {
-      "id": "node_1786959544443_22_wdrx",
+      "id": "node_1787031770896_16_dmds",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "…오늘, 바람이 좋네요. (몸을 살짝 뒤로 젖힌다)",
-      "text_key": "node_1786959544443_22_wdrx"
+      "text_key": "node_1787031770896_16_dmds"
     },
     {
-      "id": "node_1786959544443_23_0rvl",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "그러네요.",
-      "text_key": "node_1786959544443_23_0rvl"
-    },
-    {
-      "id": "node_1786959544443_26_vj0a",
+      "id": "node_1787031770896_17_kaxp",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…블라우스가, 몸에 잘 맞네요.",
-      "text_key": "node_1786959544443_26_vj0a"
+      "text_key": "node_1787031770896_17_kaxp"
     },
     {
-      "id": "node_1786959544443_27_29o7",
+      "id": "node_1787031770896_18_68b0",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "그래요? (눈을 가늘게 뜬다)",
-      "text_key": "node_1786959544443_27_29o7"
+      "text_key": "node_1787031770896_18_68b0"
     },
     {
-      "id": "node_1786959544443_28_d37g",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "흰 블라우스가 D컵 가슴에 팽팽하게 당겨지고 가슴골이 깊이 보인다. 자지가 반응하는 걸 겨우 참는다.",
-      "text_key": "node_1786959544443_28_d37g"
-    },
-    {
-      "id": "node_1786959544443_29_ced0",
+      "id": "node_1787031770896_19_x13n",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "…아, 아니, 그게… 몸매가 좋으시다는 뜻이에요.",
-      "text_key": "node_1786959544443_29_ced0"
+      "text": "…몸매가 좋으시다는 뜻이에요.",
+      "text_key": "node_1787031770896_19_x13n"
     },
     {
-      "id": "node_1786959544443_30_mo9s",
+      "id": "node_1787031770896_20_r0rj",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "칭찬이에요? 기분 나쁘진 않네요. (씩 웃는다)",
-      "text_key": "node_1786959544443_30_mo9s"
+      "text_key": "node_1787031770896_20_r0rj"
     },
     {
-      "id": "node_1786959544443_32_tsoh",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "칭찬이에요. 부담 갖지 마세요.",
-      "text_key": "node_1786959544443_32_tsoh"
-    },
-    {
-      "id": "node_1786959544443_33_zriw",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "부담이요? 저는 오히려 기분 좋은데요. (입꼬리를 올린다)",
-      "text_key": "node_1786959544443_33_zriw"
-    },
-    {
-      "id": "node_1786959544443_34_ooo7",
+      "id": "node_1787031770896_22_7lyx",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "차갑게 웃는 모습이, 오히려 더 치명적이다. 저 안경, 저 단정한 블라우스가, 시청자들을 미치게 만들 거다. 대표니까 참아야 한다.",
-      "text_key": "node_1786959544443_34_ooo7"
+      "text": "광장 옆 골목. 아야가 나를 인적이 드문 골목으로 이끈다.",
+      "text_key": "node_1787031770896_22_7lyx"
     },
     {
-      "id": "node_1786959544443_36_2grx",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "광장 옆 골목. 아야가 나를 골목으로 이끈다. 인적이 드문 곳이다.",
-      "text_key": "node_1786959544443_36_2grx"
-    },
-    {
-      "id": "node_1786959544443_35_age2",
+      "id": "node_1787031770896_21_6ye2",
       "type": "graphic",
       "image": "04_a.png",
       "delay": 2,
@@ -288,55 +200,47 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1786959544443_37_qm4h",
+      "id": "node_1787031770896_23_vm0k",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
-      "text": "…이쪽으로 와 보세요. (낮은 목소리로, 골목을 가리킨다)",
-      "text_key": "node_1786959544443_37_qm4h"
+      "text": "…이쪽으로 와 보세요. (낮은 목소리로)",
+      "text_key": "node_1787031770896_23_vm0k"
     },
     {
-      "id": "node_1786959544443_38_4ga4",
+      "id": "node_1787031770896_24_fr01",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "왜요. (꼼짝 않고)",
-      "text_key": "node_1786959544443_38_4ga4"
+      "text": "왜요.",
+      "text_key": "node_1787031770896_24_fr01"
     },
     {
-      "id": "node_1786959544443_39_w238",
+      "id": "node_1787031770896_25_28pd",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "광장엔 사람이 많으니까요. (눈을 가늘게 뜬다)",
-      "text_key": "node_1786959544443_39_w238"
+      "text_key": "node_1787031770896_25_28pd"
     },
     {
-      "id": "node_1786959544443_40_23qq",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "무슨 말씀이세요.",
-      "text_key": "node_1786959544443_40_23qq"
-    },
-    {
-      "id": "node_1786959544443_41_hys8",
+      "id": "node_1787031770896_26_w5i1",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "보여드릴 게 있어서요. (한쪽 블라우스 단추를 천천히 푼다)",
-      "text_key": "node_1786959544443_41_hys8"
+      "text_key": "node_1787031770896_26_w5i1"
     },
     {
-      "id": "node_1786959544443_42_e68j",
+      "id": "node_1787031770896_27_te7n",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "블라우스 단추가 풀리며, 속옷이 드러난다.",
-      "text_key": "node_1786959544443_42_e68j"
+      "text": "블라우스 단추가 풀리며, 브라가 그대로 드러난다. 흰 블라우스 사이로 가슴 골까지…",
+      "text_key": "node_1787031770896_27_te7n"
     },
     {
-      "id": "node_1786959544443_43_xz14",
+      "id": "node_1787031862647_5d95",
       "type": "graphic",
       "image": "2026-08-17_00006_.png",
       "delay": 2,
@@ -344,55 +248,39 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1786959544443_44_nn58",
+      "id": "node_1787031770896_28_wiue",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…뭐 하시는 거예요.",
-      "text_key": "node_1786959544443_44_nn58"
+      "text_key": "node_1787031770896_28_wiue"
     },
     {
-      "id": "node_1786959544443_45_yncs",
+      "id": "node_1787031770896_29_ebbs",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "사장님이 저를 어떻게 보는지, 확인하고 싶어서요. (또박또박)",
-      "text_key": "node_1786959544443_45_yncs"
+      "text_key": "node_1787031770896_29_ebbs"
     },
     {
-      "id": "node_1786959544443_46_tox7",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "브라가 그대로 드러난다. 흰 블라우스 사이로 가슴 골까지… 자지가 바지 안에서 아파 온다. 손대면 안 돼.",
-      "text_key": "node_1786959544443_46_tox7"
-    },
-    {
-      "id": "node_1786959544443_47_yzd7",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…저를 시험하시는 건가요?",
-      "text_key": "node_1786959544443_47_yzd7"
-    },
-    {
-      "id": "node_1786959544443_48_7tg5",
+      "id": "node_1787031770896_30_40wv",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "시험이 아니라 확인이에요. 저를 여자로 보는지. (내 손등을 살짝 만진다)",
-      "text_key": "node_1786959544443_48_7tg5"
+      "text_key": "node_1787031770896_30_40wv"
     },
     {
-      "id": "node_1786959544443_49_kuf1",
+      "id": "node_1787031770896_31_zpet",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "아야가 속옷을 벗는다.",
-      "text_key": "node_1786959544443_49_kuf1"
+      "text": "아야가 등 뒤로 손을 돌려 브라를 푼다. 브라가 풀려 가슴이 앞으로 쏟아진다.",
+      "text_key": "node_1787031770896_31_zpet"
     },
     {
-      "id": "node_1786959544443_50_fhap",
+      "id": "node_1787031770896_32_4jh5",
       "type": "graphic",
       "image": "2026-08-17_00004_.png",
       "delay": 2,
@@ -400,287 +288,103 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1786959544443_51_k8b2",
+      "id": "node_1787031770896_33_a1u9",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "! (숨이 멎는다)",
-      "text_key": "node_1786959544443_51_k8b2"
+      "text_key": "node_1787031770896_33_a1u9"
     },
     {
-      "id": "node_1786959544443_52_2zdv",
+      "id": "node_1787031770896_34_5oej",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
-      "text": "어때요.? (가만히 나를 본다)",
-      "text_key": "node_1786959544443_52_2zdv"
+      "text": "어때요. 뜨거워요? (가만히 나를 본다)",
+      "text_key": "node_1787031770896_34_5oej"
     },
     {
-      "id": "node_1786959544443_53_4sxl",
+      "id": "node_1787031770896_35_58rx",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "….",
-      "text_key": "node_1786959544443_53_4sxl"
+      "text": "…뜨거워요.",
+      "text_key": "node_1787031770896_35_58rx"
     },
     {
-      "id": "node_1786959544443_55_llzq",
+      "id": "node_1787031770896_36_fppi",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "저도요. (내 손 위에 손을 포갠다)",
+      "text_key": "node_1787031770896_36_fppi"
+    },
+    {
+      "id": "node_1787031770896_37_oot0",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "그녀의 가슴이다. 손가락이 저절로 떨린다. 저 차가운 표정 아래, 이렇게 뜨거울 줄은 몰랐다.",
-      "text_key": "node_1786959544443_55_llzq"
+      "text_key": "node_1787031770896_37_oot0"
     },
     {
-      "id": "node_1786959544443_56_kzqx",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…이건, 안 되는데요. (손을 거둔다)",
-      "text_key": "node_1786959544443_56_kzqx"
-    },
-    {
-      "id": "node_1786960054249_p598",
-      "type": "graphic",
-      "image": "2026-08-17_00007_.png",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786959544443_57_nf3z",
+      "id": "node_1787031770896_38_s9jq",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
-      "text": "만지고 싶지 않으세요?",
-      "text_key": "node_1786959544443_57_nf3z"
+      "text": "그냥 만져요. 제가 허락했으니까. (내 손을 잡아 가슴 위에 얹는다)",
+      "text_key": "node_1787031770896_38_s9jq"
     },
     {
-      "id": "node_1786959544443_58_3l3h",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "만지고 싶지만… 제가 해선 안 되는 일이라서요.",
-      "text_key": "node_1786959544443_58_3l3h"
-    },
-    {
-      "id": "node_1786959544443_59_ib1y",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "그럼 오늘 하루만..허락 해드릴께요. (내 넥타이를 당긴다)",
-      "text_key": "node_1786959544443_59_ib1y"
-    },
-    {
-      "id": "node_1786959544443_60_3fyv",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "얼굴이 코앞까지 가까워진다.",
-      "text_key": "node_1786959544443_60_3fyv"
-    },
-    {
-      "id": "node_1786959544443_61_0qvh",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "저는 준비돼 있어요. 얼른요? (눈을 맞추며, 낮게)",
-      "text_key": "node_1786959544443_61_0qvh"
-    },
-    {
-      "id": "node_1786959544443_62_hfms",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "골목. 아야가 내 넥타이를 당긴 채 코앞에서 마주 본다.",
-      "text_key": "node_1786959544443_62_hfms"
-    },
-    {
-      "id": "node_1786959544443_65_lvvo",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…! 이러시면 안 돼요.",
-      "text_key": "node_1786959544443_65_lvvo"
-    },
-    {
-      "id": "node_1786959544443_66_aoop",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "저는 지금, 참을 수 없을 만큼 두근거리는데요. (낮게, 눈빛만은 뜨겁게)",
-      "text_key": "node_1786959544443_66_aoop"
-    },
-    {
-      "id": "node_1786959544443_67_syci",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "손바닥에 가슴이 닿는다. 브라 위로 눌린 부드러운 살덩이. 자지가 바지를 찢을 것 같다. 손가락이 말을 안 듣는다.",
-      "text_key": "node_1786959544443_67_syci"
-    },
-    {
-      "id": "node_1786959544443_68_j6lz",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "그냥 만져요. 제가 허락했으니까. (블라우스 단추를 전부 푼다)",
-      "text_key": "node_1786959544443_68_j6lz"
-    },
-    {
-      "id": "node_1786959544443_70_3dd2",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…그만하세요.",
-      "text_key": "node_1786959544443_70_3dd2"
-    },
-    {
-      "id": "node_1786959544443_71_gfmb",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "싫어요..",
-      "text_key": "node_1786959544443_71_gfmb"
-    },
-    {
-      "id": "node_1786959544443_74_430t",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "!",
-      "text_key": "node_1786959544443_74_430t"
-    },
-    {
-      "id": "node_1786959544443_75_37wp",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠?",
-      "text_key": "node_1786959544443_75_37wp"
-    },
-    {
-      "id": "node_1786959544443_76_ihvb",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "젖꼭지까지 선명하다. 빨고 싶고 움켜쥐고 싶다. 하지만 넘어가면, 그녀를 지킬 수 없다.",
-      "text_key": "node_1786959544443_76_ihvb"
-    },
-    {
-      "id": "node_1786959544443_77_orzy",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…시라카와 씨 그만해요.",
-      "text_key": "node_1786959544443_77_orzy"
-    },
-    {
-      "id": "node_1786959544443_78_81ij",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "…저 같은 교수가 이러는 게, 이상하죠. (내 손을 가슴 위에 얹는다)",
-      "text_key": "node_1786959544443_78_81ij"
-    },
-    {
-      "id": "node_1786959544443_79_z0ly",
+      "id": "node_1787031770896_39_qzzf",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "손끝에 맨살이 닿는다. 나는 눈을 감고, 결국 그 살을 천천히 움켜쥔다.",
-      "text_key": "node_1786959544443_79_z0ly"
+      "text_key": "node_1787031770896_39_qzzf"
     },
     {
-      "id": "node_1786960403660_hxvj",
+      "id": "node_1787031902567_63ta",
       "type": "graphic",
-      "image": "2026-08-17_00004_.png",
+      "image": "2026-08-18_00024_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_1786959544443_80_suyq",
+      "id": "node_1787031770896_40_co6c",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "응…♡ (짧게 숨을 들이마신다)",
-      "text_key": "node_1786959544443_80_suyq"
+      "text_key": "node_1787031770896_40_co6c"
     },
     {
-      "id": "node_1786959544443_81_fx5p",
+      "id": "node_1787031770896_41_f7ju",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…… (가슴을 쥔 채, 손가락이 떨린다)",
-      "text_key": "node_1786959544443_81_fx5p"
+      "text_key": "node_1787031770896_41_f7ju"
     },
     {
-      "id": "node_1786959544443_82_7qsg",
+      "id": "node_1787031770896_42_1z8u",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "손아귀에 가슴이 차오른다. 젖꼭지를 스치자 그녀가 몸을 떤다. 이대로 치마를 걷으면… 아니, 여기까지다.",
-      "text_key": "node_1786959544443_82_7qsg"
+      "text": "손아귀에 가슴이 차오른다. 젖꼭지를 스치자 그녀가 몸을 떤다.",
+      "text_key": "node_1787031770896_42_1z8u"
     },
     {
-      "id": "node_1786959544443_83_yvb0",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…이제, 됐습니다. (손을 거둔다)",
-      "text_key": "node_1786959544443_83_yvb0"
-    },
-    {
-      "id": "node_1786960441378_k2dt",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_1786959544443_84_i2ji",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "왜요… 아직 시작도 안 했는데요.",
-      "text_key": "node_1786959544443_84_i2ji"
-    },
-    {
-      "id": "node_1786959544443_85_7an1",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "여기까지예요. 이 이상 가면, 저는 시라카와 씨를 지킬 수 없어요. (단호히, 하지만 목소리는 떨린다)",
-      "text_key": "node_1786959544443_85_7an1"
-    },
-    {
-      "id": "node_1786959544443_86_bz5y",
+      "id": "node_1787031770896_43_y2w6",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "아야가 블라우스를 여미고 가슴을 가린다. 브라는 골목 바닥에 그대로 놓여 있다.",
-      "text_key": "node_1786959544443_86_bz5y"
+      "text": "아야가 블라우스를 여미고 가슴을 가린다.",
+      "text_key": "node_1787031770896_43_y2w6"
     },
     {
-      "id": "node_1786959544443_87_2kqn",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "…역시, 제가 본 대로예요. 사장님은, 좋은 사람이에요. (차분한 얼굴로, 하지만 목소리는 조금 떨린다)",
-      "text_key": "node_1786959544443_87_2kqn"
-    },
-    {
-      "id": "node_1786959544443_89_2rum",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "광장으로 돌아온 두 사람. 아야는 블라우스를 정리하고, 나는 넥타이를 고쳐 매고 있다. 광장의 조명은 그대로다.",
-      "text_key": "node_1786959544443_89_2rum"
-    },
-    {
-      "id": "node_1786959544443_88_um1n",
+      "id": "node_1787031943702_e2n2",
       "type": "graphic",
       "image": "02_b.png",
       "delay": 2,
@@ -688,172 +392,100 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1786959544443_90_m1nc",
+      "id": "node_1787031770896_44_a1uq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…좋았어요. 사장님의 반응, 잘 확인했어요. (차분한 얼굴로, 입꼬리를 올린다)",
+      "text_key": "node_1787031770896_44_a1uq"
+    },
+    {
+      "id": "node_1787031770896_46_xf88",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "광장으로 돌아온 두 사람. 아야는 블라우스를 정리하고, 나는 넥타이를 고쳐 매고 있다.",
+      "text_key": "node_1787031770896_46_xf88"
+    },
+    {
+      "id": "node_1787031770896_47_vht4",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "오늘, 나쁘지 않았어요. (정면을 보며)",
-      "text_key": "node_1786959544443_90_m1nc"
+      "text_key": "node_1787031770896_47_vht4"
     },
     {
-      "id": "node_1786959544443_91_lmcn",
+      "id": "node_1787031770896_48_0qmv",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "저도요.",
-      "text_key": "node_1786959544443_91_lmcn"
+      "text_key": "node_1787031770896_48_0qmv"
     },
     {
-      "id": "node_1786959544443_92_en49",
+      "id": "node_1787031770896_49_2vhg",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "후회는 없으시죠? (입꼬리를 올린다)",
-      "text_key": "node_1786959544443_92_en49"
+      "text_key": "node_1787031770896_49_2vhg"
     },
     {
-      "id": "node_1786959544443_93_9qhx",
+      "id": "node_1787031770896_50_dpg2",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "없어요. (작게 웃는다)",
-      "text_key": "node_1786959544443_93_9qhx"
+      "text_key": "node_1787031770896_50_dpg2"
     },
     {
-      "id": "node_1786959544443_94_1cpq",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "아야가 몸을 돌린다.",
-      "text_key": "node_1786959544443_94_1cpq"
-    },
-    {
-      "id": "node_1786959544443_95_lplw",
+      "id": "node_1787031770896_51_w13w",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
-      "text": "늦었네요. 이쯤이면 됐어요.",
-      "text_key": "node_1786959544443_95_lplw"
+      "text": "회사에선, 평소처럼 대할게요. (또박또박)",
+      "text_key": "node_1787031770896_51_w13w"
     },
     {
-      "id": "node_1786959544443_96_9eqm",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "…벌써 가시게요?",
-      "text_key": "node_1786959544443_96_9eqm"
-    },
-    {
-      "id": "node_1786959544443_97_zzow",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "오늘, 고마웠어요. (몸을 돌려 마주 본다)",
-      "text_key": "node_1786959544443_97_zzow"
-    },
-    {
-      "id": "node_1786959544443_98_fowy",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "고맙긴요. 불러 주신 건 시라카와 씨잖아요.",
-      "text_key": "node_1786959544443_98_fowy"
-    },
-    {
-      "id": "node_1786959544443_99_xb1h",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "회사에선, 평소처럼  해주세요. (또박또박)",
-      "text_key": "node_1786959544443_99_xb1h"
-    },
-    {
-      "id": "node_1786959544443_100_pic3",
+      "id": "node_1787031770896_52_qocq",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "네. 평소처럼. (고개를 끄덕인다)",
-      "text_key": "node_1786959544443_100_pic3"
+      "text_key": "node_1787031770896_52_qocq"
     },
     {
-      "id": "node_1786959544443_101_5m4q",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "아쉽다. 저 블라우스가 다시 단정해졌다는 게, 저 몸이 내 손끝에서 멀어졌다는 게. ",
-      "text_key": "node_1786959544443_101_5m4q"
-    },
-    {
-      "id": "node_1786959544443_102_zo4d",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "그럼 저는, 이쪽으로. (광장 출구를 가리킨다)",
-      "text_key": "node_1786959544443_102_zo4d"
-    },
-    {
-      "id": "node_1786959544443_103_d5oc",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "배웅해 드릴까요?",
-      "text_key": "node_1786959544443_103_d5oc"
-    },
-    {
-      "id": "node_1786959544443_104_3rx6",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "아야",
-      "text": "괜찮아요. 여기서 헤어져요. (한 걸음 물러선다)",
-      "text_key": "node_1786959544443_104_3rx6"
-    },
-    {
-      "id": "node_1786959544443_105_c8fm",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "아야가 등을 돌려 걸어가다, 잠시 멈춘다.",
-      "text_key": "node_1786959544443_105_c8fm"
-    },
-    {
-      "id": "node_1786959544443_106_1ff9",
+      "id": "node_1787031770896_53_nesj",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "다음에 또, 불러도 돼요?",
-      "text_key": "node_1786959544443_106_1ff9"
+      "text_key": "node_1787031770896_53_nesj"
     },
     {
-      "id": "node_1786959544443_107_8hqs",
+      "id": "node_1787031770896_54_8sxy",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "…생각해 볼게요.",
-      "text_key": "node_1786959544443_107_8hqs"
+      "text_key": "node_1787031770896_54_8sxy"
     },
     {
-      "id": "node_1786959544443_108_gx70",
+      "id": "node_1787031770896_55_ytcm",
       "type": "text",
       "speakerType": "character",
       "speaker": "아야",
       "text": "좋아요. 그럼. (걸어간다)",
-      "text_key": "node_1786959544443_108_gx70"
+      "text_key": "node_1787031770896_55_ytcm"
     },
     {
-      "id": "node_1786959544443_109_wckc",
+      "id": "node_1787031770896_56_7ddx",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "아야가 광장 출구 쪽으로 걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
-      "text_key": "node_1786959544443_109_wckc"
-    },
-    {
-      "id": "node_1786959544443_110_a7y6",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "결국 아무 일도 없었다. 그런데 왜, 가슴 한구석이 이렇게 텅 비는 걸까. 저 블라우스 아래, 방금 내 손에 있던 온기가. 아, 정말로 아쉽다.",
-      "text_key": "node_1786959544443_110_a7y6"
+      "text": "아야가 광장 출구 쪽으로 걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다. 결국 아무 일도 없었는데, 가슴 한구석이 텅 빈다.",
+      "text_key": "node_1787031770896_56_7ddx"
     }
   ],
   "defaultLanguage": "ko",
@@ -870,7 +502,7 @@
       "fileName": "02_b.png",
       "kind": "image",
       "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/02_b.png",
-      "url": "blob:http://localhost:5173/3630a0b2-df0f-4b11-88bc-0ec846dd82fd",
+      "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/02_b.png",
       "size": 2455820
     },
     {
@@ -878,7 +510,7 @@
       "fileName": "04_a.png",
       "kind": "image",
       "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/04_a.png",
-      "url": "blob:http://localhost:5173/0702c349-3be4-4b7f-b922-1306d4e5f8a8",
+      "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/04_a.png",
       "size": 2328739
     },
     {
@@ -886,7 +518,7 @@
       "fileName": "2026-08-17_00006_.png",
       "kind": "image",
       "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-08-17_00006_.png",
-      "url": "blob:http://localhost:5173/654c634e-29d6-4dbc-8c8e-628aaa3b4e6e",
+      "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-08-17_00006_.png",
       "size": 2119438
     },
     {
@@ -894,7 +526,7 @@
       "fileName": "2026-08-17_00004_.png",
       "kind": "image",
       "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-08-17_00004_.png",
-      "url": "blob:http://localhost:5173/f2f7227a-c8cb-48bf-b519-7544f421b519",
+      "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-08-17_00004_.png",
       "size": 1842587
     },
     {
@@ -902,7 +534,7 @@
       "fileName": "03_a.png",
       "kind": "image",
       "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/03_a.png",
-      "url": "blob:http://localhost:5173/9c89cf09-ab2a-45b2-aa2e-a9b7844f76f7",
+      "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/03_a.png",
       "size": 2505684
     },
     {
@@ -910,8 +542,16 @@
       "fileName": "2026-08-17_00007_.png",
       "kind": "image",
       "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-08-17_00007_.png",
-      "url": "blob:http://localhost:5173/b889483c-67ca-4d8b-9a4d-f9d0ec425d3e",
+      "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-08-17_00007_.png",
       "size": 1943448
+    },
+    {
+      "id": "1787031924422-xcys6yr",
+      "fileName": "2026-08-18_00024_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-08-18_00024_.png",
+      "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-08-18_00024_.png",
+      "size": 2044427
     }
   ],
   "sourceZipName": "직접 생성",

@@ -75,5 +75,13 @@
     "placementTitle": "可部署的创作者",
     "placementDesc": "选择卡片并部署到已解锁的插槽中",
     "noCreators": "目前没有拥研究的创作者。获得角色后会显示在这里。"
+  },
+  "staff": {
+    "kindSecurity": "安保",
+    "kindRepair": "维修",
+    "kindCare": "护理",
+    "kindProduction": "制作",
+    "genderMale": "男",
+    "genderFemale": "女"
   }
 }

@@ -26,10 +26,26 @@ import {
 import { fetchPublicJson } from './game/publicJson'
 import { resolveMediaSrc } from './game/mediaUrl'
 import { createInitialStudioSlots, type StudioSlot } from './game/studioSlots'
+import {
+  createRegisteredStaff,
+  normalizeRegisteredStaff,
+  staffMediaUrl,
+  type AddStaffPayload,
+  type RegisteredStaff,
+} from './game/staff'
+import { mergeSeededStaff } from './game/staffRoster'
+import {
+  createEmptySlotManagerState,
+  ensureUnlockedSlotManagers,
+  removeStaffFromState,
+  type SlotManagerState,
+} from './game/slotManagers'
 import type { AddCharacterPayload } from './screens/EditorScreen'
 import { EditorScreen } from './screens/EditorScreen'
 import { InGame } from './screens/InGame'
 import { MainMenu } from './screens/MainMenu'
+
+const STAFF_STORAGE_KEY = 'broadcast-staff-json'
 
 type Screen = 'main' | 'game' | 'editor'
 
@@ -84,6 +100,111 @@ function hydrateRegisteredCharacter(c: any): RegisteredCharacter {
     videos,
     profileImageUrl: profileImg?.url || (c.profileImageUrl ? resolveMediaSrc(c.profileImageUrl) : c.profileImageUrl),
   })
+}
+
+function hydrateRegisteredStaff(raw: any): RegisteredStaff {
+  const images = (raw.images ?? []).map((img: any) => ({
+    ...img,
+    url: img.fileName
+      ? staffMediaUrl(raw.id, img.fileName, img.fileSize)
+      : img.url
+        ? resolveMediaSrc(img.url, img.fileSize)
+        : img.file
+          ? URL.createObjectURL(img.file)
+          : '',
+  }))
+  return normalizeRegisteredStaff({
+    ...raw,
+    images,
+  })
+}
+
+async function loadRegisteredStaffFromDisk(): Promise<RegisteredStaff[]> {
+  let source: any[] = []
+
+  try {
+    const res = await window.electronAPI?.loadStaffJson?.()
+    if (res?.success && Array.isArray(res.staff)) {
+      source = res.staff
+    }
+  } catch (err) {
+    console.error('Failed to load staff via Electron:', err)
+  }
+
+  if (source.length === 0 && typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
+    try {
+      const parsed = await fetchPublicJson<any[]>('/staff/staff.json')
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        source = parsed
+      }
+    } catch (err) {
+      console.warn('Failed to load staff.json from public folder:', err)
+    }
+  }
+
+  if (source.length === 0 && typeof window !== 'undefined') {
+    try {
+      const raw = localStorage.getItem(STAFF_STORAGE_KEY)
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (Array.isArray(parsed)) source = parsed
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return mergeSeededStaff(source.map(hydrateRegisteredStaff))
+}
+
+async function saveStaffMediaToProject(staffId: string, payload: AddStaffPayload): Promise<AddStaffPayload> {
+  if (!window.electronAPI?.saveStaffAssets) return payload
+
+  const assetsToSave: Array<{
+    id: string
+    fileName: string
+    kind: string
+    buffer: ArrayBuffer
+  }> = []
+
+  const images = await Promise.all(
+    payload.images.map(async (img) => {
+      if (!img.file) {
+        if (img.fileName) {
+          return {
+            ...img,
+            file: undefined,
+            url: staffMediaUrl(staffId, img.fileName, img.fileSize),
+          }
+        }
+        return { ...img, file: undefined }
+      }
+      const buffer = await img.file.arrayBuffer()
+      const safeName = buildSafeFileName(img.id, img.file.name)
+      assetsToSave.push({
+        id: img.id,
+        fileName: safeName,
+        kind: 'image',
+        buffer,
+      })
+      return {
+        id: img.id,
+        fileName: safeName,
+        fileSize: img.file.size,
+        url: staffMediaUrl(staffId, safeName, img.file.size),
+        file: undefined,
+      }
+    }),
+  )
+
+  if (assetsToSave.length > 0) {
+    const res = await window.electronAPI.saveStaffAssets(staffId, assetsToSave)
+    if (!res?.success) {
+      throw new Error(res?.error || '스태프 이미지를 저장하지 못했습니다.')
+    }
+  }
+
+  return { ...payload, images }
 }
 
 async function loadRegisteredCharactersFromDisk(): Promise<RegisteredCharacter[]> {
@@ -462,6 +583,9 @@ export default function App() {
   const [ownedCreators, setOwnedCreators] = useState<OwnedCreator[]>([])
   /** 스튜디오 배치 — 메인/에디터를 오가도 유지 */
   const [studioSlots, setStudioSlots] = useState<StudioSlot[]>(() => createInitialStudioSlots())
+  const [registeredStaff, setRegisteredStaff] = useState<RegisteredStaff[]>([])
+  const [isStaffLoaded, setIsStaffLoaded] = useState(false)
+  const [managerState, setManagerState] = useState<SlotManagerState>(() => createEmptySlotManagerState())
   /** 에디터 등록 이벤트 상태 (App 단으로 Lift up) */
   const [events, setEvents] = useState<GameEvent[]>([])
   /** 이벤트 로드 완료 상태 플래그 */
@@ -515,6 +639,16 @@ export default function App() {
       .catch((err) => {
         console.error('Failed to load common event links:', err)
         setIsCommonEventLinksLoaded(true)
+      })
+
+    loadRegisteredStaffFromDisk()
+      .then((rows) => {
+        setRegisteredStaff(rows)
+        setIsStaffLoaded(true)
+      })
+      .catch((err) => {
+        console.error('Failed to load staff:', err)
+        setIsStaffLoaded(true)
       })
   }, [])
 
@@ -608,6 +742,118 @@ export default function App() {
   useEffect(() => {
     setStudioSlots((prev) => syncStudioSlotsWithOwned(prev, ownedCreators))
   }, [ownedCreators])
+
+  useEffect(() => {
+    setManagerState((prev) => ensureUnlockedSlotManagers(prev, studioSlots))
+  }, [studioSlots])
+
+  useEffect(() => {
+    if (!isStaffLoaded) return
+    const clean = registeredStaff.map((row) => ({
+      id: row.id,
+      name: row.name,
+      names: row.names,
+      nameKey: row.nameKey,
+      gender: row.gender,
+      kind: row.kind,
+      iconImageId: row.iconImageId,
+      cardImageId: row.cardImageId,
+      mediaRevision: row.mediaRevision,
+      images: row.images.map((img) => ({
+        id: img.id,
+        fileName: img.fileName,
+        fileSize: img.fileSize,
+        url: img.fileName ? `media://staff/${row.id}/images/${img.fileName}` : img.url,
+      })),
+    }))
+    if (window.electronAPI?.saveStaffJson) {
+      window.electronAPI.saveStaffJson(clean).catch((err) => console.error('Failed to save staff JSON:', err))
+    } else {
+      try {
+        localStorage.setItem(STAFF_STORAGE_KEY, JSON.stringify(clean))
+      } catch (err) {
+        console.error('Failed to save staff to localStorage:', err)
+      }
+    }
+  }, [registeredStaff, isStaffLoaded])
+
+  async function handleRegisterStaff(payload: AddStaffPayload) {
+    try {
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+      const saved = await saveStaffMediaToProject(id, payload)
+      setRegisteredStaff((prev) => [
+        ...prev,
+        createRegisteredStaff({
+          id,
+          name: saved.name,
+          names: saved.names,
+          nameKey: saved.nameKey,
+          gender: saved.gender,
+          kind: saved.kind,
+          iconImageId: saved.iconImageId,
+          cardImageId: saved.cardImageId,
+          images: saved.images,
+          mediaRevision: Date.now(),
+        }),
+      ])
+    } catch (err) {
+      console.error('handleRegisterStaff error:', err)
+      alert(err instanceof Error ? err.message : '스태프를 추가하는 도중 오류가 발생했습니다.')
+    }
+  }
+
+  async function handleUpdateStaff(id: string, payload: AddStaffPayload) {
+    try {
+      const old = registeredStaff.find((row) => row.id === id)
+      const saved = await saveStaffMediaToProject(id, payload)
+      if (old && window.electronAPI?.deleteStaffFile) {
+        for (const oldImg of old.images) {
+          const still = saved.images.some((img) => img.id === oldImg.id)
+          if (still || !oldImg.fileName) continue
+          await window.electronAPI.deleteStaffFile(id, oldImg.fileName)
+        }
+      }
+      setRegisteredStaff((prev) =>
+        prev.map((row) => {
+          if (row.id !== id) return row
+          for (const img of row.images) {
+            if (img.url?.startsWith('blob:')) URL.revokeObjectURL(img.url)
+          }
+          return createRegisteredStaff({
+            id,
+            name: saved.name,
+            names: saved.names,
+            nameKey: saved.nameKey,
+            gender: saved.gender,
+            kind: saved.kind,
+            iconImageId: saved.iconImageId,
+            cardImageId: saved.cardImageId,
+            images: saved.images,
+            mediaRevision: Date.now(),
+          })
+        }),
+      )
+    } catch (err) {
+      console.error('handleUpdateStaff error:', err)
+      alert(err instanceof Error ? err.message : '스태프를 수정하는 도중 오류가 발생했습니다.')
+    }
+  }
+
+  function handleDeleteStaff(id: string) {
+    if (window.electronAPI?.deleteStaffFolder) {
+      window.electronAPI.deleteStaffFolder(id).catch((err) => console.error('Failed to delete staff folder:', err))
+    }
+    setRegisteredStaff((prev) => {
+      const target = prev.find((row) => row.id === id)
+      if (target) {
+        for (const img of target.images) {
+          if (img.url?.startsWith('blob:')) URL.revokeObjectURL(img.url)
+        }
+      }
+      return prev.filter((row) => row.id !== id)
+    })
+    setManagerState((prev) => removeStaffFromState(prev, id))
+  }
 
   async function handleRegisterCharacter(payload: AddCharacterPayload) {
     try {
@@ -801,6 +1047,7 @@ export default function App() {
   function startNewGame() {
     setOwnedCreators([])
     setStudioSlots(createInitialStudioSlots())
+    setManagerState(createEmptySlotManagerState())
     setWatchedEventIds([])
     setScreen('game')
   }
@@ -840,6 +1087,10 @@ export default function App() {
         onSaveEventsManual={handleSaveEventsManual}
         commonEventLinks={commonEventLinks}
         onCommonEventLinksChange={setCommonEventLinks}
+        registeredStaff={registeredStaff}
+        onRegisterStaff={handleRegisterStaff}
+        onUpdateStaff={handleUpdateStaff}
+        onDeleteStaff={handleDeleteStaff}
         onBack={() => setScreen(editorReturnScreen === 'game' ? 'game' : 'main')}
       />
     )
@@ -852,6 +1103,9 @@ export default function App() {
         ownedCreators={ownedCreators}
         studioSlots={studioSlots}
         events={events}
+        registeredStaff={registeredStaff}
+        managerState={managerState}
+        onManagerStateChange={setManagerState}
         onStudioSlotsChange={setStudioSlots}
         onOwnedCreatorsChange={setOwnedCreators}
         onScout={handleScout}

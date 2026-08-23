@@ -52,10 +52,10 @@ export const CONDITION_BROADCAST_FAST = { min: 8, max: 12 } as const
 export const REST_RECOVERY = { min: 10, max: 15 } as const
 export const VACATION_CONDITION_GAIN = 20
 
-/** 보유 크리에이터 1명당 진상 사태 확률 (+2%p) */
-export const CONDITION_CRASH_CHANCE_PER_OWNED = 0.02
+/** 진상 사태 발생 확률 (슬롯당 30% 고정) */
+export const CONDITION_CRASH_CHANCE_FIXED = 0.30
 /** @deprecated calcConditionCrashChance 사용 */
-export const CONDITION_CRASH_CHANCE = CONDITION_CRASH_CHANCE_PER_OWNED
+export const CONDITION_CRASH_CHANCE = CONDITION_CRASH_CHANCE_FIXED
 /** 급락 시 추가 컨디션 하락량 */
 export const CONDITION_CRASH_DROP = { min: 28, max: 42 } as const
 /** 진상 사태 시 추가 스테미나 하락량 (QTE 실패 시) */
@@ -63,17 +63,17 @@ export const CONDITION_CRASH_STAMINA_DROP = { min: 10, max: 30 } as const
 /** 진상 두더지 QTE 제한 시간 (ms) */
 export const CONDITION_CRASH_QTE_MS = 2000
 
-export function calcConditionCrashChance(ownedCount: number): number {
-  const n = Math.max(0, Math.round(ownedCount))
-  return n * CONDITION_CRASH_CHANCE_PER_OWNED
+export function calcConditionCrashChance(_ownedCount?: number): number {
+  return CONDITION_CRASH_CHANCE_FIXED
 }
 
 /** 방송 중 개별 검사. 실패하면 진상 수치, 아니면 null */
-export function rollToxicIncident(ownedCount: number): {
+export function rollToxicIncident(ownedCount: number, chanceMul = 1): {
   drop: number
   staminaDrop: number
 } | null {
-  if (Math.random() >= calcConditionCrashChance(ownedCount)) return null
+  const chance = calcConditionCrashChance(ownedCount) * Math.max(0, chanceMul)
+  if (Math.random() >= chance) return null
   return {
     drop: rollInt(CONDITION_CRASH_DROP.min, CONDITION_CRASH_DROP.max),
     staminaDrop: rollInt(CONDITION_CRASH_STAMINA_DROP.min, CONDITION_CRASH_STAMINA_DROP.max),
@@ -274,6 +274,12 @@ export type ConditionCrashResult<T extends StaminaConditionState> = {
     scoreBefore: number
     scoreAfter: number
   }>
+  cared: Array<{
+    creatorId: string
+    creatorName: string
+    scoreBefore: number
+    scoreAfter: number
+  }>
 }
 
 export type SlotDrainMults = {
@@ -293,8 +299,10 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
   drainMultByCreatorId: Record<string, SlotDrainMults> = {},
   skipCrashCreatorIds: ReadonlySet<string> = new Set(),
   assignedSlotIds: ReadonlySet<string> = broadcastedIds,
+  careRecoverCreatorIds: ReadonlySet<string> = new Set(),
 ): ConditionCrashResult<T> {
   const crashes: ConditionCrashResult<T>['crashes'] = []
+  const cared: ConditionCrashResult<T>['cared'] = []
   const crashChance = calcConditionCrashChance(creators.length)
 
   const nextCreators = creators.map((creator) => {
@@ -341,6 +349,22 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
         })
       }
 
+      if (
+        careRecoverCreatorIds.has(creator.id) &&
+        scoreAfterDrain < CONDITION_SCORE_RANGE.best.min
+      ) {
+        const scoreBeforeCare = clampConditionScore(scoreAfterDrain)
+        scoreAfterDrain = CONDITION_SCORE_RANGE.best.min
+        if (scoreBeforeCare < scoreAfterDrain) {
+          cared.push({
+            creatorId: creator.id,
+            creatorName: creator.name ?? creator.id,
+            scoreBefore: scoreBeforeCare,
+            scoreAfter: scoreAfterDrain,
+          })
+        }
+      }
+
       return withVitals(creator, scoreAfterDrain, staminaAfter, 0)
     }
 
@@ -364,7 +388,7 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
     )
   })
 
-  return { creators: nextCreators, crashes }
+  return { creators: nextCreators, crashes, cared }
 }
 
 /** 진상 QTE 실패 — 보류된 스테미나 패널티 적용 */

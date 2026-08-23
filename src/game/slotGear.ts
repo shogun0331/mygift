@@ -85,11 +85,14 @@ export function isCreatorSlotBroken(
  * 방송 중인 칸, 주 1회 고장 확률
  * clamp(4% + (100-durability)*0.18% - reliability*0.05%, 3%, 22%)
  */
-export function gearFailChance(gear: SlotGear): number {
+export function gearFailChance(gear: SlotGear, failMul = 1): number {
+  const mul = Math.max(0, failMul)
+  if (mul <= 0) return 0
   const raw =
-    FAIL_BASE +
-    (100 - gear.durability) * FAIL_PER_MISSING_DURABILITY -
-    gear.reliability * FAIL_PER_RELIABILITY
+    (FAIL_BASE +
+      (100 - gear.durability) * FAIL_PER_MISSING_DURABILITY -
+      gear.reliability * FAIL_PER_RELIABILITY) *
+    mul
   return clamp01(raw, FAIL_MIN, FAIL_MAX)
 }
 
@@ -103,9 +106,9 @@ export function repairSlotGear(gear: SlotGear): SlotGear {
   return { ...gear, broken: false }
 }
 
-export function tryBreakSlotGear(gear: SlotGear): SlotGear {
+export function tryBreakSlotGear(gear: SlotGear, failMul = 1): SlotGear {
   if (gear.broken) return gear
-  if (Math.random() < gearFailChance(gear)) {
+  if (Math.random() < gearFailChance(gear, failMul)) {
     return { ...gear, broken: true }
   }
   return gear
@@ -117,10 +120,13 @@ export function applyWeeklySlotGear(
   broadcastedCreatorIds: ReadonlySet<string>,
   opts: {
     skipFailCreatorIds?: ReadonlySet<string>
+    /** 슬롯별 고장 배율. 수리 스태프 장착 시 0 */
+    failMulBySlotId?: Record<string, number>
   } = {},
 ): Record<string, SlotGear> {
   const next = { ...gearById }
   const skipFailIds = opts.skipFailCreatorIds ?? new Set<string>()
+  const failMulBySlotId = opts.failMulBySlotId ?? {}
 
   for (const slot of slots) {
     if (slot.status !== 'assigned' || !slot.assignment) continue
@@ -128,10 +134,12 @@ export function applyWeeklySlotGear(
 
     const current = next[slot.id] ?? createInitialSlotGear()
     let updated = current
-    const skipFail = skipFailIds.has(slot.assignment.creatorId) || updated.broken
+    const failMul = failMulBySlotId[slot.id] ?? 1
+    const skipFail =
+      skipFailIds.has(slot.assignment.creatorId) || updated.broken || failMul <= 0
 
     if (!skipFail) {
-      updated = tryBreakSlotGear(updated)
+      updated = tryBreakSlotGear(updated, failMul)
     }
 
     updated = wearSlotGear(updated)

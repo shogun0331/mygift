@@ -56,6 +56,22 @@ interface ElectronAPI {
     sourceFileName: string,
     targetFileName: string
   ) => Promise<{ success: boolean; error?: string }>
+  saveStaffAssets?: (
+    staffId: string,
+    assets: Array<{ id: string; fileName: string; kind: string; buffer: ArrayBuffer }>
+  ) => Promise<{ success: boolean; path?: string; error?: string }>
+  saveStaffJson?: (
+    staff: any[]
+  ) => Promise<{ success: boolean; error?: string }>
+  loadStaffJson?: (
+  ) => Promise<{ success: boolean; staff?: any[]; error?: string }>
+  deleteStaffFile?: (
+    staffId: string,
+    fileName: string
+  ) => Promise<{ success: boolean; error?: string }>
+  deleteStaffFolder?: (
+    staffId: string
+  ) => Promise<{ success: boolean; error?: string }>
 }
 
 interface Window {

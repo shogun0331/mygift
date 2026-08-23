@@ -24,6 +24,9 @@ import {
   characterDisplayName,
 } from '../game/characterLocales'
 import { creatorVisuals, type StudioSlot } from '../game/studioSlots'
+import type { RegisteredStaff } from '../game/staff'
+import type { SlotManagerState } from '../game/slotManagers'
+import { StaffSlotIcons } from './StaffManagerUi'
 import type { SlotGear } from '../game/slotGear'
 import { useTranslation, type Locale } from '../locales/i18n'
 import type { BroadcastPhase } from '../game/broadcast'
@@ -37,12 +40,15 @@ import {
   type ConditionCrashFxItem,
 } from './ConditionCrashFx'
 import { GearFailBurstFx, type GearFailBurstItem } from './GearFailBurstFx'
+import { StaffActionFx, type StaffActionFxItem } from './StaffActionFx'
 import { ToxicWhackQte, type ToxicWhackQteItem } from './ToxicWhackQte'
 import { LiveRankBoard } from './LiveRankBoard'
 
 type DashboardPanelProps = {
   slots: StudioSlot[]
   ownedCreators?: OwnedCreator[]
+  registeredStaff?: RegisteredStaff[]
+  managerState?: SlotManagerState
   broadcastPhase?: BroadcastPhase
   livePlayVideoByCreator?: Record<string, string>
   liveEvents?: DayEvent[]
@@ -55,6 +61,7 @@ type DashboardPanelProps = {
   assets?: number
   conditionCrashes?: ConditionCrashFxItem[]
   gearFailBursts?: GearFailBurstItem[]
+  staffActions?: StaffActionFxItem[]
   toxicQtes?: ToxicWhackQteItem[]
   slotGearById?: Record<string, SlotGear>
   /** 명세서 대기/표시 중 — 방송 시작 비활성 */
@@ -63,6 +70,7 @@ type DashboardPanelProps = {
   onConditionCare?: (creatorId: string) => void
   onConditionCrashDone?: (id: string) => void
   onGearFailBurstDone?: (id: string) => void
+  onStaffActionDone?: (id: string) => void
   onToxicQteResolve?: (id: string, success: boolean) => void
   onRepairSlot?: (slotId: string) => void
 }
@@ -206,6 +214,8 @@ const STATUS_BADGE: Record<StudioSlot['status'], { labelKey: string; className: 
 export function DashboardPanel({
   slots: studioSlots,
   ownedCreators = [],
+  registeredStaff = [],
+  managerState,
   broadcastPhase = 'prep',
   livePlayVideoByCreator = {},
   liveEvents = [],
@@ -215,6 +225,7 @@ export function DashboardPanel({
   assets = 0,
   conditionCrashes = [],
   gearFailBursts = [],
+  staffActions = [],
   toxicQtes = [],
   slotGearById = {},
   startBroadcastLocked = false,
@@ -222,6 +233,7 @@ export function DashboardPanel({
   onConditionCare,
   onConditionCrashDone,
   onGearFailBurstDone,
+  onStaffActionDone,
   onToxicQteResolve,
   onRepairSlot,
 }: DashboardPanelProps) {
@@ -338,6 +350,9 @@ export function DashboardPanel({
           <StreamCard
             key={slot.id}
             slot={slot}
+            slotId={slot.id}
+            registeredStaff={registeredStaff}
+            managerState={managerState}
             broadcastPhase={broadcastPhase}
             assets={assets}
             revenueBursts={
@@ -357,10 +372,12 @@ export function DashboardPanel({
             }
             gearBroken={Boolean(slot.status === 'assigned' && slotGearById[slot.id]?.broken)}
             gearFailBursts={gearFailBursts.filter((burst) => burst.slotId === slot.id)}
+            staffActions={staffActions.filter((action) => action.slotId === slot.id)}
             onBurstDone={dismissBurst}
             onConditionCare={onConditionCare}
             onConditionCrashDone={onConditionCrashDone}
             onGearFailBurstDone={onGearFailBurstDone}
+            onStaffActionDone={onStaffActionDone}
             onToxicQteResolve={onToxicQteResolve}
             onRepairSlot={onRepairSlot}
           />
@@ -459,6 +476,9 @@ export function DashboardPanel({
 
 function StreamCard({
   slot,
+  slotId,
+  registeredStaff = [],
+  managerState,
   broadcastPhase,
   assets = 0,
   revenueBursts = [],
@@ -466,14 +486,19 @@ function StreamCard({
   toxicQte = null,
   gearBroken = false,
   gearFailBursts = [],
+  staffActions = [],
   onBurstDone,
   onConditionCare,
   onConditionCrashDone,
   onGearFailBurstDone,
+  onStaffActionDone,
   onToxicQteResolve,
   onRepairSlot,
 }: {
   slot: BroadcastSlotView
+  slotId: string
+  registeredStaff?: RegisteredStaff[]
+  managerState?: SlotManagerState
   broadcastPhase: BroadcastPhase
   assets?: number
   revenueBursts?: RevenueBurst[]
@@ -481,10 +506,12 @@ function StreamCard({
   toxicQte?: ToxicWhackQteItem | null
   gearBroken?: boolean
   gearFailBursts?: GearFailBurstItem[]
+  staffActions?: StaffActionFxItem[]
   onBurstDone?: (id: string) => void
   onConditionCare?: (creatorId: string) => void
   onConditionCrashDone?: (id: string) => void
   onGearFailBurstDone?: (id: string) => void
+  onStaffActionDone?: (id: string) => void
   onToxicQteResolve?: (id: string, success: boolean) => void
   onRepairSlot?: (slotId: string) => void
 }) {
@@ -614,6 +641,15 @@ function StreamCard({
             </div>
           </div>
 
+          {managerState ? (
+            <StaffSlotIcons
+              slotId={slotId}
+              managerState={managerState}
+              registeredStaff={registeredStaff}
+              size="sm"
+            />
+          ) : null}
+
           <div className="grid grid-cols-4 gap-1">
             <StreamAction label="배정" icon={<IconAssign />} disabled />
             <StreamAction label="훈련" icon={<IconTrain />} disabled />
@@ -633,6 +669,7 @@ function StreamCard({
   const isLive = Boolean(creator?.live)
   const crashing = conditionCrashes.length > 0
   const slamming = gearFailBursts.length > 0
+  const staffing = staffActions.length > 0
 
   return (
     <article
@@ -642,6 +679,8 @@ function StreamCard({
         crashing ? 'condition-crash-slot' : ''
       } ${
         slamming ? 'gear-fail-burst-slot' : ''
+      } ${
+        staffing ? 'staff-action-slot' : ''
       } ${
         gearBroken ? 'is-gear-broken' : ''
       }`}
@@ -733,6 +772,8 @@ function StreamCard({
           />
         ) : null}
 
+        {staffing ? <StaffActionFx actions={staffActions} variant="visual" /> : null}
+
         {gearBroken ? (
           <div className="cctv-gear-fail-fx" aria-hidden>
             <div className="cctv-gear-fail-dim" />
@@ -762,7 +803,14 @@ function StreamCard({
         ) : null}
       </div>
 
-      <div className="shrink-0 space-y-1.5 p-2.5">
+      <div className="relative shrink-0 space-y-1.5 p-2.5 pt-8">
+        {staffing ? (
+          <StaffActionFx
+            actions={staffActions}
+            variant="caption"
+            onDone={onStaffActionDone}
+          />
+        ) : null}
         <div className="flex items-center gap-2.5">
           {creator?.profileImageUrl ? (
             <img
@@ -848,6 +896,15 @@ function StreamCard({
             </p>
           ) : null}
         </div>
+
+        {managerState ? (
+          <StaffSlotIcons
+            slotId={slotId}
+            managerState={managerState}
+            registeredStaff={registeredStaff}
+            size="sm"
+          />
+        ) : null}
 
         <div className="relative grid grid-cols-4 gap-1">
           <StreamAction label="배정" icon={<IconAssign />} disabled />

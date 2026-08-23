@@ -13,11 +13,26 @@ import {
   applyWeeklySlotGear,
   createSlotGearMapFromSlots,
   ensureUnlockedSlotGear,
+  findSlotIdForCreator,
+  gearFailChance,
   isCreatorSlotBroken,
   repairSlotGear,
   tryBreakSlotGear,
   type SlotGear,
 } from '../game/slotGear'
+import { staffDisplayName, type RegisteredStaff } from '../game/staff'
+import {
+  CARE_STAMINA_MULT,
+  STAFF_HIRE_COST,
+  ensureUnlockedSlotManagers,
+  equipStaff,
+  hireStaff,
+  productionViewerBonus,
+  staffBonusOf,
+  unequipStaff,
+  type SlotManagerState,
+  type StaffKind,
+} from '../game/slotManagers'
 import {
   createInitialEquipmentTree,
   getEquipNode,
@@ -43,13 +58,18 @@ import {
   applyToxicStaminaPenalty,
   applyWeeklyStaminaAndCondition,
   applyVacationRecovery,
-  rollToxicIncident,
+  calcConditionCrashChance,
+  CONDITION_CRASH_DROP,
+  CONDITION_CRASH_STAMINA_DROP,
+  clampConditionScore,
   calcConditionFullCareCost,
   calcVacationCost,
   calcWeeklyBroadcastStaminaCost,
   canBroadcastByStamina,
+  CONDITION_SCORE_RANGE,
   scoreOf,
 } from '../game/condition'
+import { rollInt } from '../game/stats'
 import {
   buildStudioDayPlan,
   scaleDayPlanTimes,
@@ -120,6 +140,7 @@ import {
 } from '../game/weeklyReport'
 import { type ConditionCrashFxItem } from './ConditionCrashFx'
 import { type GearFailBurstItem } from './GearFailBurstFx'
+import { type StaffActionFxItem } from './StaffActionFx'
 import { type ToxicWhackQteItem } from './ToxicWhackQte'
 import { CreatorPanel } from './CreatorPanel'
 import { DashboardPanel } from './DashboardPanel'
@@ -464,6 +485,9 @@ type InGameProps = {
   ownedCreators: OwnedCreator[]
   studioSlots: StudioSlot[]
   events: GameEvent[]
+  registeredStaff: RegisteredStaff[]
+  managerState: SlotManagerState
+  onManagerStateChange: (state: SlotManagerState) => void
   onStudioSlotsChange: (slots: StudioSlot[]) => void
   onOwnedCreatorsChange: (creators: OwnedCreator[]) => void
   onScout: (creator: OwnedCreator) => void
@@ -478,6 +502,9 @@ export function InGame({
   ownedCreators,
   studioSlots,
   events,
+  registeredStaff,
+  managerState,
+  onManagerStateChange,
   onStudioSlotsChange,
   onOwnedCreatorsChange,
   onScout,
@@ -499,6 +526,7 @@ export function InGame({
   const [liveEvents, setLiveEvents] = useState<DayEvent[]>([])
   const [conditionCrashes, setConditionCrashes] = useState<ConditionCrashFxItem[]>([])
   const [gearFailBursts, setGearFailBursts] = useState<GearFailBurstItem[]>([])
+  const [staffActions, setStaffActions] = useState<StaffActionFxItem[]>([])
   const [toxicQteQueue, setToxicQteQueue] = useState<ToxicWhackQteItem[]>([])
   const [liveRevenueByCreator, setLiveRevenueByCreator] = useState<Record<string, number>>({})
   const [liveWeekProgress, setLiveWeekProgress] = useState(0)
@@ -832,6 +860,7 @@ export function InGame({
   const weekFinishedRef = useRef(false)
   const toxicQteQueueRef = useRef<ToxicWhackQteItem[]>([])
   const weekInspectionsRef = useRef<WeekInspection[]>([])
+  const productionBonusShownRef = useRef(new Set<string>())
   const pendingWeekAdvanceAfterToxicRef = useRef(false)
   const statementDelayTimerRef = useRef<number | null>(null)
   const leagueRef = useRef(league)
@@ -850,6 +879,8 @@ export function InGame({
   const studioSlotsRef = useRef(studioSlots)
   const slotGearByIdRef = useRef(slotGearById)
   const ownedCreatorsRef = useRef(ownedCreators)
+  const managerStateRef = useRef(managerState)
+  const onManagerStateChangeRef = useRef(onManagerStateChange)
   const speedRef = useRef(speed)
   const onOwnedCreatorsChangeRef = useRef(onOwnedCreatorsChange)
   const gameMonthRef = useRef(gameMonth)
@@ -859,6 +890,8 @@ export function InGame({
   studioSlotsRef.current = studioSlots
   slotGearByIdRef.current = slotGearById
   ownedCreatorsRef.current = ownedCreators
+  managerStateRef.current = managerState
+  onManagerStateChangeRef.current = onManagerStateChange
 
   useEffect(() => {
     setSlotGearById((prev) => {
@@ -931,6 +964,9 @@ export function InGame({
         slotGearByIdRef.current = next
         return next
       })
+      const nextManagers = ensureUnlockedSlotManagers(managerStateRef.current, nextSlots)
+      managerStateRef.current = nextManagers
+      onManagerStateChange(nextManagers)
     }
   }
 
@@ -979,7 +1015,11 @@ export function InGame({
     const assigned = assignedCreatorsFrom(ownedCreatorsRef.current)
     const revenueMultByCreatorId: Record<string, number> = {}
     for (const creator of assigned) {
-      revenueMultByCreatorId[creator.id] = revenueMult
+      const slotId = findSlotIdForCreator(studioSlotsRef.current, creator.id)
+      const production = slotId
+        ? staffBonusOf(managerStateRef.current, slotId, 'production')
+        : { mul: 1 }
+      revenueMultByCreatorId[creator.id] = revenueMult * production.mul
     }
     const plan = buildStudioDayPlan(
       assigned,
@@ -996,9 +1036,13 @@ export function InGame({
     const staminaMult = getStaminaCostMult(tree)
     const drainByCreatorId: Record<string, number> = {}
     for (const creator of slottedCreatorsFrom(ownedCreatorsRef.current)) {
+      const slotId = findSlotIdForCreator(studioSlotsRef.current, creator.id)
+      const care = slotId ? staffBonusOf(managerStateRef.current, slotId, 'care') : { equipped: false }
+      const careMult = care.equipped ? CARE_STAMINA_MULT : 1
+      const combined = Math.max(0.5, Math.min(1, staminaMult * careMult))
       drainByCreatorId[creator.id] = Math.max(
         1,
-        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * staminaMult),
+        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * combined),
       )
     }
     setLiveStaminaDrainByCreatorId(drainByCreatorId)
@@ -1006,16 +1050,15 @@ export function InGame({
     donationBatchRef.current = new Map()
     feedExtraQueueRef.current = []
     lastFeedEmitAtRef.current = 0
-    const lastWeekOfTurn = monthWeekIndexRef.current >= WEEKS_PER_MONTH - 1
-    const inspectSlots = lastWeekOfTurn
-      ? []
-      : studioSlotsRef.current.filter(
-          (slot) =>
-            slot.status === 'assigned' &&
-            slot.assignment &&
-            assigned.some((creator) => creator.id === slot.assignment!.creatorId),
-        )
+    // 매주 랜덤 검사(진상/보안·수리 연출). 마지막 주도 동일하게 돌려 보안 방어가 빠지지 않게 한다.
+    const inspectSlots = studioSlotsRef.current.filter(
+      (slot) =>
+        slot.status === 'assigned' &&
+        slot.assignment &&
+        assigned.some((creator) => creator.id === slot.assignment!.creatorId),
+    )
     const inspectTimes = pickInspectionTimes(inspectSlots.length, weekMs)
+    productionBonusShownRef.current = new Set()
     weekInspectionsRef.current = inspectSlots.map((slot, index) => ({
       creatorId: slot.assignment!.creatorId,
       slotId: slot.id,
@@ -1150,6 +1193,109 @@ export function InGame({
     setLiveEvents((prev) => [...failEvents.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
   }
 
+  function staffNameOf(staffId: string | null) {
+    if (!staffId) return ''
+    const staff = registeredStaff.find((row) => row.id === staffId)
+    return staffDisplayName(staff, locale)
+  }
+
+  function presentStaffAction(
+    slotId: string,
+    kind: StaffKind,
+    title: string,
+    subtitle: string,
+    feedText: string,
+    creatorId?: string,
+    creatorName?: string,
+  ) {
+    setTab('dashboard')
+    setStaffActions((prev) => [
+      ...prev,
+      {
+        id: `staff-fx-${kind}-${slotId}-${Math.round(performance.now())}`,
+        slotId,
+        kind,
+        title,
+        subtitle,
+      },
+    ])
+    setLiveEvents((prev) =>
+      [
+        {
+          id: `staff-${kind}-${slotId}-${Math.round(performance.now())}`,
+          creatorId: creatorId ?? slotId,
+          creatorName: creatorName ?? slotId,
+          type: (kind === 'production' ? 'viewers' : kind === 'repair' ? 'gear' : 'toxic') as any,
+          amount: 0,
+          text: feedText,
+          atMs: 0,
+          tone:
+            kind === 'security'
+              ? 'bg-rose-400'
+              : kind === 'repair'
+                ? 'bg-amber-400'
+                : kind === 'care'
+                  ? 'bg-emerald-400'
+                  : 'bg-violet-400',
+        },
+        ...prev,
+      ].slice(0, MAX_RECENT_EVENTS),
+    )
+  }
+
+  function grantProductionBonus(slotId: string, creatorId: string, creatorName: string) {
+    if (productionBonusShownRef.current.has(slotId)) return
+    const production = staffBonusOf(managerStateRef.current, slotId, 'production')
+    if (!production.equipped) return
+    productionBonusShownRef.current.add(slotId)
+    const bonus = productionViewerBonus(leagueRef.current.viewers)
+    if (bonus > 0) {
+      const nextViewers = capStationViewers(
+        leagueRef.current.viewers + bonus,
+        stationGradeRef.current,
+      )
+      leagueRef.current = { ...leagueRef.current, viewers: nextViewers }
+      setLeague(leagueRef.current)
+    }
+    const name = staffNameOf(production.staffId)
+    presentStaffAction(
+      slotId,
+      'production',
+      t('dashboard.staffProd'),
+      bonus > 0 ? `${t('dashboard.staffProdSub')} +${bonus}` : t('dashboard.staffProdSub'),
+      `${name || creatorName} 프로덕션 보너스! 시청자 +${bonus} · 수익 증가`,
+      creatorId,
+      creatorName,
+    )
+  }
+
+  function tryCareRestore(creatorId: string, slotId: string) {
+    const care = staffBonusOf(managerStateRef.current, slotId, 'care')
+    if (!care.equipped) return false
+    const creator = ownedCreatorsRef.current.find((row) => row.id === creatorId)
+    if (!creator) return false
+    const before = scoreOf(creator)
+    if (before >= CONDITION_SCORE_RANGE.best.min) return false
+    const nextOwned = ownedCreatorsRef.current.map((row) =>
+      row.id === creatorId
+        ? applyVitalsDelta(row, { condition: clampConditionScore(CONDITION_SCORE_RANGE.best.min - before) })
+        : row,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+    const name = staffNameOf(care.staffId)
+    presentStaffAction(
+      slotId,
+      'care',
+      t('dashboard.staffCare'),
+      t('dashboard.staffCareSub'),
+      `${name || creator.name} 케어! ${creator.name} 컨디션을 최고로 회복`,
+      creator.id,
+      creator.name,
+    )
+    return true
+  }
+
   function presentToxicCrashes(
     plan: StudioDayPlan,
     crashes: Array<{
@@ -1165,7 +1311,7 @@ export function InGame({
       id: `toxic-${crash.creatorId}-${plan.dayKey}-${Math.round(performance.now())}`,
       creatorId: crash.creatorId,
       creatorName: crash.creatorName,
-      type: 'toxic',
+      type: 'toxic' as const,
       amount: crash.drop,
       text: `${crash.creatorName} 진상 시청자! 컨디션 −${crash.drop} · 클릭으로 스테미나 방어!`,
       atMs: 0,
@@ -1206,36 +1352,119 @@ export function InGame({
     if (!plan) return
     const creator = ownedCreatorsRef.current.find((row) => row.id === inspection.creatorId)
     if (!creator) return
-    if (isCreatorSlotBroken(studioSlotsRef.current, slotGearByIdRef.current, creator.id)) return
 
-    const toxic = rollToxicIncident(ownedCreatorsRef.current.length)
-    if (toxic) {
-      const nextOwned = ownedCreatorsRef.current.map((row) =>
-        row.id === creator.id ? applyVitalsDelta(row, { condition: -toxic.drop }) : row,
+    const managers = managerStateRef.current
+    const security = staffBonusOf(managers, inspection.slotId, 'security')
+    const repair = staffBonusOf(managers, inspection.slotId, 'repair')
+
+    // 수리 장착 중이면 기존 고장도 즉시 점검·복구 (잔여 broken이 “고장 발동”처럼 보이지 않게)
+    const gearNow = slotGearByIdRef.current[inspection.slotId]
+    if (repair.equipped && gearNow?.broken) {
+      const fixed = { ...slotGearByIdRef.current, [inspection.slotId]: repairSlotGear(gearNow) }
+      slotGearByIdRef.current = fixed
+      setSlotGearById(fixed)
+      presentStaffAction(
+        inspection.slotId,
+        'repair',
+        t('dashboard.staffBlockRepair'),
+        t('dashboard.staffBlockRepairSub'),
+        `${staffNameOf(repair.staffId) || creator.name} 수리 점검! 고장을 복구했다`,
+        creator.id,
+        creator.name,
       )
-      ownedCreatorsRef.current = nextOwned
-      onOwnedCreatorsChangeRef.current(nextOwned)
-      presentToxicCrashes(plan, [
-        {
-          creatorId: creator.id,
-          creatorName: creator.name,
-          drop: toxic.drop,
-          staminaDrop: toxic.staminaDrop,
-        },
-      ])
+    }
+
+    // 이미 장비 고장이 나 있는 상태인지 확인
+    const alreadyBroken = isCreatorSlotBroken(studioSlotsRef.current, slotGearByIdRef.current, creator.id)
+
+    // 진상 사태 주사위 (이미 고장난 상태가 아닐 때만 발생 가능)
+    const toxicChance = calcConditionCrashChance(ownedCreatorsRef.current.length)
+    const wouldToxic = !alreadyBroken && (Math.random() < toxicChance)
+    let blockedOrResolved = false
+
+    if (wouldToxic) {
+      if (security.equipped) {
+        // 진상이 실제로 뜬 경우에만 방어 연출. 피해는 적용하지 않음.
+        presentStaffAction(
+          inspection.slotId,
+          'security',
+          t('dashboard.staffBlockSecurity'),
+          t('dashboard.staffBlockSecuritySub'),
+          `${staffNameOf(security.staffId) || creator.name} 보안 차단! 진상 사건을 막아냈다`,
+          creator.id,
+          creator.name,
+        )
+      } else {
+        const drop = rollInt(CONDITION_CRASH_DROP.min, CONDITION_CRASH_DROP.max)
+        const staminaDrop = rollInt(
+          CONDITION_CRASH_STAMINA_DROP.min,
+          CONDITION_CRASH_STAMINA_DROP.max,
+        )
+        const nextOwned = ownedCreatorsRef.current.map((row) =>
+          row.id === creator.id ? applyVitalsDelta(row, { condition: -drop }) : row,
+        )
+        ownedCreatorsRef.current = nextOwned
+        onOwnedCreatorsChangeRef.current(nextOwned)
+        if (!tryCareRestore(creator.id, inspection.slotId)) {
+          presentToxicCrashes(plan, [
+            {
+              creatorId: creator.id,
+              creatorName: creator.name,
+              drop,
+              staminaDrop,
+            },
+          ])
+        }
+      }
+      blockedOrResolved = true
+    }
+
+    if (alreadyBroken) {
+      // 고장난 칸은 장비 검사/프로덕션만 스킵. 보안 연출은 이미 처리됨.
+      if (!blockedOrResolved || staffBonusOf(managers, inspection.slotId, 'production').equipped) {
+        grantProductionBonus(inspection.slotId, creator.id, creator.name)
+      }
       return
     }
 
-    const currentGear = slotGearByIdRef.current[inspection.slotId]
-    if (!currentGear || currentGear.broken) return
-    const nextGearState = tryBreakSlotGear(currentGear)
-    if (!nextGearState.broken) return
-    const nextGear = { ...slotGearByIdRef.current, [inspection.slotId]: nextGearState }
-    slotGearByIdRef.current = nextGear
-    setSlotGearById(nextGear)
-    const slot = studioSlotsRef.current.find((row) => row.id === inspection.slotId)
-    if (!slot) return
-    presentGearFails(plan, [slot])
+    // 진상이 등장하지 않은 경우에만 신규 장비 고장 검사 수행
+    if (!wouldToxic) {
+      const currentGear = slotGearByIdRef.current[inspection.slotId]
+      if (currentGear && !currentGear.broken) {
+        // 수리 장착 시 고장 적용 금지. 방어 FX는 위협 롤(최소 35%)로 보이게 한다.
+        const naturalFailChance = gearFailChance(currentGear, 1)
+        if (repair.equipped) {
+          const showDefendFx = Math.random() < Math.max(naturalFailChance, 0.35)
+          if (showDefendFx) {
+            presentStaffAction(
+              inspection.slotId,
+              'repair',
+              t('dashboard.staffBlockRepair'),
+              t('dashboard.staffBlockRepairSub'),
+              `${staffNameOf(repair.staffId) || creator.name} 수리 방어! 장비 고장을 막아냈다`,
+              creator.id,
+              creator.name,
+            )
+            blockedOrResolved = true
+          }
+        } else {
+          const breakThreat = tryBreakSlotGear(currentGear, 1)
+          if (breakThreat.broken) {
+            const nextGear = { ...slotGearByIdRef.current, [inspection.slotId]: breakThreat }
+            slotGearByIdRef.current = nextGear
+            setSlotGearById(nextGear)
+            const slot = studioSlotsRef.current.find((row) => row.id === inspection.slotId)
+            if (slot) presentGearFails(plan, [slot])
+            blockedOrResolved = true
+          }
+        }
+      }
+    }
+
+    // 프로덕션은 매 검사마다 한 번 보너스·연출 (슬롯당 주 1회는 grant 쪽에서 가드)
+    if (!blockedOrResolved || staffBonusOf(managers, inspection.slotId, 'production').equipped) {
+      grantProductionBonus(inspection.slotId, creator.id, creator.name)
+    }
   }
 
   function runDueInspections(elapsed: number) {
@@ -1264,6 +1493,28 @@ export function InGame({
     })
   }
 
+  function handleHireStaff(staffId: string) {
+    if (managerStateRef.current.hiredStaffIds.includes(staffId)) return false
+    if (assetsRef.current < STAFF_HIRE_COST) return false
+    setAssets((prev) => prev - STAFF_HIRE_COST)
+    const next = hireStaff(managerStateRef.current, staffId)
+    managerStateRef.current = next
+    onManagerStateChangeRef.current(next)
+    return true
+  }
+
+  function handleEquipStaff(slotId: string, kind: StaffKind, staffId: string) {
+    const next = equipStaff(managerStateRef.current, slotId, kind, staffId)
+    managerStateRef.current = next
+    onManagerStateChangeRef.current(next)
+  }
+
+  function handleUnequipStaff(slotId: string, kind: StaffKind) {
+    const next = unequipStaff(managerStateRef.current, slotId, kind)
+    managerStateRef.current = next
+    onManagerStateChangeRef.current(next)
+  }
+
   function settleCurrentDay() {
     const plan = dayPlanRef.current
     if (!plan || settledDayKeyRef.current === plan.dayKey) return
@@ -1285,24 +1536,59 @@ export function InGame({
         .filter((slot) => slot.status === 'assigned' && slot.assignment)
         .map((slot) => slot.assignment!.creatorId),
     )
+    const careRecoverCreatorIds = new Set<string>()
     for (const creatorId of assignedSlotIds) {
-      drainMultByCreatorId[creatorId] = { staminaMult, conditionMult }
+      const slotId = findSlotIdForCreator(studioSlotsRef.current, creatorId)
+      const care = slotId ? staffBonusOf(managerStateRef.current, slotId, 'care') : { equipped: false }
+      const careMult = care.equipped ? CARE_STAMINA_MULT : 1
+      drainMultByCreatorId[creatorId] = {
+        staminaMult: Math.max(0.5, Math.min(1, staminaMult * careMult)),
+        conditionMult,
+      }
+      if (care.equipped) careRecoverCreatorIds.add(creatorId)
     }
-    const { creators: nextOwned } = applyWeeklyStaminaAndCondition(
+    const { creators: nextOwned, cared } = applyWeeklyStaminaAndCondition(
       ownedCreatorsRef.current,
       broadcastedIds,
       drainMultByCreatorId,
       broadcastedIds,
       assignedSlotIds,
+      careRecoverCreatorIds,
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    for (const row of cared) {
+      const slotId = findSlotIdForCreator(studioSlotsRef.current, row.creatorId)
+      if (!slotId) continue
+      const care = staffBonusOf(managerStateRef.current, slotId, 'care')
+      presentStaffAction(
+        slotId,
+        'care',
+        t('dashboard.staffCare'),
+        t('dashboard.staffCareSub'),
+        `${staffNameOf(care.staffId) || row.creatorName} 케어! ${row.creatorName} 컨디션을 최고로 회복`,
+        row.creatorId,
+        row.creatorName,
+      )
+    }
+    for (const creatorId of assignedSlotIds) {
+      const slotId = findSlotIdForCreator(studioSlotsRef.current, creatorId)
+      const creator = nextOwned.find((row) => row.id === creatorId)
+      if (!slotId || !creator) continue
+      grantProductionBonus(slotId, creator.id, creator.name)
+    }
 
+    const failMulBySlotId: Record<string, number> = {}
+    for (const slot of studioSlotsRef.current) {
+      if (slot.status !== 'assigned') continue
+      const repair = staffBonusOf(managerStateRef.current, slot.id, 'repair')
+      failMulBySlotId[slot.id] = repair.equipped ? 0 : 1
+    }
     const nextGear = applyWeeklySlotGear(
       prevGear,
       studioSlotsRef.current,
       broadcastedIds,
-      { skipFailCreatorIds: broadcastedIds },
+      { skipFailCreatorIds: broadcastedIds, failMulBySlotId },
     )
     slotGearByIdRef.current = nextGear
     setSlotGearById(nextGear)
@@ -2087,9 +2373,38 @@ export function InGame({
     lastFeedEmitAtRef.current = 0
     setConditionCrashes([])
     setGearFailBursts([])
+    setStaffActions([])
     toxicQteQueueRef.current = []
     setToxicQteQueue([])
     pendingWeekAdvanceAfterToxicRef.current = false
+
+    // 수리 장착 칸은 방송 시작 시 잔여 고장을 점검·복구 + 연출
+    {
+      let gearMap = slotGearByIdRef.current
+      let gearChanged = false
+      for (const slot of studioSlotsRef.current) {
+        if (slot.status !== 'assigned' || !slot.assignment) continue
+        const repair = staffBonusOf(managerStateRef.current, slot.id, 'repair')
+        const gear = gearMap[slot.id]
+        if (!repair.equipped || !gear?.broken) continue
+        gearMap = { ...gearMap, [slot.id]: repairSlotGear(gear) }
+        gearChanged = true
+        presentStaffAction(
+          slot.id,
+          'repair',
+          t('dashboard.staffBlockRepair'),
+          t('dashboard.staffBlockRepairSub'),
+          `${staffNameOf(repair.staffId) || slot.assignment.creatorName} 수리 점검! 방송 전 고장을 복구했다`,
+          slot.assignment.creatorId,
+          slot.assignment.creatorName,
+        )
+      }
+      if (gearChanged) {
+        slotGearByIdRef.current = gearMap
+        setSlotGearById(gearMap)
+      }
+    }
+
     const preservedCare = weekAccumRef.current.careExpenses
     weekAccumRef.current = {
       ...createWeekAccumulator(broadcastMonthNumberRef.current),
@@ -2361,6 +2676,8 @@ export function InGame({
           <DashboardPanel
             slots={studioSlots}
             ownedCreators={ownedCreators}
+            registeredStaff={registeredStaff}
+            managerState={managerState}
             broadcastPhase={broadcastPhase}
             livePlayVideoByCreator={livePlayVideoByCreator}
             liveEvents={liveEvents}
@@ -2369,6 +2686,7 @@ export function InGame({
             liveStaminaDrainByCreatorId={liveStaminaDrainByCreatorId}
             conditionCrashes={conditionCrashes}
             gearFailBursts={gearFailBursts}
+            staffActions={staffActions}
             toxicQtes={toxicQteQueue}
             slotGearById={slotGearById}
             assets={assets}
@@ -2381,6 +2699,9 @@ export function InGame({
             }
             onGearFailBurstDone={(id) =>
               setGearFailBursts((prev) => prev.filter((row) => row.id !== id))
+            }
+            onStaffActionDone={(id) =>
+              setStaffActions((prev) => prev.filter((row) => row.id !== id))
             }
             onToxicQteResolve={resolveToxicQte}
           />
@@ -2411,6 +2732,12 @@ export function InGame({
             pendingHandCreatorId={recruitFlyCard?.id ?? null}
             spotlightCreatorId={spotlightCreatorId}
             placementLocked={broadcastPhase === 'live'}
+            registeredStaff={registeredStaff}
+            managerState={managerState}
+            assets={assets}
+            onHireStaff={handleHireStaff}
+            onEquipStaff={handleEquipStaff}
+            onUnequipStaff={handleUnequipStaff}
           />
         ) : tab === 'ranking' ? (
           <RankingPanel
@@ -2567,8 +2894,7 @@ export function InGame({
       !socialUi &&
       !salaryEventPlay &&
       !scoutEventState &&
-      !promotionExam &&
-      promoteQueue.length === 0 ? (
+      !promotionExam ? (
         <SnsResultModal
           result={snsResultQueue[0]}
           onConfirm={() => {

@@ -2,21 +2,39 @@
   {
     "id": "1786792656193-i7isvfo",
     "name": "미야자와 리나",
+    "names": {
+      "ko": "미야자와 리나",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
     "age": "25",
     "job": "항공승무원",
-    "bust": "C",
-    "weight": "48",
+    "jobs": {
+      "ko": "항공승무원",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "bust": "",
+    "weight": "",
     "grade": "C",
-    "popularity": 25,
+    "statType": "sexy",
     "concept": "항공승무원",
     "salary": 25920,
     "eventLinks": {
-      "scout": null,
+      "scout": "scout_a",
       "salary": null,
-      "vip": null,
-      "h": null,
-      "date1": null,
-      "date2": null,
+      "vip": "a6",
+      "h": "a3",
+      "date1": "a",
+      "date2": "a1",
       "scoutAccept": null,
       "scoutFail": null
     },
@@ -26,7 +44,7 @@
     "characterIllustrationId": "1786791738319-9m239vb",
     "profileImageId": "1786791738319-9m239vb",
     "profileVideoId": null,
-    "mediaRevision": 1786848680766,
+    "mediaRevision": 1787478652355,
     "images": [
       {
         "id": "1786791738319-9m239vb",
@@ -41,6 +59,114 @@
         "fileSize": 1069500,
         "url": "media://characters/1786792656193-i7isvfo/images/1786791740143-z26f0b4__profile.png",
         "keys": []
+      },
+      {
+        "id": "1787477939799-74swzno",
+        "fileName": "1787477939799-74swzno__2026-08-23_00134.png",
+        "fileSize": 2024287,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787477939799-74swzno__2026-08-23_00134.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787477939799-htkrmn4",
+        "fileName": "1787477939799-htkrmn4__2026-08-23_00135.png",
+        "fileSize": 2669587,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787477939799-htkrmn4__2026-08-23_00135.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787477939799-460ltoo",
+        "fileName": "1787477939799-460ltoo__2026-08-23_00136.png",
+        "fileSize": 2117228,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787477939799-460ltoo__2026-08-23_00136.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787477939799-7u3j2zp",
+        "fileName": "1787477939799-7u3j2zp__2026-08-23_00138.png",
+        "fileSize": 2276124,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787477939799-7u3j2zp__2026-08-23_00138.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787477939799-u37xx8x",
+        "fileName": "1787477939799-u37xx8x__2026-08-23_00140.png",
+        "fileSize": 2357319,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787477939799-u37xx8x__2026-08-23_00140.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787477939799-9obymrk",
+        "fileName": "1787477939799-9obymrk__2026-08-23_00141.png",
+        "fileSize": 2458693,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787477939799-9obymrk__2026-08-23_00141.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787477939799-6hd3b0p",
+        "fileName": "1787477939799-6hd3b0p__2026-08-23_00142.png",
+        "fileSize": 2116152,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787477939799-6hd3b0p__2026-08-23_00142.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478002390-3sw430f",
+        "fileName": "1787478002390-3sw430f__2026-08-23_00152.png",
+        "fileSize": 2035854,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787478002390-3sw430f__2026-08-23_00152.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478002391-8adiwie",
+        "fileName": "1787478002391-8adiwie__2026-08-23_00147.png",
+        "fileSize": 2071991,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787478002391-8adiwie__2026-08-23_00147.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478002391-64ug1h0",
+        "fileName": "1787478002391-64ug1h0__2026-08-23_00148.png",
+        "fileSize": 2333874,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787478002391-64ug1h0__2026-08-23_00148.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478002391-ruv0q8u",
+        "fileName": "1787478002391-ruv0q8u__2026-08-23_00149.png",
+        "fileSize": 2554555,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787478002391-ruv0q8u__2026-08-23_00149.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478002391-fm1z2va",
+        "fileName": "1787478002391-fm1z2va__2026-08-23_00151.png",
+        "fileSize": 1939414,
+        "url": "media://characters/1786792656193-i7isvfo/images/1787478002391-fm1z2va__2026-08-23_00151.png",
+        "keys": [
+          "sns"
+        ]
       }
     ],
     "videos": [
@@ -145,26 +271,307 @@
         "level": 1,
         "stage": 1
       }
+    ],
+    "snsPosts": [
+      {
+        "id": "1787477939800-adee78s",
+        "heat": 2,
+        "imageId": "1787477939799-74swzno",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 9,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787477939800-y2sxv5e",
+        "heat": 2,
+        "imageId": "1787477939799-htkrmn4",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 6,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787477939800-hnn1up9",
+        "heat": 2,
+        "imageId": "1787477939799-460ltoo",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 34,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787477939800-344ac6u",
+        "heat": 2,
+        "imageId": "1787477939799-7u3j2zp",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 35,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787477939800-b3igdu6",
+        "heat": 2,
+        "imageId": "1787477939799-u37xx8x",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 6,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787477939800-2fyq71k",
+        "heat": 2,
+        "imageId": "1787477939799-9obymrk",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 30,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787477939800-ll2t0z6",
+        "heat": 2,
+        "imageId": "1787477939799-6hd3b0p",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 0,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478002391-7qxw0i2",
+        "heat": 3,
+        "imageId": "1787478002390-3sw430f",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 9,
+        "blurRegions": [
+          {
+            "id": "blur_1787478031326_kfe8",
+            "x": 0.7788489113410249,
+            "y": 0.3449549808641019,
+            "w": 0.22115108865897515,
+            "h": 0.2605136827201735,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478002391-upu0ph4",
+        "heat": 3,
+        "imageId": "1787478002391-8adiwie",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 23,
+        "blurRegions": [
+          {
+            "id": "blur_1787478026150_ne2c",
+            "x": 0.1999955880082063,
+            "y": 0.3845983673649979,
+            "w": 0.1736559969998456,
+            "h": 0.1217618299670376,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478002391-e63xqim",
+        "heat": 3,
+        "imageId": "1787478002391-64ug1h0",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 21,
+        "blurRegions": [
+          {
+            "id": "blur_1787478021342_dc7t",
+            "x": 0.5840153537314421,
+            "y": 0.2515098555405615,
+            "w": 0.1496547616421433,
+            "h": 0.1713160630931575,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478002391-7242015",
+        "heat": 3,
+        "imageId": "1787478002391-ruv0q8u",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 48,
+        "blurRegions": [
+          {
+            "id": "blur_1787478013670_e92u",
+            "x": 0.050340826366062956,
+            "y": 0.3633608388823751,
+            "w": 0.41649202532483287,
+            "h": 0.3284737738645665,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478002391-cnpff5m",
+        "heat": 3,
+        "imageId": "1787478002391-fm1z2va",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 43,
+        "blurRegions": [
+          {
+            "id": "blur_1787478007518_0hrw",
+            "x": 0.3355319759105248,
+            "y": 0.5162710439572594,
+            "w": 0.16659681012993316,
+            "h": 0.3228104329358671,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      }
     ]
   },
   {
     "id": "1786833964287-iflkqh2",
     "name": "타치바나 미사키",
+    "names": {
+      "ko": "타치바나 미사키",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
     "age": "25",
     "job": "요가강사",
-    "bust": "D",
-    "weight": "56",
+    "jobs": {
+      "ko": "요가강사",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "bust": "",
+    "weight": "",
     "grade": "C",
-    "popularity": 25,
+    "statType": "performance",
     "concept": "요가강사",
     "salary": 25920,
     "eventLinks": {
-      "scout": null,
+      "scout": "08e8e28c-c1bd-4b14-a8d8-797afa97288f",
       "salary": null,
-      "vip": null,
-      "h": null,
-      "date1": null,
-      "date2": null,
+      "vip": "9c23fc50-241f-457c-b53d-4c8eea480462",
+      "h": "56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601",
+      "date1": "527c3f8b-f496-4c25-9fd1-91096ec45330",
+      "date2": "a234616f-b272-4c51-94ae-ff079b5e37c7",
       "scoutAccept": null,
       "scoutFail": null
     },
@@ -174,7 +581,7 @@
     "characterIllustrationId": "1786833286586-idbg0ep",
     "profileImageId": "1786833286586-idbg0ep",
     "profileVideoId": null,
-    "mediaRevision": 1786848758765,
+    "mediaRevision": 1787400635246,
     "images": [
       {
         "id": "1786833284180-oiphofn",
@@ -189,6 +596,177 @@
         "fileSize": 1669673,
         "url": "media://characters/1786833964287-iflkqh2/images/1786833286586-idbg0ep__2026-08-15_00058.png",
         "keys": []
+      },
+      {
+        "id": "1787400450176-bp9mssg",
+        "fileName": "1787400450176-bp9mssg__2026-08-19_00052.png",
+        "fileSize": 2451690,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400450176-bp9mssg__2026-08-19_00052.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400450176-vpyqh2k",
+        "fileName": "1787400450176-vpyqh2k__2026-08-19_00057.png",
+        "fileSize": 1994773,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400450176-vpyqh2k__2026-08-19_00057.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400450176-nji6tyy",
+        "fileName": "1787400450176-nji6tyy__2026-08-13_00041.png",
+        "fileSize": 2239478,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400450176-nji6tyy__2026-08-13_00041.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400450176-xja2sv2",
+        "fileName": "1787400450176-xja2sv2__2026-08-13_00023.png",
+        "fileSize": 3597744,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400450176-xja2sv2__2026-08-13_00023.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400450176-bl53yl2",
+        "fileName": "1787400450176-bl53yl2__2026-08-13_00026.png",
+        "fileSize": 2170677,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400450176-bl53yl2__2026-08-13_00026.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400450176-3pe3p36",
+        "fileName": "1787400450176-3pe3p36__2026-08-13_00020.png",
+        "fileSize": 2694132,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400450176-3pe3p36__2026-08-13_00020.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400450176-uch044t",
+        "fileName": "1787400450176-uch044t__2026-08-13_00021.png",
+        "fileSize": 2839562,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400450176-uch044t__2026-08-13_00021.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400450176-aj7prho",
+        "fileName": "1787400450176-aj7prho__2026-08-13_00017.png",
+        "fileSize": 2582048,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400450176-aj7prho__2026-08-13_00017.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400450176-v4cky4g",
+        "fileName": "1787400450176-v4cky4g__2026-08-13_00018.png",
+        "fileSize": 2704466,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400450176-v4cky4g__2026-08-13_00018.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400450176-1afr1bt",
+        "fileName": "1787400450176-1afr1bt__2026-08-13_00019.png",
+        "fileSize": 2940375,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400450176-1afr1bt__2026-08-13_00019.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400577806-bux64te",
+        "fileName": "1787400577806-bux64te__2026-08-19_00058.png",
+        "fileSize": 1905526,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400577806-bux64te__2026-08-19_00058.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400577807-vadm42j",
+        "fileName": "1787400577807-vadm42j__2026-08-19_00055.png",
+        "fileSize": 2405319,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400577807-vadm42j__2026-08-19_00055.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400577807-1zhkknq",
+        "fileName": "1787400577807-1zhkknq__2026-08-19_00081.png",
+        "fileSize": 1895013,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400577807-1zhkknq__2026-08-19_00081.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400577807-ioo1v8j",
+        "fileName": "1787400577807-ioo1v8j__2026-08-19_00080.png",
+        "fileSize": 2024708,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400577807-ioo1v8j__2026-08-19_00080.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400630270-8medvqv",
+        "fileName": "1787400630270-8medvqv__2026-08-19_00075.png",
+        "fileSize": 2295448,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400630270-8medvqv__2026-08-19_00075.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400630270-l1ks1nl",
+        "fileName": "1787400630270-l1ks1nl__2026-08-19_00069.png",
+        "fileSize": 2494550,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400630270-l1ks1nl__2026-08-19_00069.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400630270-eqawji0",
+        "fileName": "1787400630270-eqawji0__2026-08-19_00062.png",
+        "fileSize": 2426976,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400630270-eqawji0__2026-08-19_00062.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400630270-88935nn",
+        "fileName": "1787400630270-88935nn__2026-08-19_00074.png",
+        "fileSize": 2102017,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400630270-88935nn__2026-08-19_00074.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787400630270-ze42rs4",
+        "fileName": "1787400630270-ze42rs4__2026-08-19_00072.png",
+        "fileSize": 2251189,
+        "url": "media://characters/1786833964287-iflkqh2/images/1787400630270-ze42rs4__2026-08-19_00072.png",
+        "keys": [
+          "sns"
+        ]
       }
     ],
     "videos": [
@@ -275,26 +853,388 @@
         "level": 1,
         "stage": 1
       }
+    ],
+    "snsPosts": [
+      {
+        "id": "1787400450178-vihddl0",
+        "heat": 1,
+        "imageId": "1787400450176-bp9mssg",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 47,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400450178-jq2l0nn",
+        "heat": 1,
+        "imageId": "1787400450176-vpyqh2k",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 22,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400450178-7seaak1",
+        "heat": 1,
+        "imageId": "1787400450176-nji6tyy",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 23,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400450178-da0t4cq",
+        "heat": 1,
+        "imageId": "1787400450176-xja2sv2",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 19,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400450178-z8erz2v",
+        "heat": 1,
+        "imageId": "1787400450176-bl53yl2",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 13,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400450178-04di2u5",
+        "heat": 1,
+        "imageId": "1787400450176-3pe3p36",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 25,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400450178-9vm7li7",
+        "heat": 1,
+        "imageId": "1787400450176-uch044t",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 7,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400450178-aou7opv",
+        "heat": 1,
+        "imageId": "1787400450176-aj7prho",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 38,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400450178-82fyj8j",
+        "heat": 1,
+        "imageId": "1787400450176-v4cky4g",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 9,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400450178-x5oo68p",
+        "heat": 1,
+        "imageId": "1787400450176-1afr1bt",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 41,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400577807-poywrke",
+        "heat": 2,
+        "imageId": "1787400577806-bux64te",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 14,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400577807-z0udq9q",
+        "heat": 2,
+        "imageId": "1787400577807-vadm42j",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 34,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400577807-4f4pdp3",
+        "heat": 2,
+        "imageId": "1787400577807-1zhkknq",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 2,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400577807-ku3mm8h",
+        "heat": 2,
+        "imageId": "1787400577807-ioo1v8j",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 44,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400630271-w0xealg",
+        "heat": 3,
+        "imageId": "1787400630270-8medvqv",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 22,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400630271-jmf0u0w",
+        "heat": 3,
+        "imageId": "1787400630270-l1ks1nl",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 40,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400630271-brn6kbv",
+        "heat": 3,
+        "imageId": "1787400630270-eqawji0",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 27,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400630271-gy00eeg",
+        "heat": 3,
+        "imageId": "1787400630270-88935nn",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 42,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787400630271-dxqldqt",
+        "heat": 3,
+        "imageId": "1787400630270-ze42rs4",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 5,
+        "blurRegions": [],
+        "blurDefault": 4
+      }
     ]
   },
   {
     "id": "1786849140255-p0lxz2i",
     "name": "사토 메구미",
+    "names": {
+      "ko": "사토 메구미",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
     "age": "28",
     "job": "간호사",
-    "bust": "F",
-    "weight": "56",
+    "jobs": {
+      "ko": "간호사",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "bust": "",
+    "weight": "",
     "grade": "C",
-    "popularity": 25,
+    "statType": "communication",
     "concept": "간호사",
     "salary": 25920,
     "eventLinks": {
-      "scout": null,
+      "scout": "858b65ec-6b89-4a73-aa01-8000500a5d63",
       "salary": null,
-      "vip": null,
-      "h": null,
-      "date1": null,
-      "date2": null
+      "vip": "97e7ca57-0eed-4003-885f-c42df134b577",
+      "h": "ab9b304b-a998-47b0-95b3-99bed4369624",
+      "date1": "ec8564e5-caab-4f3a-bd26-62ebe2e2df34",
+      "date2": "9e811e32-fbde-4478-a0de-4e6ac4e3f8fd"
     },
     "avatarTone": "from-rose-400 to-amber-300",
     "profileImageUrl": "media://characters/1786849140255-p0lxz2i/images/1786849076204-1ym2lis__2026-08-15_00048.png",
@@ -302,7 +1242,7 @@
     "characterIllustrationId": "1786849076204-1ym2lis",
     "profileImageId": "1786849076204-1ym2lis",
     "profileVideoId": null,
-    "mediaRevision": 1786849140313,
+    "mediaRevision": 1787479095344,
     "images": [
       {
         "id": "1786849076204-4e03kfg",
@@ -317,6 +1257,159 @@
         "fileSize": 1915145,
         "url": "media://characters/1786849140255-p0lxz2i/images/1786849076204-1ym2lis__2026-08-15_00048.png",
         "keys": []
+      },
+      {
+        "id": "1787479012049-ysumz4y",
+        "fileName": "1787479012049-ysumz4y__2026-08-23_00061.png",
+        "fileSize": 2182547,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479012049-ysumz4y__2026-08-23_00061.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479012049-o4fqqgd",
+        "fileName": "1787479012049-o4fqqgd__2026-08-23_00054.png",
+        "fileSize": 1845709,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479012049-o4fqqgd__2026-08-23_00054.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479012049-z2bi2kh",
+        "fileName": "1787479012049-z2bi2kh__2026-08-23_00055.png",
+        "fileSize": 2444625,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479012049-z2bi2kh__2026-08-23_00055.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479012049-wwreo1m",
+        "fileName": "1787479012049-wwreo1m__2026-08-23_00056.png",
+        "fileSize": 1938443,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479012049-wwreo1m__2026-08-23_00056.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479012049-gerfnf3",
+        "fileName": "1787479012049-gerfnf3__2026-08-23_00057.png",
+        "fileSize": 2165565,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479012049-gerfnf3__2026-08-23_00057.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479012049-vtiaf2e",
+        "fileName": "1787479012049-vtiaf2e__2026-08-23_00058.png",
+        "fileSize": 1920621,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479012049-vtiaf2e__2026-08-23_00058.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479012049-4i9dqu5",
+        "fileName": "1787479012049-4i9dqu5__2026-08-23_00059.png",
+        "fileSize": 1804064,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479012049-4i9dqu5__2026-08-23_00059.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479012049-991hitf",
+        "fileName": "1787479012049-991hitf__2026-08-23_00060.png",
+        "fileSize": 1806495,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479012049-991hitf__2026-08-23_00060.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479012049-t4hgbx1",
+        "fileName": "1787479012049-t4hgbx1__2026-08-23_00062.png",
+        "fileSize": 2171434,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479012049-t4hgbx1__2026-08-23_00062.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479012049-0v1zldg",
+        "fileName": "1787479012049-0v1zldg__2026-08-23_00063.png",
+        "fileSize": 2015733,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479012049-0v1zldg__2026-08-23_00063.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479056864-6qjdy1f",
+        "fileName": "1787479056864-6qjdy1f__2026-08-23_00065.png",
+        "fileSize": 2226672,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479056864-6qjdy1f__2026-08-23_00065.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479056865-1l28wu6",
+        "fileName": "1787479056865-1l28wu6__2026-08-23_00066.png",
+        "fileSize": 1730405,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479056865-1l28wu6__2026-08-23_00066.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479056865-xwr4t4e",
+        "fileName": "1787479056865-xwr4t4e__2026-08-23_00067.png",
+        "fileSize": 2044601,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479056865-xwr4t4e__2026-08-23_00067.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479056865-eqnris3",
+        "fileName": "1787479056865-eqnris3__2026-08-23_00068.png",
+        "fileSize": 2048686,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479056865-eqnris3__2026-08-23_00068.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479056865-gi8my2u",
+        "fileName": "1787479056865-gi8my2u__2026-08-23_00069.png",
+        "fileSize": 2251068,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479056865-gi8my2u__2026-08-23_00069.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479056865-15lrpim",
+        "fileName": "1787479056865-15lrpim__2026-08-23_00071.png",
+        "fileSize": 2036498,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479056865-15lrpim__2026-08-23_00071.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787479056865-zha15vg",
+        "fileName": "1787479056865-zha15vg__2026-08-23_00072.png",
+        "fileSize": 1988687,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1787479056865-zha15vg__2026-08-23_00072.png",
+        "keys": [
+          "sns"
+        ]
       }
     ],
     "videos": [
@@ -385,26 +1478,406 @@
         "level": 1,
         "stage": 1
       }
+    ],
+    "snsPosts": [
+      {
+        "id": "1787479012050-jf34zut",
+        "heat": 2,
+        "imageId": "1787479012049-ysumz4y",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 8,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479012050-x5zzkw7",
+        "heat": 2,
+        "imageId": "1787479012049-o4fqqgd",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 27,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479012050-hjn3w42",
+        "heat": 2,
+        "imageId": "1787479012049-z2bi2kh",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 38,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479012050-ivrtic9",
+        "heat": 2,
+        "imageId": "1787479012049-wwreo1m",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 7,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479012050-6ti3upe",
+        "heat": 2,
+        "imageId": "1787479012049-gerfnf3",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 43,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479012050-0kmt6ta",
+        "heat": 2,
+        "imageId": "1787479012049-vtiaf2e",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 37,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479012050-rxbf0w3",
+        "heat": 2,
+        "imageId": "1787479012049-4i9dqu5",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 36,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479012050-719ac3h",
+        "heat": 2,
+        "imageId": "1787479012049-991hitf",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 4,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479012050-upkod8r",
+        "heat": 2,
+        "imageId": "1787479012049-t4hgbx1",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 35,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479012050-rh8ebfm",
+        "heat": 2,
+        "imageId": "1787479012049-0v1zldg",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 10,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479056865-c4zc46w",
+        "heat": 3,
+        "imageId": "1787479056864-6qjdy1f",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 33,
+        "blurRegions": [
+          {
+            "id": "blur_1787479082368_g3wq",
+            "x": 0.6320178244468465,
+            "y": 0.7569630334269849,
+            "w": 0.11294698991859875,
+            "h": 0.09769263102006509,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479056865-ttfquxz",
+        "heat": 3,
+        "imageId": "1787479056865-1l28wu6",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 24,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479056865-je7r96j",
+        "heat": 3,
+        "imageId": "1787479056865-xwr4t4e",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 35,
+        "blurRegions": [
+          {
+            "id": "blur_1787479075008_5q31",
+            "x": 0.44847896582912355,
+            "y": 0.7201513173904387,
+            "w": 0.12706536365842364,
+            "h": 0.13733601752096103,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479056865-e9q5kgc",
+        "heat": 3,
+        "imageId": "1787479056865-eqnris3",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 23,
+        "blurRegions": [
+          {
+            "id": "blur_1787479071152_fu53",
+            "x": 0.3425911627804372,
+            "y": 0.785279738070482,
+            "w": 0.3331936202598663,
+            "h": 0.21472026192951799,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479056865-72j0epg",
+        "heat": 3,
+        "imageId": "1787479056865-gi8my2u",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 4,
+        "blurRegions": [
+          {
+            "id": "blur_1787479067321_6fbi",
+            "x": 0.13081555668306458,
+            "y": 0.3449549808641019,
+            "w": 0.3529593434956211,
+            "h": 0.34829546711501447,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479056865-dtgd0ve",
+        "heat": 3,
+        "imageId": "1787479056865-15lrpim",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 24,
+        "blurRegions": [
+          {
+            "id": "blur_1787479063721_lc5e",
+            "x": 0.18587721426838147,
+            "y": 0.6097161692808,
+            "w": 0.27107277580463696,
+            "h": 0.39028383071920003,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787479056865-pgpjfq2",
+        "heat": 3,
+        "imageId": "1787479056865-zha15vg",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 9,
+        "blurRegions": [
+          {
+            "id": "blur_1787479060968_p91v",
+            "x": 0.5218945092762127,
+            "y": 0.4737959869920138,
+            "w": 0.4419050980565177,
+            "h": 0.4006813707054841,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      }
     ]
   },
   {
     "id": "1786850998437-g6olmc9",
     "name": "아키야마 미호",
+    "names": {
+      "ko": "아키야마 미호",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
     "age": "28",
     "job": "경찰",
-    "bust": "C",
-    "weight": "48",
+    "jobs": {
+      "ko": "경찰",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "bust": "",
+    "weight": "",
     "grade": "C",
-    "popularity": 25,
+    "statType": "elegance",
     "concept": "경찰",
     "salary": 25920,
     "eventLinks": {
-      "scout": null,
+      "scout": "47215c35-ad07-4b2b-a633-1fbc75c2055a",
       "salary": null,
-      "vip": null,
-      "h": null,
-      "date1": null,
-      "date2": null
+      "vip": "af889669-9929-4000-84fa-10ebd9ac3cf1",
+      "h": "6e1395b9-83ad-452c-a4d6-3a78b9c95fab",
+      "date1": "2f849f77-ce82-4aa3-889f-94d1b2fad381",
+      "date2": "e80cb0f4-8839-45a6-97ca-42f2ed18c988"
     },
     "avatarTone": "from-orange-300 to-rose-400",
     "profileImageUrl": "media://characters/1786850998437-g6olmc9/images/1786850958898-fcpxigb__2026-08-15_00028.png",
@@ -412,7 +1885,7 @@
     "characterIllustrationId": "1786850958898-fcpxigb",
     "profileImageId": "1786850958898-fcpxigb",
     "profileVideoId": null,
-    "mediaRevision": 1786863152104,
+    "mediaRevision": 1787478918158,
     "images": [
       {
         "id": "1786850958898-8nounrj",
@@ -427,6 +1900,141 @@
         "fileSize": 2159621,
         "url": "media://characters/1786850998437-g6olmc9/images/1786850958898-fcpxigb__2026-08-15_00028.png",
         "keys": []
+      },
+      {
+        "id": "1787478831554-rt5hx1x",
+        "fileName": "1787478831554-rt5hx1x__2026-08-23_00075.png",
+        "fileSize": 2432828,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478831554-rt5hx1x__2026-08-23_00075.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478831554-7r16ba7",
+        "fileName": "1787478831554-7r16ba7__2026-08-23_00076.png",
+        "fileSize": 2067508,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478831554-7r16ba7__2026-08-23_00076.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478831554-ysp39fj",
+        "fileName": "1787478831554-ysp39fj__2026-08-23_00078.png",
+        "fileSize": 2134639,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478831554-ysp39fj__2026-08-23_00078.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478831554-gvi85p8",
+        "fileName": "1787478831554-gvi85p8__2026-08-23_00079.png",
+        "fileSize": 2112049,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478831554-gvi85p8__2026-08-23_00079.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478831554-rnocq67",
+        "fileName": "1787478831554-rnocq67__2026-08-23_00080.png",
+        "fileSize": 2105695,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478831554-rnocq67__2026-08-23_00080.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478831554-n15g1bx",
+        "fileName": "1787478831554-n15g1bx__2026-08-23_00081.png",
+        "fileSize": 1787335,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478831554-n15g1bx__2026-08-23_00081.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478831554-c6q1uig",
+        "fileName": "1787478831554-c6q1uig__2026-08-23_00082.png",
+        "fileSize": 2076773,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478831554-c6q1uig__2026-08-23_00082.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478831554-esn8s0z",
+        "fileName": "1787478831554-esn8s0z__2026-08-23_00083.png",
+        "fileSize": 2183854,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478831554-esn8s0z__2026-08-23_00083.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478869986-3rk0qiy",
+        "fileName": "1787478869986-3rk0qiy__2026-08-23_00085.png",
+        "fileSize": 2264881,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478869986-3rk0qiy__2026-08-23_00085.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478869986-d1zi9pd",
+        "fileName": "1787478869986-d1zi9pd__2026-08-23_00086.png",
+        "fileSize": 1971398,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478869986-d1zi9pd__2026-08-23_00086.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478869986-33n3uou",
+        "fileName": "1787478869986-33n3uou__2026-08-23_00087.png",
+        "fileSize": 2222364,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478869986-33n3uou__2026-08-23_00087.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478869986-3qn97ih",
+        "fileName": "1787478869986-3qn97ih__2026-08-23_00088.png",
+        "fileSize": 2202415,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478869986-3qn97ih__2026-08-23_00088.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478869986-by39ipt",
+        "fileName": "1787478869986-by39ipt__2026-08-23_00089.png",
+        "fileSize": 2234391,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478869986-by39ipt__2026-08-23_00089.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478869986-6wpjisy",
+        "fileName": "1787478869986-6wpjisy__2026-08-23_00090.png",
+        "fileSize": 2219289,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478869986-6wpjisy__2026-08-23_00090.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478869986-2so1kod",
+        "fileName": "1787478869986-2so1kod__2026-08-23_00091.png",
+        "fileSize": 2059867,
+        "url": "media://characters/1786850998437-g6olmc9/images/1787478869986-2so1kod__2026-08-23_00091.png",
+        "keys": [
+          "sns"
+        ]
       }
     ],
     "videos": [
@@ -495,26 +2103,370 @@
         "level": 1,
         "stage": 1
       }
+    ],
+    "snsPosts": [
+      {
+        "id": "1787478831555-ryia0e0",
+        "heat": 2,
+        "imageId": "1787478831554-rt5hx1x",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 16,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478831555-fbkh3j4",
+        "heat": 2,
+        "imageId": "1787478831554-7r16ba7",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 45,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478831555-ubhtuvn",
+        "heat": 2,
+        "imageId": "1787478831554-ysp39fj",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 5,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478831555-3ogvm88",
+        "heat": 2,
+        "imageId": "1787478831554-gvi85p8",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 31,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478831555-jfweonc",
+        "heat": 2,
+        "imageId": "1787478831554-rnocq67",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 35,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478831555-4hd48hy",
+        "heat": 2,
+        "imageId": "1787478831554-n15g1bx",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 15,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478831555-tx7bj60",
+        "heat": 2,
+        "imageId": "1787478831554-c6q1uig",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 48,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478831555-4i2gvw0",
+        "heat": 2,
+        "imageId": "1787478831554-esn8s0z",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 28,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478869987-0xwme02",
+        "heat": 3,
+        "imageId": "1787478869986-3rk0qiy",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 46,
+        "blurRegions": [
+          {
+            "id": "blur_1787478904626_8dsk",
+            "x": 0.6743729456663211,
+            "y": 0.6819237661217176,
+            "w": 0.15247843639010827,
+            "h": 0.16706855739663296,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478869987-7tophd1",
+        "heat": 3,
+        "imageId": "1787478869986-d1zi9pd",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 27,
+        "blurRegions": [
+          {
+            "id": "blur_1787478900881_w4k9",
+            "x": 0.7110807173898657,
+            "y": 0.8900515452514214,
+            "w": 0.12141801416249365,
+            "h": 0.10994845474857862,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478869987-0suit7e",
+        "heat": 3,
+        "imageId": "1787478869986-33n3uou",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 4,
+        "blurRegions": [
+          {
+            "id": "blur_1787478893905_pxmm",
+            "x": 0.6136639385850743,
+            "y": 0,
+            "w": 0.2724846131786194,
+            "h": 0.4355684357232927,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478869987-611i3dw",
+        "heat": 3,
+        "imageId": "1787478869986-3qn97ih",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 32,
+        "blurRegions": [
+          {
+            "id": "blur_1787478887529_3g4j",
+            "x": 0.043281639496150534,
+            "y": 0.550251089529456,
+            "w": 0.3190752465200415,
+            "h": 0.28316704643497115,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478869987-cp4jvys",
+        "heat": 3,
+        "imageId": "1787478869986-by39ipt",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 17,
+        "blurRegions": [
+          {
+            "id": "blur_1787478881545_2riu",
+            "x": 0.43294875471531624,
+            "y": 0.4384001061876424,
+            "w": 0.2993095232842867,
+            "h": 0.47572063801075154,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478869987-eimjuo7",
+        "heat": 3,
+        "imageId": "1787478869986-6wpjisy",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 28,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478869987-7qzi8tc",
+        "heat": 3,
+        "imageId": "1787478869986-2so1kod",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 28,
+        "blurRegions": [
+          {
+            "id": "blur_1787478873897_ky9e",
+            "x": 0.3171780900487525,
+            "y": 0.6352012034599474,
+            "w": 0.21601111821932006,
+            "h": 0.3412162909541402,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      }
     ]
   },
   {
     "id": "1786851057540-5sup19s",
     "name": "시라카와 아야",
+    "names": {
+      "ko": "시라카와 아야",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
     "age": "40",
     "job": "교수",
-    "bust": "D",
-    "weight": "48",
+    "jobs": {
+      "ko": "교수",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "bust": "",
+    "weight": "",
     "grade": "C",
-    "popularity": 25,
+    "statType": "elegance",
     "concept": "교수",
     "salary": 25920,
     "eventLinks": {
-      "scout": null,
+      "scout": "11adeaf6-5a6b-4570-80f1-cbb586a03dc2",
       "salary": null,
-      "vip": null,
-      "h": null,
-      "date1": null,
-      "date2": null
+      "vip": "c8d535db-c786-48d0-8b9c-0a24ae64de40",
+      "h": "c64be57a-0bee-4ab4-a2c6-49a46f72e231",
+      "date1": "932322e9-444a-4498-a767-c26cab3ed63d",
+      "date2": "e1afa3bc-051c-49d7-890d-52556e97ef5e"
     },
     "avatarTone": "from-emerald-300 to-cyan-400",
     "profileImageUrl": "media://characters/1786851057540-5sup19s/images/1786851012692-5okgifr__2026-08-14_00342.png",
@@ -522,7 +2474,7 @@
     "characterIllustrationId": "1786851012692-5okgifr",
     "profileImageId": "1786851012692-5okgifr",
     "profileVideoId": null,
-    "mediaRevision": 1786873012500,
+    "mediaRevision": 1787479259137,
     "images": [
       {
         "id": "1786851012691-cj9ehp3",
@@ -537,6 +2489,141 @@
         "fileSize": 2117154,
         "url": "media://characters/1786851057540-5sup19s/images/1786851012692-5okgifr__2026-08-14_00342.png",
         "keys": []
+      },
+      {
+        "id": "1787478690499-2bf6hj3",
+        "fileName": "1787478690499-2bf6hj3__2026-08-23_00094.png",
+        "fileSize": 1842553,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478690499-2bf6hj3__2026-08-23_00094.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478690499-7oh7uab",
+        "fileName": "1787478690499-7oh7uab__2026-08-23_00095.png",
+        "fileSize": 2070194,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478690499-7oh7uab__2026-08-23_00095.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478690499-z5ge1np",
+        "fileName": "1787478690499-z5ge1np__2026-08-23_00096.png",
+        "fileSize": 2388832,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478690499-z5ge1np__2026-08-23_00096.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478690499-8ksac5s",
+        "fileName": "1787478690499-8ksac5s__2026-08-23_00097.png",
+        "fileSize": 2241882,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478690499-8ksac5s__2026-08-23_00097.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478690499-s73ehky",
+        "fileName": "1787478690499-s73ehky__2026-08-23_00098.png",
+        "fileSize": 2318657,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478690499-s73ehky__2026-08-23_00098.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478690499-nmvcfuq",
+        "fileName": "1787478690499-nmvcfuq__2026-08-23_00099.png",
+        "fileSize": 2145478,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478690499-nmvcfuq__2026-08-23_00099.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478690499-bxfzo4n",
+        "fileName": "1787478690499-bxfzo4n__2026-08-23_00100.png",
+        "fileSize": 2205119,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478690499-bxfzo4n__2026-08-23_00100.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478690499-5glp29m",
+        "fileName": "1787478690499-5glp29m__2026-08-23_00101.png",
+        "fileSize": 2222582,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478690499-5glp29m__2026-08-23_00101.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478690499-rmpzt0i",
+        "fileName": "1787478690499-rmpzt0i__2026-08-23_00102.png",
+        "fileSize": 2075917,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478690499-rmpzt0i__2026-08-23_00102.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478690499-7gvft1o",
+        "fileName": "1787478690499-7gvft1o__2026-08-23_00103.png",
+        "fileSize": 2224476,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478690499-7gvft1o__2026-08-23_00103.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478735698-socozef",
+        "fileName": "1787478735698-socozef__2026-08-23_00105.png",
+        "fileSize": 2124359,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478735698-socozef__2026-08-23_00105.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478735698-vx49kcm",
+        "fileName": "1787478735698-vx49kcm__2026-08-23_00106.png",
+        "fileSize": 2121912,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478735698-vx49kcm__2026-08-23_00106.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478735698-a8vfj4v",
+        "fileName": "1787478735698-a8vfj4v__2026-08-23_00107.png",
+        "fileSize": 2218457,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478735698-a8vfj4v__2026-08-23_00107.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478735698-krkbnzm",
+        "fileName": "1787478735698-krkbnzm__2026-08-23_00108.png",
+        "fileSize": 2445464,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478735698-krkbnzm__2026-08-23_00108.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478735698-ge2l1d2",
+        "fileName": "1787478735698-ge2l1d2__2026-08-23_00109.png",
+        "fileSize": 2331874,
+        "url": "media://characters/1786851057540-5sup19s/images/1787478735698-ge2l1d2__2026-08-23_00109.png",
+        "keys": [
+          "sns"
+        ]
       }
     ],
     "videos": [
@@ -668,26 +2755,361 @@
         "level": 1,
         "stage": 1
       }
+    ],
+    "snsPosts": [
+      {
+        "id": "1787478690500-od3vm2e",
+        "heat": 2,
+        "imageId": "1787478690499-2bf6hj3",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 1,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478690500-tgje7z1",
+        "heat": 2,
+        "imageId": "1787478690499-7oh7uab",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 24,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478690500-qqu4waq",
+        "heat": 2,
+        "imageId": "1787478690499-z5ge1np",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 20,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478690500-8avf58a",
+        "heat": 2,
+        "imageId": "1787478690499-8ksac5s",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 0,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478690500-wc0766m",
+        "heat": 2,
+        "imageId": "1787478690499-s73ehky",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 7,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478690500-dcct53j",
+        "heat": 2,
+        "imageId": "1787478690499-nmvcfuq",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 2,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478690500-oiwqrb7",
+        "heat": 2,
+        "imageId": "1787478690499-bxfzo4n",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 47,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478690500-a0lly0l",
+        "heat": 2,
+        "imageId": "1787478690499-5glp29m",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 44,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478690500-ppo6j6i",
+        "heat": 2,
+        "imageId": "1787478690499-rmpzt0i",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 48,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478690500-0i1j88a",
+        "heat": 2,
+        "imageId": "1787478690499-7gvft1o",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 26,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478735699-qwtr5bd",
+        "heat": 3,
+        "imageId": "1787478735698-socozef",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 42,
+        "blurRegions": [
+          {
+            "id": "blur_1787478743331_m42v",
+            "x": 0.6574308971785312,
+            "y": 0.8305864655000774,
+            "w": 0.13271271315435362,
+            "h": 0.13167267659226156,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478735699-qzvpcb7",
+        "heat": 3,
+        "imageId": "1787478735698-vx49kcm",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 43,
+        "blurRegions": [
+          {
+            "id": "blur_1787478749650_4rnx",
+            "x": 0.16187597891067923,
+            "y": 0.5898944760303519,
+            "w": 0.13977190002426593,
+            "h": 0.11185098334181365,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478735699-h5zdrbg",
+        "heat": 3,
+        "imageId": "1787478735698-a8vfj4v",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 30,
+        "blurRegions": [
+          {
+            "id": "blur_1787478754474_jr5s",
+            "x": 0.1364629061789945,
+            "y": 0.158064730217021,
+            "w": 0.2978976859103042,
+            "h": 0.3256421034002168,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478735699-4drofa4",
+        "heat": 3,
+        "imageId": "1787478735698-krkbnzm",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 20,
+        "blurRegions": [
+          {
+            "id": "blur_1787478760402_xxfx",
+            "x": 0.06022368798394035,
+            "y": 0.32938079331017855,
+            "w": 0.2555425646908297,
+            "h": 0.20954361436187863,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478735699-2s2hjxf",
+        "heat": 3,
+        "imageId": "1787478735698-ge2l1d2",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 39,
+        "blurRegions": [
+          {
+            "id": "blur_1787478765546_fm3f",
+            "x": 0.16893516578059165,
+            "y": 0.2798265601840586,
+            "w": 0.40237365158500804,
+            "h": 0.2817512112027962,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      }
     ]
   },
   {
     "id": "1786851109772-o2n3dj3",
     "name": "센노 리나",
+    "names": {
+      "ko": "센노 리나",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
     "age": "28",
     "job": "발레리나",
-    "bust": "C",
-    "weight": "48",
+    "jobs": {
+      "ko": "발레리나",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "bust": "",
+    "weight": "",
     "grade": "C",
-    "popularity": 25,
+    "statType": "communication",
     "concept": "발레리나",
     "salary": 25920,
     "eventLinks": {
-      "scout": null,
+      "scout": "e797b38b-9182-4593-84c6-8ed9666160c2",
       "salary": null,
-      "vip": null,
-      "h": null,
-      "date1": null,
-      "date2": null
+      "vip": "db1eff8f-cb31-4d33-b438-464c29dc21fa",
+      "h": "89ab7df5-6c22-43bb-83d3-0d4df5d67843",
+      "date1": "d52a372b-52cc-445e-b192-ec7e38458ce5",
+      "date2": "55a714c6-13aa-41bf-a4f4-a511956c6079"
     },
     "avatarTone": "from-emerald-300 to-cyan-400",
     "profileImageUrl": "media://characters/1786851109772-o2n3dj3/images/1786851072697-mubqh2i__2026-08-15_00038.png",
@@ -695,7 +3117,7 @@
     "characterIllustrationId": "1786851072697-mubqh2i",
     "profileImageId": "1786851072697-mubqh2i",
     "profileVideoId": null,
-    "mediaRevision": 1786880024947,
+    "mediaRevision": 1787479269732,
     "images": [
       {
         "id": "1786851072697-wmo4ggx",
@@ -710,6 +3132,141 @@
         "fileSize": 2012399,
         "url": "media://characters/1786851109772-o2n3dj3/images/1786851072697-mubqh2i__2026-08-15_00038.png",
         "keys": []
+      },
+      {
+        "id": "1787478175805-i8helfk",
+        "fileName": "1787478175805-i8helfk__2026-08-23_00115.png",
+        "fileSize": 2661005,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478175805-i8helfk__2026-08-23_00115.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478175806-96i81cs",
+        "fileName": "1787478175806-96i81cs__2026-08-23_00116.png",
+        "fileSize": 2143827,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478175806-96i81cs__2026-08-23_00116.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478175806-rvh7d6j",
+        "fileName": "1787478175806-rvh7d6j__2026-08-23_00118.png",
+        "fileSize": 2120645,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478175806-rvh7d6j__2026-08-23_00118.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478175806-bisyg5o",
+        "fileName": "1787478175806-bisyg5o__2026-08-23_00119.png",
+        "fileSize": 2300943,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478175806-bisyg5o__2026-08-23_00119.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478175806-dv51fcm",
+        "fileName": "1787478175806-dv51fcm__2026-08-23_00120.png",
+        "fileSize": 2082285,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478175806-dv51fcm__2026-08-23_00120.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478175806-pvs98rc",
+        "fileName": "1787478175806-pvs98rc__2026-08-23_00121.png",
+        "fileSize": 1853170,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478175806-pvs98rc__2026-08-23_00121.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478175806-f8177dd",
+        "fileName": "1787478175806-f8177dd__2026-08-23_00122.png",
+        "fileSize": 2110813,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478175806-f8177dd__2026-08-23_00122.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478175806-tkq9ycu",
+        "fileName": "1787478175806-tkq9ycu__2026-08-23_00123.png",
+        "fileSize": 1953454,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478175806-tkq9ycu__2026-08-23_00123.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478213238-euzvzal",
+        "fileName": "1787478213238-euzvzal__2026-08-23_00132.png",
+        "fileSize": 1870324,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478213238-euzvzal__2026-08-23_00132.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478213238-d7a90o2",
+        "fileName": "1787478213238-d7a90o2__2026-08-23_00125.png",
+        "fileSize": 2134778,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478213238-d7a90o2__2026-08-23_00125.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478213238-y7y5qvh",
+        "fileName": "1787478213238-y7y5qvh__2026-08-23_00126.png",
+        "fileSize": 1985880,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478213238-y7y5qvh__2026-08-23_00126.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478213238-1s5cwal",
+        "fileName": "1787478213238-1s5cwal__2026-08-23_00127.png",
+        "fileSize": 2214380,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478213238-1s5cwal__2026-08-23_00127.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478213238-7i0z1pu",
+        "fileName": "1787478213238-7i0z1pu__2026-08-23_00128.png",
+        "fileSize": 2121948,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478213238-7i0z1pu__2026-08-23_00128.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478213238-3bzv2ks",
+        "fileName": "1787478213238-3bzv2ks__2026-08-23_00129.png",
+        "fileSize": 2325187,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478213238-3bzv2ks__2026-08-23_00129.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478213238-40oz8uq",
+        "fileName": "1787478213238-40oz8uq__2026-08-23_00131.png",
+        "fileSize": 1933901,
+        "url": "media://characters/1786851109772-o2n3dj3/images/1787478213238-40oz8uq__2026-08-23_00131.png",
+        "keys": [
+          "sns"
+        ]
       }
     ],
     "videos": [
@@ -787,26 +3344,379 @@
         "level": 1,
         "stage": 1
       }
+    ],
+    "snsPosts": [
+      {
+        "id": "1787478175806-40ok75f",
+        "heat": 2,
+        "imageId": "1787478175805-i8helfk",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 44,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478175806-rb4scy2",
+        "heat": 2,
+        "imageId": "1787478175806-96i81cs",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 20,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478175806-uoiwtrq",
+        "heat": 2,
+        "imageId": "1787478175806-rvh7d6j",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 23,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478175806-8ijkgb0",
+        "heat": 2,
+        "imageId": "1787478175806-bisyg5o",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 41,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478175806-ksbdeaj",
+        "heat": 2,
+        "imageId": "1787478175806-dv51fcm",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 40,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478175806-tjf1c56",
+        "heat": 2,
+        "imageId": "1787478175806-pvs98rc",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 7,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478175806-1jvq22r",
+        "heat": 2,
+        "imageId": "1787478175806-f8177dd",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 14,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478175806-9b7p7g6",
+        "heat": 2,
+        "imageId": "1787478175806-tkq9ycu",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 28,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478213239-6q813l4",
+        "heat": 3,
+        "imageId": "1787478213238-euzvzal",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 14,
+        "blurRegions": [
+          {
+            "id": "blur_1787478267717_j457",
+            "x": 0.27623480620326046,
+            "y": 0.07453045151870451,
+            "w": 0.358606692991551,
+            "h": 0.6739375705152313,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478213239-abvpis5",
+        "heat": 3,
+        "imageId": "1787478213238-d7a90o2",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 39,
+        "blurRegions": [
+          {
+            "id": "blur_1787478262508_h3m8",
+            "x": 0.6122521012110917,
+            "y": 0.5714886180120788,
+            "w": 0.08329840506496655,
+            "h": 0.1614052164679336,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478213239-8a43umo",
+        "heat": 3,
+        "imageId": "1787478213238-y7y5qvh",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 8,
+        "blurRegions": [
+          {
+            "id": "blur_1787478256285_8za6",
+            "x": 0.30729522843087514,
+            "y": 0.6946662832112913,
+            "w": 0.06494451920319427,
+            "h": 0.11185098334181354,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478213239-p0hgyls",
+        "heat": 3,
+        "imageId": "1787478213238-1s5cwal",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 18,
+        "blurRegions": [
+          {
+            "id": "blur_1787478249877_x9yb",
+            "x": 0.639077011316759,
+            "y": 0.285489901112758,
+            "w": 0.20330458185347777,
+            "h": 0.17414773355750723,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478213239-d7epv8b",
+        "heat": 3,
+        "imageId": "1787478213238-7i0z1pu",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 40,
+        "blurRegions": [
+          {
+            "id": "blur_1787478227269_nnsc",
+            "x": 0.29458869206503274,
+            "y": 0.08444129814392848,
+            "w": 0.39954997683704313,
+            "h": 0.6357100192465102,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478213239-vd3zgqq",
+        "heat": 3,
+        "imageId": "1787478213238-3bzv2ks",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 3,
+        "blurRegions": [
+          {
+            "id": "blur_1787478221037_jtmy",
+            "x": 0.5981337274712669,
+            "y": 0.4384001061876424,
+            "w": 0.23718867882905736,
+            "h": 0.23361281330885114,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478213239-wrsgxvq",
+        "heat": 3,
+        "imageId": "1787478213238-40oz8uq",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 8,
+        "blurRegions": [
+          {
+            "id": "blur_1787478216845_dqgg",
+            "x": 0.43153691734133376,
+            "y": 0.37610335597194877,
+            "w": 0.19200988286161785,
+            "h": 0.39077052408026014,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      }
     ]
   },
   {
     "id": "1786851153987-tb6qhg5",
     "name": "루이자",
+    "names": {
+      "ko": "루이자",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
     "age": "28",
     "job": "댄서",
-    "bust": "D",
-    "weight": "50",
+    "jobs": {
+      "ko": "댄서",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "bust": "",
+    "weight": "",
     "grade": "C",
-    "popularity": 25,
+    "statType": "performance",
     "concept": "댄서",
     "salary": 25920,
     "eventLinks": {
-      "scout": null,
+      "scout": "4c007732-5e08-4914-9b25-b1a221c9bd74",
       "salary": null,
-      "vip": null,
-      "h": null,
-      "date1": null,
-      "date2": null
+      "vip": "a8386efa-e345-49e7-a853-d90019a208d9",
+      "h": "e3ee8c28-6440-4f9b-8ead-3a76db761d65",
+      "date1": "66eace05-3678-4976-aebf-ee86b096de74",
+      "date2": "00848db6-5fb0-44ca-ab30-787e4f14c14d"
     },
     "avatarTone": "from-violet-300 to-pink-400",
     "profileImageUrl": "media://characters/1786851153987-tb6qhg5/images/1786851121329-s6uy6cc__2026-08-14_00390.png",
@@ -814,7 +3724,7 @@
     "characterIllustrationId": "1786851121329-s6uy6cc",
     "profileImageId": "1786851121329-s6uy6cc",
     "profileVideoId": null,
-    "mediaRevision": 1786927232129,
+    "mediaRevision": 1787479283998,
     "images": [
       {
         "id": "1786851121329-wxzy6zc",
@@ -829,6 +3739,213 @@
         "fileSize": 2903405,
         "url": "media://characters/1786851153987-tb6qhg5/images/1786851121329-s6uy6cc__2026-08-14_00390.png",
         "keys": []
+      },
+      {
+        "id": "1787463813325-5eib9wg",
+        "fileName": "1787463813325-5eib9wg__2026-08-23_00002.png",
+        "fileSize": 2588763,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-5eib9wg__2026-08-23_00002.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-mmfz3lb",
+        "fileName": "1787463813325-mmfz3lb__2026-08-23_00003.png",
+        "fileSize": 2259903,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-mmfz3lb__2026-08-23_00003.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-72uhymu",
+        "fileName": "1787463813325-72uhymu__2026-08-23_00004.png",
+        "fileSize": 2632908,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-72uhymu__2026-08-23_00004.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-iytwbsg",
+        "fileName": "1787463813325-iytwbsg__2026-08-23_00007.png",
+        "fileSize": 2379534,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-iytwbsg__2026-08-23_00007.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-albgjrd",
+        "fileName": "1787463813325-albgjrd__2026-08-23_00008.png",
+        "fileSize": 2399977,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-albgjrd__2026-08-23_00008.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-uaccldd",
+        "fileName": "1787463813325-uaccldd__2026-08-23_00009.png",
+        "fileSize": 2540748,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-uaccldd__2026-08-23_00009.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-c9qjad5",
+        "fileName": "1787463813325-c9qjad5__2026-08-23_00010.png",
+        "fileSize": 2861219,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-c9qjad5__2026-08-23_00010.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-ihez4bj",
+        "fileName": "1787463813325-ihez4bj__2026-08-23_00012.png",
+        "fileSize": 2491041,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-ihez4bj__2026-08-23_00012.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-95spmgb",
+        "fileName": "1787463813325-95spmgb__2026-08-23_00014.png",
+        "fileSize": 1922092,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-95spmgb__2026-08-23_00014.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-xfqs3dr",
+        "fileName": "1787463813325-xfqs3dr__2026-08-23_00015.png",
+        "fileSize": 2448001,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-xfqs3dr__2026-08-23_00015.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-wv2zb14",
+        "fileName": "1787463813325-wv2zb14__2026-08-23_00016.png",
+        "fileSize": 2004602,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-wv2zb14__2026-08-23_00016.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-92aez1k",
+        "fileName": "1787463813325-92aez1k__2026-08-23_00017.png",
+        "fileSize": 2124419,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-92aez1k__2026-08-23_00017.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-1bjwhu9",
+        "fileName": "1787463813325-1bjwhu9__2026-08-23_00018.png",
+        "fileSize": 2256857,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-1bjwhu9__2026-08-23_00018.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-nfh84gl",
+        "fileName": "1787463813325-nfh84gl__2026-08-23_00020.png",
+        "fileSize": 2284365,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-nfh84gl__2026-08-23_00020.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-f79jf3r",
+        "fileName": "1787463813325-f79jf3r__2026-08-23_00022.png",
+        "fileSize": 2578619,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-f79jf3r__2026-08-23_00022.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787463813325-ykzu1w9",
+        "fileName": "1787463813325-ykzu1w9__2026-08-23_00023.png",
+        "fileSize": 2218664,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787463813325-ykzu1w9__2026-08-23_00023.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787464486744-9tsq1mb",
+        "fileName": "1787464486744-9tsq1mb__2026-08-23_00026.png",
+        "fileSize": 2069409,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787464486744-9tsq1mb__2026-08-23_00026.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787464486745-3ngetag",
+        "fileName": "1787464486745-3ngetag__2026-08-23_00027.png",
+        "fileSize": 2253415,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787464486745-3ngetag__2026-08-23_00027.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787464486745-eg2i2ws",
+        "fileName": "1787464486745-eg2i2ws__2026-08-23_00028.png",
+        "fileSize": 2285536,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787464486745-eg2i2ws__2026-08-23_00028.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787464486745-q7mjahv",
+        "fileName": "1787464486745-q7mjahv__2026-08-23_00029.png",
+        "fileSize": 2519353,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787464486745-q7mjahv__2026-08-23_00029.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787464486745-88e84wy",
+        "fileName": "1787464486745-88e84wy__2026-08-23_00031.png",
+        "fileSize": 1987327,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787464486745-88e84wy__2026-08-23_00031.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787464486745-u0mn1pc",
+        "fileName": "1787464486745-u0mn1pc__2026-08-23_00032.png",
+        "fileSize": 2124749,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787464486745-u0mn1pc__2026-08-23_00032.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787464486745-afd39nl",
+        "fileName": "1787464486745-afd39nl__2026-08-23_00025.png",
+        "fileSize": 2225481,
+        "url": "media://characters/1786851153987-tb6qhg5/images/1787464486745-afd39nl__2026-08-23_00025.png",
+        "keys": [
+          "sns"
+        ]
       }
     ],
     "videos": [
@@ -888,6 +4005,476 @@
         "level": 1,
         "stage": 1
       }
+    ],
+    "snsPosts": [
+      {
+        "id": "1787463813327-1f27w6b",
+        "heat": 2,
+        "imageId": "1787463813325-5eib9wg",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 32,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-lua5igw",
+        "heat": 2,
+        "imageId": "1787463813325-mmfz3lb",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 10,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-s90f5hv",
+        "heat": 2,
+        "imageId": "1787463813325-72uhymu",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 34,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-vj15utf",
+        "heat": 2,
+        "imageId": "1787463813325-iytwbsg",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 48,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-7cc4za8",
+        "heat": 2,
+        "imageId": "1787463813325-albgjrd",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 30,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-rn7a8vq",
+        "heat": 2,
+        "imageId": "1787463813325-uaccldd",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 9,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-gc0flzc",
+        "heat": 2,
+        "imageId": "1787463813325-c9qjad5",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 14,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-0ibu6wa",
+        "heat": 2,
+        "imageId": "1787463813325-ihez4bj",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 18,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-hl706ab",
+        "heat": 2,
+        "imageId": "1787463813325-95spmgb",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 9,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-kiy0p4x",
+        "heat": 2,
+        "imageId": "1787463813325-xfqs3dr",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 37,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-lh7dk1b",
+        "heat": 2,
+        "imageId": "1787463813325-wv2zb14",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 14,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-d27p619",
+        "heat": 2,
+        "imageId": "1787463813325-92aez1k",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 41,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-s2nf89c",
+        "heat": 2,
+        "imageId": "1787463813325-1bjwhu9",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 20,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-fcw699c",
+        "heat": 2,
+        "imageId": "1787463813325-nfh84gl",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 29,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-gqcxrx0",
+        "heat": 2,
+        "imageId": "1787463813325-f79jf3r",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 17,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787463813327-vmq5owd",
+        "heat": 2,
+        "imageId": "1787463813325-ykzu1w9",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 1,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787464486746-hjk12uy",
+        "heat": 3,
+        "imageId": "1787464486744-9tsq1mb",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 31,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787464486746-5xlg8cu",
+        "heat": 3,
+        "imageId": "1787464486745-3ngetag",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 3,
+        "blurRegions": [
+          {
+            "id": "blur_1787464575328_2gzn",
+            "x": 0.8296750568043944,
+            "y": 0.6295378625312479,
+            "w": 0.1665968101299331,
+            "h": 0.16423688693228333,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787464486746-smwzswr",
+        "heat": 3,
+        "imageId": "1787464486745-eg2i2ws",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 33,
+        "blurRegions": [
+          {
+            "id": "blur_1787464560584_qoyc",
+            "x": 0.10540248395137986,
+            "y": 0.6847554365860673,
+            "w": 0.2343650040810924,
+            "h": 0.1812269097183815,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787464486746-6f1cloa",
+        "heat": 3,
+        "imageId": "1787464486745-q7mjahv",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 34,
+        "blurRegions": [
+          {
+            "id": "blur_1787464550328_6exw",
+            "x": 0.4753038759347908,
+            "y": 0.4553901289737407,
+            "w": 0.23295316670710992,
+            "h": 0.4120080525628829,
+            "blur": 4.5
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787464486746-fugx7ui",
+        "heat": 3,
+        "imageId": "1787464486745-88e84wy",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 40,
+        "blurRegions": [
+          {
+            "id": "blur_1787464540009_z5j4",
+            "x": 0.4908340870485981,
+            "y": 0.6479437205495211,
+            "w": 0.18071518386975804,
+            "h": 0.15007853461053466,
+            "blur": 4.5
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787464486746-65tj7kv",
+        "heat": 3,
+        "imageId": "1787464486745-u0mn1pc",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 43,
+        "blurRegions": [
+          {
+            "id": "blur_1787464529448_y3w1",
+            "x": 0.33129646378857736,
+            "y": 0.7810322323739575,
+            "w": 0.1468310868941784,
+            "h": 0.17839523925403178,
+            "blur": 3.5
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787464486746-xwalm05",
+        "heat": 3,
+        "imageId": "1787464486745-afd39nl",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 31,
+        "blurRegions": [
+          {
+            "id": "blur_1787464496552_kk06",
+            "x": 0.23670335973175088,
+            "y": 0.7428046811052363,
+            "w": 0.12706536365842358,
+            "h": 0.1345043470566113,
+            "blur": 3
+          }
+        ],
+        "blurDefault": 12
+      }
     ]
   },
   {
@@ -916,16 +4503,16 @@
     "bust": "",
     "weight": "",
     "grade": "C",
-    "popularity": 25,
+    "statType": "sexy",
     "concept": "재즈 가수",
     "salary": 25920,
     "eventLinks": {
-      "scout": null,
+      "scout": "97932273-6056-484b-b6e5-706727882e36",
       "salary": null,
-      "vip": null,
-      "h": null,
-      "date1": null,
-      "date2": null
+      "vip": "b55d4260-8b00-467e-a696-301888eeb32c",
+      "h": "3f011019-f38b-4731-8cc2-4608bc293759",
+      "date1": "d5b67b9f-773d-40d5-b020-de06ce45e6cb",
+      "date2": "8b86e5ed-00e4-44d9-b30f-beaca82e14f0"
     },
     "avatarTone": "from-orange-300 to-rose-400",
     "profileImageUrl": "media://characters/1786851211019-59swl59/images/1786851163784-hl0s77y__2026-08-15_00018.png",
@@ -933,7 +4520,7 @@
     "characterIllustrationId": "1786851163784-hl0s77y",
     "profileImageId": "1786851163784-hl0s77y",
     "profileVideoId": null,
-    "mediaRevision": 1786932810982,
+    "mediaRevision": 1787478494187,
     "images": [
       {
         "id": "1786851163784-g58ht1b",
@@ -948,6 +4535,177 @@
         "fileSize": 2336492,
         "url": "media://characters/1786851211019-59swl59/images/1786851163784-hl0s77y__2026-08-15_00018.png",
         "keys": []
+      },
+      {
+        "id": "1787478352245-wh2xtmt",
+        "fileName": "1787478352245-wh2xtmt__2026-08-23_00175.png",
+        "fileSize": 2304905,
+        "url": "media://characters/1786851211019-59swl59/images/1787478352245-wh2xtmt__2026-08-23_00175.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478352245-6vmmgzf",
+        "fileName": "1787478352245-6vmmgzf__2026-08-23_00176.png",
+        "fileSize": 2429863,
+        "url": "media://characters/1786851211019-59swl59/images/1787478352245-6vmmgzf__2026-08-23_00176.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478352245-y3b43ao",
+        "fileName": "1787478352245-y3b43ao__2026-08-23_00177.png",
+        "fileSize": 2065127,
+        "url": "media://characters/1786851211019-59swl59/images/1787478352245-y3b43ao__2026-08-23_00177.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478352245-836agt3",
+        "fileName": "1787478352245-836agt3__2026-08-23_00178.png",
+        "fileSize": 2397412,
+        "url": "media://characters/1786851211019-59swl59/images/1787478352245-836agt3__2026-08-23_00178.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478352245-rxct5r7",
+        "fileName": "1787478352245-rxct5r7__2026-08-23_00179.png",
+        "fileSize": 2592544,
+        "url": "media://characters/1786851211019-59swl59/images/1787478352245-rxct5r7__2026-08-23_00179.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478352245-tmjnpo7",
+        "fileName": "1787478352245-tmjnpo7__2026-08-23_00180.png",
+        "fileSize": 2511061,
+        "url": "media://characters/1786851211019-59swl59/images/1787478352245-tmjnpo7__2026-08-23_00180.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478352245-038ogyh",
+        "fileName": "1787478352245-038ogyh__2026-08-23_00181.png",
+        "fileSize": 2641536,
+        "url": "media://characters/1786851211019-59swl59/images/1787478352245-038ogyh__2026-08-23_00181.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478352245-m6qzmes",
+        "fileName": "1787478352245-m6qzmes__2026-08-23_00182.png",
+        "fileSize": 2517601,
+        "url": "media://characters/1786851211019-59swl59/images/1787478352245-m6qzmes__2026-08-23_00182.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478352245-gkgchur",
+        "fileName": "1787478352245-gkgchur__2026-08-23_00183.png",
+        "fileSize": 2246077,
+        "url": "media://characters/1786851211019-59swl59/images/1787478352245-gkgchur__2026-08-23_00183.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478352245-6dthzqr",
+        "fileName": "1787478352245-6dthzqr__2026-08-23_00174.png",
+        "fileSize": 2215685,
+        "url": "media://characters/1786851211019-59swl59/images/1787478352245-6dthzqr__2026-08-23_00174.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478433588-loxr9l5",
+        "fileName": "1787478433588-loxr9l5__2026-08-23_00184.png",
+        "fileSize": 2204020,
+        "url": "media://characters/1786851211019-59swl59/images/1787478433588-loxr9l5__2026-08-23_00184.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478433588-lodgqa4",
+        "fileName": "1787478433588-lodgqa4__2026-08-23_00185.png",
+        "fileSize": 2278880,
+        "url": "media://characters/1786851211019-59swl59/images/1787478433588-lodgqa4__2026-08-23_00185.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478433588-p59pwbw",
+        "fileName": "1787478433588-p59pwbw__2026-08-23_00186.png",
+        "fileSize": 2060366,
+        "url": "media://characters/1786851211019-59swl59/images/1787478433588-p59pwbw__2026-08-23_00186.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478433588-eck7xhd",
+        "fileName": "1787478433588-eck7xhd__2026-08-23_00187.png",
+        "fileSize": 2347997,
+        "url": "media://characters/1786851211019-59swl59/images/1787478433588-eck7xhd__2026-08-23_00187.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478433588-w70pq8j",
+        "fileName": "1787478433588-w70pq8j__2026-08-23_00188.png",
+        "fileSize": 2329586,
+        "url": "media://characters/1786851211019-59swl59/images/1787478433588-w70pq8j__2026-08-23_00188.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478433588-p9pds5l",
+        "fileName": "1787478433588-p9pds5l__2026-08-23_00189.png",
+        "fileSize": 2885996,
+        "url": "media://characters/1786851211019-59swl59/images/1787478433588-p9pds5l__2026-08-23_00189.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478433588-1y1thgm",
+        "fileName": "1787478433588-1y1thgm__2026-08-23_00191.png",
+        "fileSize": 2129286,
+        "url": "media://characters/1786851211019-59swl59/images/1787478433588-1y1thgm__2026-08-23_00191.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478433588-350wmua",
+        "fileName": "1787478433588-350wmua__2026-08-23_00192.png",
+        "fileSize": 2045768,
+        "url": "media://characters/1786851211019-59swl59/images/1787478433588-350wmua__2026-08-23_00192.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787478433588-gufgpht",
+        "fileName": "1787478433588-gufgpht__2026-08-23_00193.png",
+        "fileSize": 2598229,
+        "url": "media://characters/1786851211019-59swl59/images/1787478433588-gufgpht__2026-08-23_00193.png",
+        "keys": [
+          "sns"
+        ]
       }
     ],
     "videos": [
@@ -1016,26 +4774,460 @@
         "level": 1,
         "stage": 1
       }
+    ],
+    "snsPosts": [
+      {
+        "id": "1787478352246-pqs1awv",
+        "heat": 2,
+        "imageId": "1787478352245-wh2xtmt",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 18,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478352246-xb9gcor",
+        "heat": 2,
+        "imageId": "1787478352245-6vmmgzf",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 23,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478352246-8hyq479",
+        "heat": 2,
+        "imageId": "1787478352245-y3b43ao",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 6,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478352246-dnbfbnt",
+        "heat": 2,
+        "imageId": "1787478352245-836agt3",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 22,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478352246-ac27sys",
+        "heat": 2,
+        "imageId": "1787478352245-rxct5r7",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 47,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478352246-p59hbdr",
+        "heat": 2,
+        "imageId": "1787478352245-tmjnpo7",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 35,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478352246-u6oarck",
+        "heat": 2,
+        "imageId": "1787478352245-038ogyh",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 2,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478352246-ra9xlpp",
+        "heat": 2,
+        "imageId": "1787478352245-m6qzmes",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 23,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478352246-gpa2av7",
+        "heat": 2,
+        "imageId": "1787478352245-gkgchur",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 36,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478352246-civgtl6",
+        "heat": 2,
+        "imageId": "1787478352245-6dthzqr",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 13,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478433589-yz4ijh2",
+        "heat": 3,
+        "imageId": "1787478433588-loxr9l5",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 30,
+        "blurRegions": [
+          {
+            "id": "blur_1787478488683_cwyj",
+            "x": 0.4428316163331936,
+            "y": 0.4511426232772161,
+            "w": 0.06494451920319427,
+            "h": 0.11043514810963873,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478433589-3d30ac9",
+        "heat": 3,
+        "imageId": "1787478433588-lodgqa4",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 41,
+        "blurRegions": [
+          {
+            "id": "blur_1787478483124_05iw",
+            "x": 0.6842558072841984,
+            "y": 0.7428046811052363,
+            "w": 0.21177560609737267,
+            "h": 0.25719531889476366,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478433589-cvtpnwj",
+        "heat": 3,
+        "imageId": "1787478433588-p59pwbw",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 36,
+        "blurRegions": [
+          {
+            "id": "blur_1787478479347_yz7e",
+            "x": 0.43153691734133376,
+            "y": 0.8235072893392031,
+            "w": 0.14118373739824847,
+            "h": 0.17649271066079686,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478433589-72b7n4f",
+        "heat": 3,
+        "imageId": "1787478433588-eck7xhd",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 19,
+        "blurRegions": [
+          {
+            "id": "blur_1787478474155_hzsg",
+            "x": 0.10116697182943239,
+            "y": 0.27841072495188374,
+            "w": 0.2823674747964969,
+            "h": 0.19113775634360552,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478433589-2uf7fnl",
+        "heat": 3,
+        "imageId": "1787478433588-w70pq8j",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 47,
+        "blurRegions": [
+          {
+            "id": "blur_1787478467675_ou3u",
+            "x": 0.633429661820829,
+            "y": 0.4964493507068115,
+            "w": 0.3543711808696035,
+            "h": 0.3808596774550361,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478433589-begyqqd",
+        "heat": 3,
+        "imageId": "1787478433588-p9pds5l",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 12,
+        "blurRegions": [
+          {
+            "id": "blur_1787478463196_2fb4",
+            "x": 0.02492775363437824,
+            "y": 0.43415260049111787,
+            "w": 0.4291985616906753,
+            "h": 0.34971130234718933,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478433589-omkfpzw",
+        "heat": 3,
+        "imageId": "1787478433588-1y1thgm",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 42,
+        "blurRegions": [
+          {
+            "id": "blur_1787478452876_9i8o",
+            "x": 0.42447773047142134,
+            "y": 0.5191027144216092,
+            "w": 0.1835388586177229,
+            "h": 0.3228104329358671,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478433589-0xctgln",
+        "heat": 3,
+        "imageId": "1787478433588-350wmua",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 4,
+        "blurRegions": [
+          {
+            "id": "blur_1787478443484_57rn",
+            "x": 0.04610531424411551,
+            "y": 0,
+            "w": 0.495554918267852,
+            "h": 0.4100834015441453,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787478433589-ssd6biq",
+        "heat": 3,
+        "imageId": "1787478433588-gufgpht",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 47,
+        "blurRegions": [],
+        "blurDefault": 4
+      }
     ]
   },
   {
     "id": "1786851291899-dqn64g6",
     "name": "리메이",
+    "names": {
+      "ko": "리메이",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
     "age": "28",
     "job": "중식당 운영",
-    "bust": "D",
-    "weight": "50",
+    "jobs": {
+      "ko": "중식당 운영",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "bust": "",
+    "weight": "",
     "grade": "C",
-    "popularity": 25,
+    "statType": "communication",
     "concept": "중식당 운영",
     "salary": 25920,
     "eventLinks": {
-      "scout": null,
+      "scout": "10bf4ee0-bc0c-4b27-91ff-92acfe34a356",
       "salary": null,
-      "vip": null,
-      "h": null,
-      "date1": null,
-      "date2": null
+      "vip": "7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d",
+      "h": "01ddccbe-96f1-4e86-8359-a19eeac314a9",
+      "date1": "b3dd121c-2f6c-4a20-9245-01cfcf2ef89d",
+      "date2": "c169302b-ef86-4c50-9681-4c914194646d"
     },
     "avatarTone": "from-fuchsia-300 to-violet-400",
     "profileImageUrl": "media://characters/1786851291899-dqn64g6/images/1786851284257-ezalosr__2026-08-15_00007.png",
@@ -1043,7 +5235,7 @@
     "characterIllustrationId": "1786851284257-ezalosr",
     "profileImageId": "1786851284257-ezalosr",
     "profileVideoId": null,
-    "mediaRevision": 1786854024972,
+    "mediaRevision": 1787479293341,
     "images": [
       {
         "id": "1786851284257-6qyp938",
@@ -1058,6 +5250,177 @@
         "fileSize": 2446651,
         "url": "media://characters/1786851291899-dqn64g6/images/1786851284257-ezalosr__2026-08-15_00007.png",
         "keys": []
+      },
+      {
+        "id": "1787465413731-pkh9kd4",
+        "fileName": "1787465413731-pkh9kd4__2026-08-23_00034.png",
+        "fileSize": 1990880,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413731-pkh9kd4__2026-08-23_00034.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787465413732-p0c17lp",
+        "fileName": "1787465413732-p0c17lp__2026-08-23_00035.png",
+        "fileSize": 2437591,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413732-p0c17lp__2026-08-23_00035.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787465413732-3zsuh15",
+        "fileName": "1787465413732-3zsuh15__2026-08-23_00036.png",
+        "fileSize": 2151215,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413732-3zsuh15__2026-08-23_00036.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787465413732-3zgsjtl",
+        "fileName": "1787465413732-3zgsjtl__2026-08-23_00037.png",
+        "fileSize": 2133027,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413732-3zgsjtl__2026-08-23_00037.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787465413732-dgw5x9f",
+        "fileName": "1787465413732-dgw5x9f__2026-08-23_00038.png",
+        "fileSize": 2270992,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413732-dgw5x9f__2026-08-23_00038.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787465413732-1xf73zu",
+        "fileName": "1787465413732-1xf73zu__2026-08-23_00039.png",
+        "fileSize": 2211853,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413732-1xf73zu__2026-08-23_00039.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787465413732-tybg5io",
+        "fileName": "1787465413732-tybg5io__2026-08-23_00040.png",
+        "fileSize": 2168497,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413732-tybg5io__2026-08-23_00040.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787465413732-3i7f4r4",
+        "fileName": "1787465413732-3i7f4r4__2026-08-23_00041.png",
+        "fileSize": 1989329,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413732-3i7f4r4__2026-08-23_00041.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787465413732-h4lcfc3",
+        "fileName": "1787465413732-h4lcfc3__2026-08-23_00042.png",
+        "fileSize": 2133171,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413732-h4lcfc3__2026-08-23_00042.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787465413732-414h6hf",
+        "fileName": "1787465413732-414h6hf__2026-08-23_00043.png",
+        "fileSize": 2239646,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413732-414h6hf__2026-08-23_00043.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787465413732-8vudau8",
+        "fileName": "1787465413732-8vudau8__2026-08-23_00044.png",
+        "fileSize": 1815976,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787465413732-8vudau8__2026-08-23_00044.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787466091064-gymm1ea",
+        "fileName": "1787466091064-gymm1ea__2026-08-23_00044.png",
+        "fileSize": 1815976,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787466091064-gymm1ea__2026-08-23_00044.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787466091064-66bz2on",
+        "fileName": "1787466091064-66bz2on__2026-08-23_00045.png",
+        "fileSize": 2175195,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787466091064-66bz2on__2026-08-23_00045.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787466091064-20y14sn",
+        "fileName": "1787466091064-20y14sn__2026-08-23_00046.png",
+        "fileSize": 2035974,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787466091064-20y14sn__2026-08-23_00046.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787466091064-kekgsrx",
+        "fileName": "1787466091064-kekgsrx__2026-08-23_00047.png",
+        "fileSize": 2283717,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787466091064-kekgsrx__2026-08-23_00047.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787466091064-3b033l5",
+        "fileName": "1787466091064-3b033l5__2026-08-23_00048.png",
+        "fileSize": 2179647,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787466091064-3b033l5__2026-08-23_00048.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787466091064-csvohcm",
+        "fileName": "1787466091064-csvohcm__2026-08-23_00049.png",
+        "fileSize": 2335411,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787466091064-csvohcm__2026-08-23_00049.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787466091064-0ovx9sr",
+        "fileName": "1787466091064-0ovx9sr__2026-08-23_00051.png",
+        "fileSize": 2106096,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787466091064-0ovx9sr__2026-08-23_00051.png",
+        "keys": [
+          "sns"
+        ]
+      },
+      {
+        "id": "1787466091064-npsl3t6",
+        "fileName": "1787466091064-npsl3t6__2026-08-23_00052.png",
+        "fileSize": 2070559,
+        "url": "media://characters/1786851291899-dqn64g6/images/1787466091064-npsl3t6__2026-08-23_00052.png",
+        "keys": [
+          "sns"
+        ]
       }
     ],
     "videos": [
@@ -1116,6 +5479,404 @@
         "keys": [],
         "level": 1,
         "stage": 1
+      }
+    ],
+    "snsPosts": [
+      {
+        "id": "1787465413733-x0tkjqr",
+        "heat": 2,
+        "imageId": "1787465413731-pkh9kd4",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 8,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787465413733-r9guk5z",
+        "heat": 2,
+        "imageId": "1787465413732-p0c17lp",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 12,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787465413733-u9hw494",
+        "heat": 2,
+        "imageId": "1787465413732-3zsuh15",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 21,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787465413733-i28i1hz",
+        "heat": 2,
+        "imageId": "1787465413732-3zgsjtl",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 12,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787465413733-2xijsn6",
+        "heat": 2,
+        "imageId": "1787465413732-dgw5x9f",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 35,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787465413733-scq2bf4",
+        "heat": 2,
+        "imageId": "1787465413732-1xf73zu",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 34,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787465413733-g6ehokg",
+        "heat": 2,
+        "imageId": "1787465413732-tybg5io",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 27,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787465413733-v72lpb7",
+        "heat": 2,
+        "imageId": "1787465413732-3i7f4r4",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 0,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787465413733-9ox365s",
+        "heat": 2,
+        "imageId": "1787465413732-h4lcfc3",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 10,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787465413733-qs9loo2",
+        "heat": 2,
+        "imageId": "1787465413732-414h6hf",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 5,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787465413733-1959mcb",
+        "heat": 2,
+        "imageId": "1787465413732-8vudau8",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 16,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787466091066-5aefmpk",
+        "heat": 3,
+        "imageId": "1787466091064-gymm1ea",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 8,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787466091066-wtbpl6m",
+        "heat": 3,
+        "imageId": "1787466091064-66bz2on",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 42,
+        "blurRegions": [
+          {
+            "id": "blur_1787466145983_hu09",
+            "x": 0.04610531424411551,
+            "y": 0.727230493551313,
+            "w": 0.07623921819505416,
+            "h": 0.06371258544786851,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787466091066-fj27iu9",
+        "heat": 3,
+        "imageId": "1787466091064-20y14sn",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 36,
+        "blurRegions": [],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787466091066-2coq0ww",
+        "heat": 3,
+        "imageId": "1787466091064-kekgsrx",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 48,
+        "blurRegions": [
+          {
+            "id": "blur_1787466128783_1xji",
+            "x": 0.589662703227372,
+            "y": 0,
+            "w": 0.2950740111623392,
+            "h": 0.33504413423887797,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787466091066-plyx6o6",
+        "heat": 3,
+        "imageId": "1787466091064-3b033l5",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 11,
+        "blurRegions": [
+          {
+            "id": "blur_1787466118399_9201",
+            "x": 0.3835344466259293,
+            "y": 0.6097161692808,
+            "w": 0.17647967174781054,
+            "h": 0.39028383071920003,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787466091066-0xr3ldh",
+        "heat": 3,
+        "imageId": "1787466091064-csvohcm",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 21,
+        "blurRegions": [
+          {
+            "id": "blur_1787466111472_iv5h",
+            "x": 0.14211025567492444,
+            "y": 0.40158839015109615,
+            "w": 0.312016059650129,
+            "h": 0.27325619980974714,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787466091066-zwxujq6",
+        "heat": 3,
+        "imageId": "1787466091064-0ovx9sr",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 19,
+        "blurRegions": [
+          {
+            "id": "blur_1787466104391_h6ws",
+            "x": 0.3736515850080519,
+            "y": 0.5913103112625269,
+            "w": 0.10165229092673889,
+            "h": 0.1883060858792558,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
+      },
+      {
+        "id": "1787466091066-q0vyp4p",
+        "heat": 3,
+        "imageId": "1787466091064-npsl3t6",
+        "videoId": null,
+        "captions": {
+          "ko": "",
+          "en": "",
+          "ja": "",
+          "zh-cn": "",
+          "ru": "",
+          "es": "",
+          "de": ""
+        },
+        "captionLine": 41,
+        "blurRegions": [
+          {
+            "id": "blur_1787466097040_0g1s",
+            "x": 0.41035935673159646,
+            "y": 0.7682897152843838,
+            "w": 0.13694822527630096,
+            "h": 0.23171028471561617,
+            "blur": 4
+          }
+        ],
+        "blurDefault": 4
       }
     ]
   }
