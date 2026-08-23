@@ -53,7 +53,7 @@ export const REST_RECOVERY = { min: 10, max: 15 } as const
 export const VACATION_CONDITION_GAIN = 20
 
 /** 진상 사태 발생 확률 (슬롯당 30% 고정) */
-export const CONDITION_CRASH_CHANCE_FIXED = 0.30
+export const CONDITION_CRASH_CHANCE_FIXED = 0.08
 /** @deprecated calcConditionCrashChance 사용 */
 export const CONDITION_CRASH_CHANCE = CONDITION_CRASH_CHANCE_FIXED
 /** 급락 시 추가 컨디션 하락량 */
