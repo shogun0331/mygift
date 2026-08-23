@@ -37,8 +37,8 @@ import {
 } from '../game/characterLocales'
 import { useTranslation } from '../locales/i18n'
 import { SnsFeedModal } from './SnsFeedModal'
-import type { RegisteredStaff } from '../game/staff'
-import { staffDisplayName, staffIconUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
+import type { RegisteredStaff, StaffKind } from '../game/staff'
+import { staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
 import { STAFF_HIRE_COST } from '../game/slotManagers'
 import { resolveMediaSrc } from '../game/mediaUrl'
@@ -136,7 +136,7 @@ export function CreatorPanel({
   onScoutStaff,
 }: CreatorPanelProps) {
   const { t, locale } = useTranslation()
-  const [view, setView] = useState<'roster' | 'scout'>('roster')
+  const [view, setView] = useState<'roster' | 'scout' | 'staffScout'>('roster')
   const [query, setQuery] = useState('')
   const [gradeFilter, setGradeFilter] = useState<'ALL' | Grade>('ALL')
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -147,6 +147,12 @@ export function CreatorPanel({
     setSelectedId(null)
     setView('scout')
   }, [openScout])
+
+  useEffect(() => {
+    if (scoutedStaffCandidate && view === 'roster') {
+      setView('staffScout')
+    }
+  }, [scoutedStaffCandidate, view])
 
   function leaveScout() {
     setView('roster')
@@ -195,6 +201,20 @@ export function CreatorPanel({
         onHire={(offer) => {
           onScoutHire(offer)
           leaveScout()
+        }}
+      />
+    )
+  }
+
+  if (view === 'staffScout') {
+    return (
+      <StaffScoutView
+        candidate={scoutedStaffCandidate}
+        assets={assets}
+        onBack={() => setView('roster')}
+        onHire={(staffId, hireCost, salary) => {
+          onHireStaff(staffId, hireCost, salary)
+          setView('roster')
         }}
       />
     )
@@ -481,14 +501,23 @@ export function CreatorPanel({
                                 영입 완료
                               </button>
                             ) : (
-                              <button
-                                type="button"
-                                disabled={assets < hireCost}
-                                onClick={() => onHireStaff(staff.id, hireCost, salary)}
-                                className="game-btn game-btn-primary rounded-lg px-2.5 py-1 text-xs disabled:opacity-40"
-                              >
-                                영입하기
-                              </button>
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setView('staffScout')}
+                                  className="game-btn rounded-lg px-2.5 py-1 text-xs hover:bg-slate-800 transition"
+                                >
+                                  상세보기
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={assets < hireCost}
+                                  onClick={() => onHireStaff(staff.id, hireCost, salary)}
+                                  className="game-btn game-btn-primary rounded-lg px-2.5 py-1 text-xs disabled:opacity-40"
+                                >
+                                  영입하기
+                                </button>
+                              </div>
                             )}
                           </td>
                         </tr>
@@ -1112,6 +1141,160 @@ function StatBar({
         />
       </div>
       {note ? <p className="mt-1 text-[10px] text-slate-500">{note}</p> : null}
+    </div>
+  )
+}
+
+function StaffScoutView({
+  candidate,
+  assets,
+  onBack,
+  onHire,
+}: {
+  candidate: ScoutedStaffCandidate | null
+  assets: number
+  onBack: () => void
+  onHire: (staffId: string, hireCost: number, salary: number) => void
+}) {
+  const { t, locale } = useTranslation()
+  if (!candidate) return null
+
+  const displayName = staffDisplayName(candidate, locale)
+  const cardUrl = staffCardUrl(candidate)
+  const genderLabel = candidate.gender === 'male' ? '남성' : '여성'
+
+  const canAfford = assets >= candidate.proposedHireCost
+
+  const staffKindDesc: Record<StaffKind, { title: string; bonus: string; desc: string }> = {
+    security: {
+      title: '보안 (Security)',
+      bonus: '방송 안전성 보너스 (악플 확률 감소)',
+      desc: '악플 등 방송 중 발생할 수 있는 위협 요소들로부터 크리에이터를 보호하고 방송의 부정적인 이벤트를 효과적으로 차단합니다.',
+    },
+    repair: {
+      title: '보수 (Repair)',
+      bonus: '장비 고장 확률 및 노후화 감소',
+      desc: '방송 기계 장비의 결함이나 마모를 미연에 방지하여 장비 보수 비용을 아끼고 원활한 실시간 스트리밍 환경을 제공합니다.',
+    },
+    care: {
+      title: '케어 (Care)',
+      bonus: '스태미나 소모 경감 및 피로 감소',
+      desc: '크리에이터들의 컨디션과 피로를 집중 관리하여 라이브 방송 중 스태미나 소모량을 줄이고 지속 방송을 지원합니다.',
+    },
+    production: {
+      title: '기획 (Production)',
+      bonus: '방송 수익 및 시청자 후원 증대',
+      desc: '스트리머가 진행하는 라이브 방송의 연출과 구성 기획에 참여하여, 시청자 수 확대 및 도네이션 수익을 크게 극대화시킵니다.',
+    },
+  }
+
+  const kindInfo = staffKindDesc[candidate.kind]
+
+  return (
+    <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
+      <header className="game-panel-strong flex shrink-0 flex-wrap items-center gap-3 rounded-2xl px-4 py-3">
+        <button type="button" onClick={onBack} className="game-btn rounded-xl px-3 py-2 text-sm">
+          ← 돌아가기
+        </button>
+        <div className="min-w-0 flex-1">
+          <p className="game-kicker">STAFF SCOUT</p>
+          <h2 className="truncate text-base font-semibold text-slate-100">스탭 스카우트</h2>
+          <p className="mt-0.5 text-xs text-slate-500">스카우트된 스탭 후보의 상세 프로필과 능력을 확인하고 고용합니다.</p>
+        </div>
+      </header>
+
+      <div className="shrink-0 rounded-xl border border-indigo-400/30 bg-indigo-500/10 px-4 py-2.5 text-center text-sm font-semibold text-indigo-200">
+        새로운 스탭 후보가 영입 제안에 응답했습니다!
+      </div>
+
+      <section className="game-panel flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-2xl p-4 sm:p-6">
+        <article className="grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
+          <div className="game-card relative aspect-[3/4] overflow-hidden sm:aspect-auto sm:min-h-[22rem]">
+            {cardUrl ? (
+              <img
+                src={resolveMediaSrc(cardUrl, candidate.mediaRevision)}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-slate-700 to-slate-950">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-600 text-2xl font-bold text-white">
+                  {displayName.slice(0, 1)}
+                </div>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+            <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+              <span className="rounded border border-indigo-400/40 bg-indigo-500/15 text-indigo-300 px-2 py-0.5 text-xs font-bold">
+                {t(STAFF_KIND_LABEL_KEY[candidate.kind])}
+              </span>
+              <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-xs font-bold text-slate-200">
+                {genderLabel}
+              </span>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 p-3">
+              <h3 className="text-lg font-bold text-slate-50">{displayName}</h3>
+              <p className="text-xs text-slate-300">
+                {t(STAFF_KIND_LABEL_KEY[candidate.kind])} 스탭 · {genderLabel}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 rounded-2xl border border-white/8 bg-black/25 p-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-white/8 bg-black/20 p-3">
+                <p className="text-[10px] font-semibold tracking-wide text-slate-500">영입 요구 비용</p>
+                <p className="mt-0.5 text-lg font-black tabular-nums text-amber-400">
+                  ${candidate.proposedHireCost.toLocaleString()}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/8 bg-black/20 p-3">
+                <p className="text-[10px] font-semibold tracking-wide text-slate-500">요구 연봉</p>
+                <p className="mt-0.5 text-lg font-black tabular-nums text-amber-400">
+                  ${candidate.proposedSalary.toLocaleString()}/yr
+                </p>
+              </div>
+            </div>
+
+            <div className="flex-1 rounded-xl bg-black/30 p-4 border border-white/5 space-y-2">
+              <p className="text-[11px] font-bold text-indigo-300 uppercase tracking-widest">
+                담당 업무 및 전담 보너스
+              </p>
+              <h4 className="text-sm font-black text-slate-100">{kindInfo.title}</h4>
+              <p className="text-xs text-slate-300 font-semibold text-emerald-400">
+                ★ {kindInfo.bonus}
+              </p>
+              <p className="text-[11px] leading-5 text-slate-400 pt-1">
+                {kindInfo.desc}
+              </p>
+            </div>
+
+            {!canAfford ? (
+              <p className="text-center text-[11px] font-semibold text-rose-300">
+                보유 자산이 부족하여 이 스탭을 고용할 수 없습니다.
+              </p>
+            ) : null}
+
+            <div className="mt-auto grid grid-cols-2 gap-2 pt-2">
+              <button
+                type="button"
+                onClick={onBack}
+                className="game-btn rounded-xl px-4 py-3 text-sm font-semibold"
+              >
+                보류 (나중에 영입)
+              </button>
+              <button
+                type="button"
+                disabled={!canAfford}
+                onClick={() => onHire(candidate.id, candidate.proposedHireCost, candidate.proposedSalary)}
+                className="game-btn-pink rounded-xl px-4 py-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                영입하기
+              </button>
+            </div>
+          </div>
+        </article>
+      </section>
     </div>
   )
 }

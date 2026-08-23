@@ -1524,7 +1524,6 @@ export function InGame({
           proposedHireCost,
           proposedSalary,
         })
-        alert(`${staffDisplayName(picked, locale)} 스탭 후보가 스카우트 제안에 응했습니다!`)
       } else {
         setScoutedStaffCandidate(null)
         alert('더 이상 영입 가능한 스탭이 없습니다.')
