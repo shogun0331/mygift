@@ -572,7 +572,7 @@ export function InGame({
   const [skillPoints, setSkillPoints] = useState(1000)
   const [broadcastMonthsTowardSp, setBroadcastMonthsTowardSp] = useState(0)
   
-  const [staffScoutCooldown, setStaffScoutCooldown] = useState(3)
+  const staffScoutCooldown = 0
   const [scoutedStaffCandidate, setScoutedStaffCandidate] = useState<ScoutedStaffCandidate | null>(null)
   const [hiredStaffSalaries, setHiredStaffSalaries] = useState<Record<string, number>>({})
   const hiredStaffSalariesRef = useRef(hiredStaffSalaries)
@@ -1523,28 +1523,21 @@ export function InGame({
   }
 
   function handleScoutStaff() {
-    setStaffScoutCooldown(3)
-    const success = Math.random() < 0.5
-    if (success) {
-      const hiredIds = managerStateRef.current.hiredStaffIds
-      const pool = registeredStaff.filter((s) => !hiredIds.includes(s.id))
-      if (pool.length > 0) {
-        const picked = pool[Math.floor(Math.random() * pool.length)]
-        const hiredCount = hiredIds.length
-        const proposedHireCost = Math.round(15000 * Math.pow(1.8, hiredCount))
-        const proposedSalary = Math.round(20000 * Math.pow(1.5, hiredCount))
-        setScoutedStaffCandidate({
-          ...picked,
-          proposedHireCost,
-          proposedSalary,
-        })
-      } else {
-        setScoutedStaffCandidate(null)
-        alert('더 이상 영입 가능한 스탭이 없습니다.')
-      }
+    const hiredIds = managerStateRef.current.hiredStaffIds
+    const pool = registeredStaff.filter((s) => !hiredIds.includes(s.id))
+    if (pool.length > 0) {
+      const picked = pool[Math.floor(Math.random() * pool.length)]
+      const hiredCount = hiredIds.length
+      const proposedHireCost = Math.round(15000 * Math.pow(1.8, hiredCount))
+      const proposedSalary = Math.round(20000 * Math.pow(1.5, hiredCount))
+      setScoutedStaffCandidate({
+        ...picked,
+        proposedHireCost,
+        proposedSalary,
+      })
     } else {
       setScoutedStaffCandidate(null)
-      alert('아무도 스카우트 제안에 응하지 않았습니다.')
+      alert('더 이상 영입 가능한 스탭이 없습니다.')
     }
   }
 
@@ -1830,23 +1823,7 @@ export function InGame({
       .filter(([id]) => managerState.hiredStaffIds.includes(id))
       .reduce((sum, [_, salary]) => sum + Math.max(0, Math.round(Number(salary) / 12) || 0), 0)
 
-    setStaffScoutCooldown((prev) => {
-      const nextCooldown = Math.max(0, prev - 1)
-      if (nextCooldown === 0 && managerState.hiredStaffIds.length === 0 && !scoutedStaffCandidate) {
-        setTimeout(() => {
-          const pool = registeredStaff.filter((s) => !managerState.hiredStaffIds.includes(s.id))
-          if (pool.length > 0) {
-            const picked = pool[Math.floor(Math.random() * pool.length)]
-            setScoutedStaffCandidate({
-              ...picked,
-              proposedHireCost: 15000,
-              proposedSalary: 20000,
-            })
-          }
-        }, 0)
-      }
-      return nextCooldown
-    })
+
 
     const viewersBefore = leagueRef.current.viewers
     const statementDraft = buildWeeklyStatement({

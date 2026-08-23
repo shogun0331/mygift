@@ -134,7 +134,6 @@ export function CreatorPanel({
   managerState,
   onHireStaff,
   hiredStaffSalaries,
-  staffScoutCooldown,
   scoutedStaffCandidate,
   onScoutStaff,
   studioSlots,
@@ -422,16 +421,21 @@ export function CreatorPanel({
                   >
                     영입 제안 확인
                   </button>
-                ) : (
-                  <button
-                    type="button"
-                    disabled={staffScoutCooldown > 0}
-                    onClick={handleScoutStaffClick}
-                    className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    {staffScoutCooldown > 0 ? `스카우트 대기 (${staffScoutCooldown}턴)` : '스카우트 시도'}
-                  </button>
-                )}
+                ) : (() => {
+                  const hasAvailableStaffToScout = registeredStaff.some(
+                    (s) => !managerState.hiredStaffIds.includes(s.id)
+                  )
+                  return (
+                    <button
+                      type="button"
+                      disabled={!hasAvailableStaffToScout}
+                      onClick={handleScoutStaffClick}
+                      className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {hasAvailableStaffToScout ? '스카우트 시도' : '스카우트 완료'}
+                    </button>
+                  )
+                })()}
                 <span className="game-chip text-[10px]">{displayStaffs.length}명</span>
               </div>
             </div>
