@@ -205,9 +205,15 @@ function createWindow() {
   })
 
   if (isDev) {
+    // Pipe renderer console messages to main process terminal for easier debugging
+    mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+      console.log(`[Renderer] (${level}) ${message} @ ${sourceId}:${line}`)
+    })
+
     // Avoid stale cache while iterating on UI
     mainWindow.webContents.session.clearCache()
     mainWindow.loadURL('http://localhost:5173')
+    mainWindow.webContents.openDevTools()
 
     mainWindow.webContents.on('before-input-event', (_event, input) => {
       if (input.type === 'keyDown' && input.key === 'F5') {

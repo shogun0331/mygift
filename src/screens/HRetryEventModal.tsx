@@ -57,10 +57,7 @@ export function HRetryOfferModal({
           <p className="text-[10px] font-black tracking-wide text-emerald-300/80">
             {t('hRetry.acceptHeader')}
           </p>
-          <p className="mt-1.5 text-[12px] font-semibold text-amber-100">
-            {t('hRetry.acceptSp').replace('{n}', String(spec.sp))}
-          </p>
-          <p className="mt-1 text-[12px] font-semibold text-rose-100">
+          <p className="mt-1.5 text-[12px] font-semibold text-rose-100">
             {t('hRetry.acceptStamina').replace('{n}', String(spec.staminaLoss))}
           </p>
         </section>
@@ -90,14 +87,12 @@ export function HRetryOfferModal({
 export function HRetryResultModal({
   accepted,
   creatorName,
-  spGain,
   staminaLoss,
   conditionLoss,
   onConfirm,
 }: {
   accepted: boolean
   creatorName: string
-  spGain: number
   staminaLoss: number
   conditionLoss: number
   onConfirm: () => void
@@ -128,14 +123,9 @@ export function HRetryResultModal({
         </p>
         <div className="mt-4 space-y-1.5 rounded-xl border border-white/10 bg-black/25 px-3 py-3">
           {accepted ? (
-            <>
-              <p className="text-[12px] font-semibold text-amber-200">
-                {t('hRetry.resultSp').replace('{n}', String(spGain))}
-              </p>
-              <p className="text-[12px] font-semibold text-rose-200">
-                {t('hRetry.resultStamina').replace('{n}', String(staminaLoss))}
-              </p>
-            </>
+            <p className="text-[12px] font-semibold text-rose-200">
+              {t('hRetry.resultStamina').replace('{n}', String(staminaLoss))}
+            </p>
           ) : (
             <p className="text-[12px] font-semibold text-rose-200">
               {t('hRetry.resultCondition').replace('{n}', String(conditionLoss))}

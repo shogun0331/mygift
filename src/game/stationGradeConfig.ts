@@ -1,7 +1,7 @@
 import type { Grade } from './characters'
-import type { CompanyTierId } from './ranking'
+import { companyTierOf, type CompanyTierId } from './ranking'
 
-export type StationTierId = Exclude<CompanyTierId, 'black'>
+export type StationTierId = CompanyTierId
 export type StationGrade = StationTierId
 
 export type StationSpec = {
@@ -9,6 +9,7 @@ export type StationSpec = {
   slots: number
   maxRank: number
   viewerCap: number | null
+  maxScoutCreators: number
 }
 
 export type OptionalNumberCondition = {
@@ -23,30 +24,40 @@ export type CreatorCountRequirement = {
   enabled: boolean
 }
 
-/** 해당 등급에 머무를 때의 스튜디오 슬롯 수 */
+/** 해당 등급에 머무를 때의 스카우트 인원 상한 */
 export type StationTierSpec = {
-  slots: number
+  /** 이 등급에서 보유·스카우트 가능한 최대 크리에이터 수 */
+  maxScoutCreators: number
 }
 
 /** 다음 등급으로 올라가기 위한 연간 심사 조건 */
 export type StationPromotionRule = {
-  to: Exclude<StationTierId, 'tiny'>
+  to: Exclude<StationTierId, 'black'>
   requiredViewers: number
   minUnlockedSlots: OptionalNumberCondition
   minAssets: OptionalNumberCondition
   creatorRequirements: CreatorCountRequirement[]
-  spReward: number
-  unlockSlotIndexes: number[]
 }
 
 export type StationGradeConfig = {
   tiers: Record<StationTierId, StationTierSpec>
-  promotions: Record<Exclude<StationTierId, 'tiny'>, StationPromotionRule>
+  promotions: Record<Exclude<StationTierId, 'black'>, StationPromotionRule>
+  /**
+   * 슬롯 해금 가격 (USD).
+   * 인덱스 0 = 2번째 칸 해금가 … (현재 열린 n개일 때 prices[n-1])
+   */
+  slotUnlockPrices: number[]
+  /**
+   * 슬롯 해금에 필요한 최소 방송국 등급.
+   * 인덱스 0 = 2번째 칸 … (prices와 동일 인덱스)
+   */
+  slotUnlockMinGrades: StationTierId[]
 }
 
-export const STATION_TIER_ORDER: StationTierId[] = ['tiny', 'sme', 'mid', 'large', 'top']
+export const STATION_TIER_ORDER: StationTierId[] = ['black', 'tiny', 'sme', 'mid', 'large', 'top']
 
 export const STATION_TIER_LABEL: Record<StationTierId, string> = {
+  black: '일반사업자',
   tiny: '영세기업',
   sme: '중소기업',
   mid: '중견기업',
@@ -54,8 +65,21 @@ export const STATION_TIER_LABEL: Record<StationTierId, string> = {
   top: '일등기업',
 }
 
+/** 기본 슬롯 해금가 — 2칸~$1k, 3칸~$3k … */
+export const DEFAULT_SLOT_UNLOCK_PRICES = [1_000, 3_000, 9_000, 27_000, 81_000]
+
+/** 기본 슬롯 해금 최소 등급 — 2칸~6칸 (랭킹 기업 등급 기준) */
+export const DEFAULT_SLOT_UNLOCK_MIN_GRADES: StationTierId[] = [
+  'sme',
+  'mid',
+  'mid',
+  'large',
+  'top',
+]
+
 /** 순위 상한 — 랭킹 구간과 동일 */
 const TIER_MAX_RANK: Record<StationTierId, number> = {
+  black: 151,
   tiny: 150,
   sme: 100,
   mid: 50,
@@ -63,10 +87,10 @@ const TIER_MAX_RANK: Record<StationTierId, number> = {
   top: 1,
 }
 
-export function nextStationTier(current: StationTierId): Exclude<StationTierId, 'tiny'> | null {
+export function nextStationTier(current: StationTierId): Exclude<StationTierId, 'black'> | null {
   const idx = STATION_TIER_ORDER.indexOf(current)
   if (idx < 0 || idx >= STATION_TIER_ORDER.length - 1) return null
-  return STATION_TIER_ORDER[idx + 1] as Exclude<StationTierId, 'tiny'>
+  return STATION_TIER_ORDER[idx + 1] as Exclude<StationTierId, 'black'>
 }
 
 export function stationTierRank(tier: StationTierId): number {
@@ -90,61 +114,176 @@ export function tierMaxRank(grade: StationGrade): number {
   return TIER_MAX_RANK[grade]
 }
 
-function defaultCreatorReq(id: string, minGrade: Grade, count: number, enabled = true): CreatorCountRequirement {
+/**
+ * 현재 방송국/기업 등급에서 열 수 있는 최대 슬롯 수.
+ * 슬롯 해금 조건(필요 등급)에서 파생 — 등급별 슬롯 상한 필드는 없음.
+ * `currentGrade`는 방송국 등급 또는 랭킹 기업 등급(black 포함)을 받을 수 있다.
+ */
+export function maxSlotsForGrade(
+  config: StationGradeConfig,
+  grade: StationGrade | CompanyTierId,
+): number {
+  const currentRank = unlockTierRank(grade)
+  let max = 1
+  for (let index = 0; index < 5; index += 1) {
+    const required =
+      config.slotUnlockMinGrades[index] ??
+      DEFAULT_SLOT_UNLOCK_MIN_GRADES[index] ??
+      'tiny'
+    if (currentRank >= unlockTierRank(required)) {
+      max = Math.max(max, index + 2)
+    }
+  }
+  return Math.max(1, Math.min(6, max))
+}
+
+/** 슬롯 해금 비교용 등급 순위 (black < tiny < sme < …) */
+const UNLOCK_TIER_ORDER: CompanyTierId[] = ['black', 'tiny', 'sme', 'mid', 'large', 'top']
+
+function unlockTierRank(tier: StationGrade | CompanyTierId): number {
+  const idx = UNLOCK_TIER_ORDER.indexOf(tier)
+  return idx >= 0 ? idx : 0
+}
+
+export function maxScoutCreatorsForGrade(config: StationGradeConfig, grade: StationGrade): number {
+  return Math.max(1, Math.min(12, config.tiers[grade]?.maxScoutCreators ?? 1))
+}
+
+/**
+ * 현재 열린 슬롯 수 기준으로 다음 칸 해금 가격.
+ * 더 이상 열 수 없으면 null.
+ */
+export function slotUnlockPriceOf(
+  config: StationGradeConfig,
+  unlockedSlotCount: number,
+): number | null {
+  const n = Math.max(1, Math.round(unlockedSlotCount))
+  if (n >= 6) return null
+  const price = config.slotUnlockPrices[n - 1]
+  if (price == null || !Number.isFinite(price) || price < 0) return null
+  return Math.round(price)
+}
+
+/**
+ * 현재 열린 슬롯 수 기준으로 다음 칸 해금에 필요한 최소 방송국 등급.
+ */
+export function slotUnlockMinGradeOf(
+  config: StationGradeConfig,
+  unlockedSlotCount: number,
+): StationTierId | null {
+  const n = Math.max(1, Math.round(unlockedSlotCount))
+  if (n >= 6) return null
+  const grade =
+    config.slotUnlockMinGrades[n - 1] ??
+    DEFAULT_SLOT_UNLOCK_MIN_GRADES[n - 1] ??
+    'tiny'
+  return STATION_TIER_ORDER.includes(grade) ? grade : 'tiny'
+}
+
+/** 다음 슬롯 해금에 현재 등급이 충분한지 (방송국 등급 또는 랭킹 기업 등급) */
+export function meetsSlotUnlockGrade(
+  config: StationGradeConfig,
+  currentGrade: StationGrade | CompanyTierId,
+  unlockedSlotCount: number,
+): boolean {
+  const required = slotUnlockMinGradeOf(config, unlockedSlotCount)
+  if (!required) return false
+  return unlockTierRank(currentGrade) >= unlockTierRank(required)
+}
+
+/**
+ * 현재 랭킹 순위로 슬롯 해금 등급 충족 여부.
+ * 필요 등급 구간의 최하위 순위(worstRank) 이하면 충족.
+ * 예: 중소기업(sme)=100위 이하 → 일반사업자(151+)는 불가.
+ */
+export function meetsSlotUnlockByRank(
+  config: StationGradeConfig,
+  currentRank: number,
+  unlockedSlotCount: number,
+): boolean {
+  const required = slotUnlockMinGradeOf(config, unlockedSlotCount)
+  if (!required) return false
+  const worstAllowed: Record<StationTierId, number> = {
+    black: 200,
+    tiny: 150,
+    sme: 100,
+    mid: 50,
+    large: 20,
+    top: 10,
+  }
+  return Math.max(1, Math.round(currentRank)) <= worstAllowed[required]
+}
+
+/** 현재 랭킹 순위로 열 수 있는 최대 슬롯 수 */
+export function maxSlotsForRank(config: StationGradeConfig, currentRank: number): number {
+  return maxSlotsForGrade(config, companyTierOf(currentRank).id)
+}
+
+function defaultCreatorReq(
+  id: string,
+  minGrade: Grade,
+  count: number,
+  enabled = true,
+): CreatorCountRequirement {
   return { id, minGrade, count, enabled }
 }
 
 export function defaultStationGradeConfig(): StationGradeConfig {
   return {
     tiers: {
-      tiny: { slots: 2 },
-      sme: { slots: 2 },
-      mid: { slots: 4 },
-      large: { slots: 5 },
-      top: { slots: 6 },
+      black: { maxScoutCreators: 2 },
+      tiny: { maxScoutCreators: 2 },
+      sme: { maxScoutCreators: 3 },
+      mid: { maxScoutCreators: 4 },
+      large: { maxScoutCreators: 5 },
+      top: { maxScoutCreators: 6 },
     },
     promotions: {
-      sme: {
-        to: 'sme',
-        requiredViewers: 1_000,
+      tiny: {
+        to: 'tiny',
+        requiredViewers: 1_500,
         minUnlockedSlots: { enabled: false, value: 1 },
         minAssets: { enabled: false, value: 0 },
-        creatorRequirements: [defaultCreatorReq('b1', 'B', 1)],
-        spReward: 3,
-        unlockSlotIndexes: [],
+        creatorRequirements: [],
+      },
+      sme: {
+        to: 'sme',
+        requiredViewers: 5_000,
+        minUnlockedSlots: { enabled: false, value: 1 },
+        minAssets: { enabled: false, value: 0 },
+        creatorRequirements: [defaultCreatorReq('b1', 'B', 1, false)],
       },
       mid: {
         to: 'mid',
-        requiredViewers: 10_000,
+        requiredViewers: 100_000,
         minUnlockedSlots: { enabled: false, value: 2 },
         minAssets: { enabled: false, value: 0 },
         creatorRequirements: [defaultCreatorReq('a2', 'A', 2)],
-        spReward: 5,
-        unlockSlotIndexes: [],
       },
       large: {
         to: 'large',
-        requiredViewers: 50_000,
+        requiredViewers: 1_000_000,
         minUnlockedSlots: { enabled: false, value: 3 },
         minAssets: { enabled: false, value: 0 },
         creatorRequirements: [defaultCreatorReq('a3', 'A', 3)],
-        spReward: 7,
-        unlockSlotIndexes: [],
       },
       top: {
         to: 'top',
-        requiredViewers: 100_000,
+        requiredViewers: 8_000_000,
         minUnlockedSlots: { enabled: false, value: 4 },
         minAssets: { enabled: false, value: 0 },
         creatorRequirements: [defaultCreatorReq('s2', 'S', 2)],
-        spReward: 10,
-        unlockSlotIndexes: [],
       },
     },
+    slotUnlockPrices: [...DEFAULT_SLOT_UNLOCK_PRICES],
+    slotUnlockMinGrades: [...DEFAULT_SLOT_UNLOCK_MIN_GRADES],
   }
 }
 
-function normalizeOptionalNumber(raw: unknown, fallback: OptionalNumberCondition): OptionalNumberCondition {
+function normalizeOptionalNumber(
+  raw: unknown,
+  fallback: OptionalNumberCondition,
+): OptionalNumberCondition {
   if (!raw || typeof raw !== 'object') return fallback
   const row = raw as Record<string, unknown>
   return {
@@ -161,7 +300,9 @@ function normalizeCreatorRequirements(
   const grades: Grade[] = ['S', 'A', 'B', 'C']
   return raw.map((item, index) => {
     const row = item && typeof item === 'object' ? (item as Record<string, unknown>) : {}
-    const minGrade = grades.includes(row.minGrade as Grade) ? (row.minGrade as Grade) : fallback[index]?.minGrade ?? 'B'
+    const minGrade = grades.includes(row.minGrade as Grade)
+      ? (row.minGrade as Grade)
+      : fallback[index]?.minGrade ?? 'B'
     return {
       id: typeof row.id === 'string' && row.id.trim() ? row.id.trim() : `req-${index}`,
       minGrade,
@@ -181,14 +322,16 @@ function normalizePromotionRule(
   const row = raw as Record<string, unknown>
   return {
     to: fallback.to,
-    requiredViewers: Math.max(0, Math.round(Number(row.requiredViewers) ?? fallback.requiredViewers)),
+    requiredViewers: Math.max(
+      0,
+      Math.round(Number(row.requiredViewers) ?? fallback.requiredViewers),
+    ),
     minUnlockedSlots: normalizeOptionalNumber(row.minUnlockedSlots, fallback.minUnlockedSlots),
     minAssets: normalizeOptionalNumber(row.minAssets, fallback.minAssets),
-    creatorRequirements: normalizeCreatorRequirements(row.creatorRequirements, fallback.creatorRequirements),
-    spReward: Math.max(0, Math.round(Number(row.spReward) ?? fallback.spReward)),
-    unlockSlotIndexes: Array.isArray(row.unlockSlotIndexes)
-      ? row.unlockSlotIndexes.map((v) => Math.max(0, Math.round(Number(v) || 0))).filter((v) => v > 0)
-      : [...fallback.unlockSlotIndexes],
+    creatorRequirements: normalizeCreatorRequirements(
+      row.creatorRequirements,
+      fallback.creatorRequirements,
+    ),
   }
 }
 
@@ -196,26 +339,54 @@ function normalizeTierSpec(raw: unknown, fallback: StationTierSpec): StationTier
   if (!raw || typeof raw !== 'object') return { ...fallback }
   const row = raw as Record<string, unknown>
   return {
-    slots: Math.max(1, Math.min(6, Math.round(Number(row.slots) ?? fallback.slots))),
+    maxScoutCreators: Math.max(
+      1,
+      Math.min(12, Math.round(Number(row.maxScoutCreators) ?? fallback.maxScoutCreators)),
+    ),
   }
 }
 
-function migrateLegacyConfig(raw: Record<string, unknown>, defaults: StationGradeConfig): StationGradeConfig {
+function normalizeSlotUnlockPrices(raw: unknown, fallback: number[]): number[] {
+  const base = fallback.length >= 5 ? fallback : DEFAULT_SLOT_UNLOCK_PRICES
+  if (!Array.isArray(raw) || raw.length === 0) return [...base]
+  const next = base.map((fallbackPrice, index) => {
+    const value = Math.round(Number(raw[index]))
+    return Number.isFinite(value) && value >= 0 ? value : fallbackPrice
+  })
+  while (next.length < 5) next.push(DEFAULT_SLOT_UNLOCK_PRICES[next.length] ?? 0)
+  return next.slice(0, 5)
+}
+
+function normalizeSlotUnlockMinGrades(raw: unknown, fallback: StationTierId[]): StationTierId[] {
+  const base = fallback.length >= 5 ? fallback : DEFAULT_SLOT_UNLOCK_MIN_GRADES
+  if (!Array.isArray(raw) || raw.length === 0) return [...base]
+  const next = base.map((fallbackGrade, index) => {
+    const value = raw[index]
+    return typeof value === 'string' && STATION_TIER_ORDER.includes(value as StationTierId)
+      ? (value as StationTierId)
+      : fallbackGrade
+  })
+  while (next.length < 5) {
+    next.push(DEFAULT_SLOT_UNLOCK_MIN_GRADES[next.length] ?? 'tiny')
+  }
+  return next.slice(0, 5)
+}
+
+function migrateLegacyConfig(
+  raw: Record<string, unknown>,
+  defaults: StationGradeConfig,
+): StationGradeConfig {
   const tiers = { ...defaults.tiers }
   const baseSpec = raw.baseSpec
   if (baseSpec && typeof baseSpec === 'object') {
-    const base = baseSpec as Record<string, unknown>
-    tiers.tiny = normalizeTierSpec({ slots: base.slots }, defaults.tiers.tiny)
+    tiers.black = normalizeTierSpec(baseSpec, defaults.tiers.black)
   }
   const promotionsRaw = raw.promotions
   if (promotionsRaw && typeof promotionsRaw === 'object') {
-    for (const key of STATION_TIER_ORDER.slice(1) as Array<Exclude<StationTierId, 'tiny'>>) {
+    for (const key of STATION_TIER_ORDER.slice(1) as Array<Exclude<StationTierId, 'black'>>) {
       const legacy = (promotionsRaw as Record<string, unknown>)[key]
       if (legacy && typeof legacy === 'object') {
-        const row = legacy as Record<string, unknown>
-        if (row.slots != null) {
-          tiers[key] = normalizeTierSpec({ slots: row.slots }, defaults.tiers[key])
-        }
+        tiers[key] = normalizeTierSpec(legacy, defaults.tiers[key])
       }
     }
   }
@@ -236,7 +407,9 @@ export function normalizeStationGradeConfig(raw: unknown): StationGradeConfig {
         (row) =>
           row &&
           typeof row === 'object' &&
-          ('viewerCap' in (row as object) || 'maxRank' in (row as object) || 'slots' in (row as object)),
+          ('viewerCap' in (row as object) ||
+            'maxRank' in (row as object) ||
+            'slots' in (row as object)),
       )
     if (record.baseSpec || hasLegacyPromoFields) {
       migrated = migrateLegacyConfig(record, defaults)
@@ -247,7 +420,10 @@ export function normalizeStationGradeConfig(raw: unknown): StationGradeConfig {
   const tiersRaw = record.tiers
   if (tiersRaw && typeof tiersRaw === 'object') {
     for (const key of STATION_TIER_ORDER) {
-      tiers[key] = normalizeTierSpec((tiersRaw as Record<string, unknown>)[key], migrated.tiers[key])
+      tiers[key] = normalizeTierSpec(
+        (tiersRaw as Record<string, unknown>)[key],
+        migrated.tiers[key],
+      )
     }
   } else if (!record.baseSpec) {
     for (const key of STATION_TIER_ORDER) {
@@ -258,7 +434,7 @@ export function normalizeStationGradeConfig(raw: unknown): StationGradeConfig {
   const promotions = { ...defaults.promotions }
   const promotionsRaw = record.promotions
   if (promotionsRaw && typeof promotionsRaw === 'object') {
-    for (const key of STATION_TIER_ORDER.slice(1) as Array<Exclude<StationTierId, 'tiny'>>) {
+    for (const key of STATION_TIER_ORDER.slice(1) as Array<Exclude<StationTierId, 'black'>>) {
       promotions[key] = normalizePromotionRule(
         (promotionsRaw as Record<string, unknown>)[key],
         defaults.promotions[key],
@@ -266,15 +442,27 @@ export function normalizeStationGradeConfig(raw: unknown): StationGradeConfig {
     }
   }
 
-  return { tiers, promotions }
+  return {
+    tiers,
+    promotions,
+    slotUnlockPrices: normalizeSlotUnlockPrices(
+      record.slotUnlockPrices,
+      defaults.slotUnlockPrices,
+    ),
+    slotUnlockMinGrades: normalizeSlotUnlockMinGrades(
+      record.slotUnlockMinGrades,
+      defaults.slotUnlockMinGrades,
+    ),
+  }
 }
 
 export function stationSpecOf(config: StationGradeConfig, grade: StationGrade): StationSpec {
   return {
     grade,
-    slots: config.tiers[grade].slots,
+    slots: maxSlotsForGrade(config, grade),
     maxRank: tierMaxRank(grade),
     viewerCap: tierViewerCap(config, grade),
+    maxScoutCreators: config.tiers[grade].maxScoutCreators,
   }
 }
 
@@ -304,15 +492,13 @@ export function evaluateStationPromotion(
   current: StationGrade,
   ctx: StationReviewContext,
 ): {
-  next: Exclude<StationTierId, 'tiny'> | null
+  next: Exclude<StationTierId, 'black'> | null
   eligible: boolean
   checks: StationReviewCheck[]
-  spReward: number
-  unlockSlotIndexes: number[]
 } {
   const next = nextStationTier(current)
   if (!next) {
-    return { next: null, eligible: false, checks: [], spReward: 0, unlockSlotIndexes: [] }
+    return { next: null, eligible: false, checks: [] }
   }
   const rule = config.promotions[next]
   const checks: StationReviewCheck[] = []
@@ -356,12 +542,9 @@ export function evaluateStationPromotion(
     })
   }
 
-  const eligible = checks.every((check) => check.met)
   return {
     next,
-    eligible,
+    eligible: checks.every((check) => check.met),
     checks,
-    spReward: rule.spReward,
-    unlockSlotIndexes: rule.unlockSlotIndexes,
   }
 }

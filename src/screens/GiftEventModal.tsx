@@ -73,9 +73,6 @@ export function GiftOfferModal({
               `${formatMoney(spec.costMin)} ~ ${formatMoney(spec.costMax)}`,
             )}
           </p>
-          <p className="mt-1 text-[12px] font-semibold text-amber-100">
-            {t('gift.acceptSp').replace('{n}', String(pending.spGain))}
-          </p>
           <p className="mt-1 text-[12px] font-semibold text-emerald-100">
             {t('gift.acceptVitals').replace(
               '{range}',
@@ -116,7 +113,6 @@ export function GiftOfferModal({
 export function GiftResultModal({
   accepted,
   creatorName,
-  spGain,
   assetCost,
   conditionDelta,
   staminaDelta,
@@ -124,7 +120,6 @@ export function GiftResultModal({
 }: {
   accepted: boolean
   creatorName: string
-  spGain: number
   assetCost: number
   conditionDelta: number
   staminaDelta: number
@@ -159,9 +154,6 @@ export function GiftResultModal({
             <>
               <p className="text-[12px] font-semibold text-rose-200">
                 {t('gift.resultCost').replace('{price}', formatMoney(assetCost))}
-              </p>
-              <p className="text-[12px] font-semibold text-amber-200">
-                {t('gift.resultSp').replace('{n}', String(spGain))}
               </p>
               <p className="text-[12px] font-semibold text-emerald-200">
                 {t('gift.resultCondition').replace('{n}', String(conditionDelta))}

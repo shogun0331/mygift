@@ -65,7 +65,7 @@ export function unlockStudioSlot(slots: StudioSlot[], slotId: string): StudioSlo
   })
 }
 
-/** 시작은 1칸. 나머지는 장비 트리 슬롯 노드로 1칸씩 개방 */
+/** 시작은 1칸. 나머지는 자산으로 1칸씩 해금 */
 const INITIAL_UNLOCKED_SLOTS = 1
 
 /** 시작: 해금 칸 + 나머지 잠금 */
@@ -92,7 +92,7 @@ export function unlockSlotsToCount(slots: StudioSlot[], count: number): StudioSl
   })
 }
 
-/** 잠긴 슬롯 중 가장 앞 칸 1개를 연다 (트리 슬롯 노드) */
+/** 잠긴 슬롯 중 가장 앞 칸 1개를 연다 */
 export function unlockNextStudioSlot(slots: StudioSlot[]): StudioSlot[] {
   const next = findNextUnlockableSlot(slots)
   if (!next) return slots

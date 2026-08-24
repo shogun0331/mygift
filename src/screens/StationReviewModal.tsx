@@ -65,15 +65,6 @@ export function StationReviewModal({ promoted, status, onConfirm }: StationRevie
               {t('station.rewardTitle')}
             </p>
             <p className="mt-1 text-[11px] font-semibold text-slate-200">
-              - {t('station.rewardSp').replace('{n}', String(status.spReward))}
-            </p>
-            {status.unlockSlotIndexes.length > 0 ? (
-              <p className="mt-1 text-[11px] font-semibold text-slate-200">
-                -{' '}
-                {t('station.rewardSlots').replace('{n}', String(status.nextSlots))}
-              </p>
-            ) : null}
-            <p className="mt-1 text-[11px] font-semibold text-slate-200">
               - {t(`station.rewardScout.${status.next}` as 'station.rewardScout.sme')}
             </p>
           </div>

@@ -31,14 +31,21 @@ const LEGACY_STATION_MAP: Record<string, StationGrade> = {
   S: 'top',
 }
 
-let activeConfig: StationGradeConfig = defaultStationGradeConfig()
+let activeConfig: StationGradeConfig | null = null
+
+function getActiveConfig(): StationGradeConfig {
+  if (!activeConfig) {
+    activeConfig = defaultStationGradeConfig()
+  }
+  return activeConfig
+}
 
 export function setStationGradeConfig(config: StationGradeConfig): void {
   activeConfig = config
 }
 
 export function getStationGradeConfig(): StationGradeConfig {
-  return activeConfig
+  return getActiveConfig()
 }
 
 export function normalizeStationGrade(raw: unknown): StationGrade {
@@ -48,14 +55,14 @@ export function normalizeStationGrade(raw: unknown): StationGrade {
   if (typeof raw === 'string' && raw in LEGACY_STATION_MAP) {
     return LEGACY_STATION_MAP[raw]!
   }
-  return 'sme'
+  return 'black'
 }
 
 export function stationGradeRank(grade: StationGrade): number {
   return stationTierRank(grade)
 }
 
-export function nextStationGrade(current: StationGrade): Exclude<StationGrade, 'tiny'> | null {
+export function nextStationGrade(current: StationGrade): Exclude<StationGrade, 'black'> | null {
   return nextStationTier(current)
 }
 
@@ -64,24 +71,25 @@ export function meetsStationGrade(current: StationGrade, required: Grade): boole
   return meetsStationTierForEquip(current, required)
 }
 
-export function stationSpec(grade: StationGrade, config: StationGradeConfig = activeConfig): StationSpec {
-  return stationSpecOf(config, grade)
+export function stationSpec(grade: StationGrade, config?: StationGradeConfig): StationSpec {
+  return stationSpecOf(config ?? getActiveConfig(), grade)
 }
 
 export function gatedFloorOfStation(
   grade: StationGrade,
-  config: StationGradeConfig = activeConfig,
+  config?: StationGradeConfig,
 ): number {
-  return stationSpecOf(config, grade).maxRank
+  return stationSpecOf(config ?? getActiveConfig(), grade).maxRank
 }
 
 export function capStationViewers(
   raw: number,
   grade: StationGrade,
-  config: StationGradeConfig = activeConfig,
+  config?: StationGradeConfig,
 ): number {
+  const cfg = config ?? getActiveConfig()
   const cappedFloor = Math.max(VIEWER_FLOOR, Math.round(raw))
-  const cap = stationSpecOf(config, grade).viewerCap
+  const cap = stationSpecOf(cfg, grade).viewerCap
   if (cap == null) return cappedFloor
   return Math.min(cap, cappedFloor)
 }
@@ -107,8 +115,6 @@ export type StationReviewStatus = {
   eligible: boolean
   maxRank: number
   viewerCap: number | null
-  spReward: number
-  unlockSlotIndexes: number[]
   nextSlots: number
 }
 
@@ -140,10 +146,11 @@ export function getStationReviewStatus(
   viewers: number,
   creators: Array<{ grade: Grade }>,
   ctx: Omit<StationReviewContext, 'viewers' | 'creators'> = { unlockedSlotCount: 0, assets: 0 },
-  config: StationGradeConfig = activeConfig,
+  config?: StationGradeConfig,
 ): StationReviewStatus {
-  const spec = stationSpecOf(config, grade)
-  const evaluation = evaluateStationPromotion(config, grade, {
+  const cfg = config ?? getActiveConfig()
+  const spec = stationSpecOf(cfg, grade)
+  const evaluation = evaluateStationPromotion(cfg, grade, {
     viewers,
     unlockedSlotCount: ctx.unlockedSlotCount,
     assets: ctx.assets,
@@ -151,9 +158,9 @@ export function getStationReviewStatus(
   })
   const viewersCheck = evaluation.checks.find((check) => check.id === 'viewers')
   const requiredViewers =
-    evaluation.next != null ? config.promotions[evaluation.next].requiredViewers : viewers
+    evaluation.next != null ? cfg.promotions[evaluation.next].requiredViewers : viewers
   const legacy = legacyCreatorFields(evaluation.checks)
-  const nextSpec = evaluation.next ? stationSpecOf(config, evaluation.next) : null
+  const nextSpec = evaluation.next ? stationSpecOf(cfg, evaluation.next) : null
 
   return {
     current: grade,
@@ -166,8 +173,6 @@ export function getStationReviewStatus(
     eligible: evaluation.eligible,
     maxRank: spec.maxRank,
     viewerCap: spec.viewerCap,
-    spReward: evaluation.spReward,
-    unlockSlotIndexes: evaluation.unlockSlotIndexes,
     nextSlots: nextSpec?.slots ?? spec.slots,
   }
 }
@@ -178,7 +183,7 @@ export function applyStationReview(
   viewers: number,
   creators: Array<{ grade: Grade }>,
   ctx: Omit<StationReviewContext, 'viewers' | 'creators'> = { unlockedSlotCount: 0, assets: 0 },
-  config: StationGradeConfig = activeConfig,
+  config?: StationGradeConfig,
 ): { grade: StationGrade; promoted: boolean; status: StationReviewStatus } {
   const status = getStationReviewStatus(grade, viewers, creators, ctx, config)
   if (!status.next || !status.eligible) {

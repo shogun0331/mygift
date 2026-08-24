@@ -56,9 +56,6 @@ export function DateOfferModal({
             </p>
           </div>
         </div>
-        <div className="mt-4 rounded-xl border border-amber-400/20 bg-amber-950/30 px-3 py-3 text-[12px] font-semibold text-amber-100">
-          {t('date.offerSp').replace('{n}', String(pending.spGain))}
-        </div>
         <div className="mt-5 flex justify-center">
           <button
             type="button"
@@ -96,11 +93,6 @@ export function DateResultModal({
         <p className="mt-3 text-sm leading-relaxed text-slate-300">
           {t('date.resultBody').replace('{name}', pending.creatorName)}
         </p>
-        <div className="mt-4 space-y-1.5 rounded-xl border border-white/10 bg-black/25 px-3 py-3">
-          <p className="text-[12px] font-semibold text-amber-200">
-            {t('date.resultSp').replace('{n}', String(pending.spGain))}
-          </p>
-        </div>
         <div className="mt-5 flex justify-center">
           <button
             type="button"

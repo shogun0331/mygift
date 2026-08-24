@@ -1106,6 +1106,19 @@ export default function App() {
     }
   }
 
+  const handleSaveStationGradeManual = async () => {
+    try {
+      await saveStationGradeConfig(stationGradeConfig)
+      const saveTarget = window.electronAPI?.saveStationGradeConfigJson
+        ? '로컬 JSON 파일(station_grade_config.json)'
+        : '브라우저 저장소(localStorage)'
+      alert(`방송국 등급 설정이 ${saveTarget}에 저장되었습니다.`)
+    } catch (err) {
+      console.error(err)
+      alert('방송국 등급 설정 저장 중 오류가 발생했습니다.')
+    }
+  }
+
   if (screen === 'editor') {
     return (
       <EditorScreen
@@ -1121,6 +1134,7 @@ export default function App() {
         onCommonEventLinksChange={setCommonEventLinks}
         stationGradeConfig={stationGradeConfig}
         onStationGradeConfigChange={setStationGradeConfigState}
+        onSaveStationGradeManual={handleSaveStationGradeManual}
         registeredStaff={registeredStaff}
         onRegisterStaff={handleRegisterStaff}
         onUpdateStaff={handleUpdateStaff}

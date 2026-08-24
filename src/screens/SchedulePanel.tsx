@@ -10,17 +10,20 @@ import {
   CONDITION_ICON,
   conditionFromScore,
 } from '../game/condition'
+import { formatMoney } from '../game/money'
 import {
   assignCreatorToSlot,
   clearStudioSlot,
+  countUnlockedSlots,
+  findNextUnlockableSlot,
   moveCreatorBetweenSlots,
   type StudioHandCard,
   type StudioSlot,
 } from '../game/studioSlots'
+import { UnlockSlotModal } from './UnlockSlotModal'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import {
   STAFF_GENDER_LABEL_KEY,
-  STAFF_KIND_INITIAL,
   STAFF_KIND_LABEL_KEY,
   staffCardUrl,
   staffDisplayName,
@@ -34,7 +37,14 @@ import {
   type SlotManagerState,
   type StaffKind,
 } from '../game/slotManagers'
-import { KIND_TONE, StaffSlotIcons } from './StaffManagerUi'
+import { KIND_TONE, StaffKindIcon, StaffSlotIcons } from './StaffManagerUi'
+import {
+  meetsSlotUnlockByRank,
+  slotUnlockMinGradeOf,
+  slotUnlockPriceOf,
+  STATION_TIER_LABEL,
+  type StationGradeConfig,
+} from '../game/stationGradeConfig'
 
 const SLOT_DRAG_MIME = 'application/x-studio-slot'
 const STAFF_DRAG_MIME = 'application/x-studio-staff'
@@ -121,6 +131,17 @@ interface SchedulePanelProps {
   defaultStudioMode?: 'creator' | 'staff'
   defaultSelectedStaffId?: string | null
   onResetDefaultMode?: () => void
+  /** 다음으로 해금 가능한 잠긴 슬롯 (등급·가격 조건 충족) — config+rank 있으면 무시되고 재계산 */
+  unlockableSlotId?: string | null
+  unlockPrice?: number | null
+  /** 다음 슬롯이지만 방송국 등급 부족으로 잠긴 경우 */
+  unlockGradeBlockedSlotId?: string | null
+  unlockRequiredGradeLabel?: string | null
+  assets?: number
+  onUnlockSlot?: () => void
+  /** 랭킹 순위 — 슬롯 해금 기업 등급 판정에 사용 */
+  currentRank?: number
+  stationGradeConfig?: StationGradeConfig
 }
 
 export function SchedulePanel({
@@ -137,6 +158,14 @@ export function SchedulePanel({
   defaultStudioMode,
   defaultSelectedStaffId,
   onResetDefaultMode,
+  unlockableSlotId = null,
+  unlockPrice = null,
+  unlockGradeBlockedSlotId = null,
+  unlockRequiredGradeLabel = null,
+  assets = 0,
+  onUnlockSlot,
+  currentRank,
+  stationGradeConfig,
 }: SchedulePanelProps) {
   const { t, locale } = useTranslation()
   const [studioMode, setStudioMode] = useState<'creator' | 'staff'>('creator')
@@ -145,6 +174,38 @@ export function SchedulePanel({
   const [dragOverSlotId, setDragOverSlotId] = useState<string | null>(null)
   const [draggingSlotId, setDraggingSlotId] = useState<string | null>(null)
   const [draggingStaffId, setDraggingStaffId] = useState<string | null>(null)
+  const [unlockConfirmOpen, setUnlockConfirmOpen] = useState(false)
+
+  // 슬롯 해금은 랭킹 기업 등급으로 SchedulePanel에서 직접 판정 (부모 props와 어긋나도 안전)
+  const unlockedSlotCount = countUnlockedSlots(slots)
+  const nextLockedSlot = findNextUnlockableSlot(slots)
+  const rankGateActive = currentRank != null && stationGradeConfig != null
+  const rankMeetsUnlock =
+    rankGateActive &&
+    meetsSlotUnlockByRank(stationGradeConfig, currentRank, unlockedSlotCount)
+  const resolvedUnlockableSlotId = rankGateActive
+    ? rankMeetsUnlock
+      ? (nextLockedSlot?.id ?? null)
+      : null
+    : unlockableSlotId
+  const resolvedUnlockPrice = rankGateActive
+    ? rankMeetsUnlock
+      ? slotUnlockPriceOf(stationGradeConfig, unlockedSlotCount)
+      : null
+    : unlockPrice
+  const resolvedGradeBlockedSlotId = rankGateActive
+    ? !rankMeetsUnlock && unlockedSlotCount < 6
+      ? (nextLockedSlot?.id ?? null)
+      : null
+    : unlockGradeBlockedSlotId
+  const resolvedRequiredGradeLabel = rankGateActive
+    ? !rankMeetsUnlock && unlockedSlotCount < 6
+      ? (() => {
+          const required = slotUnlockMinGradeOf(stationGradeConfig, unlockedSlotCount)
+          return required ? STATION_TIER_LABEL[required] : null
+        })()
+      : null
+    : unlockRequiredGradeLabel
 
   useEffect(() => {
     if (defaultStudioMode) {
@@ -228,7 +289,13 @@ export function SchedulePanel({
     setDragOverSlotId(null)
   }
 
+  const canAffordUnlock =
+    resolvedUnlockPrice != null &&
+    Number.isFinite(resolvedUnlockPrice) &&
+    assets >= resolvedUnlockPrice
+
   return (
+    <>
     <div className="grid h-full min-h-0 w-full grid-cols-1 gap-2 overflow-hidden lg:grid-cols-[minmax(0,1fr)_minmax(15rem,18rem)] lg:gap-2.5">
       {/* 왼쪽: Placement Bay — 슬롯은 카드(3:4) 비율 */}
       <section className="game-panel-strong relative flex min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl">
@@ -283,6 +350,18 @@ export function SchedulePanel({
             >
             {slots.map((slot) => {
               const locked = slot.status === 'locked'
+              const canUnlock =
+                locked &&
+                !placementLocked &&
+                !staffMode &&
+                resolvedUnlockableSlotId === slot.id &&
+                resolvedUnlockPrice != null &&
+                Boolean(onUnlockSlot)
+              const gradeBlocked =
+                locked &&
+                !canUnlock &&
+                resolvedGradeBlockedSlotId === slot.id &&
+                Boolean(resolvedRequiredGradeLabel)
               const filled = slot.status === 'assigned' && Boolean(slot.assignment)
               const handForSlot = filled
                 ? handCards.find((card) => card.id === slot.assignment!.creatorId)
@@ -316,21 +395,23 @@ export function SchedulePanel({
                         : locked
                           ? 'border-rose-950/30 bg-slate-950/80 opacity-40'
                           : 'border-dashed border-indigo-500/20 bg-indigo-950/5 opacity-80'
-                      : locked
-                        ? 'border-rose-950/30 bg-slate-950/80 opacity-40 shadow-[0_0_10px_rgba(255,42,116,0.03)]'
-                        : isDragOver
-                          ? 'border-emerald-400 bg-emerald-500/10 shadow-[0_0_14px_rgba(16,185,129,0.2)] scale-[1.02]'
-                          : isDragSource
-                            ? 'border-amber-400/50 bg-amber-500/10 opacity-60'
-                            : canDropFromSlot
-                              ? 'border-indigo-400/50 bg-indigo-500/10'
-                              : canPlace
-                                ? 'border-indigo-400/80 bg-indigo-500/15 shadow-[0_0_16px_rgba(99,102,241,0.35)] scale-[1.01] animate-pulse'
-                                : filled
-                                  ? needsRemove
-                                    ? 'studio-slot-needs-remove border-rose-400/70 bg-rose-950/30 shadow-[0_0_16px_rgba(244,63,94,0.28)]'
-                                    : `${typeStyle?.frame ?? 'border-white/12'} bg-black/30`
-                                  : 'border-dashed border-indigo-500/25 bg-indigo-950/5 shadow-[0_0_10px_rgba(99,102,241,0.03)] hover:border-indigo-400/50 hover:bg-indigo-500/5 hover:shadow-[0_0_15px_rgba(99,102,241,0.15)]'
+                      : canUnlock
+                        ? 'border-dashed border-emerald-400/45 bg-emerald-950/15 shadow-[0_0_14px_rgba(16,185,129,0.18)] hover:border-emerald-300/60'
+                        : locked
+                          ? 'border-rose-950/30 bg-slate-950/80 opacity-40 shadow-[0_0_10px_rgba(255,42,116,0.03)]'
+                          : isDragOver
+                            ? 'border-emerald-400 bg-emerald-500/10 shadow-[0_0_14px_rgba(16,185,129,0.2)] scale-[1.02]'
+                            : isDragSource
+                              ? 'border-amber-400/50 bg-amber-500/10 opacity-60'
+                              : canDropFromSlot
+                                ? 'border-indigo-400/50 bg-indigo-500/10'
+                                : canPlace
+                                  ? 'border-indigo-400/80 bg-indigo-500/15 shadow-[0_0_16px_rgba(99,102,241,0.35)] scale-[1.01] animate-pulse'
+                                  : filled
+                                    ? needsRemove
+                                      ? 'studio-slot-needs-remove border-rose-400/70 bg-rose-950/30 shadow-[0_0_16px_rgba(244,63,94,0.28)]'
+                                      : `${typeStyle?.frame ?? 'border-white/12'} bg-black/30`
+                                    : 'border-dashed border-indigo-500/25 bg-indigo-950/5 shadow-[0_0_10px_rgba(99,102,241,0.03)] hover:border-indigo-400/50 hover:bg-indigo-500/5 hover:shadow-[0_0_15px_rgba(99,102,241,0.15)]'
                   }`}
                   onDragOver={(e) => {
                     if (placementLocked || locked) return
@@ -383,7 +464,7 @@ export function SchedulePanel({
                 >
                   <button
                     type="button"
-                    disabled={locked || placementLocked}
+                    disabled={(locked && !canUnlock) || (placementLocked && !canUnlock)}
                     draggable={!staffMode && filled && !placementLocked}
                     onDragStart={(e) => {
                       if (staffMode || placementLocked || !filled || !slot.assignment) {
@@ -402,6 +483,10 @@ export function SchedulePanel({
                       setDragOverSlotId(null)
                     }}
                     onClick={() => {
+                      if (canUnlock && resolvedUnlockPrice != null && onUnlockSlot) {
+                        setUnlockConfirmOpen(true)
+                        return
+                      }
                       if (locked || placementLocked) return
                       if (staffMode) {
                         if (selectedStaffId) assignStaffToSlot(slot.id, selectedStaffId)
@@ -426,19 +511,21 @@ export function SchedulePanel({
                       }
                     }}
                     className={`game-card relative h-full w-full min-h-0 text-left transition ${
-                      locked
-                        ? 'cursor-default border-rose-950/30'
-                        : placementLocked
-                          ? `cursor-not-allowed ${staffMode ? '' : typeStyle?.card ?? 'border-rose-950/30'}`
-                          : staffMode
-                            ? canPlace
-                              ? 'hover:border-indigo-400/55 hover:ring-1 hover:ring-indigo-400/35'
-                              : 'hover:border-indigo-400/40'
-                            : filled
-                              ? `cursor-grab active:cursor-grabbing ${typeStyle?.card ?? 'hover:border-white/20'}`
-                              : canPlace
+                      canUnlock
+                        ? 'cursor-pointer border-emerald-400/40 hover:border-emerald-300/60'
+                        : locked
+                          ? 'cursor-default border-rose-950/30'
+                          : placementLocked
+                            ? `cursor-not-allowed ${staffMode ? '' : typeStyle?.card ?? 'border-rose-950/30'}`
+                            : staffMode
+                              ? canPlace
                                 ? 'hover:border-indigo-400/55 hover:ring-1 hover:ring-indigo-400/35'
-                                : 'border-dashed border-indigo-500/30 hover:border-indigo-400/60 hover:bg-indigo-500/5'
+                                : 'hover:border-indigo-400/40'
+                              : filled
+                                ? `cursor-grab active:cursor-grabbing ${typeStyle?.card ?? 'hover:border-white/20'}`
+                                : canPlace
+                                  ? 'hover:border-indigo-400/55 hover:ring-1 hover:ring-indigo-400/35'
+                                  : 'border-dashed border-indigo-500/30 hover:border-indigo-400/60 hover:bg-indigo-500/5'
                     }`}
                   >
                     <div className="relative flex h-full min-h-0 flex-col">
@@ -532,12 +619,37 @@ export function SchedulePanel({
                           {locked ? (
                             <>
                               <div className="flex flex-1 flex-col items-center justify-center gap-1.5">
-                                <div className="flex h-7.5 w-7.5 items-center justify-center rounded-full border border-rose-500/20 bg-rose-500/30 text-rose-500/60 sm:h-9.5 sm:w-9.5">
-                                  <IconLockTiny />
-                                </div>
-                                <p className="text-[9px] font-bold tracking-wide text-rose-600/70 uppercase sm:text-[10px]">
-                                  {t('dashboard.lockedChannel')}
-                                </p>
+                                {canUnlock ? (
+                                  <>
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-emerald-400/45 bg-emerald-500/15 text-lg font-black text-emerald-200 shadow-[0_0_12px_rgba(16,185,129,0.25)] sm:h-9.5 sm:w-9.5">
+                                      ＋
+                                    </div>
+                                    <p className="text-[9px] font-bold tracking-wide text-emerald-300/90 uppercase sm:text-[10px]">
+                                      {formatMoney(resolvedUnlockPrice ?? 0)}
+                                    </p>
+                                  </>
+                                ) : gradeBlocked ? (
+                                  <>
+                                    <div className="flex h-7.5 w-7.5 items-center justify-center rounded-full border border-amber-400/30 bg-amber-500/15 text-amber-300/80 sm:h-9.5 sm:w-9.5">
+                                      <IconLockTiny />
+                                    </div>
+                                    <p className="px-1 text-center text-[8px] font-bold leading-tight tracking-wide text-amber-200/90 sm:text-[9px]">
+                                      {resolvedRequiredGradeLabel}
+                                    </p>
+                                    <p className="text-[8px] font-semibold text-amber-500/70 sm:text-[9px]">
+                                      등급 필요
+                                    </p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className="flex h-7.5 w-7.5 items-center justify-center rounded-full border border-rose-500/20 bg-rose-500/30 text-rose-500/60 sm:h-9.5 sm:w-9.5">
+                                      <IconLockTiny />
+                                    </div>
+                                    <p className="text-[9px] font-bold tracking-wide text-rose-600/70 uppercase sm:text-[10px]">
+                                      {t('dashboard.lockedChannel')}
+                                    </p>
+                                  </>
+                                )}
                               </div>
                             </>
                           ) : filled && slot.assignment ? (
@@ -773,6 +885,18 @@ export function SchedulePanel({
         </div>
       </section>
     </div>
+    {unlockConfirmOpen && resolvedUnlockPrice != null ? (
+      <UnlockSlotModal
+        price={resolvedUnlockPrice}
+        canAfford={canAffordUnlock}
+        onCancel={() => setUnlockConfirmOpen(false)}
+        onConfirm={() => {
+          setUnlockConfirmOpen(false)
+          onUnlockSlot?.()
+        }}
+      />
+    ) : null}
+    </>
   )
 }
 
@@ -886,14 +1010,30 @@ function StaffSlotFace({
                   image ? 'bg-gradient-to-t from-black/85 via-black/25 to-black/10' : ''
                 }`}
               />
-              <div className="relative z-10 flex h-full flex-col justify-between p-1">
-                <span className="text-[7px] font-black tracking-wide text-slate-200">
-                  {STAFF_KIND_INITIAL[kind]}
-                </span>
-                <p className="truncate text-[8px] font-bold text-slate-100">
-                  {staff ? displayName : t(STAFF_KIND_LABEL_KEY[kind])}
-                </p>
-              </div>
+              {staff ? (
+                <div className="relative z-10 flex h-full flex-col justify-between p-1">
+                  <span
+                    className={`inline-flex h-4 w-4 items-center justify-center rounded-md border ${KIND_TONE[kind]}`}
+                  >
+                    <StaffKindIcon kind={kind} className="h-2.5 w-2.5" />
+                  </span>
+                  <p className="truncate text-[8px] font-bold text-slate-100">{displayName}</p>
+                </div>
+              ) : (
+                <div className="relative z-10 flex h-full flex-col items-center justify-center gap-1 p-1">
+                  <StaffKindIcon
+                    kind={kind}
+                    className={`h-6 w-6 ${canReceive ? 'text-indigo-200' : 'text-slate-500'}`}
+                  />
+                  <p
+                    className={`truncate text-[8px] font-bold ${
+                      canReceive ? 'text-indigo-300' : 'text-slate-400'
+                    }`}
+                  >
+                    {t(STAFF_KIND_LABEL_KEY[kind])}
+                  </p>
+                </div>
+              )}
             </button>
           )
         })}
@@ -989,9 +1129,9 @@ function StaffHandCard({
 
         <div className="absolute top-1 left-1 z-20">
           <span
-            className={`inline-flex h-5 min-w-5 items-center justify-center rounded-md border px-1 text-[9px] font-black ${KIND_TONE[staff.kind]}`}
+            className={`inline-flex h-5 w-5 items-center justify-center rounded-md border ${KIND_TONE[staff.kind]}`}
           >
-            {STAFF_KIND_INITIAL[staff.kind]}
+            <StaffKindIcon kind={staff.kind} className="h-3 w-3" />
           </span>
         </div>
 

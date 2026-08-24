@@ -73,6 +73,8 @@ type CreatorPanelProps = {
   staffScoutAvailable: boolean
   scoutedStaffCandidate: ScoutedStaffCandidate | null
   onScoutStaff: () => void
+  creatorScoutAvailable: boolean
+  onScoutCreator: () => void
   studioSlots: StudioSlot[]
   onAssignStaffPlacement: (staffId: string) => void
 }
@@ -144,6 +146,8 @@ export function CreatorPanel({
   staffScoutAvailable,
   scoutedStaffCandidate,
   onScoutStaff,
+  creatorScoutAvailable,
+  onScoutCreator,
   studioSlots,
   onAssignStaffPlacement,
 }: CreatorPanelProps) {
@@ -174,6 +178,10 @@ export function CreatorPanel({
   const handleScoutStaffClick = () => {
     isScoutingRef.current = true
     onScoutStaff()
+  }
+
+  const handleScoutCreatorClick = () => {
+    onScoutCreator()
   }
 
   function leaveScout() {
@@ -317,6 +325,28 @@ export function CreatorPanel({
                 📱 {t('sns.bulkCompose')}
               </button>
             ) : null}
+            {scoutState.activeOffer ? (
+              <button
+                type="button"
+                onClick={() => setView('scout')}
+                className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition"
+              >
+                스카우트 확인
+              </button>
+            ) : (
+              <button
+                type="button"
+                disabled={!creatorScoutAvailable}
+                onClick={handleScoutCreatorClick}
+                className={`game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed ${
+                  creatorScoutAvailable
+                    ? 'border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition'
+                    : ''
+                }`}
+              >
+                스카우트
+              </button>
+            )}
             <span className="game-chip text-[10px]">{sortedBySalary.length}명</span>
           </div>
         </div>

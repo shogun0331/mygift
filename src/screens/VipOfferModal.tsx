@@ -1,4 +1,3 @@
-import type { Grade } from '../game/characters'
 import { formatViewers } from '../game/ranking'
 import {
   VIP_ACCEPT_BY_GRADE,
@@ -48,10 +47,7 @@ export function VipOfferModal({ offer, onAccept, onReject }: VipOfferModalProps)
           <p className="text-[10px] font-black tracking-wide text-emerald-300/80">
             {t('vip.acceptHeader')}
           </p>
-          <p className="mt-1.5 text-[12px] font-semibold text-emerald-100">
-            {t('vip.acceptSp').replace('{range}', spRange(offer.grade))}
-          </p>
-          <p className="mt-1 text-[12px] font-semibold text-rose-200">
+          <p className="mt-1.5 text-[12px] font-semibold text-rose-200">
             {t('vip.acceptStamina').replace('{n}', String(accept.staminaMaxLoss))}
           </p>
           <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
@@ -90,11 +86,6 @@ export function VipOfferModal({ offer, onAccept, onReject }: VipOfferModalProps)
       </div>
     </div>
   )
-}
-
-function spRange(grade: Grade): string {
-  const spec = VIP_ACCEPT_BY_GRADE[grade]
-  return `+${spec.spMin} ~ ${spec.spMax}`
 }
 
 function CreatorFace({ name, imageUrl }: { name: string; imageUrl?: string | null }) {

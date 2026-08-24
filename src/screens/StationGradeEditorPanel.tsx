@@ -1,5 +1,8 @@
 import type { Grade } from '../game/characters'
+import { formatMoney } from '../game/money'
 import {
+  DEFAULT_SLOT_UNLOCK_MIN_GRADES,
+  DEFAULT_SLOT_UNLOCK_PRICES,
   STATION_TIER_LABEL,
   STATION_TIER_ORDER,
   tierMaxRank,
@@ -13,6 +16,7 @@ import {
 type StationGradeEditorPanelProps = {
   config: StationGradeConfig
   onConfigChange: (config: StationGradeConfig) => void
+  onSaveManual?: () => void
 }
 
 const fieldClassName =
@@ -48,13 +52,23 @@ function formatCap(value: number | null): string {
   return value.toLocaleString()
 }
 
-export function StationGradeEditorPanel({ config, onConfigChange }: StationGradeEditorPanelProps) {
-  function setTierSlots(tier: StationTierId, slots: number) {
+export function StationGradeEditorPanel({
+  config,
+  onConfigChange,
+  onSaveManual,
+}: StationGradeEditorPanelProps) {
+  function setTierField(
+    tier: StationTierId,
+    patch: Partial<StationGradeConfig['tiers'][StationTierId]>,
+  ) {
     onConfigChange({
       ...config,
       tiers: {
         ...config.tiers,
-        [tier]: { slots: Math.max(1, Math.min(6, slots)) },
+        [tier]: {
+          ...config.tiers[tier],
+          ...patch,
+        },
       },
     })
   }
@@ -73,23 +87,105 @@ export function StationGradeEditorPanel({ config, onConfigChange }: StationGrade
     setPromotion(tier, { creatorRequirements: requirements })
   }
 
+  function setSlotUnlockPrice(index: number, value: number) {
+    const next = [...config.slotUnlockPrices]
+    while (next.length < 5) next.push(DEFAULT_SLOT_UNLOCK_PRICES[next.length] ?? 0)
+    next[index] = Math.max(0, Math.round(value))
+    onConfigChange({ ...config, slotUnlockPrices: next.slice(0, 5) })
+  }
+
+  function setSlotUnlockMinGrade(index: number, grade: StationTierId) {
+    const next = [...(config.slotUnlockMinGrades ?? DEFAULT_SLOT_UNLOCK_MIN_GRADES)]
+    while (next.length < 5) {
+      next.push(DEFAULT_SLOT_UNLOCK_MIN_GRADES[next.length] ?? 'tiny')
+    }
+    next[index] = grade
+    onConfigChange({ ...config, slotUnlockMinGrades: next.slice(0, 5) })
+  }
+
   return (
     <div className="game-panel rounded-2xl p-6">
-      <div>
-        <p className="game-kicker">STATION GRADE</p>
-        <h2 className="mt-1 text-lg font-semibold text-slate-100">방송국 등급 심사</h2>
-        <p className="mt-2 text-sm text-slate-400">
-          각 등급의 <span className="text-slate-200">스튜디오 슬롯</span>과{' '}
-          <span className="text-slate-200">다음 등급 승급 조건</span>만 설정합니다. 시청자·순위 상한은
-          자동으로 계산됩니다 — 현재 등급의 시청자 상한 = 다음 등급 승급에 필요한 시청자 수, 순위 상한 =
-          랭킹 구간과 동일합니다.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="game-kicker">STATION GRADE</p>
+          <h2 className="mt-1 text-lg font-semibold text-slate-100">방송국 등급 심사</h2>
+          <p className="mt-2 text-sm text-slate-400">
+            각 등급의 <span className="text-slate-200">스카우트 인원</span>과{' '}
+            <span className="text-slate-200">다음 등급 승급 조건</span>을 설정합니다. 스튜디오 슬롯은 상단
+            해금 조건(가격·필요 기업 등급)으로만 제어됩니다. 시청자·순위 상한은 자동 계산됩니다.
+          </p>
+        </div>
+        {onSaveManual && (
+          <button
+            type="button"
+            onClick={onSaveManual}
+            className="game-btn shrink-0 rounded-xl border-indigo-500/30 px-4 py-2 text-sm text-indigo-300 hover:bg-indigo-500/10"
+          >
+            💾 등급 설정 저장
+          </button>
+        )}
       </div>
+
+      <section className="mt-6 rounded-xl border border-white/10 bg-black/20 p-4">
+        <h3 className="text-sm font-bold text-cyan-200">슬롯 해금 조건 (공통)</h3>
+        <p className="mt-1 text-[11px] text-slate-500">
+          현재 열린 슬롯 수 기준으로 다음 칸 해금 비용·필요 기업 등급(랭킹)입니다. (2번째 칸 ~ 6번째 칸)
+        </p>
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-5">
+          {Array.from({ length: 5 }, (_, index) => {
+            const slotNumber = index + 2
+            const price = config.slotUnlockPrices[index] ?? DEFAULT_SLOT_UNLOCK_PRICES[index] ?? 0
+            const minGrade =
+              config.slotUnlockMinGrades?.[index] ??
+              DEFAULT_SLOT_UNLOCK_MIN_GRADES[index] ??
+              'tiny'
+            return (
+              <div
+                key={slotNumber}
+                className="rounded-xl border border-white/8 bg-black/25 p-3"
+              >
+                <p className="text-xs font-bold text-slate-200">{slotNumber}칸 해금</p>
+                <label className="mt-2 block text-[10px] font-semibold text-slate-500">
+                  가격 ($)
+                  <input
+                    type="number"
+                    min={0}
+                    className={fieldClassName}
+                    value={price}
+                    onChange={(event) =>
+                      setSlotUnlockPrice(index, Number(event.target.value) || 0)
+                    }
+                  />
+                  <span className="mt-1 block text-[10px] font-normal text-slate-500">
+                    {formatMoney(price)}
+                  </span>
+                </label>
+                <label className="mt-2 block text-[10px] font-semibold text-slate-500">
+                  필요 기업 등급(랭킹)
+                  <select
+                    className={fieldClassName}
+                    value={minGrade}
+                    onChange={(event) =>
+                      setSlotUnlockMinGrade(index, event.target.value as StationTierId)
+                    }
+                  >
+                    {STATION_TIER_ORDER.map((tier) => (
+                      <option key={tier} value={tier}>
+                        {STATION_TIER_LABEL[tier]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            )
+          })}
+        </div>
+      </section>
 
       <div className="mt-6 space-y-6">
         {STATION_TIER_ORDER.map((tier) => {
           const next = STATION_TIER_ORDER[STATION_TIER_ORDER.indexOf(tier) + 1] as
-            | Exclude<StationTierId, 'tiny'>
+            | Exclude<StationTierId, 'black'>
             | undefined
           const promotion = next ? config.promotions[next] : null
           const viewerCap = tierViewerCap(config, tier)
@@ -99,17 +195,22 @@ export function StationGradeEditorPanel({ config, onConfigChange }: StationGrade
             <section key={tier} className="rounded-xl border border-white/10 bg-black/20 p-4">
               <h3 className="text-sm font-bold text-amber-200">{STATION_TIER_LABEL[tier]}</h3>
 
-              <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="block text-xs font-semibold text-slate-400">
-                  스튜디오 슬롯
+                  스카우트 인원 상한
                   <input
                     type="number"
                     min={1}
-                    max={6}
+                    max={12}
                     className={fieldClassName}
-                    value={config.tiers[tier].slots}
+                    value={config.tiers[tier].maxScoutCreators}
                     onChange={(event) =>
-                      setTierSlots(tier, Math.round(Number(event.target.value) || 1))
+                      setTierField(tier, {
+                        maxScoutCreators: Math.max(
+                          1,
+                          Math.min(12, Math.round(Number(event.target.value) || 1)),
+                        ),
+                      })
                     }
                   />
                 </label>
@@ -162,20 +263,6 @@ export function StationGradeEditorPanel({ config, onConfigChange }: StationGrade
                       <span className="mt-1 block text-[10px] font-normal text-slate-500">
                         이 값이 {STATION_TIER_LABEL[tier]} 등급의 시청자 상한이 됩니다
                       </span>
-                    </label>
-                    <label className="block text-xs font-semibold text-slate-400">
-                      SP 보상
-                      <input
-                        type="number"
-                        min={0}
-                        className={fieldClassName}
-                        value={promotion.spReward}
-                        onChange={(event) =>
-                          setPromotion(promotion.to, {
-                            spReward: Math.max(0, Math.round(Number(event.target.value) || 0)),
-                          })
-                        }
-                      />
                     </label>
                   </div>
 

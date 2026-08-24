@@ -69,7 +69,7 @@ export function createScoutOffer(template: RegisteredCharacter, grade: Grade): S
   }
 }
 
-/** 스킬트리 스카웃 — 보유 제외 후 랜덤 1명. 오퍼 등급 = 노드/국 등급 */
+/** 스카우트 — 보유 제외 후 랜덤 1명. 오퍼 등급 = 호출 측 지정 */
 export function createRandomScoutOffer(
   registered: RegisteredCharacter[],
   ownedIds: Iterable<string>,

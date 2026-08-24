@@ -811,7 +811,7 @@ export function unclaimedMilestonesFor(
 
 export function createInitialLeagueState(
   creators: RankCreator[] = [],
-  stationGrade: StationGrade = 'tiny',
+  stationGrade: StationGrade = 'black',
 ): LeagueState {
   const viewers = capStationViewers(viewersForRank(STARTING_RANK), stationGrade)
   const npcs = generateNpcStations()

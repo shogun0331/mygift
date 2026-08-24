@@ -1,22 +1,38 @@
 {
   "tiers": {
+    "black": {
+      "maxScoutCreators": 2
+    },
     "tiny": {
-      "slots": 2
+      "maxScoutCreators": 2
     },
     "sme": {
-      "slots": 2
+      "maxScoutCreators": 3
     },
     "mid": {
-      "slots": 4
+      "maxScoutCreators": 4
     },
     "large": {
-      "slots": 5
+      "maxScoutCreators": 5
     },
     "top": {
-      "slots": 6
+      "maxScoutCreators": 6
     }
   },
   "promotions": {
+    "tiny": {
+      "to": "tiny",
+      "requiredViewers": 1500,
+      "minUnlockedSlots": {
+        "enabled": false,
+        "value": 1
+      },
+      "minAssets": {
+        "enabled": false,
+        "value": 0
+      },
+      "creatorRequirements": []
+    },
     "sme": {
       "to": "sme",
       "requiredViewers": 5000,
@@ -35,9 +51,7 @@
           "count": 1,
           "enabled": false
         }
-      ],
-      "spReward": 3,
-      "unlockSlotIndexes": []
+      ]
     },
     "mid": {
       "to": "mid",
@@ -57,9 +71,7 @@
           "count": 2,
           "enabled": true
         }
-      ],
-      "spReward": 5,
-      "unlockSlotIndexes": []
+      ]
     },
     "large": {
       "to": "large",
@@ -79,9 +91,7 @@
           "count": 3,
           "enabled": true
         }
-      ],
-      "spReward": 7,
-      "unlockSlotIndexes": []
+      ]
     },
     "top": {
       "to": "top",
@@ -101,9 +111,21 @@
           "count": 2,
           "enabled": true
         }
-      ],
-      "spReward": 10,
-      "unlockSlotIndexes": []
+      ]
     }
-  }
+  },
+  "slotUnlockPrices": [
+    1000,
+    3000,
+    9000,
+    27000,
+    81000
+  ],
+  "slotUnlockMinGrades": [
+    "tiny",
+    "mid",
+    "mid",
+    "large",
+    "top"
+  ]
 }

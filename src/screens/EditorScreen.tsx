@@ -46,6 +46,7 @@ type EditorScreenProps = {
   onCommonEventLinksChange: (links: CommonEventLinks) => void
   stationGradeConfig: StationGradeConfig
   onStationGradeConfigChange: (config: StationGradeConfig) => void
+  onSaveStationGradeManual?: () => void
   registeredStaff: RegisteredStaff[]
   onRegisterStaff: (payload: AddStaffPayload) => void | Promise<void>
   onUpdateStaff: (id: string, payload: AddStaffPayload) => void | Promise<void>
@@ -92,6 +93,7 @@ export function EditorScreen({
   onCommonEventLinksChange,
   stationGradeConfig,
   onStationGradeConfigChange,
+  onSaveStationGradeManual,
   registeredStaff,
   onRegisterStaff,
   onUpdateStaff,
@@ -403,6 +405,7 @@ export function EditorScreen({
             <StationGradeEditorPanel
               config={stationGradeConfig}
               onConfigChange={onStationGradeConfigChange}
+              onSaveManual={onSaveStationGradeManual}
             />
           ) : tab === 'staff' ? (
             <StaffEditorPanel

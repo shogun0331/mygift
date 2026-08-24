@@ -5,7 +5,6 @@ export type VipResult =
   | {
       kind: 'accept'
       creatorName: string
-      spGain: number
       staminaMaxLoss: number
     }
   | {
@@ -49,14 +48,9 @@ export function VipResultModal({ result, onConfirm }: VipResultModalProps) {
 
         <div className="mt-4 space-y-1.5 rounded-xl border border-white/10 bg-black/25 px-3 py-3">
           {accepted ? (
-            <>
-              <p className="text-[12px] font-semibold text-amber-200">
-                {t('vip.resultSp').replace('{n}', String(result.spGain))}
-              </p>
-              <p className="text-[12px] font-semibold text-rose-200">
-                {t('vip.resultStamina').replace('{n}', String(result.staminaMaxLoss))}
-              </p>
-            </>
+            <p className="text-[12px] font-semibold text-rose-200">
+              {t('vip.resultStamina').replace('{n}', String(result.staminaMaxLoss))}
+            </p>
           ) : (
             <p className="text-[12px] font-semibold text-rose-200">
               {t('vip.resultViewers').replace('{n}', formatViewers(result.viewerLoss))}
