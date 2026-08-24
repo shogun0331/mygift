@@ -6,9 +6,6 @@ import {
 } from '../game/characters'
 import {
   canBroadcastByStamina,
-  CONDITION_DOT_CLASS,
-  CONDITION_ICON,
-  conditionFromScore,
 } from '../game/condition'
 import { formatMoney } from '../game/money'
 import {
@@ -806,8 +803,6 @@ export function SchedulePanel({
                 const isSpotlight = spotlightCreatorId === card.id
                 const blocked = !canBroadcastByStamina(card.stamina)
                 const typeStyle = typeStyleOf(card.statType)
-                const conditionScore = Math.max(0, Math.min(100, Math.round(card.conditionScore)))
-                const condition = conditionFromScore(conditionScore)
                 const staminaPct = Math.max(
                   0,
                   Math.min(100, (card.stamina / Math.max(1, card.staminaMax)) * 100),
@@ -894,13 +889,6 @@ export function SchedulePanel({
                         >
                           {t(typeStyle.labelKey)}
                         </p>
-                        <HandStatRow
-                          label={t('condition.title')}
-                          icon={CONDITION_ICON[condition]}
-                          value={`${conditionScore}`}
-                          percent={conditionScore}
-                          barClass={CONDITION_DOT_CLASS[condition]}
-                        />
                         <HandStatRow
                           label={t('creator.statStamina')}
                           value={`${card.stamina}`}
