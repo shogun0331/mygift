@@ -145,12 +145,7 @@ import {
   type ScoutOffer,
   type ScoutSystemState,
 } from '../game/scout'
-import {
-  calcProgressiveAnnualTax,
-  createTaxUpcomingEvent,
-  isFebruaryCalendarMonth,
-  isMarchCalendarMonth,
-} from '../game/tax'
+
 import {
   buildWeeklyStatement,
   createWeekAccumulator,
@@ -1858,8 +1853,8 @@ export function InGame({
     if (pool.length > 0) {
       const picked = pool[Math.floor(Math.random() * pool.length)]
       const hiredCount = hiredIds.length
-      const proposedHireCost = Math.round(10000 * Math.pow(1.5, hiredCount))
-      const proposedSalary = Math.round(15000 * Math.pow(1.3, hiredCount))
+      const proposedHireCost = Math.round(5000 * Math.pow(1.25, hiredCount))
+      const proposedSalary = Math.round(3600 * Math.pow(1.1, hiredCount))
       setScoutedStaffCandidate({
         ...picked,
         proposedHireCost,
@@ -2160,30 +2155,20 @@ export function InGame({
     if (nextDate.getFullYear() !== prevDate.getFullYear()) {
       setLiveRevenueByCreator({})
     }
-    let annualTaxWon = 0
-    let taxYear: number | undefined
-    let annualRevenueForTaxWon = 0
-    if (isMarchCalendarMonth(nextDate)) {
-      taxYear = nextDate.getFullYear() - 1
-      annualRevenueForTaxWon = annualRevenueByYearRef.current[taxYear] ?? 0
-      annualTaxWon = calcProgressiveAnnualTax(annualRevenueForTaxWon)
-      // 과세·납부 완료 → RECENT EVENTS의 예고 알림 제거
-      setLiveEvents((prev) => prev.filter((event) => event.type !== 'tax'))
-    } else if (isFebruaryCalendarMonth(nextDate)) {
-      const upcomingTaxYear = nextDate.getFullYear() - 1
-      const annualRevenue = annualRevenueByYearRef.current[upcomingTaxYear] ?? 0
-      const taxNotice = createTaxUpcomingEvent(upcomingTaxYear, annualRevenue)
-      setLiveEvents((prev) =>
-        [taxNotice, ...prev.filter((event) => event.type !== 'tax')].slice(0, MAX_RECENT_EVENTS),
-      )
-    }
+    // 종합소득세 (Tax) 완전 제거
+    const annualTaxWon = 0
+    const taxYear: number | undefined = undefined
+    const annualRevenueForTaxWon = 0
+    setLiveEvents((prev) => prev.filter((event) => event.type !== 'tax'))
 
     const equippedManagers = managerStateRef.current.equippedBySlotId
     const staffPayroll = managerStateRef.current.hiredStaffIds
       .map((id) => {
         const staff = registeredStaff.find((s) => s.id === id)
         if (!staff) return null
-        const annual = hiredStaffSalariesRef.current[id] ?? 0
+        const rawAnnual = hiredStaffSalariesRef.current[id] ?? 3600
+        // 스태프 연봉 부담 완화: 최대 연 $6,000 (월 $500) 상한 적용
+        const annual = Math.min(rawAnnual, 6000)
         const salaryWon = Math.max(0, Math.round(Number(annual) / 12) || 0)
         if (salaryWon <= 0) return null
 

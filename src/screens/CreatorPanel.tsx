@@ -590,7 +590,8 @@ export function CreatorPanel({
                       const displayName = staffDisplayName(staff, locale)
                       const icon = staffIconUrl(staff)
                       const genderLabel = staff.gender === 'male' ? t('common.male') : t('common.female')
-                      const salary = hiredStaffSalaries[staff.id] ?? 0
+                      const rawSalary = hiredStaffSalaries[staff.id] ?? 3600
+                      const salary = Math.min(rawSalary, 6000)
 
                       const slotId = findSlotIdForStaff(managerState, staff.id)
                       const slot = slotId ? studioSlots.find((s) => s.id === slotId) : null
