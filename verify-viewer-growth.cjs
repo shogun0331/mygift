@@ -1,7 +1,8 @@
-// 시청자 성장 로직 검증 — 방송 중 절대 감소 없음 + 무방송 이탈
+// 시청자 성장 로직 검증 — 방송 중 절대 감소 없음 + 상한 도달/초과 시 유기적 성장 + 무방송 이탈
 const VIEWER_FLOOR = 150
 const IDLE_VIEWER_DECAY = 0.04
 const VIEWER_GROWTH_RATE = 0.18
+const VIEWER_ORGANIC_GROWTH_RATE = 0.02
 const VIEWER_GROWTH_RANDOM_MIN = 0.55
 const VIEWER_GROWTH_RANDOM_MAX = 1.4
 
@@ -13,10 +14,14 @@ function growLeagueViewers(current, potential, didBroadcast, communication = 0) 
   if (!didBroadcast) {
     return Math.max(VIEWER_FLOOR, Math.round(now * (1 - IDLE_VIEWER_DECAY * retain)))
   }
-  if (now >= cap) return now
   const factor = VIEWER_GROWTH_RANDOM_MIN + Math.random() * (VIEWER_GROWTH_RANDOM_MAX - VIEWER_GROWTH_RANDOM_MIN)
-  const gain = Math.round((cap - now) * VIEWER_GROWTH_RATE * factor)
-  return Math.min(cap, now + Math.max(0, gain))
+  if (now >= cap) {
+    // 유기적 성장: 활동 보상 (상한이 현재보다 낮아도 감소하지 않음)
+    const gain = Math.max(1, Math.round(now * VIEWER_ORGANIC_GROWTH_RATE * factor))
+    return now + gain
+  }
+  const gain = Math.max(1, Math.round((cap - now) * VIEWER_GROWTH_RATE * factor))
+  return Math.min(cap, now + gain)
 }
 
 let failed = false
@@ -26,13 +31,13 @@ const check = (cond, label) => { if (!cond) failed = true; console.log(`${cond ?
 const r1 = growLeagueViewers(3000, 5000, true, 60)
 check(r1 > 3000 && r1 <= 5000, `방송+미달 → 성장 (3000→${r1})`)
 
-// 2) 방송 + 포텐셜 도달(now == cap) → 보유 (감소 없음)
+// 2) 방송 + 포텐셜 도달(now == cap) → 유기적 성장 (감소 없음 + 증가)
 const r2 = growLeagueViewers(5000, 5000, true, 60)
-check(r2 === 5000, `방송+도달 → 보유 (5000→${r2})`)
+check(r2 > 5000, `방송+도달 → 유기적 성장 (5000→${r2})`)
 
-// 3) 방송 + 초과(now > cap, 잉여) → 보유 (감소 없음) ← 핵심 수정
+// 3) 방송 + 초과(now > cap, 잉여) → 유기적 성장 (감소 없음 + 증가) ← 핵심 수정
 const r3 = growLeagueViewers(5000, 3000, true, 60)
-check(r3 === 5000, `방송+잉여 → 감소 없음 (5000→${r3})`)
+check(r3 > 5000, `방송+잉여 → 유기적 성장 (5000→${r3})`)
 
 // 4) 무방송 → 이탈 (감소)
 const r4 = growLeagueViewers(5000, 3000, false, 60)

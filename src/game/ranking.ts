@@ -116,6 +116,8 @@ export type RankSettlementResult = {
 const VIEWER_PER_COMM_POINT = 50
 const SUBSCRIBER_VIEWER_RATE = 0.2
 const VIEWER_GROWTH_RATE = 0.18
+/** 방송 중 로스터 상한 도달/초과 시에도 월마다 소폭 성장 (활동 보상) */
+const VIEWER_ORGANIC_GROWTH_RATE = 0.02
 const VIEWER_GROWTH_RANDOM_MIN = 0.55
 const VIEWER_GROWTH_RANDOM_MAX = 1.4
 const IDLE_VIEWER_DECAY = 0.04
@@ -578,10 +580,20 @@ export function growLeagueViewers(
     return Math.max(VIEWER_FLOOR, Math.round(now * (1 - IDLE_VIEWER_DECAY * retain)))
   }
 
-  // 방송 중: 절대 감소 없음 — 포텐셜 도달 시 보유, 미달 시 성장
-  if (now >= cap) return now
-  const gain = Math.round((cap - now) * VIEWER_GROWTH_RATE * rollViewerGrowthFactor())
-  return Math.min(cap, now + Math.max(0, gain))
+  // 방송 중: 절대 감소 없음 — 미달이면 상한까지 성장, 도달/초과면 소폭 유기적 성장
+  if (now >= cap) {
+    // 유기적 성장: 활동 보상 (로스터 상한이 현재보다 낮아도 감소하지 않음)
+    const gain = Math.max(
+      1,
+      Math.round(now * VIEWER_ORGANIC_GROWTH_RATE * rollViewerGrowthFactor()),
+    )
+    return now + gain
+  }
+  const gain = Math.max(
+    1,
+    Math.round((cap - now) * VIEWER_GROWTH_RATE * rollViewerGrowthFactor()),
+  )
+  return Math.min(cap, now + gain)
 }
 
 export function gatedFloorOf(stationGrade: StationGrade): number {
