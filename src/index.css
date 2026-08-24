@@ -525,10 +525,9 @@ html.theme-on-air .game-kicker {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(4, 8, 18, 0.42);
-  backdrop-filter: blur(6px);
+  background: rgba(4, 8, 18, 0.72);
   pointer-events: auto;
-  animation: broadcast-ended-in 0.35s ease-out;
+  animation: broadcast-ended-in 0.25s ease-out;
 }
 
 .broadcast-ended-title {
@@ -538,7 +537,7 @@ html.theme-on-air .game-kicker {
   letter-spacing: 0.18em;
   color: #f1f5f9;
   text-shadow: 0 0 28px rgba(148, 163, 184, 0.28);
-  animation: broadcast-ended-title-in 0.45s ease-out;
+  animation: broadcast-ended-in 0.25s ease-out;
 }
 
 @keyframes broadcast-ended-in {
@@ -547,17 +546,6 @@ html.theme-on-air .game-kicker {
   }
   to {
     opacity: 1;
-  }
-}
-
-@keyframes broadcast-ended-title-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
@@ -1053,15 +1041,7 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 }
 
 @keyframes gear-fail-slam-shake {
-  0%,
-  100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
-  6% { transform: translate3d(-14px, 8px, 0) rotate(-2.2deg) scale(1.03); }
-  14% { transform: translate3d(16px, -9px, 0) rotate(2.4deg) scale(1.05); }
-  22% { transform: translate3d(-12px, 6px, 0) rotate(-1.8deg) scale(1.02); }
-  32% { transform: translate3d(11px, -5px, 0) rotate(1.4deg) scale(1.01); }
-  44% { transform: translate3d(-7px, 3px, 0) rotate(-0.8deg) scale(1); }
-  58% { transform: translate3d(5px, -2px, 0) rotate(0.5deg) scale(1); }
-  72% { transform: translate3d(-3px, 1px, 0) rotate(-0.2deg) scale(1); }
+  0%, 100% { transform: none !important; }
 }
 
 @keyframes gear-fail-slam-wash {
@@ -1296,10 +1276,7 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 }
 
 @keyframes staff-action-shake {
-  0% { transform: scale(1.04); }
-  18% { transform: scale(0.98) rotate(-0.4deg); }
-  32% { transform: scale(1.02) rotate(0.3deg); }
-  100% { transform: scale(1) rotate(0deg); }
+  0%, 100% { transform: none !important; }
 }
 
 @keyframes staff-action-wash {
@@ -1865,7 +1842,7 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 
 /* 진상 사태 — CCTV 슬롯 전체 흔들림 + 빨간 플래시 */
 .condition-crash-slot {
-  animation: condition-crash-shake 0.5s ease-in-out;
+  animation: none !important;
   z-index: 5;
 }
 
@@ -1924,34 +1901,7 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 }
 
 @keyframes condition-crash-shake {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-  8% {
-    transform: translate3d(-8px, 4px, 0) rotate(-1deg);
-  }
-  18% {
-    transform: translate3d(9px, -4px, 0) rotate(1.1deg);
-  }
-  28% {
-    transform: translate3d(-7px, 3px, 0) rotate(-0.8deg);
-  }
-  38% {
-    transform: translate3d(7px, -3px, 0) rotate(0.7deg);
-  }
-  50% {
-    transform: translate3d(-5px, 2px, 0) rotate(-0.5deg);
-  }
-  62% {
-    transform: translate3d(5px, -2px, 0) rotate(0.4deg);
-  }
-  74% {
-    transform: translate3d(-3px, 1px, 0) rotate(-0.2deg);
-  }
-  86% {
-    transform: translate3d(2px, -1px, 0) rotate(0.1deg);
-  }
+  0%, 100% { transform: none !important; }
 }
 
 @keyframes condition-crash-wash {
@@ -3350,11 +3300,7 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 }
 
 @keyframes live-rank-shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-2px); }
-  40% { transform: translateX(2px); }
-  60% { transform: translateX(-1.5px); }
-  80% { transform: translateX(1.5px); }
+  0%, 100% { transform: none !important; }
 }
 
 @keyframes live-rank-crown-pop {
