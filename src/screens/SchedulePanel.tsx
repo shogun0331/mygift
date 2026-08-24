@@ -669,6 +669,38 @@ export function SchedulePanel({
                                   {t(typeStyle.labelKey)}
                                 </p>
                               ) : null}
+                              {handForSlot ? (
+                                <div className="mt-1 w-full">
+                                  <div className="mb-0.5 flex items-center justify-between gap-1">
+                                    <span className="truncate text-[8px] font-semibold tracking-wide text-slate-300">
+                                      {t('creator.statStamina')}
+                                    </span>
+                                    <span className="shrink-0 text-[8px] font-bold tabular-nums text-slate-100">
+                                      {handForSlot.stamina}
+                                    </span>
+                                  </div>
+                                  <div className="h-1 overflow-hidden rounded-full bg-black/50">
+                                    <div
+                                      className={`h-full rounded-full ${
+                                        canBroadcastByStamina(handForSlot.stamina)
+                                          ? 'bg-cyan-400'
+                                          : 'bg-rose-400'
+                                      }`}
+                                      style={{
+                                        width: `${Math.max(
+                                          0,
+                                          Math.min(
+                                            100,
+                                            (handForSlot.stamina /
+                                              Math.max(1, handForSlot.staminaMax)) *
+                                              100,
+                                          ),
+                                        )}%`,
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              ) : null}
                             </>
                           ) : (
                             <>
