@@ -73,6 +73,10 @@ function parseJsonFile(buffer) {
 
 const isDev = process.env.ELECTRON_DEV === '1'
 
+// GPU 가속은 유지하되 GPU 샌드박스를 해제해 GPU 프로세스 access violation(0xC0000005) 크래시 방지
+// (하이브리드 GPU 노트북에서 흔한 원인. 성능 영향 없음)
+app.commandLine.appendSwitch('disable-gpu-sandbox')
+
 function splitPublicSegments(segments) {
   return segments.flatMap((seg) =>
     String(seg)
@@ -210,8 +214,6 @@ function createWindow() {
       console.log(`[Renderer] (${level}) ${message} @ ${sourceId}:${line}`)
     })
 
-    // Avoid stale cache while iterating on UI
-    mainWindow.webContents.session.clearCache()
     mainWindow.loadURL('http://localhost:5173')
     mainWindow.webContents.openDevTools()
 
