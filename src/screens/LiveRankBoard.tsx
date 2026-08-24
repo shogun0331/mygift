@@ -197,7 +197,7 @@ export function LiveRankBoard({
 
   return (
     <LayoutGroup>
-      <ul className="mt-2.5 grid min-h-0 flex-1 auto-rows-fr grid-rows-6 gap-1.5 overflow-hidden pr-0.5">
+      <ul className="mt-2.5 grid min-h-0 flex-1 auto-rows-fr grid-rows-6 gap-1 overflow-hidden pr-0.5">
         <AnimatePresence initial={false}>
           {ranking.map((creator) => {
             const delta = deltaById[creator.id]
@@ -239,21 +239,21 @@ export function LiveRankBoard({
                     <img
                       src={creator.profileImageUrl}
                       alt={creator.name}
-                      className="h-8 w-8 rounded-full object-cover shrink-0"
+                      className="h-7 w-7 rounded-full object-cover shrink-0"
                     />
                   ) : (
                     <div
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator.avatarTone}`}
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[9px] font-bold text-slate-950 ${creator.avatarTone}`}
                     >
                       {creator.avatar.slice(0, 2)}
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-semibold text-slate-100">
+                    <p className="line-clamp-2 break-words text-xs font-semibold leading-tight text-slate-100">
                       {creator.name}
                       <span className="ml-1 font-medium text-amber-400/90">({creator.concept})</span>
                     </p>
-                    <p className="mt-0.5 text-[10px] text-slate-500">
+                    <p className="mt-0.5 text-[9px] leading-none text-slate-500">
                       {creator.blocked
                         ? t('dashboard.broadcastBlockedBadge')
                         : creator.placed
@@ -275,7 +275,7 @@ export function LiveRankBoard({
                     </p>
                     <RollingMoney
                       value={creator.revenue}
-                      className="text-xs font-bold tabular-nums text-amber-400"
+                      className="text-[11px] font-bold tabular-nums text-amber-400"
                     />
                   </div>
                 </div>

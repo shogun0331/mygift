@@ -165,6 +165,8 @@ import {
   isAnnualReviewMonth,
   nextJanuaryAfter,
   setStationGradeConfig,
+  stationRankForGrade,
+  stationSpec,
   type StationGrade,
   type StationReviewStatus,
 } from '../game/station'
@@ -195,6 +197,7 @@ import {
 import { RankChangeModal } from './RankChangeModal'
 import { RankingPanel } from './RankingPanel'
 import { StationReviewModal } from './StationReviewModal'
+import { StationPromotionFx } from './StationPromotionFx'
 import { DateOfferModal, DateResultModal } from './DateEventModal'
 import { GiftOfferModal, GiftResultModal } from './GiftEventModal'
 import { HRetryOfferModal, HRetryResultModal } from './HRetryEventModal'
@@ -567,6 +570,12 @@ export function InGame({
     fromRank: number
     toRank: number
   } | null>(null)
+  const [promotionFx, setPromotionFx] = useState<{
+    fromGrade: StationGrade
+    toGrade: StationGrade
+    fromRank: number
+    toRank: number
+  } | null>(null)
   const [stationGrade, setStationGrade] = useState<StationGrade>('black')
 
   const [, setStaffScoutCooldown] = useState(3)
@@ -916,6 +925,12 @@ export function InGame({
   const pendingScoutAfterRankRef = useRef(false)
   const pendingRankResultRef = useRef<RankSettlementResult | null>(null)
   const pendingRankAfterBubbleRef = useRef<RankSettlementResult | null>(null)
+  /** 승급 애니메이션(말풍선 상승)이 끝난 뒤 리그 상태에 반영할 승급 정보 */
+  const pendingPromotionRef = useRef<{
+    nextGrade: StationGrade
+    oldRank: number
+    newRank: number
+  } | null>(null)
   const rankRefreshTurnsLeftRef = useRef(RANK_REFRESH_TURNS)
   const pendingStationReviewRef = useRef(false)
   const pendingGameClearRef = useRef(false)
@@ -2051,6 +2066,7 @@ export function InGame({
       taxYear,
       annualRevenueForTaxWon,
       staffPayroll,
+      rank: leagueRef.current.currentRank,
     })
     prevWeekRevenueRef.current = statementDraft.netProfitWon
     // 케어비는 이미 즉시 차감됐으므로, 명세서 net에 포함된 케어분을 환산 보정
@@ -2178,6 +2194,8 @@ export function InGame({
         ...line,
         viewersGained: viewersByCreator[line.creatorId] ?? 0,
       })),
+      // 순위는 이번 달 시청자 진행도를 반영한 갱신 후 값으로 표시
+      rank: leagueRef.current.currentRank,
       viewersBefore,
       viewersAfter: leagueRef.current.viewers,
       viewersGained,
@@ -2227,19 +2245,25 @@ export function InGame({
       Boolean(scoutSystemRef.current.activeOffer)
     if (pendingRank) {
       pendingScoutAfterRankRef.current = openScout
-      const tierMoved =
-        companyTierOf(pendingRank.previousRank).id !==
-        companyTierOf(pendingRank.currentRank).id
-      if (pendingRank.rankChange !== 0 || tierMoved) {
-        pendingRankAfterBubbleRef.current = pendingRank
-        setTab('ranking')
-        setRankBubblePlay({
-          fromRank: pendingRank.previousRank,
-          toRank: pendingRank.currentRank,
-        })
-        return
-      }
-      setRankSettlement(pendingRank)
+      // 순위는 매 턴 시청자 진행도로 갱신되고 명세서에 표시됨 — 랭킹 패널 이동/팝업 없이 진행
+      continueAfterMonthModals(openScout)
+      return
+    }
+    // 1월 1일 연간 심사 — 순위 정산 턴과 무관하게 항상 실행
+    // (순위 정산은 3턴마다 일어나므로 12월→1월 전환과 겹치지 않아 이 경로가 필요)
+    if (pendingStationReviewRef.current) {
+      pendingStationReviewRef.current = false
+      pendingScoutAfterRankRef.current = openScout
+      const review = applyStationReview(
+        stationGradeRef.current,
+        leagueRef.current.viewers,
+        ownedCreatorsRef.current,
+        {
+          unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
+          assets: assetsRef.current,
+        },
+      )
+      setStationReview({ promoted: review.promoted, status: review.status })
       return
     }
     continueAfterMonthModals(openScout)
@@ -2318,6 +2342,34 @@ export function InGame({
       setTab('creator')
       setOpenCreatorScout(true)
     }
+  }
+
+  /** 정산/심사 이후 월말 모달 체인을 이어간다 (게임 클리어 확인 포함) */
+  function continueMonthEndFlow() {
+    const openScout = pendingScoutAfterRankRef.current
+    const cleared = pendingGameClearRef.current
+    pendingGameClearRef.current = false
+    if (cleared) {
+      pendingScoutAfterRankRef.current = openScout
+      setShowGameClear(true)
+      return
+    }
+    continueAfterMonthModals(openScout)
+  }
+
+  /** 승급 애니메이션이 끝난 뒤 승급을 리그 상태에 반영 (멱등) */
+  function applyPendingPromotion() {
+    const promo = pendingPromotionRef.current
+    if (!promo) return
+    pendingPromotionRef.current = null
+    const nextLeague = reapplyLeagueGate(
+      leagueRef.current,
+      toRankCreators(ownedCreatorsRef.current),
+      promo.nextGrade,
+    )
+    leagueRef.current = nextLeague
+    setLeague(nextLeague)
+    if (nextLeague.gameCleared) pendingGameClearRef.current = true
   }
 
   function continueAfterMonthModals(openScout: boolean) {
@@ -2901,6 +2953,7 @@ export function InGame({
         rankSettlement ||
         rankBubblePlay ||
         stationReview ||
+        promotionFx ||
         showGameClear ||
         vipOffer ||
         vipResult ||
@@ -2923,6 +2976,7 @@ export function InGame({
     rankSettlement,
     rankBubblePlay,
     stationReview,
+    promotionFx,
     showGameClear,
     vipOffer,
     vipResult,
@@ -2939,6 +2993,9 @@ export function InGame({
   const broadcastWeekCurrent = monthWeekIndex + 1
   const broadcastWeeksLeft = Math.max(0, WEEKS_PER_MONTH - broadcastWeekCurrent)
   const broadcastMonthPct = Math.round((broadcastWeekCurrent / WEEKS_PER_MONTH) * 100)
+
+  // 현재 등급의 시청자 보유 상한 = 다음 등급 승급 필요 시청자 수 (최상위 등급은 null)
+  const viewerCap = stationSpec(stationGrade).viewerCap
 
   return (
     <main
@@ -3047,6 +3104,9 @@ export function InGame({
               </div>
               <p className="game-stat-value tabular-nums">
                 {formatViewers(league.viewers)}
+                {viewerCap != null ? (
+                  <span className="text-slate-500/80"> / {formatViewers(viewerCap)}</span>
+                ) : null}
                 {t('ranking.viewersUnit')}
               </p>
             </div>
@@ -3236,7 +3296,12 @@ export function InGame({
               setRankBubblePlay(null)
               const pending = pendingRankAfterBubbleRef.current
               pendingRankAfterBubbleRef.current = null
-              if (pending) setRankSettlement(pending)
+              if (pending) {
+                setRankSettlement(pending)
+                return
+              }
+              // 승급 말풍선 애니메이션 종료 → 승급을 리그 상태에 반영
+              applyPendingPromotion()
             }}
             onOpenScout={openScoutFromRanking}
           />
@@ -3442,26 +3507,39 @@ export function InGame({
             setStationReview(null)
             if (review.promoted && review.status.next) {
               const nextGrade = review.status.next
+              const oldRank = leagueRef.current.currentRank
+              const newRank = stationRankForGrade(nextGrade, leagueRef.current.viewers)
+              // 등급은 즉시 반영, 리그 순위는 애니메이션 종료 후 반영
+              // (말풍선이 이전 순위에서 새 순위로 올라가며 피라미드가 채워지도록)
               stationGradeRef.current = nextGrade
               setStationGrade(nextGrade)
-              const nextLeague = reapplyLeagueGate(
-                leagueRef.current,
-                toRankCreators(ownedCreatorsRef.current),
-                nextGrade,
-              )
-              leagueRef.current = nextLeague
-              setLeague(nextLeague)
-              if (nextLeague.gameCleared) pendingGameClearRef.current = true
-            }
-            const openScout = pendingScoutAfterRankRef.current
-            const cleared = pendingGameClearRef.current
-            pendingGameClearRef.current = false
-            if (cleared) {
-              pendingScoutAfterRankRef.current = openScout
-              setShowGameClear(true)
+              pendingPromotionRef.current = { nextGrade, oldRank, newRank }
+              setTab('ranking')
+              setPromotionFx({
+                fromGrade: review.status.current,
+                toGrade: nextGrade,
+                fromRank: oldRank,
+                toRank: newRank,
+              })
+              setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
               return
             }
-            continueAfterMonthModals(openScout)
+            continueMonthEndFlow()
+          }}
+        />
+      ) : null}
+
+      {promotionFx ? (
+        <StationPromotionFx
+          fromLabel={t(companyTierLabelKey(promotionFx.fromGrade))}
+          toLabel={t(companyTierLabelKey(promotionFx.toGrade))}
+          fromRank={promotionFx.fromRank}
+          toRank={promotionFx.toRank}
+          onDone={() => {
+            // 배너가 끝나면 승급 반영(이미 됐다면 무시) 후 월말 흐름 계속
+            applyPendingPromotion()
+            setPromotionFx(null)
+            continueMonthEndFlow()
           }}
         />
       ) : null}

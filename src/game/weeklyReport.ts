@@ -60,6 +60,8 @@ export type WeeklyStatement = {
   monthNumber: number
   issuedDate: string
   stationName: string
+  /** 이번 달 정산 시점의 리그 순위 */
+  rank: number
   lines: WeeklyCreatorLine[]
   staffLines: WeeklyStaffLine[]
   expenses: SettlementExpenseLine[]
@@ -201,6 +203,8 @@ export function buildWeeklyStatement(opts: {
   annualRevenueForTaxWon?: number
   viewersBefore?: number
   viewersAfter?: number
+  /** 이번 달 정산 시점의 리그 순위 */
+  rank?: number
   staffPayroll?: Array<{
     id: string
     name: string
@@ -384,6 +388,7 @@ export function buildWeeklyStatement(opts: {
     netProfitWon,
     profitChangePct,
     highlights: highlights.slice(0, 8),
+    rank: Math.max(1, Math.round(opts.rank ?? 1)),
     viewersBefore: Math.max(0, Math.round(opts.viewersBefore ?? 0)),
     viewersAfter: Math.max(0, Math.round(opts.viewersAfter ?? opts.viewersBefore ?? 0)),
     viewersGained:

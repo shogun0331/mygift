@@ -119,6 +119,11 @@ export function WeeklySettlementModal({
                 <span className="mx-1.5 text-slate-600">·</span>
                 {statement.monthNumber}
                 {t('settlement.monthSuffix')}
+                <span className="mx-1.5 text-slate-600">·</span>
+                <span className="font-bold text-amber-300">
+                  {t('ranking.currentRankLabel')} {statement.rank}
+                  {t('ranking.rankUnit')}
+                </span>
               </p>
             </div>
             <div className="ml-auto flex flex-wrap items-end justify-end gap-x-8 gap-y-3 text-right">

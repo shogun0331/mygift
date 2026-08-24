@@ -22,7 +22,7 @@
   "promotions": {
     "tiny": {
       "to": "tiny",
-      "requiredViewers": 1500,
+      "requiredViewers": 500,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 1

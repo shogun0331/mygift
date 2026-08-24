@@ -102,7 +102,7 @@ export function RankingPanel({
     ? Math.round(rankPlay.fromRank + (rankPlay.toRank - rankPlay.fromRank) * playProgress)
     : league.currentRank
   const currentTier = companyTierOf(displayRank)
-  const destTier = companyTierOf(league.currentRank)
+  const destTier = companyTierOf(rankPlay?.toRank ?? league.currentRank)
   const fromTier = companyTierOf(rankPlay?.fromRank ?? league.previousRank)
   const riseSlots = COMPANY_TIERS.findIndex((tier) => tier.id === fromTier.id)
     - COMPANY_TIERS.findIndex((tier) => tier.id === destTier.id)

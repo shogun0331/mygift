@@ -8,6 +8,8 @@ import {
   stationTierRank,
   STATION_TIER_LABEL,
   STATION_TIER_ORDER,
+  TIER_RANK_BANDS,
+  tierViewerHoldCap,
   type StationGradeConfig,
   type StationGrade,
   type StationReviewCheck,
@@ -18,6 +20,9 @@ export type { StationGrade, StationSpec, StationReviewCheck, StationGradeConfig 
 export {
   STATION_TIER_ORDER as STATION_GRADE_ORDER,
   STATION_TIER_LABEL,
+  TIER_RANK_BANDS,
+  tierViewerCap,
+  tierViewerHoldCap,
   defaultStationGradeConfig,
   normalizeStationGradeConfig,
 } from './stationGradeConfig'
@@ -89,9 +94,30 @@ export function capStationViewers(
 ): number {
   const cfg = config ?? getActiveConfig()
   const cappedFloor = Math.max(VIEWER_FLOOR, Math.round(raw))
-  const cap = stationSpecOf(cfg, grade).viewerCap
-  if (cap == null) return cappedFloor
-  return Math.min(cap, cappedFloor)
+  // 실제 보유 상한 = 승급 필요 시청자 수의 110% (심사 목표는 tierViewerCap)
+  const holdCap = tierViewerHoldCap(cfg, grade)
+  if (holdCap == null) return cappedFloor
+  return Math.min(holdCap, cappedFloor)
+}
+
+/**
+ * 현재 등급 순위 구간에서 시청자 진행도에 따른 결정적 순위.
+ * 시청자 0% → 구간 최하위(black 300위), 필수 시청자 100% → 구간 최상위(black 151위).
+ */
+export function stationRankForGrade(
+  grade: StationGrade,
+  viewers: number,
+  config?: StationGradeConfig,
+): number {
+  const cfg = config ?? getActiveConfig()
+  const band = TIER_RANK_BANDS[grade]
+  const next = nextStationTier(grade)
+  if (!band) return 1
+  if (!next) return band.best
+  const required = cfg.promotions[next].requiredViewers
+  const progress = required <= 0 ? 1 : Math.max(0, Math.min(1, viewers / required))
+  const rank = Math.round(band.worst - progress * (band.worst - band.best))
+  return Math.max(band.best, Math.min(band.worst, rank))
 }
 
 export type StationReviewContext = {

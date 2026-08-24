@@ -3,6 +3,7 @@ import { gradeViewerMult } from './stats'
 import {
   capStationViewers,
   gatedFloorOfStation,
+  stationRankForGrade,
   VIEWER_FLOOR,
   type StationGrade,
 } from './station'
@@ -119,8 +120,8 @@ const VIEWER_GROWTH_RANDOM_MIN = 0.55
 const VIEWER_GROWTH_RANDOM_MAX = 1.4
 const IDLE_VIEWER_DECAY = 0.04
 const NPC_VIEWER_FLOOR = 30
-export const LEAGUE_SIZE = 200
-export const STARTING_RANK = 151
+export const LEAGUE_SIZE = 300
+export const STARTING_RANK = 300
 
 const GRADE_RANK: Record<CreatorGrade, number> = {
   C: 0,
@@ -144,6 +145,7 @@ const VIEWER_BANDS: Array<{
   { bestRank: 81, worstRank: 100, minViewers: 400, maxViewers: 1_500 },
   { bestRank: 101, worstRank: 150, minViewers: 151, maxViewers: 400 },
   { bestRank: 151, worstRank: 200, minViewers: 80, maxViewers: 150 },
+  { bestRank: 201, worstRank: 300, minViewers: 0, maxViewers: 80 },
 ]
 
 export type CompanyTierId = 'top' | 'large' | 'mid' | 'sme' | 'tiny' | 'black'
@@ -519,8 +521,33 @@ export function growLeagueBetweenRefresh(
     ),
     stationGrade,
   )
-  if (viewers === state.viewers && subscribers === state.subscribers) return state
-  return { ...state, viewers, subscribers }
+  const ace = playerAce(didBroadcast ? broadcastedCreators : ownedCreators)
+  // 매 턴 시청자 진행도에 따른 순위를 갱신 (랭킹 패널 이동 없이 명세서에 반영)
+  const board = assembleLeaderboard({
+    playerViewers: viewers,
+    playerAceName: ace.name,
+    playerAceGrade: ace.grade,
+    previousPlayerRank: state.currentRank,
+    gatedFloor: gatedFloorOf(stationGrade),
+    npcs: ensureNpcRoster(state.npcStations),
+    pinRank: stationRankForGrade(stationGrade, viewers),
+  })
+  if (
+    viewers === state.viewers &&
+    subscribers === state.subscribers &&
+    board.playerRank === state.currentRank
+  ) {
+    return state
+  }
+  return {
+    ...state,
+    viewers,
+    subscribers,
+    currentRank: board.playerRank,
+    previousRank: state.currentRank,
+    npcStations: board.npcs,
+    entries: board.entries,
+  }
 }
 
 export function growLeagueViewers(
@@ -817,18 +844,20 @@ export function createInitialLeagueState(
   const npcs = generateNpcStations()
   const ace = playerAce(creators)
   const gatedFloor = gatedFloorOf(stationGrade)
+  // 시작 순위 = 현재 시청자 진행도에 따른 결정적 순위 (일반사업자 300위부터)
+  const initialRank = stationRankForGrade(stationGrade, viewers)
   const board = assembleLeaderboard({
     playerViewers: viewers,
     playerAceName: ace.name,
     playerAceGrade: ace.grade,
-    previousPlayerRank: STARTING_RANK,
+    previousPlayerRank: initialRank,
     gatedFloor,
     npcs,
-    pinRank: STARTING_RANK,
+    pinRank: initialRank,
   })
   return {
     currentRank: board.playerRank,
-    previousRank: STARTING_RANK,
+    previousRank: initialRank,
     viewers,
     subscribers: 0,
     revenueBonusPercent: 0,
@@ -877,6 +906,7 @@ export function settleLeagueRank(
       previousPlayerRank: previousRank,
       gatedFloor: floor,
       npcs: jittered,
+      pinRank: stationRankForGrade(stationGrade, nextViewers),
     })
   }
 
@@ -909,15 +939,8 @@ export function settleLeagueRank(
     claimAt(board.playerRank)
   }
 
-  const unconstrained = assembleLeaderboard({
-    playerViewers: viewers,
-    playerAceName: ace.name,
-    playerAceGrade: ace.grade,
-    previousPlayerRank: state.currentRank,
-    gatedFloor: 1,
-    npcs: jittered,
-  })
-  const heldByGate = unconstrained.playerRank < board.playerRank
+  // 승격 보류 팝업은 제거 — 순위 변동 없는 정산은 조용히 넘어가고, 승격은 1월 1일 심사에서만 안내
+  const heldByGate = false
 
   const nextState: LeagueState = {
     currentRank: board.playerRank,
@@ -979,6 +1002,7 @@ export function reapplyLeagueGate(
       previousPlayerRank: state.currentRank,
       gatedFloor: gatedFloorOf(stationGrade),
       npcs: ensureNpcRoster(state.npcStations),
+      pinRank: stationRankForGrade(stationGrade, nextViewers),
     })
 
   let board = apply(viewers)

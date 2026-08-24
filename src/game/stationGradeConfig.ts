@@ -80,11 +80,24 @@ export const DEFAULT_SLOT_UNLOCK_MIN_GRADES: StationTierId[] = [
 /** 순위 상한 — 랭킹 구간과 동일 */
 const TIER_MAX_RANK: Record<StationTierId, number> = {
   black: 151,
-  tiny: 150,
-  sme: 100,
-  mid: 50,
-  large: 20,
+  tiny: 101,
+  sme: 51,
+  mid: 21,
+  large: 11,
   top: 1,
+}
+
+/**
+ * 등급별 순위 구간 — 시청자 진행도(0% → worst, 필수 100% → best)에 따라 순위가 상승.
+ * 일반사업자(black)는 300위 ~ 151위부터 시작한다.
+ */
+export const TIER_RANK_BANDS: Record<StationTierId, { best: number; worst: number }> = {
+  black: { best: 151, worst: 300 },
+  tiny: { best: 101, worst: 150 },
+  sme: { best: 51, worst: 100 },
+  mid: { best: 21, worst: 50 },
+  large: { best: 11, worst: 20 },
+  top: { best: 1, worst: 10 },
 }
 
 export function nextStationTier(current: StationTierId): Exclude<StationTierId, 'black'> | null {
@@ -103,11 +116,18 @@ export function meetsStationTierForEquip(current: StationGrade, required: Grade)
   return stationTierRank(current) >= EQUIP_REQ_RANK[required]
 }
 
-/** 현재 등급 시청자 상한 = 다음 등급 승급에 필요한 시청자 수 */
+/** 현재 등급 시청자 상한(심사 목표) = 다음 등급 승급에 필요한 시청자 수 */
 export function tierViewerCap(config: StationGradeConfig, grade: StationGrade): number | null {
   const next = nextStationTier(grade)
   if (!next) return null
   return config.promotions[next].requiredViewers
+}
+
+/** 실제 보유 가능 상한 — 승급 필요 시청자 수의 110%까지 확보 허용 */
+export function tierViewerHoldCap(config: StationGradeConfig, grade: StationGrade): number | null {
+  const base = tierViewerCap(config, grade)
+  if (base == null) return null
+  return Math.round(base * 1.1)
 }
 
 export function tierMaxRank(grade: StationGrade): number {

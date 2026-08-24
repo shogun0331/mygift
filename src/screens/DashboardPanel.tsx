@@ -409,7 +409,7 @@ export function DashboardPanel({
           )}
         </section>
 
-        <section className={`game-panel live-rank-panel flex min-h-[22rem] flex-[1.35] flex-col rounded-2xl p-3 sm:min-h-[24rem] lg:min-h-0 ${isLive ? 'is-live' : ''}`}>
+        <section className={`game-panel live-rank-panel flex min-h-[24rem] flex-[1.35] flex-col rounded-2xl p-3 sm:min-h-[26rem] lg:min-h-0 ${isLive ? 'is-live' : ''}`}>
           <div className="flex shrink-0 items-center justify-between gap-2">
             <h2 className="game-stat-label">{t('dashboard.liveRank')}</h2>
             {isLive && hasAssigned ? (
