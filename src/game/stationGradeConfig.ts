@@ -282,14 +282,14 @@ export function defaultStationGradeConfig(): StationGradeConfig {
       },
       large: {
         to: 'large',
-        requiredViewers: 100_000,
+        requiredViewers: 80_000,
         minUnlockedSlots: { enabled: false, value: 3 },
         minAssets: { enabled: false, value: 0 },
         creatorRequirements: [defaultCreatorReq('a3', 'A', 2)],
       },
       top: {
         to: 'top',
-        requiredViewers: 300_000,
+        requiredViewers: 250_000,
         minUnlockedSlots: { enabled: false, value: 4 },
         minAssets: { enabled: false, value: 0 },
         creatorRequirements: [defaultCreatorReq('s2', 'S', 1)],

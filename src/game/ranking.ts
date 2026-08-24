@@ -113,11 +113,11 @@ export type RankSettlementResult = {
 }
 
 /** 로스터 잠재력 = floor + Σ(소통 × 단가 × 등급배율) + 구독 */
-const VIEWER_PER_COMM_POINT = 300
+const VIEWER_PER_COMM_POINT = 160
 const SUBSCRIBER_VIEWER_RATE = 0.2
 const VIEWER_GROWTH_RATE = 0.18
 /** 방송 중 로스터 상한 도달/초과 시에도 월마다 소폭 성장 (활동 보상) */
-const VIEWER_ORGANIC_GROWTH_RATE = 0.12
+const VIEWER_ORGANIC_GROWTH_RATE = 0.1
 const VIEWER_GROWTH_RANDOM_MIN = 0.55
 const VIEWER_GROWTH_RANDOM_MAX = 1.4
 const IDLE_VIEWER_DECAY = 0.04
@@ -138,14 +138,14 @@ const VIEWER_BANDS: Array<{
   minViewers: number
   maxViewers: number
 }> = [
-  { bestRank: 1, worstRank: 3, minViewers: 280_000, maxViewers: 420_000 },
-  { bestRank: 4, worstRank: 10, minViewers: 150_000, maxViewers: 280_000 },
-  { bestRank: 11, worstRank: 20, minViewers: 80_000, maxViewers: 150_000 },
-  { bestRank: 21, worstRank: 30, minViewers: 40_000, maxViewers: 80_000 },
-  { bestRank: 31, worstRank: 50, minViewers: 15_000, maxViewers: 40_000 },
-  { bestRank: 51, worstRank: 80, minViewers: 5_000, maxViewers: 15_000 },
-  { bestRank: 81, worstRank: 100, minViewers: 2_000, maxViewers: 5_000 },
-  { bestRank: 101, worstRank: 150, minViewers: 400, maxViewers: 2_000 },
+  { bestRank: 1, worstRank: 3, minViewers: 220_000, maxViewers: 320_000 },
+  { bestRank: 4, worstRank: 10, minViewers: 120_000, maxViewers: 220_000 },
+  { bestRank: 11, worstRank: 20, minViewers: 60_000, maxViewers: 120_000 },
+  { bestRank: 21, worstRank: 30, minViewers: 30_000, maxViewers: 60_000 },
+  { bestRank: 31, worstRank: 50, minViewers: 12_000, maxViewers: 30_000 },
+  { bestRank: 51, worstRank: 80, minViewers: 4_000, maxViewers: 12_000 },
+  { bestRank: 81, worstRank: 100, minViewers: 1_500, maxViewers: 4_000 },
+  { bestRank: 101, worstRank: 150, minViewers: 400, maxViewers: 1_500 },
   { bestRank: 151, worstRank: 200, minViewers: 150, maxViewers: 400 },
   { bestRank: 201, worstRank: 300, minViewers: 0, maxViewers: 150 },
 ]
@@ -246,7 +246,7 @@ export const PROMOTION_TARGETS: PromotionTarget[] = [
   },
   {
     enterRank: 20,
-    requiredViewers: 100_000,
+    requiredViewers: 80_000,
     requirements: [
       { id: 'a3', minGrade: 'A', count: 2, orGroup: '20' },
       { id: 's1a', minGrade: 'S', count: 1, orGroup: '20' },
@@ -256,21 +256,21 @@ export const PROMOTION_TARGETS: PromotionTarget[] = [
   },
   {
     enterRank: 10,
-    requiredViewers: 300_000,
+    requiredViewers: 250_000,
     requirements: [{ id: 's1', minGrade: 'S', count: 1 }],
     reward: MILESTONE_REWARDS[10],
     nextMilestone: 10,
   },
   {
     enterRank: 3,
-    requiredViewers: 300_000,
+    requiredViewers: 250_000,
     requirements: [{ id: 's3', minGrade: 'S', count: 1 }],
     reward: MILESTONE_REWARDS[1],
     nextMilestone: 1,
   },
   {
     enterRank: 1,
-    requiredViewers: 300_000,
+    requiredViewers: 250_000,
     requirements: [{ id: 's3-top', minGrade: 'S', count: 1 }],
     reward: MILESTONE_REWARDS[1],
     nextMilestone: 1,

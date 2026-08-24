@@ -65,9 +65,9 @@ check(config.promotions.sme.creatorRequirements.every((r) => !r.enabled), 'sme �
 // 레벨디자인 2단계: 티어 요구 하향 + 등급 요구 완화
 check(config.promotions.mid.requiredViewers === 20000, `mid 필요 시청자 = 20K (실제: ${config.promotions.mid.requiredViewers})`)
 check(config.promotions.mid.creatorRequirements[0]?.minGrade === 'B', 'mid 등급 요구 = B×2')
-check(config.promotions.large.requiredViewers === 100000, `large 필요 시청자 = 100K (실제: ${config.promotions.large.requiredViewers})`)
+check(config.promotions.large.requiredViewers === 80000, `large 필요 시청자 = 80K (실제: ${config.promotions.large.requiredViewers})`)
 check(config.promotions.large.creatorRequirements[0]?.count === 2, 'large 등급 요구 = A×2')
-check(config.promotions.top.requiredViewers === 300000, `top 필요 시청자 = 300K (실제: ${config.promotions.top.requiredViewers})`)
+check(config.promotions.top.requiredViewers === 250000, `top 필요 시청자 = 250K (실제: ${config.promotions.top.requiredViewers})`)
 check(config.promotions.top.creatorRequirements[0]?.count === 1, 'top 등급 요구 = S×1')
 
 // 2) 승급 판정 — tiny, 5000명 → eligible

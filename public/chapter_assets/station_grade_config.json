@@ -75,7 +75,7 @@
     },
     "large": {
       "to": "large",
-      "requiredViewers": 100000,
+      "requiredViewers": 80000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 3
@@ -95,7 +95,7 @@
     },
     "top": {
       "to": "top",
-      "requiredViewers": 300000,
+      "requiredViewers": 250000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 4

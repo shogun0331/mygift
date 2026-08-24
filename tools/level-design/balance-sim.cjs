@@ -63,19 +63,19 @@ const REQUIRED_VIEWERS = { tiny: 500, sme: 5000, mid: 100000, large: 1000000, to
 const MAX_SCOUT_CREATORS = { black: 2, tiny: 3, sme: 5, mid: 7, large: 12, top: 6 }
 
 // ── 2단계 튜닝 파라미터 (env 주입 가능 — 스윕/검증용) ──
-//   SIM_VPCP    : 소통 1당 시청자 가중치 (기본 300 — 적용 튜닝)
-//   SIM_ORG     : 잠재력 도달 후 월 유기성장률 (기본 0.12)
+//   SIM_VPCP    : 소통 1당 시청자 가중치 (기본 160 — 적용 튜닝)
+//   SIM_ORG     : 잠재력 도달 후 월 유기성장률 (기본 0.10)
 //   SIM_MID     : sme→mid 필요 시청자 (기본 20000)
-//   SIM_LARGE   : mid→large 필요 시청자 (기본 100000)
-//   SIM_TOP     : large→top 필요 시청자 (기본 300000)
+//   SIM_LARGE   : mid→large 필요 시청자 (기본 80000)
+//   SIM_TOP     : large→top 필요 시청자 (기본 250000)
 //   SIM_MID_G/C : mid 등급 요구 (기본 B/2)
 //   SIM_LG_G/C  : large 등급 요구 (기본 A/2)
 //   SIM_TP_G/C  : top 등급 요구 (기본 S/1)
-const SIM_VPCP = Number(process.env.SIM_VPCP || 300)
-const SIM_ORG = Number(process.env.SIM_ORG || 0.12)
+const SIM_VPCP = Number(process.env.SIM_VPCP || 160)
+const SIM_ORG = Number(process.env.SIM_ORG || 0.1)
 const SIM_MID = Number(process.env.SIM_MID || 20000)
-const SIM_LARGE = Number(process.env.SIM_LARGE || 100000)
-const SIM_TOP = Number(process.env.SIM_TOP || 300000)
+const SIM_LARGE = Number(process.env.SIM_LARGE || 80000)
+const SIM_TOP = Number(process.env.SIM_TOP || 250000)
 REQUIRED_VIEWERS.mid = SIM_MID
 REQUIRED_VIEWERS.large = SIM_LARGE
 REQUIRED_VIEWERS.top = SIM_TOP
@@ -480,18 +480,18 @@ function runOnce(seed, scenarioKey, months) {
       } else if (!st.creatorScoutAvailable) {
         st.creatorScoutCooldown--
         if (st.creatorScoutCooldown <= 0) {
-          if (rng() < 0.5) {
+          if (rng() < 0.7) {
             st.creatorScoutAvailable = true
             st.creatorScoutCooldown = 0
           } else {
-            st.creatorScoutCooldown = rollInt(rng, 3, 6)
+            st.creatorScoutCooldown = rollInt(rng, 2, 4)
           }
         }
       }
       if (st.creatorScoutAvailable) {
         if (st.owned.length >= MAX_SCOUT_CREATORS[st.grade]) {
           st.creatorScoutAvailable = false
-          st.creatorScoutCooldown = rollInt(rng, 3, 6)
+          st.creatorScoutCooldown = rollInt(rng, 2, 4)
         } else {
           const c = makeCreator(rng, 'c-' + (st.owned.length + 1))
           st.scoutOffers++
@@ -507,7 +507,7 @@ function runOnce(seed, scenarioKey, months) {
             st.scoutHires++
           }
           st.creatorScoutAvailable = false
-          st.creatorScoutCooldown = rollInt(rng, 3, 6)
+          st.creatorScoutCooldown = rollInt(rng, 2, 4)
         }
       }
     }
@@ -674,12 +674,12 @@ function runReport() {
   lines.push(`- **적용 튜닝: 소통가중치=${SIM_VPCP} · 유기성장=${(SIM_ORG * 100).toFixed(1)}%/월 · mid=${(SIM_MID / 1000).toFixed(0)}K · large=${(SIM_LARGE / 1000).toFixed(0)}K · top=${(SIM_TOP / 1000).toFixed(0)}K**`)
   lines.push('')
   lines.push('## 재현 범위 (실제 로직 근거)')
-  lines.push('- 시청자 성장 18%/월 · 유기성장 12%/월 · 휴식 감소 4%/월 · 잠재력=150+Σ(소통×300×등급배율)+구독×0.2')
+  lines.push('- 시청자 성장 18%/월 · 유기성장 10%/월 · 휴식 감소 4%/월 · 잠재력=150+Σ(소통×160×등급배율)+구독×0.2')
   lines.push('- 순위 = 티어 게이트: black 151~300 · tiny 101~150 · sme 51~100 · mid 21~50 · large 11~20 · top 1')
-  lines.push('- 티어 요구: tiny 500 · sme 5K · mid 20K(B×2) · large 100K(A×2) · top 300K(S×1), 유지 상한=요구×1.1')
-  lines.push('- 스카우트: 전부 C등급, 오프닝 1명(무료)+3~6턴 50%, 티어별 보유 상한 2/3/5/7/12/6')
+  lines.push('- 티어 요구: tiny 500 · sme 5K · mid 20K(B×2) · large 80K(A×2) · top 250K(S×1), 유지 상한=요구×1.1')
+  lines.push('- 스카우트: 전부 C등급, 오프닝 1명(무료)+2~4턴 70%, 티어별 보유 상한 2/3/5/7/12/6')
   lines.push('- 훈련: 의도된 유료 공식(주력 스탯·등급↑↑ 비용↑) · 심사비 C→B $52K(80%)/B→A $210K(60%)/A→S $780K(40%)')
-  lines.push('  - **참고**: 현재 게임은 `TRAINING_COST_FREE=true`(임시 0원) — 시뮬레이션은 의도된 유료 공식')
+  lines.push('  - **참고**: 트레이닝 유료화 적용됨 (`TRAINING_COST_FREE=false`)')
   lines.push('- 마일스톤: 50위 1K / 30위 5K·+5% / 20위 10K·+10% / 10위 50K / 5위 100K·특별이벤트 / 1위 클리어')
   lines.push('')
   lines.push('> **단순화**: 컨디션/케어비·장비·스탭 보너스·VIP·SNS·데이트/이벤트 수익 미반영(경제 보수 추정).')
@@ -805,6 +805,19 @@ const sum = {}
 for (const key of KEYS) {
   sum[key] = medianArr([...act[key]].sort((a, b) => a - b))
 }
+const rates = {}
+for (const key of ['tier:tiny', 'tier:sme', 'tier:mid', 'tier:large', 'tier:top', 'clear']) {
+  rates[key] = Math.round((act[key].length / RUNS) * 1000) / 10
+}
+const y1 = pct(
+  results.active.finals
+    .map((st) => {
+      const snap = st.snapshots.find((s) => s.month === 12)
+      return snap ? snap.viewers : 0
+    })
+    .sort((a, b) => a - b),
+  0.5,
+)
 fs.writeFileSync(
   path.join(__dirname, 'sweep.json'),
   JSON.stringify(
@@ -818,6 +831,8 @@ fs.writeFileSync(
       largeReq: `${SIM_LG_G}×${SIM_LG_C}`,
       topReq: `${SIM_TP_G}×${SIM_TP_C}`,
       medians: sum,
+      rates,
+      viewersYear1: Math.round(y1),
     },
     null,
     2,

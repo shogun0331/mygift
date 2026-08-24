@@ -1,9 +1,9 @@
 {
-  "vpcp": 300,
-  "org": 0.12,
+  "vpcp": 160,
+  "org": 0.1,
   "mid": 20000,
-  "large": 100000,
-  "top": 300000,
+  "large": 80000,
+  "top": 250000,
   "midReq": "B×2",
   "largeReq": "A×2",
   "topReq": "S×1",
@@ -12,7 +12,7 @@
     "tier:sme": 16,
     "mil:50": 29,
     "tier:mid": 28,
-    "mil:30": 44,
+    "mil:30": 46,
     "tier:large": 52,
     "mil:20": 53,
     "tier:top": 88,
@@ -20,5 +20,14 @@
     "mil:5": 89,
     "mil:1": 89,
     "clear": 89
-  }
+  },
+  "rates": {
+    "tier:tiny": 100,
+    "tier:sme": 100,
+    "tier:mid": 100,
+    "tier:large": 100,
+    "tier:top": 73.7,
+    "clear": 73.7
+  },
+  "viewersYear1": 5500
 }

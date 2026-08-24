@@ -1198,7 +1198,7 @@ export function InGame({
       appearCount: prev.appearCount + 1,
     }))
     setCreatorScoutAvailable(false)
-    setCreatorScoutCooldown(rollInt(3, 6))
+    setCreatorScoutCooldown(rollInt(2, 4))
     setOpenCreatorScout(true)
   }
 
@@ -2207,11 +2207,12 @@ export function InGame({
 
       const nextCooldown = Math.max(0, prev - 1)
       if (nextCooldown > 0) return nextCooldown
-      if (Math.random() < 0.5) {
+      // 레벨디자인: 영입 주기 2~4턴·성공 70% — 로스터 성장이 곡선에 맞도록
+      if (Math.random() < 0.7) {
         setCreatorScoutAvailable(true)
         return 0
       }
-      return rollInt(3, 6)
+      return rollInt(2, 4)
     })
 
 
