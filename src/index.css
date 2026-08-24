@@ -1119,7 +1119,7 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 }
 
 .staff-action-burst {
-  animation: staff-action-shake 1.2s cubic-bezier(0.22, 0.9, 0.3, 1);
+  /* 방송 종료 시 CCTV 화면 흔들림 방지 */
 }
 
 
