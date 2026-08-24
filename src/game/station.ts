@@ -128,6 +128,7 @@ export type StationReviewContext = {
   unlockedSlotCount: number
   assets: number
   creators: Array<{ grade: Grade }>
+  snsSubscribers?: number
 }
 
 export type StationReviewStatus = {
@@ -174,16 +175,17 @@ export function getStationReviewStatus(
   grade: StationGrade,
   viewers: number,
   creators: Array<{ grade: Grade }>,
-  ctx: Omit<StationReviewContext, 'viewers' | 'creators'> = { unlockedSlotCount: 0, assets: 0 },
+  ctx: Partial<Omit<StationReviewContext, 'viewers' | 'creators'>> = {},
   config?: StationGradeConfig,
 ): StationReviewStatus {
   const cfg = config ?? getActiveConfig()
   const spec = stationSpecOf(cfg, grade)
   const evaluation = evaluateStationPromotion(cfg, grade, {
     viewers,
-    unlockedSlotCount: ctx.unlockedSlotCount,
-    assets: ctx.assets,
+    unlockedSlotCount: ctx.unlockedSlotCount ?? 0,
+    assets: ctx.assets ?? 0,
     creators,
+    snsSubscribers: ctx.snsSubscribers ?? 0,
   })
   const viewersCheck = evaluation.checks.find((check) => check.id === 'viewers')
   const requiredViewers =

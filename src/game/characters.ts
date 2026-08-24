@@ -123,6 +123,7 @@ export type OwnedCreator = RegisteredCharacter & {
   snsPublishedIds?: string[]
   snsFeed?: SnsPublishedPost[]
   snsPending?: SnsPendingPost | null
+  snsSubscribers?: number
   /** @deprecated trust 사용. 구 세이브 호환용 */
   loyalty?: number
 }
@@ -322,6 +323,7 @@ export function normalizeOwnedCreator(
       : [],
     snsFeed: normalizeSnsPublishedPosts(raw.snsFeed),
     snsPending: raw.snsPending && typeof raw.snsPending === 'object' ? raw.snsPending : null,
+    snsSubscribers: Math.max(0, Math.round(Number(raw.snsSubscribers ?? 0) || 0)),
     loyalty: undefined,
   }
 }

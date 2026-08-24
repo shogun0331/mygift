@@ -37,6 +37,7 @@ export type StationPromotionRule = {
   requiredViewers: number
   minUnlockedSlots: OptionalNumberCondition
   minAssets: OptionalNumberCondition
+  minSnsSubscribers?: OptionalNumberCondition
   creatorRequirements: CreatorCountRequirement[]
 }
 
@@ -255,46 +256,51 @@ export function defaultStationGradeConfig(): StationGradeConfig {
   return {
     tiers: {
       black: { maxScoutCreators: 2 },
-      tiny: { maxScoutCreators: 2 },
-      sme: { maxScoutCreators: 3 },
-      mid: { maxScoutCreators: 4 },
-      large: { maxScoutCreators: 5 },
-      top: { maxScoutCreators: 6 },
+      tiny: { maxScoutCreators: 3 },
+      sme: { maxScoutCreators: 4 },
+      mid: { maxScoutCreators: 5 },
+      large: { maxScoutCreators: 6 },
+      top: { maxScoutCreators: 8 },
     },
     promotions: {
       tiny: {
         to: 'tiny',
-        requiredViewers: 500,
+        requiredViewers: 1_000,
         minUnlockedSlots: { enabled: false, value: 1 },
         minAssets: { enabled: false, value: 0 },
+        minSnsSubscribers: { enabled: false, value: 0 },
         creatorRequirements: [],
       },
       sme: {
         to: 'sme',
-        requiredViewers: 5_000,
+        requiredViewers: 10_000,
         minUnlockedSlots: { enabled: false, value: 1 },
         minAssets: { enabled: false, value: 0 },
+        minSnsSubscribers: { enabled: false, value: 0 },
         creatorRequirements: [defaultCreatorReq('b1', 'B', 1, false)],
       },
       mid: {
         to: 'mid',
-        requiredViewers: 20_000,
+        requiredViewers: 40_000,
         minUnlockedSlots: { enabled: false, value: 2 },
         minAssets: { enabled: false, value: 0 },
+        minSnsSubscribers: { enabled: false, value: 0 },
         creatorRequirements: [defaultCreatorReq('a2', 'B', 2)],
       },
       large: {
         to: 'large',
-        requiredViewers: 80_000,
+        requiredViewers: 160_000,
         minUnlockedSlots: { enabled: false, value: 3 },
         minAssets: { enabled: false, value: 0 },
+        minSnsSubscribers: { enabled: false, value: 0 },
         creatorRequirements: [defaultCreatorReq('a3', 'A', 2)],
       },
       top: {
         to: 'top',
-        requiredViewers: 250_000,
+        requiredViewers: 500_000,
         minUnlockedSlots: { enabled: false, value: 4 },
         minAssets: { enabled: false, value: 0 },
+        minSnsSubscribers: { enabled: false, value: 0 },
         creatorRequirements: [defaultCreatorReq('s2', 'S', 1)],
       },
     },
@@ -352,6 +358,10 @@ function normalizePromotionRule(
     ),
     minUnlockedSlots: normalizeOptionalNumber(row.minUnlockedSlots, fallback.minUnlockedSlots),
     minAssets: normalizeOptionalNumber(row.minAssets, fallback.minAssets),
+    minSnsSubscribers: normalizeOptionalNumber(
+      row.minSnsSubscribers,
+      fallback.minSnsSubscribers ?? { enabled: false, value: 0 },
+    ),
     creatorRequirements: normalizeCreatorRequirements(
       row.creatorRequirements,
       fallback.creatorRequirements,
@@ -519,6 +529,7 @@ export type StationReviewContext = {
   unlockedSlotCount: number
   assets: number
   creators: Array<{ grade: Grade }>
+  snsSubscribers?: number
 }
 
 const CREATOR_GRADE_RANK: Record<Grade, number> = { C: 0, B: 1, A: 2, S: 3 }
@@ -569,6 +580,17 @@ export function evaluateStationPromotion(
       label: '보유 자산',
       met,
       detail: `$${ctx.assets.toLocaleString()} / $${rule.minAssets.value.toLocaleString()}`,
+    })
+  }
+
+  if (rule.minSnsSubscribers?.enabled) {
+    const snsSubs = ctx.snsSubscribers ?? 0
+    const met = snsSubs >= rule.minSnsSubscribers.value
+    checks.push({
+      id: 'snsSubscribers',
+      label: '필요 SNS 구독자',
+      met,
+      detail: `${snsSubs.toLocaleString()} / ${rule.minSnsSubscribers.value.toLocaleString()}명`,
     })
   }
 

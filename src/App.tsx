@@ -21,6 +21,7 @@ import {
   type StationGradeConfig,
 } from './game/stationGradeConfig'
 import { setStationGradeConfig } from './game/station'
+import { setViewerBalance } from './game/viewerBalance'
 import { normalizeOwnerCharacterId } from './events/types'
 import {
   createRegisteredCharacter,
@@ -1150,13 +1151,29 @@ export default function App() {
   const handleSaveStationGradeManual = async () => {
     try {
       await saveStationGradeConfig(stationGradeConfig)
+      setStationGradeConfig(stationGradeConfig)
+      setViewerBalance(stationGradeConfig?.balance)
       const saveTarget = window.electronAPI?.saveStationGradeConfigJson
         ? '로컬 JSON 파일(station_grade_config.json)'
         : '브라우저 저장소(localStorage)'
-      alert(`방송국 등급 설정이 ${saveTarget}에 저장되었습니다.`)
+      alert(`방송국 등급 설정이 ${saveTarget}에 저장되고 즉시 적용되었습니다.`)
     } catch (err) {
       console.error(err)
       alert('방송국 등급 설정 저장 중 오류가 발생했습니다.')
+    }
+  }
+
+  const handleReloadStationGradeFromFile = async () => {
+    try {
+      localStorage.removeItem('broadcast-station-grade-config')
+      const freshConfig = await loadStationGradeConfig()
+      setStationGradeConfigState(freshConfig)
+      setStationGradeConfig(freshConfig)
+      setViewerBalance(freshConfig.balance)
+      alert('🔄 최신 station_grade_config.json 파일 및 밸런스 설정이 게임에 즉시 적용되었습니다!')
+    } catch (err) {
+      console.error(err)
+      alert('방송국 등급 설정 새로고침 중 오류가 발생했습니다.')
     }
   }
 
@@ -1176,6 +1193,7 @@ export default function App() {
         stationGradeConfig={stationGradeConfig}
         onStationGradeConfigChange={setStationGradeConfigState}
         onSaveStationGradeManual={handleSaveStationGradeManual}
+        onReloadStationGradeFromFile={handleReloadStationGradeFromFile}
         registeredStaff={registeredStaff}
         onRegisterStaff={handleRegisterStaff}
         onUpdateStaff={handleUpdateStaff}

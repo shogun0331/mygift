@@ -47,6 +47,7 @@ type EditorScreenProps = {
   stationGradeConfig: StationGradeConfig
   onStationGradeConfigChange: (config: StationGradeConfig) => void
   onSaveStationGradeManual?: () => void
+  onReloadStationGradeFromFile?: () => void | Promise<void>
   registeredStaff: RegisteredStaff[]
   onRegisterStaff: (payload: AddStaffPayload) => void | Promise<void>
   onUpdateStaff: (id: string, payload: AddStaffPayload) => void | Promise<void>
@@ -94,6 +95,7 @@ export function EditorScreen({
   stationGradeConfig,
   onStationGradeConfigChange,
   onSaveStationGradeManual,
+  onReloadStationGradeFromFile,
   registeredStaff,
   onRegisterStaff,
   onUpdateStaff,
@@ -406,6 +408,7 @@ export function EditorScreen({
               config={stationGradeConfig}
               onConfigChange={onStationGradeConfigChange}
               onSaveManual={onSaveStationGradeManual}
+              onReloadFromFile={onReloadStationGradeFromFile}
             />
           ) : tab === 'staff' ? (
             <StaffEditorPanel

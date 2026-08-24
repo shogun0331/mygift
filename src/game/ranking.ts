@@ -20,6 +20,8 @@ export type RankCreator = {
   condition?: string
   conditionScore?: number
   statCommunication?: number
+  snsSubscribers?: number
+  snsRatio?: number
 }
 
 export type NpcStation = {
@@ -446,13 +448,12 @@ function communicationRetainOf(communication = 0): number {
   return 1 - clampCommunication(communication) / 200
 }
 
-/** 로스터 잠재력·배분 가중치 = 소통 × 등급 배율 */
+/** 로스터 잠재력·배분 가중치 = (소통×단가 + SNS구독자×0.25) × (1 + SNS진행비율×0.5) × 등급배율 */
 export function creatorViewerWeight(creator: RankCreator): number {
-  return (
-    clampCommunication(creator.statCommunication) *
-    getViewerBalance().viewerPerCommPoint *
-    gradeViewerMult(creator.grade)
-  )
+  const commBase = clampCommunication(creator.statCommunication) * getViewerBalance().viewerPerCommPoint
+  const snsSubBase = Math.max(0, Number(creator.snsSubscribers) || 0) * 0.25
+  const ratioSynergy = 1 + Math.min(1.0, Math.max(0, Number(creator.snsRatio) || 0)) * 0.5
+  return (commBase + snsSubBase) * ratioSynergy * gradeViewerMult(creator.grade)
 }
 
 /** 회사 획득 시청자를 가중치 비율로 나눠 합이 gained와 같게 맞춤 */

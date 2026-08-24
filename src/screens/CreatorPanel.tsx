@@ -36,6 +36,11 @@ import {
   characterDisplayName,
 } from '../game/characterLocales'
 import { useTranslation } from '../locales/i18n'
+import {
+  maxScoutCreatorsForGrade,
+  type StationGrade,
+  type StationGradeConfig,
+} from '../game/stationGradeConfig'
 import { SnsFeedModal } from './SnsFeedModal'
 import { RedDot } from './RedDot'
 import { SnsBulkComposeModal } from './SnsBulkComposeModal'
@@ -55,6 +60,8 @@ type CreatorPanelProps = {
   scoutState: ScoutSystemState
   assets: number
   broadcastMonthNumber: number
+  stationGrade: StationGrade
+  stationGradeConfig?: StationGradeConfig
   /** 명세서 종료 후 스카우트 강제 오픈 */
   openScout?: boolean
   onScoutClosed?: () => void
@@ -133,6 +140,8 @@ export function CreatorPanel({
   scoutState,
   assets,
   broadcastMonthNumber,
+  stationGrade,
+  stationGradeConfig,
   openScout = false,
   onScoutClosed,
   openStaffScout = false,
@@ -161,6 +170,11 @@ export function CreatorPanel({
 }: CreatorPanelProps) {
   const { t, locale } = useTranslation()
   const [view, setView] = useState<'roster' | 'scout' | 'staffScout'>('roster')
+
+  const maxScout = stationGradeConfig
+    ? maxScoutCreatorsForGrade(stationGradeConfig, stationGrade)
+    : 2
+  const canScoutMore = ownedCreators.length < maxScout
   const [query, setQuery] = useState('')
   const [gradeFilter, setGradeFilter] = useState<'ALL' | Grade>('ALL')
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -170,17 +184,21 @@ export function CreatorPanel({
 
   useEffect(() => {
     if (!openScout) return
+    // 첫번째 영입 전(보유 0명)일 때만 자동 오픈, 1명 이상일 때는 메인 목록 유지
+    if (ownedCreators.length > 0) return
     setSelectedId(null)
     setView('scout')
-  }, [openScout])
+  }, [openScout, ownedCreators.length])
 
   useEffect(() => {
     if (!openStaffScout) return
+    if (ownedCreators.length > 0) return
     setSelectedId(null)
     setView('staffScout')
-  }, [openStaffScout])
+  }, [openStaffScout, ownedCreators.length])
 
   const isScoutingRef = useRef(false)
+  const isCreatorScoutingRef = useRef(false)
 
   useEffect(() => {
     if (scoutedStaffCandidate && isScoutingRef.current) {
@@ -189,13 +207,26 @@ export function CreatorPanel({
     }
   }, [scoutedStaffCandidate])
 
+  useEffect(() => {
+    if (scoutState.activeOffer && isCreatorScoutingRef.current) {
+      isCreatorScoutingRef.current = false
+      setView('scout')
+    }
+  }, [scoutState.activeOffer])
+
   const handleScoutStaffClick = () => {
     isScoutingRef.current = true
     onScoutStaff()
   }
 
   const handleScoutCreatorClick = () => {
-    onScoutCreator()
+    isCreatorScoutingRef.current = true
+    if (scoutState.activeOffer) {
+      setView('scout')
+    } else {
+      onScoutCreator()
+      setView('scout')
+    }
   }
 
   function leaveScout() {
@@ -350,28 +381,27 @@ export function CreatorPanel({
                 📱 {t('sns.bulkCompose')}
               </button>
             ) : null}
-            {scoutState.activeOffer ? (
+            {!canScoutMore ? (
               <button
                 type="button"
-                onClick={() => setView('scout')}
-                className="game-btn game-btn-primary relative rounded-lg px-3 py-1 text-xs border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition"
+                disabled
+                className="game-btn rounded-lg px-3 py-1 text-xs opacity-50 cursor-not-allowed border border-white/10 text-slate-400 font-semibold"
               >
-                {t('creator.scoutCheck')}
-                <RedDot label={t('creator.scoutNewArrival')} />
+                🔒 {t('creator.scout')} ({sortedBySalary.length}/{maxScout}명)
               </button>
             ) : (
               <button
                 type="button"
-                disabled={!creatorScoutAvailable}
+                disabled={!scoutState.activeOffer && !creatorScoutAvailable}
                 onClick={handleScoutCreatorClick}
                 className={`game-btn game-btn-primary relative rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed ${
-                  creatorScoutAvailable
+                  scoutState.activeOffer || creatorScoutAvailable
                     ? 'border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition'
                     : ''
                 }`}
               >
                 {t('creator.scout')}
-                {creatorScoutAvailable ? (
+                {scoutState.activeOffer || creatorScoutAvailable ? (
                   <RedDot label={t('creator.scoutAvailable')} />
                 ) : null}
               </button>
@@ -397,6 +427,7 @@ export function CreatorPanel({
                   <th className="px-3 py-2.5 font-semibold">{t('creator.statType')}</th>
                   <th className="px-3 py-2.5 font-semibold">{t('creator.currentSalary')}</th>
                   <th className="px-3 py-2.5 font-semibold">{t('creator.statTrust')}</th>
+                  <th className="px-3 py-2.5 font-semibold text-cyan-300">SNS 구독자</th>
                   <th className="px-3 py-2.5 font-semibold sm:px-4">{t('common.action')}</th>
                 </tr>
               </thead>
@@ -405,6 +436,7 @@ export function CreatorPanel({
                   const trust = trustOf(creator)
                   const displayName = characterDisplayName(creator, locale)
                   const displayJob = characterDisplayJob(creator, locale)
+                  const snsSubs = creator.snsSubscribers ?? 0
                   return (
                     <tr
                       key={creator.id}
@@ -456,6 +488,9 @@ export function CreatorPanel({
                           </div>
                           <span className="tabular-nums text-xs text-slate-300">{trust}%</span>
                         </div>
+                      </td>
+                      <td className="px-3 py-2.5 font-bold tabular-nums text-cyan-300">
+                        📱 {snsSubs.toLocaleString()}명
                       </td>
                       <td className="px-3 py-2.5 sm:px-4">
                         <div className="flex flex-wrap gap-1.5">

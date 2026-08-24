@@ -54,13 +54,59 @@ export type SnsResult = {
   likes: number
   comments: SnsComment[]
   viewersGained: number
+  snsSubscribersGained?: number
 }
 
-/** 수위별 촬영/의상비. 3은 전문 스튜디오 급 */
+/** 캐릭터의 전체 포스팅 개수에 연동된 동적 발주 비용 공식 */
+export function calcSnsPostCost(heat: SnsHeat, totalAssetCount: number): number {
+  const count = Math.max(1, Math.round(totalAssetCount))
+  if (heat === 3) {
+    return 120_000 + count * 12_000
+  }
+  if (heat === 2) {
+    return 35_000 + count * 3_500
+  }
+  return 10_000 + count * 1_000
+}
+
+/** 수위별 기본 촬영/의상비 (1장 기준 하한) */
 export const SNS_HEAT_COST: Record<SnsHeat, number> = {
-  1: 8_000,
-  2: 28_000,
-  3: 95_000,
+  1: 11_000,
+  2: 38_500,
+  3: 132_000,
+}
+
+/** 캐릭터당 최대 모을 수 있는 영구 SNS 구독자 캡 (10만 명) */
+export const MAX_CREATOR_SNS_SUBSCRIBERS = 100_000
+
+/** 캐릭터별 SNS 발행 진행 비율 (%) 계산 */
+export function calcCreatorSnsRatio(publishedCount: number, totalAssetCount: number): number {
+  if (!totalAssetCount || totalAssetCount <= 0) return 0
+  return Math.min(1.0, Math.max(0, publishedCount / totalAssetCount))
+}
+
+/** SNS 발주 시 모이는 신규 SNS 구독자 스탯 계산 (최대 10만 명 캡 적용) */
+export function calcSnsSubscribersGain(
+  currentSubscribers: number,
+  heat: SnsHeat,
+  publishedCount: number,
+  totalAssetCount: number,
+): number {
+  const cur = Math.max(0, currentSubscribers)
+  if (cur >= MAX_CREATOR_SNS_SUBSCRIBERS) return 0
+
+  const ratio = calcCreatorSnsRatio(publishedCount + 1, totalAssetCount)
+  const targetMax = Math.round(MAX_CREATOR_SNS_SUBSCRIBERS * Math.pow(ratio, 0.85))
+
+  const baseGain =
+    heat === 3
+      ? rollInt(3_000, 8_000)
+      : heat === 2
+        ? rollInt(500, 1_500)
+        : rollInt(200, 600)
+
+  const allowedGain = Math.max(0, targetMax - cur)
+  return Math.min(baseGain, allowedGain)
 }
 
 export const SNS_HEAT_VIEWERS: Record<SnsHeat, { min: number; max: number }> = {

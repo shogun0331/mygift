@@ -51,7 +51,7 @@ export function gradeViewerMult(grade?: Grade | string): number {
 }
 
 /** 섹시+퍼포먼스 1당 주간 수익(USD). 등급 배율은 별도 */
-export const REVENUE_PER_STAT_POINT = 100
+export const REVENUE_PER_STAT_POINT = 20
 
 /** 스카우트 등급 가중치: C40 / B30 / A20 / S10 */
 export const GRADE_WEIGHTS: Array<{ grade: Grade; weight: number }> = [

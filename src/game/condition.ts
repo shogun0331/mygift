@@ -42,8 +42,8 @@ export const STAMINA_BROADCAST_COST_MIN = 8
 export const ELEGANCE_STAMINA_REDUCTION = 0.5
 export const STAMINA_REST_GAIN = 20
 export const STAMINA_VACATION_GAIN = 30
-/** 이 값 이하면 방송 불가 */
-export const STAMINA_BROADCAST_MIN = 10
+/** 이 값 미만(0)이면 방송 불가 */
+export const STAMINA_BROADCAST_MIN = 1
 /** 소모 후 스테미나가 이 미만이면 컨디션 급속 소모 */
 export const STAMINA_LOW_THRESHOLD = 30
 
@@ -116,6 +116,21 @@ export const CONDITION_LABEL_KEY: Record<CreatorCondition, string> = {
   normal: 'condition.normal',
   bad: 'condition.bad',
   worst: 'condition.worst',
+}
+
+/** 컨디션 등급별 방송 수익률 배율 (Best 1.2x, Good 1.1x, Normal 1.0x, Bad 0.8x, Worst 0.6x) */
+export const CONDITION_REVENUE_MULT: Record<CreatorCondition, number> = {
+  best: 1.2,
+  good: 1.1,
+  normal: 1.0,
+  bad: 0.8,
+  worst: 0.6,
+}
+
+export function conditionRevenueMultOf(creator: { condition?: string; conditionScore?: number }): number {
+  const score = scoreOf(creator)
+  const tier = conditionFromScore(score)
+  return CONDITION_REVENUE_MULT[tier] ?? 1.0
 }
 
 export const CONDITION_ICON: Record<CreatorCondition, string> = {

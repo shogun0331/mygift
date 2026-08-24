@@ -3,6 +3,7 @@ import { characterDisplayName } from './characterLocales'
 import { getCurrentLocale, translate } from '../locales/i18n'
 import {
   conditionFromScore,
+  conditionRevenueMultOf,
   scoreOf,
   type CreatorCondition,
 } from './condition'
@@ -49,13 +50,15 @@ export type StudioDayPlan = {
 }
 
 /**
- * 주간 총수익(USD) = (섹시 + 퍼포먼스) × 시청자보너스 × 단가 × 등급배율
+ * 주간 총수익(USD) = (섹시 + 퍼포먼스) × 시청자보너스 × 단가 × 등급배율 × 컨디션배율(0.6~1.2)
  */
 export function calcWeekRevenueWon(
   creator: {
     grade?: string
     statSexy?: number
     statPerformance?: number
+    condition?: string
+    conditionScore?: number
   },
   _stationRevenueBonusPercent = 0,
   _equipmentRevenueMult = 1,
@@ -63,6 +66,7 @@ export function calcWeekRevenueWon(
 ): number {
   const sexy = Math.max(0, Math.min(100, Number(creator.statSexy) || 0))
   const performance = Math.max(0, Math.min(100, Number(creator.statPerformance) || 0))
+  const condMult = conditionRevenueMultOf(creator)
   return Math.max(
     0,
     Math.round(
@@ -70,6 +74,7 @@ export function calcWeekRevenueWon(
         viewerBonusOf(companyViewers) *
         REVENUE_PER_STAT_POINT *
         gradeRevenueMult(creator.grade) *
+        condMult *
         Math.max(0, Number(_equipmentRevenueMult) || 1),
     ),
   )

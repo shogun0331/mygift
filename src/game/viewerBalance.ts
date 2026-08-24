@@ -19,7 +19,7 @@ export type ViewerBalance = {
 
 /** 기본값 — station_grade_config.json `balance` 섹션과 동일해야 함 */
 export const DEFAULT_VIEWER_BALANCE: ViewerBalance = {
-  viewerPerCommPoint: 160,
+  viewerPerCommPoint: 20,
   viewerGrowthRate: 0.18,
   viewerOrganicGrowthRate: 0.1,
   idleViewerDecay: 0.04,

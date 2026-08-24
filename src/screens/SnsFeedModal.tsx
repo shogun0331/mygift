@@ -5,7 +5,9 @@ import { characterDisplayJob, characterDisplayName } from '../game/characterLoca
 import { formatMoney } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import {
-  SNS_HEAT_COST,
+  calcCreatorSnsRatio,
+  calcSnsPostCost,
+  MAX_CREATOR_SNS_SUBSCRIBERS,
   nextSnsPost,
   snsCaptionOf,
   snsHeatProgress,
@@ -23,7 +25,7 @@ type SnsFeedModalProps = {
   onCompose: (heat: SnsHeat) => void
 }
 
-const HEATS: SnsHeat[] = [1, 2, 3]
+const HEATS: SnsHeat[] = [2, 3]
 
 function snsHandle(name: string) {
   const compact = name.replace(/\s+/g, '')
@@ -62,7 +64,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
   const feedScrollRef = useRef<HTMLDivElement>(null)
   const waitRevealRef = useRef(false)
   const [composeOpen, setComposeOpen] = useState(false)
-  const [pickedHeat, setPickedHeat] = useState<SnsHeat>(1)
+  const [pickedHeat, setPickedHeat] = useState<SnsHeat>(2)
   const [revealPostId, setRevealPostId] = useState<string | null>(null)
   const [lightbox, setLightbox] = useState<{
     url: string
@@ -80,7 +82,9 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
   const bannerUrl = creator.characterIllustrationId
     ? creator.images?.find((image) => image.id === creator.characterIllustrationId)?.url
     : avatarUrl
-  const followers = feed.reduce((sum, item) => sum + item.likes, 0)
+  const snsSubscribers = creator.snsSubscribers ?? 0
+  const ratio = calcCreatorSnsRatio(publishedIds.length, posts.length)
+  const ratioPercent = Math.round(ratio * 100)
   const postCount = feed.length + (pending ? 1 : 0)
 
   const feedItems = [
@@ -138,15 +142,13 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
       <div
         className="relative flex h-[min(92dvh,52rem)] w-[min(92vw,28rem)] flex-col rounded-[2.4rem] p-[0.72rem] shadow-[0_28px_80px_rgba(0,0,0,0.55)]"
         style={{
-          background:
-            'linear-gradient(165deg, #3a3f4d 0%, #1a1d26 38%, #0d0f14 100%)',
+          background: 'linear-gradient(175deg, #171d2b 0%, #0d121c 30%, #070a12 100%)',
           boxShadow:
-            '0 28px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.5)',
+            '0 0 0 1px rgba(255,255,255,0.12) inset, 0 32px 90px -10px rgba(0,0,0,0.85), 0 0 40px rgba(99,102,241,0.12)',
         }}
       >
-        <div className="absolute left-1/2 top-[0.42rem] h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-slate-700 ring-1 ring-black/40" />
-        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.7rem] bg-[#070b12]">
-          <div className="flex shrink-0 items-center justify-between px-3 pt-2">
+        <div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[1.85rem] border border-white/10 bg-[#070b12]">
+          <div className="flex shrink-0 items-center justify-between border-b border-white/8 px-4 py-2">
             <span className="pl-1 text-[10px] font-semibold tracking-wide text-slate-400">SNS</span>
             <button
               type="button"
@@ -179,13 +181,26 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
                   <p className="pb-1 text-[11px] text-slate-400">
                     <span className="font-bold text-slate-100">{postCount}</span> {t('sns.posts')}
                     <span className="mx-1.5 text-slate-600">·</span>
-                    <span className="font-bold text-slate-100">{followers.toLocaleString()}</span>{' '}
-                    {t('sns.followers')}
+                    <span className="font-bold text-cyan-300">{snsSubscribers.toLocaleString()}</span> / {MAX_CREATOR_SNS_SUBSCRIBERS.toLocaleString()}명
                   </p>
                 </div>
                 <h3 className="mt-2 text-lg font-extrabold text-slate-100">{displayName}</h3>
                 <p className="text-[12px] text-slate-500">{handle}</p>
                 {job ? <p className="mt-0.5 text-[12px] text-slate-300">{job}</p> : null}
+
+                {/* SNS 달성 비율 게이지 바 */}
+                <div className="mt-3 rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-2.5">
+                  <div className="flex items-center justify-between text-[11px] font-bold text-cyan-200">
+                    <span>📱 SNS 발행 진행률</span>
+                    <span>{ratioPercent}% ({publishedIds.length} / {posts.length}장)</span>
+                  </div>
+                  <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-black/40">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-indigo-400 transition-all duration-300"
+                      style={{ width: `${ratioPercent}%` }}
+                    />
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -239,7 +254,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
               onClick={() => setComposeOpen(true)}
               className="game-btn game-btn-primary w-full rounded-full py-2.5 text-[13px] font-bold disabled:cursor-not-allowed disabled:opacity-35"
             >
-              {t('sns.compose')}
+              📷 {t('sns.compose')}
             </button>
             {pending ? (
               <p className="mt-1.5 text-center text-[11px] font-semibold text-amber-300">
@@ -264,7 +279,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
                   disabled={
                     Boolean(pending) ||
                     !nextSnsPost(posts, publishedIds, pickedHeat) ||
-                    assets < SNS_HEAT_COST[pickedHeat]
+                    assets < calcSnsPostCost(pickedHeat, posts.length)
                   }
                   onClick={submitCompose}
                   className="game-btn game-btn-primary rounded-lg px-3 py-1.5 text-xs disabled:opacity-35"
@@ -283,7 +298,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
                     ) : (
                       <div className="mt-3 space-y-2">
                         {HEATS.map((heat) => {
-                          const cost = SNS_HEAT_COST[heat]
+                          const cost = calcSnsPostCost(heat, posts.length)
                           const stock = nextSnsPost(posts, publishedIds, heat)
                           const progress = snsHeatProgress(posts, publishedIds, heat, undefined)
                           const broke = assets < cost

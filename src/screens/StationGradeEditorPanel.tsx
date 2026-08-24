@@ -17,6 +17,7 @@ type StationGradeEditorPanelProps = {
   config: StationGradeConfig
   onConfigChange: (config: StationGradeConfig) => void
   onSaveManual?: () => void
+  onReloadFromFile?: () => void | Promise<void>
 }
 
 const fieldClassName =
@@ -56,6 +57,7 @@ export function StationGradeEditorPanel({
   config,
   onConfigChange,
   onSaveManual,
+  onReloadFromFile,
 }: StationGradeEditorPanelProps) {
   function setTierField(
     tier: StationTierId,
@@ -115,15 +117,26 @@ export function StationGradeEditorPanel({
             해금 조건(가격·필요 기업 등급)으로만 제어됩니다. 시청자·순위 상한은 자동 계산됩니다.
           </p>
         </div>
-        {onSaveManual && (
-          <button
-            type="button"
-            onClick={onSaveManual}
-            className="game-btn shrink-0 rounded-xl border-indigo-500/30 px-4 py-2 text-sm text-indigo-300 hover:bg-indigo-500/10"
-          >
-            💾 등급 설정 저장
-          </button>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {onReloadFromFile && (
+            <button
+              type="button"
+              onClick={() => onReloadFromFile()}
+              className="game-btn shrink-0 rounded-xl border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-sm font-bold text-cyan-200 hover:bg-cyan-500/25 transition shadow-[0_0_12px_rgba(34,211,238,0.2)]"
+            >
+              🔄 최신 JSON 설정 새로고침 (즉시 반영)
+            </button>
+          )}
+          {onSaveManual && (
+            <button
+              type="button"
+              onClick={onSaveManual}
+              className="game-btn shrink-0 rounded-xl border border-indigo-500/40 bg-indigo-500/20 px-4 py-2 text-sm font-bold text-indigo-300 hover:bg-indigo-500/35 transition"
+            >
+              💾 등급 설정 저장
+            </button>
+          )}
+        </div>
       </div>
 
       <section className="mt-6 rounded-xl border border-white/10 bg-black/20 p-4">

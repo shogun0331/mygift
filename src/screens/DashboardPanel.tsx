@@ -294,10 +294,11 @@ export function DashboardPanel({
   for (const [creatorId, amount] of Object.entries(liveRevenueByCreator)) {
     if (amount > 0) rankIds.add(creatorId)
   }
-  if (isLive) {
-    for (const slot of assigned) {
-      if (slot.assignment) rankIds.add(slot.assignment.creatorId)
-    }
+  for (const slot of assigned) {
+    if (slot.assignment) rankIds.add(slot.assignment.creatorId)
+  }
+  for (const creator of ownedCreators) {
+    rankIds.add(creator.id)
   }
 
   const liveRanking = [...rankIds]

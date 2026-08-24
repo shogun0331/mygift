@@ -7,22 +7,22 @@
       "maxScoutCreators": 3
     },
     "sme": {
-      "maxScoutCreators": 5
+      "maxScoutCreators": 4
     },
     "mid": {
-      "maxScoutCreators": 7
+      "maxScoutCreators": 5
     },
     "large": {
-      "maxScoutCreators": 12
+      "maxScoutCreators": 6
     },
     "top": {
-      "maxScoutCreators": 6
+      "maxScoutCreators": 8
     }
   },
   "promotions": {
     "tiny": {
       "to": "tiny",
-      "requiredViewers": 500,
+      "requiredViewers": 1000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 1
@@ -31,16 +31,24 @@
         "enabled": false,
         "value": 0
       },
+      "minSnsSubscribers": {
+        "enabled": false,
+        "value": 0
+      },
       "creatorRequirements": []
     },
     "sme": {
       "to": "sme",
-      "requiredViewers": 5000,
+      "requiredViewers": 10000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 1
       },
       "minAssets": {
+        "enabled": false,
+        "value": 0
+      },
+      "minSnsSubscribers": {
         "enabled": false,
         "value": 0
       },
@@ -55,12 +63,16 @@
     },
     "mid": {
       "to": "mid",
-      "requiredViewers": 20000,
+      "requiredViewers": 40000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 2
       },
       "minAssets": {
+        "enabled": false,
+        "value": 0
+      },
+      "minSnsSubscribers": {
         "enabled": false,
         "value": 0
       },
@@ -75,12 +87,16 @@
     },
     "large": {
       "to": "large",
-      "requiredViewers": 80000,
+      "requiredViewers": 160000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 3
       },
       "minAssets": {
+        "enabled": false,
+        "value": 0
+      },
+      "minSnsSubscribers": {
         "enabled": false,
         "value": 0
       },
@@ -95,12 +111,16 @@
     },
     "top": {
       "to": "top",
-      "requiredViewers": 250000,
+      "requiredViewers": 500000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 4
       },
       "minAssets": {
+        "enabled": false,
+        "value": 0
+      },
+      "minSnsSubscribers": {
         "enabled": false,
         "value": 0
       },
@@ -129,7 +149,7 @@
     "top"
   ],
   "balance": {
-    "viewerPerCommPoint": 160,
+    "viewerPerCommPoint": 20,
     "viewerGrowthRate": 0.18,
     "viewerOrganicGrowthRate": 0.1,
     "idleViewerDecay": 0.04,

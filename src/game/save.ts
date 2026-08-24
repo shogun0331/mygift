@@ -66,6 +66,8 @@ export type GameSave = {
   scoutSystem: SerializedScoutSystemState
   /** 월말 연간 심사/승급이 진행 중인지 (세이브-로드 유실 방지) */
   pendingStationReview?: boolean
+  /** 방송 랭킹 수익 데이터 (세이브-로드 유실 방지) */
+  liveRevenueByCreator?: Record<string, number>
 }
 
 export type TopCharacterMeta = {

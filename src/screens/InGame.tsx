@@ -104,7 +104,9 @@ import {
 import { characterDisplayName } from '../game/characterLocales'
 import { applyProductionTraining, calcPromotionExamCost, calcTrainingCost } from '../game/training'
 import {
-  SNS_HEAT_COST,
+  calcSnsPostCost,
+  calcSnsSubscribersGain,
+  MAX_CREATOR_SNS_SUBSCRIBERS,
   nextSnsPost,
   previewBulkSnsCompose,
   resolveSnsPending,
@@ -228,7 +230,7 @@ export type GameTab =
 const SPEED_OPTIONS = ['1x', '2x', '3x'] as const
 type SpeedOption = (typeof SPEED_OPTIONS)[number]
 
-const INITIAL_ASSETS = 100_000
+const INITIAL_ASSETS = 200_000
 const MAX_RECENT_EVENTS = 40
 /** 이 인원 이상이면 후원을 모아 1명일 때와 비슷한 속도로 로그에 냄 */
 const FEED_BATCH_MIN_CREATORS = 2
@@ -562,7 +564,11 @@ export function InGame({
   const [gearFailBursts, setGearFailBursts] = useState<GearFailBurstItem[]>([])
   const [staffActions, setStaffActions] = useState<StaffActionFxItem[]>([])
   const [toxicQteQueue, setToxicQteQueue] = useState<ToxicWhackQteItem[]>([])
-  const [liveRevenueByCreator, setLiveRevenueByCreator] = useState<Record<string, number>>({})
+  const [liveRevenueByCreator, setLiveRevenueByCreator] = useState<Record<string, number>>(
+    () => initialSave?.liveRevenueByCreator ?? {},
+  )
+  const liveRevenueByCreatorRef = useRef(liveRevenueByCreator)
+  liveRevenueByCreatorRef.current = liveRevenueByCreator
   const [liveWeekProgress, setLiveWeekProgress] = useState(0)
   const [liveStaminaDrainByCreatorId, setLiveStaminaDrainByCreatorId] = useState<
     Record<string, number>
@@ -602,7 +608,7 @@ export function InGame({
     initialSave?.stationGrade ?? 'black',
   )
 
-  const staffScoutCooldownRef = useRef(initialSave?.scout?.staffScoutCooldown ?? 3)
+  const staffScoutCooldownRef = useRef(initialSave?.scout?.staffScoutCooldown ?? rollInt(3, 5))
   const [staffScoutAvailable, setStaffScoutAvailable] = useState(
     initialSave?.scout?.staffScoutAvailable ?? false,
   )
@@ -754,14 +760,16 @@ export function InGame({
   registeredCharactersRef.current = registeredCharacters
   eventsRef.current = events
 
-  /** 하단 탭 클릭 — 매니지먼트(CREATOR) 탭은 대기 중인 스카우트/영입 제안이 있으면 해당 뷰로 바로 이동 */
+  /** 하단 탭 클릭 — 첫 영입(0명)일 때만 스카우트 화면으로 자동 이동하고, 1명 이상일 때는 무조건 메인 매니지먼트(크리에이터&스태프 목록) 화면으로 진입 */
   function handleTabClick(next: GameTab) {
     setTab(next)
     if (next !== 'creator') return
-    if (scoutSystem.activeOffer) {
-      setOpenCreatorScout(true)
-    } else if (scoutedStaffCandidate) {
-      setOpenStaffScout(true)
+    if (ownedCreatorsRef.current.length === 0) {
+      if (scoutSystem.activeOffer) {
+        setOpenCreatorScout(true)
+      } else if (scoutedStaffCandidate) {
+        setOpenStaffScout(true)
+      }
     }
   }
 
@@ -898,7 +906,12 @@ export function InGame({
     if (!freeHire) {
       setAssets((prev) => prev - offer.salary)
     }
+    setOpenCreatorScout(false)
     setScoutSystem((prev) => clearScoutOfferAfterHire(prev))
+    const maxScout = maxScoutCreatorsForGrade(stationGradeConfig, stationGradeRef.current)
+    if (ownedCreatorsRef.current.length + 1 >= maxScout) {
+      setCreatorScoutAvailable(false)
+    }
     beginScoutVisualNovel(creator)
   }
 
@@ -921,6 +934,17 @@ export function InGame({
       ),
     )
   }, [registeredCharacters])
+
+  // 현재 방송국 등급의 최대 스카우트 인원에 도달하면 대기 중인 스카우트 오퍼 및 버튼 활성 상태를 즉시 비활성화
+  useEffect(() => {
+    const maxScout = maxScoutCreatorsForGrade(stationGradeConfig, stationGrade)
+    if (ownedCreators.length >= maxScout) {
+      if (creatorScoutAvailable) setCreatorScoutAvailable(false)
+      if (scoutSystem.activeOffer) {
+        setScoutSystem((prev) => clearScoutOfferAfterHire(prev))
+      }
+    }
+  }, [ownedCreators.length, stationGrade, creatorScoutAvailable, scoutSystem.activeOffer, stationGradeConfig])
 
   // 보유 로스터 승격 게이트 즉시 반영 (정산 시 방송 인원만 보고 막힌 순위 보정)
   const rosterGateKey = ownedCreators
@@ -1098,6 +1122,7 @@ export function InGame({
       },
       scoutSystem: serializeScoutSystem(scoutSystemRef.current),
       pendingStationReview: pendingStationReviewRef.current,
+      liveRevenueByCreator: liveRevenueByCreatorRef.current,
     }
   }
 
@@ -1214,14 +1239,21 @@ export function InGame({
   }
 
   function toRankCreators(list: OwnedCreator[]): RankCreator[] {
-    return list.map((creator) => ({
-      id: creator.id,
-      name: creator.name,
-      grade: creator.grade,
-      condition: creator.condition,
-      conditionScore: creator.conditionScore,
-      statCommunication: creator.statCommunication,
-    }))
+    return list.map((creator) => {
+      const totalPosts = (creator.snsPosts ?? []).length
+      const pubCount = (creator.snsPublishedIds ?? []).length
+      const ratio = totalPosts > 0 ? Math.min(1.0, pubCount / totalPosts) : 0
+      return {
+        id: creator.id,
+        name: creator.name,
+        grade: creator.grade,
+        condition: creator.condition,
+        conditionScore: creator.conditionScore,
+        statCommunication: creator.statCommunication,
+        snsSubscribers: creator.snsSubscribers ?? 0,
+        snsRatio: ratio,
+      }
+    })
   }
 
   function openScoutFromRanking() {
@@ -1826,8 +1858,8 @@ export function InGame({
     if (pool.length > 0) {
       const picked = pool[Math.floor(Math.random() * pool.length)]
       const hiredCount = hiredIds.length
-      const proposedHireCost = Math.round(15000 * Math.pow(1.8, hiredCount))
-      const proposedSalary = Math.round(20000 * Math.pow(1.5, hiredCount))
+      const proposedHireCost = Math.round(10000 * Math.pow(1.5, hiredCount))
+      const proposedSalary = Math.round(15000 * Math.pow(1.3, hiredCount))
       setScoutedStaffCandidate({
         ...picked,
         proposedHireCost,
@@ -1835,17 +1867,17 @@ export function InGame({
       })
 
       setStaffScoutAvailable(false)
-      staffScoutCooldownRef.current = 3
+      staffScoutCooldownRef.current = rollInt(3, 5)
     } else {
       setScoutedStaffCandidate(null)
       alert(t('alert.noStaffToRecruit'))
     }
   }
 
-  /** 스탭 후보 거절 — 후보 정리 후 3개월 뒤 새 후보 등장 */
+  /** 스탭 후보 거절 — 후보 정리 후 3~5턴 뒤 확정 등장 */
   function handleStaffScoutPass() {
     setScoutedStaffCandidate(null)
-    staffScoutCooldownRef.current = 3
+    staffScoutCooldownRef.current = rollInt(3, 5)
     scheduleAutoSave()
   }
 
@@ -1865,7 +1897,7 @@ export function InGame({
     managerStateRef.current = next
     onManagerStateChangeRef.current(next)
     setScoutedStaffCandidate(null)
-    staffScoutCooldownRef.current = 3
+    staffScoutCooldownRef.current = rollInt(3, 5)
 
     const staff = registeredStaff.find((s) => s.id === staffId)
     if (staff) {
@@ -2165,7 +2197,7 @@ export function InGame({
       })
       .filter((row): row is NonNullable<typeof row> => row != null)
 
-    // 스탭 스카우트 — 오퍼(스카우트 가능)나 대기 후보가 있으면 새 후보를 만들지 않고 유지
+    // 스탭 스카우트 — 3~5턴 주기 100% 확정 등장 (피로도 방지 및 3~5턴 확정 수급)
     if (!staffScoutAvailableRef.current && !scoutedStaffCandidate) {
       const nextStaffCooldown = Math.max(0, staffScoutCooldownRef.current - 1)
       if (nextStaffCooldown === 0) {
@@ -2173,16 +2205,10 @@ export function InGame({
           (s) => !managerStateRef.current.hiredStaffIds.includes(s.id),
         )
         if (pool.length > 0) {
-          const isFirstStaff = managerStateRef.current.hiredStaffIds.length === 0
-          const success = isFirstStaff || Math.random() < 0.5
-          if (success) {
-            setStaffScoutAvailable(true)
-            staffScoutCooldownRef.current = 0
-          } else {
-            staffScoutCooldownRef.current = 3
-          }
+          setStaffScoutAvailable(true)
+          staffScoutCooldownRef.current = rollInt(3, 5)
         } else {
-          staffScoutCooldownRef.current = 3
+          staffScoutCooldownRef.current = rollInt(3, 5)
         }
       } else {
         staffScoutCooldownRef.current = nextStaffCooldown
@@ -2197,7 +2223,7 @@ export function InGame({
       if (ownedCreatorsRef.current.length >= maxScout) return prev
 
       if (!creatorScoutFirstDoneRef.current) {
-        if (nextMonthNumberPreview > 3) {
+        if (nextMonthNumberPreview >= 2) {
           setCreatorScoutAvailable(true)
           setCreatorScoutFirstDone(true)
           return 0
@@ -2207,12 +2233,12 @@ export function InGame({
 
       const nextCooldown = Math.max(0, prev - 1)
       if (nextCooldown > 0) return nextCooldown
-      // 레벨디자인: 영입 주기 2~4턴·성공 70% — 로스터 성장이 곡선에 맞도록
-      if (Math.random() < 0.7) {
+      // 레벨디자인: 영입 주기 6~10턴·성공 40% — 인원 급증을 방지하고 신중한 성장 유도
+      if (Math.random() < 0.4) {
         setCreatorScoutAvailable(true)
         return 0
       }
-      return rollInt(2, 4)
+      return rollInt(6, 10)
     })
 
 
@@ -2297,6 +2323,18 @@ export function InGame({
       const pending = creator.snsPending
       if (!pending) return creator
       const rolled = resolveSnsPending(pending.heat)
+      const pubCount = (creator.snsPublishedIds ?? []).length
+      const totalPosts = (creator.snsPosts ?? []).length
+      const snsSubGain = calcSnsSubscribersGain(
+        creator.snsSubscribers ?? 0,
+        pending.heat,
+        pubCount,
+        totalPosts,
+      )
+      const nextSnsSubscribers = Math.min(
+        MAX_CREATOR_SNS_SUBSCRIBERS,
+        (creator.snsSubscribers ?? 0) + snsSubGain,
+      )
       extraViewers += rolled.viewersGained
       const post = (creator.snsPosts ?? []).find((row) => row.id === pending.postId)
       const media = snsPostMedia(
@@ -2317,10 +2355,12 @@ export function InGame({
         likes: rolled.likes,
         comments: rolled.comments,
         viewersGained: rolled.viewersGained,
+        snsSubscribersGained: snsSubGain,
       })
       return {
         ...creator,
         snsPending: null,
+        snsSubscribers: nextSnsSubscribers,
         snsPublishedIds: [...(creator.snsPublishedIds ?? []), pending.postId],
         snsFeed: [
           ...(creator.snsFeed ?? []),
@@ -2380,6 +2420,7 @@ export function InGame({
       socialSpawnRef.current,
       ownedCreatorsRef.current,
       socialBlocked,
+      stationGradeRef.current,
     )
     socialSpawnRef.current = socialRoll.state
     pendingSocialQueueRef.current = socialRoll.event ? [socialRoll.event] : []
@@ -2518,7 +2559,7 @@ export function InGame({
       return
     }
     setStartBroadcastLocked(false)
-    if (openScout && scoutSystemRef.current.activeOffer) {
+    if (openScout && scoutSystemRef.current.activeOffer && ownedCreatorsRef.current.length === 0) {
       setTab('creator')
       setOpenCreatorScout(true)
     }
@@ -2845,7 +2886,7 @@ export function InGame({
     if (!target || target.snsPending) return
     const published = target.snsPublishedIds ?? []
     const post = nextSnsPost(target.snsPosts ?? [], published, heat)
-    const cost = SNS_HEAT_COST[heat]
+    const cost = calcSnsPostCost(heat, (target.snsPosts ?? []).length)
     if (!post || assetsRef.current < cost) return
     const nextAssets = assetsRef.current - cost
     assetsRef.current = nextAssets
@@ -2860,8 +2901,11 @@ export function InGame({
 
   function handleBulkSnsCompose(heat: SnsHeat): BulkSnsRevealEntry[] {
     const preview = previewBulkSnsCompose(ownedCreatorsRef.current, heat)
-    const costPer = SNS_HEAT_COST[heat]
-    const totalCost = preview.eligibleIds.length * costPer
+    const totalCost = preview.eligibleIds.reduce((sum, id) => {
+      const creator = ownedCreatorsRef.current.find((c) => c.id === id)
+      const postCount = (creator?.snsPosts ?? []).length
+      return sum + calcSnsPostCost(heat, postCount)
+    }, 0)
     if (preview.eligibleIds.length === 0 || assetsRef.current < totalCost) return []
 
     const eligibleSet = new Set(preview.eligibleIds)
@@ -3353,6 +3397,8 @@ export function InGame({
             scoutState={scoutSystem}
             assets={assets}
             broadcastMonthNumber={broadcastMonthNumber}
+            stationGrade={stationGrade}
+            stationGradeConfig={stationGradeConfig}
             openScout={openCreatorScout}
             onScoutClosed={() => setOpenCreatorScout(false)}
             openStaffScout={openStaffScout}

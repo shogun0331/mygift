@@ -230,10 +230,13 @@ const SPAWN_SPEC: Record<keyof SocialSpawnState, SocialSpawnSpec> = {
  * blocked(등급평가·클리어 등)이면 이벤트 없음. 당첨된 ready는 다음 달로 이월.
  * 한 턴에는 후보 중 무작위로 1개만 반환. 선택된 채널만 새 랜덤 대기로 리셋.
  */
+import type { StationGrade } from './stationGradeConfig'
+
 export function advanceAndPickSocialEvent(
   state: SocialSpawnState,
   roster: OwnedCreator[],
   blocked: boolean,
+  stationGrade?: StationGrade,
 ): { state: SocialSpawnState; event: SocialPending | null } {
   const next: SocialSpawnState = {
     date: tickChannel(state.date, DATE_SPAWN),
@@ -252,8 +255,12 @@ export function advanceAndPickSocialEvent(
     if (pending) candidates.push(pending)
   }
   if (next.vip.ready) {
-    const vipTarget = pickVipTarget(roster)
-    if (vipTarget) candidates.push({ kind: 'vip', offer: toVipOffer(vipTarget) })
+    // VIP 스폰서 이벤트는 중소기업(sme) 이상 등급부터 발동
+    const isVipAllowed = !stationGrade || (stationGrade !== 'black' && stationGrade !== 'tiny')
+    if (isVipAllowed) {
+      const vipTarget = pickVipTarget(roster)
+      if (vipTarget) candidates.push({ kind: 'vip', offer: toVipOffer(vipTarget) })
+    }
   }
   if (next.h.ready) {
     const hPending = buildHPending(roster)

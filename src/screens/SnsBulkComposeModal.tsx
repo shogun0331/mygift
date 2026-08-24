@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import type { OwnedCreator } from '../game/characters'
 import { formatMoney } from '../game/money'
 import {
-  SNS_HEAT_COST,
+  calcSnsPostCost,
   nextSnsPost,
   previewBulkSnsCompose,
   snsHeatProgress,
@@ -19,7 +19,7 @@ type SnsBulkComposeModalProps = {
   onCompose: (heat: SnsHeat) => BulkSnsRevealEntry[]
 }
 
-const HEATS: SnsHeat[] = [1, 2, 3]
+const HEATS: SnsHeat[] = [2, 3]
 
 export function SnsBulkComposeModal({
   creators,
@@ -28,14 +28,21 @@ export function SnsBulkComposeModal({
   onCompose,
 }: SnsBulkComposeModalProps) {
   const { t } = useTranslation()
-  const [pickedHeat, setPickedHeat] = useState<SnsHeat>(1)
+  const [pickedHeat, setPickedHeat] = useState<SnsHeat>(2)
 
   const preview = useMemo(
     () => previewBulkSnsCompose(creators, pickedHeat),
     [creators, pickedHeat],
   )
 
-  const totalCost = preview.eligibleIds.length * SNS_HEAT_COST[pickedHeat]
+  const totalCost = useMemo(() => {
+    return preview.eligibleIds.reduce((sum, id) => {
+      const creator = creators.find((c) => c.id === id)
+      const postCount = (creator?.snsPosts ?? []).length
+      return sum + calcSnsPostCost(pickedHeat, postCount)
+    }, 0)
+  }, [creators, preview.eligibleIds, pickedHeat])
+
   const canAfford = assets >= totalCost
   const canSubmit = preview.eligibleIds.length > 0 && canAfford
 
@@ -97,9 +104,12 @@ export function SnsBulkComposeModal({
 
           <div className="mt-4 space-y-2">
             {HEATS.map((heat) => {
-              const cost = SNS_HEAT_COST[heat]
               const heatPreview = previewBulkSnsCompose(creators, heat)
-              const heatTotal = heatPreview.eligibleIds.length * cost
+              const heatTotalCost = heatPreview.eligibleIds.reduce((sum, id) => {
+                const creator = creators.find((c) => c.id === id)
+                const postCount = (creator?.snsPosts ?? []).length
+                return sum + calcSnsPostCost(heat, postCount)
+              }, 0)
               const hasStock = creators.some(
                 (creator) =>
                   !creator.snsPending &&
@@ -131,16 +141,11 @@ export function SnsBulkComposeModal({
                   </span>
                   <span className="shrink-0 text-right">
                     <span className="block text-[12px] font-black tabular-nums text-amber-300">
-                      {formatMoney(cost)}
+                      {formatMoney(heatTotalCost)}
                     </span>
                     <span className="mt-1 block text-[11px] font-semibold tabular-nums text-slate-400">
                       {t('sns.countUnit').replace('{count}', String(heatPreview.eligibleIds.length))}
                     </span>
-                    {heatPreview.eligibleIds.length > 0 ? (
-                      <span className="mt-0.5 block text-[10px] tabular-nums text-slate-500">
-                        {formatMoney(heatTotal)}
-                      </span>
-                    ) : null}
                   </span>
                 </button>
               )
