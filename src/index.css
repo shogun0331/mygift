@@ -106,62 +106,83 @@ select {
 @keyframes neon-background-pulse {
   0% {
     background:
-      radial-gradient(ellipse 90% 55% at 20% -10%, rgba(255, 0, 128, 0.5), transparent 60%),
-      radial-gradient(ellipse 70% 50% at 85% 105%, rgba(0, 245, 255, 0.45), transparent 55%),
-      radial-gradient(ellipse 60% 40% at 50% 50%, rgba(157, 78, 221, 0.3), transparent 65%),
+      radial-gradient(ellipse 90% 55% at 20% -10%, rgba(255, 0, 128, 0.65), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 85% 105%, rgba(0, 245, 255, 0.55), transparent 55%),
+      radial-gradient(ellipse 60% 40% at 50% 50%, rgba(157, 78, 221, 0.4), transparent 65%),
       #030008;
   }
-  33% {
+  25% {
     background:
-      radial-gradient(ellipse 90% 55% at 80% -10%, rgba(0, 245, 255, 0.5), transparent 60%),
-      radial-gradient(ellipse 70% 50% at 15% 105%, rgba(255, 215, 0, 0.45), transparent 55%),
-      radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255, 42, 116, 0.35), transparent 65%),
+      radial-gradient(ellipse 90% 55% at 85% -10%, rgba(0, 245, 255, 0.65), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 15% 105%, rgba(255, 215, 0, 0.55), transparent 55%),
+      radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255, 42, 116, 0.45), transparent 65%),
       #030008;
   }
-  66% {
+  50% {
     background:
-      radial-gradient(ellipse 90% 55% at 50% -10%, rgba(255, 215, 0, 0.45), transparent 60%),
-      radial-gradient(ellipse 70% 50% at 90% 50%, rgba(255, 0, 128, 0.45), transparent 55%),
-      radial-gradient(ellipse 60% 40% at 10% 80%, rgba(0, 245, 255, 0.3), transparent 65%),
+      radial-gradient(ellipse 90% 55% at 50% -10%, rgba(255, 215, 0, 0.6), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 90% 50%, rgba(255, 0, 128, 0.55), transparent 55%),
+      radial-gradient(ellipse 60% 40% at 10% 80%, rgba(0, 245, 255, 0.45), transparent 65%),
+      #030008;
+  }
+  75% {
+    background:
+      radial-gradient(ellipse 90% 55% at 10% 90%, rgba(157, 78, 221, 0.6), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 50% -10%, rgba(0, 245, 255, 0.55), transparent 55%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255, 0, 128, 0.45), transparent 65%),
       #030008;
   }
   100% {
     background:
-      radial-gradient(ellipse 90% 55% at 20% -10%, rgba(255, 0, 128, 0.5), transparent 60%),
-      radial-gradient(ellipse 70% 50% at 85% 105%, rgba(0, 245, 255, 0.45), transparent 55%),
-      radial-gradient(ellipse 60% 40% at 50% 50%, rgba(157, 78, 221, 0.3), transparent 65%),
+      radial-gradient(ellipse 90% 55% at 20% -10%, rgba(255, 0, 128, 0.65), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 85% 105%, rgba(0, 245, 255, 0.55), transparent 55%),
+      radial-gradient(ellipse 60% 40% at 50% 50%, rgba(157, 78, 221, 0.4), transparent 65%),
       #030008;
   }
 }
 
 @keyframes neon-border-sparkle {
   0% {
-    border-color: rgba(255, 42, 116, 0.85);
+    border-color: rgba(255, 42, 116, 0.95);
     box-shadow:
-      0 0 14px rgba(255, 42, 116, 0.55),
-      0 0 32px rgba(255, 42, 116, 0.25),
-      inset 0 0 16px rgba(255, 42, 116, 0.15);
+      0 0 16px rgba(255, 42, 116, 0.8),
+      0 0 36px rgba(255, 42, 116, 0.4),
+      inset 0 0 20px rgba(255, 42, 116, 0.25);
   }
-  33% {
-    border-color: rgba(0, 245, 255, 0.88);
+  20% {
+    border-color: rgba(0, 245, 255, 0.95);
     box-shadow:
-      0 0 18px rgba(0, 245, 255, 0.65),
-      0 0 38px rgba(0, 245, 255, 0.3),
-      inset 0 0 20px rgba(0, 245, 255, 0.2);
+      0 0 22px rgba(0, 245, 255, 0.85),
+      0 0 45px rgba(0, 245, 255, 0.5),
+      inset 0 0 24px rgba(0, 245, 255, 0.3);
   }
-  66% {
-    border-color: rgba(255, 215, 0, 0.88);
+  40% {
+    border-color: rgba(255, 215, 0, 0.95);
     box-shadow:
-      0 0 20px rgba(255, 215, 0, 0.65),
-      0 0 42px rgba(255, 215, 0, 0.3),
-      inset 0 0 20px rgba(255, 215, 0, 0.2);
+      0 0 24px rgba(255, 215, 0, 0.85),
+      0 0 48px rgba(255, 215, 0, 0.5),
+      inset 0 0 24px rgba(255, 215, 0, 0.3);
+  }
+  60% {
+    border-color: rgba(181, 23, 158, 0.95);
+    box-shadow:
+      0 0 22px rgba(181, 23, 158, 0.85),
+      0 0 45px rgba(181, 23, 158, 0.5),
+      inset 0 0 24px rgba(181, 23, 158, 0.3);
+  }
+  80% {
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow:
+      0 0 28px rgba(255, 255, 255, 0.9),
+      0 0 52px rgba(0, 245, 255, 0.6),
+      inset 0 0 28px rgba(255, 42, 116, 0.35);
   }
   100% {
-    border-color: rgba(255, 42, 116, 0.85);
+    border-color: rgba(255, 42, 116, 0.95);
     box-shadow:
-      0 0 14px rgba(255, 42, 116, 0.55),
-      0 0 32px rgba(255, 42, 116, 0.25),
-      inset 0 0 16px rgba(255, 42, 116, 0.15);
+      0 0 16px rgba(255, 42, 116, 0.8),
+      0 0 36px rgba(255, 42, 116, 0.4),
+      inset 0 0 20px rgba(255, 42, 116, 0.25);
   }
 }
 
@@ -174,11 +195,11 @@ select {
 html.theme-on-air .game-stage {
   --panel: rgba(15, 2, 12, 0.88);
   --panel-strong: rgba(8, 1, 6, 0.95);
-  --line: rgba(255, 42, 116, 0.6);
-  --line-soft: rgba(255, 42, 116, 0.35);
+  --line: rgba(255, 42, 116, 0.7);
+  --line-soft: rgba(255, 42, 116, 0.45);
   --accent: #ff6b9d;
   --accent-strong: #ff2a74;
-  animation: neon-background-pulse 4.5s ease-in-out infinite;
+  animation: neon-background-pulse 1.8s linear infinite;
 }
 
 html.theme-on-air,
@@ -188,7 +209,7 @@ html.theme-on-air body {
 
 .game-stage.is-on-air::before,
 html.theme-on-air .game-stage::before {
-  opacity: 0.12;
+  opacity: 0.15;
 }
 
 .game-hud,
@@ -196,41 +217,39 @@ html.theme-on-air .game-stage::before {
 .game-panel,
 .game-hud-strip {
   transition:
-    background 0.7s ease,
-    border-color 0.7s ease,
-    box-shadow 0.7s ease;
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
 }
 
 .game-stage.is-on-air .game-hud,
 html.theme-on-air .game-hud {
   background: rgba(0, 0, 0, 0.94);
-  border-bottom: 1.5px solid rgba(255, 42, 116, 0.7);
-  box-shadow: 0 12px 36px rgba(255, 42, 116, 0.25), 0 0 20px rgba(0, 245, 255, 0.15);
+  border-bottom: 2px solid rgba(255, 42, 116, 0.85);
+  animation: neon-border-sparkle 0.8s linear infinite;
 }
 
 .game-stage.is-on-air .game-hud-strip,
 html.theme-on-air .game-hud-strip {
-  border-color: rgba(255, 42, 116, 0.6);
-  background: linear-gradient(180deg, rgba(80, 8, 38, 0.9), rgba(12, 0, 10, 0.96));
-  box-shadow:
-    0 0 16px rgba(255, 42, 116, 0.35),
-    0 10px 28px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 42, 116, 0.8);
+  background: linear-gradient(180deg, rgba(90, 8, 42, 0.92), rgba(12, 0, 10, 0.96));
+  animation: neon-border-sparkle 0.9s linear infinite;
 }
 
 .game-stage.is-on-air .game-dock,
 html.theme-on-air .game-dock {
   background: #000000;
-  border-top: 1.5px solid rgba(255, 42, 116, 0.6);
-  box-shadow: 0 -16px 40px rgba(120, 0, 50, 0.45), 0 0 25px rgba(0, 245, 255, 0.2);
+  border-top: 2px solid rgba(255, 42, 116, 0.85);
+  animation: neon-border-sparkle 0.85s linear infinite;
 }
 
 .game-stage.is-on-air .game-panel,
 html.theme-on-air .game-panel {
   position: relative;
   overflow: hidden;
-  border-width: 1.5px;
-  animation: neon-border-sparkle 3s ease-in-out infinite;
-  background: linear-gradient(180deg, rgba(48, 6, 26, 0.85), rgba(8, 1, 8, 0.96));
+  border-width: 2px;
+  animation: neon-border-sparkle 0.75s linear infinite;
+  background: linear-gradient(180deg, rgba(54, 6, 30, 0.88), rgba(8, 1, 8, 0.96));
 }
 
 .game-stage.is-on-air .game-panel::after,
@@ -239,30 +258,30 @@ html.theme-on-air .game-panel::after {
   position: absolute;
   top: 0;
   left: 0;
-  width: 50%;
+  width: 60%;
   height: 100%;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.15) 50%,
     transparent 100%
   );
   pointer-events: none;
-  animation: neon-light-sweep 4s ease-in-out infinite;
+  animation: neon-light-sweep 1.2s linear infinite;
 }
 
 .game-stage.is-on-air .game-btn-tab.is-active,
 html.theme-on-air .game-btn-tab.is-active {
-  border-color: rgba(255, 120, 170, 0.6);
+  border-color: rgba(255, 120, 170, 0.8);
   background: linear-gradient(180deg, #ff4d88 0%, #c2185b 100%);
-  box-shadow: 0 10px 28px rgba(255, 42, 116, 0.55), 0 0 15px rgba(0, 245, 255, 0.3);
+  animation: neon-border-sparkle 0.65s linear infinite;
 }
 
 .game-stage.is-on-air .stream-on-air.neon-glow-card,
 html.theme-on-air .stream-on-air.neon-glow-card {
   position: relative;
   overflow: hidden;
-  animation: neon-border-sparkle 2.5s ease-in-out infinite !important;
+  animation: neon-border-sparkle 0.7s linear infinite !important;
   background: #080105 !important;
 }
 
@@ -270,8 +289,8 @@ html.theme-on-air .stream-on-air.neon-glow-card {
 html.theme-on-air .live-rank-panel {
   position: relative;
   overflow: hidden;
-  animation: neon-border-sparkle 3.2s ease-in-out infinite;
-  background: linear-gradient(180deg, rgba(56, 8, 28, 0.88), rgba(8, 0, 6, 0.96));
+  animation: neon-border-sparkle 0.8s linear infinite;
+  background: linear-gradient(180deg, rgba(62, 8, 32, 0.9), rgba(8, 0, 6, 0.96));
 }
 
 .game-stage.is-on-air .game-kicker,
