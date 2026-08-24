@@ -72,6 +72,7 @@ type CreatorPanelProps = {
   registeredStaff: RegisteredStaff[]
   managerState: SlotManagerState
   onHireStaff: (staffId: string, hireCost: number, salary: number) => boolean
+  onStaffScoutPass: () => void
   hiredStaffSalaries: Record<string, number>
   hiredStaffStartMonths: Record<string, number>
   staffScoutAvailable: boolean
@@ -147,6 +148,7 @@ export function CreatorPanel({
   registeredStaff,
   managerState,
   onHireStaff,
+  onStaffScoutPass,
   hiredStaffSalaries,
   hiredStaffStartMonths,
   staffScoutAvailable,
@@ -254,6 +256,11 @@ export function CreatorPanel({
         candidate={scoutedStaffCandidate}
         assets={assets}
         onBack={() => {
+          setView('roster')
+          onStaffScoutClosed?.()
+        }}
+        onPass={() => {
+          onStaffScoutPass()
           setView('roster')
           onStaffScoutClosed?.()
         }}
@@ -1270,11 +1277,13 @@ function StaffScoutView({
   candidate,
   assets,
   onBack,
+  onPass,
   onHire,
 }: {
   candidate: ScoutedStaffCandidate | null
   assets: number
   onBack: () => void
+  onPass: () => void
   onHire: (staffId: string, hireCost: number, salary: number) => void
 }) {
   const { t, locale } = useTranslation()
@@ -1388,19 +1397,26 @@ function StaffScoutView({
               </p>
             ) : null}
 
-            <div className="mt-auto grid grid-cols-2 gap-2 pt-2">
+            <div className="mt-auto grid grid-cols-3 gap-2 pt-2">
               <button
                 type="button"
                 onClick={onBack}
-                className="game-btn rounded-xl px-4 py-3 text-sm font-semibold"
+                className="game-btn rounded-xl px-3 py-3 text-sm font-semibold"
               >
                 {t('creator.staffHold')}
               </button>
               <button
                 type="button"
+                onClick={onPass}
+                className="game-btn rounded-xl px-3 py-3 text-sm font-semibold"
+              >
+                {t('creator.staffPass')}
+              </button>
+              <button
+                type="button"
                 disabled={!canAfford}
                 onClick={() => onHire(candidate.id, candidate.proposedHireCost, candidate.proposedSalary)}
-                className="game-btn-pink rounded-xl px-4 py-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
+                className="game-btn-pink rounded-xl px-3 py-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {t('creator.staffHire')}
               </button>

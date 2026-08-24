@@ -344,7 +344,8 @@
     "staffHold": "保留（後でスカウト）",
     "staffHire": "雇用する",
     "noRegistered": "登録されたキャラクターがいません。",
-    "noRegisteredDesc": "エディターでキャラクターを追加するとスカウト候補に登場します。"
+    "noRegisteredDesc": "エディターでキャラクターを追加するとスカウト候補に登場します。",
+    "staffPass": "辞退（次の候補を待つ）"
   },
   "sns": {
     "action": "SNS",

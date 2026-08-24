@@ -344,7 +344,8 @@
     "staffHold": "Zurückhalten (später)",
     "staffHire": "Einstellen",
     "noRegistered": "Keine registrierten Charaktere.",
-    "noRegisteredDesc": "Füge Charaktere im Editor hinzu, damit sie als Kandidaten erscheinen."
+    "noRegisteredDesc": "Füge Charaktere im Editor hinzu, damit sie als Kandidaten erscheinen.",
+    "staffPass": "Ablehnen (auf nächsten warten)"
   },
   "sns": {
     "action": "SNS",

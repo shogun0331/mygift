@@ -1842,6 +1842,13 @@ export function InGame({
     }
   }
 
+  /** 스탭 후보 거절 — 후보 정리 후 3개월 뒤 새 후보 등장 */
+  function handleStaffScoutPass() {
+    setScoutedStaffCandidate(null)
+    staffScoutCooldownRef.current = 3
+    scheduleAutoSave()
+  }
+
   function handleHireStaff(staffId: string, hireCost: number, salary: number) {
     if (managerStateRef.current.hiredStaffIds.includes(staffId)) return false
     if (assetsRef.current < hireCost) return false
@@ -3369,6 +3376,7 @@ export function InGame({
             registeredStaff={registeredStaff}
             managerState={managerState}
             onHireStaff={handleHireStaff}
+            onStaffScoutPass={handleStaffScoutPass}
             hiredStaffSalaries={hiredStaffSalaries}
             hiredStaffStartMonths={hiredStaffStartMonths}
             staffScoutAvailable={staffScoutAvailable}

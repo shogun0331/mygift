@@ -344,7 +344,8 @@
     "staffHold": "Retener (contratar luego)",
     "staffHire": "Contratar",
     "noRegistered": "No hay personajes registrados.",
-    "noRegisteredDesc": "Añade personajes en el editor para que aparezcan como candidatos."
+    "noRegisteredDesc": "Añade personajes en el editor para que aparezcan como candidatos.",
+    "staffPass": "Rechazar (esperar siguiente)"
   },
   "sns": {
     "action": "SNS",

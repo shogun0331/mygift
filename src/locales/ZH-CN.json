@@ -344,7 +344,8 @@
     "staffHold": "保留（以后再挖角）",
     "staffHire": "雇佣",
     "noRegistered": "没有注册的角色。",
-    "noRegisteredDesc": "在编辑器中添加角色后，他们将成为挖角候选人。"
+    "noRegisteredDesc": "在编辑器中添加角色后，他们将成为挖角候选人。",
+    "staffPass": "拒绝（等待下一位）"
   },
   "sns": {
     "action": "SNS",

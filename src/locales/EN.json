@@ -279,7 +279,8 @@
     "staffHold": "Hold (recruit later)",
     "staffHire": "Recruit",
     "noRegistered": "No registered characters.",
-    "noRegisteredDesc": "Add characters in the editor to have them appear as scout candidates."
+    "noRegisteredDesc": "Add characters in the editor to have them appear as scout candidates.",
+    "staffPass": "Decline (wait for next)"
   },
   "sns": {
     "action": "SNS",

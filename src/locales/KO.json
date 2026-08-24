@@ -279,7 +279,8 @@
     "staffHold": "보류 (나중에 영입)",
     "staffHire": "영입하기",
     "noRegistered": "등록된 캐릭터가 없습니다.",
-    "noRegisteredDesc": "에디터에서 캐릭터를 추가하면 스카우트 후보로 등장합니다."
+    "noRegisteredDesc": "에디터에서 캐릭터를 추가하면 스카우트 후보로 등장합니다.",
+    "staffPass": "거절 (새 후보 대기)"
   },
   "sns": {
     "action": "SNS",
