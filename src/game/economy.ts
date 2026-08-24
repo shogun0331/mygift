@@ -80,6 +80,28 @@ export function calcWeekRevenueWon(
   )
 }
 
+export function calcMonthRevenueWon(
+  creator: {
+    grade?: string
+    statSexy?: number
+    statPerformance?: number
+    condition?: string
+    conditionScore?: number
+  },
+  stationRevenueBonusPercent = 0,
+  equipmentRevenueMult = 1,
+  companyViewers = 0,
+): number {
+  return (
+    calcWeekRevenueWon(
+      creator,
+      stationRevenueBonusPercent,
+      equipmentRevenueMult,
+      companyViewers,
+    ) * 4
+  )
+}
+
 /**
  * 총액 T를 5~15개 금액으로 분할. 합 = T.
  * 큰(≥$1K) 1~2 / 중간($100~$999) 3~5 / 나머지 작음($10~$99).

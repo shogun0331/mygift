@@ -21,7 +21,7 @@ import {
   scoreOf,
 } from '../game/condition'
 import { formatMoney, formatMoneySigned } from '../game/money'
-import { calcWeekRevenueWon } from '../game/economy'
+import { calcMonthRevenueWon } from '../game/economy'
 import { isPromotionExamReady } from '../game/promotionExam'
 import {
   TRAINING_MAIN_GAIN,
@@ -58,6 +58,7 @@ import type { StudioSlot } from '../game/studioSlots'
 import type { SnsHeat } from '../game/sns'
 
 type CreatorPanelProps = {
+  companyViewers?: number
   ownedCreators: OwnedCreator[]
   registeredCharacters: RegisteredCharacter[]
   scoutState: ScoutSystemState
@@ -136,6 +137,7 @@ function formatContract(weeks: number, t: (key: string) => string) {
 
 
 export function CreatorPanel({
+  companyViewers = 0,
   ownedCreators,
   registeredCharacters,
   scoutState,
@@ -308,6 +310,7 @@ export function CreatorPanel({
   if (selected) {
     return (
       <CreatorDetailView
+        companyViewers={companyViewers}
         creator={selected}
         assets={assets}
         broadcastMonthNumber={broadcastMonthNumber}
@@ -434,7 +437,7 @@ export function CreatorPanel({
               </thead>
               <tbody>
                 {sortedBySalary.map((creator, index) => {
-                  const expectedRev = calcWeekRevenueWon(creator)
+                  const expectedRev = calcMonthRevenueWon(creator, 0, 1, companyViewers)
                   const displayName = characterDisplayName(creator, locale)
                   const displayJob = characterDisplayJob(creator, locale)
                   const snsSubs = creator.snsSubscribers ?? 0
@@ -869,6 +872,7 @@ function fillLocale(template: string, vars: Record<string, string>) {
 }
 
 function CreatorDetailView({
+  companyViewers = 0,
   creator,
   assets,
   broadcastMonthNumber,
@@ -877,6 +881,7 @@ function CreatorDetailView({
   onVacation,
   onProductionTraining,
 }: {
+  companyViewers?: number
   creator: OwnedCreator
   assets: number
   broadcastMonthNumber: number
@@ -1008,7 +1013,7 @@ function CreatorDetailView({
             <PersonalityStatBars stats={creator} t={t} />
             <StatBar
               label={t('creator.expectedRevenue')}
-              valueLabel={formatMoney(calcWeekRevenueWon(creator))}
+              valueLabel={formatMoney(calcMonthRevenueWon(creator, 0, 1, companyViewers))}
               percent={100}
               barClass="from-emerald-400 to-teal-300"
             />

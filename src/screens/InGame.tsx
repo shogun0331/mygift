@@ -3424,6 +3424,7 @@ export function InGame({
 
         {tab === 'dashboard' ? null : tab === 'creator' ? (
           <CreatorPanel
+            companyViewers={league.viewers}
             ownedCreators={ownedCreators}
             registeredCharacters={registeredCharacters}
             scoutState={scoutSystem}
