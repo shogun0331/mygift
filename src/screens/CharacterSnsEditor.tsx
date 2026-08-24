@@ -34,7 +34,6 @@ type DraftMedia = {
 }
 
 const HEAT_LABEL: Record<SnsHeat, string> = {
-  1: '수위 1 · 일상',
   2: '수위 2 · 어필',
   3: '수위 3 · 화보',
 }
@@ -105,7 +104,7 @@ export function CharacterSnsEditor({ character, onCancel, onSave }: CharacterSns
   const [images, setImages] = useState(() => [...(character.images ?? [])])
   const [videos, setVideos] = useState(() => [...(character.videos ?? [])])
   const [posts, setPosts] = useState<SnsPostDef[]>(() => normalizeSnsPosts(character.snsPosts))
-  const [heat, setHeat] = useState<SnsHeat>(1)
+  const [heat, setHeat] = useState<SnsHeat>(2)
   const [drafts, setDrafts] = useState<DraftMedia[]>([])
   const [blurPostId, setBlurPostId] = useState<string | null>(null)
   const blurPost = posts.find((row) => row.id === blurPostId) ?? null
@@ -244,7 +243,7 @@ export function CharacterSnsEditor({ character, onCancel, onSave }: CharacterSns
         <section className="game-panel rounded-2xl p-4">
           <p className="text-xs font-semibold text-slate-300">1. 수위</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {([1, 2, 3] as SnsHeat[]).map((value) => (
+            {([2, 3] as SnsHeat[]).map((value) => (
               <button
                 key={value}
                 type="button"
@@ -410,7 +409,7 @@ export function CharacterSnsEditor({ character, onCancel, onSave }: CharacterSns
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <span className="text-[10px] font-semibold text-slate-500">#{index + 1}</span>
-                      {([1, 2, 3] as SnsHeat[]).map((value) => (
+                      {([2, 3] as SnsHeat[]).map((value) => (
                         <button
                           key={value}
                           type="button"

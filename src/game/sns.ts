@@ -13,7 +13,7 @@ import { normalizeSnsComments, pickSnsComments, type SnsComment } from './snsCom
 
 export type { SnsComment } from './snsComments'
 
-export type SnsHeat = 1 | 2 | 3
+export type SnsHeat = 2 | 3
 
 export type SnsPostDef = {
   id: string
@@ -57,21 +57,17 @@ export type SnsResult = {
   snsSubscribersGained?: number
 }
 
-/** 캐릭터의 전체 포스팅 개수에 연동된 동적 발주 비용 공식 (50% 가격 인하) */
+/** 캐릭터의 전체 포스팅 개수에 연동된 동적 발주 비용 공식 (수위 2·3만 사용) */
 export function calcSnsPostCost(heat: SnsHeat, totalAssetCount: number): number {
   const count = Math.max(1, Math.round(totalAssetCount))
   if (heat === 3) {
     return 60_000 + count * 6_000
   }
-  if (heat === 2) {
-    return 17_500 + count * 1_750
-  }
-  return 5_000 + count * 500
+  return 17_500 + count * 1_750
 }
 
-/** 수위별 기본 촬영/의상비 (1장 기준 하한 - 50% 인하) */
+/** 수위별 기본 촬영/의상비 (1장 기준 하한) */
 export const SNS_HEAT_COST: Record<SnsHeat, number> = {
-  1: 5_500,
   2: 19_250,
   3: 66_000,
 }
@@ -98,25 +94,24 @@ export function calcSnsSubscribersGain(
   const ratio = calcCreatorSnsRatio(publishedCount + 1, totalAssetCount)
   const targetMax = Math.round(MAX_CREATOR_SNS_SUBSCRIBERS * Math.pow(ratio, 0.85))
 
+  if (cur >= targetMax) return 0
+
+  const maxPossibleGain = targetMax - cur
+
   const baseGain =
     heat === 3
       ? rollInt(3_000, 8_000)
-      : heat === 2
-        ? rollInt(500, 1_500)
-        : rollInt(200, 600)
+      : rollInt(500, 1_500)
 
-  const allowedGain = Math.max(0, targetMax - cur)
-  return Math.min(baseGain, allowedGain)
+  return Math.min(maxPossibleGain, Math.max(500, baseGain))
 }
 
 export const SNS_HEAT_VIEWERS: Record<SnsHeat, { min: number; max: number }> = {
-  1: { min: 80, max: 180 },
   2: { min: 400, max: 800 },
   3: { min: 1_600, max: 3_200 },
 }
 
 export const SNS_HEAT_LIKES: Record<SnsHeat, { min: number; max: number }> = {
-  1: { min: 120, max: 480 },
   2: { min: 1_800, max: 6_200 },
   3: { min: 12_000, max: 28_000 },
 }
@@ -129,22 +124,20 @@ export function normalizeSnsPublishedPosts(raw: unknown): SnsPublishedPost[] {
       const row = item as Record<string, unknown>
       const postId = String(row.postId ?? '').trim()
       if (!postId) return null
-      const comments = normalizeSnsComments(row.comments ?? row.commentKeys)
       return {
         postId,
         heat: normalizeSnsHeat(row.heat),
-        likes: Math.max(0, Math.round(Number(row.likes) || 0)),
-        comments,
-        publishedMonth: Math.max(0, Math.round(Number(row.publishedMonth) || 0)),
-      } satisfies SnsPublishedPost
+        likes: Number(row.likes) || 0,
+        comments: normalizeSnsComments(row.comments ?? row.commentKeys),
+        publishedMonth: Number(row.publishedMonth) || 0,
+      } as SnsPublishedPost
     })
     .filter((row): row is SnsPublishedPost => Boolean(row))
 }
 
 export function normalizeSnsHeat(raw: unknown): SnsHeat {
-  if (raw === 2 || raw === '2') return 2
   if (raw === 3 || raw === '3') return 3
-  return 1
+  return 2
 }
 
 export function normalizeSnsPosts(raw: unknown): SnsPostDef[] {

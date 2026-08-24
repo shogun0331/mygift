@@ -54,6 +54,8 @@ import { resolveMediaSrc } from '../game/mediaUrl'
 import type { ScoutedStaffCandidate } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
 
+import type { SnsHeat } from '../game/sns'
+
 type CreatorPanelProps = {
   ownedCreators: OwnedCreator[]
   registeredCharacters: RegisteredCharacter[]
@@ -74,8 +76,8 @@ type CreatorPanelProps = {
   onConditionCare: (creatorId: string) => void
   onVacation: (creatorId: string) => void
   onProductionTraining: (creatorId: string) => void
-  onSnsCompose: (creatorId: string, heat: 1 | 2 | 3) => void
-  onBulkSnsCompose: (heat: 1 | 2 | 3) => BulkSnsRevealEntry[]
+  onSnsCompose: (creatorId: string, heat: SnsHeat) => void
+  onBulkSnsCompose: (heat: SnsHeat) => BulkSnsRevealEntry[]
   registeredStaff: RegisteredStaff[]
   managerState: SlotManagerState
   onHireStaff: (staffId: string, hireCost: number, salary: number) => boolean

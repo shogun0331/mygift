@@ -15,7 +15,6 @@ type CharacterBulkSnsModalProps = {
 }
 
 const HEAT_LABEL: Record<SnsHeat, string> = {
-  1: '수위 1 · 일상',
   2: '수위 2 · 어필',
   3: '수위 3 · 화보',
 }
@@ -38,7 +37,7 @@ type DraftMedia = {
 
 export function CharacterBulkSnsModal({ characters, onClose, onApply }: CharacterBulkSnsModalProps) {
   const fileRef = useRef<HTMLInputElement>(null)
-  const [heat, setHeat] = useState<SnsHeat>(1)
+  const [heat, setHeat] = useState<SnsHeat>(2)
   const [target, setTarget] = useState<'all' | 'empty'>('empty')
   const [mode, setMode] = useState<BulkSnsMode>('append')
   const [dragging, setDragging] = useState(false)
@@ -183,7 +182,7 @@ export function CharacterBulkSnsModal({ characters, onClose, onApply }: Characte
         <div className="mt-4">
           <p className="text-xs font-semibold text-slate-300">수위</p>
           <div className="mt-2 flex flex-wrap gap-2">
-            {([1, 2, 3] as SnsHeat[]).map((value) => (
+            {([2, 3] as SnsHeat[]).map((value) => (
               <button
                 key={value}
                 type="button"
