@@ -602,7 +602,7 @@ export function InGame({
     initialSave?.stationGrade ?? 'black',
   )
 
-  const [, setStaffScoutCooldown] = useState(3)
+  const staffScoutCooldownRef = useRef(initialSave?.scout?.staffScoutCooldown ?? 3)
   const [staffScoutAvailable, setStaffScoutAvailable] = useState(
     initialSave?.scout?.staffScoutAvailable ?? false,
   )
@@ -619,7 +619,29 @@ export function InGame({
   )
   const creatorScoutFirstDoneRef = useRef(creatorScoutFirstDone)
   creatorScoutFirstDoneRef.current = creatorScoutFirstDone
+  /** 세이브된 스탭 후보 (staff id 기반) — 등록 스탭 로드 전에는 재구성 보류 */
+  const staffCandidateRawRef = useRef<{
+    staffId: string
+    proposedHireCost: number
+    proposedSalary: number
+  } | null>(initialSave?.scout?.scoutedStaffCandidate ?? null)
   const [scoutedStaffCandidate, setScoutedStaffCandidate] = useState<ScoutedStaffCandidate | null>(null)
+  const scoutedStaffCandidateRef = useRef(scoutedStaffCandidate)
+  scoutedStaffCandidateRef.current = scoutedStaffCandidate
+  // 등록 스탭 로드 후 저장된 스탭 영입 후보 복원 (영입 전까지 유지)
+  useEffect(() => {
+    const raw = staffCandidateRawRef.current
+    if (!raw) return
+    if (registeredStaff.length === 0) return
+    const staff = registeredStaff.find((s) => s.id === raw.staffId)
+    staffCandidateRawRef.current = null
+    if (!staff) return
+    setScoutedStaffCandidate({
+      ...staff,
+      proposedSalary: raw.proposedSalary,
+      proposedHireCost: raw.proposedHireCost,
+    })
+  }, [registeredStaff])
   const [hiredStaffSalaries, setHiredStaffSalaries] = useState<Record<string, number>>(
     initialSave?.hiredStaffSalaries ?? {},
   )
@@ -1065,6 +1087,14 @@ export function InGame({
         staffScoutAvailable: staffScoutAvailableRef.current,
         creatorScoutAvailable: creatorScoutAvailableRef.current,
         creatorScoutFirstDone: creatorScoutFirstDoneRef.current,
+        scoutedStaffCandidate: scoutedStaffCandidateRef.current
+          ? {
+              staffId: scoutedStaffCandidateRef.current.id,
+              proposedHireCost: scoutedStaffCandidateRef.current.proposedHireCost,
+              proposedSalary: scoutedStaffCandidateRef.current.proposedSalary,
+            }
+          : null,
+        staffScoutCooldown: staffScoutCooldownRef.current,
       },
       scoutSystem: serializeScoutSystem(scoutSystemRef.current),
       pendingStationReview: pendingStationReviewRef.current,
@@ -1805,7 +1835,7 @@ export function InGame({
       })
 
       setStaffScoutAvailable(false)
-      setStaffScoutCooldown(3)
+      staffScoutCooldownRef.current = 3
     } else {
       setScoutedStaffCandidate(null)
       alert(t('alert.noStaffToRecruit'))
@@ -1828,6 +1858,7 @@ export function InGame({
     managerStateRef.current = next
     onManagerStateChangeRef.current(next)
     setScoutedStaffCandidate(null)
+    staffScoutCooldownRef.current = 3
 
     const staff = registeredStaff.find((s) => s.id === staffId)
     if (staff) {
@@ -2127,24 +2158,29 @@ export function InGame({
       })
       .filter((row): row is NonNullable<typeof row> => row != null)
 
-    setStaffScoutCooldown((prev) => {
-      if (staffScoutAvailableRef.current) return 0
-
-      const nextCooldown = Math.max(0, prev - 1)
-      if (nextCooldown === 0) {
-        const pool = registeredStaff.filter((s) => !managerStateRef.current.hiredStaffIds.includes(s.id))
-        if (pool.length === 0) return 3
-
-        const isFirstStaff = managerStateRef.current.hiredStaffIds.length === 0
-        const success = isFirstStaff || Math.random() < 0.5
-        if (success) {
-          setStaffScoutAvailable(true)
-          return 0
+    // 스탭 스카우트 — 오퍼(스카우트 가능)나 대기 후보가 있으면 새 후보를 만들지 않고 유지
+    if (!staffScoutAvailableRef.current && !scoutedStaffCandidate) {
+      const nextStaffCooldown = Math.max(0, staffScoutCooldownRef.current - 1)
+      if (nextStaffCooldown === 0) {
+        const pool = registeredStaff.filter(
+          (s) => !managerStateRef.current.hiredStaffIds.includes(s.id),
+        )
+        if (pool.length > 0) {
+          const isFirstStaff = managerStateRef.current.hiredStaffIds.length === 0
+          const success = isFirstStaff || Math.random() < 0.5
+          if (success) {
+            setStaffScoutAvailable(true)
+            staffScoutCooldownRef.current = 0
+          } else {
+            staffScoutCooldownRef.current = 3
+          }
+        } else {
+          staffScoutCooldownRef.current = 3
         }
-        return 3
+      } else {
+        staffScoutCooldownRef.current = nextStaffCooldown
       }
-      return nextCooldown
-    })
+    }
 
     // 크리에이터 스카우트 버튼 — 미사용 시 유지, 쿨다운 후 활성화
     const nextMonthNumberPreview = broadcastMonthNumberRef.current + 1

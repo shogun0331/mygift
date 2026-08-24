@@ -54,6 +54,13 @@ export type GameSave = {
     staffScoutAvailable: boolean
     creatorScoutAvailable: boolean
     creatorScoutFirstDone: boolean
+    /** 대기 중인 스탭 영입 후보 (영입 전까지 유지) — staff id 기반 */
+    scoutedStaffCandidate?: {
+      staffId: string
+      proposedHireCost: number
+      proposedSalary: number
+    } | null
+    staffScoutCooldown?: number
   }
   /** 스카우트 런타임 상태 (오프닝 보장/대기 오퍼 등) */
   scoutSystem: SerializedScoutSystemState
