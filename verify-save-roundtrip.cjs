@@ -220,4 +220,15 @@ check(fallbackScout.openingScoutPending === false, '구버전 fallback: 오프�
 const oldEnsure = ensureOpeningScout(fallbackScout)
 check(oldEnsure.activeOffer == null, '구버전 fallback: 새 오퍼 미생성')
 
+// 8) 로드 시점에 등록 캐릭터가 아직 로드되지 않은 경우(빈 풀)에도 오퍼를 잃지 않고
+//    풀 로드 완료 후 재구성 가능해야 함 (deferred hydration 수정 검증)
+const hydratedEmpty = hydrateScoutSystem(loaded.scoutSystem, [])
+check(hydratedEmpty.activeOffer == null, '빈 풀: 임시로 오퍼 null(재구성 보류)')
+const rehydrated = hydrateScoutSystem(loaded.scoutSystem, registeredPool)
+check(
+  rehydrated.activeOffer != null && rehydrated.activeOffer.template.id === 'c-456',
+  '풀 로드 후 저장된 오퍼 재구성 성공',
+)
+check(rehydrated.openingScoutPending === false, '재구성 후 오프닝 재등장 없음')
+
 process.exit(failed ? 1 : 0)

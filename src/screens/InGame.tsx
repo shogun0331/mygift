@@ -7,6 +7,7 @@ import {
   serializeScoutSystem,
   serializeWeekAccum,
   type GameSave,
+  type SerializedScoutSystemState,
 } from '../game/save'
 import {
   flushAutoSave,
@@ -689,8 +690,11 @@ export function InGame({
 
   const [scoutEventState, setScoutEventState] = useState<ScoutEventState | null>(null)
   const [restRequiredName, setRestRequiredName] = useState<string | null>(null)
+  /** 세이브된 스카우트 상태 — 등록 캐릭터 로드 전에는 오퍼 템플릿 재구성을 보류 */
+  const scoutRawRef = useRef<SerializedScoutSystemState | null>(initialSave?.scoutSystem ?? null)
   const [scoutSystem, setScoutSystem] = useState<ScoutSystemState>(() => {
-    if (initialSave?.scoutSystem) {
+    if (initialSave?.scoutSystem && registeredCharacters.length > 0) {
+      scoutRawRef.current = null
       return hydrateScoutSystem(initialSave.scoutSystem, registeredCharacters)
     }
     // 구버전 세이브: 이미 영입을 한 상태라면 오프닝 스카우트 재등장 금지
@@ -699,6 +703,15 @@ export function InGame({
     }
     return createInitialScoutState(1)
   })
+
+  // 등록 캐릭터 로드가 늦어 오퍼 템플릿을 못 찾았으면, 로드 완료 후 저장된 오퍼를 복원
+  useEffect(() => {
+    const raw = scoutRawRef.current
+    if (!raw) return
+    if (registeredCharacters.length === 0) return
+    scoutRawRef.current = null
+    setScoutSystem(hydrateScoutSystem(raw, registeredCharacters))
+  }, [registeredCharacters])
   const [promoteQueue, setPromoteQueue] = useState<PromoteSalaryNego[]>([])
   const [salaryEventPlay, setSalaryEventPlay] = useState<PromoteSalaryNego | null>(null)
   const [promotionExam, setPromotionExam] = useState<{
