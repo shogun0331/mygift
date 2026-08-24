@@ -127,5 +127,12 @@
     "mid",
     "large",
     "top"
-  ]
+  ],
+  "balance": {
+    "viewerPerCommPoint": 160,
+    "viewerGrowthRate": 0.18,
+    "viewerOrganicGrowthRate": 0.1,
+    "idleViewerDecay": 0.04,
+    "subscriberViewerRate": 0.2
+  }
 }

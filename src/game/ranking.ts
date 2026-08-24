@@ -7,6 +7,7 @@ import {
   VIEWER_FLOOR,
   type StationGrade,
 } from './station'
+import { getViewerBalance } from './viewerBalance'
 import { STATION_NAME } from './weeklyReport'
 
 export type CreatorGrade = Grade
@@ -112,15 +113,12 @@ export type RankSettlementResult = {
   gameCleared: boolean
 }
 
-/** 로스터 잠재력 = floor + Σ(소통 × 단가 × 등급배율) + 구독 */
-const VIEWER_PER_COMM_POINT = 160
-const SUBSCRIBER_VIEWER_RATE = 0.2
-const VIEWER_GROWTH_RATE = 0.18
-/** 방송 중 로스터 상한 도달/초과 시에도 월마다 소폭 성장 (활동 보상) */
-const VIEWER_ORGANIC_GROWTH_RATE = 0.1
+/**
+ * 시청자 성장 밸런스는 station_grade_config.json 의 `balance` 섹션에서 관리한다.
+ * (로드 → setViewerBalance → 여기서 getViewerBalance()로 읽음)
+ */
 const VIEWER_GROWTH_RANDOM_MIN = 0.55
 const VIEWER_GROWTH_RANDOM_MAX = 1.4
-const IDLE_VIEWER_DECAY = 0.04
 const NPC_VIEWER_FLOOR = 30
 export const LEAGUE_SIZE = 300
 export const STARTING_RANK = 300
@@ -452,7 +450,7 @@ function communicationRetainOf(communication = 0): number {
 export function creatorViewerWeight(creator: RankCreator): number {
   return (
     clampCommunication(creator.statCommunication) *
-    VIEWER_PER_COMM_POINT *
+    getViewerBalance().viewerPerCommPoint *
     gradeViewerMult(creator.grade)
   )
 }
@@ -494,7 +492,11 @@ export function calcRosterViewers(
   const roster = creators.reduce((sum, creator) => sum + creatorViewerWeight(creator), 0)
   return Math.max(
     VIEWER_FLOOR,
-    Math.round(VIEWER_FLOOR + roster + Math.max(0, subscribers) * SUBSCRIBER_VIEWER_RATE),
+    Math.round(
+      VIEWER_FLOOR +
+        roster +
+        Math.max(0, subscribers) * getViewerBalance().subscriberViewerRate,
+    ),
   )
 }
 
@@ -574,7 +576,10 @@ export function growLeagueViewers(
 
   // 무방송: 자연 이탈 (이탈율은 소통이 높을수록 감소)
   if (!didBroadcast) {
-    return Math.max(VIEWER_FLOOR, Math.round(now * (1 - IDLE_VIEWER_DECAY * retain)))
+    return Math.max(
+      VIEWER_FLOOR,
+      Math.round(now * (1 - getViewerBalance().idleViewerDecay * retain)),
+    )
   }
 
   // 방송 중: 절대 감소 없음 — 미달이면 상한까지 성장, 도달/초과면 소폭 유기적 성장
@@ -582,13 +587,13 @@ export function growLeagueViewers(
     // 유기적 성장: 활동 보상 (로스터 상한이 현재보다 낮아도 감소하지 않음)
     const gain = Math.max(
       1,
-      Math.round(now * VIEWER_ORGANIC_GROWTH_RATE * rollViewerGrowthFactor()),
+      Math.round(now * getViewerBalance().viewerOrganicGrowthRate * rollViewerGrowthFactor()),
     )
     return now + gain
   }
   const gain = Math.max(
     1,
-    Math.round((cap - now) * VIEWER_GROWTH_RATE * rollViewerGrowthFactor()),
+    Math.round((cap - now) * getViewerBalance().viewerGrowthRate * rollViewerGrowthFactor()),
   )
   return Math.min(cap, now + gain)
 }
@@ -953,7 +958,7 @@ export function settleLeagueRank(
     viewers = capStationViewers(
       Math.min(
         nextPotential,
-        viewers + Math.round(rewards.subscribersBonus * SUBSCRIBER_VIEWER_RATE),
+        viewers + Math.round(rewards.subscribersBonus * getViewerBalance().subscriberViewerRate),
       ),
       stationGrade,
     )
@@ -1041,7 +1046,7 @@ export function reapplyLeagueGate(
   if (bonusSubs > 0) {
     subscribers += bonusSubs
     viewers = capStationViewers(
-      Math.max(viewers, Math.round(viewers + bonusSubs * SUBSCRIBER_VIEWER_RATE)),
+      Math.max(viewers, Math.round(viewers + bonusSubs * getViewerBalance().subscriberViewerRate)),
       stationGrade,
     )
     board = apply(viewers)
@@ -1050,7 +1055,7 @@ export function reapplyLeagueGate(
       const reward = MILESTONE_REWARDS[milestone]
       subscribers += reward.subscribersBonus
       viewers = capStationViewers(
-        Math.max(viewers, Math.round(viewers + reward.subscribersBonus * SUBSCRIBER_VIEWER_RATE)),
+        Math.max(viewers, Math.round(viewers + reward.subscribersBonus * getViewerBalance().subscriberViewerRate)),
         stationGrade,
       )
       revenueBonusPercent += reward.revenueBonusPercent

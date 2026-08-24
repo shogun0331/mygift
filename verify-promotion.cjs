@@ -45,7 +45,7 @@ function applyStationReview(config, grade, viewers) {
 
 // ── 실제 설정 로드 (normalize 간소화) ──
 const raw = JSON.parse(fs.readFileSync('public/chapter_assets/station_grade_config.json', 'utf8'))
-const config = { tiers: raw.tiers, promotions: raw.promotions }
+const config = { tiers: raw.tiers, promotions: raw.promotions, balance: raw.balance }
 
 // ── 날짜 재현 ──
 const EPOCH = new Date(2026, 8, 1)
@@ -69,6 +69,12 @@ check(config.promotions.large.requiredViewers === 80000, `large 필요 시청자
 check(config.promotions.large.creatorRequirements[0]?.count === 2, 'large 등급 요구 = A×2')
 check(config.promotions.top.requiredViewers === 250000, `top 필요 시청자 = 250K (실제: ${config.promotions.top.requiredViewers})`)
 check(config.promotions.top.creatorRequirements[0]?.count === 1, 'top 등급 요구 = S×1')
+// balance 섹션 (JSON으로 밸런스 관리)
+check(config.balance?.viewerPerCommPoint === 160, `balance.viewerPerCommPoint = 160 (실제: ${config.balance?.viewerPerCommPoint})`)
+check(config.balance?.viewerOrganicGrowthRate === 0.1, `balance.viewerOrganicGrowthRate = 0.1 (실제: ${config.balance?.viewerOrganicGrowthRate})`)
+check(config.balance?.viewerGrowthRate === 0.18, `balance.viewerGrowthRate = 0.18 (실제: ${config.balance?.viewerGrowthRate})`)
+check(config.balance?.idleViewerDecay === 0.04, `balance.idleViewerDecay = 0.04 (실제: ${config.balance?.idleViewerDecay})`)
+check(config.balance?.subscriberViewerRate === 0.2, `balance.subscriberViewerRate = 0.2 (실제: ${config.balance?.subscriberViewerRate})`)
 
 // 2) 승급 판정 — tiny, 5000명 → eligible
 const r5000 = applyStationReview(config, 'tiny', 5000)

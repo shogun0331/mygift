@@ -63,16 +63,31 @@ const REQUIRED_VIEWERS = { tiny: 500, sme: 5000, mid: 100000, large: 1000000, to
 const MAX_SCOUT_CREATORS = { black: 2, tiny: 3, sme: 5, mid: 7, large: 12, top: 6 }
 
 // ── 2단계 튜닝 파라미터 (env 주입 가능 — 스윕/검증용) ──
-//   SIM_VPCP    : 소통 1당 시청자 가중치 (기본 160 — 적용 튜닝)
-//   SIM_ORG     : 잠재력 도달 후 월 유기성장률 (기본 0.10)
+// ── 게임 설정 JSON에서 balance 로드 (게임과 동기화 — JSON으로 밸런스 관리) ──
+let jsonBalance = {}
+try {
+  const raw = JSON.parse(
+    fs.readFileSync(
+      path.join(__dirname, '../../public/chapter_assets/station_grade_config.json'),
+      'utf8',
+    ),
+  )
+  jsonBalance = raw.balance ?? {}
+} catch {
+  // 파일이 없으면 기본값 사용
+}
+
+// ── 2단계 튜닝 파라미터 (env 주입 가능 — 스윕/검증용) ──
+//   SIM_VPCP    : 소통 1당 시청자 가중치 (기본 = JSON balance)
+//   SIM_ORG     : 잠재력 도달 후 월 유기성장률 (기본 = JSON balance)
 //   SIM_MID     : sme→mid 필요 시청자 (기본 20000)
 //   SIM_LARGE   : mid→large 필요 시청자 (기본 80000)
 //   SIM_TOP     : large→top 필요 시청자 (기본 250000)
 //   SIM_MID_G/C : mid 등급 요구 (기본 B/2)
 //   SIM_LG_G/C  : large 등급 요구 (기본 A/2)
 //   SIM_TP_G/C  : top 등급 요구 (기본 S/1)
-const SIM_VPCP = Number(process.env.SIM_VPCP || 160)
-const SIM_ORG = Number(process.env.SIM_ORG || 0.1)
+const SIM_VPCP = Number(process.env.SIM_VPCP || jsonBalance.viewerPerCommPoint || 160)
+const SIM_ORG = Number(process.env.SIM_ORG || jsonBalance.viewerOrganicGrowthRate || 0.1)
 const SIM_MID = Number(process.env.SIM_MID || 20000)
 const SIM_LARGE = Number(process.env.SIM_LARGE || 80000)
 const SIM_TOP = Number(process.env.SIM_TOP || 250000)
@@ -674,7 +689,9 @@ function runReport() {
   lines.push(`- **적용 튜닝: 소통가중치=${SIM_VPCP} · 유기성장=${(SIM_ORG * 100).toFixed(1)}%/월 · mid=${(SIM_MID / 1000).toFixed(0)}K · large=${(SIM_LARGE / 1000).toFixed(0)}K · top=${(SIM_TOP / 1000).toFixed(0)}K**`)
   lines.push('')
   lines.push('## 재현 범위 (실제 로직 근거)')
-  lines.push('- 시청자 성장 18%/월 · 유기성장 10%/월 · 휴식 감소 4%/월 · 잠재력=150+Σ(소통×160×등급배율)+구독×0.2')
+  lines.push(
+    `- 시청자 성장 ${((Number(process.env.SIM_GROWTH || jsonBalance.viewerGrowthRate || 0.18)) * 100).toFixed(0)}%/월 지향 · 유기성장 ${(SIM_ORG * 100).toFixed(0)}%/월 · 휴식 감소 ${((Number(process.env.SIM_IDLE || jsonBalance.idleViewerDecay || 0.04)) * 100).toFixed(0)}%/월 · 잠재력=150+Σ(소통×${SIM_VPCP}×등급배율)+구독×${(Number(process.env.SIM_SUBS || jsonBalance.subscriberViewerRate || 0.2))}`,
+  )
   lines.push('- 순위 = 티어 게이트: black 151~300 · tiny 101~150 · sme 51~100 · mid 21~50 · large 11~20 · top 1')
   lines.push('- 티어 요구: tiny 500 · sme 5K · mid 20K(B×2) · large 80K(A×2) · top 250K(S×1), 유지 상한=요구×1.1')
   lines.push('- 스카우트: 전부 C등급, 오프닝 1명(무료)+2~4턴 70%, 티어별 보유 상한 2/3/5/7/12/6')

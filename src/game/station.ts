@@ -15,6 +15,7 @@ import {
   type StationReviewCheck,
   type StationSpec,
 } from './stationGradeConfig'
+import { setViewerBalance } from './viewerBalance'
 
 export type { StationGrade, StationSpec, StationReviewCheck, StationGradeConfig }
 export {
@@ -47,6 +48,8 @@ function getActiveConfig(): StationGradeConfig {
 
 export function setStationGradeConfig(config: StationGradeConfig): void {
   activeConfig = config
+  // 시청자 성장 밸런스도 함께 적용 (station_grade_config.json `balance`)
+  setViewerBalance(config?.balance)
 }
 
 export function getStationGradeConfig(): StationGradeConfig {

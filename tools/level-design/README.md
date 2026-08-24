@@ -95,6 +95,7 @@ node tools/level-design/balance-sim.cjs
 | 스카우트 주기 | **2~4턴·70%** | `src/screens/InGame.tsx` |
 | 트레이닝 비용 | **유료 공식 활성화** | `src/game/training.ts` |
 | 승급 목표 UI | 티어 게이트와 정합 | `src/game/ranking.ts` `PROMOTION_TARGETS` |
+| 시청자 성장 밸런스 | **JSON `balance` 섹션으로 관리** | `station_grade_config.json` + `viewerBalance.ts` |
 
 ### 최종 목표 곡선 (시뮬레이션 확정, 적극 플레이)
 
@@ -139,8 +140,8 @@ node tools/level-design/balance-sim.cjs
    로스터(영입비·심사비 지원)와 시너지 나는 보상 형태가 자연스러움.
 2. **플레이어 실플레이 피드백** — 시뮬레이션은 "보통 플레이"와 실제 체감이 다를 수 있음.
    직접 플레이 후 "large가 빡빡/느슨" 등의 피드백 → 해당 파라미터만 미세조정.
-3. **성장 상수의 JSON화(선택)** — 소통가중치/유기성장을 `station_grade_config.json`의 `balance` 섹션으로 옮기면
-   에디터에서도 조정 가능 (현재는 ranking.ts 코드 상수).
+3. ~~성장 상수의 JSON화(선택)~~ → **완료**: 시청자 성장 밸런스는 `station_grade_config.json`의
+   `balance` 섹션에서 관리 (로드 시 자동 적용). 에디터 UI에 balance 입력란을 추가하는 것은 추후 선택 과제.
 
 ---
 

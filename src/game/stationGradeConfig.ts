@@ -1,5 +1,6 @@
 import type { Grade } from './characters'
 import { companyTierOf, type CompanyTierId } from './ranking'
+import { DEFAULT_VIEWER_BALANCE, type ViewerBalance } from './viewerBalance'
 
 export type StationTierId = CompanyTierId
 export type StationGrade = StationTierId
@@ -52,6 +53,8 @@ export type StationGradeConfig = {
    * 인덱스 0 = 2번째 칸 … (prices와 동일 인덱스)
    */
   slotUnlockMinGrades: StationTierId[]
+  /** 시청자 성장 밸런스 — JSON `balance` 섹션에서 관리 */
+  balance?: ViewerBalance
 }
 
 export const STATION_TIER_ORDER: StationTierId[] = ['black', 'tiny', 'sme', 'mid', 'large', 'top']
@@ -297,6 +300,7 @@ export function defaultStationGradeConfig(): StationGradeConfig {
     },
     slotUnlockPrices: [...DEFAULT_SLOT_UNLOCK_PRICES],
     slotUnlockMinGrades: [...DEFAULT_SLOT_UNLOCK_MIN_GRADES],
+    balance: { ...DEFAULT_VIEWER_BALANCE },
   }
 }
 
@@ -473,6 +477,23 @@ export function normalizeStationGradeConfig(raw: unknown): StationGradeConfig {
       record.slotUnlockMinGrades,
       defaults.slotUnlockMinGrades,
     ),
+    balance: normalizeViewerBalance(record.balance),
+  }
+}
+
+/** balance 섹션 normalize — 누락/잘못된 값은 기본값으로 */
+function normalizeViewerBalance(raw: unknown): ViewerBalance {
+  const row = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {}
+  const pick = (key: keyof ViewerBalance) => {
+    const n = Number(row[key])
+    return Number.isFinite(n) && n >= 0 ? n : DEFAULT_VIEWER_BALANCE[key]
+  }
+  return {
+    viewerPerCommPoint: pick('viewerPerCommPoint'),
+    viewerGrowthRate: pick('viewerGrowthRate'),
+    viewerOrganicGrowthRate: pick('viewerOrganicGrowthRate'),
+    idleViewerDecay: pick('idleViewerDecay'),
+    subscriberViewerRate: pick('subscriberViewerRate'),
   }
 }
 
