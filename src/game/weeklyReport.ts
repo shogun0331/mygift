@@ -1,6 +1,7 @@
 import type { DayEvent } from './economy'
 import { formatMoney } from './money'
 import type { StaffKind } from './staff'
+import { getCurrentLocale, translate } from '../locales/i18n'
 
 export const STATION_NAME = '스타라이트 방송국'
 /** 방송 1주 환산 시간 (기존 일×6시간 × 7일) */
@@ -131,14 +132,24 @@ export function pickDayHighlights(events: DayEvent[]): string[] {
 
   const top = donations[0]
   if (top && top.amount >= 1_000) {
-    highlights.push(`${top.creatorName} 대형 후원! (${formatMoney(top.amount)})`)
+    highlights.push(
+      translate(getCurrentLocale(), 'feed.bigDonation')
+        .replace('{name}', top.creatorName)
+        .replace('{amount}', () => formatMoney(top.amount)),
+    )
   } else if (top && top.amount >= 500) {
-    highlights.push(`${top.creatorName} 후원 화제! (${formatMoney(top.amount)})`)
+    highlights.push(
+      translate(getCurrentLocale(), 'feed.donationTopic')
+        .replace('{name}', top.creatorName)
+        .replace('{amount}', () => formatMoney(top.amount)),
+    )
   }
 
   for (const event of events) {
     if (event.type === 'viewers') {
-      highlights.push(`${event.creatorName} 시청자 급증!`)
+      highlights.push(
+        translate(getCurrentLocale(), 'feed.viewersSpike').replace('{name}', event.creatorName),
+      )
       break
     }
   }
@@ -276,9 +287,12 @@ export function buildWeeklyStatement(opts: {
   if (opCost > 0) {
     expenses.push({
       id: 'slot-ops',
-      label: '스튜디오 운영비',
+      label: translate(getCurrentLocale(), 'settlement.expenseStudioOps'),
       detail: emptyBroadcastMonth
-        ? `무배치 방송 (${Math.round(EMPTY_BROADCAST_OP_COST_RATE * 100)}%)`
+        ? translate(getCurrentLocale(), 'settlement.expenseEmptyBroadcast').replace(
+            '{percent}',
+            String(Math.round(EMPTY_BROADCAST_OP_COST_RATE * 100)),
+          )
         : undefined,
       amountWon: opCost,
     })
@@ -288,8 +302,11 @@ export function buildWeeklyStatement(opts: {
   if (staffPayrollTotal > 0) {
     expenses.push({
       id: 'staff-payroll',
-      label: '스탭 인건비',
-      detail: `${staffLines.length}명`,
+      label: translate(getCurrentLocale(), 'settlement.expenseStaffPayroll'),
+      detail: translate(getCurrentLocale(), 'settlement.expenseStaffCount').replace(
+        '{count}',
+        String(staffLines.length),
+      ),
       amountWon: staffPayrollTotal,
     })
   }
@@ -297,7 +314,10 @@ export function buildWeeklyStatement(opts: {
   for (const [index, care] of unattributedCare.entries()) {
     expenses.push({
       id: `care-misc-${index}`,
-      label: `컨디션 케어 (${care.name})`,
+      label: translate(getCurrentLocale(), 'settlement.careExpenseLabel').replace(
+        '{name}',
+        care.name,
+      ),
       amountWon: care.amountWon,
     })
   }
@@ -309,8 +329,10 @@ export function buildWeeklyStatement(opts: {
   if (isMarchTaxEvent && annualTaxWon > 0) {
     expenses.push({
       id: 'annual-tax',
-      label: '세금 과세',
-      detail: `${taxYear}년 연간 수익 ${formatStatementWon(annualRevenueForTaxWon)} 기준`,
+      label: translate(getCurrentLocale(), 'settlement.taxLabel'),
+      detail: translate(getCurrentLocale(), 'settlement.taxDetail')
+        .replace('{year}', String(taxYear))
+        .replace('{amount}', () => formatStatementWon(annualRevenueForTaxWon)),
       amountWon: annualTaxWon,
     })
   }
@@ -333,17 +355,21 @@ export function buildWeeklyStatement(opts: {
   const highlights = [...week.highlights]
   const top = lines[0]
   if (top && !highlights.some((h) => h.includes(top.name))) {
-    highlights.unshift(`${top.name} 월간 최고 수익!`)
+    highlights.unshift(
+      translate(getCurrentLocale(), 'feed.monthlyTopEarn').replace('{name}', top.name),
+    )
   }
   if (isMarchTaxEvent) {
     highlights.unshift(
       annualTaxWon > 0
-        ? `${taxYear}년 연간 소득세 과세 (−${formatStatementWon(annualTaxWon)})`
-        : `${taxYear}년 연간 소득세 과세 (해당 없음)`,
+        ? translate(getCurrentLocale(), 'feed.annualTaxNotice')
+            .replace('{year}', String(taxYear))
+            .replace('{amount}', () => formatStatementWon(annualTaxWon))
+        : translate(getCurrentLocale(), 'feed.annualTaxNone').replace('{year}', String(taxYear)),
     )
   }
   if (highlights.length === 0) {
-    highlights.push('이번 달 특이 이벤트 없음')
+    highlights.push(translate(getCurrentLocale(), 'feed.noSpecialEvents'))
   }
 
   return {

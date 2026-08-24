@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from '../locales/i18n'
 
 export type RecruitFlyCard = {
   id: string
@@ -16,6 +17,7 @@ type RecruitCardFlyFxProps = {
 
 /** 중앙에 카드가 떴다가 배치할 크리에이터 패널 또는 스탭 베이로 빨려 들어가는 연출 */
 export function RecruitCardFlyFx({ card, onDone }: RecruitCardFlyFxProps) {
+  const { t } = useTranslation()
   const cardRef = useRef<HTMLDivElement>(null)
   const onDoneRef = useRef(onDone)
   onDoneRef.current = onDone
@@ -105,7 +107,7 @@ export function RecruitCardFlyFx({ card, onDone }: RecruitCardFlyFxProps) {
           )}
           <p className="w-full truncate text-center text-sm font-bold text-slate-50">{card.name}</p>
           <p className="mt-0.5 text-[11px] font-semibold text-amber-300">
-            {card.isStaff ? card.kind : `${card.grade}급`}
+            {card.isStaff ? card.kind : t('common.gradeBadge').replace('{grade}', card.grade ?? '')}
           </p>
           <p className="mt-2 text-[10px] font-bold tracking-[0.2em] text-indigo-300">
             {card.isStaff ? 'NEW STAFF' : 'NEW RECRUIT'}

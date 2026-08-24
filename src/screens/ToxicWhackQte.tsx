@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { CONDITION_CRASH_QTE_MS } from '../game/condition'
+import { useTranslation } from '../locales/i18n'
 
 export type ToxicWhackQteItem = {
   id: string
@@ -16,6 +17,7 @@ type ToxicWhackQteProps = {
 
 /** 해당 CCTV 화면 클릭으로 진상 대응 (제한 시간 내) */
 export function ToxicWhackQte({ item, onResolve }: ToxicWhackQteProps) {
+  const { t } = useTranslation()
   const resolvedRef = useRef(false)
   const [progress, setProgress] = useState(1)
 
@@ -46,7 +48,7 @@ export function ToxicWhackQte({ item, onResolve }: ToxicWhackQteProps) {
       type="button"
       onClick={() => finish(true)}
       className="absolute inset-0 z-40 flex cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-[inherit] border-0 bg-rose-950/50 p-2 text-center transition hover:bg-rose-900/55 active:bg-rose-800/60"
-      aria-label={`${item.creatorName} 진상 시청자 — 화면을 클릭하세요`}
+      aria-label={t('toxic.ariaLabel').replace('{name}', item.creatorName)}
     >
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-slate-950/50"
@@ -59,13 +61,13 @@ export function ToxicWhackQte({ item, onResolve }: ToxicWhackQteProps) {
       </div>
 
       <p className="pointer-events-none text-[10px] font-black tracking-wide text-rose-100 drop-shadow sm:text-[11px]">
-        ⚠ 진상 출현
+        {t('toxic.appear')}
       </p>
       <p className="pointer-events-none text-[9px] font-bold text-rose-50/95 sm:text-[10px]">
-        화면을 클릭!
+        {t('toxic.click')}
       </p>
       <p className="pointer-events-none text-[8px] font-semibold tabular-nums text-rose-200/85">
-        실패 시 스테미나 −{item.staminaDrop}
+        {t('toxic.staminaPenalty').replace('{count}', String(item.staminaDrop))}
       </p>
     </button>
   )

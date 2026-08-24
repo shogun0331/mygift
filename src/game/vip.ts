@@ -1,4 +1,6 @@
 import type { Grade, OwnedCreator } from './characters'
+import { characterDisplayName } from './characterLocales'
+import { getCurrentLocale } from '../locales/i18n'
 import { rollInt } from './stats'
 
 /** 스폰 주기(3~6턴, 50%)는 social.ts VIP_SPAWN. 보유 캐릭터 중 선택 */
@@ -54,7 +56,7 @@ export function rollVipRejectViewers(grade: Grade): number {
 export function toVipOffer(creator: OwnedCreator): VipOffer {
   return {
     creatorId: creator.id,
-    creatorName: creator.name,
+    creatorName: characterDisplayName(creator, getCurrentLocale()),
     grade: creator.grade,
     profileImageUrl: creator.profileImageUrl || null,
   }

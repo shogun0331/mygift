@@ -19,7 +19,9 @@
     "finalVer": "FINAL VER.",
     "kicker": "Tonight's Broadcast",
     "desc": "경영 시뮬레이션 게임",
-    "savedData": "(SAVED DATA)"
+    "savedData": "(SAVED DATA)",
+    "ariaMainMenu": "메인 메뉴",
+    "ariaGameMenu": "인게임 메뉴"
   },
   "hud": {
     "dateTime": "년월일",
@@ -77,7 +79,11 @@
     "staffCare": "케어 회복",
     "staffCareSub": "컨디션을 최고로 되돌렸다",
     "staffProd": "프로덕션 보너스",
-    "staffProdSub": "수익·시청자 보너스"
+    "staffProdSub": "수익·시청자 보너스",
+    "actionAssign": "배정",
+    "actionTrain": "훈련",
+    "actionStats": "통계",
+    "actionSettings": "설정"
   },
   "condition": {
     "title": "컨디션",
@@ -174,6 +180,9 @@
     "scoutFailBody": "이번 협상은 성사되지 않았습니다. 다음에 다시 도전해 보세요.",
     "scoutFailConfirm": "확인",
     "scoutNewArrival": "새로운 크리에이터가 나타났습니다!",
+    "staffScoutNewArrival": "새로운 스탭 후보가 영입 제안에 응답했습니다!",
+    "scoutAvailable": "스카우트 가능",
+    "staffScoutAvailable": "영입 제안 가능",
     "scoutWaiting": "아직 새로운 후보가 없습니다. 몇 달 뒤 다시 기회가 옵니다.",
     "scoutHireBlockedSlot": "해금된 스튜디오 슬롯이 부족합니다.",
     "scoutHireBlockedAssets": "자산이 연봉보다 부족합니다.",
@@ -225,7 +234,50 @@
     "examSuccessHint": "확인하면 등급과 연봉이 반영됩니다.",
     "examFailHint": "주력 스탯은 유지됩니다. 다시 심사에 도전할 수 있습니다.",
     "examRefund": "환급",
-    "examConfirm": "확인"
+    "examConfirm": "확인",
+    "manageSubtitle": "보유 {count}명 · 스카우트로 영입",
+    "gradeFilter": "등급 필터",
+    "manageTitle": "크리에이터 관리",
+    "manageDesc": "연봉순 정렬 · 엑셀 스타일 테이블",
+    "scoutCheck": "스카우트 확인",
+    "noCreators": "표시할 크리에이터가 없습니다.",
+    "noCreatorsDesc": "월간 명세서 이후 스카우트 기회가 열립니다.",
+    "currentSalary": "현재 연봉",
+    "detailView": "상세보기",
+    "staffManageTitle": "스탭 관리",
+    "staffManageDesc": "스카우트 및 고용 스탭 관리",
+    "staffOfferCheck": "영입 제안 확인",
+    "staffOffer": "영입 제안",
+    "staffScoutDone": "스카우트 완료",
+    "noStaff": "고용된 스탭이 없습니다.",
+    "noStaffDesc": "우측 상단의 스카우트 시도 버튼을 눌러 스탭 후보를 찾아보세요.",
+    "colField": "분야",
+    "colJoinDate": "입사 년월",
+    "colSalary": "연봉",
+    "colDeploy": "배치",
+    "colWorkDeploy": "업무 배치",
+    "notDeployed": "미배치",
+    "weeksFormat": "{weeks}주",
+    "weeksYearFormat": "{weeks}주 (1년)",
+    "ageFormat": "{age}세",
+    "proposedSalary": "제안 연봉",
+    "payDay": "월급 지출일",
+    "payTurns": "{count}턴 후",
+    "statsTitle": "핵심 능력치 & 상태",
+    "trustMax": "만족도 최고",
+    "trustNeed": "관리 필요",
+    "contractLeft": "남은 계약: {weeks}",
+    "staffScoutTitle": "스탭 스카우트",
+    "staffScoutDesc": "스카우트된 스탭 후보의 상세 프로필과 능력을 확인하고 고용합니다.",
+    "staffKindFormat": "{kind} 스탭",
+    "hireCost": "영입 요구 비용",
+    "requiredSalary": "요구 연봉",
+    "staffDutyTitle": "담당 업무 및 전담 보너스",
+    "hireBlockedAssets": "보유 자산이 부족하여 이 스탭을 고용할 수 없습니다.",
+    "staffHold": "보류 (나중에 영입)",
+    "staffHire": "영입하기",
+    "noRegistered": "등록된 캐릭터가 없습니다.",
+    "noRegisteredDesc": "에디터에서 캐릭터를 추가하면 스카우트 후보로 등장합니다."
   },
   "sns": {
     "action": "SNS",
@@ -285,7 +337,8 @@
     "comment.h3c": "이건 저장해야 해",
     "comment.h3d": "서버 터지겠다",
     "comment.h3e": "레전드 업로드",
-    "comment.h3f": "이거 실화냐"
+    "comment.h3f": "이거 실화냐",
+    "countUnit": "{count}명"
   },
   "studio": {
     "placementTitle": "배치할 크리에이터",
@@ -330,7 +383,9 @@
       "repair": "장비 고장 차단",
       "care": "스테미나 소모 절반 · 좋음까지 떨어지면 최고로 케어",
       "production": "후원 수익 +25% · 시청자 보너스"
-    }
+    },
+    "dragHint": "드래그로 슬롯 이동 · 대시보드와 연동",
+    "gradeRequired": "등급 필요"
   },
   "staff": {
     "kindSecurity": "보안",
@@ -338,7 +393,19 @@
     "kindCare": "케어",
     "kindProduction": "프로덕션",
     "genderMale": "남",
-    "genderFemale": "여"
+    "genderFemale": "여",
+    "dutySecurityTitle": "보안 (Security)",
+    "dutySecurityBonus": "방송 안전성 보너스 (악플 확률 감소)",
+    "dutySecurityDesc": "악플 등 방송 중 발생할 수 있는 위협 요소들로부터 크리에이터를 보호하고 방송의 부정적인 이벤트를 효과적으로 차단합니다.",
+    "dutyRepairTitle": "보수 (Repair)",
+    "dutyRepairBonus": "장비 고장 확률 및 노후화 감소",
+    "dutyRepairDesc": "방송 기계 장비의 결함이나 마모를 미연에 방지하여 장비 보수 비용을 아끼고 원활한 실시간 스트리밍 환경을 제공합니다.",
+    "dutyCareTitle": "케어 (Care)",
+    "dutyCareBonus": "스태미나 소모 경감 및 피로 감소",
+    "dutyCareDesc": "크리에이터들의 컨디션과 피로를 집중 관리하여 라이브 방송 중 스태미나 소모량을 줄이고 지속 방송을 지원합니다.",
+    "dutyProductionTitle": "기획 (Production)",
+    "dutyProductionBonus": "방송 수익 및 시청자 후원 증대",
+    "dutyProductionDesc": "스트리머가 진행하는 라이브 방송의 연출과 구성 기획에 참여하여, 시청자 수 확대 및 도네이션 수익을 크게 극대화시킵니다."
   },
   "settlement": {
     "title": "월간 정산 명세서",
@@ -375,7 +442,14 @@
     "miscExpenses": "기타 잡비",
     "funds": "보유 자산",
     "highlightsSection": "주요 이벤트",
-    "confirm": "확인"
+    "confirm": "확인",
+    "expenseStudioOps": "스튜디오 운영비",
+    "expenseEmptyBroadcast": "무배치 방송 ({percent}%)",
+    "expenseStaffPayroll": "스탭 인건비",
+    "expenseStaffCount": "{count}명",
+    "careExpenseLabel": "컨디션 케어 ({name})",
+    "taxLabel": "세금 과세",
+    "taxDetail": "{year}년 연간 수익 {amount} 기준"
   },
   "station": {
     "gradeBadge": "{grade}등급",
@@ -549,5 +623,88 @@
       "tiny": "영세기업",
       "black": "일반사업자"
     }
+  },
+  "common": {
+    "search": "검색",
+    "name": "이름",
+    "grade": "등급",
+    "gradeBadge": "{grade}급",
+    "gradeFilterFormat": "{grade} 등급",
+    "action": "액션",
+    "countUnit": "{count}명",
+    "back": "← 돌아가기",
+    "male": "남성",
+    "female": "여성",
+    "screenReady": "{name} 화면 준비 중"
+  },
+  "alert": {
+    "stationGradeRequired": "기업 등급이 부족합니다.",
+    "stationGradeRequiredDetail": "기업 등급이 부족합니다. (필요: {tier})",
+    "insufficientAssets": "자산이 부족합니다.",
+    "scoutLimitReached": "현재 방송국 등급에서 더 이상 스카우트할 수 없습니다.",
+    "noScoutCandidate": "스카우트 가능한 후보가 없습니다.",
+    "noStaffToRecruit": "더 이상 영입 가능한 스탭이 없습니다.",
+    "staffQuit": "{name} 스탭이 퇴사하였습니다."
+  },
+  "feed": {
+    "donation": "💰 {amount} 후원! ({name})",
+    "gearFail": "{name} 장비 고장! 후원 중단 · 클릭하여 수리",
+    "productionBonus": "{name} 프로덕션 보너스! 시청자 +{bonus} · 수익 증가",
+    "care": "{name} 케어! {creatorName} 컨디션을 최고로 회복",
+    "toxicAppear": "{name} 진상 시청자! 컨디션 −{drop} · 클릭으로 스테미나 방어!",
+    "toxicCrash": "{name} 진상 사태로 컨디션 −{drop}",
+    "repairFix": "{name} 수리 점검! 고장을 복구했다",
+    "repairDefense": "{name} 수리 방어! 장비 고장을 막아냈다",
+    "toxicBlocked": "{name} 진상 차단 성공! 스테미나 방어",
+    "toxicBlockedShort": "{name} 진상 차단 — 스테미나 방어",
+    "toxicFailed": "{name} 진상 대응 실패! 스테미나 −{drop}",
+    "toxicFailedShort": "{name} 진상 실패로 스테미나 −{drop}",
+    "repairPreBroadcast": "{name} 수리 점검! 방송 전 고장을 복구했다",
+    "securityBlocked": "{name} 보안 차단! 진상 사건을 막아냈다",
+    "viewersGained": "📈 시청자 {count}명 증가! ({name})",
+    "taxUpcoming": "다음 달 연간 소득세 과세 예정 ({year}년 누적 수익 {amount})",
+    "bigDonation": "{name} 대형 후원! ({amount})",
+    "donationTopic": "{name} 후원 화제! ({amount})",
+    "viewersSpike": "{name} 시청자 급증!",
+    "monthlyTopEarn": "{name} 월간 최고 수익!",
+    "annualTaxNotice": "{year}년 연간 소득세 과세 (−{amount})",
+    "annualTaxNone": "{year}년 연간 소득세 과세 (해당 없음)",
+    "noSpecialEvents": "이번 달 특이 이벤트 없음"
+  },
+  "broadcast": {
+    "stationName": "방송국명",
+    "week": "주차",
+    "weekCount": "{count}주차",
+    "endBroadcast": "방송 종료",
+    "levelFormat": "Lv.{level} · {type}",
+    "skip": "스킵",
+    "chatTakeOff": "벗어라!",
+    "chatPretty": "예뻐요~",
+    "chatDance": "춤춰줘!",
+    "chatAmazing": "대박!",
+    "chatPrettyToday": "오늘도 예쁘다",
+    "chatDance2": "댄스 춰줘!",
+    "chatLove": "사랑해요~",
+    "chatBestConcept": "오늘 컨셉 최고",
+    "chatSubscribed": "구독했습니다!",
+    "chatBest": "한소희 최고!"
+  },
+  "salaryRaise": {
+    "title": "연봉 인상 요구",
+    "staffNameFormat": "{name} 스탭",
+    "dialogue": "\"다른 스탭들과 제 연봉 차이가 너무 많이 납니다. 연봉을 제안된 금액으로 올려주지 않으시면 이 회사에서 더 일하기 어려울 것 같습니다.\"",
+    "currentSalary": "현재 연봉",
+    "requiredSalary": "요구 연봉",
+    "reject": "거절 (퇴사)",
+    "accept": "수락 (인상)"
+  },
+  "toxic": {
+    "ariaLabel": "{name} 진상 시청자 — 화면을 클릭하세요",
+    "appear": "⚠ 진상 출현",
+    "click": "화면을 클릭!",
+    "staminaPenalty": "실패 시 스테미나 −{count}",
+    "viewer": "⚠ 진상 시청자",
+    "conditionDrop": "컨디션 −{drop}",
+    "trollingHint": "방송 중 트롤링 · CCTV에서 대응!"
   }
 }

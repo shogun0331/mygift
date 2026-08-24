@@ -1,5 +1,6 @@
 import type { DayEvent } from './economy'
 import { formatMoney } from './money'
+import { getCurrentLocale, translate } from '../locales/i18n'
 
 /** 연간 수익 누진 세율 구간 (USD, 구 원화÷1000) */
 export const ANNUAL_TAX_BRACKETS = [
@@ -49,7 +50,9 @@ export function createTaxUpcomingEvent(taxYear: number, annualRevenueWon: number
     creatorName: '',
     type: 'tax',
     amount: 0,
-    text: `다음 달 연간 소득세 과세 예정 (${taxYear}년 누적 수익 ${formatMoney(revenue)})`,
+    text: translate(getCurrentLocale(), 'feed.taxUpcoming')
+      .replace('{year}', String(taxYear))
+      .replace('{amount}', () => formatMoney(revenue)),
     atMs: 0,
     tone: 'bg-amber-400',
   }

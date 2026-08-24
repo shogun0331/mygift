@@ -38,11 +38,11 @@ import {
   type StaffKind,
 } from '../game/slotManagers'
 import { KIND_TONE, StaffKindIcon, StaffSlotIcons } from './StaffManagerUi'
+import { companyTierLabelKey } from '../game/ranking'
 import {
   meetsSlotUnlockByRank,
   slotUnlockMinGradeOf,
   slotUnlockPriceOf,
-  STATION_TIER_LABEL,
   type StationGradeConfig,
 } from '../game/stationGradeConfig'
 
@@ -202,7 +202,7 @@ export function SchedulePanel({
     ? !rankMeetsUnlock && unlockedSlotCount < 6
       ? (() => {
           const required = slotUnlockMinGradeOf(stationGradeConfig, unlockedSlotCount)
-          return required ? STATION_TIER_LABEL[required] : null
+          return required ? t(companyTierLabelKey(required)) : null
         })()
       : null
     : unlockRequiredGradeLabel
@@ -312,7 +312,7 @@ export function SchedulePanel({
                   ? t('studio.placementLockedHint')
                   : staffMode
                     ? t('studio.staffBayHint')
-                    : '드래그로 슬롯 이동 · 대시보드와 연동'}
+                    : t('studio.dragHint')}
               </span>
             </h2>
           </div>
@@ -637,7 +637,7 @@ export function SchedulePanel({
                                       {resolvedRequiredGradeLabel}
                                     </p>
                                     <p className="text-[8px] font-semibold text-amber-500/70 sm:text-[9px]">
-                                      등급 필요
+                                      {t('studio.gradeRequired')}
                                     </p>
                                   </>
                                 ) : (

@@ -37,6 +37,7 @@ import {
 } from '../game/characterLocales'
 import { useTranslation } from '../locales/i18n'
 import { SnsFeedModal } from './SnsFeedModal'
+import { RedDot } from './RedDot'
 import { SnsBulkComposeModal } from './SnsBulkComposeModal'
 import { SnsBulkPostRevealModal } from './SnsBulkPostRevealModal'
 import type { BulkSnsRevealEntry } from '../game/sns'
@@ -57,6 +58,9 @@ type CreatorPanelProps = {
   /** 명세서 종료 후 스카우트 강제 오픈 */
   openScout?: boolean
   onScoutClosed?: () => void
+  /** 스탭 영입 제안 대기 중일 때 탭 레드닷 액션으로 강제 오픈 */
+  openStaffScout?: boolean
+  onStaffScoutClosed?: () => void
   onScoutViewed: () => void
   onScoutPass: () => void
   onScoutHire: (offer: ScoutOffer) => void
@@ -113,9 +117,9 @@ function formatSalary(value: number) {
   return formatMoney(value)
 }
 
-function formatContract(weeks: number) {
-  if (weeks >= 48) return `${weeks}주 (1년)`
-  return `${weeks}주`
+function formatContract(weeks: number, t: (key: string) => string) {
+  const key = weeks >= 48 ? 'creator.weeksYearFormat' : 'creator.weeksFormat'
+  return t(key).replace('{weeks}', String(weeks))
 }
 
 function trustOf(creator: OwnedCreator) {
@@ -130,6 +134,8 @@ export function CreatorPanel({
   broadcastMonthNumber,
   openScout = false,
   onScoutClosed,
+  openStaffScout = false,
+  onStaffScoutClosed,
   onScoutViewed,
   onScoutPass,
   onScoutHire,
@@ -165,6 +171,12 @@ export function CreatorPanel({
     setSelectedId(null)
     setView('scout')
   }, [openScout])
+
+  useEffect(() => {
+    if (!openStaffScout) return
+    setSelectedId(null)
+    setView('staffScout')
+  }, [openStaffScout])
 
   const isScoutingRef = useRef(false)
 
@@ -241,10 +253,14 @@ export function CreatorPanel({
       <StaffScoutView
         candidate={scoutedStaffCandidate}
         assets={assets}
-        onBack={() => setView('roster')}
+        onBack={() => {
+          setView('roster')
+          onStaffScoutClosed?.()
+        }}
         onHire={(staffId, hireCost, salary) => {
           onHireStaff(staffId, hireCost, salary)
           setView('roster')
+          onStaffScoutClosed?.()
         }}
       />
     )
@@ -270,7 +286,7 @@ export function CreatorPanel({
         <div className="mr-auto min-w-0">
           <p className="game-kicker">CREATOR MANAGEMENT</p>
           <p className="mt-0.5 text-xs text-slate-500">
-            보유 {ownedCreators.length}명 · 스카우트로 영입
+            {t('creator.manageSubtitle').replace('{count}', String(ownedCreators.length))}
           </p>
         </div>
 
@@ -285,13 +301,13 @@ export function CreatorPanel({
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="검색"
+            placeholder={t('common.search')}
             className="w-full rounded-xl border border-white/10 bg-black/25 py-2 pr-3 pl-9 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-indigo-400/40"
           />
         </label>
 
         <label className="relative">
-          <span className="sr-only">등급 필터</span>
+          <span className="sr-only">{t('creator.gradeFilter')}</span>
           <select
             value={gradeFilter}
             onChange={(e) => setGradeFilter(e.target.value as 'ALL' | Grade)}
@@ -299,7 +315,9 @@ export function CreatorPanel({
           >
             {GRADE_FILTERS.map((grade) => (
               <option key={grade} value={grade}>
-                {grade === 'ALL' ? '등급 필터' : `${grade} 등급`}
+                {grade === 'ALL'
+                  ? t('creator.gradeFilter')
+                  : t('common.gradeFilterFormat').replace('{grade}', grade)}
               </option>
             ))}
           </select>
@@ -312,8 +330,8 @@ export function CreatorPanel({
       <section className="game-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl mb-4">
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 px-3 py-2.5 sm:px-4">
           <div>
-            <p className="text-xs font-semibold tracking-wide text-slate-200">크리에이터 관리</p>
-            <p className="mt-0.5 text-[10px] text-slate-500">연봉순 정렬 · 엑셀 스타일 테이블</p>
+            <p className="text-xs font-semibold tracking-wide text-slate-200">{t('creator.manageTitle')}</p>
+            <p className="mt-0.5 text-[10px] text-slate-500">{t('creator.manageDesc')}</p>
           </div>
           <div className="flex items-center gap-2">
             {ownedCreators.length > 0 ? (
@@ -329,44 +347,50 @@ export function CreatorPanel({
               <button
                 type="button"
                 onClick={() => setView('scout')}
-                className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition"
+                className="game-btn game-btn-primary relative rounded-lg px-3 py-1 text-xs border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition"
               >
-                스카우트 확인
+                {t('creator.scoutCheck')}
+                <RedDot label={t('creator.scoutNewArrival')} />
               </button>
             ) : (
               <button
                 type="button"
                 disabled={!creatorScoutAvailable}
                 onClick={handleScoutCreatorClick}
-                className={`game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed ${
+                className={`game-btn game-btn-primary relative rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed ${
                   creatorScoutAvailable
                     ? 'border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition'
                     : ''
                 }`}
               >
-                스카우트
+                {t('creator.scout')}
+                {creatorScoutAvailable ? (
+                  <RedDot label={t('creator.scoutAvailable')} />
+                ) : null}
               </button>
             )}
-            <span className="game-chip text-[10px]">{sortedBySalary.length}명</span>
+            <span className="game-chip text-[10px]">
+              {t('common.countUnit').replace('{count}', String(sortedBySalary.length))}
+            </span>
           </div>
         </div>
 
         <div className="min-h-0 flex-1 overflow-auto">
           {sortedBySalary.length === 0 ? (
             <div className="flex h-full min-h-[12rem] flex-col items-center justify-center gap-2 px-4 text-center">
-              <p className="text-sm text-slate-400">표시할 크리에이터가 없습니다.</p>
-              <p className="text-xs text-slate-500">월간 명세서 이후 스카우트 기회가 열립니다.</p>
+              <p className="text-sm text-slate-400">{t('creator.noCreators')}</p>
+              <p className="text-xs text-slate-500">{t('creator.noCreatorsDesc')}</p>
             </div>
           ) : (
             <table className="w-full min-w-[56rem] border-collapse text-left text-sm">
               <thead className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur-sm">
                 <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase">
-                  <th className="px-3 py-2.5 font-semibold sm:px-4">이름</th>
-                  <th className="px-3 py-2.5 font-semibold">등급</th>
+                  <th className="px-3 py-2.5 font-semibold sm:px-4">{t('common.name')}</th>
+                  <th className="px-3 py-2.5 font-semibold">{t('common.grade')}</th>
                   <th className="px-3 py-2.5 font-semibold">{t('creator.statType')}</th>
-                  <th className="px-3 py-2.5 font-semibold">현재 연봉</th>
+                  <th className="px-3 py-2.5 font-semibold">{t('creator.currentSalary')}</th>
                   <th className="px-3 py-2.5 font-semibold">{t('creator.statTrust')}</th>
-                  <th className="px-3 py-2.5 font-semibold sm:px-4">액션</th>
+                  <th className="px-3 py-2.5 font-semibold sm:px-4">{t('common.action')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -406,7 +430,7 @@ export function CreatorPanel({
                         <span
                           className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${GRADE_STYLE[creator.grade]}`}
                         >
-                          {creator.grade}급
+                          {t('common.gradeBadge').replace('{grade}', creator.grade)}
                         </span>
                       </td>
                       <td className="px-3 py-2.5 text-slate-300">
@@ -440,7 +464,7 @@ export function CreatorPanel({
                             onClick={() => setSelectedId(creator.id)}
                             className="game-btn rounded-lg px-2.5 py-1 text-xs"
                           >
-                            상세보기
+                            {t('creator.detailView')}
                           </button>
                         </div>
                       </td>
@@ -460,71 +484,79 @@ export function CreatorPanel({
           <section className="game-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
             <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 px-3 py-2.5 sm:px-4">
               <div>
-                <p className="text-xs font-semibold tracking-wide text-slate-200">스탭 관리</p>
-                <p className="mt-0.5 text-[10px] text-slate-500">스카우트 및 고용 스탭 관리</p>
+                <p className="text-xs font-semibold tracking-wide text-slate-200">{t('creator.staffManageTitle')}</p>
+                <p className="mt-0.5 text-[10px] text-slate-500">{t('creator.staffManageDesc')}</p>
               </div>
               <div className="flex items-center gap-2">
                 {scoutedStaffCandidate ? (
                   <button
                     type="button"
                     onClick={() => setView('staffScout')}
-                    className="game-btn game-btn-primary rounded-lg px-3 py-1 text-xs border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition"
+                    className="game-btn game-btn-primary relative rounded-lg px-3 py-1 text-xs border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition"
                   >
-                    영입 제안 확인
+                    {t('creator.staffOfferCheck')}
+                    <RedDot label={t('creator.staffScoutNewArrival')} />
                   </button>
                 ) : (() => {
                   const hasAvailableStaffToScout = registeredStaff.some(
                     (s) => !managerState.hiredStaffIds.includes(s.id)
                   )
                   const canScout = staffScoutAvailable && hasAvailableStaffToScout
-                  const scoutLabel = !hasAvailableStaffToScout ? '스카우트 완료' : '영입 제안'
+                  const scoutLabel = !hasAvailableStaffToScout
+                    ? t('creator.staffScoutDone')
+                    : t('creator.staffOffer')
                   return (
                     <button
                       type="button"
                       disabled={!canScout}
                       onClick={handleScoutStaffClick}
-                      className={`game-btn game-btn-primary rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed ${
+                      className={`game-btn game-btn-primary relative rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed ${
                         canScout
                           ? 'border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition'
                           : ''
                       }`}
                     >
                       {scoutLabel}
+                      {canScout ? (
+                        <RedDot label={t('creator.staffScoutAvailable')} />
+                      ) : null}
                     </button>
                   )
                 })()}
-                <span className="game-chip text-[10px]">{displayStaffs.length}명</span>
+                <span className="game-chip text-[10px]">
+                  {t('common.countUnit').replace('{count}', String(displayStaffs.length))}
+                </span>
               </div>
             </div>
 
             <div className="min-h-0 flex-1 overflow-auto">
               {displayStaffs.length === 0 ? (
                 <div className="flex h-full min-h-[12rem] flex-col items-center justify-center gap-2 px-4 text-center">
-                  <p className="text-sm text-slate-400">고용된 스탭이 없습니다.</p>
-                  <p className="text-xs text-slate-500">우측 상단의 스카우트 시도 버튼을 눌러 스탭 후보를 찾아보세요.</p>
+                  <p className="text-sm text-slate-400">{t('creator.noStaff')}</p>
+                  <p className="text-xs text-slate-500">{t('creator.noStaffDesc')}</p>
                 </div>
               ) : (
                 <table className="w-full min-w-[56rem] border-collapse text-left text-sm">
                   <thead className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur-sm">
                     <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase">
-                      <th className="px-3 py-2.5 font-semibold sm:px-4">이름</th>
-                      <th className="px-3 py-2.5 font-semibold">분야</th>
-                      <th className="px-3 py-2.5 font-semibold">입사 년월</th>
-                      <th className="px-3 py-2.5 font-semibold">연봉</th>
-                      <th className="px-3 py-2.5 font-semibold">배치</th>
-                      <th className="px-3 py-2.5 font-semibold sm:px-4">업무 배치</th>
+                      <th className="px-3 py-2.5 font-semibold sm:px-4">{t('common.name')}</th>
+                      <th className="px-3 py-2.5 font-semibold">{t('creator.colField')}</th>
+                      <th className="px-3 py-2.5 font-semibold">{t('creator.colJoinDate')}</th>
+                      <th className="px-3 py-2.5 font-semibold">{t('creator.colSalary')}</th>
+                      <th className="px-3 py-2.5 font-semibold">{t('creator.colDeploy')}</th>
+                      <th className="px-3 py-2.5 font-semibold sm:px-4">{t('creator.colWorkDeploy')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {displayStaffs.map((staff, index) => {
                       const displayName = staffDisplayName(staff, locale)
                       const icon = staffIconUrl(staff)
-                      const genderLabel = staff.gender === 'male' ? '남성' : '여성'
+                      const genderLabel = staff.gender === 'male' ? t('common.male') : t('common.female')
                       const salary = hiredStaffSalaries[staff.id] ?? 0
 
                       const slotId = findSlotIdForStaff(managerState, staff.id)
                       const slot = slotId ? studioSlots.find((s) => s.id === slotId) : null
-                      const locationLabel = slot ? slot.label : '미배치'
+                      const locationLabel = slot ? slot.label : t('creator.notDeployed')
 
                       return (
                         <tr
@@ -579,7 +611,7 @@ export function CreatorPanel({
                               onClick={() => onAssignStaffPlacement(staff.id)}
                               className="game-btn game-btn-primary rounded-lg px-2.5 py-1 text-xs hover:bg-slate-800 transition"
                             >
-                              업무 배치
+                              {t('creator.colWorkDeploy')}
                             </button>
                           </td>
                         </tr>
@@ -660,7 +692,7 @@ function ScoutView({
       <header className="game-panel-strong flex shrink-0 flex-wrap items-center gap-3 rounded-2xl px-4 py-3">
         {mustHire ? null : (
           <button type="button" onClick={onBack} className="game-btn rounded-xl px-3 py-2 text-sm">
-            ← 돌아가기
+            {t('common.back')}
           </button>
         )}
         <div className="min-w-0 flex-1">
@@ -681,9 +713,9 @@ function ScoutView({
           <div className="flex max-w-md flex-col items-center gap-2 text-center">
             {registeredCount === 0 ? (
               <>
-                <p className="text-sm text-slate-300">등록된 캐릭터가 없습니다.</p>
+                <p className="text-sm text-slate-300">{t('creator.noRegistered')}</p>
                 <p className="text-xs text-slate-500">
-                  에디터에서 캐릭터를 추가하면 스카우트 후보로 등장합니다.
+                  {t('creator.noRegisteredDesc')}
                 </p>
               </>
             ) : (
@@ -716,7 +748,7 @@ function ScoutView({
                 <span
                   className={`rounded border px-2 py-0.5 text-xs font-bold ${GRADE_STYLE[offer.grade]}`}
                 >
-                  {offer.grade}급
+                  {t('common.gradeBadge').replace('{grade}', offer.grade)}
                 </span>
                 <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-xs font-bold text-slate-200">
                   {t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(offer.template.statType)])}
@@ -728,7 +760,9 @@ function ScoutView({
                 </h3>
                 <p className="text-xs text-slate-300">
                   {characterDisplayJob(offer.template, locale)}
-                  {offer.template.age ? ` · ${offer.template.age}세` : ''}
+                  {offer.template.age
+                    ? ` · ${t('creator.ageFormat').replace('{age}', String(offer.template.age))}`
+                    : ''}
                 </p>
               </div>
             </div>
@@ -736,7 +770,7 @@ function ScoutView({
             <div className="flex flex-col gap-3 rounded-2xl border border-white/8 bg-black/25 p-4">
               <div className="flex items-end justify-between gap-2">
                 <div>
-                  <p className="text-[10px] font-semibold tracking-wide text-slate-500">제안 연봉</p>
+                  <p className="text-[10px] font-semibold tracking-wide text-slate-500">{t('creator.proposedSalary')}</p>
                   {mustHire ? (
                     <div>
                       <p className="text-xl font-black text-emerald-300">{t('creator.scoutFirstHireFree')}</p>
@@ -862,20 +896,22 @@ function CreatorDetailView({
     <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
       <header className="game-panel-strong flex shrink-0 flex-wrap items-center gap-3 rounded-2xl px-4 py-3">
         <button type="button" onClick={onBack} className="game-btn rounded-xl px-3 py-2 text-sm">
-          ← 돌아가기
+          {t('common.back')}
         </button>
         <div className="min-w-0 flex-1">
           <p className="game-kicker">CREATOR PROFILE</p>
           <h2 className="truncate text-base font-semibold text-slate-100">
             {displayName}{' '}
             <span className={`text-sm font-bold ${GRADE_TEXT[creator.grade]}`}>
-              ({creator.grade}급)
+              ({t('common.gradeBadge').replace('{grade}', creator.grade)})
             </span>
           </h2>
         </div>
         <div className="rounded-xl border border-cyan-400/25 bg-cyan-500/10 px-3 py-2 text-right">
-          <p className="text-[10px] font-semibold tracking-wide text-cyan-400/80">월급 지출일</p>
-          <p className="text-sm font-bold text-cyan-300">{creator.nextPayTurns}턴 후</p>
+          <p className="text-[10px] font-semibold tracking-wide text-cyan-400/80">{t('creator.payDay')}</p>
+          <p className="text-sm font-bold text-cyan-300">
+            {t('creator.payTurns').replace('{count}', String(creator.nextPayTurns))}
+          </p>
         </div>
       </header>
 
@@ -902,7 +938,7 @@ function CreatorDetailView({
               <span
                 className={`rounded border px-2 py-0.5 text-xs font-bold ${GRADE_STYLE[creator.grade]}`}
               >
-                {creator.grade}급
+                {t('common.gradeBadge').replace('{grade}', creator.grade)}
               </span>
               <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-xs font-bold text-slate-200">
                 {t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(creator.statType)])}
@@ -913,14 +949,16 @@ function CreatorDetailView({
               <h3 className="text-lg font-bold text-slate-50">{displayName}</h3>
               <p className="mt-0.5 text-xs text-slate-300">
                 {displayJob}
-                {creator.age ? ` · ${creator.age}세` : ''}
+                {creator.age
+                  ? ` · ${t('creator.ageFormat').replace('{age}', String(creator.age))}`
+                  : ''}
               </p>
             </div>
           </article>
         </section>
 
         <section className="game-panel flex min-h-0 flex-col overflow-auto rounded-2xl p-4 sm:p-5">
-          <h3 className="text-sm font-semibold tracking-wide text-slate-100">핵심 능력치 & 상태</h3>
+          <h3 className="text-sm font-semibold tracking-wide text-slate-100">{t('creator.statsTitle')}</h3>
 
           {broadcastBlocked ? (
             <p className="mt-3 rounded-xl border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-300">
@@ -937,7 +975,7 @@ function CreatorDetailView({
             <StatBar
               label={t('creator.statTrust')}
               valueLabel={`${trust}%`}
-              note={trust >= 90 ? '만족도 최고' : '관리 필요'}
+              note={trust >= 90 ? t('creator.trustMax') : t('creator.trustNeed')}
               percent={trust}
               barClass="from-indigo-400 to-violet-300"
             />
@@ -954,12 +992,12 @@ function CreatorDetailView({
               barClass="from-emerald-400 to-lime-300"
             />
             <div className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5">
-              <p className="text-[10px] font-semibold tracking-wide text-slate-500">현재 연봉</p>
+              <p className="text-[10px] font-semibold tracking-wide text-slate-500">{t('creator.currentSalary')}</p>
               <p className="mt-0.5 text-base font-bold tabular-nums text-amber-400">
                 {formatSalary(creator.salary)}
               </p>
               <p className="mt-0.5 text-xs text-slate-400">
-                남은 계약: {formatContract(creator.contractWeeks)}
+                {t('creator.contractLeft').replace('{weeks}', formatContract(creator.contractWeeks, t))}
               </p>
             </div>
           </div>
@@ -1244,50 +1282,38 @@ function StaffScoutView({
 
   const displayName = staffDisplayName(candidate, locale)
   const cardUrl = staffCardUrl(candidate)
-  const genderLabel = candidate.gender === 'male' ? '남성' : '여성'
+  const genderLabel = candidate.gender === 'male' ? t('common.male') : t('common.female')
 
   const canAfford = assets >= candidate.proposedHireCost
 
-  const staffKindDesc: Record<StaffKind, { title: string; bonus: string; desc: string }> = {
-    security: {
-      title: '보안 (Security)',
-      bonus: '방송 안전성 보너스 (악플 확률 감소)',
-      desc: '악플 등 방송 중 발생할 수 있는 위협 요소들로부터 크리에이터를 보호하고 방송의 부정적인 이벤트를 효과적으로 차단합니다.',
-    },
-    repair: {
-      title: '보수 (Repair)',
-      bonus: '장비 고장 확률 및 노후화 감소',
-      desc: '방송 기계 장비의 결함이나 마모를 미연에 방지하여 장비 보수 비용을 아끼고 원활한 실시간 스트리밍 환경을 제공합니다.',
-    },
-    care: {
-      title: '케어 (Care)',
-      bonus: '스태미나 소모 경감 및 피로 감소',
-      desc: '크리에이터들의 컨디션과 피로를 집중 관리하여 라이브 방송 중 스태미나 소모량을 줄이고 지속 방송을 지원합니다.',
-    },
+  const staffKindKeys: Record<StaffKind, { title: string; bonus: string; desc: string }> = {
+    security: { title: 'staff.dutySecurityTitle', bonus: 'staff.dutySecurityBonus', desc: 'staff.dutySecurityDesc' },
+    repair: { title: 'staff.dutyRepairTitle', bonus: 'staff.dutyRepairBonus', desc: 'staff.dutyRepairDesc' },
+    care: { title: 'staff.dutyCareTitle', bonus: 'staff.dutyCareBonus', desc: 'staff.dutyCareDesc' },
     production: {
-      title: '기획 (Production)',
-      bonus: '방송 수익 및 시청자 후원 증대',
-      desc: '스트리머가 진행하는 라이브 방송의 연출과 구성 기획에 참여하여, 시청자 수 확대 및 도네이션 수익을 크게 극대화시킵니다.',
+      title: 'staff.dutyProductionTitle',
+      bonus: 'staff.dutyProductionBonus',
+      desc: 'staff.dutyProductionDesc',
     },
   }
 
-  const kindInfo = staffKindDesc[candidate.kind]
+  const kindInfo = staffKindKeys[candidate.kind]
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
       <header className="game-panel-strong flex shrink-0 flex-wrap items-center gap-3 rounded-2xl px-4 py-3">
         <button type="button" onClick={onBack} className="game-btn rounded-xl px-3 py-2 text-sm">
-          ← 돌아가기
+          {t('common.back')}
         </button>
         <div className="min-w-0 flex-1">
           <p className="game-kicker">STAFF SCOUT</p>
-          <h2 className="truncate text-base font-semibold text-slate-100">스탭 스카우트</h2>
-          <p className="mt-0.5 text-xs text-slate-500">스카우트된 스탭 후보의 상세 프로필과 능력을 확인하고 고용합니다.</p>
+          <h2 className="truncate text-base font-semibold text-slate-100">{t('creator.staffScoutTitle')}</h2>
+          <p className="mt-0.5 text-xs text-slate-500">{t('creator.staffScoutDesc')}</p>
         </div>
       </header>
 
       <div className="shrink-0 rounded-xl border border-indigo-400/30 bg-indigo-500/10 px-4 py-2.5 text-center text-sm font-semibold text-indigo-200">
-        새로운 스탭 후보가 영입 제안에 응답했습니다!
+        {t('creator.staffScoutNewArrival')}
       </div>
 
       <section className="game-panel flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-2xl p-4 sm:p-6">
@@ -1318,7 +1344,11 @@ function StaffScoutView({
             <div className="absolute inset-x-0 bottom-0 p-3">
               <h3 className="text-lg font-bold text-slate-50">{displayName}</h3>
               <p className="text-xs text-slate-300">
-                {t(STAFF_KIND_LABEL_KEY[candidate.kind])} 스탭 · {genderLabel}
+                {t('creator.staffKindFormat').replace(
+                  '{kind}',
+                  t(STAFF_KIND_LABEL_KEY[candidate.kind]),
+                )}{' '}
+                · {genderLabel}
               </p>
             </div>
           </div>
@@ -1326,13 +1356,13 @@ function StaffScoutView({
           <div className="flex flex-col gap-3 rounded-2xl border border-white/8 bg-black/25 p-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl border border-white/8 bg-black/20 p-3">
-                <p className="text-[10px] font-semibold tracking-wide text-slate-500">영입 요구 비용</p>
+                <p className="text-[10px] font-semibold tracking-wide text-slate-500">{t('creator.hireCost')}</p>
                 <p className="mt-0.5 text-lg font-black tabular-nums text-amber-400">
                   ${candidate.proposedHireCost.toLocaleString()}
                 </p>
               </div>
               <div className="rounded-xl border border-white/8 bg-black/20 p-3">
-                <p className="text-[10px] font-semibold tracking-wide text-slate-500">요구 연봉</p>
+                <p className="text-[10px] font-semibold tracking-wide text-slate-500">{t('creator.requiredSalary')}</p>
                 <p className="mt-0.5 text-lg font-black tabular-nums text-amber-400">
                   ${candidate.proposedSalary.toLocaleString()}/yr
                 </p>
@@ -1341,20 +1371,20 @@ function StaffScoutView({
 
             <div className="flex-1 rounded-xl bg-black/30 p-4 border border-white/5 space-y-2">
               <p className="text-[11px] font-bold text-indigo-300 uppercase tracking-widest">
-                담당 업무 및 전담 보너스
+                {t('creator.staffDutyTitle')}
               </p>
-              <h4 className="text-sm font-black text-slate-100">{kindInfo.title}</h4>
+              <h4 className="text-sm font-black text-slate-100">{t(kindInfo.title)}</h4>
               <p className="text-xs text-slate-300 font-semibold text-emerald-400">
-                ★ {kindInfo.bonus}
+                ★ {t(kindInfo.bonus)}
               </p>
               <p className="text-[11px] leading-5 text-slate-400 pt-1">
-                {kindInfo.desc}
+                {t(kindInfo.desc)}
               </p>
             </div>
 
             {!canAfford ? (
               <p className="text-center text-[11px] font-semibold text-rose-300">
-                보유 자산이 부족하여 이 스탭을 고용할 수 없습니다.
+                {t('creator.hireBlockedAssets')}
               </p>
             ) : null}
 
@@ -1364,7 +1394,7 @@ function StaffScoutView({
                 onClick={onBack}
                 className="game-btn rounded-xl px-4 py-3 text-sm font-semibold"
               >
-                보류 (나중에 영입)
+                {t('creator.staffHold')}
               </button>
               <button
                 type="button"
@@ -1372,7 +1402,7 @@ function StaffScoutView({
                 onClick={() => onHire(candidate.id, candidate.proposedHireCost, candidate.proposedSalary)}
                 className="game-btn-pink rounded-xl px-4 py-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
               >
-                영입하기
+                {t('creator.staffHire')}
               </button>
             </div>
           </div>

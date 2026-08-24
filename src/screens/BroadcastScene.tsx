@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from '../locales/i18n'
 
-const CHAT_MESSAGES = [
-  '벗어라!',
-  '예뻐요~',
-  '춤춰줘!',
-  '대박!',
-  '오늘도 예쁘다',
-  '댄스 춰줘!',
-  '사랑해요~',
-  '오늘 컨셉 최고',
-  '구독했습니다!',
-  '한소희 최고!',
+const CHAT_MESSAGE_KEYS = [
+  'broadcast.chatTakeOff',
+  'broadcast.chatPretty',
+  'broadcast.chatDance',
+  'broadcast.chatAmazing',
+  'broadcast.chatPrettyToday',
+  'broadcast.chatDance2',
+  'broadcast.chatLove',
+  'broadcast.chatBestConcept',
+  'broadcast.chatSubscribed',
+  'broadcast.chatBest',
 ]
 
 const SPEED_OPTIONS = ['1x', '2x', '3x'] as const
@@ -27,6 +28,7 @@ function formatTime(totalSeconds: number) {
 }
 
 export function BroadcastScene({ onEnd }: BroadcastSceneProps) {
+  const { t } = useTranslation()
   const [speed, setSpeed] = useState<(typeof SPEED_OPTIONS)[number]>('1x')
   const [elapsed, setElapsed] = useState(12 * 60 + 34)
 
@@ -48,27 +50,29 @@ export function BroadcastScene({ onEnd }: BroadcastSceneProps) {
       {/* Header */}
       <header className="game-hud flex flex-wrap items-center gap-4 px-6 py-3">
         <div className="min-w-[10rem]">
-          <p className="game-stat-label">방송국명</p>
+          <p className="game-stat-label">{t('broadcast.stationName')}</p>
           <p className="text-sm font-semibold text-slate-100">
             STAR BROADCASTING CO.
           </p>
         </div>
         <div className="h-8 w-px bg-white/10" />
         <div>
-          <p className="game-stat-label">자산</p>
+          <p className="game-stat-label">{t('hud.assets')}</p>
           <p className="text-sm font-bold text-amber-400">$12,500</p>
         </div>
         <div className="h-8 w-px bg-white/10" />
         <div>
-          <p className="game-stat-label">주차</p>
-          <p className="text-sm font-semibold text-slate-100">3주차</p>
+          <p className="game-stat-label">{t('broadcast.week')}</p>
+          <p className="text-sm font-semibold text-slate-100">
+            {t('broadcast.weekCount').replace('{count}', '3')}
+          </p>
         </div>
         <button
           type="button"
           onClick={onEnd}
           className="game-btn ml-auto px-4 py-2 text-sm"
         >
-          방송 종료
+          {t('broadcast.endBroadcast')}
         </button>
       </header>
 
@@ -82,7 +86,11 @@ export function BroadcastScene({ onEnd }: BroadcastSceneProps) {
             <p className="text-sm font-semibold text-slate-100">
               한소희 <span className="text-indigo-300">(A)</span>
             </p>
-            <p className="text-xs text-amber-400">Lv.2 · 섹시</p>
+            <p className="text-xs text-amber-400">
+              {t('broadcast.levelFormat')
+                .replace('{level}', '2')
+                .replace('{type}', t('creator.typeSexy'))}
+            </p>
           </div>
         </div>
         <span className="game-chip">
@@ -139,12 +147,12 @@ export function BroadcastScene({ onEnd }: BroadcastSceneProps) {
                     Viewer Chat
                   </p>
                   <div className="flex max-h-full flex-col justify-end gap-1.5 overflow-hidden">
-                    {CHAT_MESSAGES.map((message, index) => (
+                    {CHAT_MESSAGE_KEYS.map((key, index) => (
                       <p
-                        key={`${message}-${index}`}
+                        key={`${key}-${index}`}
                         className="rounded-lg border border-white/10 bg-black/50 px-2.5 py-1.5 text-[11px] leading-snug text-white/95 shadow-lg backdrop-blur-[2px]"
                       >
-                        {message}
+                        {t(key)}
                       </p>
                     ))}
                   </div>
@@ -162,7 +170,7 @@ export function BroadcastScene({ onEnd }: BroadcastSceneProps) {
       <footer className="game-dock px-6 py-3">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3">
           <div className="game-panel flex items-center gap-1 rounded-xl p-1">
-            <span className="px-2 text-xs text-slate-400">배속</span>
+            <span className="px-2 text-xs text-slate-400">{t('hud.speed')}</span>
             {SPEED_OPTIONS.map((option) => {
               const isActive = speed === option
               return (
@@ -185,7 +193,7 @@ export function BroadcastScene({ onEnd }: BroadcastSceneProps) {
             onClick={onEnd}
             className="game-btn px-4 py-2 text-sm"
           >
-            스킵
+            {t('broadcast.skip')}
           </button>
 
           <span className="game-chip ml-auto font-mono">

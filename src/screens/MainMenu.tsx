@@ -104,7 +104,7 @@ export function MainMenu({ onNewGame, onContinueGame, onOpenEditor }: MainMenuPr
 
         <nav
           className="flex w-full flex-col"
-          aria-label="메인 메뉴"
+          aria-label={t('menu.ariaMainMenu')}
           style={{ gap: 'clamp(0.4rem, 0.9vh, 0.85rem)' }}
         >
           {MENU_ITEMS.map((item) => {

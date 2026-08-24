@@ -570,10 +570,10 @@ function StreamCard({
             </div>
           </div>
           <div className="grid grid-cols-4 gap-1">
-            <StreamAction label="배정" icon={<IconAssign />} disabled />
-            <StreamAction label="훈련" icon={<IconTrain />} disabled />
-            <StreamAction label="통계" icon={<IconStats />} disabled />
-            <StreamAction label="설정" icon={<IconGear />} disabled />
+            <StreamAction label={t('dashboard.actionAssign')} icon={<IconAssign />} disabled />
+            <StreamAction label={t('dashboard.actionTrain')} icon={<IconTrain />} disabled />
+            <StreamAction label={t('dashboard.actionStats')} icon={<IconStats />} disabled />
+            <StreamAction label={t('dashboard.actionSettings')} icon={<IconGear />} disabled />
           </div>
         </div>
       </article>
@@ -641,10 +641,10 @@ function StreamCard({
           ) : null}
 
           <div className="grid grid-cols-4 gap-1">
-            <StreamAction label="배정" icon={<IconAssign />} disabled />
-            <StreamAction label="훈련" icon={<IconTrain />} disabled />
-            <StreamAction label="통계" icon={<IconStats />} disabled />
-            <StreamAction label="설정" icon={<IconGear />} disabled />
+            <StreamAction label={t('dashboard.actionAssign')} icon={<IconAssign />} disabled />
+            <StreamAction label={t('dashboard.actionTrain')} icon={<IconTrain />} disabled />
+            <StreamAction label={t('dashboard.actionStats')} icon={<IconStats />} disabled />
+            <StreamAction label={t('dashboard.actionSettings')} icon={<IconGear />} disabled />
           </div>
         </div>
       </article>
@@ -909,7 +909,7 @@ function StreamCard({
         ) : null}
 
         <div className="relative grid grid-cols-4 gap-1">
-          <StreamAction label="배정" icon={<IconAssign />} disabled />
+          <StreamAction label={t('dashboard.actionAssign')} icon={<IconAssign />} disabled />
           <button
             type="button"
             title={`${t('dashboard.actionRecover')} −${formatMoney(careCost)}`}
@@ -927,8 +927,8 @@ function StreamCard({
             </span>
             <span className="sr-only">{t('dashboard.actionRecover')}</span>
           </button>
-          <StreamAction label="통계" icon={<IconStats />} disabled />
-          <StreamAction label="설정" icon={<IconGear />} disabled />
+          <StreamAction label={t('dashboard.actionStats')} icon={<IconStats />} disabled />
+          <StreamAction label={t('dashboard.actionSettings')} icon={<IconGear />} disabled />
 
           {careSpendFlash ? (
             <div className="pointer-events-none absolute bottom-full left-1/4 z-20 mb-1 -translate-x-1/2 rounded-md border border-amber-400/40 bg-slate-950/95 px-2 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.5)]">

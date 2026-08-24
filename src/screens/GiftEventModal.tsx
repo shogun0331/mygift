@@ -65,7 +65,7 @@ export function GiftOfferModal({
             {t('gift.acceptHeader')}
           </p>
           <p className="mt-1.5 text-[12px] font-semibold text-rose-100">
-            {t('gift.acceptCost').replace('{price}', formatMoney(pending.assetCost))}
+            {t('gift.acceptCost').replace('{price}', () => formatMoney(pending.assetCost))}
           </p>
           <p className="mt-1 text-[11px] text-slate-400">
             {t('gift.acceptCostRange').replace(
@@ -153,7 +153,7 @@ export function GiftResultModal({
           {accepted ? (
             <>
               <p className="text-[12px] font-semibold text-rose-200">
-                {t('gift.resultCost').replace('{price}', formatMoney(assetCost))}
+                {t('gift.resultCost').replace('{price}', () => formatMoney(assetCost))}
               </p>
               <p className="text-[12px] font-semibold text-emerald-200">
                 {t('gift.resultCondition').replace('{n}', String(conditionDelta))}

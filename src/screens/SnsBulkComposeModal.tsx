@@ -134,7 +134,7 @@ export function SnsBulkComposeModal({
                       {formatMoney(cost)}
                     </span>
                     <span className="mt-1 block text-[11px] font-semibold tabular-nums text-slate-400">
-                      {heatPreview.eligibleIds.length}명
+                      {t('sns.countUnit').replace('{count}', String(heatPreview.eligibleIds.length))}
                     </span>
                     {heatPreview.eligibleIds.length > 0 ? (
                       <span className="mt-0.5 block text-[10px] tabular-nums text-slate-500">

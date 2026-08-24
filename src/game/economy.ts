@@ -1,4 +1,6 @@
 import type { OwnedCreator } from './characters'
+import { characterDisplayName } from './characterLocales'
+import { getCurrentLocale, translate } from '../locales/i18n'
 import {
   conditionFromScore,
   scoreOf,
@@ -168,7 +170,9 @@ function buildFlavorEvents(
       creatorName,
       type: 'viewers',
       amount: 0,
-      text: `📈 시청자 ${n}명 증가! (${creatorName})`,
+      text: translate(getCurrentLocale(), 'feed.viewersGained')
+        .replace('{count}', String(n))
+        .replace('{name}', creatorName),
       tone: 'bg-cyan-400',
     })
   }
@@ -191,15 +195,19 @@ export function buildCreatorDayPlan(
   )
   const amounts = splitDayRevenueAmounts(weekRevenueWon)
   const flavorCount = Math.min(3, rollInt(0, 3))
+  // Recent Events/정산 등에 노출되는 이름은 현재 언어로 표시
+  const displayName = characterDisplayName(creator, getCurrentLocale())
   const donationEvents: Array<Omit<DayEvent, 'atMs' | 'id'>> = amounts.map((amount) => ({
     creatorId: creator.id,
-    creatorName: creator.name,
+    creatorName: displayName,
     type: 'donation' as const,
     amount,
-    text: `💰 ${formatMoney(amount)} 후원! (${creator.name})`,
+    text: translate(getCurrentLocale(), 'feed.donation')
+      .replace('{amount}', () => formatMoney(amount))
+      .replace('{name}', displayName),
     tone: amount >= 1_000 ? 'bg-amber-400' : 'bg-pink-400',
   }))
-  const flavor = buildFlavorEvents(creator.name, creator.id, flavorCount)
+  const flavor = buildFlavorEvents(displayName, creator.id, flavorCount)
   const merged = [...donationEvents, ...flavor]
   // 시간 배치를 위해 섞기
   for (let i = merged.length - 1; i > 0; i -= 1) {
@@ -216,7 +224,7 @@ export function buildCreatorDayPlan(
 
   return {
     creatorId: creator.id,
-    creatorName: creator.name,
+    creatorName: displayName,
     weekRevenueWon,
     events,
   }

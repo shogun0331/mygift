@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from '../locales/i18n'
 
 export type ConditionCrashFxItem = {
   id: string
@@ -32,6 +33,7 @@ function CrashBurst({
   onDone: (id: string) => void
 }) {
   const [visible, setVisible] = useState(true)
+  const { t } = useTranslation()
 
   useEffect(() => {
     const hide = window.setTimeout(() => setVisible(false), 550)
@@ -53,13 +55,13 @@ function CrashBurst({
 
       <div className="condition-crash-copy absolute inset-0 flex flex-col items-center justify-center gap-1.5 px-3 text-center">
         <p className="condition-crash-badge rounded-lg border-2 border-rose-300/80 bg-rose-600/90 px-3 py-1.5 text-[11px] font-black tracking-[0.18em] text-white shadow-[0_0_24px_rgba(244,63,94,0.75)]">
-          ⚠ 진상 시청자
+          {t('toxic.viewer')}
         </p>
         <p className="condition-crash-amount text-2xl font-black tabular-nums text-rose-100 drop-shadow-[0_0_12px_rgba(244,63,94,0.95)] sm:text-3xl">
-          컨디션 −{crash.drop}
+          {t('toxic.conditionDrop').replace('{drop}', String(crash.drop))}
         </p>
         <p className="condition-crash-sub text-[10px] font-bold tracking-wide text-rose-200/95">
-          방송 중 트롤링 · CCTV에서 대응!
+          {t('toxic.trollingHint')}
         </p>
       </div>
     </div>

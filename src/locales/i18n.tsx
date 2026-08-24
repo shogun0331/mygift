@@ -30,6 +30,16 @@ const RESOURCES: Record<Locale, any> = {
   DE,
 }
 
+/**
+ * React hook 외부(게임 로직 등)에서 현재 UI 로케일을 읽기 위한 모듈 싱글톤.
+ * I18nProvider 초기화/언어 변경 시 동기화된다. (기본값 KO)
+ */
+let currentLocale: Locale = 'KO'
+
+export function getCurrentLocale(): Locale {
+  return currentLocale
+}
+
 type I18nContextType = {
   locale: Locale
   setLocale: (locale: Locale) => void
@@ -53,7 +63,7 @@ function applyLocaleToDocument(locale: Locale) {
   document.documentElement.dataset.locale = locale
 }
 
-function translate(locale: Locale, key: string): string {
+export function translate(locale: Locale, key: string): string {
   const currentPack = RESOURCES[locale]
   let val = getValueByPath(currentPack, key)
   if (val != null && val.trim() !== '') return val
@@ -71,9 +81,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     try {
       const saved = localStorage.getItem('locale') as Locale | null
       const next = saved && RESOURCES[saved] ? saved : 'KO'
+      currentLocale = next
       applyLocaleToDocument(next)
       return next
     } catch {
+      currentLocale = 'KO'
       applyLocaleToDocument('KO')
       return 'KO'
     }
@@ -81,6 +93,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLocale = (newLocale: Locale) => {
     if (!RESOURCES[newLocale]) return
+    currentLocale = newLocale
     setLocaleState(newLocale)
     try {
       localStorage.setItem('locale', newLocale)

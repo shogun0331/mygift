@@ -19,7 +19,9 @@
     "finalVer": "FINAL VER.",
     "kicker": "Tonight's Broadcast",
     "desc": "Management Sim Game",
-    "savedData": "(SAVED DATA)"
+    "savedData": "(SAVED DATA)",
+    "ariaMainMenu": "Main menu",
+    "ariaGameMenu": "In-game menu"
   },
   "hud": {
     "dateTime": "DATE",
@@ -77,7 +79,11 @@
     "staffCare": "CARE RECOVER",
     "staffCareSub": "Condition restored to Best",
     "staffProd": "PRODUCTION BONUS",
-    "staffProdSub": "Revenue and viewer bonus"
+    "staffProdSub": "Revenue and viewer bonus",
+    "actionAssign": "Assign",
+    "actionTrain": "Train",
+    "actionStats": "Stats",
+    "actionSettings": "Settings"
   },
   "condition": {
     "title": "Condition",
@@ -174,6 +180,9 @@
     "scoutFailBody": "This negotiation didn't work out. Try again next time.",
     "scoutFailConfirm": "OK",
     "scoutNewArrival": "A new creator has appeared!",
+    "staffScoutNewArrival": "A new staff candidate has responded to your offer!",
+    "scoutAvailable": "Scout available",
+    "staffScoutAvailable": "Offer available",
     "scoutWaiting": "No new candidates yet. Another chance comes in a few months.",
     "scoutHireBlockedSlot": "Not enough unlocked studio slots.",
     "scoutHireBlockedAssets": "Not enough assets to cover the salary.",
@@ -225,7 +234,50 @@
     "examSuccessHint": "Confirm to apply the new grade and salary.",
     "examFailHint": "Main stat is kept. You can try the review again.",
     "examRefund": "Refund",
-    "examConfirm": "OK"
+    "examConfirm": "OK",
+    "manageSubtitle": "Owned {count} · recruit through scouting",
+    "gradeFilter": "Grade filter",
+    "manageTitle": "Creator Management",
+    "manageDesc": "Sorted by salary · spreadsheet-style table",
+    "scoutCheck": "Check scout",
+    "noCreators": "No creators to display.",
+    "noCreatorsDesc": "A scout opportunity opens after the monthly settlement.",
+    "currentSalary": "Current salary",
+    "detailView": "Details",
+    "staffManageTitle": "Staff Management",
+    "staffManageDesc": "Manage scouted and hired staff",
+    "staffOfferCheck": "Check offer",
+    "staffOffer": "Recruit offer",
+    "staffScoutDone": "Scout complete",
+    "noStaff": "No hired staff yet.",
+    "noStaffDesc": "Click the scout button at the top right to find candidates.",
+    "colField": "Field",
+    "colJoinDate": "Join date",
+    "colSalary": "Salary",
+    "colDeploy": "Placement",
+    "colWorkDeploy": "Work assignment",
+    "notDeployed": "Unassigned",
+    "weeksFormat": "{weeks}w",
+    "weeksYearFormat": "{weeks}w (1 yr)",
+    "ageFormat": "{age} yrs old",
+    "proposedSalary": "Proposed salary",
+    "payDay": "Payday",
+    "payTurns": "in {count} turns",
+    "statsTitle": "Key stats & status",
+    "trustMax": "Max satisfaction",
+    "trustNeed": "Needs care",
+    "contractLeft": "Contract left: {weeks}",
+    "staffScoutTitle": "Staff scout",
+    "staffScoutDesc": "Review the candidate's profile and stats, then hire them.",
+    "staffKindFormat": "{kind} staff",
+    "hireCost": "Required hire cost",
+    "requiredSalary": "Required salary",
+    "staffDutyTitle": "Duties & dedicated bonus",
+    "hireBlockedAssets": "You don't have enough assets to hire this staff.",
+    "staffHold": "Hold (recruit later)",
+    "staffHire": "Recruit",
+    "noRegistered": "No registered characters.",
+    "noRegisteredDesc": "Add characters in the editor to have them appear as scout candidates."
   },
   "sns": {
     "action": "SNS",
@@ -285,7 +337,8 @@
     "comment.h3c": "Saving this immediately",
     "comment.h3d": "The server's gonna melt",
     "comment.h3e": "Legendary upload",
-    "comment.h3f": "Is this real"
+    "comment.h3f": "Is this real",
+    "countUnit": "{count}"
   },
   "studio": {
     "placementTitle": "CREATOR PLACEMENT",
@@ -330,7 +383,9 @@
       "repair": "Blocks equipment failures",
       "care": "Halves stamina drain · restores to Best when it drops to Good",
       "production": "+25% donations · extra viewers"
-    }
+    },
+    "dragHint": "Drag to move slots · synced with dashboard",
+    "gradeRequired": "Grade required"
   },
   "staff": {
     "kindSecurity": "Security",
@@ -338,7 +393,19 @@
     "kindCare": "Care",
     "kindProduction": "Production",
     "genderMale": "Male",
-    "genderFemale": "Female"
+    "genderFemale": "Female",
+    "dutySecurityTitle": "Security",
+    "dutySecurityBonus": "Broadcast safety bonus (reduces hate comment chance)",
+    "dutySecurityDesc": "Protects creators from threats that may occur during a broadcast and effectively blocks negative events.",
+    "dutyRepairTitle": "Repair",
+    "dutyRepairBonus": "Reduces equipment failure & wear",
+    "dutyRepairDesc": "Prevents defects or wear in broadcast equipment to save on repair costs and provide a smooth live streaming environment.",
+    "dutyCareTitle": "Care",
+    "dutyCareBonus": "Reduces stamina drain & fatigue",
+    "dutyCareDesc": "Manages creators’ condition and fatigue, reducing stamina drain during live broadcasts to support sustained streaming.",
+    "dutyProductionTitle": "Production",
+    "dutyProductionBonus": "Boosts broadcast revenue & viewer donations",
+    "dutyProductionDesc": "Participates in directing and planning live broadcasts to maximize viewership and donation revenue."
   },
   "settlement": {
     "title": "Monthly Settlement",
@@ -375,7 +442,14 @@
     "miscExpenses": "Other costs",
     "funds": "Funds",
     "highlightsSection": "Highlights",
-    "confirm": "OK"
+    "confirm": "OK",
+    "expenseStudioOps": "Studio operating cost",
+    "expenseEmptyBroadcast": "No-creator broadcast ({percent}%)",
+    "expenseStaffPayroll": "Staff payroll",
+    "expenseStaffCount": "{count} staff",
+    "careExpenseLabel": "Condition care ({name})",
+    "taxLabel": "Income tax",
+    "taxDetail": "based on {year} annual revenue {amount}"
   },
   "station": {
     "gradeBadge": "Grade {grade}",
@@ -549,5 +623,88 @@
       "tiny": "Tiny Business",
       "black": "Sole Proprietor"
     }
+  },
+  "common": {
+    "search": "Search",
+    "name": "Name",
+    "grade": "Grade",
+    "gradeBadge": "{grade}",
+    "gradeFilterFormat": "{grade} grade",
+    "action": "Action",
+    "countUnit": "{count}",
+    "back": "← Back",
+    "male": "Male",
+    "female": "Female",
+    "screenReady": "Preparing {name} screen"
+  },
+  "alert": {
+    "stationGradeRequired": "Your company tier is too low.",
+    "stationGradeRequiredDetail": "Your company tier is too low. (Required: {tier})",
+    "insufficientAssets": "Not enough assets.",
+    "scoutLimitReached": "You can't scout more creators at your current station grade.",
+    "noScoutCandidate": "No scout candidates available.",
+    "noStaffToRecruit": "No more staff available to recruit.",
+    "staffQuit": "{name} has left the company."
+  },
+  "feed": {
+    "donation": "💰 {amount} donation! ({name})",
+    "gearFail": "{name} equipment failure! Donations halted · click to repair",
+    "productionBonus": "{name} production bonus! Viewers +{bonus} · revenue up",
+    "care": "{name} care! Restored {creatorName}'s condition to max",
+    "toxicAppear": "{name} toxic viewer! Condition −{drop} · click to defend stamina!",
+    "toxicCrash": "{name}'s condition −{drop} due to toxic viewers",
+    "repairFix": "{name} repair check! Fixed the breakdown",
+    "repairDefense": "{name} repair defense! Prevented equipment failure",
+    "toxicBlocked": "{name} blocked the toxic viewer! Stamina defended",
+    "toxicBlockedShort": "{name} toxic blocked — stamina defended",
+    "toxicFailed": "{name} failed to respond! Stamina −{drop}",
+    "toxicFailedShort": "{name} lost stamina −{drop} to a toxic viewer",
+    "repairPreBroadcast": "{name} repair check! Fixed the breakdown before broadcast",
+    "securityBlocked": "{name} security blocked! Stopped the toxic incident",
+    "viewersGained": "📈 {count} viewers gained! ({name})",
+    "taxUpcoming": "Annual income tax due next month ({year} cumulative revenue: {amount})",
+    "bigDonation": "{name} huge donation! ({amount})",
+    "donationTopic": "{name} donation makes waves! ({amount})",
+    "viewersSpike": "{name} viewers surge!",
+    "monthlyTopEarn": "{name} top earner of the month!",
+    "annualTaxNotice": "{year} annual income tax (−{amount})",
+    "annualTaxNone": "{year} annual income tax (none due)",
+    "noSpecialEvents": "No notable events this month"
+  },
+  "broadcast": {
+    "stationName": "Station",
+    "week": "Week",
+    "weekCount": "Week {count}",
+    "endBroadcast": "End broadcast",
+    "levelFormat": "Lv.{level} · {type}",
+    "skip": "Skip",
+    "chatTakeOff": "Strip!",
+    "chatPretty": "So pretty~",
+    "chatDance": "Dance for us!",
+    "chatAmazing": "Awesome!",
+    "chatPrettyToday": "Still beautiful today",
+    "chatDance2": "Do a dance!",
+    "chatLove": "Love you~",
+    "chatBestConcept": "Best concept today",
+    "chatSubscribed": "Subscribed!",
+    "chatBest": "You're the best!"
+  },
+  "salaryRaise": {
+    "title": "Salary raise demand",
+    "staffNameFormat": "Staff {name}",
+    "dialogue": "\"The gap between my salary and the other staff is too large. If you won't raise it to the proposed amount, I'm not sure I can keep working here.\"",
+    "currentSalary": "Current salary",
+    "requiredSalary": "Required salary",
+    "reject": "Reject (quit)",
+    "accept": "Accept (raise)"
+  },
+  "toxic": {
+    "ariaLabel": "{name}'s toxic viewer — click the screen",
+    "appear": "⚠ Toxic viewer appeared",
+    "click": "Click the screen!",
+    "staminaPenalty": "−{count} stamina on failure",
+    "viewer": "⚠ Toxic viewer",
+    "conditionDrop": "Condition −{drop}",
+    "trollingHint": "Trolling during broadcast · respond from CCTV!"
   }
 }

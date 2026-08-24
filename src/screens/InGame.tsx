@@ -148,6 +148,7 @@ import { type GearFailBurstItem } from './GearFailBurstFx'
 import { type StaffActionFxItem } from './StaffActionFx'
 import { type ToxicWhackQteItem } from './ToxicWhackQte'
 import { CreatorPanel } from './CreatorPanel'
+import { RedDot } from './RedDot'
 import { DashboardPanel } from './DashboardPanel'
 import { StaffSalaryRaiseModal } from './StaffSalaryRaiseModal'
 import { type ScoutedStaffCandidate } from '../game/characters'
@@ -173,7 +174,6 @@ import {
   meetsSlotUnlockByRank,
   slotUnlockMinGradeOf,
   slotUnlockPriceOf,
-  STATION_TIER_LABEL,
 } from '../game/stationGradeConfig'
 import {
   rollVipRejectViewers,
@@ -282,14 +282,14 @@ function takeLargestDonationBatch(map: Map<string, DonationBatch>): DonationBatc
   return best
 }
 
-function donationEventFromBatch(batch: DonationBatch, stamp: string): DayEvent {
+function donationEventFromBatch(batch: DonationBatch, stamp: string, t: (key: string) => string): DayEvent {
   return {
     id: `donation-batch-${batch.creatorId}-${stamp}`,
     creatorId: batch.creatorId,
     creatorName: batch.creatorName,
     type: 'donation',
     amount: batch.amount,
-    text: `💰 ${formatMoney(batch.amount)} 후원! (${batch.creatorName})`,
+    text: t('feed.donation').replace('{amount}', () => formatMoney(batch.amount)).replace('{name}', batch.creatorName),
     atMs: 0,
     tone: batch.amount >= 1_000 ? 'bg-amber-400' : 'bg-pink-400',
   }
@@ -558,6 +558,7 @@ export function InGame({
   /** 월간 방송 종료 후 명세서 대기·표시 중 — 닫기 전까지 방송 시작 잠금 */
   const [startBroadcastLocked, setStartBroadcastLocked] = useState(false)
   const [openCreatorScout, setOpenCreatorScout] = useState(false)
+  const [openStaffScout, setOpenStaffScout] = useState(false)
   const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(1)
   const [league, setLeague] = useState<LeagueState>(() => createInitialLeagueState([], 'black'))
   const [rankSettlement, setRankSettlement] = useState<RankSettlementResult | null>(null)
@@ -676,6 +677,17 @@ export function InGame({
   scoutSystemRef.current = scoutSystem
   registeredCharactersRef.current = registeredCharacters
   eventsRef.current = events
+
+  /** 하단 탭 클릭 — 매니지먼트(CREATOR) 탭은 대기 중인 스카우트/영입 제안이 있으면 해당 뷰로 바로 이동 */
+  function handleTabClick(next: GameTab) {
+    setTab(next)
+    if (next !== 'creator') return
+    if (scoutSystem.activeOffer) {
+      setOpenCreatorScout(true)
+    } else if (scoutedStaffCandidate) {
+      setOpenStaffScout(true)
+    }
+  }
 
   function beginRecruitPresentation(creator: OwnedCreator) {
     onScout(creator)
@@ -968,15 +980,15 @@ export function InGame({
       const required = slotUnlockMinGradeOf(stationGradeConfig, unlocked)
       alert(
         required
-          ? `기업 등급이 부족합니다. (필요: ${STATION_TIER_LABEL[required]})`
-          : '기업 등급이 부족합니다.',
+          ? t('alert.stationGradeRequiredDetail').replace('{tier}', t(companyTierLabelKey(required)))
+          : t('alert.stationGradeRequired'),
       )
       return
     }
     const price =
       slotUnlockPriceOf(stationGradeConfig, unlocked) ?? calcSlotUnlockCost(unlocked)
     if (assetsRef.current < price) {
-      alert('자산이 부족합니다.')
+      alert(t('alert.insufficientAssets'))
       return
     }
     setAssets((prev) => prev - price)
@@ -998,7 +1010,7 @@ export function InGame({
     if (!creatorScoutAvailableRef.current) return
     const maxScout = maxScoutCreatorsForGrade(stationGradeConfig, stationGradeRef.current)
     if (ownedCreatorsRef.current.length >= maxScout) {
-      alert('현재 방송국 등급에서 더 이상 스카우트할 수 없습니다.')
+      alert(t('alert.scoutLimitReached'))
       return
     }
     const offer = createRandomScoutOffer(
@@ -1007,7 +1019,7 @@ export function InGame({
       'C',
     )
     if (!offer) {
-      alert('스카우트 가능한 후보가 없습니다.')
+      alert(t('alert.noScoutCandidate'))
       return
     }
     const turn = broadcastMonthNumberRef.current
@@ -1249,7 +1261,7 @@ export function InGame({
         const batch = takeLargestDonationBatch(donationBatchRef.current)
         if (!batch) break
         if (isCreatorDonationBlocked(batch.creatorId)) continue
-        emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${stamp}`))
+        emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${stamp}`, t))
         stamp += 1
       }
       emit.push(...feedExtraQueueRef.current)
@@ -1264,7 +1276,7 @@ export function InGame({
 
     const batch = takeLargestDonationBatch(donationBatchRef.current)
     if (batch && !isCreatorDonationBlocked(batch.creatorId)) {
-      emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${Math.round(now)}`))
+      emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${Math.round(now)}`, t))
     } else if (batch) {
       // blocked creator batch — drop and retry next tick
       return
@@ -1294,16 +1306,22 @@ export function InGame({
         slotId: slot.id,
       })),
     ])
-    const failEvents: DayEvent[] = newlyBrokenSlots.map((slot) => ({
-      id: `gear-fail-${slot.id}-${plan.dayKey}-${Math.round(performance.now())}`,
-      creatorId: slot.assignment?.creatorId ?? slot.id,
-      creatorName: slot.assignment?.creatorName ?? slot.label,
-      type: 'gear',
-      amount: 0,
-      text: `${slot.assignment?.creatorName ?? slot.label} 장비 고장! 후원 중단 · 클릭하여 수리`,
-      atMs: 0,
-      tone: 'bg-amber-400',
-    }))
+    const failEvents: DayEvent[] = newlyBrokenSlots.map((slot) => {
+      const creatorName = creatorNameOf(
+        slot.assignment?.creatorId,
+        slot.assignment?.creatorName ?? slot.label,
+      )
+      return {
+        id: `gear-fail-${slot.id}-${plan.dayKey}-${Math.round(performance.now())}`,
+        creatorId: slot.assignment?.creatorId ?? slot.id,
+        creatorName,
+        type: 'gear',
+        amount: 0,
+        text: t('feed.gearFail').replace('{name}', creatorName),
+        atMs: 0,
+        tone: 'bg-amber-400',
+      }
+    })
     setLiveEvents((prev) => [...failEvents.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
   }
 
@@ -1311,6 +1329,13 @@ export function InGame({
     if (!staffId) return ''
     const staff = registeredStaff.find((row) => row.id === staffId)
     return staffDisplayName(staff, locale)
+  }
+
+  /** Recent Events 등에 표시할 크리에이터 이름을 현재 언어로 (없으면 fallback) */
+  function creatorNameOf(creatorId: string | null | undefined, fallback = ''): string {
+    if (!creatorId) return fallback
+    const creator = ownedCreatorsRef.current.find((row) => row.id === creatorId)
+    return creator ? characterDisplayName(creator, locale) : fallback
   }
 
   function presentStaffAction(
@@ -1377,7 +1402,9 @@ export function InGame({
       'production',
       t('dashboard.staffProd'),
       bonus > 0 ? `${t('dashboard.staffProdSub')} +${bonus}` : t('dashboard.staffProdSub'),
-      `${name || creatorName} 프로덕션 보너스! 시청자 +${bonus} · 수익 증가`,
+      t('feed.productionBonus')
+        .replace('{name}', name || creatorName)
+        .replace('{bonus}', String(bonus)),
       creatorId,
       creatorName,
     )
@@ -1403,9 +1430,11 @@ export function InGame({
       'care',
       t('dashboard.staffCare'),
       t('dashboard.staffCareSub'),
-      `${name || creator.name} 케어! ${creator.name} 컨디션을 최고로 회복`,
+      t('feed.care')
+        .replace('{name}', name || creatorNameOf(creator.id))
+        .replace('{creatorName}', creatorNameOf(creator.id)),
       creator.id,
-      creator.name,
+      creatorNameOf(creator.id),
     )
     return true
   }
@@ -1427,7 +1456,9 @@ export function InGame({
       creatorName: crash.creatorName,
       type: 'toxic' as const,
       amount: crash.drop,
-      text: `${crash.creatorName} 진상 시청자! 컨디션 −${crash.drop} · 클릭으로 스테미나 방어!`,
+      text: t('feed.toxicAppear')
+        .replace('{name}', crash.creatorName)
+        .replace('{drop}', String(crash.drop)),
       atMs: 0,
       tone: 'bg-rose-500',
     }))
@@ -1454,7 +1485,9 @@ export function InGame({
       weekAccumRef.current = {
         ...weekAccumRef.current,
         highlights: [
-          `${crash.creatorName} 진상 사태로 컨디션 −${crash.drop}`,
+          t('feed.toxicCrash')
+            .replace('{name}', crash.creatorName)
+            .replace('{drop}', String(crash.drop)),
           ...weekAccumRef.current.highlights,
         ],
       }
@@ -1485,9 +1518,12 @@ export function InGame({
         'repair',
         t('dashboard.staffBlockRepair'),
         t('dashboard.staffBlockRepairSub'),
-        `${staffNameOf(repair.staffId) || creator.name} 수리 점검! 고장을 복구했다`,
+        t('feed.repairFix').replace(
+          '{name}',
+          staffNameOf(repair.staffId) || characterDisplayName(creator, locale),
+        ),
         creator.id,
-        creator.name,
+        characterDisplayName(creator, locale),
       )
     }
 
@@ -1507,9 +1543,12 @@ export function InGame({
           'security',
           t('dashboard.staffBlockSecurity'),
           t('dashboard.staffBlockSecuritySub'),
-          `${staffNameOf(security.staffId) || creator.name} 보안 차단! 진상 사건을 막아냈다`,
+          t('feed.securityBlocked').replace(
+            '{name}',
+            staffNameOf(security.staffId) || characterDisplayName(creator, locale),
+          ),
           creator.id,
-          creator.name,
+          characterDisplayName(creator, locale),
         )
       } else {
         const drop = rollInt(CONDITION_CRASH_DROP.min, CONDITION_CRASH_DROP.max)
@@ -1525,7 +1564,7 @@ export function InGame({
         presentToxicCrashes(plan, [
           {
             creatorId: creator.id,
-            creatorName: creator.name,
+            creatorName: characterDisplayName(creator, locale),
             drop,
             staminaDrop,
           },
@@ -1539,7 +1578,7 @@ export function InGame({
     if (alreadyBroken) {
       // 고장난 칸은 장비 검사/프로덕션만 스킵. 보안 연출은 이미 처리됨.
       if (!blockedOrResolved || staffBonusOf(managers, inspection.slotId, 'production').equipped) {
-        grantProductionBonus(inspection.slotId, creator.id, creator.name)
+        grantProductionBonus(inspection.slotId, creator.id, characterDisplayName(creator, locale))
       }
       return
     }
@@ -1558,9 +1597,12 @@ export function InGame({
               'repair',
               t('dashboard.staffBlockRepair'),
               t('dashboard.staffBlockRepairSub'),
-              `${staffNameOf(repair.staffId) || creator.name} 수리 방어! 장비 고장을 막아냈다`,
+              t('feed.repairDefense').replace(
+                '{name}',
+                staffNameOf(repair.staffId) || characterDisplayName(creator, locale),
+              ),
               creator.id,
-              creator.name,
+              characterDisplayName(creator, locale),
             )
             blockedOrResolved = true
           }
@@ -1580,7 +1622,7 @@ export function InGame({
 
     // 프로덕션은 매 검사마다 한 번 보너스·연출 (슬롯당 주 1회는 grant 쪽에서 가드)
     if (!blockedOrResolved || staffBonusOf(managers, inspection.slotId, 'production').equipped) {
-      grantProductionBonus(inspection.slotId, creator.id, creator.name)
+      grantProductionBonus(inspection.slotId, creator.id, characterDisplayName(creator, locale))
     }
   }
 
@@ -1631,7 +1673,7 @@ export function InGame({
       setStaffScoutCooldown(3)
     } else {
       setScoutedStaffCandidate(null)
-      alert('더 이상 영입 가능한 스탭이 없습니다.')
+      alert(t('alert.noStaffToRecruit'))
     }
   }
 
@@ -1657,7 +1699,7 @@ export function InGame({
       setRecruitFlyCard({
         id: staff.id,
         name: staffDisplayName(staff, locale),
-        kind: t(STAFF_KIND_LABEL_KEY[staff.kind]) + ' 스탭',
+        kind: t('creator.staffKindFormat').replace('{kind}', t(STAFF_KIND_LABEL_KEY[staff.kind])),
         profileImageUrl: staffCardUrl(staff) || staffIconUrl(staff),
         isStaff: true,
       })
@@ -1730,16 +1772,18 @@ export function InGame({
         'care',
         t('dashboard.staffCare'),
         t('dashboard.staffCareSub'),
-        `${staffNameOf(care.staffId) || row.creatorName} 케어! ${row.creatorName} 컨디션을 최고로 회복`,
+        t('feed.care')
+          .replace('{name}', staffNameOf(care.staffId) || creatorNameOf(row.creatorId))
+          .replace('{creatorName}', creatorNameOf(row.creatorId)),
         row.creatorId,
-        row.creatorName,
+        creatorNameOf(row.creatorId),
       )
     }
     for (const creatorId of assignedSlotIds) {
       const slotId = findSlotIdForCreator(studioSlotsRef.current, creatorId)
       const creator = nextOwned.find((row) => row.id === creatorId)
       if (!slotId || !creator) continue
-      grantProductionBonus(slotId, creator.id, creator.name)
+      grantProductionBonus(slotId, creator.id, characterDisplayName(creator, locale))
     }
 
     const failMulBySlotId: Record<string, number> = {}
@@ -1794,7 +1838,7 @@ export function InGame({
             creatorName: current.creatorName,
             type: 'toxic' as const,
             amount: 0,
-            text: `${current.creatorName} 진상 차단 성공! 스테미나 방어`,
+            text: t('feed.toxicBlocked').replace('{name}', current.creatorName),
             atMs: 0,
             tone: 'bg-emerald-400',
           },
@@ -1804,7 +1848,7 @@ export function InGame({
       weekAccumRef.current = {
         ...weekAccumRef.current,
         highlights: [
-          `${current.creatorName} 진상 차단 — 스테미나 방어`,
+          t('feed.toxicBlockedShort').replace('{name}', current.creatorName),
           ...weekAccumRef.current.highlights,
         ],
       }
@@ -1824,7 +1868,9 @@ export function InGame({
             creatorName: current.creatorName,
             type: 'toxic' as const,
             amount: current.staminaDrop,
-            text: `${current.creatorName} 진상 대응 실패! 스테미나 −${current.staminaDrop}`,
+            text: t('feed.toxicFailed')
+              .replace('{name}', current.creatorName)
+              .replace('{drop}', String(current.staminaDrop)),
             atMs: 0,
             tone: 'bg-rose-500',
           },
@@ -1834,7 +1880,9 @@ export function InGame({
       weekAccumRef.current = {
         ...weekAccumRef.current,
         highlights: [
-          `${current.creatorName} 진상 실패로 스테미나 −${current.staminaDrop}`,
+          t('feed.toxicFailedShort')
+            .replace('{name}', current.creatorName)
+            .replace('{drop}', String(current.staminaDrop)),
           ...weekAccumRef.current.highlights,
         ],
       }
@@ -2070,7 +2118,7 @@ export function InGame({
       )
       snsResults.push({
         creatorId: creator.id,
-        creatorName: creator.name,
+        creatorName: characterDisplayName(creator, locale),
         postId: pending.postId,
         heat: pending.heat,
         imageUrl: media?.url ?? null,
@@ -2255,7 +2303,7 @@ export function InGame({
     const next = removeStaffFromState(managerStateRef.current, staffId)
     managerStateRef.current = next
     onManagerStateChangeRef.current(next)
-    alert(`${staffName} 스탭이 퇴사하였습니다.`)
+    alert(t('alert.staffQuit').replace('{name}', staffName))
     setStaffSalaryRaiseRequest(null)
     setStartBroadcastLocked(false)
   }
@@ -2508,7 +2556,7 @@ export function InGame({
       ...prev,
       {
         creatorId: creator.id,
-        creatorName: creator.name,
+        creatorName: characterDisplayName(creator, locale),
         previousGrade,
         newGrade,
         previousSalary,
@@ -2535,7 +2583,7 @@ export function InGame({
       }
       const exam = {
         creatorId: target.id,
-        creatorName: target.name,
+        creatorName: characterDisplayName(target, locale),
         result,
       }
       promotionExamRef.current = exam
@@ -2678,7 +2726,7 @@ export function InGame({
       .filter((c) => !canBroadcastByStamina(c.stamina))
 
     if (blockedAssigned.length > 0) {
-      setRestRequiredName(blockedAssigned[0]!.name)
+      setRestRequiredName(characterDisplayName(blockedAssigned[0]!, locale))
       return
     }
 
@@ -2722,9 +2770,12 @@ export function InGame({
           'repair',
           t('dashboard.staffBlockRepair'),
           t('dashboard.staffBlockRepairSub'),
-          `${staffNameOf(repair.staffId) || slot.assignment.creatorName} 수리 점검! 방송 전 고장을 복구했다`,
+          t('feed.repairPreBroadcast').replace(
+            '{name}',
+            staffNameOf(repair.staffId) || creatorNameOf(slot.assignment.creatorId, slot.assignment.creatorName),
+          ),
           slot.assignment.creatorId,
-          slot.assignment.creatorName,
+          creatorNameOf(slot.assignment.creatorId, slot.assignment.creatorName),
         )
       }
       if (gearChanged) {
@@ -3087,6 +3138,8 @@ export function InGame({
             broadcastMonthNumber={broadcastMonthNumber}
             openScout={openCreatorScout}
             onScoutClosed={() => setOpenCreatorScout(false)}
+            openStaffScout={openStaffScout}
+            onStaffScoutClosed={() => setOpenStaffScout(false)}
             onScoutViewed={() => setScoutSystem((prev) => markScoutViewed(prev))}
             onScoutPass={() => setScoutSystem((prev) => passScoutOffer(prev))}
             onScoutHire={handleCreatorScoutHire}
@@ -3159,7 +3212,7 @@ export function InGame({
                 return null
               }
               const required = slotUnlockMinGradeOf(stationGradeConfig, unlocked)
-              return required ? STATION_TIER_LABEL[required] : null
+              return required ? t(companyTierLabelKey(required)) : null
             })()}
             assets={assets}
             onUnlockSlot={handleUnlockStudioSlot}
@@ -3209,11 +3262,11 @@ export function InGame({
                   >
                     <option value="KO">한국어 (KO)</option>
                     <option value="EN">English (EN)</option>
-                    <option value="JA">日本語 (JA)</option>
-                    <option value="ZH-CN">简体中文 (ZH-CN)</option>
-                    <option value="RU">Русский (RU)</option>
-                    <option value="ES">Español (ES)</option>
-                    <option value="DE">Deutsch (DE)</option>
+                    <option value="JA">日本語 (JA) (일본어)</option>
+                    <option value="ZH-CN">简体中文 (ZH-CN) (중국어 간체)</option>
+                    <option value="RU">Русский (RU) (러시아어)</option>
+                    <option value="ES">Español (ES) (스페인어)</option>
+                    <option value="DE">Deutsch (DE) (독일어)</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-indigo-400">
                     <svg className="fill-current h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -3256,27 +3309,47 @@ export function InGame({
           </div>
         ) : (
           <div className="game-panel min-h-full rounded-2xl p-6 text-slate-500">
-            <p className="text-base">{t(`menu.${tab}`) || (tab as string).toUpperCase()} 화면 준비 중</p>
+            <p className="text-base">
+              {t('common.screenReady').replace(
+                '{name}',
+                t(`menu.${tab}`) || (tab as string).toUpperCase(),
+              )}
+            </p>
           </div>
         )}
       </section>
 
       {broadcastPhase === 'live' ? null : (
-      <nav className="game-dock z-20 shrink-0 px-6 py-3" aria-label="인게임 메뉴">
+      <nav className="game-dock z-20 shrink-0 px-6 py-3" aria-label={t('menu.ariaGameMenu')}>
         <div className="mx-auto flex w-full max-w-6xl gap-1.5 sm:gap-2">
           {TABS.map((item) => {
             const isActive = tab === item.id
+            const alert =
+              item.id === 'creator' &&
+              (creatorScoutAvailable ||
+                staffScoutAvailable ||
+                Boolean(scoutSystem.activeOffer) ||
+                Boolean(scoutedStaffCandidate))
+            const alertLabel =
+              item.id === 'creator' && alert
+                ? scoutSystem.activeOffer
+                  ? t('creator.scoutNewArrival')
+                  : scoutedStaffCandidate
+                    ? t('creator.staffScoutNewArrival')
+                    : t('menu.creator')
+                : undefined
             return (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setTab(item.id)}
+                onClick={() => handleTabClick(item.id)}
                 className={`game-btn-tab relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-4 py-2.5 text-xs font-semibold tracking-wide ${
                   isActive ? 'is-active' : ''
                 }`}
               >
                 {item.icon}
                 <span>{t(`menu.${item.id}`)}</span>
+                {alert ? <RedDot label={alertLabel} /> : null}
               </button>
             )
           })}

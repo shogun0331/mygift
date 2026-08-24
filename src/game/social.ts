@@ -1,4 +1,6 @@
 import type { Grade, OwnedCreator } from './characters'
+import { characterDisplayName } from './characterLocales'
+import { getCurrentLocale } from '../locales/i18n'
 import { rollInt } from './stats'
 import { pickVipTarget, toVipOffer, type VipOffer } from './vip'
 
@@ -151,7 +153,7 @@ export function pickHCompletedTarget(
 function faceOf(creator: OwnedCreator) {
   return {
     creatorId: creator.id,
-    creatorName: creator.name,
+    creatorName: characterDisplayName(creator, getCurrentLocale()),
     grade: creator.grade,
     profileImageUrl: creator.profileImageUrl || null,
   }
