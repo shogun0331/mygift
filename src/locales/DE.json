@@ -466,7 +466,7 @@
     "reviewFail": "Klasse gehalten",
     "reviewMax": "Höchste Klasse gehalten",
     "reviewMaxBody": "Du bist bereits Top-Firma. Rang- und Zuschauerlimit aufgehoben.",
-    "reviewFailBody": "Bedingungen nicht erfüllt — Klasse bleibt. Kein Abstieg. Nächste Prüfung im Januar.",
+    "reviewFailBody": "Bedingungen nicht erfüllt — Klasse bleibt. Kein Abstieg. Nächste Prüfung im nächsten Monat.",
     "rewardTitle": "Aufstiegsbelohnung",
     "rewardSp": "SP +{n}",
     "rewardSlots": "Studio-Plätze geöffnet: {n}",

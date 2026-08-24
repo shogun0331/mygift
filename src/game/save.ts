@@ -57,6 +57,8 @@ export type GameSave = {
   }
   /** 스카우트 런타임 상태 (오프닝 보장/대기 오퍼 등) */
   scoutSystem: SerializedScoutSystemState
+  /** 월말 연간 심사/승급이 진행 중인지 (세이브-로드 유실 방지) */
+  pendingStationReview?: boolean
 }
 
 export type TopCharacterMeta = {

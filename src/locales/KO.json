@@ -468,7 +468,7 @@
     "reviewFail": "등급 유지",
     "reviewMax": "최고 등급 유지",
     "reviewMaxBody": "이미 일등기업입니다. 순위 상한과 시청자 캡이 해제된 상태입니다.",
-    "reviewFailBody": "조건을 충족하지 못해 등급이 유지됩니다. 하락은 없습니다. 다음 해 1월에 다시 심사합니다.",
+    "reviewFailBody": "조건을 충족하지 못해 등급이 유지됩니다. 하락은 없습니다. 다음 달에 다시 심사합니다.",
     "rewardTitle": "승급 보상",
     "rewardSp": "SP +{n}",
     "rewardSlots": "스튜디오 슬롯 {n}칸 개방",

@@ -466,7 +466,7 @@
     "reviewFail": "等级保持",
     "reviewMax": "最高等级保持",
     "reviewMaxBody": "已是一流企业。排名上限与观众上限已解除。",
-    "reviewFailBody": "条件未满足，等级保持。不会降级。明年1月再次审核。",
+    "reviewFailBody": "条件未满足，等级保持。不会降级。下月再次审核。",
     "rewardTitle": "晋升奖励",
     "rewardSp": "SP +{n}",
     "rewardSlots": "演播室格位开放 {n}格",

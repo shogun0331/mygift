@@ -177,7 +177,6 @@ import {
   applyStationReview,
   capStationViewers,
   isAnnualReviewMonth,
-  nextJanuaryAfter,
   setStationGradeConfig,
   stationRankForGrade,
   stationSpec,
@@ -981,7 +980,7 @@ export function InGame({
     newRank: number
   } | null>(null)
   const rankRefreshTurnsLeftRef = useRef(RANK_REFRESH_TURNS)
-  const pendingStationReviewRef = useRef(false)
+  const pendingStationReviewRef = useRef(initialSave?.pendingStationReview ?? false)
   const pendingGameClearRef = useRef(false)
   const pendingSocialQueueRef = useRef<SocialPending[]>([])
   const socialSpawnRef = useRef(initialSave?.socialSpawn ?? createSocialSpawnState())
@@ -1068,6 +1067,7 @@ export function InGame({
         creatorScoutFirstDone: creatorScoutFirstDoneRef.current,
       },
       scoutSystem: serializeScoutSystem(scoutSystemRef.current),
+      pendingStationReview: pendingStationReviewRef.current,
     }
   }
 
@@ -2207,7 +2207,17 @@ export function InGame({
       setLeague(grown)
       pendingRankResultRef.current = null
     }
-    pendingStationReviewRef.current = isAnnualReviewMonth(nextDate, GAME_EPOCH)
+    pendingStationReviewRef.current =
+      isAnnualReviewMonth(nextDate, GAME_EPOCH) ||
+      applyStationReview(
+        stationGradeRef.current,
+        leagueRef.current.viewers,
+        ownedCreatorsRef.current,
+        {
+          unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
+          assets: assetsRef.current,
+        },
+      ).promoted
 
     const rankAfter = leagueRef.current.currentRank
     const rankChange = rankBefore - rankAfter
@@ -2368,19 +2378,10 @@ export function InGame({
   }
 
   function finishWeeklyStatementFollowup() {
-    const pendingRank = pendingRankResultRef.current
-    pendingRankResultRef.current = null
     const openScout =
       ownedCreatorsRef.current.length === 0 &&
       Boolean(scoutSystemRef.current.activeOffer)
-    if (pendingRank) {
-      pendingScoutAfterRankRef.current = openScout
-      // 순위는 매 턴 시청자 진행도로 갱신되고 명세서에 표시됨 — 랭킹 패널 이동/팝업 없이 진행
-      continueAfterMonthModals(openScout)
-      return
-    }
-    // 1월 1일 연간 심사 — 순위 정산 턴과 무관하게 항상 실행
-    // (순위 정산은 3턴마다 일어나므로 12월→1월 전환과 겹치지 않아 이 경로가 필요)
+    // 승급 심사는 순위 정산과 무관하게 항상 먼저 처리 (연간 1월 + 월중 조건 충족)
     if (pendingStationReviewRef.current) {
       pendingStationReviewRef.current = false
       pendingScoutAfterRankRef.current = openScout
@@ -2393,7 +2394,21 @@ export function InGame({
           assets: assetsRef.current,
         },
       )
-      setStationReview({ promoted: review.promoted, status: review.status })
+      // 실패 안내는 연간(1월) 심사에서만, 월중 미충족은 조용히 통과
+      const annual = isAnnualReviewMonth(
+        monthToCalendarDate(GAME_EPOCH, gameMonthRef.current),
+        GAME_EPOCH,
+      )
+      if (review.promoted || annual) {
+        setStationReview({ promoted: review.promoted, status: review.status })
+        return
+      }
+    }
+    const pendingRank = pendingRankResultRef.current
+    pendingRankResultRef.current = null
+    if (pendingRank) {
+      pendingScoutAfterRankRef.current = openScout
+      continueAfterMonthModals(openScout)
       return
     }
     continueAfterMonthModals(openScout)
@@ -3394,8 +3409,7 @@ export function InGame({
             unlockedSlotCount={countUnlockedSlots(studioSlots)}
             assets={assets}
             nextReviewDate={
-              formatGameClock(nextJanuaryAfter(monthToCalendarDate(GAME_EPOCH, gameMonth), GAME_EPOCH))
-                .date
+              formatGameClock(monthToCalendarDate(GAME_EPOCH, gameMonth + 1)).date
             }
             creators={toRankCreators(ownedCreators)}
             turnsUntilRankRefresh={rankRefreshTurnsLeft}

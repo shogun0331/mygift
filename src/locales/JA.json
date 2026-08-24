@@ -466,7 +466,7 @@
     "reviewFail": "等級維持",
     "reviewMax": "最高等級維持",
     "reviewMaxBody": "すでに一流企業です。順位上限と視聴者キャップが解除されています。",
-    "reviewFailBody": "条件を満たせず等級が維持されます。降格はありません。来年1月に再度審査します。",
+    "reviewFailBody": "条件を満たせず等級が維持されます。降格はありません。来月に再度審査します。",
     "rewardTitle": "昇格報酬",
     "rewardSp": "SP +{n}",
     "rewardSlots": "スタジオスロット {n}枠解放",

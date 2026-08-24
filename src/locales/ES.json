@@ -466,7 +466,7 @@
     "reviewFail": "Grado mantenido",
     "reviewMax": "Grado máximo mantenido",
     "reviewMaxBody": "Ya eres una empresa de primer nivel. Límites de rango y espectadores liberados.",
-    "reviewFailBody": "No cumpliste las condiciones; el grado se mantiene. No hay descenso. Se revisa en enero.",
+    "reviewFailBody": "No cumpliste las condiciones; el grado se mantiene. No hay descenso. Se revisa el próximo mes.",
     "rewardTitle": "Recompensa de ascenso",
     "rewardSp": "SP +{n}",
     "rewardSlots": "Ranuras de estudio abiertas: {n}",

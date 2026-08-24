@@ -468,7 +468,7 @@
     "reviewFail": "GRADE HELD",
     "reviewMax": "Top grade held",
     "reviewMaxBody": "You are already a top-tier company. Rank and viewer caps are lifted.",
-    "reviewFailBody": "Conditions were not met, so the grade stays. Grades never drop. Next review is January.",
+    "reviewFailBody": "Conditions were not met, so the grade stays. Grades never drop. Next review is next month.",
     "rewardTitle": "Promotion rewards",
     "rewardSp": "SP +{n}",
     "rewardSlots": "Studio slots unlocked to {n}",
