@@ -153,7 +153,11 @@ export function WeeklySettlementModal({
             </div>
             <div className="ml-auto flex flex-wrap items-end justify-end gap-x-8 gap-y-3 text-right">
               <div>
-                <p className="game-stat-label">{t('settlement.viewersGained')}</p>
+                <p className="game-stat-label">
+                  {statement.viewersGained < 0
+                    ? t('settlement.viewersLost')
+                    : t('settlement.viewersGained')}
+                </p>
                 <p
                   className={`mt-1 text-xl font-bold tabular-nums tracking-tight sm:text-2xl ${
                     statement.viewersGained > 0

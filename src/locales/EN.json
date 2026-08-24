@@ -452,7 +452,8 @@
     "expenseStaffCount": "{count} staff",
     "careExpenseLabel": "Condition care ({name})",
     "taxLabel": "Income tax",
-    "taxDetail": "based on {year} annual revenue {amount}"
+    "taxDetail": "based on {year} annual revenue {amount}",
+    "viewersLost": "Viewers Lost"
   },
   "station": {
     "gradeBadge": "Grade {grade}",

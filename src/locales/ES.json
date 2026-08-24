@@ -450,7 +450,8 @@
     "expenseStaffCount": "{count} empleados",
     "careExpenseLabel": "Cuidado de condición ({name})",
     "taxLabel": "Impuesto sobre la renta",
-    "taxDetail": "según ingresos anuales de {year}: {amount}"
+    "taxDetail": "según ingresos anuales de {year}: {amount}",
+    "viewersLost": "Espectadores perdidos"
   },
   "station": {
     "gradeBadge": "Grado {grade}",

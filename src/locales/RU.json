@@ -450,7 +450,8 @@
     "expenseStaffCount": "{count} чел.",
     "careExpenseLabel": "Уход за состоянием ({name})",
     "taxLabel": "Подоходный налог",
-    "taxDetail": "на основе годового дохода {amount} за {year}"
+    "taxDetail": "на основе годового дохода {amount} за {year}",
+    "viewersLost": "Потеря зрителей"
   },
   "station": {
     "gradeBadge": "{grade} класс",

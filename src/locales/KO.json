@@ -452,7 +452,8 @@
     "expenseStaffCount": "{count}명",
     "careExpenseLabel": "컨디션 케어 ({name})",
     "taxLabel": "세금 과세",
-    "taxDetail": "{year}년 연간 수익 {amount} 기준"
+    "taxDetail": "{year}년 연간 수익 {amount} 기준",
+    "viewersLost": "시청자 이탈"
   },
   "station": {
     "gradeBadge": "{grade}등급",

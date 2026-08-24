@@ -450,7 +450,8 @@
     "expenseStaffCount": "{count} Mitarbeiter",
     "careExpenseLabel": "Zustandsbetreuung ({name})",
     "taxLabel": "Einkommensteuer",
-    "taxDetail": "basierend auf {year} Jahresumsatz {amount}"
+    "taxDetail": "basierend auf {year} Jahresumsatz {amount}",
+    "viewersLost": "Verlorene Zuschauer"
   },
   "station": {
     "gradeBadge": "Klasse {grade}",

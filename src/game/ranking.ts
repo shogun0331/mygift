@@ -523,7 +523,8 @@ export function growLeagueBetweenRefresh(
   const subscribers = state.subscribers + organicSubs
   const didBroadcast = broadcastedCreators.length > 0
   const viewerRoster = didBroadcast ? broadcastedCreators : ownedCreators
-  const potential = calcRosterViewers(viewerRoster, subscribers)
+  // 포텐셜 상한은 보유 로스터(팀 전체) 기준 — 부분 라인업 방송으로 상한이 내려가지 않음
+  const potential = calcRosterViewers(ownedCreators, subscribers)
   const viewers = capStationViewers(
     growLeagueViewers(
       state.viewers,
@@ -571,14 +572,14 @@ export function growLeagueViewers(
   const now = Math.max(VIEWER_FLOOR, Math.round(current))
   const cap = Math.max(VIEWER_FLOOR, Math.round(potential))
   const retain = communicationRetainOf(communication)
-  if (now > cap) {
-    const drop = Math.max(1, Math.round((now - cap) * 0.25 * retain))
-    return Math.max(cap, now - drop)
-  }
+
+  // 무방송: 자연 이탈 (이탈율은 소통이 높을수록 감소)
   if (!didBroadcast) {
     return Math.max(VIEWER_FLOOR, Math.round(now * (1 - IDLE_VIEWER_DECAY * retain)))
   }
-  if (now >= cap) return cap
+
+  // 방송 중: 절대 감소 없음 — 포텐셜 도달 시 보유, 미달 시 성장
+  if (now >= cap) return now
   const gain = Math.round((cap - now) * VIEWER_GROWTH_RATE * rollViewerGrowthFactor())
   return Math.min(cap, now + Math.max(0, gain))
 }
@@ -892,11 +893,11 @@ export function settleLeagueRank(
   const organicSubs = Math.round(state.viewers * 0.03)
   let subscribers = state.subscribers + organicSubs
   const didBroadcast = broadcastedCreators.length > 0
-  /** 잠재력: 이번 달 방송 로스터 (무방송이면 보유 로스터로 상한만 맞춤) */
+  /** 잠재력: 보유 로스터 기준 — 부분 라인업 방송으로 상한이 내려가지 않음 */
   const viewerRoster = didBroadcast ? broadcastedCreators : ownedCreators
   /** 승격 게이트: 스펙상 '보유' 크리에이터 */
   const gateRoster = ownedCreators.length > 0 ? ownedCreators : broadcastedCreators
-  const potential = calcRosterViewers(viewerRoster, subscribers)
+  const potential = calcRosterViewers(ownedCreators, subscribers)
   let viewers = capStationViewers(
     growLeagueViewers(
       state.viewers,

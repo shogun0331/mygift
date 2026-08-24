@@ -450,7 +450,8 @@
     "expenseStaffCount": "{count}人",
     "careExpenseLabel": "コンディションケア ({name})",
     "taxLabel": "所得税",
-    "taxDetail": "{year}年の年間収益 {amount} 基準"
+    "taxDetail": "{year}年の年間収益 {amount} 基準",
+    "viewersLost": "視聴者離脱"
   },
   "station": {
     "gradeBadge": "{grade}等級",

@@ -450,7 +450,8 @@
     "expenseStaffCount": "{count}人",
     "careExpenseLabel": "状态照料 ({name})",
     "taxLabel": "所得税",
-    "taxDetail": "基于{year}年年度收益 {amount}"
+    "taxDetail": "基于{year}年年度收益 {amount}",
+    "viewersLost": "观众流失"
   },
   "station": {
     "gradeBadge": "{grade}级",
