@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from '../locales/i18n'
+import { listSaveMetas } from '../game/saveService'
 
 type MenuId =
+  | 'continue'
   | 'new'
   | 'load'
   | 'settings'
@@ -11,7 +13,7 @@ type MenuId =
   | 'edit'
 
 const MENU_ITEMS: {
-  id: Exclude<MenuId, 'edit'>
+  id: Exclude<MenuId, 'continue' | 'edit'>
   labelKey: string
   subKey?: string
   icon?: 'gear'
@@ -39,17 +41,23 @@ function GearIcon() {
 
 type MainMenuProps = {
   onNewGame: () => void
-  onLoadGame: () => void
+  onLoadGame: (id?: string) => void
   onOpenEditor?: () => void
 }
 
 export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps) {
   const { t } = useTranslation()
-  const [active, setActive] = useState<MenuId>('new')
+  const saves = useMemo(() => listSaveMetas(), [])
+  const latestSave = saves.length > 0 ? saves[0] : null
+  const [active, setActive] = useState<MenuId>(latestSave ? 'continue' : 'new')
   const showEditor = import.meta.env.DEV
 
   const handleSelect = (id: MenuId) => {
     setActive(id)
+    if (id === 'continue' && latestSave) {
+      onLoadGame(latestSave.id)
+      return
+    }
     if (id === 'new') {
       onNewGame()
       return
@@ -104,6 +112,35 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
           aria-label={t('menu.ariaMainMenu')}
           style={{ gap: 'clamp(0.4rem, 0.9vh, 0.85rem)' }}
         >
+          {latestSave ? (
+            <button
+              type="button"
+              onMouseEnter={() => setActive('continue')}
+              onFocus={() => setActive('continue')}
+              onClick={() => handleSelect('continue')}
+              className={`game-menu-btn text-center ${active === 'continue' ? 'is-active border-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.35)]' : ''}`}
+              style={{
+                padding:
+                  'clamp(0.55rem, 1.15vh, 1.15rem) clamp(0.85rem, 1.2vw, 1.5rem)',
+                fontSize: 'clamp(0.78rem, 0.45vw + 0.55vh, 1.2rem)',
+              }}
+            >
+              <span className="flex items-center justify-center gap-[0.4em]">
+                <span className="font-bold tracking-[0.14em] text-amber-300">
+                  [{t('menu.continueGame') || 'CONTINUE'}]
+                </span>
+              </span>
+              <span
+                className={`mt-[0.25em] block tracking-[0.12em] ${
+                  active === 'continue' ? 'text-indigo-100 font-semibold' : 'text-slate-400'
+                }`}
+                style={{ fontSize: '0.72em' }}
+              >
+                {latestSave.companyName} · {latestSave.date}
+              </span>
+            </button>
+          ) : null}
+
           {MENU_ITEMS.map((item) => {
             const isActive = active === item.id
             return (

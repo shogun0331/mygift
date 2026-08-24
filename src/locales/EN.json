@@ -2,6 +2,8 @@
   "menu": {
     "newGame": "NEW GAME",
     "loadGame": "LOAD GAME",
+    "continueGame": "CONTINUE",
+    "continueSub": "Auto load latest save",
     "continueHint": "(Resume current session)",
     "settings": "SETTINGS",
     "gallery": "ENDING GALLERY",

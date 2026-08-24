@@ -1216,7 +1216,7 @@ export default function App() {
     <>
       <MainMenu
         onNewGame={() => setShowNewGame(true)}
-        onLoadGame={() => setShowLoadGame(true)}
+        onLoadGame={(id) => (id ? loadSaveGame(id) : setShowLoadGame(true))}
         onOpenEditor={() => openEditor('main')}
       />
       {showNewGame ? (

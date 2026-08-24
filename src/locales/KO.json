@@ -2,6 +2,8 @@
   "menu": {
     "newGame": "NEW GAME",
     "loadGame": "LOAD GAME",
+    "continueGame": "CONTINUE",
+    "continueSub": "최근 세이브 자동 로드",
     "continueHint": "(진행 중 세션으로 복귀)",
     "settings": "SETTINGS",
     "gallery": "ENDING GALLERY",

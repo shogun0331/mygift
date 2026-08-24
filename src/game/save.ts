@@ -1,4 +1,4 @@
-import type { OwnedCreator, RegisteredCharacter } from './characters'
+import type { Grade, OwnedCreator, RegisteredCharacter } from './characters'
 import type { ScoutOffer, ScoutSystemState } from './scout'
 import type { WeeklyCreatorAccum, WeekAccumulator } from './weeklyReport'
 import type { LeagueState } from './ranking'
@@ -59,6 +59,13 @@ export type GameSave = {
   scoutSystem: SerializedScoutSystemState
 }
 
+export type TopCharacterMeta = {
+  name: string
+  grade: Grade
+  imageUrl: string | null
+  avatarTone?: string
+}
+
 export type SaveMeta = {
   id: string
   companyName: string
@@ -69,6 +76,7 @@ export type SaveMeta = {
   viewers: number
   /** 게임 내 현재 날짜 (YYYY.MM.DD) */
   date: string
+  topCharacter?: TopCharacterMeta | null
 }
 
 export function serializeWeekAccum(week: WeekAccumulator): SerializedWeekAccum {
@@ -163,6 +171,44 @@ export function gameDateString(monthIndex: number): string {
   return `${y}.${m}.${day}`
 }
 
+export function getTopCreatorMeta(save: GameSave): TopCharacterMeta | null {
+  if (!save.ownedCreators || save.ownedCreators.length === 0) return null
+
+  const GRADE_ORDER: Record<string, number> = { S: 4, A: 3, B: 2, C: 1 }
+
+  const sorted = [...save.ownedCreators].sort((a, b) => {
+    const gA = GRADE_ORDER[a.grade] ?? 0
+    const gB = GRADE_ORDER[b.grade] ?? 0
+    if (gA !== gB) return gB - gA
+    const scoreA =
+      (a.statCommunication ?? 0) +
+      (a.statPerformance ?? 0) +
+      (a.statSexy ?? 0) +
+      (a.statElegance ?? 0)
+    const scoreB =
+      (b.statCommunication ?? 0) +
+      (b.statPerformance ?? 0) +
+      (b.statSexy ?? 0) +
+      (b.statElegance ?? 0)
+    return scoreB - scoreA
+  })
+
+  const top = sorted[0]
+  if (!top) return null
+
+  const hydrated = hydrateOwnedCreator(top)
+  const profileImg = (hydrated.images ?? [])[0]
+  const rawUrl = hydrated.profileImageUrl || profileImg?.url
+  const imageUrl = rawUrl ? resolveMediaSrc(rawUrl) : null
+
+  return {
+    name: top.name,
+    grade: top.grade,
+    imageUrl,
+    avatarTone: top.avatarTone,
+  }
+}
+
 export function saveMetaFrom(save: GameSave): SaveMeta {
   return {
     id: save.id,
@@ -173,6 +219,7 @@ export function saveMetaFrom(save: GameSave): SaveMeta {
     assets: save.assets,
     viewers: save.league?.viewers ?? 0,
     date: gameDateString(save.gameMonth ?? 0),
+    topCharacter: getTopCreatorMeta(save),
   }
 }
 
