@@ -57,23 +57,23 @@ export type SnsResult = {
   snsSubscribersGained?: number
 }
 
-/** 캐릭터의 전체 포스팅 개수에 연동된 동적 발주 비용 공식 */
+/** 캐릭터의 전체 포스팅 개수에 연동된 동적 발주 비용 공식 (50% 가격 인하) */
 export function calcSnsPostCost(heat: SnsHeat, totalAssetCount: number): number {
   const count = Math.max(1, Math.round(totalAssetCount))
   if (heat === 3) {
-    return 120_000 + count * 12_000
+    return 60_000 + count * 6_000
   }
   if (heat === 2) {
-    return 35_000 + count * 3_500
+    return 17_500 + count * 1_750
   }
-  return 10_000 + count * 1_000
+  return 5_000 + count * 500
 }
 
-/** 수위별 기본 촬영/의상비 (1장 기준 하한) */
+/** 수위별 기본 촬영/의상비 (1장 기준 하한 - 50% 인하) */
 export const SNS_HEAT_COST: Record<SnsHeat, number> = {
-  1: 11_000,
-  2: 38_500,
-  3: 132_000,
+  1: 5_500,
+  2: 19_250,
+  3: 66_000,
 }
 
 /** 캐릭터당 최대 모을 수 있는 영구 SNS 구독자 캡 (10만 명) */
