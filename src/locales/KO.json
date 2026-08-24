@@ -205,6 +205,7 @@
     "typePerformance": "퍼포먼스 타입",
     "statHeat": "수위",
     "statTrust": "신뢰",
+    "expectedRevenue": "예상 매출",
     "statStamina": "체력",
     "statRevenueMult": "수익 배율",
     "broadcastBlocked": "스테미나 부족 — 방송 불가 (휴식이 필요합니다)",

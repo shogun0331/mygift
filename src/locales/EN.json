@@ -205,6 +205,7 @@
     "typePerformance": "Performance Type",
     "statHeat": "Heat",
     "statTrust": "Trust",
+    "expectedRevenue": "Est. Revenue",
     "statStamina": "Stamina",
     "statRevenueMult": "Revenue Mult",
     "broadcastBlocked": "Low stamina — cannot broadcast (needs rest)",

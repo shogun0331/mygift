@@ -21,6 +21,7 @@ import {
   scoreOf,
 } from '../game/condition'
 import { formatMoney, formatMoneySigned } from '../game/money'
+import { calcWeekRevenueWon } from '../game/economy'
 import { isPromotionExamReady } from '../game/promotionExam'
 import {
   TRAINING_MAIN_GAIN,
@@ -132,9 +133,7 @@ function formatContract(weeks: number, t: (key: string) => string) {
   return t(key).replace('{weeks}', String(weeks))
 }
 
-function trustOf(creator: OwnedCreator) {
-  return creator.trust ?? creator.loyalty ?? 0
-}
+
 
 export function CreatorPanel({
   ownedCreators,
@@ -428,14 +427,14 @@ export function CreatorPanel({
                   <th className="px-3 py-2.5 font-semibold">{t('common.grade')}</th>
                   <th className="px-3 py-2.5 font-semibold">{t('creator.statType')}</th>
                   <th className="px-3 py-2.5 font-semibold">{t('creator.currentSalary')}</th>
-                  <th className="px-3 py-2.5 font-semibold">{t('creator.statTrust')}</th>
+                  <th className="px-3 py-2.5 font-semibold text-emerald-400">{t('creator.expectedRevenue')}</th>
                   <th className="px-3 py-2.5 font-semibold text-cyan-300">SNS 구독자</th>
                   <th className="px-3 py-2.5 font-semibold sm:px-4">{t('common.action')}</th>
                 </tr>
               </thead>
               <tbody>
                 {sortedBySalary.map((creator, index) => {
-                  const trust = trustOf(creator)
+                  const expectedRev = calcWeekRevenueWon(creator)
                   const displayName = characterDisplayName(creator, locale)
                   const displayJob = characterDisplayJob(creator, locale)
                   const snsSubs = creator.snsSubscribers ?? 0
@@ -480,16 +479,8 @@ export function CreatorPanel({
                       <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
                         {formatSalary(creator.salary)}
                       </td>
-                      <td className="px-3 py-2.5">
-                        <div className="flex items-center gap-2">
-                          <div className="h-1.5 w-14 overflow-hidden rounded-full bg-slate-800">
-                            <div
-                              className="h-full rounded-full bg-gradient-to-r from-indigo-400 to-violet-300"
-                              style={{ width: `${trust}%` }}
-                            />
-                          </div>
-                          <span className="tabular-nums text-xs text-slate-300">{trust}%</span>
-                        </div>
+                      <td className="px-3 py-2.5 font-bold tabular-nums text-emerald-400">
+                        {formatMoney(expectedRev)}
                       </td>
                       <td className="px-3 py-2.5 font-bold tabular-nums text-cyan-300">
                         📱 {snsSubs.toLocaleString()}명
@@ -897,7 +888,6 @@ function CreatorDetailView({
   const { t, locale } = useTranslation()
   const displayName = characterDisplayName(creator, locale)
   const displayJob = characterDisplayJob(creator, locale)
-  const trust = trustOf(creator)
   const staminaPct = Math.round((creator.stamina / Math.max(1, creator.staminaMax)) * 100)
   const conditionScore = scoreOf(creator)
   const condition = conditionFromScore(conditionScore)
@@ -1017,11 +1007,10 @@ function CreatorDetailView({
           >
             <PersonalityStatBars stats={creator} t={t} />
             <StatBar
-              label={t('creator.statTrust')}
-              valueLabel={`${trust}%`}
-              note={trust >= 90 ? t('creator.trustMax') : t('creator.trustNeed')}
-              percent={trust}
-              barClass="from-indigo-400 to-violet-300"
+              label={t('creator.expectedRevenue')}
+              valueLabel={formatMoney(calcWeekRevenueWon(creator))}
+              percent={100}
+              barClass="from-emerald-400 to-teal-300"
             />
             <StatBar
               label={t('creator.statStamina')}
