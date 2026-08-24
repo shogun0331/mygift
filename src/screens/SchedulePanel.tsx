@@ -670,7 +670,7 @@ export function SchedulePanel({
                                 <div className="mt-1 w-full">
                                   <div className="mb-0.5 flex items-center justify-between gap-1">
                                     <span className="truncate text-[8px] font-semibold tracking-wide text-slate-300">
-                                      {t('creator.statStamina')}
+                                      Stamina
                                     </span>
                                     <span className="shrink-0 text-[8px] font-bold tabular-nums text-slate-100">
                                       {handForSlot.stamina}
@@ -890,7 +890,7 @@ export function SchedulePanel({
                           {t(typeStyle.labelKey)}
                         </p>
                         <HandStatRow
-                          label={t('creator.statStamina')}
+                          label="Stamina"
                           value={`${card.stamina}`}
                           percent={staminaPct}
                           barClass={blocked ? 'bg-rose-400' : 'bg-cyan-400'}
