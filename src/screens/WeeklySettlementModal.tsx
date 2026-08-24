@@ -280,12 +280,13 @@ export function WeeklySettlementModal({
             {statement.staffLines.length > 0 ? (
               <section className="mt-6">
                 <h3 className="game-stat-label">{t('settlement.staffSection')}</h3>
-                <table className="statement-table statement-table--staff mt-3 w-full min-w-[560px] border-collapse text-left">
+                <table className="statement-table statement-table--staff mt-3 w-full min-w-[640px] border-collapse text-left">
                   <thead>
                     <tr>
                       <th className="w-10">{t('settlement.colRank')}</th>
                       <th>{t('settlement.colStaff')}</th>
-                      <th className="w-[120px]">{t('settlement.colStaffKind')}</th>
+                      <th className="w-[100px]">{t('settlement.colStaffKind')}</th>
+                      <th>{t('settlement.colStaffActivity')}</th>
                       <th className="text-right">{t('settlement.colStaffSalary')}</th>
                     </tr>
                   </thead>
@@ -319,7 +320,12 @@ export function WeeklySettlementModal({
                             {line.kindLabel}
                           </span>
                         </td>
-                        <td className="tabular-nums">
+                        <td>
+                          <span className="text-xs font-semibold text-cyan-300">
+                            {line.taskLabel || '-'}
+                          </span>
+                        </td>
+                        <td className="tabular-nums text-right">
                           <span className="statement-amt-neg">
                             -{formatStatementWon(line.salaryWon)}
                           </span>
@@ -328,7 +334,7 @@ export function WeeklySettlementModal({
                       )
                     })}
                     <tr className="border-t border-white/8">
-                      <td colSpan={3} className="pt-2 text-right text-xs font-semibold text-slate-400">
+                      <td colSpan={4} className="pt-2 text-right text-xs font-semibold text-slate-400">
                         {t('settlement.staffSubtotal')}
                       </td>
                       <td className="pt-2 text-right tabular-nums font-semibold">

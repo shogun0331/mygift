@@ -2178,6 +2178,7 @@ export function InGame({
       )
     }
 
+    const equippedManagers = managerStateRef.current.equippedBySlotId
     const staffPayroll = managerStateRef.current.hiredStaffIds
       .map((id) => {
         const staff = registeredStaff.find((s) => s.id === id)
@@ -2185,6 +2186,35 @@ export function InGame({
         const annual = hiredStaffSalariesRef.current[id] ?? 0
         const salaryWon = Math.max(0, Math.round(Number(annual) / 12) || 0)
         if (salaryWon <= 0) return null
+
+        let equippedSlotCount = 0
+        for (const managers of Object.values(equippedManagers)) {
+          if (managers?.[staff.kind] === staff.id) {
+            equippedSlotCount += 1
+          }
+        }
+
+        let taskCount = 0
+        let taskLabel = ''
+        if (equippedSlotCount > 0) {
+          if (staff.kind === 'care') {
+            taskCount = Math.min(4, Math.max(1, equippedSlotCount * 3 + (id.charCodeAt(0) % 2)))
+            taskLabel = t('settlement.staffTaskCare').replace('{count}', String(taskCount))
+          } else if (staff.kind === 'repair') {
+            taskCount = Math.min(4, Math.max(1, equippedSlotCount * 2 + (id.charCodeAt(0) % 2)))
+            taskLabel = t('settlement.staffTaskRepair').replace('{count}', String(taskCount))
+          } else if (staff.kind === 'security') {
+            taskCount = Math.min(4, Math.max(1, equippedSlotCount * 3 + (id.charCodeAt(0) % 2)))
+            taskLabel = t('settlement.staffTaskSecurity').replace('{count}', String(taskCount))
+          } else if (staff.kind === 'production') {
+            taskCount = 4
+            taskLabel = t('settlement.staffTaskProduction').replace('{count}', String(taskCount))
+          }
+        } else {
+          taskCount = 0
+          taskLabel = t('settlement.staffTaskIdle').replace('{count}', '0')
+        }
+
         return {
           id,
           name: staffDisplayName(staff, locale),
@@ -2193,6 +2223,8 @@ export function InGame({
           iconUrl: staffIconUrl(staff) || null,
           mediaRevision: staff.mediaRevision,
           salaryWon,
+          taskCount,
+          taskLabel,
         }
       })
       .filter((row): row is NonNullable<typeof row> => row != null)

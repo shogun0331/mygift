@@ -44,8 +44,9 @@ export type WeeklyStaffLine = {
   kindLabel: string
   iconUrl: string | null
   mediaRevision?: number
-  /** 해당 스탭 월급 (연봉/12) */
   salaryWon: number
+  taskCount?: number
+  taskLabel?: string
 }
 
 export type SettlementExpenseLine = {
@@ -219,6 +220,8 @@ export function buildWeeklyStatement(opts: {
     iconUrl: string | null
     mediaRevision?: number
     salaryWon: number
+    taskCount?: number
+    taskLabel?: string
   }>
 }): WeeklyStatement {
   const { week, issuedDate, previousNetProfitWon } = opts
@@ -284,6 +287,8 @@ export function buildWeeklyStatement(opts: {
       iconUrl: row.iconUrl,
       mediaRevision: row.mediaRevision,
       salaryWon: row.salaryWon,
+      taskCount: row.taskCount ?? 0,
+      taskLabel: row.taskLabel ?? '',
     }))
     .sort((a, b) => b.salaryWon - a.salaryWon || a.name.localeCompare(b.name, 'ko'))
 
