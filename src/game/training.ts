@@ -20,8 +20,8 @@ const TRAINING_GRADE_MULT: Record<Grade, number> = {
   S: 4.5,
 }
 
-/** 임시: 밸런스 확인용 무료 트레이닝/심사 */
-const TRAINING_COST_FREE = true
+/** 훈련 비용 활성화 — 트레이닝은 자산 소비의 핵심 (레벨디자인 2단계 적용) */
+const TRAINING_COST_FREE = false
 
 /** 다음 트레이닝 비용. 주력 스탯·등급이 높을수록 급격히 비싸진다 */
 export function calcTrainingCost(

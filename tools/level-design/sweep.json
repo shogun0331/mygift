@@ -1,0 +1,24 @@
+{
+  "vpcp": 300,
+  "org": 0.12,
+  "mid": 20000,
+  "large": 100000,
+  "top": 300000,
+  "midReq": "B×2",
+  "largeReq": "A×2",
+  "topReq": "S×1",
+  "medians": {
+    "tier:tiny": 4,
+    "tier:sme": 16,
+    "mil:50": 29,
+    "tier:mid": 28,
+    "mil:30": 44,
+    "tier:large": 52,
+    "mil:20": 53,
+    "tier:top": 88,
+    "mil:10": 89,
+    "mil:5": 89,
+    "mil:1": 89,
+    "clear": 89
+  }
+}

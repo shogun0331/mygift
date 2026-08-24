@@ -62,6 +62,13 @@ check(config.promotions.sme.requiredViewers === 5000, `sme 필요 시청자 = 50
 check(config.promotions.sme.minUnlockedSlots.enabled === false, 'sme 슬롯 조건 비활성')
 check(config.promotions.sme.minAssets.enabled === false, 'sme 자산 조건 비활성')
 check(config.promotions.sme.creatorRequirements.every((r) => !r.enabled), 'sme 크리에이터 조건 비활성')
+// 레벨디자인 2단계: 티어 요구 하향 + 등급 요구 완화
+check(config.promotions.mid.requiredViewers === 20000, `mid 필요 시청자 = 20K (실제: ${config.promotions.mid.requiredViewers})`)
+check(config.promotions.mid.creatorRequirements[0]?.minGrade === 'B', 'mid 등급 요구 = B×2')
+check(config.promotions.large.requiredViewers === 100000, `large 필요 시청자 = 100K (실제: ${config.promotions.large.requiredViewers})`)
+check(config.promotions.large.creatorRequirements[0]?.count === 2, 'large 등급 요구 = A×2')
+check(config.promotions.top.requiredViewers === 300000, `top 필요 시청자 = 300K (실제: ${config.promotions.top.requiredViewers})`)
+check(config.promotions.top.creatorRequirements[0]?.count === 1, 'top 등급 요구 = S×1')
 
 // 2) 승급 판정 — tiny, 5000명 → eligible
 const r5000 = applyStationReview(config, 'tiny', 5000)
@@ -81,17 +88,17 @@ for (let mi = 0; mi <= 6; mi++) {
 check(isAnnualReviewMonth(monthToDate(4)) === true, '12월 종료(gameMonth3) → 1월 심사 발동')
 check(isAnnualReviewMonth(monthToDate(5)) === false, '1월 종료(gameMonth4) → 심사 없음(다음 해 1월)')
 
-// 5) 월중 승급 조건 충족 시에도 심사 발동 (수정 검증)
-//    finishBroadcastMonth: pendingStationReview = annual || promotionNow.promoted
+// 5) 승급은 연 1회(1월 연간 심사) — 월중 조건 충족 시에도 대기 (레벨디자인 2단계 적용)
+//    finishBroadcastMonth: pendingStationReview = isAnnualReviewMonth (월중 승급 제거)
 function monthEndFlag(grade, viewers, nextMonthIndex) {
-  const promotionNow = applyStationReview(config, grade, viewers)
-  return isAnnualReviewMonth(monthToDate(nextMonthIndex)) || promotionNow.promoted
+  return isAnnualReviewMonth(monthToDate(nextMonthIndex))
 }
-check(monthEndFlag('tiny', 5000, 5) === true, '2월 종료 + tiny 5000명 → 월중 심사 발동(승급)')
-check(monthEndFlag('tiny', 5000, 4) === true, '1월 종료 + tiny 5000명 → 심사 발동(승급)')
+check(monthEndFlag('tiny', 5000, 5) === false, '2월 종료 + tiny 5000명 → 월중 심사 없음(연 1회)')
+check(monthEndFlag('tiny', 5000, 4) === true, '1월 종료 + tiny 5000명 → 연간 심사 발동(승급)')
 check(monthEndFlag('tiny', 4000, 5) === false, '2월 종료 + tiny 4000명 → 심사 없음(미충족)')
 check(monthEndFlag('tiny', 4000, 4) === true, '1월 종료 + tiny 4000명 → 연간 심사 발동(실패 안내)')
-check(monthEndFlag('black', 5000, 5) === true, 'black 5000명 → tiny 승급 발동(1단계만)')
+check(monthEndFlag('black', 5000, 5) === false, 'black 5000명 월중 → 심사 없음(연 1회)')
+check(monthEndFlag('black', 5000, 4) === true, 'black 5000명 1월 → 연간 심사 발동(1단계만)')
 
 // 6) 승급은 1단계씩만 (black → tiny, tiny → sme)
 const blackReview = applyStationReview(config, 'black', 5000)

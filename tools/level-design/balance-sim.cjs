@@ -31,10 +31,8 @@ function clamp(n, lo, hi) {
 
 // ── 게임 상수 (ranking.ts / stats.ts 재현) ──
 const VIEWER_FLOOR = 150
-const VIEWER_PER_COMM_POINT = 50
 const SUBSCRIBER_VIEWER_RATE = 0.2
 const VIEWER_GROWTH_RATE = 0.18
-const VIEWER_ORGANIC_GROWTH_RATE = 0.02
 const VIEWER_GROWTH_RANDOM_MIN = 0.55
 const VIEWER_GROWTH_RANDOM_MAX = 1.4
 const IDLE_VIEWER_DECAY = 0.04
@@ -63,11 +61,39 @@ function gradeRevenueMult(g) {
 const TIER_ORDER = ['black', 'tiny', 'sme', 'mid', 'large', 'top']
 const REQUIRED_VIEWERS = { tiny: 500, sme: 5000, mid: 100000, large: 1000000, top: 8000000 }
 const MAX_SCOUT_CREATORS = { black: 2, tiny: 3, sme: 5, mid: 7, large: 12, top: 6 }
+
+// ── 2단계 튜닝 파라미터 (env 주입 가능 — 스윕/검증용) ──
+//   SIM_VPCP    : 소통 1당 시청자 가중치 (기본 300 — 적용 튜닝)
+//   SIM_ORG     : 잠재력 도달 후 월 유기성장률 (기본 0.12)
+//   SIM_MID     : sme→mid 필요 시청자 (기본 20000)
+//   SIM_LARGE   : mid→large 필요 시청자 (기본 100000)
+//   SIM_TOP     : large→top 필요 시청자 (기본 300000)
+//   SIM_MID_G/C : mid 등급 요구 (기본 B/2)
+//   SIM_LG_G/C  : large 등급 요구 (기본 A/2)
+//   SIM_TP_G/C  : top 등급 요구 (기본 S/1)
+const SIM_VPCP = Number(process.env.SIM_VPCP || 300)
+const SIM_ORG = Number(process.env.SIM_ORG || 0.12)
+const SIM_MID = Number(process.env.SIM_MID || 20000)
+const SIM_LARGE = Number(process.env.SIM_LARGE || 100000)
+const SIM_TOP = Number(process.env.SIM_TOP || 300000)
+REQUIRED_VIEWERS.mid = SIM_MID
+REQUIRED_VIEWERS.large = SIM_LARGE
+REQUIRED_VIEWERS.top = SIM_TOP
+const SIM_MID_G = process.env.SIM_MID_G || 'B'
+const SIM_MID_C = Number(process.env.SIM_MID_C || 2)
+const SIM_LG_G = process.env.SIM_LG_G || 'A'
+const SIM_LG_C = Number(process.env.SIM_LG_C || 2)
+const SIM_TP_G = process.env.SIM_TP_G || 'S'
+const SIM_TP_C = Number(process.env.SIM_TP_C || 1)
 const TIER_REQ_CREATORS = {
-  mid: { minGrade: 'A', count: 2 },
-  large: { minGrade: 'A', count: 3 },
-  top: { minGrade: 'S', count: 2 },
+  mid: { minGrade: 'B', count: 2 },
+  large: { minGrade: 'A', count: 2 },
+  top: { minGrade: 'S', count: 1 },
 }
+// 등급 요구 튜닝 (env) — TIER_REQ_CREATORS 선언 후 적용
+TIER_REQ_CREATORS.mid = { minGrade: SIM_MID_G, count: SIM_MID_C }
+TIER_REQ_CREATORS.large = { minGrade: SIM_LG_G, count: SIM_LG_C }
+TIER_REQ_CREATORS.top = { minGrade: SIM_TP_G, count: SIM_TP_C }
 const TIER_BAND = {
   black: { best: 151, worst: 300 },
   tiny: { best: 101, worst: 150 },
@@ -147,7 +173,7 @@ function stationRankForGrade(grade, viewers) {
   return band.worst - Math.round(progress * (band.worst - band.best))
 }
 function creatorViewerWeight(c) {
-  return clamp(c.statCommunication, 0, 100) * VIEWER_PER_COMM_POINT * gradeViewerMult(c.grade)
+  return clamp(c.statCommunication, 0, 100) * SIM_VPCP * gradeViewerMult(c.grade)
 }
 function calcRosterViewers(owned, subscribers) {
   const roster = owned.reduce((s, c) => s + creatorViewerWeight(c), 0)
@@ -165,7 +191,7 @@ function growLeagueViewers(current, potential, didBroadcast, rng) {
     return Math.max(VIEWER_FLOOR, Math.round(now * (1 - IDLE_VIEWER_DECAY)))
   }
   if (now >= cap) {
-    const gain = Math.max(1, Math.round(now * VIEWER_ORGANIC_GROWTH_RATE * factor))
+    const gain = Math.max(1, Math.round(now * SIM_ORG * factor))
     return now + gain
   }
   const gain = Math.max(1, Math.round((cap - now) * VIEWER_GROWTH_RATE * factor))
@@ -404,9 +430,10 @@ function runOnce(seed, scenarioKey, months) {
       }
     }
 
-    // ── 티어 승급 (1단계씩, 조건 충족 시) ──
+    // ── 티어 승급 (연 1회, 1월 연간 심사 — 1단계씩) ──
+    // 첫 심사는 이듬해 1월(2027-01). 일등기업까지 최소 5년(black→tiny→sme→mid→large→top)
     const next = nextTier(st.grade)
-    if (next) {
+    if (next && calMonth === 0 && year > epochYear) {
       const req = TIER_REQ_CREATORS[next]
       const viewersOk = st.viewers >= REQUIRED_VIEWERS[next]
       const creatorsOk = !req || countCreatorsAtLeast(st.owned, req.minGrade, req.count)
@@ -525,6 +552,7 @@ function runOnce(seed, scenarioKey, months) {
       st.snapshots.push({
         month: m,
         viewers: Math.round(st.viewers),
+        potential: Math.round(calcRosterViewers(st.owned, st.subscribers)),
         assets: Math.round(st.assets),
         rank: st.rank,
         grade: st.grade,
@@ -589,18 +617,18 @@ const LABEL = {
   clear: '★ 1위 클리어',
 }
 const TARGET = {
-  'tier:tiny': '12개월',
-  'tier:sme': '12개월',
-  'mil:50': '12개월',
-  'tier:mid': '24개월',
-  'mil:30': '24개월',
-  'tier:large': '48개월',
-  'mil:20': '48개월',
-  'tier:top': '96개월',
-  'mil:10': '96개월',
-  'mil:5': '96개월',
-  'mil:1': '96개월',
-  clear: '96개월',
+  'tier:tiny': '5개월(1회차)',
+  'tier:sme': '17개월(2회차)',
+  'mil:50': '29개월(3회차)',
+  'tier:mid': '29개월(3회차)',
+  'mil:30': '53개월(5회차)',
+  'tier:large': '53개월(5회차)',
+  'mil:20': '53개월(5회차)',
+  'tier:top': '89개월(8회차)',
+  'mil:10': '89개월(8회차)',
+  'mil:5': '89개월(8회차)',
+  'mil:1': '89개월(8회차)',
+  clear: '89개월(8회차)',
 }
 
 function keyMonth(st, key) {
@@ -641,11 +669,14 @@ function runReport() {
   lines.push(`- 시뮬레이션: 시나리오 3종 × ${RUNS}회 × ${MONTHS}개월(8년) 몬테카를로 (seeded, 결정적)`)
   lines.push(`- 실시간 환산: 게임 내 1년 ≈ ${REAL_MIN_PER_YEAR}분 (빠른 플레이 기준)`)
   lines.push(`- 목표: **1위 클리어까지 실질 ${REAL_MIN_PER_YEAR * 8}분(2시간) = 게임 내 96개월**`)
+  lines.push(`- **설계 제약: 승급은 연 1회(1월 심사) → 일등기업까지 최소 5년(60개월)**`)
+  lines.push(`- **목표 심사 회차: tiny 5개월 · sme 17개월 · mid 29개월 · large 53개월 · top 89개월 (연 1회 게이트)**`)
+  lines.push(`- **적용 튜닝: 소통가중치=${SIM_VPCP} · 유기성장=${(SIM_ORG * 100).toFixed(1)}%/월 · mid=${(SIM_MID / 1000).toFixed(0)}K · large=${(SIM_LARGE / 1000).toFixed(0)}K · top=${(SIM_TOP / 1000).toFixed(0)}K**`)
   lines.push('')
   lines.push('## 재현 범위 (실제 로직 근거)')
-  lines.push('- 시청자 성장 18%/월 · 유기성장 2%/월 · 휴식 감소 4%/월 · 잠재력=150+Σ(소통×50×등급배율)+구독×0.2')
+  lines.push('- 시청자 성장 18%/월 · 유기성장 12%/월 · 휴식 감소 4%/월 · 잠재력=150+Σ(소통×300×등급배율)+구독×0.2')
   lines.push('- 순위 = 티어 게이트: black 151~300 · tiny 101~150 · sme 51~100 · mid 21~50 · large 11~20 · top 1')
-  lines.push('- 티어 요구: tiny 500 · sme 5K · mid 100K(A×2) · large 1M(A×3) · top 8M(S×2), 유지 상한=요구×1.1')
+  lines.push('- 티어 요구: tiny 500 · sme 5K · mid 20K(B×2) · large 100K(A×2) · top 300K(S×1), 유지 상한=요구×1.1')
   lines.push('- 스카우트: 전부 C등급, 오프닝 1명(무료)+3~6턴 50%, 티어별 보유 상한 2/3/5/7/12/6')
   lines.push('- 훈련: 의도된 유료 공식(주력 스탯·등급↑↑ 비용↑) · 심사비 C→B $52K(80%)/B→A $210K(60%)/A→S $780K(40%)')
   lines.push('  - **참고**: 현재 게임은 `TRAINING_COST_FREE=true`(임시 0원) — 시뮬레이션은 의도된 유료 공식')
@@ -703,8 +734,8 @@ lines.push('')
 // ── 연말 상태 (적극) ──
 lines.push('## 연말 상태 (적극 플레이, 중앙값)')
 lines.push('')
-lines.push('| 연차 | 시청자 | 자산($) | 순위 | 티어(최다) | 크리에이터 | 스탭 |')
-lines.push('| --- | --- | --- | --- | --- | --- | --- |')
+lines.push('| 연차 | 시청자 | 잠재력 | 자산($) | 순위 | 티어(최다) | 크리에이터 | 스탭 |')
+lines.push('| --- | --- | --- | --- | --- | --- | --- | --- |')
 for (const ym of [12, 24, 36, 48, 60, 72, 84, 96]) {
   const snaps = results.active.finals
     .map((st) => st.snapshots.find((s) => s.month === ym))
@@ -716,8 +747,8 @@ for (const ym of [12, 24, 36, 48, 60, 72, 84, 96]) {
   const topGrade = Object.entries(gradeCounts).sort((a, b) => b[1] - a[1])[0]
   lines.push(
     `| ${ym / 12}년차 | ${Math.round(med('viewers')).toLocaleString()} | ${Math.round(
-      med('assets'),
-    ).toLocaleString()} | ${med('rank')}위 | ${topGrade[0]}(${(
+      med('potential'),
+    ).toLocaleString()} | ${Math.round(med('assets')).toLocaleString()} | ${med('rank')}위 | ${topGrade[0]}(${(
       (topGrade[1] / snaps.length) *
       100
     ).toFixed(0)}%) | ${med('owned')} | ${med('staff')} |`,
@@ -744,10 +775,6 @@ for (const sc of ['active', 'normal', 'passive']) {
 lines.push('')
 
 // ── 핵심 진단 (수치로 계산) ──
-const ORG_MONTHLY = 1 + VIEWER_ORGANIC_GROWTH_RATE * 0.975 // 유기성장 평균 ~1.95%/월
-function monthsToGrow(from, to) {
-  return Math.ceil(Math.log(to / Math.max(1, from)) / Math.log(ORG_MONTHLY))
-}
 const y8 = pct(
   results.active.finals
     .map((st) => {
@@ -757,21 +784,46 @@ const y8 = pct(
     .sort((a, b) => a - b),
   0.5,
 )
+const clearRate = (results.active.out.clear.length / RUNS) * 100
 lines.push('## 핵심 진단 (적극 플레이 기준)')
 lines.push('')
-lines.push('- **8년차 시청자(중앙값): ' + Math.round(y8).toLocaleString() + '명** — mid 승급 요구(10만)의 ' + Math.round((y8 / 100000) * 100) + '%')
-lines.push('- 현 시청자 성장 엔진(유기성장 ~1.95%/월) 기준 남은 티어 도달 예상:')
-lines.push('  - mid(10만): +' + monthsToGrow(y8, 100000) + '개월 → 총 약 ' + fmtMonth(96 + monthsToGrow(y8, 100000)))
-lines.push('  - large(100만): +' + monthsToGrow(y8, 1000000) + '개월 → 총 약 ' + fmtMonth(96 + monthsToGrow(y8, 1000000)))
-lines.push('  - top(800만)·1위 클리어: +' + monthsToGrow(y8, 8000000) + '개월 → 총 약 ' + fmtMonth(96 + monthsToGrow(y8, 8000000)))
+lines.push('- **8년차 시청자(중앙값): ' + Math.round(y8).toLocaleString() + '명**')
+lines.push('- **8년차 티어: ' + (results.active.finals.some((st) => st.clear) ? '일부 클리어' : '미클리어') + ` — 클리어 도달율 ${clearRate.toFixed(0)}%` + '**')
+lines.push('- **시청자 성장 엔진**: 로스터 잠재력(소통×' + SIM_VPCP + '×등급배율)을 따라가고, 상한 도달 후 유기성장 ' + (SIM_ORG * 100).toFixed(0) + '%/월')
+lines.push('- **목표 심사 회차 대비**: mid ' + fmtMonth(medianArr([...results.active.out['tier:mid']].sort((a, b) => a - b))) + ' · large ' + fmtMonth(medianArr([...results.active.out['tier:large']].sort((a, b) => a - b))) + ' · top ' + fmtMonth(medianArr([...results.active.out['tier:top']].sort((a, b) => a - b))))
 lines.push('')
-lines.push('**① 미드 게임 벽 — sme→mid(10만) 불가**: 로스터 잠재력(5명, 소통 100, A등급 ≈ 3.6만) + 유기성장 2%/월로는 8년 내 도달 불가.')
-lines.push('**② 마일스톤/티어 요구 불일치**: 50위는 mid 티어(10만, A×2)가 실제 게이트 — UI 승급 목표(10K, B×2)와 10배 차이.')
-lines.push('**③ 경제는 여유**: 8년차 자산 중앙값 $34M (수익 >> 지출). 병목은 자산이 아니라 **시청자 성장률**. 훈련 유료화(의도 공식) 8년 총 $53M도 수익으로 감당 가능.')
-lines.push('**④ 클리어 예상**: top(800만)·1위까지 현 밸런스로 약 30년(게임 내) = 실질 7시간+ — 목표 2시간의 3.5배 이상. 튜닝 필요.')
+lines.push('**① 미드 게임 (sme→mid)**: 목표 29개월 — 시뮬레이션 ' + fmtMonth(medianArr([...results.active.out['tier:mid']].sort((a, b) => a - b))) + ' (도달율 ' + ((results.active.out['tier:mid'].length / RUNS) * 100).toFixed(0) + '%)')
+lines.push('**② 승급 게이트는 연 1회**: 요구를 채워도 1월 심사까지 대기 — 일등기업 최소 5년(60개월) 보장')
+lines.push('**③ 경제는 여유**: 8년차 자산 중앙값 수억~수천만 (수익 >> 지출). 병목은 자산이 아니라 **시청자 성장 + 로스터 구축**. 훈련 유료화도 수익으로 감당 가능.')
+lines.push('**④ 클리어**: 목표 89개월(2시간) — 현재 도달율 ' + clearRate.toFixed(0) + '%')
 
 const report = lines.join('\n')
 fs.writeFileSync(path.join(__dirname, 'report.md'), report, 'utf8')
+// 캘리브레이션용 요약 파일
+const act = results.active.out
+const sum = {}
+for (const key of KEYS) {
+  sum[key] = medianArr([...act[key]].sort((a, b) => a - b))
+}
+fs.writeFileSync(
+  path.join(__dirname, 'sweep.json'),
+  JSON.stringify(
+    {
+      vpcp: SIM_VPCP,
+      org: SIM_ORG,
+      mid: SIM_MID,
+      large: SIM_LARGE,
+      top: SIM_TOP,
+      midReq: `${SIM_MID_G}×${SIM_MID_C}`,
+      largeReq: `${SIM_LG_G}×${SIM_LG_C}`,
+      topReq: `${SIM_TP_G}×${SIM_TP_C}`,
+      medians: sum,
+    },
+    null,
+    2,
+  ),
+  'utf8',
+)
 console.log(report)
 console.log('\n→ tools/level-design/report.md 저장 완료')
 

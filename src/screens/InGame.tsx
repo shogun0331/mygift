@@ -2250,17 +2250,8 @@ export function InGame({
       setLeague(grown)
       pendingRankResultRef.current = null
     }
-    pendingStationReviewRef.current =
-      isAnnualReviewMonth(nextDate, GAME_EPOCH) ||
-      applyStationReview(
-        stationGradeRef.current,
-        leagueRef.current.viewers,
-        ownedCreatorsRef.current,
-        {
-          unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
-          assets: assetsRef.current,
-        },
-      ).promoted
+    // 승급은 연 1회(1월 연간 심사) — 일등기업까지 최소 5년 보장
+    pendingStationReviewRef.current = isAnnualReviewMonth(nextDate, GAME_EPOCH)
 
     const rankAfter = leagueRef.current.currentRank
     const rankChange = rankBefore - rankAfter
