@@ -1,6 +1,19 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
 import {
+  deserializeWeekAccum,
+  hydrateScoutSystem,
+  serializeOwnedCreator,
+  serializeScoutSystem,
+  serializeWeekAccum,
+  type GameSave,
+} from '../game/save'
+import {
+  flushAutoSave,
+  registerSaveCapture,
+  scheduleAutoSave,
+} from '../game/saveService'
+import {
   toStudioHandCard,
   pickRandomBroadcastVideoUrl,
   type Grade,
@@ -187,10 +200,8 @@ import {
   createSocialSpawnState,
   dateArcAfter,
   H_RETRY_BY_GRADE,
-  rollGiftAcceptVitals,
   rollRejectConditionLoss,
   type DatePending,
-  type GiftPending,
   type HRetryPending,
   type SocialPending,
 } from '../game/social'
@@ -199,7 +210,6 @@ import { RankingPanel } from './RankingPanel'
 import { StationReviewModal } from './StationReviewModal'
 import { StationPromotionFx } from './StationPromotionFx'
 import { DateOfferModal, DateResultModal } from './DateEventModal'
-import { GiftOfferModal, GiftResultModal } from './GiftEventModal'
 import { HRetryOfferModal, HRetryResultModal } from './HRetryEventModal'
 import { VipOfferModal } from './VipOfferModal'
 import { VipResultModal, type VipResult } from './VipResultModal'
@@ -500,6 +510,10 @@ type InGameProps = {
   watchedEventIds?: string[]
   onEventWatched?: (eventId: string) => void
   stationGradeConfig: StationGradeConfig
+  /** 회사 메타 (새 게임/로드 시) — null이면 저장 비활성 */
+  companyMeta?: { id: string; name: string; createdAt: number } | null
+  /** 로드/에디터 복귀 시 하이드레이션용 이전 세이브 */
+  initialSave?: GameSave | null
 }
 
 export function InGame({
@@ -518,6 +532,8 @@ export function InGame({
   watchedEventIds = [],
   onEventWatched,
   stationGradeConfig,
+  companyMeta = null,
+  initialSave = null,
 }: InGameProps) {
   const { t, locale, setLocale } = useTranslation()
 
@@ -534,12 +550,12 @@ export function InGame({
     setTab('schedule')
   }
   const speed: SpeedOption = '1x'
-  const [gameMonth, setGameMonth] = useState(0)
+  const [gameMonth, setGameMonth] = useState(initialSave?.gameMonth ?? 0)
   const [broadcastPhase, setBroadcastPhase] = useState<BroadcastPhase>('prep')
   const [livePlayVideoByCreator, setLivePlayVideoByCreator] = useState<Record<string, string>>({})
   const livePlayVideoByCreatorRef = useRef(livePlayVideoByCreator)
-  const [monthWeekIndex, setMonthWeekIndex] = useState(0)
-  const [assets, setAssets] = useState(INITIAL_ASSETS)
+  const [monthWeekIndex, setMonthWeekIndex] = useState(initialSave?.monthWeekIndex ?? 0)
+  const [assets, setAssets] = useState(initialSave?.assets ?? INITIAL_ASSETS)
   const assetsRef = useRef(assets)
   const [liveEvents, setLiveEvents] = useState<DayEvent[]>([])
   const [conditionCrashes, setConditionCrashes] = useState<ConditionCrashFxItem[]>([])
@@ -552,7 +568,7 @@ export function InGame({
     Record<string, number>
   >({})
   const [slotGearById, setSlotGearById] = useState<Record<string, SlotGear>>(() =>
-    createSlotGearMapFromSlots(studioSlots),
+    initialSave?.slotGearById ?? createSlotGearMapFromSlots(studioSlots),
   )
   const [weeklyStatement, setWeeklyStatement] = useState<WeeklyStatement | null>(null)
   const [settlementAssetsAfter, setSettlementAssetsAfter] = useState(0)
@@ -562,10 +578,16 @@ export function InGame({
   const [startBroadcastLocked, setStartBroadcastLocked] = useState(false)
   const [openCreatorScout, setOpenCreatorScout] = useState(false)
   const [openStaffScout, setOpenStaffScout] = useState(false)
-  const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(1)
-  const [league, setLeague] = useState<LeagueState>(() => createInitialLeagueState([], 'black'))
+  const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(
+    initialSave?.broadcastMonthNumber ?? 1,
+  )
+  const [league, setLeague] = useState<LeagueState>(
+    () => initialSave?.league ?? createInitialLeagueState([], 'black'),
+  )
   const [rankSettlement, setRankSettlement] = useState<RankSettlementResult | null>(null)
-  const [rankRefreshTurnsLeft, setRankRefreshTurnsLeft] = useState(RANK_REFRESH_TURNS)
+  const [rankRefreshTurnsLeft, setRankRefreshTurnsLeft] = useState(
+    initialSave?.rankRefreshTurnsLeft ?? RANK_REFRESH_TURNS,
+  )
   const [rankBubblePlay, setRankBubblePlay] = useState<{
     fromRank: number
     toRank: number
@@ -576,24 +598,36 @@ export function InGame({
     fromRank: number
     toRank: number
   } | null>(null)
-  const [stationGrade, setStationGrade] = useState<StationGrade>('black')
+  const [stationGrade, setStationGrade] = useState<StationGrade>(
+    initialSave?.stationGrade ?? 'black',
+  )
 
   const [, setStaffScoutCooldown] = useState(3)
-  const [staffScoutAvailable, setStaffScoutAvailable] = useState(false)
+  const [staffScoutAvailable, setStaffScoutAvailable] = useState(
+    initialSave?.scout?.staffScoutAvailable ?? false,
+  )
   const staffScoutAvailableRef = useRef(staffScoutAvailable)
   staffScoutAvailableRef.current = staffScoutAvailable
   const [, setCreatorScoutCooldown] = useState(0)
-  const [creatorScoutAvailable, setCreatorScoutAvailable] = useState(false)
+  const [creatorScoutAvailable, setCreatorScoutAvailable] = useState(
+    initialSave?.scout?.creatorScoutAvailable ?? false,
+  )
   const creatorScoutAvailableRef = useRef(creatorScoutAvailable)
   creatorScoutAvailableRef.current = creatorScoutAvailable
-  const [creatorScoutFirstDone, setCreatorScoutFirstDone] = useState(false)
+  const [creatorScoutFirstDone, setCreatorScoutFirstDone] = useState(
+    initialSave?.scout?.creatorScoutFirstDone ?? false,
+  )
   const creatorScoutFirstDoneRef = useRef(creatorScoutFirstDone)
   creatorScoutFirstDoneRef.current = creatorScoutFirstDone
   const [scoutedStaffCandidate, setScoutedStaffCandidate] = useState<ScoutedStaffCandidate | null>(null)
-  const [hiredStaffSalaries, setHiredStaffSalaries] = useState<Record<string, number>>({})
+  const [hiredStaffSalaries, setHiredStaffSalaries] = useState<Record<string, number>>(
+    initialSave?.hiredStaffSalaries ?? {},
+  )
   const hiredStaffSalariesRef = useRef(hiredStaffSalaries)
   hiredStaffSalariesRef.current = hiredStaffSalaries
-  const [hiredStaffStartMonths, setHiredStaffStartMonths] = useState<Record<string, number>>({})
+  const [hiredStaffStartMonths, setHiredStaffStartMonths] = useState<Record<string, number>>(
+    initialSave?.hiredStaffStartMonths ?? {},
+  )
   const hiredStaffStartMonthsRef = useRef(hiredStaffStartMonths)
   hiredStaffStartMonthsRef.current = hiredStaffStartMonths
   const [staffSalaryRaiseRequest, setStaffSalaryRaiseRequest] = useState<{
@@ -621,14 +655,6 @@ export function InGame({
     | { mode: 'dateOffer'; pending: DatePending }
     | { mode: 'dateVn'; pending: DatePending; event: GameEvent }
     | { mode: 'dateResult'; pending: DatePending }
-    | { mode: 'giftOffer'; pending: GiftPending }
-    | {
-        mode: 'giftResult'
-        pending: GiftPending
-        accepted: boolean
-        conditionDelta: number
-        staminaDelta: number
-      }
     | { mode: 'hRetryOffer'; pending: HRetryPending }
     | {
         mode: 'hRetryVn'
@@ -663,9 +689,16 @@ export function InGame({
 
   const [scoutEventState, setScoutEventState] = useState<ScoutEventState | null>(null)
   const [restRequiredName, setRestRequiredName] = useState<string | null>(null)
-  const [scoutSystem, setScoutSystem] = useState<ScoutSystemState>(() =>
-    createInitialScoutState(1),
-  )
+  const [scoutSystem, setScoutSystem] = useState<ScoutSystemState>(() => {
+    if (initialSave?.scoutSystem) {
+      return hydrateScoutSystem(initialSave.scoutSystem, registeredCharacters)
+    }
+    // 구버전 세이브: 이미 영입을 한 상태라면 오프닝 스카우트 재등장 금지
+    if (initialSave && (initialSave.ownedCreators?.length ?? 0) > 0) {
+      return createInitialScoutState(initialSave.broadcastMonthNumber ?? 1, { openingDone: true })
+    }
+    return createInitialScoutState(1)
+  })
   const [promoteQueue, setPromoteQueue] = useState<PromoteSalaryNego[]>([])
   const [salaryEventPlay, setSalaryEventPlay] = useState<PromoteSalaryNego | null>(null)
   const [promotionExam, setPromotionExam] = useState<{
@@ -708,6 +741,7 @@ export function InGame({
       grade: creator.grade,
       profileImageUrl: creator.profileImageUrl || null,
     })
+    scheduleAutoSave()
   }
 
   function beginScoutVisualNovel(creator: OwnedCreator) {
@@ -911,8 +945,10 @@ export function InGame({
   const feedExtraQueueRef = useRef<DayEvent[]>([])
   const lastFeedEmitAtRef = useRef(0)
   const settledDayKeyRef = useRef<string | null>(null)
-  const weekAccumRef = useRef<WeekAccumulator>(createWeekAccumulator(1))
-  const prevWeekRevenueRef = useRef<number | null>(null)
+  const weekAccumRef = useRef<WeekAccumulator>(
+    initialSave ? deserializeWeekAccum(initialSave.weekAccum) : createWeekAccumulator(1),
+  )
+  const prevWeekRevenueRef = useRef<number | null>(initialSave?.prevWeekRevenue ?? null)
   const weekFinishedRef = useRef(false)
   const toxicQteQueueRef = useRef<ToxicWhackQteItem[]>([])
   const weekInspectionsRef = useRef<WeekInspection[]>([])
@@ -935,9 +971,11 @@ export function InGame({
   const pendingStationReviewRef = useRef(false)
   const pendingGameClearRef = useRef(false)
   const pendingSocialQueueRef = useRef<SocialPending[]>([])
-  const socialSpawnRef = useRef(createSocialSpawnState())
+  const socialSpawnRef = useRef(initialSave?.socialSpawn ?? createSocialSpawnState())
   const stationGradeRef = useRef(stationGrade)
-  const annualRevenueByYearRef = useRef<Record<number, number>>({})
+  const annualRevenueByYearRef = useRef<Record<number, number>>(
+    initialSave?.annualRevenueByYear ?? {},
+  )
   const studioSlotsRef = useRef(studioSlots)
   const slotGearByIdRef = useRef(slotGearById)
   const ownedCreatorsRef = useRef(ownedCreators)
@@ -972,6 +1010,75 @@ export function InGame({
   broadcastMonthNumberRef.current = broadcastMonthNumber
   leagueRef.current = league
   stationGradeRef.current = stationGrade
+
+  // ── 세이브/플레이타임 ──────────────────────────────────────────
+  const playtimeMsRef = useRef<number>(initialSave?.playtimeMs ?? 0)
+  const lastPlaytimeMarkRef = useRef(Date.now())
+
+  function markPlaytime() {
+    const now = Date.now()
+    playtimeMsRef.current += now - lastPlaytimeMarkRef.current
+    lastPlaytimeMarkRef.current = now
+  }
+
+  function buildSave(): GameSave | null {
+    if (!companyMeta) return null
+    markPlaytime()
+    return {
+      schemaVersion: 1,
+      id: companyMeta.id,
+      companyName: companyMeta.name,
+      createdAt: companyMeta.createdAt,
+      savedAt: Date.now(),
+      playtimeMs: playtimeMsRef.current,
+      gameMonth: gameMonthRef.current,
+      broadcastMonthNumber: broadcastMonthNumberRef.current,
+      monthWeekIndex: monthWeekIndexRef.current,
+      assets: assetsRef.current,
+      league: leagueRef.current,
+      stationGrade: stationGradeRef.current,
+      rankRefreshTurnsLeft: rankRefreshTurnsLeftRef.current,
+      ownedCreators: ownedCreatorsRef.current.map(serializeOwnedCreator),
+      studioSlots: studioSlotsRef.current,
+      managerState: managerStateRef.current,
+      slotGearById: slotGearByIdRef.current,
+      hiredStaffSalaries: hiredStaffSalariesRef.current,
+      hiredStaffStartMonths: hiredStaffStartMonthsRef.current,
+      weekAccum: serializeWeekAccum(weekAccumRef.current),
+      prevWeekRevenue: prevWeekRevenueRef.current,
+      socialSpawn: socialSpawnRef.current,
+      annualRevenueByYear: annualRevenueByYearRef.current,
+      watchedEventIds,
+      scout: {
+        staffScoutAvailable: staffScoutAvailableRef.current,
+        creatorScoutAvailable: creatorScoutAvailableRef.current,
+        creatorScoutFirstDone: creatorScoutFirstDoneRef.current,
+      },
+      scoutSystem: serializeScoutSystem(scoutSystemRef.current),
+    }
+  }
+
+  const buildSaveRef = useRef(buildSave)
+  buildSaveRef.current = buildSave
+
+  useEffect(() => {
+    registerSaveCapture(() => buildSaveRef.current())
+    const interval = window.setInterval(() => markPlaytime(), 30000)
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') flushAutoSave()
+    }
+    const onUnload = () => flushAutoSave()
+    window.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('beforeunload', onUnload)
+    return () => {
+      registerSaveCapture(null)
+      window.clearInterval(interval)
+      window.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('beforeunload', onUnload)
+      markPlaytime()
+    }
+  }, [])
+
   const handCards = ownedCreators.map(toStudioHandCard)
 
   function rollLivePlayVideos(prev: Record<string, string> = {}) {
@@ -1722,6 +1829,7 @@ export function InGame({
       setTab('schedule')
     }
 
+    scheduleAutoSave()
     return true
   }
 
@@ -2053,37 +2161,7 @@ export function InGame({
 
 
     const viewersBefore = leagueRef.current.viewers
-    const statementDraft = buildWeeklyStatement({
-      week: {
-        ...weekSnapshot,
-        highlights: [...weekSnapshot.highlights],
-      },
-      issuedDate: issued,
-      previousNetProfitWon: prevWeekRevenueRef.current,
-      unlockedSlotCount,
-      payroll,
-      annualTaxWon,
-      taxYear,
-      annualRevenueForTaxWon,
-      staffPayroll,
-      rank: leagueRef.current.currentRank,
-    })
-    prevWeekRevenueRef.current = statementDraft.netProfitWon
-    // 케어비는 이미 즉시 차감됐으므로, 명세서 net에 포함된 케어분을 환산 보정
-    const careAlreadyPaid = weekSnapshot.careExpenses.reduce(
-      (sum, row) => sum + row.amountWon,
-      0,
-    )
-    const assetDelta = statementDraft.netProfitWon + careAlreadyPaid
-    const assetsAfter = assetsRef.current + assetDelta
-    if (assetDelta !== 0) {
-      setAssets(assetsAfter)
-      assetsRef.current = assetsAfter
-    }
-    const portraits: Record<string, string> = {}
-    for (const creator of nextOwned) {
-      if (creator.profileImageUrl) portraits[creator.id] = creator.profileImageUrl
-    }
+    const rankBefore = leagueRef.current.currentRank
 
     const broadcastedIds = new Set(weekSnapshot.byCreator.keys())
     const ownedRankCreators = toRankCreators(ownedCreatorsRef.current)
@@ -2117,6 +2195,43 @@ export function InGame({
       pendingRankResultRef.current = null
     }
     pendingStationReviewRef.current = isAnnualReviewMonth(nextDate, GAME_EPOCH)
+
+    const rankAfter = leagueRef.current.currentRank
+    const rankChange = rankBefore - rankAfter
+
+    const statementDraft = buildWeeklyStatement({
+      week: {
+        ...weekSnapshot,
+        highlights: [...weekSnapshot.highlights],
+      },
+      issuedDate: issued,
+      previousNetProfitWon: prevWeekRevenueRef.current,
+      unlockedSlotCount,
+      payroll,
+      annualTaxWon,
+      taxYear,
+      annualRevenueForTaxWon,
+      staffPayroll,
+      rank: rankAfter,
+      previousRank: rankBefore,
+      rankChange: rankChange,
+    })
+    prevWeekRevenueRef.current = statementDraft.netProfitWon
+    // 케어비는 이미 즉시 차감됐으므로, 명세서 net에 포함된 케어분을 환산 보정
+    const careAlreadyPaid = weekSnapshot.careExpenses.reduce(
+      (sum, row) => sum + row.amountWon,
+      0,
+    )
+    const assetDelta = statementDraft.netProfitWon + careAlreadyPaid
+    const assetsAfter = assetsRef.current + assetDelta
+    if (assetDelta !== 0) {
+      setAssets(assetsAfter)
+      assetsRef.current = assetsAfter
+    }
+    const portraits: Record<string, string> = {}
+    for (const creator of nextOwned) {
+      if (creator.profileImageUrl) portraits[creator.id] = creator.profileImageUrl
+    }
 
     const snsResults: SnsResult[] = []
     let extraViewers = 0
@@ -2235,6 +2350,8 @@ export function InGame({
       setSettlementPortraits(portraits)
       setWeeklyStatement(statement)
     }, 1800)
+    // 방송 턴 마무리 → 즉시 저장
+    flushAutoSave()
   }
 
   function finishWeeklyStatementFollowup() {
@@ -2370,6 +2487,7 @@ export function InGame({
     leagueRef.current = nextLeague
     setLeague(nextLeague)
     if (nextLeague.gameCleared) pendingGameClearRef.current = true
+    flushAutoSave()
   }
 
   function continueAfterMonthModals(openScout: boolean) {
@@ -2379,7 +2497,6 @@ export function InGame({
       setStartBroadcastLocked(true)
       if (next.kind === 'vip') setVipOffer(next.offer)
       else if (next.kind === 'date') setSocialUi({ mode: 'dateOffer', pending: next })
-      else if (next.kind === 'gift') setSocialUi({ mode: 'giftOffer', pending: next })
       else setSocialUi({ mode: 'hRetryOffer', pending: next })
       return
     }
@@ -2405,6 +2522,7 @@ export function InGame({
       dateArcStep: dateArcAfter(pending.step),
     }))
     setSocialUi({ mode: 'dateResult', pending })
+    scheduleAutoSave()
   }
 
   const handleDateStart = () => {
@@ -2455,6 +2573,7 @@ export function InGame({
       return
     }
     applyVipAcceptRewards(offer, spec.staminaMaxLoss)
+    scheduleAutoSave()
   }
 
   function handleVipReject() {
@@ -2475,40 +2594,7 @@ export function InGame({
       creatorName: offer.creatorName,
       viewerLoss,
     })
-  }
-
-  function handleGiftAccept() {
-    if (socialUi?.mode !== 'giftOffer') return
-    const pending = socialUi.pending
-    if (assets < pending.assetCost) return
-    const vitals = rollGiftAcceptVitals()
-    setAssets((prev) => prev - pending.assetCost)
-    patchOwnedCreator(pending.creatorId, (creator) =>
-      applyVitalsDelta(creator, { condition: vitals.condition, stamina: vitals.stamina }),
-    )
-    setSocialUi({
-      mode: 'giftResult',
-      pending,
-      accepted: true,
-      conditionDelta: vitals.condition,
-      staminaDelta: vitals.stamina,
-    })
-  }
-
-  function handleGiftReject() {
-    if (socialUi?.mode !== 'giftOffer') return
-    const pending = socialUi.pending
-    const loss = rollRejectConditionLoss(pending.grade)
-    patchOwnedCreator(pending.creatorId, (creator) =>
-      applyVitalsDelta(creator, { condition: -loss }),
-    )
-    setSocialUi({
-      mode: 'giftResult',
-      pending,
-      accepted: false,
-      conditionDelta: loss,
-      staminaDelta: 0,
-    })
+    scheduleAutoSave()
   }
 
   function handleHRetryAccept() {
@@ -2528,6 +2614,7 @@ export function InGame({
       return
     }
     applyHRetryAccept(pending, spec.staminaLoss)
+    scheduleAutoSave()
   }
 
   function applyHRetryAccept(pending: HRetryPending, staminaLoss: number) {
@@ -2541,6 +2628,7 @@ export function InGame({
       staminaLoss,
       conditionLoss: 0,
     })
+    scheduleAutoSave()
   }
 
   function handleHRetryReject() {
@@ -2557,6 +2645,7 @@ export function InGame({
       staminaLoss: 0,
       conditionLoss: loss,
     })
+    scheduleAutoSave()
   }
 
   function handleConditionCare(creatorId: string) {
@@ -2662,6 +2751,7 @@ export function InGame({
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    scheduleAutoSave()
   }
 
   function confirmPromotionExam() {
@@ -2684,6 +2774,7 @@ export function InGame({
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
     queuePromotionSalary(promoted, play.result.fromGrade, play.result.toGrade)
+    scheduleAutoSave()
   }
 
   function handleSnsCompose(creatorId: string, heat: SnsHeat) {
@@ -2701,6 +2792,7 @@ export function InGame({
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    scheduleAutoSave()
   }
 
   function handleBulkSnsCompose(heat: SnsHeat): BulkSnsRevealEntry[] {
@@ -2734,6 +2826,7 @@ export function InGame({
     })
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    scheduleAutoSave()
     return posted
   }
 
@@ -2754,6 +2847,7 @@ export function InGame({
     })
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    scheduleAutoSave()
   }
 
   function handleStartBroadcast() {
@@ -3283,6 +3377,7 @@ export function InGame({
           <RankingPanel
             league={league}
             stationGrade={stationGrade}
+            stationGradeConfig={stationGradeConfig}
             unlockedSlotCount={countUnlockedSlots(studioSlots)}
             assets={assets}
             nextReviewDate={
@@ -3578,27 +3673,6 @@ export function InGame({
       {socialUi?.mode === 'dateResult' ? (
         <DateResultModal
           pending={socialUi.pending}
-          onConfirm={() => {
-            setSocialUi(null)
-            continueAfterMonthModals(pendingScoutAfterRankRef.current)
-          }}
-        />
-      ) : null}
-      {socialUi?.mode === 'giftOffer' ? (
-        <GiftOfferModal
-          pending={socialUi.pending}
-          assets={assets}
-          onAccept={handleGiftAccept}
-          onReject={handleGiftReject}
-        />
-      ) : null}
-      {socialUi?.mode === 'giftResult' ? (
-        <GiftResultModal
-          accepted={socialUi.accepted}
-          creatorName={socialUi.pending.creatorName}
-          assetCost={socialUi.pending.assetCost}
-          conditionDelta={socialUi.conditionDelta}
-          staminaDelta={socialUi.staminaDelta}
           onConfirm={() => {
             setSocialUi(null)
             continueAfterMonthModals(pendingScoutAfterRankRef.current)

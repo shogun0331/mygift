@@ -193,6 +193,18 @@ export function rankOffsetInTier(rank: number, tier: CompanyTier = companyTierOf
   return Math.max(0, Math.min(1, (rank - tier.bestRank) / span))
 }
 
+/** 0 = 피라미드 최상단(1위), 1 = 피라미드 최하단(300위) 연속 Y 비율 계산 */
+export function getPyramidY(rank: number): number {
+  const r = Math.max(1, Math.min(LEAGUE_SIZE, rank))
+  const tier = companyTierOf(r)
+  const tierIndex = COMPANY_TIERS.findIndex((t) => t.id === tier.id)
+  if (tierIndex === -1) return 1.0
+  const worst = tier.worstRank ?? LEAGUE_SIZE
+  const span = Math.max(1, worst - tier.bestRank)
+  const t = Math.max(0, Math.min(1, (r - tier.bestRank) / span))
+  return (tierIndex + t) / COMPANY_TIERS.length
+}
+
 export const RANK_MILESTONES: RankMilestone[] = [50, 30, 20, 10, 5, 1]
 
 export const MILESTONE_REWARDS: Record<RankMilestone, MilestoneReward> = {

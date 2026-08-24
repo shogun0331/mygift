@@ -5,6 +5,7 @@ import {
   companyTierOf,
   companyTierReached,
   formatViewers,
+  getPyramidY,
   MILESTONE_REWARDS,
   RANK_MILESTONES,
   type CompanyTier,
@@ -15,6 +16,7 @@ import {
   getStationReviewStatus,
   type StationGrade,
 } from '../game/station'
+import type { StationGradeConfig, StationPromotionRule } from '../game/stationGradeConfig'
 import type { Grade } from '../game/characters'
 import { useTranslation } from '../locales/i18n'
 
@@ -26,6 +28,7 @@ export type RankBubblePlay = {
 type RankingPanelProps = {
   league: LeagueState
   stationGrade: StationGrade
+  stationGradeConfig: StationGradeConfig
   unlockedSlotCount: number
   assets: number
   nextReviewDate: string
@@ -36,13 +39,14 @@ type RankingPanelProps = {
   onOpenScout: () => void
 }
 
-const RANK_BUBBLE_MS = 1100
+const RANK_BUBBLE_MS = 1600
 
 const TIER_COUNT = COMPANY_TIERS.length
 
 export function RankingPanel({
   league,
   stationGrade,
+  stationGradeConfig,
   unlockedSlotCount,
   assets,
   nextReviewDate,
@@ -98,19 +102,21 @@ export function RankingPanel({
     }
   }, [rankPlay])
 
-  const displayRank = rankPlay
-    ? Math.round(rankPlay.fromRank + (rankPlay.toRank - rankPlay.fromRank) * playProgress)
+  const displayRankFloat = rankPlay
+    ? rankPlay.fromRank + (rankPlay.toRank - rankPlay.fromRank) * playProgress
     : league.currentRank
-  const currentTier = companyTierOf(displayRank)
+  const displayRank = Math.round(displayRankFloat)
+  const currentTier = companyTierOf(displayRankFloat)
   const destTier = companyTierOf(rankPlay?.toRank ?? league.currentRank)
-  const fromTier = companyTierOf(rankPlay?.fromRank ?? league.previousRank)
-  const riseSlots = COMPANY_TIERS.findIndex((tier) => tier.id === fromTier.id)
-    - COMPANY_TIERS.findIndex((tier) => tier.id === destTier.id)
   const rankUp = (rankPlay?.fromRank ?? league.previousRank) > displayRank
   const rankDown = (rankPlay?.fromRank ?? league.previousRank) < displayRank
   const playing = Boolean(rankPlay)
   const nextMilestone = RANK_MILESTONES.find((rank) => rank < league.currentRank) ?? null
   const reward = nextMilestone ? MILESTONE_REWARDS[nextMilestone] : null
+
+  const pyramidY = getPyramidY(displayRankFloat)
+  const topPct = pyramidY * 100
+  const leftPct = (0.5 - 0.5 * pyramidY) * 100
 
   return (
     <div className="rank-arena">
@@ -143,7 +149,7 @@ export function RankingPanel({
           <div className="rank-layers" aria-hidden={false}>
             {COMPANY_TIERS.map((tier, index) => {
               const active = tier.id === destTier.id
-              const filled = companyTierReached(displayRank, tier)
+              const filled = companyTierReached(displayRankFloat, tier)
               return (
                 <div
                   key={tier.id}
@@ -157,18 +163,17 @@ export function RankingPanel({
                 >
                   <div className={`rank-layer rank-layer--${tier.id}`} />
                   {filled ? <LayerSparks dense={active} /> : null}
-                  {active ? (
-                    <CurrentMarker
-                      rank={displayRank}
-                      cheering={rankUp}
-                      rising={playing}
-                      fill={playProgress}
-                      riseSlots={playing ? riseSlots : 0}
-                    />
-                  ) : null}
                 </div>
               )
             })}
+            <CurrentMarker
+              rank={displayRank}
+              cheering={rankUp}
+              rising={playing}
+              fill={playProgress}
+              topPct={topPct}
+              leftPct={leftPct}
+            />
           </div>
         </div>
 
@@ -179,6 +184,8 @@ export function RankingPanel({
               tier={tier}
               active={tier.id === currentTier.id}
               filled={companyTierReached(displayRank, tier)}
+              rule={tier.id === 'black' ? null : stationGradeConfig.promotions[tier.id]}
+              ctx={{ viewers: league.viewers, unlockedSlotCount, assets, creators }}
             />
           ))}
         </div>
@@ -241,13 +248,15 @@ function CurrentMarker({
   cheering,
   rising = false,
   fill = 1,
-  riseSlots = 0,
+  topPct,
+  leftPct,
 }: {
   rank: number
   cheering: boolean
   rising?: boolean
   fill?: number
-  riseSlots?: number
+  topPct: number
+  leftPct: number
 }) {
   const { t } = useTranslation()
   return (
@@ -255,8 +264,8 @@ function CurrentMarker({
       className={`rank-tip${cheering ? ' is-up' : ''}${rising ? ' is-rising' : ''}`}
       style={
         {
-          '--rise-slots': String(riseSlots),
-          '--rise-t': String(fill),
+          top: `${topPct.toFixed(3)}%`,
+          left: `calc(${leftPct.toFixed(3)}% - 0.35rem)`,
         } as CSSProperties
       }
     >
@@ -279,10 +288,14 @@ function TierCard({
   tier,
   active,
   filled,
+  rule,
+  ctx,
 }: {
   tier: CompanyTier
   active: boolean
   filled: boolean
+  rule: StationPromotionRule | null
+  ctx: PromotionCtx
 }) {
   const { t } = useTranslation()
   const range =
@@ -291,6 +304,7 @@ function TierCard({
       : t('ranking.rangeClosed')
           .replace('{from}', String(tier.bestRank))
           .replace('{to}', String(tier.worstRank))
+  const cells = rule ? promotionCondCells(rule, ctx, t) : []
 
   return (
     <div
@@ -300,9 +314,77 @@ function TierCard({
       <div className="rank-card-copy">
         <p className="rank-card-name">{t(companyTierLabelKey(tier.id))}</p>
         <p className="rank-card-range">{range}</p>
+        {cells.length > 0 ? (
+          <div className="rank-card-conds">
+            {cells.map((cell) => (
+              <span key={cell.id} className={`rank-cond-cell${cell.met ? ' is-met' : ''}`}>
+                {cell.met ? (
+                  <span className="rank-cond-check" aria-hidden>
+                    ✓
+                  </span>
+                ) : null}
+                {cell.label}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
     </div>
   )
+}
+
+/** 충족 판정에 필요한 현재 플레이어 수치 */
+type PromotionCtx = {
+  viewers: number
+  unlockedSlotCount: number
+  assets: number
+  creators: Array<{ grade: Grade }>
+}
+
+const COND_GRADE_RANK: Record<Grade, number> = { C: 0, B: 1, A: 2, S: 3 }
+
+function countCreatorsAtLeast(creators: Array<{ grade: Grade }>, minGrade: Grade): number {
+  const min = COND_GRADE_RANK[minGrade]
+  return creators.filter((c) => COND_GRADE_RANK[c.grade] >= min).length
+}
+
+/** 승급 조건 → 셀 단위 + 충족 여부 (에디터 설정값 기반) */
+function promotionCondCells(
+  rule: StationPromotionRule,
+  ctx: PromotionCtx,
+  t: (key: string) => string,
+): Array<{ id: string; label: string; met: boolean }> {
+  const cells: Array<{ id: string; label: string; met: boolean }> = []
+  cells.push({
+    id: 'viewers',
+    label: t('ranking.cond.viewers').replace('{n}', formatViewers(rule.requiredViewers)),
+    met: ctx.viewers >= rule.requiredViewers,
+  })
+  if (rule.minUnlockedSlots.enabled) {
+    cells.push({
+      id: 'slots',
+      label: t('ranking.cond.slots').replace('{n}', String(rule.minUnlockedSlots.value)),
+      met: ctx.unlockedSlotCount >= rule.minUnlockedSlots.value,
+    })
+  }
+  if (rule.minAssets.enabled) {
+    cells.push({
+      id: 'assets',
+      label: t('ranking.cond.assets').replace('{n}', rule.minAssets.value.toLocaleString()),
+      met: ctx.assets >= rule.minAssets.value,
+    })
+  }
+  for (const req of rule.creatorRequirements) {
+    if (!req.enabled) continue
+    cells.push({
+      id: req.id,
+      label: t('ranking.cond.creators')
+        .replace('{grade}', req.minGrade)
+        .replace('{n}', String(req.count)),
+      met: countCreatorsAtLeast(ctx.creators, req.minGrade) >= req.count,
+    })
+  }
+  return cells
 }
 
 function RewardSummary({ reward }: { reward: MilestoneReward }) {

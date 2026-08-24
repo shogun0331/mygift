@@ -33,8 +33,12 @@ export function enablePremiumScout(state: ScoutSystemState): ScoutSystemState {
   return state
 }
 
-export function createInitialScoutState(currentTurn: number): ScoutSystemState {
+export function createInitialScoutState(
+  currentTurn: number,
+  opts?: { openingDone?: boolean },
+): ScoutSystemState {
   const turn = Math.max(1, Math.round(currentTurn))
+  const openingDone = opts?.openingDone ?? false
   return {
     nextCheckTurn: turn,
     failStreak: 0,
@@ -43,8 +47,8 @@ export function createInitialScoutState(currentTurn: number): ScoutSystemState {
     activeOffer: null,
     offerAppearedTurn: null,
     hasUnread: false,
-    openingScoutPending: true,
-    firstHireGuaranteed: true,
+    openingScoutPending: !openingDone,
+    firstHireGuaranteed: !openingDone,
     appearCount: 0,
     premiumScout: false,
   }

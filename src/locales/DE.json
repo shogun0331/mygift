@@ -511,30 +511,6 @@
     "resultSp": "SP +{n} (erhalten)",
     "confirm": "OK"
   },
-  "gift": {
-    "offerTitle": "Geschenk-Anfrage",
-    "offerBody": "{name} bittet den Chef um ein Geschenk (oder Geld).",
-    "acceptHeader": "Bei Annahme",
-    "acceptCost": "Vermögen {price}",
-    "acceptCostRange": "Angeforderter Bereich {range}",
-    "acceptSp": "SP +{n}",
-    "acceptVitals": "Zustand·Ausdauer {range}",
-    "rejectHeader": "Bei Ablehnung",
-    "rejectCondition": "Zustand -5 ~ -10",
-    "needAssets": "Nicht genug Vermögen",
-    "accept": "Annehmen",
-    "reject": "Ablehnen",
-    "resultAcceptTitle": "Geschenk gesendet",
-    "resultAcceptBody": "{name} freut sich.",
-    "resultRejectTitle": "Geschenk abgelehnt",
-    "resultRejectBody": "{name} scheint verstimmt zu sein.",
-    "resultCost": "Vermögen {price}",
-    "resultSp": "SP +{n} (erhalten)",
-    "resultCondition": "Zustand +{n}",
-    "resultStamina": "Ausdauer +{n}",
-    "resultConditionDown": "Zustand -{n}",
-    "confirm": "OK"
-  },
   "hRetry": {
     "offerTitle": "H-erneut angefragt",
     "offerBody": "{name} bittet erneut um ein Treffen.",
@@ -622,6 +598,13 @@
       "sme": "Kleines Unternehmen",
       "tiny": "Kleinstbetrieb",
       "black": "Einzelunternehmer"
+    },
+    "cond": {
+      "viewers": "Zuschauer {n}",
+      "slots": "Slots {n}",
+      "assets": "Vermögen ${n}",
+      "creators": "Rang {grade}+ ×{n}",
+      "none": "Keine Bedingungen"
     }
   },
   "common": {
@@ -706,5 +689,20 @@
     "viewer": "⚠ Troll",
     "conditionDrop": "Zustand −{drop}",
     "trollingHint": "Troll während der Sendung · wehre dich über die CCTV!"
+  },
+  "save": {
+    "newGameTitle": "Neues Unternehmen",
+    "companyName": "Firmenname",
+    "companyNamePlaceholder": "STAR",
+    "companyNameHint": "Nur Buchstaben/Zahlen/Leerzeichen · leer = STAR",
+    "start": "Starten",
+    "cancel": "Abbrechen",
+    "loadTitle": "Spielstände",
+    "emptySaves": "Noch keine Spielstände.",
+    "delete": "Löschen",
+    "deleteConfirm": "Diesen Spielstand löschen?",
+    "playtime": "Spielzeit",
+    "assets": "Vermögen",
+    "viewers": "Zuschauer"
   }
 }

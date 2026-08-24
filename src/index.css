@@ -2700,6 +2700,7 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 }
 
 .rank-layers {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: min(100%, 26rem);
@@ -2880,18 +2881,13 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 
 .rank-tip {
   position: absolute;
-  top: 50%;
-  left: calc(50% - 50% * var(--t1) - 0.35rem);
-  z-index: 3;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   transform: translate(-100%, -50%);
   pointer-events: none;
-}
-
-.rank-tip.is-rising {
-  top: calc(50% + (1 - var(--rise-t, 1)) * var(--rise-slots, 0) * 100%);
+  transition: top 0.08s ease-out, left 0.08s ease-out;
 }
 
 .rank-tip-card.is-filling {
@@ -3091,6 +3087,57 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 }
 .rank-legend-icon--black {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23c084fc' d='M12 2l2.8 3.9 4.8.4-3.4 3.4 1.1 4.7L12 12.6 6.7 14.4l1.1-4.7L4.4 6.3l4.8-.4z'/></svg>");
+}
+
+.rank-card-conds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.26rem;
+  margin-top: 0.32rem;
+}
+
+.rank-cond-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  max-width: 100%;
+  padding: 0.17rem 0.45rem;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 0.5rem;
+  background: rgba(15, 23, 42, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: #64748b;
+}
+
+.rank-cond-cell.is-met {
+  border-color: color-mix(in srgb, currentColor 55%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, currentColor 30%, rgba(8, 13, 24, 0.62)) 0%,
+    color-mix(in srgb, currentColor 16%, rgba(8, 13, 24, 0.62)) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, currentColor 30%, transparent),
+    0 0 10px color-mix(in srgb, currentColor 22%, transparent);
+  color: color-mix(in srgb, currentColor 82%, #f1f5f9);
+}
+
+.rank-card.is-active .rank-cond-cell.is-met {
+  border-color: currentColor;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, currentColor 40%, transparent),
+    0 0 14px color-mix(in srgb, currentColor 38%, transparent);
+}
+
+.rank-cond-check {
+  font-size: 0.55rem;
+  font-weight: 900;
+  line-height: 1;
+  filter: drop-shadow(0 0 3px currentColor);
 }
 
 .rank-foot {

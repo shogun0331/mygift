@@ -511,30 +511,6 @@
     "resultSp": "SP +{n} (獲得)",
     "confirm": "確認"
   },
-  "gift": {
-    "offerTitle": "プレゼント要求",
-    "offerBody": "{name}が社長にプレゼント（またはお金）を求めています。",
-    "acceptHeader": "受諾時",
-    "acceptCost": "資産 {price}",
-    "acceptCostRange": "要求範囲 {range}",
-    "acceptSp": "SP +{n}",
-    "acceptVitals": "コンディション・スタミナ {range}",
-    "rejectHeader": "拒否時",
-    "rejectCondition": "コンディション -5 〜 -10",
-    "needAssets": "資産が不足しています",
-    "accept": "受諾",
-    "reject": "拒否",
-    "resultAcceptTitle": "プレゼントを送りました",
-    "resultAcceptBody": "{name}が喜んでいます。",
-    "resultRejectTitle": "プレゼントを拒否しました",
-    "resultRejectBody": "{name}の機嫌を損ねたようです。",
-    "resultCost": "資産 {price}",
-    "resultSp": "SP +{n} (獲得)",
-    "resultCondition": "コンディション +{n}",
-    "resultStamina": "スタミナ +{n}",
-    "resultConditionDown": "コンディション -{n}",
-    "confirm": "確認"
-  },
   "hRetry": {
     "offerTitle": "H再リクエスト",
     "offerBody": "{name}が再び面会を求めています。",
@@ -622,6 +598,13 @@
       "sme": "中小企業",
       "tiny": "零細企業",
       "black": "個人事業"
+    },
+    "cond": {
+      "viewers": "視聴者 {n}人",
+      "slots": "開放スロット {n}枠",
+      "assets": "資産 ${n}",
+      "creators": "{grade}+ランク {n}人",
+      "none": "条件なし"
     }
   },
   "common": {
@@ -706,5 +689,20 @@
     "viewer": "⚠ 迷惑視聴者",
     "conditionDrop": "コンディション −{drop}",
     "trollingHint": "放送中トロール · CCTVで対応！"
+  },
+  "save": {
+    "newGameTitle": "新会社を始める",
+    "companyName": "会社名",
+    "companyNamePlaceholder": "STAR",
+    "companyNameHint": "英数字・スペースのみ · 空欄なら STAR",
+    "start": "開始",
+    "cancel": "キャンセル",
+    "loadTitle": "セーブ一覧",
+    "emptySaves": "セーブがありません。",
+    "delete": "削除",
+    "deleteConfirm": "このセーブを削除しますか？",
+    "playtime": "プレイ時間",
+    "assets": "資産",
+    "viewers": "視聴者"
   }
 }

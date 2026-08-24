@@ -52,6 +52,15 @@ import type { AddCharacterPayload } from './screens/EditorScreen'
 import { EditorScreen } from './screens/EditorScreen'
 import { InGame } from './screens/InGame'
 import { MainMenu } from './screens/MainMenu'
+import { hydrateOwnedCreator, type GameSave } from './game/save'
+import {
+  captureCurrentSave,
+  flushAutoSave,
+  loadGame,
+  saveGame,
+} from './game/saveService'
+import { NewGameModal } from './screens/NewGameModal'
+import { LoadGameModal } from './screens/LoadGameModal'
 
 const STAFF_STORAGE_KEY = 'broadcast-staff-json'
 
@@ -609,9 +618,26 @@ export default function App() {
   /** 인게임에서 1회 이상 시청한 시뮬레이터 이벤트 */
   const [watchedEventIds, setWatchedEventIds] = useState<string[]>([])
   const [editorReturnScreen, setEditorReturnScreen] = useState<Screen>('main')
-  const hasActiveSession = ownedCreators.length > 0
+  /** 현재 회사 메타 (새 게임/로드 시 설정) */
+  const [companyMeta, setCompanyMeta] = useState<{
+    id: string
+    name: string
+    createdAt: number
+  } | null>(null)
+  /** InGame 재마운트(에디터 복귀/로드) 시 하이드레이션용 세이브 */
+  const [initialSave, setInitialSave] = useState<GameSave | null>(null)
+  const [showNewGame, setShowNewGame] = useState(false)
+  const [showLoadGame, setShowLoadGame] = useState(false)
 
   function openEditor(returnTo: 'main' | 'game' = 'main') {
+    // 에디터 진입 전 현재 진행 상태를 저장 → 복귀 시 초기화 방지
+    const latest = captureCurrentSave()
+    if (latest) {
+      saveGame(latest)
+      setInitialSave(latest)
+    } else {
+      flushAutoSave()
+    }
     setEditorReturnScreen(returnTo)
     setScreen('editor')
   }
@@ -1076,7 +1102,14 @@ export default function App() {
     })
   }
 
-  function startNewGame() {
+  function startNewGame(companyName: string) {
+    const name = (companyName || 'STAR').trim() || 'STAR'
+    const id =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `company-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+    setCompanyMeta({ id, name, createdAt: Date.now() })
+    setInitialSave(null)
     setOwnedCreators([])
     setStudioSlots(createInitialStudioSlots())
     setManagerState(createEmptySlotManagerState())
@@ -1084,13 +1117,21 @@ export default function App() {
     setScreen('game')
   }
 
+  function loadSaveGame(id: string) {
+    const save = loadGame(id)
+    if (!save) return
+    setCompanyMeta({ id: save.id, name: save.companyName, createdAt: save.createdAt })
+    setInitialSave(save)
+    setOwnedCreators((save.ownedCreators ?? []).map(hydrateOwnedCreator))
+    setStudioSlots(save.studioSlots ?? createInitialStudioSlots())
+    setManagerState(save.managerState ?? createEmptySlotManagerState())
+    setWatchedEventIds(save.watchedEventIds ?? [])
+    setScreen('game')
+  }
+
   function markEventWatched(eventId: string) {
     if (!eventId) return
     setWatchedEventIds((prev) => (prev.includes(eventId) ? prev : [...prev, eventId]))
-  }
-
-  function continueGame() {
-    setScreen('game')
   }
 
   const handleSaveEventsManual = async () => {
@@ -1157,20 +1198,45 @@ export default function App() {
         onStudioSlotsChange={setStudioSlots}
         onOwnedCreatorsChange={setOwnedCreators}
         onScout={handleScout}
-        onBack={() => setScreen('main')}
+        onBack={() => {
+          flushAutoSave()
+          setScreen('main')
+        }}
         onOpenEditor={() => openEditor('game')}
         watchedEventIds={watchedEventIds}
         onEventWatched={markEventWatched}
         stationGradeConfig={stationGradeConfig}
+        companyMeta={companyMeta}
+        initialSave={initialSave}
       />
     )
   }
 
   return (
-    <MainMenu
-      onNewGame={startNewGame}
-      onContinueGame={hasActiveSession ? continueGame : undefined}
-      onOpenEditor={() => openEditor('main')}
-    />
+    <>
+      <MainMenu
+        onNewGame={() => setShowNewGame(true)}
+        onLoadGame={() => setShowLoadGame(true)}
+        onOpenEditor={() => openEditor('main')}
+      />
+      {showNewGame ? (
+        <NewGameModal
+          onConfirm={(name) => {
+            setShowNewGame(false)
+            startNewGame(name)
+          }}
+          onCancel={() => setShowNewGame(false)}
+        />
+      ) : null}
+      {showLoadGame ? (
+        <LoadGameModal
+          onLoad={(id) => {
+            setShowLoadGame(false)
+            loadSaveGame(id)
+          }}
+          onClose={() => setShowLoadGame(false)}
+        />
+      ) : null}
+    </>
   )
 }

@@ -39,13 +39,13 @@ function GearIcon() {
 
 type MainMenuProps = {
   onNewGame: () => void
-  onContinueGame?: () => void
+  onLoadGame: () => void
   onOpenEditor?: () => void
 }
 
-export function MainMenu({ onNewGame, onContinueGame, onOpenEditor }: MainMenuProps) {
+export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps) {
   const { t } = useTranslation()
-  const [active, setActive] = useState<MenuId>(onContinueGame ? 'load' : 'new')
+  const [active, setActive] = useState<MenuId>('new')
   const showEditor = import.meta.env.DEV
 
   const handleSelect = (id: MenuId) => {
@@ -55,10 +55,7 @@ export function MainMenu({ onNewGame, onContinueGame, onOpenEditor }: MainMenuPr
       return
     }
     if (id === 'load') {
-      if (onContinueGame) {
-        onContinueGame()
-        return
-      }
+      onLoadGame()
       return
     }
     if (id === 'edit') {
@@ -129,14 +126,14 @@ export function MainMenu({ onNewGame, onContinueGame, onOpenEditor }: MainMenuPr
                     [{t(item.labelKey)}]
                   </span>
                 </span>
-                {item.id === 'load' && onContinueGame ? (
+                {item.id === 'load' && item.subKey ? (
                   <span
                     className={`mt-[0.2em] block tracking-[0.14em] ${
                       isActive ? 'text-indigo-100' : 'text-slate-500'
                     }`}
                     style={{ fontSize: '0.72em' }}
                   >
-                    {t('menu.continueHint')}
+                    {t(item.subKey)}
                   </span>
                 ) : item.subKey ? (
                   <span

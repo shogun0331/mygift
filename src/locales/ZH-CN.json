@@ -511,30 +511,6 @@
     "resultSp": "SP +{n}（获得）",
     "confirm": "确认"
   },
-  "gift": {
-    "offerTitle": "索要礼物",
-    "offerBody": "{name}向老板索要礼物（或金钱）。",
-    "acceptHeader": "接受时",
-    "acceptCost": "资产 {price}",
-    "acceptCostRange": "要求范围 {range}",
-    "acceptSp": "SP +{n}",
-    "acceptVitals": "状态·体力 {range}",
-    "rejectHeader": "拒绝时",
-    "rejectCondition": "状态 -5 ~ -10",
-    "needAssets": "资产不足",
-    "accept": "接受",
-    "reject": "拒绝",
-    "resultAcceptTitle": "已送出礼物",
-    "resultAcceptBody": "{name}很开心。",
-    "resultRejectTitle": "已拒绝礼物",
-    "resultRejectBody": "{name}似乎有点不高兴。",
-    "resultCost": "资产 {price}",
-    "resultSp": "SP +{n}（获得）",
-    "resultCondition": "状态 +{n}",
-    "resultStamina": "体力 +{n}",
-    "resultConditionDown": "状态 -{n}",
-    "confirm": "确认"
-  },
   "hRetry": {
     "offerTitle": "H再次请求",
     "offerBody": "{name}请求再次见面。",
@@ -622,6 +598,13 @@
       "sme": "中小企业",
       "tiny": "微型企业",
       "black": "个体经营"
+    },
+    "cond": {
+      "viewers": "观众 {n}人",
+      "slots": "开放槽位 {n}个",
+      "assets": "资产 ${n}",
+      "creators": "{grade}+级 {n}人",
+      "none": "无条件"
     }
   },
   "common": {
@@ -706,5 +689,20 @@
     "viewer": "⚠ 恶意观众",
     "conditionDrop": "状态 −{drop}",
     "trollingHint": "直播中遇到骚扰 · 请用CCTV应对！"
+  },
+  "save": {
+    "newGameTitle": "开始新公司",
+    "companyName": "公司名称",
+    "companyNamePlaceholder": "STAR",
+    "companyNameHint": "仅限英文/数字/空格 · 留空则为 STAR",
+    "start": "开始",
+    "cancel": "取消",
+    "loadTitle": "存档列表",
+    "emptySaves": "暂无存档。",
+    "delete": "删除",
+    "deleteConfirm": "删除此存档？",
+    "playtime": "游戏时间",
+    "assets": "资产",
+    "viewers": "观众"
   }
 }

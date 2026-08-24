@@ -111,7 +111,7 @@ broadcast-game/
 #### 대화상자 & 인터랙티브 모달 컴포넌트 (Modals)
 - **[`StationReviewModal.tsx`](file:///f:/Broadcast/broadcast-game/src/screens/StationReviewModal.tsx)**: 연간 방송국 승급 심사 결과를 연출하는 모달.
 - **[`RankChangeModal.tsx`](file:///f:/Broadcast/broadcast-game/src/screens/RankChangeModal.tsx)**: 월간 랭킹 변동 및 순위 상승을 알리는 모달.
-- **[`DateEventModal.tsx`](file:///f:/Broadcast/broadcast-game/src/screens/DateEventModal.tsx)** / **[`GiftEventModal.tsx`](file:///f:/Broadcast/broadcast-game/src/screens/GiftEventModal.tsx)**: 크리에이터 데이트/선물 컷씬 이벤트 팝업.
+- **[`DateEventModal.tsx`](file:///f:/Broadcast/broadcast-game/src/screens/DateEventModal.tsx)** 크리에이터 데이트 컷씬 이벤트 팝업.
 - **[`WeeklySettlementModal.tsx`](file:///f:/Broadcast/broadcast-game/src/screens/WeeklySettlementModal.tsx)**: 주간 방송 결산 명세서.
 - **[`SalaryNegotiateModal.tsx`](file:///f:/Broadcast/broadcast-game/src/screens/SalaryNegotiateModal.tsx)** / **[`UnlockSlotModal.tsx`](file:///f:/Broadcast/broadcast-game/src/screens/UnlockSlotModal.tsx)**: 연봉 협상 및 스튜디오 슬롯 해금 모달.
 - **[`StationGradeEditorPanel.tsx`](file:///f:/Broadcast/broadcast-game/src/screens/StationGradeEditorPanel.tsx)**: 에디터 내 방송국 등급 승급 조건 및 슬롯 해금가를 편집하는 개발자 패널.
@@ -142,3 +142,6 @@ Electron 프로세스는 웹 렌더러와 OS 파일 시스템 간의 통로 역�
    - `tsc -b`로 TypeScript 타입 검사를 거친 후 `vite build`를 실행하여 `dist/` 폴더에 최적화된 번들 결과물을 생성합니다.
 3. **프로덕션 실행 (`npm start`)**:
    - 빌드된 `dist/index.html`을 기반으로 Electron 데스크톱 앱을 단독 구동합니다.
+
+
+

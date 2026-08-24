@@ -511,30 +511,6 @@
     "resultSp": "SP +{n} (obtenido)",
     "confirm": "Aceptar"
   },
-  "gift": {
-    "offerTitle": "Petición de regalo",
-    "offerBody": "{name} pide un regalo (o dinero) al jefe.",
-    "acceptHeader": "Si aceptas",
-    "acceptCost": "Activos {price}",
-    "acceptCostRange": "Rango pedido {range}",
-    "acceptSp": "SP +{n}",
-    "acceptVitals": "Estado·energía {range}",
-    "rejectHeader": "Si rechazas",
-    "rejectCondition": "Estado -5 ~ -10",
-    "needAssets": "Activos insuficientes",
-    "accept": "Aceptar",
-    "reject": "Rechazar",
-    "resultAcceptTitle": "Regalo enviado",
-    "resultAcceptBody": "{name} está feliz.",
-    "resultRejectTitle": "Regalo rechazado",
-    "resultRejectBody": "{name} parece molesto.",
-    "resultCost": "Activos {price}",
-    "resultSp": "SP +{n} (obtenido)",
-    "resultCondition": "Estado +{n}",
-    "resultStamina": "Energía +{n}",
-    "resultConditionDown": "Estado -{n}",
-    "confirm": "Aceptar"
-  },
   "hRetry": {
     "offerTitle": "Reintento H",
     "offerBody": "{name} pide verse de nuevo.",
@@ -622,6 +598,13 @@
       "sme": "Pyme",
       "tiny": "Microempresa",
       "black": "Autónomo"
+    },
+    "cond": {
+      "viewers": "Espectadores {n}",
+      "slots": "Espacios {n}",
+      "assets": "Activos ${n}",
+      "creators": "Rango {grade}+ ×{n}",
+      "none": "Sin condiciones"
     }
   },
   "common": {
@@ -706,5 +689,20 @@
     "viewer": "⚠ Troll",
     "conditionDrop": "Estado −{drop}",
     "trollingHint": "Troll durante la emisión · ¡responde con la CCTV!"
+  },
+  "save": {
+    "newGameTitle": "Nueva compañía",
+    "companyName": "Nombre de la compañía",
+    "companyNamePlaceholder": "STAR",
+    "companyNameHint": "Solo letras/números/espacios · vacío = STAR",
+    "start": "Empezar",
+    "cancel": "Cancelar",
+    "loadTitle": "Partidas guardadas",
+    "emptySaves": "Aún no hay partidas guardadas.",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Eliminar esta partida?",
+    "playtime": "Tiempo de juego",
+    "assets": "Activos",
+    "viewers": "Espectadores"
   }
 }

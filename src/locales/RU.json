@@ -511,30 +511,6 @@
     "resultSp": "SP +{n} (получено)",
     "confirm": "OK"
   },
-  "gift": {
-    "offerTitle": "Просьба о подарке",
-    "offerBody": "{name} просит у босса подарок (или деньги).",
-    "acceptHeader": "Принять",
-    "acceptCost": "Средства {price}",
-    "acceptCostRange": "Запрос {range}",
-    "acceptSp": "SP +{n}",
-    "acceptVitals": "Состояние·стамина {range}",
-    "rejectHeader": "Отказать",
-    "rejectCondition": "Состояние -5 ~ -10",
-    "needAssets": "Недостаточно средств",
-    "accept": "Принять",
-    "reject": "Отказать",
-    "resultAcceptTitle": "Подарок отправлен",
-    "resultAcceptBody": "{name} радуется.",
-    "resultRejectTitle": "Подарок отклонён",
-    "resultRejectBody": "{name}, похоже, расстроился.",
-    "resultCost": "Средства {price}",
-    "resultSp": "SP +{n} (получено)",
-    "resultCondition": "Состояние +{n}",
-    "resultStamina": "Стамина +{n}",
-    "resultConditionDown": "Состояние -{n}",
-    "confirm": "OK"
-  },
   "hRetry": {
     "offerTitle": "Повторная просьба H",
     "offerBody": "{name} снова просит о встрече.",
@@ -622,6 +598,13 @@
       "sme": "Малый бизнес",
       "tiny": "Микробизнес",
       "black": "ИП"
+    },
+    "cond": {
+      "viewers": "Зрители {n}",
+      "slots": "Слоты {n}",
+      "assets": "Активы ${n}",
+      "creators": "Ранг {grade}+ ×{n}",
+      "none": "Нет условий"
     }
   },
   "common": {
@@ -706,5 +689,20 @@
     "viewer": "⚠ Тролль",
     "conditionDrop": "Состояние −{drop}",
     "trollingHint": "Троллинг во время эфира · ответьте через CCTV!"
+  },
+  "save": {
+    "newGameTitle": "Новая компания",
+    "companyName": "Название компании",
+    "companyNamePlaceholder": "STAR",
+    "companyNameHint": "Только латиница/цифры/пробелы · пусто = STAR",
+    "start": "Начать",
+    "cancel": "Отмена",
+    "loadTitle": "Сохранения",
+    "emptySaves": "Сохранений пока нет.",
+    "delete": "Удалить",
+    "deleteConfirm": "Удалить это сохранение?",
+    "playtime": "Время игры",
+    "assets": "Активы",
+    "viewers": "Зрители"
   }
 }

@@ -511,30 +511,6 @@
     "resultSp": "SP +{n} gained",
     "confirm": "OK"
   },
-  "gift": {
-    "offerTitle": "Gift Request",
-    "offerBody": "{name} asks the boss for a gift (or money).",
-    "acceptHeader": "If accepted",
-    "acceptCost": "Assets {price}",
-    "acceptCostRange": "Ask range {range}",
-    "acceptSp": "SP +{n}",
-    "acceptVitals": "Condition & stamina {range}",
-    "rejectHeader": "If declined",
-    "rejectCondition": "Condition -5 to -10",
-    "needAssets": "Not enough assets",
-    "accept": "Accept",
-    "reject": "Decline",
-    "resultAcceptTitle": "Gift Sent",
-    "resultAcceptBody": "{name} is delighted.",
-    "resultRejectTitle": "Gift Declined",
-    "resultRejectBody": "{name} looks upset.",
-    "resultCost": "Assets {price}",
-    "resultSp": "SP +{n} gained",
-    "resultCondition": "Condition +{n}",
-    "resultStamina": "Stamina +{n}",
-    "resultConditionDown": "Condition -{n}",
-    "confirm": "OK"
-  },
   "hRetry": {
     "offerTitle": "H Request",
     "offerBody": "{name} asks to meet again.",
@@ -622,6 +598,13 @@
       "sme": "SME",
       "tiny": "Tiny Business",
       "black": "Sole Proprietor"
+    },
+    "cond": {
+      "viewers": "Viewers {n}",
+      "slots": "Open Slots {n}",
+      "assets": "Assets ${n}",
+      "creators": "Rank {grade}+ ×{n}",
+      "none": "No conditions"
     }
   },
   "common": {
@@ -706,5 +689,20 @@
     "viewer": "⚠ Toxic viewer",
     "conditionDrop": "Condition −{drop}",
     "trollingHint": "Trolling during broadcast · respond from CCTV!"
+  },
+  "save": {
+    "newGameTitle": "Start New Company",
+    "companyName": "Company Name",
+    "companyNamePlaceholder": "STAR",
+    "companyNameHint": "English letters/numbers/spaces only · blank = STAR",
+    "start": "Start",
+    "cancel": "Cancel",
+    "loadTitle": "Saved Games",
+    "emptySaves": "No saved games yet.",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this save?",
+    "playtime": "Playtime",
+    "assets": "Assets",
+    "viewers": "Viewers"
   }
 }

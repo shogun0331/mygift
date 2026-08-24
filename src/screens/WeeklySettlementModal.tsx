@@ -124,6 +124,31 @@ export function WeeklySettlementModal({
                   {t('ranking.currentRankLabel')} {statement.rank}
                   {t('ranking.rankUnit')}
                 </span>
+                {statement.rankChange != null && statement.rankChange !== 0 ? (
+                  <span
+                    className={`ml-2 inline-flex items-center font-bold text-xs ${
+                      statement.rankChange > 0 ? 'text-emerald-400' : 'text-rose-400'
+                    }`}
+                  >
+                    (
+                    {statement.rankChange > 0 ? (
+                      <>
+                        ▲{statement.rankChange}
+                        {t('ranking.rankUnit')} UP
+                      </>
+                    ) : (
+                      <>
+                        ▼{Math.abs(statement.rankChange)}
+                        {t('ranking.rankUnit')} DOWN
+                      </>
+                    )}
+                    )
+                  </span>
+                ) : statement.rankChange === 0 ? (
+                  <span className="ml-2 inline-flex items-center text-slate-400 font-normal text-xs">
+                    (─ {t('ranking.modalStay')})
+                  </span>
+                ) : null}
               </p>
             </div>
             <div className="ml-auto flex flex-wrap items-end justify-end gap-x-8 gap-y-3 text-right">

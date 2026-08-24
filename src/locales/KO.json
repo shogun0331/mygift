@@ -511,30 +511,6 @@
     "resultSp": "SP +{n} (획득)",
     "confirm": "확인"
   },
-  "gift": {
-    "offerTitle": "선물 요구",
-    "offerBody": "{name}이(가) 사장님께 선물(또는 돈)을 요청합니다.",
-    "acceptHeader": "수락 시",
-    "acceptCost": "자산 {price}",
-    "acceptCostRange": "요구 범위 {range}",
-    "acceptSp": "SP +{n}",
-    "acceptVitals": "컨디션·스테미나 {range}",
-    "rejectHeader": "거절 시",
-    "rejectCondition": "컨디션 -5 ~ -10",
-    "needAssets": "자산이 부족합니다",
-    "accept": "수락",
-    "reject": "거절",
-    "resultAcceptTitle": "선물을 보냈습니다",
-    "resultAcceptBody": "{name}이(가) 기뻐합니다.",
-    "resultRejectTitle": "선물을 거절했습니다",
-    "resultRejectBody": "{name}의 기분이 상한 것 같습니다.",
-    "resultCost": "자산 {price}",
-    "resultSp": "SP +{n} (획득)",
-    "resultCondition": "컨디션 +{n}",
-    "resultStamina": "스테미나 +{n}",
-    "resultConditionDown": "컨디션 -{n}",
-    "confirm": "확인"
-  },
   "hRetry": {
     "offerTitle": "H 재요청",
     "offerBody": "{name}이(가) 다시 만남을 요청합니다.",
@@ -622,6 +598,13 @@
       "sme": "중소기업",
       "tiny": "영세기업",
       "black": "일반사업자"
+    },
+    "cond": {
+      "viewers": "시청자 {n}명",
+      "slots": "오픈 슬롯 {n}칸",
+      "assets": "자산 ${n}",
+      "creators": "{grade}+랭크 {n}명",
+      "none": "조건 없음"
     }
   },
   "common": {
@@ -706,5 +689,20 @@
     "viewer": "⚠ 진상 시청자",
     "conditionDrop": "컨디션 −{drop}",
     "trollingHint": "방송 중 트롤링 · CCTV에서 대응!"
+  },
+  "save": {
+    "newGameTitle": "새 회사 시작",
+    "companyName": "회사 이름",
+    "companyNamePlaceholder": "STAR",
+    "companyNameHint": "영문/숫자/공백만 입력 가능 · 비우면 STAR",
+    "start": "시작",
+    "cancel": "취소",
+    "loadTitle": "세이브 목록",
+    "emptySaves": "저장된 세이브가 없습니다.",
+    "delete": "삭제",
+    "deleteConfirm": "이 세이브를 삭제할까요?",
+    "playtime": "플레이타임",
+    "assets": "자산",
+    "viewers": "시청자"
   }
 }

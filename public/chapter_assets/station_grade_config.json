@@ -4,16 +4,16 @@
       "maxScoutCreators": 2
     },
     "tiny": {
-      "maxScoutCreators": 2
-    },
-    "sme": {
       "maxScoutCreators": 3
     },
+    "sme": {
+      "maxScoutCreators": 5
+    },
     "mid": {
-      "maxScoutCreators": 4
+      "maxScoutCreators": 7
     },
     "large": {
-      "maxScoutCreators": 5
+      "maxScoutCreators": 12
     },
     "top": {
       "maxScoutCreators": 6
