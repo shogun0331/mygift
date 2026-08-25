@@ -226,11 +226,21 @@ export function PromotionAuditModal({
   const handlePerform = (creator: RegisteredCreator) => {
     if (session.isCompleted || isJudgeTurn || isActionLocked) return
     const currentStamina = creatorStaminaMap[creator.id] ?? 100
-    if (currentStamina < session.baseStaminaCost) {
-      return // 스테미나 소모량이 부족하면 더 이상 제시 불가!
+    if (currentStamina < 15) {
+      return // 스테미나 15 미만 시 퍼포먼스 제시 불가!
     }
 
     setIsActionLocked(true) // 카드 선택 즉시 잠금 개시!
+
+    // ⚡ 퍼포먼스 1회 제출 당 스테미너 15 차감!
+    setCreatorStaminaMap((prev) => {
+      const cur = prev[creator.id] ?? 100
+      const next = Math.max(0, cur - 15)
+      return {
+        ...prev,
+        [creator.id]: next,
+      }
+    })
 
     setLastPerformedCreator(creator)
     const nextSession = submitTurnPerformance(
@@ -683,7 +693,7 @@ export function PromotionAuditModal({
                 const creatorGrade = creator.grade ?? 'B'
                 const profileUrl = (creator as any).profileImageUrl || (creator as any).avatarUrl
                 const currentStamina = creatorStaminaMap[creator.id] ?? 100
-                const isStaminaExhausted = currentStamina < session.baseStaminaCost
+                const isStaminaExhausted = currentStamina < 15
                 const isHitFlashing = hitFlashingCardId === creator.id
                 const isCardDisabled = isStaminaExhausted || isJudgeTurn || isActionLocked
 

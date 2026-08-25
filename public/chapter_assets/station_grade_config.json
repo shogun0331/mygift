@@ -255,7 +255,7 @@
     ],
     "stageSettings": {
       "sme": {
-        "targetSatisfaction": 45,
+        "targetSatisfaction": 30,
         "recommendedGrade": "B",
         "staminaCost": 15,
         "judgeAttackMod": 1

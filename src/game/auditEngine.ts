@@ -109,7 +109,7 @@ export function createAuditSession(
     currentSatisfaction: 0,
     targetSatisfaction: stage.targetSatisfaction,
     recommendedGrade: stage.recommendedGrade,
-    baseStaminaCost: stage.staminaCost,
+    baseStaminaCost: 15,
     cooldownMap: {},
     staminaDeductions: {},
     history: [],
@@ -237,7 +237,7 @@ export function submitTurnPerformance(
     Math.max(0, session.currentSatisfaction + scoreGained),
   )
 
-  const totalStaminaCost = session.baseStaminaCost + extraStaminaCost
+  const totalStaminaCost = 15 + extraStaminaCost
   const nextStaminaDeductions = {
     ...session.staminaDeductions,
     [creator.id]: (session.staminaDeductions[creator.id] ?? 0) + totalStaminaCost,
