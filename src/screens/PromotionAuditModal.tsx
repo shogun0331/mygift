@@ -193,7 +193,7 @@ export function PromotionAuditModal({
   const [creatorStaminaMap, setCreatorStaminaMap] = useState<Record<string, number>>(() => {
     const map: Record<string, number> = {}
     creators.forEach((c) => {
-      map[c.id] = 100
+      map[c.id] = typeof (c as any).stamina === 'number' ? Math.max(0, Math.min(100, Math.round((c as any).stamina))) : 100
     })
     return map
   })
