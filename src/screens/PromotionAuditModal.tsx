@@ -658,11 +658,17 @@ export function PromotionAuditModal({
               }
             }}
           >
-            {/* ✨ 심사관을 만족시킬 카드를 선택해 주세요. 7개국어 지속 안내 라인 */}
-            <div className="mb-2 text-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-950/80 px-4 py-1 text-xs sm:text-sm font-black text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.35)] animate-pulse">
-                {getSelectCardPrompt(locale)}
-              </span>
+            {/* 오직 유저 카드 선택이 가능한 차례(!isActionLocked && !isJudgeTurn && !showCinematicIntro)일 때만 카드 선택 가이드 라인 팝업! */}
+            <div className="mb-2 text-center min-h-[28px] flex items-center justify-center">
+              {!isActionLocked && !isJudgeTurn && !showCinematicIntro ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-950/80 px-4 py-1 text-xs sm:text-sm font-black text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.35)] animate-pulse">
+                  {getSelectCardPrompt(locale)}
+                </span>
+              ) : isJudgeTurn ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/80 px-4 py-1 text-xs sm:text-sm font-black text-rose-200 shadow-[0_0_15px_rgba(244,63,94,0.35)] animate-bounce">
+                  ⚔️ 심사관 반격 진행 중...
+                </span>
+              ) : null}
             </div>
 
             <div className="grid grid-cols-4 gap-1.5 sm:gap-2 max-w-xl sm:max-w-2xl mx-auto">
