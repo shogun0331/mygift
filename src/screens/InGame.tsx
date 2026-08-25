@@ -555,6 +555,16 @@ export function InGame({
   const speed: SpeedOption = '1x'
   const [gameMonth, setGameMonth] = useState(initialSave?.gameMonth ?? 0)
   const [broadcastPhase, setBroadcastPhase] = useState<BroadcastPhase>('prep')
+
+  function handleDevPrevMonth() {
+    setGameMonth((prev) => Math.max(0, prev - 1))
+    setBroadcastMonthNumber((prev) => Math.max(1, prev - 1))
+  }
+
+  function handleDevNextMonth() {
+    setGameMonth((prev) => prev + 1)
+    setBroadcastMonthNumber((prev) => prev + 1)
+  }
   const [livePlayVideoByCreator, setLivePlayVideoByCreator] = useState<Record<string, string>>({})
   const livePlayVideoByCreatorRef = useRef(livePlayVideoByCreator)
   const [monthWeekIndex, setMonthWeekIndex] = useState(initialSave?.monthWeekIndex ?? 0)
@@ -3325,7 +3335,29 @@ export function InGame({
                 <IconHudDate />
                 <p className="game-stat-label">{t('hud.dateTime')}</p>
               </div>
-              <p className="game-stat-value tabular-nums text-slate-100">{clock.date}</p>
+              <div className="flex items-center gap-1.5">
+                {import.meta.env.DEV ? (
+                  <button
+                    type="button"
+                    onClick={handleDevPrevMonth}
+                    title="[DEV] 1달 전으로 이동"
+                    className="flex h-5 w-5 items-center justify-center rounded bg-purple-500/30 border border-purple-400/50 text-[10px] font-black text-purple-200 hover:bg-purple-500/60 active:scale-95 transition shadow-sm"
+                  >
+                    ◀
+                  </button>
+                ) : null}
+                <p className="game-stat-value tabular-nums text-slate-100">{clock.date}</p>
+                {import.meta.env.DEV ? (
+                  <button
+                    type="button"
+                    onClick={handleDevNextMonth}
+                    title="[DEV] 1달 후로 이동"
+                    className="flex h-5 w-5 items-center justify-center rounded bg-purple-500/30 border border-purple-400/50 text-[10px] font-black text-purple-200 hover:bg-purple-500/60 active:scale-95 transition shadow-sm"
+                  >
+                    ▶
+                  </button>
+                ) : null}
+              </div>
             </div>
             <div className="game-hud-cell game-hud-cell--rank">
               <div className="game-hud-cell-head">
