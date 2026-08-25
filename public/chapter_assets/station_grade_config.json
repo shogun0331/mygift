@@ -39,7 +39,7 @@
     },
     "sme": {
       "to": "sme",
-      "requiredViewers": 10000,
+      "requiredViewers": 6000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 1

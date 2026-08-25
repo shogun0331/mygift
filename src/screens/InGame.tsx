@@ -59,6 +59,7 @@ import {
   type StaffKind,
 } from '../game/slotManagers'
 import { PromotionAuditModal } from './PromotionAuditModal'
+import { AuditSimulatorDeckModal } from './AuditSimulatorDeckModal'
 import type { BroadcastPhase } from '../game/broadcast'
 import {
   GAME_EPOCH,
@@ -610,6 +611,8 @@ export function InGame({
     currentTier: StationGrade
     nextTier: Exclude<StationGrade, 'black' | 'tiny'>
   } | null>(null)
+  const [auditDeckSelecting, setAuditDeckSelecting] = useState<boolean>(false)
+  const [selectedAuditCreators, setSelectedAuditCreators] = useState<any[] | null>(null)
 
   const staffScoutCooldownRef = useRef(initialSave?.scout?.staffScoutCooldown ?? rollInt(3, 5))
   const [staffScoutAvailable, setStaffScoutAvailable] = useState(
@@ -3755,6 +3758,7 @@ export function InGame({
                 currentTier: review.status.current,
                 nextTier: review.status.next as Exclude<StationGrade, 'black' | 'tiny'>,
               })
+              setAuditDeckSelecting(true)
               return
             }
             if (review.promoted && review.status.next) {
@@ -3779,12 +3783,25 @@ export function InGame({
         />
       ) : null}
 
-      {stationAuditTarget ? (
+      {stationAuditTarget && auditDeckSelecting ? (
+        <AuditSimulatorDeckModal
+          tierKey={stationAuditTarget.nextTier}
+          registeredCharacters={ownedCreators}
+          isSimulator={false}
+          onStartSimulation={(selectedDeck) => {
+            setSelectedAuditCreators(selectedDeck)
+            setAuditDeckSelecting(false)
+          }}
+        />
+      ) : null}
+
+      {stationAuditTarget && !auditDeckSelecting ? (
         <PromotionAuditModal
           tier={stationAuditTarget.nextTier}
-          creators={ownedCreators}
+          creators={selectedAuditCreators || ownedCreators}
           config={stationGradeConfig}
           onComplete={(success, staminaDeductions) => {
+            setSelectedAuditCreators(null)
             if (Object.keys(staminaDeductions).length > 0) {
               const nextOwned = ownedCreatorsRef.current.map((c) => {
                 const ded = staminaDeductions[c.id]

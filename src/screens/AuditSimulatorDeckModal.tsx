@@ -7,8 +7,9 @@ import { resolveMediaSrc } from '../game/mediaUrl'
 
 type Props = {
   tierKey: Exclude<StationTierId, 'black' | 'tiny'>
-  registeredCharacters: RegisteredCharacter[]
-  onStartSimulation: (selectedCharacters: RegisteredCharacter[]) => void
+  registeredCharacters: any[]
+  isSimulator?: boolean
+  onStartSimulation: (selectedCharacters: any[]) => void
   onClose?: () => void
 }
 
@@ -31,12 +32,13 @@ export function getGradeBadgeStyle(grade: string = 'B') {
 export function AuditSimulatorDeckModal({
   tierKey,
   registeredCharacters,
+  isSimulator = false,
   onStartSimulation,
 }: Props) {
-  // 시뮬레이터 전용: 모든 캐릭터를 S등급 및 최고 스탯으로 마운트
-  const boostedCharacters: RegisteredCharacter[] = registeredCharacters.map((c) => ({
+  // 시뮬레이터일 때만 S등급 보정, 인게임 정식 심사 덱 배치 시에는 보유 캐릭터의 실제 능력치 유지
+  const boostedCharacters: any[] = registeredCharacters.map((c) => ({
     ...c,
-    grade: 'S',
+    grade: isSimulator ? 'S' : c.grade || 'B',
   }))
 
   // 4인 덱 고정 슬롯 위치 상태 (크기 4 배열: [slot0, slot1, slot2, slot3])
