@@ -103,6 +103,7 @@ import {
   resolvePromotionExam,
   type PromotionExamResult,
 } from '../game/promotionExam'
+import { getAuditDocPassNotice } from '../game/judgeDialogues'
 import { characterDisplayName } from '../game/characterLocales'
 import { applyProductionTraining, calcPromotionExamCost, calcTrainingCost } from '../game/training'
 import {
@@ -611,6 +612,7 @@ export function InGame({
     currentTier: StationGrade
     nextTier: Exclude<StationGrade, 'black' | 'tiny'>
   } | null>(null)
+  const [auditDocPassNoticeOpen, setAuditDocPassNoticeOpen] = useState<boolean>(false)
   const [auditDeckSelecting, setAuditDeckSelecting] = useState<boolean>(false)
   const [selectedAuditCreators, setSelectedAuditCreators] = useState<any[] | null>(null)
 
@@ -3758,7 +3760,7 @@ export function InGame({
                 currentTier: review.status.current,
                 nextTier: review.status.next as Exclude<StationGrade, 'black' | 'tiny'>,
               })
-              setAuditDeckSelecting(true)
+              setAuditDocPassNoticeOpen(true)
               return
             }
             if (review.promoted && review.status.next) {
@@ -3783,7 +3785,39 @@ export function InGame({
         />
       ) : null}
 
-      {stationAuditTarget && auditDeckSelecting ? (
+      {stationAuditTarget && auditDocPassNoticeOpen ? (() => {
+        const tierName = t(companyTierLabelKey(stationAuditTarget.nextTier))
+        const notice = getAuditDocPassNotice(locale, tierName)
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="relative w-full max-w-md overflow-hidden rounded-3xl border-2 border-amber-400/80 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 p-6 sm:p-8 text-center shadow-[0_0_50px_rgba(251,191,36,0.35)] animate-in zoom-in-95 duration-200">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-amber-400 bg-amber-500/20 text-3xl shadow-[0_0_20px_rgba(251,191,36,0.5)]">
+                📋
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-amber-300 tracking-tight drop-shadow">
+                {notice.title}
+              </h3>
+              <p className="mt-4 whitespace-pre-line text-xs sm:text-sm font-medium leading-relaxed text-slate-200">
+                {notice.body}
+              </p>
+              <div className="mt-6 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuditDocPassNoticeOpen(false)
+                    setAuditDeckSelecting(true)
+                  }}
+                  className="game-btn game-btn-primary w-full px-6 py-3 text-sm sm:text-base font-black shadow-[0_0_20px_rgba(251,191,36,0.5)] transition hover:scale-105"
+                >
+                  {notice.button}
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })() : null}
+
+      {stationAuditTarget && !auditDocPassNoticeOpen && auditDeckSelecting ? (
         <AuditSimulatorDeckModal
           tierKey={stationAuditTarget.nextTier}
           registeredCharacters={ownedCreators}
@@ -3795,7 +3829,7 @@ export function InGame({
         />
       ) : null}
 
-      {stationAuditTarget && !auditDeckSelecting ? (
+      {stationAuditTarget && !auditDocPassNoticeOpen && !auditDeckSelecting ? (
         <PromotionAuditModal
           tier={stationAuditTarget.nextTier}
           creators={selectedAuditCreators || ownedCreators}
