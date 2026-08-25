@@ -27,3 +27,6 @@ release
 
 # Electron 빌드 산출물 (용량 초과로 GitHub 푸시 거부됨)
 dist-electron
+
+# event loc 번역 도구 캐시(중간 산출물)
+tools/event-loc/out/
