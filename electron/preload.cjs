@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteEventFile: (eventId, kind, fileName) =>
     ipcRenderer.invoke('delete-event-file', { eventId, kind, fileName }),
   deleteEventFolder: (eventId) => ipcRenderer.invoke('delete-event-folder', { eventId }),
+  openEventFolder: (eventId) => ipcRenderer.invoke('open-event-folder', { eventId }),
   deleteCharacterFile: (characterId, kind, fileName) => ipcRenderer.invoke('delete-character-file', { characterId, kind, fileName }),
   pruneCharacterFiles: (characterId, keep) => ipcRenderer.invoke('prune-character-files', { characterId, keep }),
   deleteCharacterFolder: (characterId) => ipcRenderer.invoke('delete-character-folder', { characterId }),

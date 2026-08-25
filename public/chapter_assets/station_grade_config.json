@@ -63,7 +63,7 @@
     },
     "mid": {
       "to": "mid",
-      "requiredViewers": 40000,
+      "requiredViewers": 29534,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 2

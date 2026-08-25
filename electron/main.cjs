@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol, Menu } = require('electron')
+const { app, BrowserWindow, protocol, Menu, shell, ipcMain } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -830,6 +830,36 @@ ipcMain.handle('delete-staff-folder', async (event, { staffId }) => {
     if (fs.existsSync(dirPath)) {
       fs.rmSync(dirPath, { recursive: true, force: true })
     }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('open-event-folder', async (event, { eventId }) => {
+  try {
+    let dirPath
+    if (eventId) {
+      dirPath = publicWritePath('chapter_assets', 'events', String(eventId))
+      if (!fs.existsSync(dirPath)) {
+        dirPath = publicPath('chapter_assets', 'events', String(eventId))
+      }
+      if (!fs.existsSync(dirPath)) {
+        dirPath = publicWritePath('chapter_assets', 'events')
+      }
+    } else {
+      dirPath = publicWritePath('chapter_assets', 'events')
+    }
+
+    if (!fs.existsSync(dirPath)) {
+      dirPath = publicPath('chapter_assets', 'events')
+    }
+
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true })
+    }
+
+    await shell.openPath(dirPath)
     return { success: true }
   } catch (err) {
     return { success: false, error: err.message }

@@ -43,6 +43,9 @@ interface ElectronAPI {
   deleteEventFolder?: (
     eventId: string
   ) => Promise<{ success: boolean; error?: string }>
+  openEventFolder?: (
+    eventId?: string
+  ) => Promise<{ success: boolean; error?: string }>
   deleteCharacterFile?: (
     characterId: string,
     kind: 'image' | 'video',
