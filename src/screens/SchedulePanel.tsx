@@ -618,12 +618,19 @@ export function SchedulePanel({
                               <div className="flex flex-1 flex-col items-center justify-center gap-1.5">
                                 {canUnlock ? (
                                   <>
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-emerald-400/45 bg-emerald-500/15 text-lg font-black text-emerald-200 shadow-[0_0_12px_rgba(16,185,129,0.25)] sm:h-9.5 sm:w-9.5">
+                                    <div className="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-500/30 text-lg font-black text-emerald-100 shadow-[0_0_15px_rgba(52,211,153,0.6)] animate-pulse sm:h-9.5 sm:w-9.5">
                                       ＋
+                                      <span className="absolute -top-1 -right-1 flex h-3 w-3 z-30">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500 border border-white"></span>
+                                      </span>
                                     </div>
-                                    <p className="text-[9px] font-bold tracking-wide text-emerald-300/90 uppercase sm:text-[10px]">
+                                    <p className="text-[9px] font-black tracking-wide text-emerald-200 uppercase sm:text-[10px] drop-shadow">
                                       {formatMoney(resolvedUnlockPrice ?? 0)}
                                     </p>
+                                    <span className="rounded bg-emerald-500/90 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-black text-white shadow-md animate-bounce">
+                                      ✨ 슬롯 개방 가능!
+                                    </span>
                                   </>
                                 ) : gradeBlocked ? (
                                   <>

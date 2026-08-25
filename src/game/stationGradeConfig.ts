@@ -1,4 +1,5 @@
 import type { Grade } from './characters'
+import { mergeCharacterLocaleText, type CharacterLocaleText } from './characterLocales'
 import { companyTierOf, type CompanyTierId } from './ranking'
 import { DEFAULT_VIEWER_BALANCE, type ViewerBalance } from './viewerBalance'
 
@@ -41,9 +42,39 @@ export type StationPromotionRule = {
   creatorRequirements: CreatorCountRequirement[]
 }
 
+export type CreatorType = 'elegance' | 'performance' | 'communication' | 'sexy'
+
+export type AuditJudgeConfig = {
+  id: string
+  name: string
+  avatarUrl: string
+  targetTier?: Exclude<StationTierId, 'black' | 'tiny'> | 'all'
+  successMediaUrl?: string
+  failMediaUrl?: string
+  attackPower: number
+  satisfactionMod: number
+  description: string
+}
+
+export type AuditStageSetting = {
+  targetSatisfaction: number
+  recommendedGrade: Grade
+  staminaCost: number
+  judgeAttackMod: number
+}
+
+export type PromotionAuditConfig = {
+  judges: AuditJudgeConfig[]
+  stageSettings: Record<Exclude<StationTierId, 'black' | 'tiny'>, AuditStageSetting>
+}
+
 export type StationGradeConfig = {
   tiers: Record<StationTierId, StationTierSpec>
   promotions: Record<Exclude<StationTierId, 'black'>, StationPromotionRule>
+  /** 승급 심사 미니게임 4인 심사관 및 밸런스 설정 */
+  auditConfig?: PromotionAuditConfig
+  /** 최종 1위(1등 클리어) 달성에 필요한 시청자 수 (기본값: 750,000) */
+  topClearViewers?: number
   /**
    * 슬롯 해금 가격 (USD).
    * 인덱스 0 = 2번째 칸 해금가 … (현재 열린 n개일 때 prices[n-1])
@@ -304,9 +335,162 @@ export function defaultStationGradeConfig(): StationGradeConfig {
         creatorRequirements: [defaultCreatorReq('s2', 'S', 1)],
       },
     },
+    auditConfig: defaultAuditConfig(),
+    topClearViewers: 750_000,
     slotUnlockPrices: [...DEFAULT_SLOT_UNLOCK_PRICES],
     slotUnlockMinGrades: [...DEFAULT_SLOT_UNLOCK_MIN_GRADES],
     balance: { ...DEFAULT_VIEWER_BALANCE },
+  }
+}
+
+export const FIXED_JUDGES_LOCALES: Record<
+  number,
+  { names: CharacterLocaleText; descriptions: CharacterLocaleText }
+> = {
+  0: {
+    names: {
+      ko: '사토 켄지',
+      en: 'Kenji Sato',
+      ja: '佐藤 健二',
+      'zh-cn': '佐藤健二',
+      ru: 'Кэндзи Сато',
+      es: 'Kenji Sato',
+      de: 'Kenji Sato',
+    },
+    descriptions: {
+      ko: '전통과 기품, 격식을 엄격하게 심사하는 수석 심사관.',
+      en: 'Senior evaluator who strictly assesses tradition, elegance, and formality.',
+      ja: '伝統と気品、格式を厳格に審査する主任審査員。',
+      'zh-cn': '严格审查传统、高雅与礼仪的首席审查员。',
+      ru: 'Старший эксперт, строго оценивающий традиции, элегантность и формальности.',
+      es: 'Evaluador principal que juzga strictly la tradición, la elegancia y la formalidad.',
+      de: 'Chefprüfer, der Tradition, Eleganz und Formstrengheit bewertet.',
+    },
+  },
+  1: {
+    names: {
+      ko: '타나카 렌',
+      en: 'Ren Tanaka',
+      ja: '田中 蓮',
+      'zh-cn': '田中莲',
+      ru: 'Рэн Танака',
+      es: 'Ren Tanaka',
+      de: 'Ren Tanaka',
+    },
+    descriptions: {
+      ko: '압도적인 스킬과 화려한 무대 퍼포먼스를 중시하는 심사관.',
+      en: 'Evaluator who focuses on overwhelming skills and dynamic stage performance.',
+      ja: '圧倒的なスキルと華やかなステージパフォーマンスを重視する審査員。',
+      'zh-cn': '重视压倒性技巧与华丽舞台表演的审查员。',
+      ru: 'Эксперт, уделяющий внимание выдающимся навыкам и ярким выступлениям.',
+      es: 'Evaluador que se enfoca en habilidades deslumbrantes y espectáculo escénico.',
+      de: 'Prüfer, der den Fokus auf überragendes Können und Bühnenperformance legt.',
+    },
+  },
+  2: {
+    names: {
+      ko: '야마모토 류세이',
+      en: 'Ryusei Yamamoto',
+      ja: '山本 龍星',
+      'zh-cn': '山本龙星',
+      ru: 'Рюсэй Яма모토',
+      es: 'Ryusei Yamamoto',
+      de: 'Ryusei Yamamoto',
+    },
+    descriptions: {
+      ko: '시청자와의 진정성 있는 소통과 공감을 최우선으로 보는 심사관.',
+      en: 'Evaluator who prioritizes authentic communication and viewer empathy.',
+      ja: '視聴者との真心ある対話と共感を最優先に評価する審査員。',
+      'zh-cn': '将与观众的真诚沟通与共鸣放在首位的审查员。',
+      ru: 'Эксперт, ставящий во главу угла искреннее общение и эмпатию со зрителями.',
+      es: 'Evaluador que prioriza la comunicación authentic y la empatía con la audiencia.',
+      de: 'Prüfer, der authentische Kommunikation und Empathie mit dem Publikum schätzt.',
+    },
+  },
+  3: {
+    names: {
+      ko: '카와무라 다이치',
+      en: 'Daichi Kawamura',
+      ja: '川村 大地',
+      'zh-cn': '川村大地',
+      ru: 'Дайти Кава무ра',
+      es: 'Daichi Kawamura',
+      de: 'Daichi Kawamura',
+    },
+    descriptions: {
+      ko: '독보적인 아우라와 치명적인 카리스마 매력을 평가하는 심사관.',
+      en: 'Evaluator who assesses unique aura and irresistible charismatic attraction.',
+      ja: '独創的なオーラと致命的なカリスマ性を評価する審査員。',
+      'zh-cn': '评估独一无二的气场与致命魅力风采的审查员。',
+      ru: 'Эксперт, оценивающий уникальную ауру и неотразимую харизму.',
+      es: 'Evaluador que juzga el aura única y el atractivo carismático irresistible.',
+      de: 'Prüfer, der die einzigartige Ausstrahlung und unwiderstehliche Aura bewertet.',
+    },
+  },
+}
+
+export function defaultAuditConfig(): PromotionAuditConfig {
+  return {
+    judges: [
+      {
+        id: 'judge_1',
+        name: FIXED_JUDGES_LOCALES[0].names.ko,
+        names: FIXED_JUDGES_LOCALES[0].names,
+        avatarUrl: '',
+        targetTier: 'sme',
+        successMediaUrl: '',
+        failMediaUrl: '',
+        attackPower: 8,
+        satisfactionMod: 1.0,
+        description: FIXED_JUDGES_LOCALES[0].descriptions.ko,
+        descriptions: FIXED_JUDGES_LOCALES[0].descriptions,
+      },
+      {
+        id: 'judge_2',
+        name: FIXED_JUDGES_LOCALES[1].names.ko,
+        names: FIXED_JUDGES_LOCALES[1].names,
+        avatarUrl: '',
+        targetTier: 'mid',
+        successMediaUrl: '',
+        failMediaUrl: '',
+        attackPower: 12,
+        satisfactionMod: 1.1,
+        description: FIXED_JUDGES_LOCALES[1].descriptions.ko,
+        descriptions: FIXED_JUDGES_LOCALES[1].descriptions,
+      },
+      {
+        id: 'judge_3',
+        name: FIXED_JUDGES_LOCALES[2].names.ko,
+        names: FIXED_JUDGES_LOCALES[2].names,
+        avatarUrl: '',
+        targetTier: 'large',
+        successMediaUrl: '',
+        failMediaUrl: '',
+        attackPower: 6,
+        satisfactionMod: 0.9,
+        description: FIXED_JUDGES_LOCALES[2].descriptions.ko,
+        descriptions: FIXED_JUDGES_LOCALES[2].descriptions,
+      },
+      {
+        id: 'judge_4',
+        name: FIXED_JUDGES_LOCALES[3].names.ko,
+        names: FIXED_JUDGES_LOCALES[3].names,
+        avatarUrl: '',
+        targetTier: 'top',
+        successMediaUrl: '',
+        failMediaUrl: '',
+        attackPower: 15,
+        satisfactionMod: 1.2,
+        description: FIXED_JUDGES_LOCALES[3].descriptions.ko,
+        descriptions: FIXED_JUDGES_LOCALES[3].descriptions,
+      },
+    ],
+    stageSettings: {
+      sme: { targetSatisfaction: 60, recommendedGrade: 'B', staminaCost: 15, judgeAttackMod: 1.0 },
+      mid: { targetSatisfaction: 80, recommendedGrade: 'A', staminaCost: 20, judgeAttackMod: 1.2 },
+      large: { targetSatisfaction: 100, recommendedGrade: 'S', staminaCost: 25, judgeAttackMod: 1.5 },
+      top: { targetSatisfaction: 120, recommendedGrade: 'S', staminaCost: 30, judgeAttackMod: 2.0 },
+    },
   }
 }
 
@@ -476,9 +660,16 @@ export function normalizeStationGradeConfig(raw: unknown): StationGradeConfig {
     }
   }
 
+  const topClearViewers =
+    typeof record.topClearViewers === 'number' && Number.isFinite(record.topClearViewers)
+      ? Math.max(0, Math.round(record.topClearViewers))
+      : defaults.topClearViewers ?? 750_000
+
   return {
     tiers,
     promotions,
+    auditConfig: normalizeAuditConfig(record.auditConfig, defaults.auditConfig),
+    topClearViewers,
     slotUnlockPrices: normalizeSlotUnlockPrices(
       record.slotUnlockPrices,
       defaults.slotUnlockPrices,
@@ -488,6 +679,73 @@ export function normalizeStationGradeConfig(raw: unknown): StationGradeConfig {
       defaults.slotUnlockMinGrades,
     ),
     balance: normalizeViewerBalance(record.balance),
+  }
+}
+
+function normalizeAuditConfig(
+  raw: unknown,
+  fallback?: PromotionAuditConfig,
+): PromotionAuditConfig {
+  const base = fallback ?? defaultAuditConfig()
+  if (!raw || typeof raw !== 'object') return base
+  const row = raw as Record<string, unknown>
+
+  const rawJudges = Array.isArray(row.judges) && row.judges.length >= 4 ? row.judges.slice(0, 4) : base.judges
+  const validTiers = ['sme', 'mid', 'large', 'top', 'all']
+  const defaultTargetTiers: Array<Exclude<StationTierId, 'black' | 'tiny'>> = ['sme', 'mid', 'large', 'top']
+
+  const judges = [0, 1, 2, 3].map((idx) => {
+    const item = rawJudges[idx]
+    const rowItem = item && typeof item === 'object' ? (item as Record<string, unknown>) : {}
+    const fallbackJudge = base.judges[idx] ?? base.judges[0]!
+    const fixedInfo = FIXED_JUDGES_LOCALES[idx % 4] ?? FIXED_JUDGES_LOCALES[0]!
+    const assignedTier = defaultTargetTiers[idx % 4]!
+
+    const targetTier = validTiers.includes(rowItem.targetTier as string)
+      ? (rowItem.targetTier as Exclude<StationTierId, 'black' | 'tiny'> | 'all')
+      : assignedTier
+
+    // 이름과 설명은 세이브데이터나 구버전 JSON에 관계없이 무조건 일본 남성 4인 7개국어 고정 데이터로 강제 덮어쓰기
+    const name = fixedInfo.names.ko
+    const names = fixedInfo.names
+    const description = fixedInfo.descriptions.ko
+    const descriptions = fixedInfo.descriptions
+
+    return {
+      id: typeof rowItem.id === 'string' && rowItem.id.trim() ? rowItem.id.trim() : `judge_${idx + 1}`,
+      name,
+      names,
+      avatarUrl: typeof rowItem.avatarUrl === 'string' ? rowItem.avatarUrl : '',
+      targetTier,
+      successMediaUrl: typeof rowItem.successMediaUrl === 'string' ? rowItem.successMediaUrl : '',
+      failMediaUrl: typeof rowItem.failMediaUrl === 'string' ? rowItem.failMediaUrl : '',
+      attackPower: Math.max(0, Math.round(Number(rowItem.attackPower) || fallbackJudge.attackPower || 10)),
+      satisfactionMod: Math.max(0.1, Number(rowItem.satisfactionMod) || fallbackJudge.satisfactionMod || 1.0),
+      description,
+      descriptions,
+    }
+  })
+
+  const rawStages = row.stageSettings && typeof row.stageSettings === 'object' ? (row.stageSettings as Record<string, unknown>) : {}
+  const grades: Grade[] = ['S', 'A', 'B', 'C']
+  const stageSettings = { ...base.stageSettings }
+
+  for (const tierKey of ['sme', 'mid', 'large', 'top'] as Array<Exclude<StationTierId, 'black' | 'tiny'>>) {
+    const fallbackStage = base.stageSettings[tierKey]
+    const item = rawStages[tierKey] && typeof rawStages[tierKey] === 'object' ? (rawStages[tierKey] as Record<string, unknown>) : {}
+    const recGrade = grades.includes(item.recommendedGrade as Grade) ? (item.recommendedGrade as Grade) : fallbackStage.recommendedGrade
+
+    stageSettings[tierKey] = {
+      targetSatisfaction: Math.max(10, Math.round(Number(item.targetSatisfaction) || fallbackStage.targetSatisfaction)),
+      recommendedGrade: recGrade,
+      staminaCost: Math.max(0, Math.round(Number(item.staminaCost) || fallbackStage.staminaCost)),
+      judgeAttackMod: Math.max(0.1, Number(item.judgeAttackMod) || fallbackStage.judgeAttackMod),
+    }
+  }
+
+  return {
+    judges,
+    stageSettings,
   }
 }
 

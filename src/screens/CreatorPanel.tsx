@@ -98,17 +98,10 @@ type CreatorPanelProps = {
 const GRADE_FILTERS: Array<'ALL' | Grade> = ['ALL', 'S', 'A', 'B', 'C']
 
 const GRADE_STYLE: Record<Grade, string> = {
-  S: 'border-amber-400/40 bg-amber-400/15 text-amber-300',
-  A: 'border-indigo-400/40 bg-indigo-500/15 text-indigo-300',
-  B: 'border-slate-500/50 bg-slate-700/40 text-slate-300',
-  C: 'border-slate-700 bg-slate-800/60 text-slate-400',
-}
-
-const GRADE_TEXT: Record<Grade, string> = {
-  S: 'text-amber-300',
-  A: 'text-indigo-300',
-  B: 'text-slate-300',
-  C: 'text-slate-400',
+  S: 'border-amber-400 text-amber-200 bg-gradient-to-r from-amber-950 via-yellow-900 to-amber-950 shadow-[0_0_12px_rgba(251,191,36,0.85)] ring-1 ring-amber-400/50',
+  A: 'border-purple-400 text-purple-200 bg-gradient-to-r from-purple-950 via-indigo-900 to-purple-950 shadow-[0_0_12px_rgba(168,85,247,0.85)] ring-1 ring-purple-400/50',
+  B: 'border-cyan-400 text-cyan-200 bg-gradient-to-r from-cyan-950 via-slate-900 to-cyan-950 shadow-[0_0_12px_rgba(6,182,212,0.8)] ring-1 ring-cyan-400/50',
+  C: 'border-slate-400 text-slate-200 bg-slate-900 shadow-[0_0_8px_rgba(148,163,184,0.5)]',
 }
 
 const STAT_TYPE_LABEL_KEY: Record<CreatorStatType, string> = {
@@ -471,9 +464,9 @@ export function CreatorPanel({
                       </td>
                       <td className="px-3 py-2.5">
                         <span
-                          className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${GRADE_STYLE[creator.grade]}`}
+                          className={`rounded-md border px-2 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}
                         >
-                          {t('common.gradeBadge').replace('{grade}', creator.grade)}
+                          {creator.grade}
                         </span>
                       </td>
                       <td className="px-3 py-2.5 text-slate-300">
@@ -785,9 +778,9 @@ function ScoutView({
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
               <div className="absolute top-2 left-2 flex flex-wrap gap-1">
                 <span
-                  className={`rounded border px-2 py-0.5 text-xs font-bold ${GRADE_STYLE[offer.grade]}`}
+                  className={`rounded-md border px-2.5 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[offer.grade]}`}
                 >
-                  {t('common.gradeBadge').replace('{grade}', offer.grade)}
+                  {offer.grade}
                 </span>
                 <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-xs font-bold text-slate-200">
                   {t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(offer.template.statType)])}
@@ -942,8 +935,8 @@ function CreatorDetailView({
           <p className="game-kicker">CREATOR PROFILE</p>
           <h2 className="truncate text-base font-semibold text-slate-100">
             {displayName}{' '}
-            <span className={`text-sm font-bold ${GRADE_TEXT[creator.grade]}`}>
-              ({t('common.gradeBadge').replace('{grade}', creator.grade)})
+            <span className={`ml-1.5 rounded-md border px-2 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}>
+              {creator.grade}
             </span>
           </h2>
         </div>
@@ -976,9 +969,9 @@ function CreatorDetailView({
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
             <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1">
               <span
-                className={`rounded border px-2 py-0.5 text-xs font-bold ${GRADE_STYLE[creator.grade]}`}
+                className={`rounded-md border px-2.5 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}
               >
-                {t('common.gradeBadge').replace('{grade}', creator.grade)}
+                {creator.grade}
               </span>
               <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-xs font-bold text-slate-200">
                 {t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(creator.statType)])}

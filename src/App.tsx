@@ -1150,9 +1150,12 @@ export default function App() {
 
   const handleSaveStationGradeManual = async () => {
     try {
-      await saveStationGradeConfig(stationGradeConfig)
-      setStationGradeConfig(stationGradeConfig)
-      setViewerBalance(stationGradeConfig?.balance)
+      const updated = await saveStationGradeConfig(stationGradeConfig)
+      if (updated) {
+        setStationGradeConfigState(updated)
+        setStationGradeConfig(updated)
+        setViewerBalance(updated.balance)
+      }
       const saveTarget = window.electronAPI?.saveStationGradeConfigJson
         ? '로컬 JSON 파일(station_grade_config.json)'
         : '브라우저 저장소(localStorage)'

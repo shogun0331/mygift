@@ -5,9 +5,12 @@ import {
   DEFAULT_SLOT_UNLOCK_PRICES,
   STATION_TIER_LABEL,
   STATION_TIER_ORDER,
+  defaultAuditConfig,
   tierMaxRank,
   tierViewerCap,
+  type AuditJudgeConfig,
   type CreatorCountRequirement,
+  type PromotionAuditConfig,
   type StationGradeConfig,
   type StationPromotionRule,
   type StationTierId,
@@ -390,9 +393,292 @@ export function StationGradeEditorPanel({
                   </div>
                 </div>
               ) : null}
+
+              {tier === 'top' ? (
+                <div className="mt-5 rounded-lg border border-amber-400/20 bg-amber-500/5 p-4">
+                  <h4 className="text-xs font-bold text-amber-200">
+                    → 최종 1위 (1등 클리어) 달성 심사 조건
+                  </h4>
+
+                  <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <label className="block text-xs font-semibold text-slate-400">
+                      1위 달성 필수 시청자 수
+                      <input
+                        type="number"
+                        min={0}
+                        className={fieldClassName}
+                        value={config.topClearViewers ?? 750_000}
+                        onChange={(event) =>
+                          onChange({
+                            ...config,
+                            topClearViewers: Math.max(
+                              0,
+                              Math.round(Number(event.target.value) || 0),
+                            ),
+                          })
+                        }
+                      />
+                      <span className="mt-1 block text-[10px] font-normal text-slate-500">
+                        일등기업 등급에서 랭킹 1위(1등)를 달성하고 엔딩 클리어가 되는 시청자 목표치입니다
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              ) : null}
             </section>
           )
         })}
+      </div>
+
+      {/* 승급 심사 미니게임 4인 심사관 및 밸런스 설정 */}
+      <AuditEditorSection
+        auditConfig={config.auditConfig ?? defaultAuditConfig()}
+        onChange={(nextAudit) => onChange({ ...config, auditConfig: nextAudit })}
+      />
+    </div>
+  )
+}
+
+function AuditEditorSection({
+  auditConfig,
+  onChange,
+}: {
+  auditConfig: PromotionAuditConfig
+  onChange: (next: PromotionAuditConfig) => void
+}) {
+  const updateJudge = (idx: number, patch: Partial<AuditJudgeConfig>) => {
+    const nextJudges = auditConfig.judges.map((j, i) => (i === idx ? { ...j, ...patch } : j))
+    onChange({ ...auditConfig, judges: nextJudges })
+  }
+
+  const addJudge = () => {
+    const nextIdx = auditConfig.judges.length + 1
+    const newJudge: AuditJudgeConfig = {
+      id: `judge_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      name: `신규 심사관 ${nextIdx}`,
+      avatarUrl: '',
+      attackPower: 10,
+      satisfactionMod: 1.0,
+      description: '새로 등록된 승급 심사관',
+    }
+    onChange({ ...auditConfig, judges: [...auditConfig.judges, newJudge] })
+  }
+
+  const removeJudge = (idx: number) => {
+    if (auditConfig.judges.length <= 1) return
+    const nextJudges = auditConfig.judges.filter((_, i) => i !== idx)
+    onChange({ ...auditConfig, judges: nextJudges })
+  }
+
+  const updateStage = (
+    tierKey: Exclude<StationTierId, 'black' | 'tiny'>,
+    patch: Partial<PromotionAuditConfig['stageSettings'][typeof tierKey]>,
+  ) => {
+    onChange({
+      ...auditConfig,
+      stageSettings: {
+        ...auditConfig.stageSettings,
+        [tierKey]: { ...auditConfig.stageSettings[tierKey], ...patch },
+      },
+    })
+  }
+
+  const grades: Grade[] = ['B', 'A', 'S']
+
+  return (
+    <div className="mt-8 rounded-2xl border border-purple-500/30 bg-purple-950/20 p-5 shadow-[0_0_30px_rgba(168,85,247,0.1)]">
+      <div className="flex items-center justify-between border-b border-purple-500/20 pb-3">
+        <div>
+          <h3 className="text-base font-bold text-purple-200">⚖️ 승급 심사 미니게임 밸런스 & 심사관 세팅</h3>
+          <p className="text-xs text-slate-400">
+            승급 심사관을 새로 생성/편집하고, 공격력(데미지 계수) 및 기업 단계별 권장 등급과 메인 스테미나 소모량을 관리합니다.
+          </p>
+        </div>
+      </div>
+
+      {/* 심사관 등록, 추가 및 편집 */}
+      <div className="mt-4">
+        <div className="flex items-center justify-between gap-3">
+          <h4 className="text-xs font-bold text-purple-300">
+            👥 등록된 심사관 ({auditConfig.judges.length}명)
+          </h4>
+          <button
+            type="button"
+            className="game-btn border border-purple-400/40 bg-purple-900/60 px-3 py-1 text-xs font-bold text-purple-200 hover:bg-purple-800"
+            onClick={addJudge}
+          >
+            ＋ 심사관 추가
+          </button>
+        </div>
+
+        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {auditConfig.judges.map((judge, idx) => (
+            <div
+              key={judge.id || `judge-${idx}`}
+              className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2.5"
+            >
+              <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                <span className="rounded bg-purple-900/60 px-2 py-0.5 text-[10px] font-bold text-purple-300">
+                  심사관 #{idx + 1}
+                </span>
+                {auditConfig.judges.length > 1 ? (
+                  <button
+                    type="button"
+                    className="game-btn px-2 py-0.5 text-[10px] text-rose-300 hover:text-rose-100"
+                    onClick={() => removeJudge(idx)}
+                  >
+                    삭제
+                  </button>
+                ) : null}
+              </div>
+
+              <label className="block text-[11px] font-semibold text-slate-400">
+                심사관 이름
+                <input
+                  type="text"
+                  className={fieldClassName}
+                  value={judge.name}
+                  onChange={(e) => updateJudge(idx, { name: e.target.value })}
+                />
+              </label>
+
+              <label className="block text-[11px] font-semibold text-slate-400">
+                초상화 미디어 URL (선택)
+                <input
+                  type="text"
+                  className={fieldClassName}
+                  placeholder="/assets/judges/judge_1.png"
+                  value={judge.avatarUrl}
+                  onChange={(e) => updateJudge(idx, { avatarUrl: e.target.value })}
+                />
+              </label>
+
+              <div className="grid grid-cols-2 gap-2">
+                <label className="block text-[11px] font-semibold text-slate-400">
+                  공격력 (데미지)
+                  <input
+                    type="number"
+                    min={0}
+                    className={fieldClassName}
+                    value={judge.attackPower}
+                    onChange={(e) =>
+                      updateJudge(idx, {
+                        attackPower: Math.max(0, Math.round(Number(e.target.value) || 0)),
+                      })
+                    }
+                  />
+                </label>
+                <label className="block text-[11px] font-semibold text-slate-400">
+                  만족도 계수
+                  <input
+                    type="number"
+                    step={0.1}
+                    min={0.1}
+                    className={fieldClassName}
+                    value={judge.satisfactionMod}
+                    onChange={(e) =>
+                      updateJudge(idx, {
+                        satisfactionMod: Math.max(0.1, Number(e.target.value) || 1.0),
+                      })
+                    }
+                  />
+                </label>
+              </div>
+
+              <label className="block text-[11px] font-semibold text-slate-400">
+                설명/특징
+                <input
+                  type="text"
+                  className={fieldClassName}
+                  value={judge.description}
+                  onChange={(e) => updateJudge(idx, { description: e.target.value })}
+                />
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 기업 단계별 심사 밸런스 */}
+      <div className="mt-6">
+        <h4 className="text-xs font-bold text-purple-300">🏢 기업 단계별 심사 목표 & 밸런스</h4>
+        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {(['sme', 'mid', 'large', 'top'] as const).map((tierKey) => {
+            const stage = auditConfig.stageSettings[tierKey]
+            return (
+              <div
+                key={tierKey}
+                className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2.5"
+              >
+                <h5 className="text-xs font-bold text-amber-300">{STATION_TIER_LABEL[tierKey]}</h5>
+
+                <label className="block text-[11px] font-semibold text-slate-400">
+                  목표 만족도 (점수)
+                  <input
+                    type="number"
+                    min={10}
+                    className={fieldClassName}
+                    value={stage.targetSatisfaction}
+                    onChange={(e) =>
+                      updateStage(tierKey, {
+                        targetSatisfaction: Math.max(10, Math.round(Number(e.target.value) || 10)),
+                      })
+                    }
+                  />
+                </label>
+
+                <label className="block text-[11px] font-semibold text-slate-400">
+                  권장 크리에이터 등급
+                  <select
+                    className={fieldClassName}
+                    value={stage.recommendedGrade}
+                    onChange={(e) =>
+                      updateStage(tierKey, { recommendedGrade: e.target.value as Grade })
+                    }
+                  >
+                    {grades.map((g) => (
+                      <option key={g} value={g}>
+                        {g} 등급 이상
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="block text-[11px] font-semibold text-slate-400">
+                    메인 스테미나 소모
+                    <input
+                      type="number"
+                      min={0}
+                      className={fieldClassName}
+                      value={stage.staminaCost}
+                      onChange={(e) =>
+                        updateStage(tierKey, {
+                          staminaCost: Math.max(0, Math.round(Number(e.target.value) || 0)),
+                        })
+                      }
+                    />
+                  </label>
+                  <label className="block text-[11px] font-semibold text-slate-400">
+                    심사관 공격 계수
+                    <input
+                      type="number"
+                      step={0.1}
+                      min={0.1}
+                      className={fieldClassName}
+                      value={stage.judgeAttackMod}
+                      onChange={(e) =>
+                        updateStage(tierKey, {
+                          judgeAttackMod: Math.max(0.1, Number(e.target.value) || 1.0),
+                        })
+                      }
+                    />
+                  </label>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

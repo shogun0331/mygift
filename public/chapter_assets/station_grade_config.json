@@ -10,13 +10,13 @@
       "maxScoutCreators": 4
     },
     "mid": {
-      "maxScoutCreators": 5
+      "maxScoutCreators": 7
     },
     "large": {
-      "maxScoutCreators": 6
+      "maxScoutCreators": 9
     },
     "top": {
-      "maxScoutCreators": 8
+      "maxScoutCreators": 9
     }
   },
   "promotions": {
@@ -134,6 +134,153 @@
       ]
     }
   },
+  "auditConfig": {
+    "judges": [
+      {
+        "id": "judge_1",
+        "name": "사토 켄지",
+        "names": {
+          "ko": "사토 켄지",
+          "en": "Kenji Sato",
+          "ja": "佐藤 健二",
+          "zh-cn": "佐藤健二",
+          "ru": "Кэндзи Сато",
+          "es": "Kenji Sato",
+          "de": "Kenji Sato"
+        },
+        "avatarUrl": "media://chapter_assets/audits/judge_1_avatar.mp4",
+        "targetTier": "sme",
+        "successMediaUrl": "",
+        "failMediaUrl": "",
+        "attackPower": 8,
+        "satisfactionMod": 1,
+        "description": "전통과 기품, 격식을 엄격하게 심사하는 수석 심사관.",
+        "descriptions": {
+          "ko": "전통과 기품, 격식을 엄격하게 심사하는 수석 심사관.",
+          "en": "Senior evaluator who strictly assesses tradition, elegance, and formality.",
+          "ja": "伝統と気品、格式を厳格に審査する主任審査員。",
+          "zh-cn": "严格审查传统、高雅与礼仪的首席审查员。",
+          "ru": "Старший эксперт, строго оценивающий традиции, элегантность и формальности.",
+          "es": "Evaluador principal que juzga strictly la tradición, la elegancia y la formalidad.",
+          "de": "Chefprüfer, der Tradition, Eleganz und Formstrengheit bewertet."
+        }
+      },
+      {
+        "id": "judge_2",
+        "name": "타나카 렌",
+        "names": {
+          "ko": "타나카 렌",
+          "en": "Ren Tanaka",
+          "ja": "田中 蓮",
+          "zh-cn": "田中莲",
+          "ru": "Рэн Танака",
+          "es": "Ren Tanaka",
+          "de": "Ren Tanaka"
+        },
+        "avatarUrl": "media://chapter_assets/audits/judge_2_avatar.mp4",
+        "targetTier": "mid",
+        "successMediaUrl": "",
+        "failMediaUrl": "",
+        "attackPower": 12,
+        "satisfactionMod": 1.1,
+        "description": "압도적인 스킬과 화려한 무대 퍼포먼스를 중시하는 심사관.",
+        "descriptions": {
+          "ko": "압도적인 스킬과 화려한 무대 퍼포먼스를 중시하는 심사관.",
+          "en": "Evaluator who focuses on overwhelming skills and dynamic stage performance.",
+          "ja": "圧倒的なスキルと華やかなステージパフォーマンスを重視する審査員。",
+          "zh-cn": "重视压倒性技巧与华丽舞台表演的审查员。",
+          "ru": "Эксперт, уделяющий внимание выдающимся навыкам и ярким выступлениям.",
+          "es": "Evaluador que se enfoca en habilidades deslumbrantes y espectáculo escénico.",
+          "de": "Prüfer, der den Fokus auf überragendes Können und Bühnenperformance legt."
+        }
+      },
+      {
+        "id": "judge_3",
+        "name": "야마모토 류세이",
+        "names": {
+          "ko": "야마모토 류세이",
+          "en": "Ryusei Yamamoto",
+          "ja": "山本 龍星",
+          "zh-cn": "山本龙星",
+          "ru": "Рюсэй Яма모토",
+          "es": "Ryusei Yamamoto",
+          "de": "Ryusei Yamamoto"
+        },
+        "avatarUrl": "media://chapter_assets/audits/judge_3_avatar.mp4",
+        "targetTier": "large",
+        "successMediaUrl": "",
+        "failMediaUrl": "",
+        "attackPower": 6,
+        "satisfactionMod": 0.9,
+        "description": "시청자와의 진정성 있는 소통과 공감을 최우선으로 보는 심사관.",
+        "descriptions": {
+          "ko": "시청자와의 진정성 있는 소통과 공감을 최우선으로 보는 심사관.",
+          "en": "Evaluator who prioritizes authentic communication and viewer empathy.",
+          "ja": "視聴者との真心ある対話と共感を最優先に評価する審査員。",
+          "zh-cn": "将与观众的真诚沟通与共鸣放在首位的审查员。",
+          "ru": "Эксперт, ставящий во главу угла искреннее общение и эмпатию со зрителями.",
+          "es": "Evaluador que prioriza la comunicación authentic y la empatía con la audiencia.",
+          "de": "Prüfer, der authentische Kommunikation und Empathie mit dem Publikum schätzt."
+        }
+      },
+      {
+        "id": "judge_4",
+        "name": "카와무라 다이치",
+        "names": {
+          "ko": "카와무라 다이치",
+          "en": "Daichi Kawamura",
+          "ja": "川村 大地",
+          "zh-cn": "川村大地",
+          "ru": "Дайти Кава무ра",
+          "es": "Daichi Kawamura",
+          "de": "Daichi Kawamura"
+        },
+        "avatarUrl": "media://chapter_assets/audits/judge_4_avatar.mp4",
+        "targetTier": "top",
+        "successMediaUrl": "",
+        "failMediaUrl": "",
+        "attackPower": 15,
+        "satisfactionMod": 1.2,
+        "description": "독보적인 아우라와 치명적인 카리스마 매력을 평가하는 심사관.",
+        "descriptions": {
+          "ko": "독보적인 아우라와 치명적인 카리스마 매력을 평가하는 심사관.",
+          "en": "Evaluator who assesses unique aura and irresistible charismatic attraction.",
+          "ja": "独創的なオーラと致命的なカリスマ性を評価する審査員。",
+          "zh-cn": "评估独一无二的气场与致命魅力风采的审查员。",
+          "ru": "Эксперт, оценивающий уникальную ауру и неотразимую харизму.",
+          "es": "Evaluador que juzga el aura única y el atractivo carismático irresistible.",
+          "de": "Prüfer, der die einzigartige Ausstrahlung und unwiderstehliche Aura bewertet."
+        }
+      }
+    ],
+    "stageSettings": {
+      "sme": {
+        "targetSatisfaction": 60,
+        "recommendedGrade": "B",
+        "staminaCost": 15,
+        "judgeAttackMod": 1
+      },
+      "mid": {
+        "targetSatisfaction": 80,
+        "recommendedGrade": "A",
+        "staminaCost": 20,
+        "judgeAttackMod": 1.2
+      },
+      "large": {
+        "targetSatisfaction": 100,
+        "recommendedGrade": "S",
+        "staminaCost": 25,
+        "judgeAttackMod": 1.5
+      },
+      "top": {
+        "targetSatisfaction": 120,
+        "recommendedGrade": "S",
+        "staminaCost": 30,
+        "judgeAttackMod": 2
+      }
+    }
+  },
+  "topClearViewers": 750000,
   "slotUnlockPrices": [
     1000,
     3000,

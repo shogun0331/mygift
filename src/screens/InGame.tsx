@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
 import {
   deserializeWeekAccum,
@@ -58,6 +58,7 @@ import {
   type SlotManagerState,
   type StaffKind,
 } from '../game/slotManagers'
+import { PromotionAuditModal } from './PromotionAuditModal'
 import type { BroadcastPhase } from '../game/broadcast'
 import {
   GAME_EPOCH,
@@ -145,6 +146,11 @@ import {
   type ScoutOffer,
   type ScoutSystemState,
 } from '../game/scout'
+import {
+  meetsSlotUnlockByRank,
+  meetsSlotUnlockGrade,
+  slotUnlockPriceOf,
+} from '../game/stationGradeConfig'
 
 import {
   buildWeeklyStatement,
@@ -178,14 +184,12 @@ import {
   stationRankForGrade,
   stationSpec,
   type StationGrade,
+  type StationGradeConfig,
   type StationReviewStatus,
 } from '../game/station'
-import type { StationGradeConfig } from '../game/stationGradeConfig'
 import {
   maxScoutCreatorsForGrade,
-  meetsSlotUnlockByRank,
   slotUnlockMinGradeOf,
-  slotUnlockPriceOf,
 } from '../game/stationGradeConfig'
 import {
   rollVipRejectViewers,
@@ -602,6 +606,10 @@ export function InGame({
   const [stationGrade, setStationGrade] = useState<StationGrade>(
     initialSave?.stationGrade ?? 'black',
   )
+  const [stationAuditTarget, setStationAuditTarget] = useState<{
+    currentTier: StationGrade
+    nextTier: Exclude<StationGrade, 'black' | 'tiny'>
+  } | null>(null)
 
   const staffScoutCooldownRef = useRef(initialSave?.scout?.staffScoutCooldown ?? rollInt(3, 5))
   const [staffScoutAvailable, setStaffScoutAvailable] = useState(
@@ -940,6 +948,18 @@ export function InGame({
       }
     }
   }, [ownedCreators.length, stationGrade, creatorScoutAvailable, scoutSystem.activeOffer, stationGradeConfig])
+
+  const unlockedSlotCount = useMemo(() => countUnlockedSlots(studioSlots), [studioSlots])
+
+  const canUnlockStudioSlot = useMemo(() => {
+    const hasLockedSlot = studioSlots.some((s) => s.status === 'locked')
+    if (!hasLockedSlot || unlockedSlotCount >= 6) return false
+    const price = slotUnlockPriceOf(stationGradeConfig, unlockedSlotCount)
+    if (price == null || assets < price) return false
+    const meetsGrade = meetsSlotUnlockGrade(stationGradeConfig, stationGrade, unlockedSlotCount)
+    const meetsRank = meetsSlotUnlockByRank(stationGradeConfig, league.currentRank, unlockedSlotCount)
+    return meetsGrade || meetsRank
+  }, [studioSlots, unlockedSlotCount, stationGradeConfig, assets, stationGrade, league.currentRank])
 
   // 보유 로스터 승격 게이트 즉시 반영 (정산 시 방송 인원만 보고 막힌 순위 보정)
   const rosterGateKey = ownedCreators
@@ -3612,11 +3632,12 @@ export function InGame({
           {TABS.map((item) => {
             const isActive = tab === item.id
             const alert =
-              item.id === 'creator' &&
-              (creatorScoutAvailable ||
-                staffScoutAvailable ||
-                Boolean(scoutSystem.activeOffer) ||
-                Boolean(scoutedStaffCandidate))
+              (item.id === 'creator' &&
+                (creatorScoutAvailable ||
+                  staffScoutAvailable ||
+                  Boolean(scoutSystem.activeOffer) ||
+                  Boolean(scoutedStaffCandidate))) ||
+              (item.id === 'schedule' && canUnlockStudioSlot)
             const alertLabel =
               item.id === 'creator' && alert
                 ? scoutSystem.activeOffer
@@ -3624,7 +3645,9 @@ export function InGame({
                   : scoutedStaffCandidate
                     ? t('creator.staffScoutNewArrival')
                     : t('menu.creator')
-                : undefined
+                : item.id === 'schedule' && alert
+                  ? '신규 방송 슬롯 해금 가능!'
+                  : undefined
             return (
               <button
                 key={item.id}
@@ -3727,18 +3750,66 @@ export function InGame({
           onConfirm={() => {
             const review = stationReview
             setStationReview(null)
+            if (review.promoted && review.status.next && review.status.next !== 'tiny') {
+              setStationAuditTarget({
+                currentTier: review.status.current,
+                nextTier: review.status.next as Exclude<StationGrade, 'black' | 'tiny'>,
+              })
+              return
+            }
             if (review.promoted && review.status.next) {
               const nextGrade = review.status.next
               const oldRank = leagueRef.current.currentRank
               const newRank = stationRankForGrade(nextGrade, leagueRef.current.viewers)
-              // 등급은 즉시 반영, 리그 순위는 애니메이션 종료 후 반영
-              // (말풍선이 이전 순위에서 새 순위로 올라가며 피라미드가 채워지도록)
               stationGradeRef.current = nextGrade
               setStationGrade(nextGrade)
               pendingPromotionRef.current = { nextGrade, oldRank, newRank }
               setTab('ranking')
               setPromotionFx({
                 fromGrade: review.status.current,
+                toGrade: nextGrade,
+                fromRank: oldRank,
+                toRank: newRank,
+              })
+              setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
+              return
+            }
+            continueMonthEndFlow()
+          }}
+        />
+      ) : null}
+
+      {stationAuditTarget ? (
+        <PromotionAuditModal
+          tier={stationAuditTarget.nextTier}
+          creators={ownedCreators}
+          config={stationGradeConfig}
+          onComplete={(success, staminaDeductions) => {
+            if (Object.keys(staminaDeductions).length > 0) {
+              const nextOwned = ownedCreatorsRef.current.map((c) => {
+                const ded = staminaDeductions[c.id]
+                if (ded && ded > 0) {
+                  return { ...c, stamina: Math.max(0, Math.round(c.stamina - ded)) }
+                }
+                return c
+              })
+              ownedCreatorsRef.current = nextOwned
+              onOwnedCreatorsChangeRef.current(nextOwned)
+            }
+
+            const target = stationAuditTarget
+            setStationAuditTarget(null)
+
+            if (success && target.nextTier) {
+              const nextGrade = target.nextTier
+              const oldRank = leagueRef.current.currentRank
+              const newRank = stationRankForGrade(nextGrade, leagueRef.current.viewers)
+              stationGradeRef.current = nextGrade
+              setStationGrade(nextGrade)
+              pendingPromotionRef.current = { nextGrade, oldRank, newRank }
+              setTab('ranking')
+              setPromotionFx({
+                fromGrade: target.currentTier,
                 toGrade: nextGrade,
                 fromRank: oldRank,
                 toRank: newRank,

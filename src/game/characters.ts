@@ -61,6 +61,13 @@ export type CharacterVideo = {
   keys: string[]           // 예: ['idle'] — 기본 대기 표시용
 }
 
+/** 캐릭터별 승급심사 3단계 퍼포먼스 영상 (A: 고만족도 80%↑, B: 중만족도 30~79%, C: 저만족도 0~29%) */
+export type CharacterAuditMedia = {
+  A?: string | null
+  B?: string | null
+  C?: string | null
+}
+
 /** 에디터에 등록된 캐릭터 (스카우트 대상 풀) */
 export type RegisteredCharacter = {
   id: string
@@ -93,6 +100,8 @@ export type RegisteredCharacter = {
   videos?: CharacterVideo[]
   /** 에디터 SNS 피드. 수위별 순차 오픈 */
   snsPosts?: SnsPostDef[]
+  /** 승급심사 3단계 퍼포먼스 미디어 (A: 80%↑, B: 30~79%, C: 0~29%) */
+  auditMedia?: CharacterAuditMedia
   /** 미디어 교체 시 증가 — 영상 캐시/리마운트용 */
   mediaRevision?: number
 }
@@ -148,6 +157,7 @@ export type CharacterDraft = {
   images?: CharacterImage[]
   videos?: CharacterVideo[]
   snsPosts?: SnsPostDef[]
+  auditMedia?: CharacterAuditMedia
   mediaRevision?: number
 }
 

@@ -17,7 +17,7 @@ interface ElectronAPI {
   ) => Promise<{ success: boolean; path?: string; error?: string }>
   saveCharactersJson?: (
     characters: any[]
-  ) => Promise<{ success: boolean; error?: string }>
+  ) => Promise<{ success: boolean; characters?: any[]; error?: string }>
   loadCharactersJson?: (
   ) => Promise<{ success: boolean; characters?: any[]; error?: string }>
   saveEventsJson?: (
@@ -32,7 +32,7 @@ interface ElectronAPI {
   ) => Promise<{ success: boolean; links?: Record<string, string | null>; error?: string }>
   saveStationGradeConfigJson?: (
     config: Record<string, unknown>
-  ) => Promise<{ success: boolean; error?: string }>
+  ) => Promise<{ success: boolean; config?: any; error?: string }>
   loadStationGradeConfigJson?: (
   ) => Promise<{ success: boolean; config?: Record<string, unknown>; error?: string }>
   deleteEventFile?: (

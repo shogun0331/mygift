@@ -390,8 +390,21 @@ ipcMain.handle('save-characters-json', async (event, { characters }) => {
         return { success: true, skippedEmptyOverwrite: true }
       }
     }
-    writeJson(filePath, characters)
-    return { success: true }
+
+    const nextCharacters = JSON.parse(JSON.stringify(characters ?? []))
+    for (const char of nextCharacters) {
+      if (char && char.auditMedia) {
+        const charAuditsDir = publicWritePath('characters', String(char.id), 'audits')
+        const urlPrefix = `media://characters/${char.id}/audits`
+        
+        char.auditMedia.A = saveBase64MediaFile(char.auditMedia.A, charAuditsDir, 'video_A', urlPrefix)
+        char.auditMedia.B = saveBase64MediaFile(char.auditMedia.B, charAuditsDir, 'video_B', urlPrefix)
+        char.auditMedia.C = saveBase64MediaFile(char.auditMedia.C, charAuditsDir, 'video_C', urlPrefix)
+      }
+    }
+
+    writeJson(filePath, nextCharacters)
+    return { success: true, characters: nextCharacters }
   } catch (err) {
     return { success: false, error: err.message }
   }
@@ -437,14 +450,68 @@ ipcMain.handle('load-common-event-links-json', async (event) => {
   }
 })
 
+function saveBase64MediaFile(dataUrl, targetDir, filePrefix, urlPrefix = 'media://chapter_assets/audits') {
+  if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
+    return dataUrl
+  }
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/)
+  if (!match) return dataUrl
+
+  const mimeType = match[1]
+  const base64Data = match[2]
+  const buffer = Buffer.from(base64Data, 'base64')
+
+  const extMap = {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+    'video/mp4': 'mp4',
+    'video/webm': 'webm',
+    'video/ogg': 'ogv',
+  }
+  const ext = extMap[mimeType] || (mimeType.startsWith('video/') ? 'mp4' : 'png')
+  const fileName = `${filePrefix}.${ext}`
+
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true })
+  }
+
+  const filePath = path.join(targetDir, fileName)
+  fs.writeFileSync(filePath, buffer)
+
+  return `${urlPrefix}/${fileName}`
+}
+
 ipcMain.handle('save-station-grade-config-json', async (event, { config }) => {
   try {
     const dir = publicWritePath('chapter_assets')
+    const auditsDir = path.join(dir, 'audits')
+
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true })
     }
-    writeJson(path.join(dir, 'station_grade_config.json'), config ?? {})
-    return { success: true }
+
+    const nextConfig = JSON.parse(JSON.stringify(config ?? {}))
+    if (nextConfig.auditConfig && Array.isArray(nextConfig.auditConfig.judges)) {
+      nextConfig.auditConfig.judges = nextConfig.auditConfig.judges.map((judge, idx) => {
+        const idKey = judge.id || `judge_${idx}`
+        const avatarUrl = saveBase64MediaFile(judge.avatarUrl, auditsDir, `${idKey}_avatar`)
+        const successMediaUrl = saveBase64MediaFile(judge.successMediaUrl, auditsDir, `${idKey}_success`)
+        const failMediaUrl = saveBase64MediaFile(judge.failMediaUrl, auditsDir, `${idKey}_fail`)
+
+        return {
+          ...judge,
+          avatarUrl,
+          successMediaUrl,
+          failMediaUrl,
+        }
+      })
+    }
+
+    writeJson(path.join(dir, 'station_grade_config.json'), nextConfig)
+    return { success: true, config: nextConfig }
   } catch (err) {
     return { success: false, error: err.message }
   }

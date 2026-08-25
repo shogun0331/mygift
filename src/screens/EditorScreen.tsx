@@ -4,6 +4,9 @@ import { CommonEventPanel } from '../events/CommonEventPanel'
 import { EventManagePanel } from '../events/EventManagePanel'
 import { EventSimulator } from '../events/EventSimulator'
 import { CharacterSnsEditor } from './CharacterSnsEditor'
+import { CharacterAuditEditorModal } from './CharacterAuditEditorModal'
+import { AuditSimulatorDeckModal } from './AuditSimulatorDeckModal'
+import { PromotionAuditModal } from './PromotionAuditModal'
 import {
   CHARACTER_EVENT_SLOTS,
   emptyCharacterEventLinks,
@@ -13,7 +16,7 @@ import {
   type GameEvent,
 } from '../events/types'
 import type { CommonEventLinks } from '../events/commonEventLinks'
-import type { StationGradeConfig } from '../game/stationGradeConfig'
+import type { StationGradeConfig, StationTierId } from '../game/stationGradeConfig'
 import {
   CREATOR_STAT_TYPES,
   normalizeCreatorStatType,
@@ -27,10 +30,11 @@ import {
 } from '../game/characterLocales'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import type { AddStaffPayload, RegisteredStaff } from '../game/staff'
+import { AuditEditorPanel } from './AuditEditorPanel'
 import { StaffEditorPanel } from './StaffEditorPanel'
 import { StationGradeEditorPanel } from './StationGradeEditorPanel'
 
-type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent' | 'stationGrade' | 'staff'
+type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent' | 'stationGrade' | 'staff' | 'audit'
 type CharacterView = 'list' | 'add' | 'edit' | 'sns'
 
 type EditorScreenProps = {
@@ -105,6 +109,10 @@ export function EditorScreen({
   const [tab, setTab] = useState<EditorTab>('character')
   const [characterView, setCharacterView] = useState<CharacterView>('list')
   const [editingCharacter, setEditingCharacter] = useState<RegisteredCharacter | null>(null)
+  const [auditMediaCharacter, setAuditMediaCharacter] = useState<RegisteredCharacter | null>(null)
+  const [simulatorTierKey, setSimulatorTierKey] = useState<Exclude<StationTierId, 'black' | 'tiny'> | null>(null)
+  const [simulatorCreators, setSimulatorCreators] = useState<RegisteredCharacter[] | null>(null)
+  const [isAuditSimulatorActive, setIsAuditSimulatorActive] = useState(false)
   const [showSimulator, setShowSimulator] = useState(false)
   const [simulatorMode, setSimulatorMode] = useState<'debug' | 'game'>('debug')
   const [selectedSimulatorEvent, setSelectedSimulatorEvent] = useState<GameEvent | null>(null)
@@ -209,6 +217,15 @@ export function EditorScreen({
           >
             스태프 관리
           </button>
+          <button
+            type="button"
+            onClick={() => setTab('audit')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'audit' ? 'is-active' : ''
+            }`}
+          >
+            ⚖️ 승급심사 관리
+          </button>
         </aside>
 
         <section className="relative z-10 min-h-0 overflow-auto p-6">
@@ -268,7 +285,7 @@ export function EditorScreen({
                             </span>
                           </div>
                           <p className="truncate text-xs text-slate-500">
-                            {character.grade}급 · {character.concept}
+                            {character.grade} · {character.concept}
                             {character.age ? ` · ${character.age}세` : ''}
                           </p>
                         </div>
@@ -292,6 +309,13 @@ export function EditorScreen({
                             className="game-btn rounded-lg px-2.5 py-1.5 text-xs"
                           >
                             SNS
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setAuditMediaCharacter(character)}
+                            className="game-btn rounded-lg px-2.5 py-1.5 text-xs text-purple-300 border border-purple-500/40 hover:border-purple-400 hover:bg-purple-950/40"
+                          >
+                            승급심사
                           </button>
                           <button
                             type="button"
@@ -417,6 +441,13 @@ export function EditorScreen({
               onUpdateStaff={onUpdateStaff}
               onDeleteStaff={onDeleteStaff}
             />
+          ) : tab === 'audit' ? (
+            <AuditEditorPanel
+              config={stationGradeConfig}
+              onConfigChange={onStationGradeConfigChange}
+              onSaveManual={onSaveStationGradeManual}
+              onStartSimulator={(tierKey) => setSimulatorTierKey(tierKey)}
+            />
           ) : null}
         </section>
       </div>
@@ -431,6 +462,77 @@ export function EditorScreen({
             setSelectedSimulatorEvent(null)
           }}
           registeredCharacters={registeredCharacters}
+        />
+      )}
+      {auditMediaCharacter && (
+        <CharacterAuditEditorModal
+          character={auditMediaCharacter}
+          onSave={(nextAuditMedia) => {
+            onUpdateCharacter(auditMediaCharacter.id, {
+              name: auditMediaCharacter.name,
+              names: auditMediaCharacter.names,
+              age: auditMediaCharacter.age,
+              job: auditMediaCharacter.job,
+              jobs: auditMediaCharacter.jobs,
+              bust: auditMediaCharacter.bust,
+              weight: auditMediaCharacter.weight,
+              statType: auditMediaCharacter.statType,
+              characterIconId: auditMediaCharacter.characterIconId ?? null,
+              characterIllustrationId: auditMediaCharacter.characterIllustrationId ?? null,
+              profileImageId: auditMediaCharacter.profileImageId ?? null,
+              profileVideoId: auditMediaCharacter.profileVideoId ?? null,
+              eventLinks: auditMediaCharacter.eventLinks,
+              images: (auditMediaCharacter.images || []).map((img) => ({
+                id: img.id,
+                file: img.file,
+                fileName: img.fileName,
+                fileSize: img.fileSize,
+                url: img.url,
+                keys: img.keys,
+              })),
+              videos: (auditMediaCharacter.videos || []).map((vid) => ({
+                id: vid.id,
+                file: vid.file,
+                fileName: vid.fileName,
+                fileSize: vid.fileSize,
+                url: vid.url,
+                keys: vid.keys,
+                level: vid.level,
+                stage: vid.stage,
+              })),
+              snsPosts: auditMediaCharacter.snsPosts,
+              auditMedia: nextAuditMedia,
+            })
+          }}
+          onClose={() => setAuditMediaCharacter(null)}
+        />
+      )}
+      {simulatorTierKey != null && !isAuditSimulatorActive && (
+        <AuditSimulatorDeckModal
+          tierKey={simulatorTierKey}
+          registeredCharacters={registeredCharacters}
+          onStartSimulation={(creators) => {
+            setSimulatorCreators(creators)
+            setIsAuditSimulatorActive(true)
+          }}
+          onClose={() => setSimulatorTierKey(null)}
+        />
+      )}
+      {isAuditSimulatorActive && simulatorTierKey && simulatorCreators && (
+        <PromotionAuditModal
+          tier={simulatorTierKey}
+          creators={simulatorCreators as any}
+          config={stationGradeConfig}
+          onComplete={() => {
+            setIsAuditSimulatorActive(false)
+            setSimulatorCreators(null)
+            setSimulatorTierKey(null)
+          }}
+          onClose={() => {
+            setIsAuditSimulatorActive(false)
+            setSimulatorCreators(null)
+            setSimulatorTierKey(null)
+          }}
         />
       )}
     </main>
@@ -484,6 +586,7 @@ export type AddCharacterPayload = {
     stage: number
   }>
   snsPosts?: import('../game/sns').SnsPostDef[]
+  auditMedia?: import('../game/characters').CharacterAuditMedia
 }
 
 type AddCharacterPanelProps = {

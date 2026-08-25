@@ -114,11 +114,27 @@ export function stationRankForGrade(
 ): number {
   const cfg = config ?? getActiveConfig()
   const band = TIER_RANK_BANDS[grade]
-  const next = nextStationTier(grade)
   if (!band) return 1
-  if (!next) return band.best
-  const required = cfg.promotions[next].requiredViewers
-  const progress = required <= 0 ? 1 : Math.max(0, Math.min(1, viewers / required))
+
+  const next = nextStationTier(grade)
+  let requiredViewers = 0
+  let baseViewers = 0
+
+  if (next) {
+    requiredViewers = cfg.promotions[next].requiredViewers
+  } else {
+    // 최고 등급(top, 일등기업)일 경우:
+    // 일등기업 입성 조건 시청자(startViewers)를 기준 0% (10위)로 두고,
+    // 설정된 topClearViewers (기본 750,000)를 달성해야 100% (최종 1위/1등 클리어)가 된다.
+    const promoToTop = cfg.promotions['top']
+    const startViewers = promoToTop ? promoToTop.requiredViewers : 500_000
+    baseViewers = startViewers
+    requiredViewers = cfg.topClearViewers ?? Math.round(startViewers * 1.5)
+  }
+
+  const denominator = requiredViewers - baseViewers
+  const currentDiff = viewers - baseViewers
+  const progress = denominator <= 0 ? 1 : Math.max(0, Math.min(1, currentDiff / denominator))
   const rank = Math.round(band.worst - progress * (band.worst - band.best))
   return Math.max(band.best, Math.min(band.worst, rank))
 }

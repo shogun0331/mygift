@@ -45,6 +45,22 @@ import { StaffActionFx, type StaffActionFxItem } from './StaffActionFx'
 import { ToxicWhackQte, type ToxicWhackQteItem } from './ToxicWhackQte'
 import { LiveRankBoard } from './LiveRankBoard'
 
+/** 등급별(S, A, B, C) 프리미엄 네온 글로우 뱃지 스타일 헬퍼 */
+export function getGradeBadgeStyle(grade: string = 'B') {
+  const g = (grade || 'B').toUpperCase()
+  switch (g) {
+    case 'S':
+      return 'border-amber-400 text-amber-200 bg-gradient-to-r from-amber-950 via-yellow-900 to-amber-950 shadow-[0_0_12px_rgba(251,191,36,0.85)] ring-1 ring-amber-400/50'
+    case 'A':
+      return 'border-purple-400 text-purple-200 bg-gradient-to-r from-purple-950 via-indigo-900 to-purple-950 shadow-[0_0_12px_rgba(168,85,247,0.85)] ring-1 ring-purple-400/50'
+    case 'B':
+      return 'border-cyan-400 text-cyan-200 bg-gradient-to-r from-cyan-950 via-slate-900 to-cyan-950 shadow-[0_0_12px_rgba(6,182,212,0.8)] ring-1 ring-cyan-400/50'
+    case 'C':
+    default:
+      return 'border-slate-400 text-slate-200 bg-slate-900 shadow-[0_0_8px_rgba(148,163,184,0.5)]'
+  }
+}
+
 type DashboardPanelProps = {
   slots: StudioSlot[]
   ownedCreators?: OwnedCreator[]
@@ -534,6 +550,7 @@ function StreamCard({
   const careCost = creator ? calcConditionFullCareCost(creator.grade) : 0
   const canAffordCare = assets >= careCost
   const canCare = Boolean(creator && onConditionCare && !conditionFull && canAffordCare)
+  const hasCareManager = Boolean(managerState?.equippedBySlotId[slot.id]?.care)
   const [careSpendFlash, setCareSpendFlash] = useState<string | null>(null)
 
   useEffect(() => {
@@ -570,12 +587,6 @@ function StreamCard({
               <p className="mt-0.5 text-[10px] text-slate-600">{t('dashboard.unlockHint')}</p>
             </div>
           </div>
-          <div className="grid grid-cols-4 gap-1">
-            <StreamAction label={t('dashboard.actionAssign')} icon={<IconAssign />} disabled />
-            <StreamAction label={t('dashboard.actionTrain')} icon={<IconTrain />} disabled />
-            <StreamAction label={t('dashboard.actionStats')} icon={<IconStats />} disabled />
-            <StreamAction label={t('dashboard.actionSettings')} icon={<IconGear />} disabled />
-          </div>
         </div>
       </article>
     )
@@ -607,7 +618,7 @@ function StreamCard({
           </div>
         </div>
 
-        <div className="shrink-0 space-y-2 p-2.5">
+        <div className="shrink-0 space-y-2 p-3 pb-3.5">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-dashed border-white/20 bg-black/25 text-sm font-bold text-slate-500">
               ＋
@@ -622,31 +633,30 @@ function StreamCard({
             </div>
           </div>
 
-          <div>
-            <div className="mb-1 flex items-center justify-between text-[10px]">
-              <span className="font-semibold tracking-wide text-slate-500">Stamina</span>
-              <span className="font-semibold text-slate-600">—</span>
+          <div className="flex items-center justify-between gap-3 pt-0.5">
+            <div className="min-w-0 flex-1">
+              <div className="mb-0.5 flex items-center justify-between text-[10px]">
+                <span className="font-semibold tracking-wide text-slate-500">Stamina</span>
+                <span className="font-semibold text-slate-600">—</span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
+                <div className="h-full w-0 rounded-full bg-gradient-to-r from-cyan-400 to-teal-300" />
+              </div>
             </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
-              <div className="h-full w-0 rounded-full bg-gradient-to-r from-cyan-400 to-teal-300" />
-            </div>
+
+            {managerState ? (
+              <div className="shrink-0 pt-2">
+                <StaffSlotIcons
+                  slotId={slotId}
+                  managerState={managerState}
+                  registeredStaff={registeredStaff}
+                  size="sm"
+                />
+              </div>
+            ) : null}
           </div>
 
-          {managerState ? (
-            <StaffSlotIcons
-              slotId={slotId}
-              managerState={managerState}
-              registeredStaff={registeredStaff}
-              size="sm"
-            />
-          ) : null}
 
-          <div className="grid grid-cols-4 gap-1">
-            <StreamAction label={t('dashboard.actionAssign')} icon={<IconAssign />} disabled />
-            <StreamAction label={t('dashboard.actionTrain')} icon={<IconTrain />} disabled />
-            <StreamAction label={t('dashboard.actionStats')} icon={<IconStats />} disabled />
-            <StreamAction label={t('dashboard.actionSettings')} icon={<IconGear />} disabled />
-          </div>
         </div>
       </article>
     )
@@ -664,14 +674,14 @@ function StreamCard({
 
   return (
     <article
-      className={`neon-glow-card relative flex flex-col overflow-hidden rounded-2xl bg-slate-950/40 ${
+      className={`neon-glow-card relative flex flex-col overflow-hidden rounded-2xl bg-slate-950/40 transition-all duration-300 ${
         isLive && !feedOff ? 'stream-on-air' : ''
       } ${
         crashing ? 'condition-crash-slot' : ''
       } ${
         staffing ? 'staff-action-slot' : ''
       } ${
-        gearBroken ? 'is-gear-broken' : blocked && isLive ? 'is-cctv-rest-off' : ''
+        gearBroken ? 'is-gear-broken' : isLive && blocked ? 'is-cctv-rest-off' : blocked ? 'border-2 border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.35)]' : ''
       }`}
     >
       <div
@@ -786,6 +796,7 @@ function StreamCard({
           </div>
         ) : null}
 
+
         {gearBroken && !toxicQte && onRepairSlot ? (
           <button
             type="button"
@@ -806,7 +817,7 @@ function StreamCard({
         ) : null}
       </div>
 
-      <div className="relative shrink-0 space-y-1.5 p-2.5 pt-8">
+      <div className="relative shrink-0 space-y-2 p-3 pt-7 pb-3.5">
         {staffing ? (
           <StaffActionFx
             actions={staffActions}
@@ -814,127 +825,153 @@ function StreamCard({
             onDone={onStaffActionDone}
           />
         ) : null}
-        <div className="flex items-center gap-2.5">
-          {creator?.profileImageUrl ? (
-            <img
-              src={creator.profileImageUrl}
-              alt={creator.name}
-              className="h-8 w-8 rounded-full object-cover shrink-0"
-            />
-          ) : (
-            <div
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator?.avatarTone ?? 'from-slate-500 to-slate-700'}`}
-            >
-              {(creator?.avatar ?? '?').slice(0, 2)}
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
-              <p className="truncate text-xs font-semibold text-slate-100">
-                {creator?.name ?? '—'}
-                {creator?.concept ? (
-                  <span className="font-medium text-amber-400"> ({creator.concept})</span>
-                ) : null}
-              </p>
-              {creator ? (
-                <div className="flex flex-col gap-0.5 items-start">
-                  <span
-                    className={`inline-flex min-w-0 max-w-full items-center gap-1 text-[10px] font-bold leading-none ${CONDITION_ROW_CLASS[creator.condition]}`}
-                    title={`${t('condition.title')} ${t(CONDITION_LABEL_KEY[creator.condition])} (${creator.conditionScore}%)`}
-                  >
-                    <span
-                      className={`condition-status-dot h-1.5 w-1.5 shrink-0 rounded-full ${CONDITION_DOT_CLASS[creator.condition]}`}
-                      aria-hidden
-                    />
-                    <span className="shrink-0 text-[11px]" aria-hidden>
-                      {CONDITION_ICON[creator.condition]}
-                    </span>
-                    <span className="truncate">
-                      {t(CONDITION_LABEL_KEY[creator.condition])}
-                    </span>
+        {/* 프로필 이미지 & 우측 끝 컨디션 회복 버튼 */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            {creator?.profileImageUrl ? (
+              <img
+                src={creator.profileImageUrl}
+                alt={creator.name}
+                className="h-8 w-8 rounded-full object-cover shrink-0 border border-white/10"
+              />
+            ) : (
+              <div
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-slate-950 ${creator?.avatarTone ?? 'from-slate-500 to-slate-700'}`}
+              >
+                {(creator?.avatar ?? '?').slice(0, 2)}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+                {creator?.grade ? (
+                  <span className={`rounded-md border px-1.5 py-0.2 text-[10px] sm:text-xs font-black italic tracking-wider ${getGradeBadgeStyle(creator.grade)}`}>
+                    {creator.grade}
                   </span>
-                  <div className="h-1 w-10 overflow-hidden rounded-full bg-slate-800/80">
-                    <div
-                      className={`h-full rounded-full ${CONDITION_DOT_CLASS[creator.condition]}`}
-                      style={{ width: `${creator.conditionScore}%` }}
-                    />
-                  </div>
-                </div>
-              ) : null}
-              {creator?.tag ? (
-                <span
-                  className={`rounded-md border px-1.5 py-0.5 text-[9px] font-semibold ${TAG_STYLE[creator.tag.tone]}`}
-                >
-                  {creator.tag.text}
-                </span>
-              ) : null}
+                ) : null}
+                <p className="truncate text-xs font-bold text-slate-100">
+                  {creator?.name ?? '—'}
+                  {creator?.concept ? (
+                    <span className="font-medium text-amber-400"> ({creator.concept})</span>
+                  ) : null}
+                </p>
+                {creator?.tag ? (
+                  <span
+                    className={`rounded-md border px-1.5 py-0.5 text-[9px] font-semibold ${TAG_STYLE[creator.tag.tone]}`}
+                  >
+                    {creator.tag.text}
+                  </span>
+                ) : null}
+              </div>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-1 text-[10px] font-semibold text-slate-400">
-            <IconEye />
-            {creator?.viewers ?? '—'}
+
+          {/* 우측 영역: 시청자 수 & 컨디션 회복 버튼 (케어매니저 미장착 시에만 회복버튼 표시) */}
+          <div className="flex shrink-0 items-center gap-2">
+            <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-400">
+              <IconEye />
+              {creator?.viewers ?? '—'}
+            </div>
+
+            {!hasCareManager ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  title={`${t('dashboard.actionRecover')} −${formatMoney(careCost)}`}
+                  disabled={!canCare}
+                  onClick={() => {
+                    if (!creator || !canCare) return
+                    onConditionCare?.(creator.id)
+                    setCareSpendFlash(`−${formatMoney(careCost)}`)
+                  }}
+                  className="game-btn flex h-7 items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-950/70 px-2 text-emerald-200 transition-all hover:bg-emerald-900 hover:border-emerald-400 active:scale-95 disabled:cursor-not-allowed disabled:opacity-35 disabled:border-slate-800 disabled:bg-slate-900/40 shadow-[0_0_8px_rgba(16,185,129,0.2)]"
+                >
+                  <IconTrain />
+                  <span className="text-[10px] font-black tabular-nums text-amber-300">
+                    {careCost > 0 ? formatCareCostShort(careCost) : '—'}
+                  </span>
+                  <span className="text-[9px] font-bold text-emerald-300">{t('dashboard.actionRecover')}</span>
+                </button>
+
+                {careSpendFlash ? (
+                  <div className="pointer-events-none absolute bottom-full right-0 z-30 mb-1 rounded-md border border-amber-400/40 bg-slate-950/95 px-2 py-0.5 shadow-[0_4px_16px_rgba(0,0,0,0.6)] whitespace-nowrap">
+                    <p className="text-[10px] font-black tabular-nums text-amber-300">{careSpendFlash}</p>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
 
-        <div>
-          <div className="mb-1 flex items-center justify-between gap-2 text-[10px]">
-            <span className="font-semibold tracking-wide text-slate-400">Stamina</span>
-            <span className={`font-semibold ${blocked ? 'text-rose-300' : 'text-cyan-300'}`}>
-              {creator
-                ? `${Math.round(creator.stamina)}/${creator.staminaMax}`
-                : '—'}
-            </span>
-          </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
-            <div
-              className={`h-full rounded-full bg-gradient-to-r transition-[width] duration-150 ease-linear ${
-                blocked ? 'from-rose-400 to-orange-300' : 'from-cyan-400 to-teal-300'
-              }`}
-              style={{ width: `${staminaPct}%` }}
-            />
-          </div>
-          {blocked ? (
-            <p className="mt-1 text-[10px] font-semibold text-rose-300/90">
-              {t('dashboard.broadcastBlocked')}
-            </p>
+        {/* 컨디션 & Stamina 게이지바 */}
+        <div className="space-y-1.5 pt-0.5">
+          {/* 컨디션 게이지바 */}
+          {creator ? (
+            <div>
+              <div className="mb-0.5 flex items-center justify-between text-[10px]">
+                <span className={`flex items-center gap-1.5 font-bold ${CONDITION_ROW_CLASS[creator.condition]}`}>
+                  <span
+                    className={`condition-status-dot h-1.5 w-1.5 shrink-0 rounded-full shadow-[0_0_6px_currentColor] ${CONDITION_DOT_CLASS[creator.condition]}`}
+                    aria-hidden
+                  />
+                  <span className="text-[11px]" aria-hidden>
+                    {CONDITION_ICON[creator.condition]}
+                  </span>
+                  <span>{t(CONDITION_LABEL_KEY[creator.condition])}</span>
+                </span>
+                <span className="font-extrabold tabular-nums text-slate-300 text-[10px]">
+                  {creator.conditionScore}%
+                </span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-slate-900 border border-white/10 shadow-inner">
+                <div
+                  className={`h-full rounded-full transition-[width] duration-300 ease-out ${CONDITION_DOT_CLASS[creator.condition]} shadow-[0_0_8px_currentColor]`}
+                  style={{ width: `${creator.conditionScore}%` }}
+                />
+              </div>
+            </div>
           ) : null}
-        </div>
 
-        {managerState ? (
-          <StaffSlotIcons
-            slotId={slotId}
-            managerState={managerState}
-            registeredStaff={registeredStaff}
-            size="sm"
-          />
-        ) : null}
+          {/* Stamina 게이지바 & 우측 스태프 아이콘 (한 줄로 통합 배치) */}
+          <div className="flex items-center justify-between gap-3 pt-0.5">
+            <div className="min-w-0 flex-1">
+              <div className="mb-0.5 flex items-center justify-between text-[10px]">
+                <span className={`font-bold tracking-wide ${blocked ? 'text-rose-400 animate-pulse' : 'text-slate-400'}`}>
+                  {blocked ? '🚨 Stamina (고갈)' : 'Stamina'}
+                </span>
+                <span className={`font-black tabular-nums ${blocked ? 'text-rose-300 animate-pulse' : 'text-cyan-300'}`}>
+                  {creator
+                    ? `${Math.round(creator.stamina)}/${creator.staminaMax}`
+                    : '—'}
+                </span>
+              </div>
+              <div className={`h-1.5 overflow-hidden rounded-full bg-slate-900 border transition-all duration-300 shadow-inner ${
+                blocked ? 'border-rose-500/80 shadow-[0_0_12px_rgba(244,63,94,0.6)] animate-pulse' : 'border-white/10'
+              }`}>
+                <div
+                  className={`h-full rounded-full transition-[width] duration-150 ease-linear ${
+                    blocked ? 'bg-gradient-to-r from-rose-600 via-rose-500 to-amber-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]' : 'bg-gradient-to-r from-cyan-400 to-teal-300 shadow-[0_0_8px_rgba(34,211,238,0.4)]'
+                  }`}
+                  style={{ width: `${staminaPct}%` }}
+                />
+              </div>
+            </div>
 
-        <div className="relative grid grid-cols-4 gap-1">
-          <StreamAction label={t('dashboard.actionAssign')} icon={<IconAssign />} disabled />
-          <button
-            type="button"
-            title={`${t('dashboard.actionRecover')} −${formatMoney(careCost)}`}
-            disabled={!canCare}
-            onClick={() => {
-              if (!creator || !canCare) return
-              onConditionCare?.(creator.id)
-              setCareSpendFlash(`−${formatMoney(careCost)}`)
-            }}
-            className="game-btn flex h-7 flex-col items-center justify-center gap-0 rounded-lg px-0.5 text-emerald-200 disabled:cursor-not-allowed disabled:opacity-35"
-          >
-            <IconTrain />
-            <span className="text-[7px] font-black leading-none tabular-nums text-amber-300">
-              {careCost > 0 ? formatCareCostShort(careCost) : '—'}
-            </span>
-            <span className="sr-only">{t('dashboard.actionRecover')}</span>
-          </button>
-          <StreamAction label={t('dashboard.actionStats')} icon={<IconStats />} disabled />
-          <StreamAction label={t('dashboard.actionSettings')} icon={<IconGear />} disabled />
+            {managerState ? (
+              <div className="shrink-0 pt-2">
+                <StaffSlotIcons
+                  slotId={slotId}
+                  managerState={managerState}
+                  registeredStaff={registeredStaff}
+                  size="sm"
+                />
+              </div>
+            ) : null}
+          </div>
 
-          {careSpendFlash ? (
-            <div className="pointer-events-none absolute bottom-full left-1/4 z-20 mb-1 -translate-x-1/2 rounded-md border border-amber-400/40 bg-slate-950/95 px-2 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
-              <p className="text-[10px] font-black tabular-nums text-amber-300">{careSpendFlash}</p>
-              <p className="text-[8px] font-semibold text-slate-400">{t('dashboard.actionRecover')}</p>
+          {blocked ? (
+            <div className="mt-1 flex items-center gap-1.5 rounded-md border border-rose-500/70 bg-rose-950/90 px-2 py-0.5 text-[10px] font-black text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.4)] animate-pulse">
+              <span className="text-xs shrink-0">🚨</span>
+              <span className="truncate">{t('dashboard.broadcastBlocked')} — 회복 케어가 필요합니다!</span>
             </div>
           ) : null}
         </div>

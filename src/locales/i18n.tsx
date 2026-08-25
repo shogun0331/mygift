@@ -127,3 +127,7 @@ export function useTranslation() {
   }
 }
 
+export function useI18n() {
+  return useTranslation()
+}
+

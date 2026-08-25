@@ -242,18 +242,19 @@ export async function loadCommonEventLinks(): Promise<CommonEventLinks> {
   return normalizeCommonEventLinks(fromPublic)
 }
 
-export async function saveStationGradeConfig(config: StationGradeConfig): Promise<void> {
+export async function saveStationGradeConfig(config: StationGradeConfig): Promise<StationGradeConfig> {
   const normalized = normalizeStationGradeConfig(config)
   if (window.electronAPI?.saveStationGradeConfigJson) {
     const res = await window.electronAPI.saveStationGradeConfigJson(normalized)
     if (!res.success) throw new Error(res.error || 'Failed to save station grade config')
-    return
+    if (res.config) return normalizeStationGradeConfig(res.config)
   }
   try {
     localStorage.setItem(STATION_GRADE_CONFIG_KEY, JSON.stringify(normalized))
   } catch {
     // ignore quota
   }
+  return normalized
 }
 
 export async function loadStationGradeConfig(): Promise<StationGradeConfig> {

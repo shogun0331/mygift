@@ -463,7 +463,7 @@
     "viewersLost": "시청자 이탈"
   },
   "station": {
-    "gradeBadge": "{grade}등급",
+    "gradeBadge": "{grade}",
     "panelTitle": "방송국 등급",
     "maxRank": "순위 상한",
     "viewerCap": "시청자 상한",
@@ -622,7 +622,7 @@
     "search": "검색",
     "name": "이름",
     "grade": "등급",
-    "gradeBadge": "{grade}급",
+    "gradeBadge": "{grade}",
     "gradeFilterFormat": "{grade} 등급",
     "action": "액션",
     "countUnit": "{count}명",
