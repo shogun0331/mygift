@@ -66,11 +66,14 @@ export function PromotionAuditModal({
   const [showImpactEffect, setShowImpactEffect] = useState<boolean>(false)
   const [isHeartShaking, setIsHeartShaking] = useState<boolean>(false)
 
-  // 💬 심사관 오른쪽 상단 말풍선 코멘트 상태 (7개국어 지원)
+  // 💬 심사관 오른쪽 상단 말풍선 코멘트 상태 (시작하자마자 0% 만족도 저만족 멘트 초기 노출)
   const [judgeSpeechBubble, setJudgeSpeechBubble] = useState<{
     text: string
     type: 'reaction' | 'attack'
-  } | null>(null)
+  } | null>(() => ({
+    text: getJudgeReactionDialogue(0, locale),
+    type: 'reaction',
+  }))
 
   // ⚔️ 심사관 턴 & 반격 파티클 연출 (Judge Counter-Attack System)
   const [isActionLocked, setIsActionLocked] = useState<boolean>(false) // 턴 진행 중 유저 카드 제출 클릭 완전 잠금
