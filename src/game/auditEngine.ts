@@ -227,6 +227,11 @@ export function submitTurnPerformance(
     scoreGained = Math.max(2, scoreGained - reboundDamage)
   }
 
+  // 🔥 공격 타입 일치 시(typeMatched) 최저 만족도 점수 10점 보장 계산!
+  if (typeMatched) {
+    scoreGained = Math.max(10, scoreGained)
+  }
+
   const nextSatisfaction = Math.min(
     session.targetSatisfaction,
     Math.max(0, session.currentSatisfaction + scoreGained),
