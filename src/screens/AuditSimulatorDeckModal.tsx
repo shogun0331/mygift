@@ -41,10 +41,11 @@ export function AuditSimulatorDeckModal({
     grade: isSimulator ? 'S' : c.grade || 'B',
   }))
 
-  // 4인 덱 고정 슬롯 위치 상태 (크기 4 배열: [slot0, slot1, slot2, slot3])
+  // 4인 덱 고정 슬롯 위치 상태 (스테미나 > 30 보유 크리에이터만 초기 자동 픽업)
   const [deckSlots, setDeckSlots] = useState<(string | null)[]>(() => {
     const initial: (string | null)[] = [null, null, null, null]
-    boostedCharacters.slice(0, 4).forEach((c, idx) => {
+    const validEligible = boostedCharacters.filter((c) => ((c as any).stamina ?? 100) > 30)
+    validEligible.slice(0, 4).forEach((c, idx) => {
       initial[idx] = c.id
     })
     return initial
@@ -57,6 +58,9 @@ export function AuditSimulatorDeckModal({
 
   // 하단 카드 클릭 시 덱 장착 / 해제 (빈 슬롯 탐색)
   const toggleSelect = (id: string) => {
+    const char = boostedCharacters.find((c) => c.id === id)
+    if (char && ((char as any).stamina ?? 100) <= 30) return // 30 이하 출전 금지
+
     setDeckSlots((prev) => {
       const next = [...prev]
       const existingIdx = next.indexOf(id)
@@ -77,6 +81,9 @@ export function AuditSimulatorDeckModal({
 
   // 특정 슬롯 위치에 캐릭터 장착
   const assignToSlot = (slotIdx: number, charId: string) => {
+    const char = boostedCharacters.find((c) => c.id === charId)
+    if (char && ((char as any).stamina ?? 100) <= 30) return // 30 이하 출전 금지
+
     setDeckSlots((prev) => {
       const next = [...prev]
       // 만약 다른 슬롯에 이미 위치해 있다면 이전 위치를 null로 비움
@@ -267,23 +274,45 @@ export function AuditSimulatorDeckModal({
                           const typeInfo = CREATOR_TYPE_LABEL[cType]
                           const isBeingDragged = draggedId === character.id
                           const stamina = (character as any).stamina ?? 100
+                          const isLowStamina = stamina <= 30
 
                           return (
                             <div
                               key={character.id}
-                              draggable
+                              draggable={!isLowStamina}
                               onDragStart={(e) => {
+                                if (isLowStamina) {
+                                  e.preventDefault()
+                                  return
+                                }
                                 setDraggedId(character.id)
                                 e.dataTransfer.effectAllowed = 'move'
                               }}
                               onDragEnd={() => setDraggedId(null)}
-                              onClick={() => toggleSelect(character.id)}
-                              className={`group relative aspect-[3/4] h-[175px] sm:h-[205px] flex flex-col justify-between overflow-hidden rounded-2xl border transition-all cursor-pointer ${
-                                isBeingDragged
-                                  ? 'opacity-30 border-cyan-400 border-dashed scale-95'
-                                  : 'border-purple-500/40 bg-slate-950 hover:border-cyan-400 hover:scale-[1.04] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)]'
+                              onClick={() => {
+                                if (isLowStamina) return
+                                toggleSelect(character.id)
+                              }}
+                              className={`group relative aspect-[3/4] h-[175px] sm:h-[205px] flex flex-col justify-between overflow-hidden rounded-2xl border transition-all ${
+                                isLowStamina
+                                  ? 'cursor-not-allowed border-rose-950/80 bg-slate-950/90 opacity-50 grayscale-[40%]'
+                                  : isBeingDragged
+                                    ? 'opacity-30 border-cyan-400 border-dashed scale-95'
+                                    : 'border-purple-500/40 bg-slate-950 hover:border-cyan-400 hover:scale-[1.04] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer'
                               }`}
                             >
+                              {/* 🪫 스테미나 30 이하 참여 불가 오버레이 */}
+                              {isLowStamina ? (
+                                <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-rose-950/85 p-1 text-center backdrop-blur-xs">
+                                  <span className="text-xl sm:text-2xl drop-shadow">🪫</span>
+                                  <span className="mt-1 text-[9.5px] font-black text-rose-300 leading-tight drop-shadow">
+                                    스테미나 부족
+                                  </span>
+                                  <span className="text-[8px] font-bold text-rose-200/80">
+                                    (30 이하 참여 불가)
+                                  </span>
+                                </div>
+                              ) : null}
                               {/* 배경 이미지 */}
                               {character.profileImageUrl ? (
                                 <img
