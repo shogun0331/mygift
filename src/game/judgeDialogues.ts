@@ -243,6 +243,26 @@ export const AUDIT_FAIL_TITLE: Record<SupportedLocale, string> = {
   vi: "❌ Thăng Hạng Thất Bại...",
 }
 
+export const SATISFY_JUDGE_TITLE: Record<SupportedLocale, string> = {
+  ko: "🔥 심사관을 만족시켜라!",
+  en: "🔥 Satisfy the Judge!",
+  ja: "🔥 審査員を満足させろ！",
+  zh: "🔥 征服审查员！",
+  es: "🔥 ¡Satisface al Juez!",
+  th: "🔥 ทำคะแนนให้พึงพอใจกรรมการ!",
+  vi: "🔥 Chinh Phục Giám Khảo!",
+}
+
+export const SELECT_CARD_PROMPT: Record<SupportedLocale, string> = {
+  ko: "✨ 심사관을 만족시킬 카드를 선택해 주세요.",
+  en: "✨ Please select a card to satisfy the judge.",
+  ja: "✨ 審査員を満足させるカードを選択してください。",
+  zh: "✨ 请选择能够征服审查员的卡牌。",
+  es: "✨ Selecciona una carta para satisfacer al juez.",
+  th: "✨ โปรดเลือกการ์ดเพื่อทำให้กรรมการพึงพอใจ",
+  vi: "✨ Vui lòng chọn thẻ để chinh phục giám khảo.",
+}
+
 export const AUDIT_DOC_PASS_NOTICE: Record<
   SupportedLocale,
   (tierName: string) => { title: string; body: string; button: string }
@@ -336,6 +356,18 @@ export function getAuditDocPassNotice(localeStr: string, tierName: string) {
   const loc = normalizeLocale(localeStr)
   const fn = AUDIT_DOC_PASS_NOTICE[loc] || AUDIT_DOC_PASS_NOTICE.ko
   return fn(tierName)
+}
+
+// 심사관을 만족시켜라 타이틀 획득
+export function getSatisfyJudgeTitle(localeStr: string): string {
+  const loc = normalizeLocale(localeStr)
+  return SATISFY_JUDGE_TITLE[loc] || SATISFY_JUDGE_TITLE.ko
+}
+
+// 심사관을 만족시킬 카드를 선택해주세요 안내 획득
+export function getSelectCardPrompt(localeStr: string): string {
+  const loc = normalizeLocale(localeStr)
+  return SELECT_CARD_PROMPT[loc] || SELECT_CARD_PROMPT.ko
 }
 
 // 확인 및 진행 버튼 텍스트 획득

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   CREATOR_TYPE_LABEL,
   createAuditSession,
@@ -16,6 +16,8 @@ import {
   getJudgeAttackDialogue,
   getAuditPassTitle,
   getAuditFailTitle,
+  getSatisfyJudgeTitle,
+  getSelectCardPrompt,
 } from '../game/judgeDialogues'
 
 /** 등급별(S, A, B, C) 프리미엄 네온 글로우 뱃지 스타일 헬퍼 */
@@ -75,8 +77,16 @@ export function PromotionAuditModal({
     type: 'reaction',
   }))
 
-  // ⚔️ 심사관 턴 & 반격 파티클 연출 (Judge Counter-Attack System)
-  const [isActionLocked, setIsActionLocked] = useState<boolean>(false) // 턴 진행 중 유저 카드 제출 클릭 완전 잠금
+  // ⚔️ 심사관 턴 & 반격 파티클 연출 (진입 직후 저만족 멘트 노출 동안 2초간 유저 카드 선택 잠금!)
+  const [isActionLocked, setIsActionLocked] = useState<boolean>(true)
+
+  useEffect(() => {
+    // 🎬 무대 진입 시 저만족 멘트 노출 후 2초 뒤 비로소 카드 선택 유저 차례 오픈!
+    const timer = setTimeout(() => {
+      setIsActionLocked(false)
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [])
   const [isJudgeTurn, setIsJudgeTurn] = useState<boolean>(false)
   const [isJudgeEnergyFlying, setIsJudgeEnergyFlying] = useState<boolean>(false)
   const [hitFlashingCardId, setHitFlashingCardId] = useState<string | null>(null)
@@ -417,9 +427,12 @@ export function PromotionAuditModal({
                   : ''
               }`}
             >
-              {/* 심사관 그래픽 좌측 상단 선호 타입 착 붙이기 오버레이 */}
+              {/* 심사관 메인 화면 헤더 오버레이 (선호 타입 & 🔥 심사관을 만족시켜라! 7개국어 뱃지) */}
               <div className="absolute top-3 left-3 z-20 flex items-center gap-2 rounded-2xl border border-amber-500/40 bg-black/85 px-3.5 py-1.5 backdrop-blur-md shadow-lg">
-                <span className="text-xs font-bold text-slate-300">이번 턴 선호 타입:</span>
+                <span className="rounded-full border border-amber-400 bg-amber-500/20 px-2.5 py-0.5 text-xs font-black text-amber-200 shadow-[0_0_12px_rgba(251,191,36,0.5)] animate-pulse">
+                  {getSatisfyJudgeTitle(locale)}
+                </span>
+                <span className="hidden sm:inline text-xs font-bold text-slate-300">| 선호:</span>
                 <span
                   className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-black ${currentDemandInfo.tone}`}
                 >
@@ -616,10 +629,10 @@ export function PromotionAuditModal({
           </div>
         </div>
 
-        {/* 하단 4인 크리에이터 카드 드래그 앤 드롭 & 선택 덱 (10% 더 확장한 황금 밸런스 3:4 카드 모드) */}
+        {/* 하단 4인 크리에이터 카드 드래그 앤 드롭 & 선택 덱 */}
         {!session.isCompleted ? (
           <div
-            className="shrink-0 border-t border-purple-500/20 bg-slate-950/90 px-4 py-3"
+            className="shrink-0 border-t border-purple-500/20 bg-slate-950/90 px-4 py-2.5"
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => {
               if (draggedCreatorId) {
@@ -629,6 +642,12 @@ export function PromotionAuditModal({
               }
             }}
           >
+            {/* ✨ 심사관을 만족시킬 카드를 선택해 주세요. 7개국어 지속 안내 라인 */}
+            <div className="mb-2 text-center">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-950/80 px-4 py-1 text-xs sm:text-sm font-black text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.35)] animate-pulse">
+                {getSelectCardPrompt(locale)}
+              </span>
+            </div>
 
             <div className="grid grid-cols-4 gap-1.5 sm:gap-2 max-w-xl sm:max-w-2xl mx-auto">
               {displayCreators.map((creator) => {
