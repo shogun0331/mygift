@@ -259,8 +259,6 @@ app.whenReady().then(() => {
   })
 })
 
-const { ipcMain } = require('electron')
-
 ipcMain.handle('save-event-assets', async (event, { eventId, assets }) => {
   try {
     const baseDir = publicWritePath('chapter_assets', 'events', String(eventId))
