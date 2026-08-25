@@ -26,6 +26,27 @@ import {
   normalizeEventLocale,
 } from './eventLocales'
 
+export async function handleOpenEventFolder(eventId?: string) {
+  try {
+    if (window.electronAPI?.openEventFolder) {
+      await window.electronAPI.openEventFolder(eventId)
+      return
+    }
+    // 웹 브라우저 (Vite Dev Server) 개발 환경 fallback API
+    const res = await fetch('/api/open-event-folder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId }),
+    })
+    const json = await res.json()
+    if (!json.success) {
+      console.error('Failed to open event folder via dev server API:', json.error)
+    }
+  } catch (err) {
+    console.error('Failed to open event folder:', err)
+  }
+}
+
 type EventManagePanelProps = {
   events: GameEvent[]
   onEventsChange: (events: GameEvent[]) => void
@@ -426,13 +447,7 @@ export function EventManagePanel({
           <div className="shrink-0 flex items-center gap-1">
             <button
               type="button"
-              onClick={() => {
-                if (window.electronAPI?.openEventFolder) {
-                  void window.electronAPI.openEventFolder(event.id)
-                } else {
-                  alert('일렉트론 환경에서만 폴더 열기를 지원합니다.')
-                }
-              }}
+              onClick={() => void handleOpenEventFolder(event.id)}
               title="해당 이벤트의 폴더를 탐색기에서 엽니다"
               className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[11px] font-bold text-amber-300 hover:bg-amber-500/20 transition"
             >
@@ -502,13 +517,7 @@ export function EventManagePanel({
           <div className="flex shrink-0 gap-2">
             <button
               type="button"
-              onClick={() => {
-                if (window.electronAPI?.openEventFolder) {
-                  void window.electronAPI.openEventFolder()
-                } else {
-                  alert('일렉트론 환경에서만 폴더 열기를 지원합니다.')
-                }
-              }}
+              onClick={() => void handleOpenEventFolder()}
               title="이벤트 폴더(public/chapter_assets/events)를 탐색기에서 엽니다"
               className="game-btn shrink-0 rounded-xl px-4 py-2 text-sm border-amber-500/40 text-amber-300 bg-amber-950/40 hover:bg-amber-500/20 font-bold"
             >
@@ -1261,13 +1270,7 @@ function EventDetail({
         <div className="flex shrink-0 gap-2">
           <button
             type="button"
-            onClick={() => {
-              if (window.electronAPI?.openEventFolder) {
-                void window.electronAPI.openEventFolder(event.id)
-              } else {
-                alert('일렉트론 환경에서만 폴더 열기를 지원합니다.')
-              }
-            }}
+            onClick={() => void handleOpenEventFolder(event.id)}
             title="현재 선택한 이벤트의 실제 폴더를 탐색기에서 엽니다"
             className="game-btn shrink-0 rounded-xl px-3 py-2 text-xs font-bold text-amber-300 border-amber-500/40 bg-amber-950/40 hover:bg-amber-500/30"
           >

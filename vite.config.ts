@@ -1,8 +1,51 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { exec } from 'node:child_process'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+
+function openFolderPlugin(): Plugin {
+  return {
+    name: 'open-folder-dev-api',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.url && req.url.startsWith('/api/open-event-folder')) {
+          let body = ''
+          req.on('data', (chunk) => {
+            body += chunk
+          })
+          req.on('end', () => {
+            try {
+              const data = body ? JSON.parse(body) : {}
+              const eventId = data.eventId
+              let dirPath = path.resolve(process.cwd(), 'public', 'chapter_assets', 'events')
+              if (eventId) {
+                const targetPath = path.resolve(dirPath, String(eventId))
+                if (fs.existsSync(targetPath)) {
+                  dirPath = targetPath
+                }
+              }
+              if (!fs.existsSync(dirPath)) {
+                fs.mkdirSync(dirPath, { recursive: true })
+              }
+              const command =
+                process.platform === 'win32' ? `explorer.exe "${dirPath}"` : `open "${dirPath}"`
+              exec(command)
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ success: true }))
+            } catch (err: any) {
+              res.statusCode = 500
+              res.end(JSON.stringify({ success: false, error: err.message }))
+            }
+          })
+          return
+        }
+        next()
+      })
+    },
+  }
+}
 
 function contentTypeFor(filePath: string) {
   const ext = path.extname(filePath).toLowerCase()
@@ -104,7 +147,7 @@ function charactersMediaPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [charactersMediaPlugin(), react(), tailwindcss()],
+  plugins: [openFolderPlugin(), charactersMediaPlugin(), react(), tailwindcss()],
   base: './',
   server: {
     port: 5173,
