@@ -77,12 +77,14 @@ export function PromotionAuditModal({
     type: 'reaction',
   }))
 
-  // ⚔️ 심사관 턴 & 반격 파티클 연출 (진입 직후 저만족 멘트 노출 동안 2초간 유저 카드 선택 잠금!)
+  // 🎬 진입 직후 암전 시네마틱 스케일 트윈 타이틀 연출 상태 (0ms ~ 2000ms)
+  const [showCinematicIntro, setShowCinematicIntro] = useState<boolean>(true)
   const [isActionLocked, setIsActionLocked] = useState<boolean>(true)
 
   useEffect(() => {
-    // 🎬 무대 진입 시 저만족 멘트 노출 후 2초 뒤 비로소 카드 선택 유저 차례 오픈!
+    // 🎬 까만 화면에서 "심사관을 만족시켜라!" 스케일 트윈 2초 연출 후 심사관 미디어 & 카드 활성화!
     const timer = setTimeout(() => {
+      setShowCinematicIntro(false)
       setIsActionLocked(false)
     }, 2000)
     return () => clearTimeout(timer)
@@ -478,8 +480,22 @@ export function PromotionAuditModal({
                 </div>
               ) : null}
 
-              {/* 미디어 뷰어 - 1280x720 (16:9) 정밀 화각 매칭 */}
-              {activeDisplayMediaUrl ? (
+              {/* 🎬 미디어 뷰어 (showCinematicIntro 일 때는 미디어 X, 까만 화면에 거대한 스케일 트윈 연출 표출!) */}
+              {showCinematicIntro ? (
+                <div className="flex h-full w-full aspect-[16/9] flex-col items-center justify-center bg-black p-4">
+                  <div className="relative flex flex-col items-center justify-center text-center animate-in zoom-in-50 duration-500 ease-out">
+                    <span className="text-6xl sm:text-8xl mb-3 animate-bounce drop-shadow-[0_0_35px_rgba(251,191,36,0.9)]">
+                      ⚖️
+                    </span>
+                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-black italic tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 drop-shadow-[0_0_40px_rgba(251,191,36,0.95)] animate-pulse">
+                      {getSatisfyJudgeTitle(locale)}
+                    </h1>
+                    <p className="mt-3 rounded-full border border-amber-400/40 bg-amber-950/80 px-4 py-1 text-xs font-bold text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.4)]">
+                      {stationGradeLabel(tier)} PERFORMANCE AUDIT
+                    </p>
+                  </div>
+                </div>
+              ) : activeDisplayMediaUrl ? (
                 activeDisplayMediaUrl.startsWith('data:video') ||
                 activeDisplayMediaUrl.endsWith('.mp4') ||
                 activeDisplayMediaUrl.endsWith('.webm') ||
