@@ -760,6 +760,27 @@ function isScriptTextFile(file: File) {
   return name.endsWith('.txt') || file.type === 'text/plain'
 }
 
+const AUDIO_EXT_SET = new Set(['mp3', 'wav', 'ogg', 'oga', 'm4a', 'aac', 'flac', 'opus'])
+const VIDEO_EXT_SET = new Set(['mp4', 'webm', 'mov', 'avi', 'mkv'])
+const IMAGE_EXT_SET = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'avif'])
+
+/**
+ * MIME 우선, 확장자 폴백으로 미디어 종류 판정.
+ * (Windows 탐색기 등에서 파일을 끌어오면 MIME type이 비어있는 경우가 있다)
+ */
+function mediaKindOfFile(file: File | null | undefined): EventMediaKind | null {
+  if (!file) return null
+  if (file.type.startsWith('video/')) return 'video'
+  if (file.type.startsWith('audio/')) return 'sound'
+  if (file.type.startsWith('image/')) return 'image'
+  const extMatch = /\.([a-z0-9]+)$/i.exec(file.name)
+  const ext = extMatch ? extMatch[1].toLowerCase() : ''
+  if (VIDEO_EXT_SET.has(ext)) return 'video'
+  if (AUDIO_EXT_SET.has(ext)) return 'sound'
+  if (IMAGE_EXT_SET.has(ext)) return 'image'
+  return null
+}
+
 async function readScriptTextFile(file: File): Promise<string> {
   const bytes = new Uint8Array(await file.arrayBuffer())
   if (bytes.length >= 2 && bytes[0] === 0xff && bytes[1] === 0xfe) {
@@ -1005,7 +1026,65 @@ function EventDetail({
     return true
   }
 
-  // 파일 드롭 핸들러
+  // 드롭된 파일을 해당 노드에 바인딩. 소비했으면 true 반환 (스크립트 txt 제외 — 호출부에서 먼저 처리)
+  const applyDroppedFileToNode = (file: File, targetNodeIndex: number): boolean => {
+    const nodes = (event.nodes || []) as any[]
+    const rawType = String(nodes[targetNodeIndex]?.type || 'text')
+    const nodeType: EditorNodeType =
+      rawType === 'fade' ? 'fade' : rawType === 'graphic' ? 'graphic' : rawType === 'sound' ? 'sound' : 'text'
+
+    const kind = mediaKindOfFile(file)
+
+    // 노드 타입별 수용 규칙: 사운드=오디오 / 텍스트=음성 오디오 / 그래픽=이미지·영상
+    const acceptedKinds: EventMediaKind[] =
+      nodeType === 'graphic' ? ['image', 'video'] : nodeType === 'fade' ? [] : ['sound']
+
+    if (!kind || !acceptedKinds.includes(kind)) {
+      if (nodeType === 'fade') {
+        alert(
+          '페이드 노드에는 파일을 연결할 수 없습니다.\n그래픽 노드에는 이미지·영상을, 사운드·대사 노드에는 오디오를 드롭하세요.',
+        )
+      } else {
+        const expected =
+          nodeType === 'graphic'
+            ? '이미지 또는 영상'
+            : nodeType === 'text'
+              ? '오디오(음성) '
+              : '오디오(배경음·효과음)'
+        alert(`이 노드에는 ${expected}파일만 드롭할 수 있습니다.\n(받은 파일: ${file.name})`)
+      }
+      return true
+    }
+
+    const bindField: 'image' | 'voice' | 'sound' =
+      nodeType === 'sound' ? 'sound' : nodeType === 'text' ? 'voice' : 'image'
+
+    const url = URL.createObjectURL(file)
+    const newAsset: EventMediaAsset = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      fileName: file.name,
+      kind,
+      sourcePath: `chapter_assets/events/${event.id}/${kind === 'image' ? 'images' : kind === 'video' ? 'videos' : 'sounds'}/${file.name}`,
+      blob: file,
+      url,
+      size: file.size,
+    }
+
+    const updatedMedia = [...(event.media || []), newAsset]
+    const updatedNodes = [...nodes]
+    const bound = { ...(updatedNodes[targetNodeIndex] as Record<string, any>) }
+    bound[bindField] = file.name
+    updatedNodes[targetNodeIndex] = bound
+
+    onUpdateEvent({
+      ...event,
+      media: updatedMedia,
+      nodes: updatedNodes,
+    })
+    return true
+  }
+
+  // 파일 드롭 핸들러 (노드 내부 전용 드롭존)
   const handleFileDrop = (e: React.DragEvent, targetNodeIndex: number) => {
     e.preventDefault()
     e.stopPropagation()
@@ -1019,38 +1098,7 @@ function EventDetail({
       return
     }
 
-    const kind: EventMediaKind = file.type.startsWith('video/')
-      ? 'video'
-      : file.type.startsWith('audio/')
-      ? 'sound'
-      : 'image'
-
-    if (kind !== 'image' && kind !== 'video') {
-      alert('이미지 또는 비디오 파일만 드롭할 수 있습니다.')
-      return
-    }
-
-    const url = URL.createObjectURL(file)
-    const newAsset: EventMediaAsset = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      fileName: file.name,
-      kind,
-      sourcePath: `chapter_assets/events/${event.id}/${kind === 'image' ? 'images' : 'videos'}/${file.name}`,
-      blob: file,
-      url,
-      size: file.size,
-    }
-
-    const updatedMedia = [...(event.media || []), newAsset]
-    const updatedNodes = [...(event.nodes || [])]
-    const node = { ...(updatedNodes[targetNodeIndex] as Record<string, any>), image: file.name }
-    updatedNodes[targetNodeIndex] = node
-
-    onUpdateEvent({
-      ...event,
-      media: updatedMedia,
-      nodes: updatedNodes,
-    })
+    applyDroppedFileToNode(file, targetNodeIndex)
   }
 
   // 노드 값 변경 처리
@@ -1147,11 +1195,7 @@ function EventDetail({
     const file = e.target.files?.[0]
     if (!file) return
 
-    const kind: EventMediaKind = file.type.startsWith('video/')
-      ? 'video'
-      : file.type.startsWith('audio/')
-      ? 'sound'
-      : 'image'
+    const kind = mediaKindOfFile(file) ?? 'image'
 
     const url = URL.createObjectURL(file)
     const newAsset: EventMediaAsset = {
@@ -1361,7 +1405,7 @@ function EventDetail({
         >
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <span className="text-xs text-slate-500">
-              새 노드는 지금 보고 있는 카드 바로 아래에 추가됩니다. 드래그로 순서를 바꿀 수 있습니다. txt 대본은 여기로 드롭해도 됩니다.
+              새 노드는 지금 보고 있는 카드 바로 아래에 추가됩니다. 드래그로 순서를 바꿀 수 있습니다. txt 대본은 여기로 드롭해도 됩니다. 이미지·영상·음원 파일을 각 노드 카드 위에 드래그 앤 드롭하면 바로 연결됩니다.
             </span>
             <div className="flex flex-wrap gap-2">
               <button
@@ -1444,10 +1488,46 @@ function EventDetail({
                       }
                       handleDragStart(index)
                     }}
-                    onDragOver={(e) => handleDragOver(e, index)}
-                    onDrop={() => handleDrop(index)}
+                    onDragOver={(e) => {
+                      handleDragOver(e, index)
+                      if (draggedIndex === null && [...(e.dataTransfer.types ?? [])].includes('Files')) {
+                        // OS 파일 드래그: 노드 카드 위에서 드롭 하이라이트
+                        e.dataTransfer.dropEffect = 'copy'
+                        if (fileDragOverIndex !== index) setFileDragOverIndex(index)
+                      } else if (fileDragOverIndex === index) {
+                        setFileDragOverIndex(null)
+                      }
+                    }}
+                    onDragLeave={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                        if (fileDragOverIndex === index) setFileDragOverIndex(null)
+                      }
+                    }}
+                    onDrop={(e) => {
+                      const isFileDrag = [...(e.dataTransfer.types ?? [])].includes('Files')
+                      if (!isFileDrag || draggedIndex !== null) {
+                        setFileDragOverIndex(null)
+                        handleDrop(index)
+                        return
+                      }
+                      // OS 파일을 카드에 직접 드롭 — 브라우저 기본 동작(파일 열기) 방지
+                      e.preventDefault()
+                      setFileDragOverIndex(null)
+                      const file = e.dataTransfer.files?.[0]
+                      if (!file) return
+                      e.stopPropagation()
+                      if (isScriptTextFile(file)) {
+                        void applyScriptFile(file)
+                        return
+                      }
+                      applyDroppedFileToNode(file, index)
+                    }}
                     className={`relative rounded-xl border bg-black/25 p-4 transition-all hover:border-white/20 ${
-                      draggedIndex === index ? 'opacity-40 border-indigo-500 bg-indigo-500/5' : 'border-white/10'
+                      draggedIndex === index
+                        ? 'opacity-40 border-indigo-500 bg-indigo-500/5'
+                        : fileDragOverIndex === index
+                          ? 'border-emerald-400/70 bg-emerald-500/5 ring-2 ring-emerald-400/50'
+                          : 'border-white/10'
                     } ${isFocused ? 'ring-2 ring-indigo-400/70 border-indigo-400/50' : ''}`}
                   >
                     {/* Card Header & Controls */}
@@ -1671,7 +1751,23 @@ function EventDetail({
                         </div>
 
                         {!node.stop ? (
-                          <div className="space-y-1.5">
+                          <div
+                            className="space-y-1.5"
+                            onDragOver={(e) => {
+                              if ([...(e.dataTransfer.types ?? [])].includes('Files')) {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                setFileDragOverIndex(index)
+                              }
+                            }}
+                            onDragLeave={(e) => {
+                              e.stopPropagation()
+                              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                                setFileDragOverIndex(null)
+                              }
+                            }}
+                            onDrop={(e) => handleFileDrop(e, index)}
+                          >
                             <div className="flex items-center justify-between">
                               <label className="text-[11px] font-semibold text-slate-400">사운드 파일</label>
                               <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
@@ -1687,7 +1783,11 @@ function EventDetail({
                             <select
                               value={node.sound || ''}
                               onChange={(e) => handleNodeChange(index, { sound: e.target.value })}
-                              className="w-full rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500/50 cursor-pointer"
+                              className={`w-full rounded-lg border px-2 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500/50 cursor-pointer transition ${
+                                fileDragOverIndex === index
+                                  ? 'border-emerald-400 bg-emerald-500/10'
+                                  : 'border-white/10 bg-black/40'
+                              }`}
                             >
                               <option value="">-- 사운드 선택 --</option>
                               {soundAssets.map((asset) => (
@@ -1696,6 +1796,15 @@ function EventDetail({
                                 </option>
                               ))}
                             </select>
+                            {fileDragOverIndex === index ? (
+                              <p className="text-[10px] font-semibold text-emerald-300">
+                                🎵 오디오 파일을 놓으면 이 노드에 연결됩니다
+                              </p>
+                            ) : (
+                              <p className="text-[10px] text-slate-500">
+                                .wav · .mp3 등 오디오 파일을 이 영역(또는 노드 카드)에 드래그 앤 드롭할 수 있습니다.
+                              </p>
+                            )}
                           </div>
                         ) : (
                           <p className="text-[10px] text-slate-500">
