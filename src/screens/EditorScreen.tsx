@@ -33,8 +33,9 @@ import type { AddStaffPayload, RegisteredStaff } from '../game/staff'
 import { AuditEditorPanel } from './AuditEditorPanel'
 import { StaffEditorPanel } from './StaffEditorPanel'
 import { StationGradeEditorPanel } from './StationGradeEditorPanel'
+import { HighLowEditorPanel } from '../minigames/highlow/HighLowEditorPanel'
 
-type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent' | 'stationGrade' | 'staff' | 'audit'
+type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent' | 'stationGrade' | 'staff' | 'audit' | 'highlow'
 type CharacterView = 'list' | 'add' | 'edit' | 'sns'
 
 type EditorScreenProps = {
@@ -225,6 +226,15 @@ export function EditorScreen({
             }`}
           >
             ⚖️ 승급심사 관리
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('highlow')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'highlow' ? 'is-active' : ''
+            }`}
+          >
+            ♠ VIP 하이-로우
           </button>
         </aside>
 
@@ -448,6 +458,8 @@ export function EditorScreen({
               onSaveManual={onSaveStationGradeManual}
               onStartSimulator={(tierKey) => setSimulatorTierKey(tierKey)}
             />
+          ) : tab === 'highlow' ? (
+            <HighLowEditorPanel />
           ) : null}
         </section>
       </div>
