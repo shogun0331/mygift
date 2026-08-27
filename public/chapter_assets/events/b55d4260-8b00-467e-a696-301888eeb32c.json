@@ -29,7 +29,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "…안녕하세요. 불러주셔서 감사합니다. (고개를 살짝 숙인다)",
-      "text_key": "node_1787264690002_3_1ia8"
+      "text_key": "node_1787264690002_3_1ia8",
+      "voice": "node_1787264690002_3_1ia8.wav",
+      "sound": "node_1787264690002_3_1ia8.wav"
     },
     {
       "id": "node_1787264690002_4_xp7b",
@@ -45,7 +47,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "오늘은, VIP분과의 개인적인 만남이라고 들어서요.",
-      "text_key": "node_1787264690002_5_psiv"
+      "text_key": "node_1787264690002_5_psiv",
+      "voice": "node_1787264690002_5_psiv.wav",
+      "sound": "node_1787264690002_5_psiv.wav"
     },
     {
       "id": "node_1787264690002_6_jdye",
@@ -61,7 +65,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "네. …방송 밖에서 뵙는 건 처음이네요.",
-      "text_key": "node_1787264690002_7_6t5j"
+      "text_key": "node_1787264690002_7_6t5j",
+      "voice": "node_1787264690002_7_6t5j.wav",
+      "sound": "node_1787264690002_7_6t5j.wav"
     },
     {
       "id": "node_1787264690002_8_asrl",
@@ -77,7 +83,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "과찬이세요. …뭐, 이 나이에 그런 말 들으면 기분 좋네요. (시니컬하게 웃으며)",
-      "text_key": "node_1787264690002_9_lr9c"
+      "text_key": "node_1787264690002_9_lr9c",
+      "voice": "node_1787264690002_9_lr9c.wav",
+      "sound": "node_1787264690002_9_lr9c.wav"
     },
     {
       "id": "node_1787264690002_10_v8us",
@@ -93,7 +101,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "네. 오늘만큼은, 고객님의 뜻대로.",
-      "text_key": "node_1787264690002_11_ycoe"
+      "text_key": "node_1787264690002_11_ycoe",
+      "voice": "node_1787264690002_11_ycoe.wav",
+      "sound": "node_1787264690002_11_ycoe.wav"
     },
     {
       "id": "node_1787264690002_12_rico",
@@ -109,7 +119,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "제가, 입으로 모실게요. (내 바지 위로 손을 올린다)",
-      "text_key": "node_1787264690002_14_0hlw"
+      "text_key": "node_1787264690002_14_0hlw",
+      "voice": "node_1787264690002_14_0hlw.wav",
+      "sound": "node_1787264690002_14_0hlw.wav"
     },
     {
       "id": "node_1787264690002_15_zghk",
@@ -141,7 +153,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "맛있게 해드릴게요.",
-      "text_key": "node_1787264690002_18_kyus"
+      "text_key": "node_1787264690002_18_kyus",
+      "voice": "node_1787264690002_18_kyus.wav",
+      "sound": "node_1787264690002_18_kyus.wav"
     },
     {
       "id": "node_1787264690002_19_nixd",
@@ -181,7 +195,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "그대로, 입에 내주세요.",
-      "text_key": "node_1787264690002_23_a3ot"
+      "text_key": "node_1787264690002_23_a3ot",
+      "voice": "node_1787264690002_23_a3ot.wav",
+      "sound": "node_1787264690002_23_a3ot.wav"
     },
     {
       "id": "node_1787264690002_24_2pfp",
@@ -213,7 +229,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "…대단하세요.",
-      "text_key": "node_1787264690002_27_rcfh"
+      "text_key": "node_1787264690002_27_rcfh",
+      "voice": "node_1787264690002_27_rcfh.wav",
+      "sound": "node_1787264690002_27_rcfh.wav"
     },
     {
       "id": "node_1787264690002_28_2kf4",
@@ -229,7 +247,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "오늘 밤은, 여기까지…",
-      "text_key": "node_1787264690002_29_9iz4"
+      "text_key": "node_1787264690002_29_9iz4",
+      "voice": "node_1787264690002_29_9iz4.wav",
+      "sound": "node_1787264690002_29_9iz4.wav"
     },
     {
       "id": "node_1787264690002_30_nhvn",
@@ -284,6 +304,56 @@
       "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/images/2026-08-14_00120_.png",
       "url": "media://chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/images/2026-08-14_00120_.png",
       "size": 2636613
+    },
+    {
+      "fileName": "node_1787264690002_11_ycoe.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/sounds/node_1787264690002_11_ycoe.wav"
+    },
+    {
+      "fileName": "node_1787264690002_14_0hlw.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/sounds/node_1787264690002_14_0hlw.wav"
+    },
+    {
+      "fileName": "node_1787264690002_18_kyus.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/sounds/node_1787264690002_18_kyus.wav"
+    },
+    {
+      "fileName": "node_1787264690002_23_a3ot.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/sounds/node_1787264690002_23_a3ot.wav"
+    },
+    {
+      "fileName": "node_1787264690002_27_rcfh.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/sounds/node_1787264690002_27_rcfh.wav"
+    },
+    {
+      "fileName": "node_1787264690002_29_9iz4.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/sounds/node_1787264690002_29_9iz4.wav"
+    },
+    {
+      "fileName": "node_1787264690002_3_1ia8.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/sounds/node_1787264690002_3_1ia8.wav"
+    },
+    {
+      "fileName": "node_1787264690002_5_psiv.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/sounds/node_1787264690002_5_psiv.wav"
+    },
+    {
+      "fileName": "node_1787264690002_7_6t5j.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/sounds/node_1787264690002_7_6t5j.wav"
+    },
+    {
+      "fileName": "node_1787264690002_9_lr9c.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/sounds/node_1787264690002_9_lr9c.wav"
     }
   ],
   "sourceZipName": "직접 생성",

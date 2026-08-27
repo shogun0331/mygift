@@ -50,6 +50,13 @@ export interface Card {
   value: number // 2 ~ 14 (2..10, J=11, Q=12, K=13, A=14)
 }
 
+export interface ItemDropRates {
+  peek_card: number // 0 ~ 100 (%)
+  double_payout: number // 0 ~ 100 (%)
+  loss_shield: number // 0 ~ 100 (%)
+  staff_hire: number // 0 ~ 100 (%)
+}
+
 export interface HighLowRoomConfig {
   id: HighLowRoomId
   name: string
@@ -63,7 +70,8 @@ export interface HighLowRoomConfig {
   badgeColor: string
   borderColor: string
   houseEdge: number // default 0.03 (3%)
-  itemDropRate: number // 0 ~ 100 (%)
+  itemDropRate?: number // 하위 호환용 (단일)
+  itemDropRates: ItemDropRates // 개별 아이템 등장 확률 (%)
   maxComboLimit: number // 최대 콤보 제한 (1 ~ 10회)
 }
 
@@ -83,8 +91,14 @@ export const DEFAULT_HIGH_LOW_CONFIG: HighLowConfigMap = {
     badgeColor: '#3b82f6',
     borderColor: 'rgba(59, 130, 246, 0.4)',
     houseEdge: 0.03,
-    itemDropRate: 40, // 40% 확률로 아이템 등장
-    maxComboLimit: 3, // 최대 3콤보 (8배)
+    itemDropRate: 40,
+    itemDropRates: {
+      peek_card: 20,
+      double_payout: 15,
+      loss_shield: 10,
+      staff_hire: 5,
+    },
+    maxComboLimit: 3,
   },
   star: {
     id: 'star',
@@ -99,8 +113,14 @@ export const DEFAULT_HIGH_LOW_CONFIG: HighLowConfigMap = {
     badgeColor: '#a855f7',
     borderColor: 'rgba(168, 85, 247, 0.4)',
     houseEdge: 0.03,
-    itemDropRate: 60, // 60% 확률로 아이템 등장
-    maxComboLimit: 5, // 최대 5콤보 (32배)
+    itemDropRate: 60,
+    itemDropRates: {
+      peek_card: 25,
+      double_payout: 20,
+      loss_shield: 15,
+      staff_hire: 10,
+    },
+    maxComboLimit: 5,
   },
   legend: {
     id: 'legend',
@@ -115,9 +135,53 @@ export const DEFAULT_HIGH_LOW_CONFIG: HighLowConfigMap = {
     badgeColor: '#ec4899',
     borderColor: 'rgba(236, 72, 153, 0.4)',
     houseEdge: 0.03,
-    itemDropRate: 80, // 80% 확률로 아이템 등장
-    maxComboLimit: 7, // 최대 7콤보 (128배)
+    itemDropRate: 80,
+    itemDropRates: {
+      peek_card: 30,
+      double_payout: 25,
+      loss_shield: 20,
+      staff_hire: 15,
+    },
+    maxComboLimit: 7,
   },
+}
+
+/**
+ * 룸의 4가지 아이템 개별 등장 확률(%)을 바탕으로 매 라운드 보상 아이템 롤링
+ */
+export function rollRewardItem(config: HighLowRoomConfig): CasinoItem | null {
+  const rates = config.itemDropRates || {
+    peek_card: config.itemDropRate || 20,
+    double_payout: config.itemDropRate || 15,
+    loss_shield: config.itemDropRate || 10,
+    staff_hire: config.itemDropRate || 5,
+  }
+
+  const candidates: { type: CasinoItemType; rate: number }[] = [
+    { type: 'peek_card', rate: rates.peek_card ?? 20 },
+    { type: 'double_payout', rate: rates.double_payout ?? 15 },
+    { type: 'loss_shield', rate: rates.loss_shield ?? 10 },
+    { type: 'staff_hire', rate: rates.staff_hire ?? 5 },
+  ]
+
+  const passedItems = candidates.filter((item) => {
+    const rnd = Math.random() * 100
+    return rnd < item.rate
+  })
+
+  if (passedItems.length === 0) return null
+
+  const chosen = passedItems[Math.floor(Math.random() * passedItems.length)]
+  const info = CASINO_ITEMS_INFO[chosen.type]
+
+  return {
+    id: `reward-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    type: chosen.type,
+    name: info.name,
+    icon: info.icon,
+    description: info.description,
+    badgeColor: info.badgeColor,
+  }
 }
 
 export const SUIT_SYMBOLS: Record<Suit, string> = {

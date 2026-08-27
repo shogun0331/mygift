@@ -389,20 +389,31 @@ export function EventSimulator({
     }
   }, [currentNodeId, dialogueText])
 
-  // 현재 화자 캐릭터의 이미지 구하기
+  // 현재 화자 캐릭터의 이미지 구하기 (ID 및 이름으로 2중 매칭)
   const speakerCharacter = useMemo(() => {
     if (!currentNode || !registeredCharacters) return null
     if (currentNode.speakerType !== 'character') return null
-    return registeredCharacters.find(c => c.id === currentNode.speaker) || null
-  }, [currentNode, registeredCharacters])
+
+    // 1. speaker ID로 탐색
+    let found = registeredCharacters.find((c) => c.id === currentNode.speaker)
+    if (found) return found
+
+    // 2. characterName (이름)으로 탐색
+    if (characterName) {
+      found = registeredCharacters.find(
+        (c) => c.name === characterName || c.name.includes(characterName) || characterName.includes(c.name)
+      )
+    }
+    return found || null
+  }, [currentNode, registeredCharacters, characterName])
 
   // 프로필 이미지 URL 확인
   const speakerProfileUrl = useMemo(() => {
     if (!speakerCharacter) return null
-    
+
     // 1. profileImageUrl이 직접 셋업되어 있다면 리턴
     if (speakerCharacter.profileImageUrl) return speakerCharacter.profileImageUrl
-    
+
     // 2. 이미지가 등록되어 있다면 첫 번째 이미지 파일 주소를 미디어 링크 형식으로 복구해서 리턴
     if (speakerCharacter.images && speakerCharacter.images.length > 0) {
       const firstImg = speakerCharacter.images[0]
@@ -411,7 +422,7 @@ export function EventSimulator({
         return `media://characters/${speakerCharacter.id}/images/${firstImg.fileName}`
       }
     }
-    
+
     return null
   }, [speakerCharacter])
 
@@ -932,7 +943,18 @@ export function EventSimulator({
                 isGame ? (
                   <>
                     {characterName ? (
-                      <div className="vn-nameplate">{characterName}</div>
+                      <div className="vn-nameplate inline-flex items-center gap-2">
+                        {speakerProfileUrl ? (
+                          <img
+                            src={speakerProfileUrl}
+                            alt={characterName}
+                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-cyan-300/80 shadow-md shrink-0"
+                          />
+                        ) : (
+                          <span className="w-4 h-4 rounded-full bg-cyan-400/60 inline-block shrink-0 shadow-inner" />
+                        )}
+                        <span>{characterName}</span>
+                      </div>
                     ) : null}
                     <div
                       className={`vn-dialog ${choices.length === 0 ? 'vn-dialog--clickable' : ''}`}

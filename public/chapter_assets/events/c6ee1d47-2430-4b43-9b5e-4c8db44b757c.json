@@ -29,7 +29,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "…사장님. (거울 속의 나를 보며 미소 짓는다)",
-      "text_key": "node_1786860403048_2_c5r0"
+      "text_key": "node_1786860403048_2_c5r0",
+      "voice": "node_1786860403048_2_c5r0.wav",
+      "sound": "node_1786860403048_2_c5r0.wav"
     },
     {
       "id": "node_1786860403048_3_vjhs",
@@ -45,7 +47,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "감사합니다. 저, 떨려요. (살짝 숨을 들이쉰다)",
-      "text_key": "node_1786860403048_4_elzj"
+      "text_key": "node_1786860403048_4_elzj",
+      "voice": "node_1786860403048_4_elzj.wav",
+      "sound": "node_1786860403048_4_elzj.wav"
     },
     {
       "id": "node_1786860403048_5_ykd8",
@@ -61,7 +65,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "저, 사장님을 만나서 정말 다행이에요. (몸을 돌려 나를 마주 본다)",
-      "text_key": "node_1786860403048_6_7ki8"
+      "text_key": "node_1786860403048_6_7ki8",
+      "voice": "node_1786860403048_6_7ki8.wav",
+      "sound": "node_1786860403048_6_7ki8.wav"
     },
     {
       "id": "node_1786860403048_7_u49a",
@@ -77,7 +83,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "처음 공연장에서 스카웃 받던 날, 사장님 얼굴 보고 이상하게 마음이 놓였어요. (또박또박)",
-      "text_key": "node_1786860403048_8_il26"
+      "text_key": "node_1786860403048_8_il26",
+      "voice": "node_1786860403048_8_il26.wav",
+      "sound": "node_1786860403048_8_il26.wav"
     },
     {
       "id": "node_1786860403048_9_emq2",
@@ -93,7 +101,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "저는 한 번도 후회한 적 없어요. (눈을 맞춘다)",
-      "text_key": "node_1786860403048_10_0gi5"
+      "text_key": "node_1786860403048_10_0gi5",
+      "voice": "node_1786860403048_10_0gi5.wav",
+      "sound": "node_1786860403048_10_0gi5.wav"
     },
     {
       "id": "node_1786860403048_11_d2mp",
@@ -117,7 +127,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "그럼, 오늘부터는 크리에이터가 아니라… (말을 잇지 못한다)",
-      "text_key": "node_1786860403048_13_h1p3"
+      "text_key": "node_1786860403048_13_h1p3",
+      "voice": "node_1786860403048_13_h1p3.wav",
+      "sound": "node_1786860403048_13_h1p3.wav"
     },
     {
       "id": "node_1786860403048_14_akzd",
@@ -133,7 +145,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "…네. (눈물이 글썽인다)",
-      "text_key": "node_1786860403048_15_w2tz"
+      "text_key": "node_1786860403048_15_w2tz",
+      "voice": "node_1786860403048_15_w2tz.wav",
+      "sound": "node_1786860403048_15_w2tz.wav"
     },
     {
       "id": "node_1786860403048_16_01h5",
@@ -149,7 +163,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "저도 사랑해요, 사장님. (내 손을 꼭 잡는다)",
-      "text_key": "node_1786860403048_17_boou"
+      "text_key": "node_1786860403048_17_boou",
+      "voice": "node_1786860403048_17_boou.wav",
+      "sound": "node_1786860403048_17_boou.wav"
     },
     {
       "id": "node_1786860403048_18_h8an",
@@ -173,7 +189,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "예식 전에, 신부가 신랑을 모셔야죠. (내 바지 위로 손을 올린다)",
-      "text_key": "node_1786860403048_20_4gof"
+      "text_key": "node_1786860403048_20_4gof",
+      "voice": "node_1786860403048_20_4gof.wav",
+      "sound": "node_1786860403048_20_4gof.wav"
     },
     {
       "id": "node_1786860403048_21_rau8",
@@ -189,7 +207,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "이런 데니까요. 오늘은, 전부 사장님 거예요. (눈을 올려 나를 본다)",
-      "text_key": "node_1786860403048_22_phrm"
+      "text_key": "node_1786860403048_22_phrm",
+      "voice": "node_1786860403048_22_phrm.wav",
+      "sound": "node_1786860403048_22_phrm.wav"
     },
     {
       "id": "node_1786860403048_23_lukf",
@@ -213,7 +233,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "맛있게 해드릴게요. (입을 벌려 귀두를 물어 넣는다)",
-      "text_key": "node_1786860403048_25_a4qs"
+      "text_key": "node_1786860403048_25_a4qs",
+      "voice": "node_1786860403048_25_a4qs.wav",
+      "sound": "node_1786860403048_25_a4qs.wav"
     },
     {
       "id": "node_1786860403048_26_r5vt",
@@ -245,7 +267,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "사장님, 입에 그대로… (낮게)",
-      "text_key": "node_1786860403048_29_b40p"
+      "text_key": "node_1786860403048_29_b40p",
+      "voice": "node_1786860403048_29_b40p.wav",
+      "sound": "node_1786860403048_29_b40p.wav"
     },
     {
       "id": "node_1786860403048_30_6iyi",
@@ -277,7 +301,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "맛있었어요. …이제, 본론이에요. (입술을 혀로 닦으며, 입꼬리를 올린다)",
-      "text_key": "node_1786860403048_33_2srd"
+      "text_key": "node_1786860403048_33_2srd",
+      "voice": "node_1786860403048_33_2srd.wav",
+      "sound": "node_1786860403048_33_2srd.wav"
     },
     {
       "id": "node_1786860403048_34_vizq",
@@ -301,7 +327,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "…사장님, 뒤에서 해주세요. (엉덩이를 살짝 든다)",
-      "text_key": "node_1786860403048_36_q0b1"
+      "text_key": "node_1786860403048_36_q0b1",
+      "voice": "node_1786860403048_36_q0b1.wav",
+      "sound": "node_1786860403048_36_q0b1.wav"
     },
     {
       "id": "node_1786860403048_37_em2j",
@@ -333,7 +361,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "깊어요… 사장님, 제 안 깊은 곳까지… (몸을 떤다)",
-      "text_key": "node_1786860403048_40_wkyy"
+      "text_key": "node_1786860403048_40_wkyy",
+      "voice": "node_1786860403048_40_wkyy.wav",
+      "sound": "node_1786860403048_40_wkyy.wav"
     },
     {
       "id": "node_1786860403048_41_i388",
@@ -349,7 +379,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "좋아요… 더 세게… 제 안, 사장님으로 가득 채워줘요… (엉덩이를 내게 밀어붙인다)",
-      "text_key": "node_1786860403048_42_r8gl"
+      "text_key": "node_1786860403048_42_r8gl",
+      "voice": "node_1786860403048_42_r8gl.wav",
+      "sound": "node_1786860403048_42_r8gl.wav"
     },
     {
       "id": "node_1786860403048_43_nfbo",
@@ -373,7 +405,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "네… 안에, 전부 주세요… (낮게)",
-      "text_key": "node_1786860403048_45_laft"
+      "text_key": "node_1786860403048_45_laft",
+      "voice": "node_1786860403048_45_laft.wav",
+      "sound": "node_1786860403048_45_laft.wav"
     },
     {
       "id": "node_1786860403048_46_nhib",
@@ -397,7 +431,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "…사장님의 전부, 제 안에 있어요. (웨딩드레스를 내리며, 나를 돌아본다)",
-      "text_key": "node_1786860403048_48_as7b"
+      "text_key": "node_1786860403048_48_as7b",
+      "voice": "node_1786860403048_48_as7b.wav",
+      "sound": "node_1786860403048_48_as7b.wav"
     },
     {
       "id": "node_1786860403048_49_i9zr",
@@ -413,7 +449,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "이제, 예식 시작해요. 신부가 되러 가요. (미소 짓는다)",
-      "text_key": "node_1786860403048_50_8y0m"
+      "text_key": "node_1786860403048_50_8y0m",
+      "voice": "node_1786860403048_50_8y0m.wav",
+      "sound": "node_1786860403048_50_8y0m.wav"
     },
     {
       "id": "node_1786860403048_51_yjtd",
@@ -437,7 +475,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "…사장님. (조용히)",
-      "text_key": "node_1786860403048_53_s23d"
+      "text_key": "node_1786860403048_53_s23d",
+      "voice": "node_1786860403048_53_s23d.wav",
+      "sound": "node_1786860403048_53_s23d.wav"
     },
     {
       "id": "node_1786860403048_54_a032",
@@ -453,7 +493,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "저, 오늘 정말 행복해요. (눈물을 닦으며)",
-      "text_key": "node_1786860403048_55_5z7z"
+      "text_key": "node_1786860403048_55_5z7z",
+      "voice": "node_1786860403048_55_5z7z.wav",
+      "sound": "node_1786860403048_55_5z7z.wav"
     },
     {
       "id": "node_1786860403048_56_4aqk",
@@ -469,7 +511,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "앞으로도, 계속 제 곁에 있어 주세요. (또박또박)",
-      "text_key": "node_1786860403048_57_7ydj"
+      "text_key": "node_1786860403048_57_7ydj",
+      "voice": "node_1786860403048_57_7ydj.wav",
+      "sound": "node_1786860403048_57_7ydj.wav"
     },
     {
       "id": "node_1786860403048_58_1oa9",
@@ -485,7 +529,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "네. (미소 짓는다)",
-      "text_key": "node_1786860403048_59_h9ht"
+      "text_key": "node_1786860403048_59_h9ht",
+      "voice": "node_1786860403048_59_h9ht.wav",
+      "sound": "node_1786860403048_59_h9ht.wav"
     },
     {
       "id": "node_1786860403048_60_mxoh",
@@ -517,7 +563,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "…사장님, 이제 곧이에요. (부른 배를 쓰다듬으며)",
-      "text_key": "node_1786860403048_63_j8f1"
+      "text_key": "node_1786860403048_63_j8f1",
+      "voice": "node_1786860403048_63_j8f1.wav",
+      "sound": "node_1786860403048_63_j8f1.wav"
     },
     {
       "id": "node_1786860403048_64_x30z",
@@ -533,7 +581,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "사장님을 닮았으면 좋겠어요. (미소 짓는다)",
-      "text_key": "node_1786860403048_65_es8v"
+      "text_key": "node_1786860403048_65_es8v",
+      "voice": "node_1786860403048_65_es8v.wav",
+      "sound": "node_1786860403048_65_es8v.wav"
     },
     {
       "id": "node_1786860403048_66_qg66",
@@ -549,7 +599,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "저, 발레리나였던 때도, 크리에이터였던 때도, 지금도… 사장님 곁이 제일 행복해요. (눈을 맞춘다)",
-      "text_key": "node_1786860403048_67_ize9"
+      "text_key": "node_1786860403048_67_ize9",
+      "voice": "node_1786860403048_67_ize9.wav",
+      "sound": "node_1786860403048_67_ize9.wav"
     },
     {
       "id": "node_1786860403048_68_944z",
@@ -573,7 +625,9 @@
       "speakerType": "character",
       "speaker": "리나",
       "text": "저도요, 사장님. (내 손을 꼭 잡는다)",
-      "text_key": "node_1786860403048_70_ls5j"
+      "text_key": "node_1786860403048_70_ls5j",
+      "voice": "node_1786860403048_70_ls5j.wav",
+      "sound": "node_1786860403048_70_ls5j.wav"
     }
   ],
   "defaultLanguage": "ko",
@@ -584,7 +638,143 @@
     }
   ],
   "points": [],
-  "media": [],
+  "media": [
+    {
+      "fileName": "node_1786860403048_10_0gi5.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_10_0gi5.wav"
+    },
+    {
+      "fileName": "node_1786860403048_13_h1p3.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_13_h1p3.wav"
+    },
+    {
+      "fileName": "node_1786860403048_15_w2tz.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_15_w2tz.wav"
+    },
+    {
+      "fileName": "node_1786860403048_17_boou.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_17_boou.wav"
+    },
+    {
+      "fileName": "node_1786860403048_20_4gof.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_20_4gof.wav"
+    },
+    {
+      "fileName": "node_1786860403048_22_phrm.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_22_phrm.wav"
+    },
+    {
+      "fileName": "node_1786860403048_25_a4qs.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_25_a4qs.wav"
+    },
+    {
+      "fileName": "node_1786860403048_29_b40p.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_29_b40p.wav"
+    },
+    {
+      "fileName": "node_1786860403048_2_c5r0.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_2_c5r0.wav"
+    },
+    {
+      "fileName": "node_1786860403048_33_2srd.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_33_2srd.wav"
+    },
+    {
+      "fileName": "node_1786860403048_36_q0b1.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_36_q0b1.wav"
+    },
+    {
+      "fileName": "node_1786860403048_40_wkyy.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_40_wkyy.wav"
+    },
+    {
+      "fileName": "node_1786860403048_42_r8gl.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_42_r8gl.wav"
+    },
+    {
+      "fileName": "node_1786860403048_45_laft.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_45_laft.wav"
+    },
+    {
+      "fileName": "node_1786860403048_48_as7b.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_48_as7b.wav"
+    },
+    {
+      "fileName": "node_1786860403048_4_elzj.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_4_elzj.wav"
+    },
+    {
+      "fileName": "node_1786860403048_50_8y0m.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_50_8y0m.wav"
+    },
+    {
+      "fileName": "node_1786860403048_53_s23d.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_53_s23d.wav"
+    },
+    {
+      "fileName": "node_1786860403048_55_5z7z.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_55_5z7z.wav"
+    },
+    {
+      "fileName": "node_1786860403048_57_7ydj.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_57_7ydj.wav"
+    },
+    {
+      "fileName": "node_1786860403048_59_h9ht.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_59_h9ht.wav"
+    },
+    {
+      "fileName": "node_1786860403048_63_j8f1.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_63_j8f1.wav"
+    },
+    {
+      "fileName": "node_1786860403048_65_es8v.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_65_es8v.wav"
+    },
+    {
+      "fileName": "node_1786860403048_67_ize9.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_67_ize9.wav"
+    },
+    {
+      "fileName": "node_1786860403048_6_7ki8.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_6_7ki8.wav"
+    },
+    {
+      "fileName": "node_1786860403048_70_ls5j.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_70_ls5j.wav"
+    },
+    {
+      "fileName": "node_1786860403048_8_il26.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c6ee1d47-2430-4b43-9b5e-4c8db44b757c/sounds/node_1786860403048_8_il26.wav"
+    }
+  ],
   "sourceZipName": "직접 생성",
   "createdAt": "2026-08-16T06:06:36.372Z",
   "ownerCharacterId": "1786851109772-o2n3dj3"

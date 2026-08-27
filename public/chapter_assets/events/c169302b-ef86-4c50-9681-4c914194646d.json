@@ -29,7 +29,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "…왔네요. (고개를 든다)",
-      "text_key": "node_1787178069328_2_6xgq"
+      "text_key": "node_1787178069328_2_6xgq",
+      "voice": "node_1787178069328_2_6xgq.wav",
+      "sound": "node_1787178069328_2_6xgq.wav"
     },
     {
       "id": "node_1787178069328_3_qemg",
@@ -45,7 +47,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "아니에요. 제가 일찍 온 거예요.",
-      "text_key": "node_1787178069328_4_ewc9"
+      "text_key": "node_1787178069328_4_ewc9",
+      "voice": "node_1787178069328_4_ewc9.wav",
+      "sound": "node_1787178069328_4_ewc9.wav"
     },
     {
       "id": "node_1787178069328_5_iml6",
@@ -61,7 +65,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "모시려면 이 정도는 해야죠.",
-      "text_key": "node_1787178069328_6_zhl2"
+      "text_key": "node_1787178069328_6_zhl2",
+      "voice": "node_1787178069328_6_zhl2.wav",
+      "sound": "node_1787178069328_6_zhl2.wav"
     },
     {
       "id": "node_1787178069328_7_vzgo",
@@ -77,7 +83,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "네. 오늘은 제가 모시는 날이에요.",
-      "text_key": "node_1787178069328_8_ank3"
+      "text_key": "node_1787178069328_8_ank3",
+      "voice": "node_1787178069328_8_ank3.wav",
+      "sound": "node_1787178069328_8_ank3.wav"
     },
     {
       "id": "node_1787178069328_9_zilf",
@@ -93,7 +101,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "그건 오늘, 천천히 말할게요.",
-      "text_key": "node_1787178069328_10_rwuo"
+      "text_key": "node_1787178069328_10_rwuo",
+      "voice": "node_1787178069328_10_rwuo.wav",
+      "sound": "node_1787178069328_10_rwuo.wav"
     },
     {
       "id": "node_1787178069328_11_nwv8",
@@ -109,7 +119,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "심상치 않을 만큼, 제가 진심이라는 거예요. (눈을 가늘게 뜬다)",
-      "text_key": "node_1787178069328_12_ym60"
+      "text_key": "node_1787178069328_12_ym60",
+      "voice": "node_1787178069328_12_ym60.wav",
+      "sound": "node_1787178069328_12_ym60.wav"
     },
     {
       "id": "node_1787178069328_13_weni",
@@ -125,7 +137,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "좋아요. 그럼 들어가요.",
-      "text_key": "node_1787178069328_14_8pi3"
+      "text_key": "node_1787178069328_14_8pi3",
+      "voice": "node_1787178069328_14_8pi3.wav",
+      "sound": "node_1787178069328_14_8pi3.wav"
     },
     {
       "id": "node_1787178069328_15_2554",
@@ -141,7 +155,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "…안 들어오세요?",
-      "text_key": "node_1787178069328_16_4q3x"
+      "text_key": "node_1787178069328_16_4q3x",
+      "voice": "node_1787178069328_16_4q3x.wav",
+      "sound": "node_1787178069328_16_4q3x.wav"
     },
     {
       "id": "node_1787178069328_17_b6an",
@@ -157,7 +173,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "그럼 제가 먼저 들어갈게요.",
-      "text_key": "node_1787178069328_18_v94s"
+      "text_key": "node_1787178069328_18_v94s",
+      "voice": "node_1787178069328_18_v94s.wav",
+      "sound": "node_1787178069328_18_v94s.wav"
     },
     {
       "id": "node_1787178069328_19_joev",
@@ -173,7 +191,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "어때요. 물, 생각보다 괜찮죠?",
-      "text_key": "node_1787178069328_20_qfrw"
+      "text_key": "node_1787178069328_20_qfrw",
+      "voice": "node_1787178069328_20_qfrw.wav",
+      "sound": "node_1787178069328_20_qfrw.wav"
     },
     {
       "id": "node_1787178069328_21_asod",
@@ -189,7 +209,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "사장님, 시선이 자꾸… 제 몸에 가시네요.",
-      "text_key": "node_1787178069328_22_ucj2"
+      "text_key": "node_1787178069328_22_ucj2",
+      "voice": "node_1787178069328_22_ucj2.wav",
+      "sound": "node_1787178069328_22_ucj2.wav"
     },
     {
       "id": "node_1787178069328_23_0xlv",
@@ -205,7 +227,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "오해가 아니면 뭐예요.",
-      "text_key": "node_1787178069328_24_xhpb"
+      "text_key": "node_1787178069328_24_xhpb",
+      "voice": "node_1787178069328_24_xhpb.wav",
+      "sound": "node_1787178069328_24_xhpb.wav"
     },
     {
       "id": "node_1787178069328_25_75u6",
@@ -221,7 +245,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "수영만 하러 온 건 아니잖아요.",
-      "text_key": "node_1787178069328_26_sknv"
+      "text_key": "node_1787178069328_26_sknv",
+      "voice": "node_1787178069328_26_sknv.wav",
+      "sound": "node_1787178069328_26_sknv.wav"
     },
     {
       "id": "node_1787178069328_27_ldmx",
@@ -229,7 +255,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "제가 왜 오늘 이랬는지, 아세요?",
-      "text_key": "node_1787178069328_27_ldmx"
+      "text_key": "node_1787178069328_27_ldmx",
+      "voice": "node_1787178069328_27_ldmx.wav",
+      "sound": "node_1787178069328_27_ldmx.wav"
     },
     {
       "id": "node_1787178069328_28_a7v8",
@@ -245,7 +273,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "사장님이 저를 여자로 봐주셨으면 해서요. (또박또박)",
-      "text_key": "node_1787178069328_29_5ylb"
+      "text_key": "node_1787178069328_29_5ylb",
+      "voice": "node_1787178069328_29_5ylb.wav",
+      "sound": "node_1787178069328_29_5ylb.wav"
     },
     {
       "id": "node_1787178069328_30_naii",
@@ -269,7 +299,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "싫으세요? (눈을 맞춘다)",
-      "text_key": "node_1787178069328_32_r2h3"
+      "text_key": "node_1787178069328_32_r2h3",
+      "voice": "node_1787178069328_32_r2h3.wav",
+      "sound": "node_1787178069328_32_r2h3.wav"
     },
     {
       "id": "node_1787178069328_33_wk3m",
@@ -285,7 +317,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "오늘만큼은, 곤란해지셔도 돼요.",
-      "text_key": "node_1787178069328_34_i2w8"
+      "text_key": "node_1787178069328_34_i2w8",
+      "voice": "node_1787178069328_34_i2w8.wav",
+      "sound": "node_1787178069328_34_i2w8.wav"
     },
     {
       "id": "node_1787178069328_35_2qlu",
@@ -309,7 +343,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "더우니까요. (앞을 가린 채, 나를 본다)",
-      "text_key": "node_1787178069328_37_81sv"
+      "text_key": "node_1787178069328_37_81sv",
+      "voice": "node_1787178069328_37_81sv.wav",
+      "sound": "node_1787178069328_37_81sv.wav"
     },
     {
       "id": "node_1787178069328_38_2dj2",
@@ -325,7 +361,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "아니요. 사장님 때문이에요.",
-      "text_key": "node_1787178069328_39_soml"
+      "text_key": "node_1787178069328_39_soml",
+      "voice": "node_1787178069328_39_soml.wav",
+      "sound": "node_1787178069328_39_soml.wav"
     },
     {
       "id": "node_1787178069328_40_jcgf",
@@ -349,7 +387,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠?",
-      "text_key": "node_1787178069328_42_jvtr"
+      "text_key": "node_1787178069328_42_jvtr",
+      "voice": "node_1787178069328_42_jvtr.wav",
+      "sound": "node_1787178069328_42_jvtr.wav"
     },
     {
       "id": "node_1787178069328_43_6ocg",
@@ -365,7 +405,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "왜요. 저는 지금, 꽤 두근거리는데.",
-      "text_key": "node_1787178069328_44_9o75"
+      "text_key": "node_1787178069328_44_9o75",
+      "voice": "node_1787178069328_44_9o75.wav",
+      "sound": "node_1787178069328_44_9o75.wav"
     },
     {
       "id": "node_1787178069328_45_4jjd",
@@ -381,7 +423,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "만져요. 제가 허락했으니까.",
-      "text_key": "node_1787178069328_46_14y4"
+      "text_key": "node_1787178069328_46_14y4",
+      "voice": "node_1787178069328_46_14y4.wav",
+      "sound": "node_1787178069328_46_14y4.wav"
     },
     {
       "id": "node_1787178069328_47_3i8f",
@@ -397,7 +441,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "제가 오늘 왜 이랬는지, 이제 알려드릴게요.",
-      "text_key": "node_1787178069328_48_pzle"
+      "text_key": "node_1787178069328_48_pzle",
+      "voice": "node_1787178069328_48_pzle.wav",
+      "sound": "node_1787178069328_48_pzle.wav"
     },
     {
       "id": "node_1787178069328_49_tu4m",
@@ -413,7 +459,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "사장님을, 제가 모실게요.",
-      "text_key": "node_1787178069328_50_wq6u"
+      "text_key": "node_1787178069328_50_wq6u",
+      "voice": "node_1787178069328_50_wq6u.wav",
+      "sound": "node_1787178069328_50_wq6u.wav"
     },
     {
       "id": "node_1787178069328_51_jl5p",
@@ -437,7 +485,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "저, 하고 싶어요.",
-      "text_key": "node_1787178069328_53_yswl"
+      "text_key": "node_1787178069328_53_yswl",
+      "voice": "node_1787178069328_53_yswl.wav",
+      "sound": "node_1787178069328_53_yswl.wav"
     },
     {
       "id": "node_1787178069328_54_8i8o",
@@ -461,7 +511,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "맛있게 해드릴게요.",
-      "text_key": "node_1787178069328_56_9soc"
+      "text_key": "node_1787178069328_56_9soc",
+      "voice": "node_1787178069328_56_9soc.wav",
+      "sound": "node_1787178069328_56_9soc.wav"
     },
     {
       "id": "node_1787178069328_57_qdki",
@@ -501,7 +553,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "그대로, 입에 내세요.",
-      "text_key": "node_1787178069328_61_98zp"
+      "text_key": "node_1787178069328_61_98zp",
+      "voice": "node_1787178069328_61_98zp.wav",
+      "sound": "node_1787178069328_61_98zp.wav"
     },
     {
       "id": "node_1787178069328_62_xn9o",
@@ -533,7 +587,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "…대단하세요.",
-      "text_key": "node_1787178069328_65_juv4"
+      "text_key": "node_1787178069328_65_juv4",
+      "voice": "node_1787178069328_65_juv4.wav",
+      "sound": "node_1787178069328_65_juv4.wav"
     },
     {
       "id": "node_1787178069328_66_1zid",
@@ -549,7 +605,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "오늘, 정말 좋은 시간이었어요.",
-      "text_key": "node_1787178069328_67_x41n"
+      "text_key": "node_1787178069328_67_x41n",
+      "voice": "node_1787178069328_67_x41n.wav",
+      "sound": "node_1787178069328_67_x41n.wav"
     },
     {
       "id": "node_1787178069328_68_ucyw",
@@ -565,7 +623,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "다음에 또 불러도 돼요?",
-      "text_key": "node_1787178069328_69_zhba"
+      "text_key": "node_1787178069328_69_zhba",
+      "voice": "node_1787178069328_69_zhba.wav",
+      "sound": "node_1787178069328_69_zhba.wav"
     },
     {
       "id": "node_1787178069328_70_78zb",
@@ -581,7 +641,9 @@
       "speakerType": "character",
       "speaker": "1786851291899-dqn64g6",
       "text": "좋아요. 그럼.",
-      "text_key": "node_1787178069328_71_74ss"
+      "text_key": "node_1787178069328_71_74ss",
+      "voice": "node_1787178069328_71_74ss.wav",
+      "sound": "node_1787178069328_71_74ss.wav"
     },
     {
       "id": "node_1787178069328_72_jk63",
@@ -636,6 +698,161 @@
       "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/images/2026-08-19_00222_.png",
       "url": "media://chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/images/2026-08-19_00222_.png",
       "size": 2662899
+    },
+    {
+      "fileName": "node_1787178069328_10_rwuo.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_10_rwuo.wav"
+    },
+    {
+      "fileName": "node_1787178069328_12_ym60.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_12_ym60.wav"
+    },
+    {
+      "fileName": "node_1787178069328_14_8pi3.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_14_8pi3.wav"
+    },
+    {
+      "fileName": "node_1787178069328_16_4q3x.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_16_4q3x.wav"
+    },
+    {
+      "fileName": "node_1787178069328_18_v94s.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_18_v94s.wav"
+    },
+    {
+      "fileName": "node_1787178069328_20_qfrw.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_20_qfrw.wav"
+    },
+    {
+      "fileName": "node_1787178069328_22_ucj2.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_22_ucj2.wav"
+    },
+    {
+      "fileName": "node_1787178069328_24_xhpb.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_24_xhpb.wav"
+    },
+    {
+      "fileName": "node_1787178069328_26_sknv.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_26_sknv.wav"
+    },
+    {
+      "fileName": "node_1787178069328_27_ldmx.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_27_ldmx.wav"
+    },
+    {
+      "fileName": "node_1787178069328_29_5ylb.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_29_5ylb.wav"
+    },
+    {
+      "fileName": "node_1787178069328_2_6xgq.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_2_6xgq.wav"
+    },
+    {
+      "fileName": "node_1787178069328_32_r2h3.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_32_r2h3.wav"
+    },
+    {
+      "fileName": "node_1787178069328_34_i2w8.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_34_i2w8.wav"
+    },
+    {
+      "fileName": "node_1787178069328_37_81sv.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_37_81sv.wav"
+    },
+    {
+      "fileName": "node_1787178069328_39_soml.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_39_soml.wav"
+    },
+    {
+      "fileName": "node_1787178069328_42_jvtr.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_42_jvtr.wav"
+    },
+    {
+      "fileName": "node_1787178069328_44_9o75.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_44_9o75.wav"
+    },
+    {
+      "fileName": "node_1787178069328_46_14y4.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_46_14y4.wav"
+    },
+    {
+      "fileName": "node_1787178069328_48_pzle.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_48_pzle.wav"
+    },
+    {
+      "fileName": "node_1787178069328_4_ewc9.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_4_ewc9.wav"
+    },
+    {
+      "fileName": "node_1787178069328_50_wq6u.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_50_wq6u.wav"
+    },
+    {
+      "fileName": "node_1787178069328_53_yswl.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_53_yswl.wav"
+    },
+    {
+      "fileName": "node_1787178069328_56_9soc.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_56_9soc.wav"
+    },
+    {
+      "fileName": "node_1787178069328_61_98zp.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_61_98zp.wav"
+    },
+    {
+      "fileName": "node_1787178069328_65_juv4.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_65_juv4.wav"
+    },
+    {
+      "fileName": "node_1787178069328_67_x41n.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_67_x41n.wav"
+    },
+    {
+      "fileName": "node_1787178069328_69_zhba.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_69_zhba.wav"
+    },
+    {
+      "fileName": "node_1787178069328_6_zhl2.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_6_zhl2.wav"
+    },
+    {
+      "fileName": "node_1787178069328_71_74ss.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_71_74ss.wav"
+    },
+    {
+      "fileName": "node_1787178069328_8_ank3.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/sounds/node_1787178069328_8_ank3.wav"
     }
   ],
   "sourceZipName": "직접 생성",

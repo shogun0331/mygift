@@ -29,7 +29,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "…오셨네요. (팔짱을 낀 채, 시선만 올려 나를 본다)",
-      "text_key": "node_1787031770896_2_pfwu"
+      "text_key": "node_1787031770896_2_pfwu",
+      "voice": "node_1787031770896_2_pfwu.wav",
+      "sound": "node_1787031770896_2_pfwu.wav"
     },
     {
       "id": "node_1787031770896_3_kez2",
@@ -45,7 +47,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "아니에요. 제가 일찍 온 거니까요. (무덤덤하게)",
-      "text_key": "node_1787031770896_4_4v95"
+      "text_key": "node_1787031770896_4_4v95",
+      "voice": "node_1787031770896_4_4v95.wav",
+      "sound": "node_1787031770896_4_4v95.wav"
     },
     {
       "id": "node_1787031770896_5_8ldu",
@@ -61,7 +65,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "뭐가요. (차갑게)",
-      "text_key": "node_1787031770896_6_p0dw"
+      "text_key": "node_1787031770896_6_p0dw",
+      "voice": "node_1787031770896_6_p0dw.wav",
+      "sound": "node_1787031770896_6_p0dw.wav"
     },
     {
       "id": "node_1787031770896_7_twcw",
@@ -77,7 +83,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "그게 그렇게 놀라운 일인가요. (눈을 가늘게 뜬다)",
-      "text_key": "node_1787031770896_8_k5lo"
+      "text_key": "node_1787031770896_8_k5lo",
+      "voice": "node_1787031770896_8_k5lo.wav",
+      "sound": "node_1787031770896_8_k5lo.wav"
     },
     {
       "id": "node_1787031770896_9_zjnd",
@@ -101,7 +109,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "좋아요. 그럼 걷죠. (앞장선다)",
-      "text_key": "node_1787031770896_11_4i5z"
+      "text_key": "node_1787031770896_11_4i5z",
+      "voice": "node_1787031770896_11_4i5z.wav",
+      "sound": "node_1787031770896_11_4i5z.wav"
     },
     {
       "id": "node_1787031770896_12_jed2",
@@ -109,7 +119,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "오늘은 그냥 저와 대화하며 같이 있어요. (옆모습을 나에게로 돌린다)",
-      "text_key": "node_1787031770896_12_jed2"
+      "text_key": "node_1787031770896_12_jed2",
+      "voice": "node_1787031770896_12_jed2.wav",
+      "sound": "node_1787031770896_12_jed2.wav"
     },
     {
       "id": "node_1787031770896_13_agy5",
@@ -125,7 +137,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "알아요. 그래서 부른 거예요. (또박또박)",
-      "text_key": "node_1787031770896_14_in2f"
+      "text_key": "node_1787031770896_14_in2f",
+      "voice": "node_1787031770896_14_in2f.wav",
+      "sound": "node_1787031770896_14_in2f.wav"
     },
     {
       "id": "node_1787031814464_bk0j",
@@ -149,7 +163,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "…오늘, 바람이 좋네요. (몸을 살짝 뒤로 젖힌다)",
-      "text_key": "node_1787031770896_16_dmds"
+      "text_key": "node_1787031770896_16_dmds",
+      "voice": "node_1787031770896_16_dmds.wav",
+      "sound": "node_1787031770896_16_dmds.wav"
     },
     {
       "id": "node_1787031770896_17_kaxp",
@@ -165,7 +181,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "그래요? (눈을 가늘게 뜬다)",
-      "text_key": "node_1787031770896_18_68b0"
+      "text_key": "node_1787031770896_18_68b0",
+      "voice": "node_1787031770896_18_68b0.wav",
+      "sound": "node_1787031770896_18_68b0.wav"
     },
     {
       "id": "node_1787031770896_19_x13n",
@@ -181,7 +199,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "칭찬이에요? 기분 나쁘진 않네요. (씩 웃는다)",
-      "text_key": "node_1787031770896_20_r0rj"
+      "text_key": "node_1787031770896_20_r0rj",
+      "voice": "node_1787031770896_20_r0rj.wav",
+      "sound": "node_1787031770896_20_r0rj.wav"
     },
     {
       "id": "node_1787031770896_22_7lyx",
@@ -205,7 +225,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "…이쪽으로 와 보세요. (낮은 목소리로)",
-      "text_key": "node_1787031770896_23_vm0k"
+      "text_key": "node_1787031770896_23_vm0k",
+      "voice": "node_1787031770896_23_vm0k.wav",
+      "sound": "node_1787031770896_23_vm0k.wav"
     },
     {
       "id": "node_1787031770896_24_fr01",
@@ -221,7 +243,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "광장엔 사람이 많으니까요. (눈을 가늘게 뜬다)",
-      "text_key": "node_1787031770896_25_28pd"
+      "text_key": "node_1787031770896_25_28pd",
+      "voice": "node_1787031770896_25_28pd.wav",
+      "sound": "node_1787031770896_25_28pd.wav"
     },
     {
       "id": "node_1787031770896_26_w5i1",
@@ -229,7 +253,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "보여드릴 게 있어서요. (한쪽 블라우스 단추를 천천히 푼다)",
-      "text_key": "node_1787031770896_26_w5i1"
+      "text_key": "node_1787031770896_26_w5i1",
+      "voice": "node_1787031770896_26_w5i1.wav",
+      "sound": "node_1787031770896_26_w5i1.wav"
     },
     {
       "id": "node_1787031770896_27_te7n",
@@ -261,7 +287,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "사장님이 저를 어떻게 보는지, 확인하고 싶어서요. (또박또박)",
-      "text_key": "node_1787031770896_29_ebbs"
+      "text_key": "node_1787031770896_29_ebbs",
+      "voice": "node_1787031770896_29_ebbs.wav",
+      "sound": "node_1787031770896_29_ebbs.wav"
     },
     {
       "id": "node_1787031770896_30_40wv",
@@ -269,7 +297,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "시험이 아니라 확인이에요. 저를 여자로 보는지. (내 손등을 살짝 만진다)",
-      "text_key": "node_1787031770896_30_40wv"
+      "text_key": "node_1787031770896_30_40wv",
+      "voice": "node_1787031770896_30_40wv.wav",
+      "sound": "node_1787031770896_30_40wv.wav"
     },
     {
       "id": "node_1787031770896_31_zpet",
@@ -301,7 +331,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "어때요. 뜨거워요? (가만히 나를 본다)",
-      "text_key": "node_1787031770896_34_5oej"
+      "text_key": "node_1787031770896_34_5oej",
+      "voice": "node_1787031770896_34_5oej.wav",
+      "sound": "node_1787031770896_34_5oej.wav"
     },
     {
       "id": "node_1787031770896_35_58rx",
@@ -317,7 +349,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "저도요. (내 손 위에 손을 포갠다)",
-      "text_key": "node_1787031770896_36_fppi"
+      "text_key": "node_1787031770896_36_fppi",
+      "voice": "node_1787031770896_36_fppi.wav",
+      "sound": "node_1787031770896_36_fppi.wav"
     },
     {
       "id": "node_1787031770896_37_oot0",
@@ -333,7 +367,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "그냥 만져요. 제가 허락했으니까. (내 손을 잡아 가슴 위에 얹는다)",
-      "text_key": "node_1787031770896_38_s9jq"
+      "text_key": "node_1787031770896_38_s9jq",
+      "voice": "node_1787031770896_38_s9jq.wav",
+      "sound": "node_1787031770896_38_s9jq.wav"
     },
     {
       "id": "node_1787031770896_39_qzzf",
@@ -357,7 +393,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "응…♡ (짧게 숨을 들이마신다)",
-      "text_key": "node_1787031770896_40_co6c"
+      "text_key": "node_1787031770896_40_co6c",
+      "voice": "node_1787031770896_40_co6c.wav",
+      "sound": "node_1787031770896_40_co6c.wav"
     },
     {
       "id": "node_1787031770896_41_f7ju",
@@ -397,7 +435,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "…좋았어요. 사장님의 반응, 잘 확인했어요. (차분한 얼굴로, 입꼬리를 올린다)",
-      "text_key": "node_1787031770896_44_a1uq"
+      "text_key": "node_1787031770896_44_a1uq",
+      "voice": "node_1787031770896_44_a1uq.wav",
+      "sound": "node_1787031770896_44_a1uq.wav"
     },
     {
       "id": "node_1787031770896_46_xf88",
@@ -413,7 +453,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "오늘, 나쁘지 않았어요. (정면을 보며)",
-      "text_key": "node_1787031770896_47_vht4"
+      "text_key": "node_1787031770896_47_vht4",
+      "voice": "node_1787031770896_47_vht4.wav",
+      "sound": "node_1787031770896_47_vht4.wav"
     },
     {
       "id": "node_1787031770896_48_0qmv",
@@ -429,7 +471,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "후회는 없으시죠? (입꼬리를 올린다)",
-      "text_key": "node_1787031770896_49_2vhg"
+      "text_key": "node_1787031770896_49_2vhg",
+      "voice": "node_1787031770896_49_2vhg.wav",
+      "sound": "node_1787031770896_49_2vhg.wav"
     },
     {
       "id": "node_1787031770896_50_dpg2",
@@ -445,7 +489,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "회사에선, 평소처럼 대할게요. (또박또박)",
-      "text_key": "node_1787031770896_51_w13w"
+      "text_key": "node_1787031770896_51_w13w",
+      "voice": "node_1787031770896_51_w13w.wav",
+      "sound": "node_1787031770896_51_w13w.wav"
     },
     {
       "id": "node_1787031770896_52_qocq",
@@ -461,7 +507,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "다음에 또, 불러도 돼요?",
-      "text_key": "node_1787031770896_53_nesj"
+      "text_key": "node_1787031770896_53_nesj",
+      "voice": "node_1787031770896_53_nesj.wav",
+      "sound": "node_1787031770896_53_nesj.wav"
     },
     {
       "id": "node_1787031770896_54_8sxy",
@@ -477,7 +525,9 @@
       "speakerType": "character",
       "speaker": "아야",
       "text": "좋아요. 그럼. (걸어간다)",
-      "text_key": "node_1787031770896_55_ytcm"
+      "text_key": "node_1787031770896_55_ytcm",
+      "voice": "node_1787031770896_55_ytcm.wav",
+      "sound": "node_1787031770896_55_ytcm.wav"
     },
     {
       "id": "node_1787031770896_56_7ddx",
@@ -552,6 +602,131 @@
       "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-08-18_00024_.png",
       "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-08-18_00024_.png",
       "size": 2044427
+    },
+    {
+      "fileName": "node_1787031770896_11_4i5z.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_11_4i5z.wav"
+    },
+    {
+      "fileName": "node_1787031770896_12_jed2.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_12_jed2.wav"
+    },
+    {
+      "fileName": "node_1787031770896_14_in2f.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_14_in2f.wav"
+    },
+    {
+      "fileName": "node_1787031770896_16_dmds.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_16_dmds.wav"
+    },
+    {
+      "fileName": "node_1787031770896_18_68b0.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_18_68b0.wav"
+    },
+    {
+      "fileName": "node_1787031770896_20_r0rj.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_20_r0rj.wav"
+    },
+    {
+      "fileName": "node_1787031770896_23_vm0k.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_23_vm0k.wav"
+    },
+    {
+      "fileName": "node_1787031770896_25_28pd.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_25_28pd.wav"
+    },
+    {
+      "fileName": "node_1787031770896_26_w5i1.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_26_w5i1.wav"
+    },
+    {
+      "fileName": "node_1787031770896_29_ebbs.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_29_ebbs.wav"
+    },
+    {
+      "fileName": "node_1787031770896_2_pfwu.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_2_pfwu.wav"
+    },
+    {
+      "fileName": "node_1787031770896_30_40wv.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_30_40wv.wav"
+    },
+    {
+      "fileName": "node_1787031770896_34_5oej.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_34_5oej.wav"
+    },
+    {
+      "fileName": "node_1787031770896_36_fppi.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_36_fppi.wav"
+    },
+    {
+      "fileName": "node_1787031770896_38_s9jq.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_38_s9jq.wav"
+    },
+    {
+      "fileName": "node_1787031770896_40_co6c.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_40_co6c.wav"
+    },
+    {
+      "fileName": "node_1787031770896_44_a1uq.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_44_a1uq.wav"
+    },
+    {
+      "fileName": "node_1787031770896_47_vht4.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_47_vht4.wav"
+    },
+    {
+      "fileName": "node_1787031770896_49_2vhg.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_49_2vhg.wav"
+    },
+    {
+      "fileName": "node_1787031770896_4_4v95.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_4_4v95.wav"
+    },
+    {
+      "fileName": "node_1787031770896_51_w13w.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_51_w13w.wav"
+    },
+    {
+      "fileName": "node_1787031770896_53_nesj.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_53_nesj.wav"
+    },
+    {
+      "fileName": "node_1787031770896_55_ytcm.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_55_ytcm.wav"
+    },
+    {
+      "fileName": "node_1787031770896_6_p0dw.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_6_p0dw.wav"
+    },
+    {
+      "fileName": "node_1787031770896_8_k5lo.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/sounds/node_1787031770896_8_k5lo.wav"
     }
   ],
   "sourceZipName": "직접 생성",

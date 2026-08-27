@@ -11,9 +11,9 @@ import {
   getCardDisplayValue,
   calculatePayout,
   createDeck,
+  rollRewardItem,
 } from './highLowConfig'
 import { loadUserInventory, saveUserInventory } from './highLowStore'
-import { CasinoRoomEditorModal } from './CasinoRoomEditorModal'
 
 export type GamePhase =
   | 'LOBBY'
@@ -629,8 +629,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   onClose,
   initialRoomId = 'legend',
 }) => {
-  const [roomConfigs, setRoomConfigs] = useState<HighLowConfigMap>(configs)
-  const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const roomConfigs = configs
   const [selectedRoomId, setSelectedRoomId] = useState<HighLowRoomId>(initialRoomId)
   const [phase, setPhase] = useState<GamePhase>('LOBBY')
 
@@ -757,19 +756,11 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
     onUpdateChips(roomId, nextChips)
     addLog(`Ante $${currentBet.toLocaleString()} ${comboCount > 0 ? `(🔥 콤보 ${comboMultiplier}배 판돈)` : ''} 차감. 게임이 시작됩니다.`, 'info')
 
-    // 라운드 보상 아이템 가챠 세팅 (itemDropRate 확률)
-    const dropRate = conf.itemDropRate ?? 50
-    const isDropped = Math.random() * 100 < dropRate
-    if (isDropped) {
-      const types: CasinoItemType[] = ['peek_card', 'double_payout', 'loss_shield', 'staff_hire']
-      const pickedType = types[Math.floor(Math.random() * types.length)]
-      const itemInfo = CASINO_ITEMS_INFO[pickedType]
-      setCurrentRewardItem({
-        id: `item-${Date.now()}-${Math.random()}`,
-        ...itemInfo,
-      })
-    } else {
-      setCurrentRewardItem(null)
+    // 라운드 보상 아이템 가챠 세팅 (개별 아이템 등장 확률 적용)
+    const rewardItem = rollRewardItem(conf)
+    setCurrentRewardItem(rewardItem)
+    if (rewardItem) {
+      addLog(`🎁 이번 라운드 드롭 보상 아이템 [${rewardItem.name}] 등장! (승리 시 수령)`, 'info')
     }
 
     setPeekHintText(null)
@@ -1198,13 +1189,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         </div>
 
         <div className="flex items-center gap-2.5 z-10">
-          <button
-            onClick={() => setIsEditorOpen(true)}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border border-amber-400/60 bg-slate-900/90 text-[11px] sm:text-xs font-black tracking-wider text-amber-300 hover:text-slate-950 hover:bg-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all"
-          >
-            ⚙️ 카지노 에디터
-          </button>
-
           {onClose && (
             <button
               onClick={onClose}
@@ -1216,102 +1200,103 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         </div>
       </div>
 
-      {/* 3-Column Fullscreen Landscape Main Duel Area */}
-      <div className="relative z-10 flex-1 grid grid-cols-1 lg:grid-cols-[290px_1fr_280px] gap-3 sm:gap-4 my-auto py-1 items-stretch min-h-0 overflow-hidden">
-        {/* LEFT COLUMN: Live Dealer Showcase & Round Item Drop Reward */}
-        <div className="hidden lg:flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl border border-amber-400/40 bg-slate-900/80 backdrop-blur-md font-mono text-xs shadow-xl min-h-0 overflow-hidden">
-          <div className="space-y-2.5 flex-1 flex flex-col min-h-0">
-            <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest border-b border-amber-400/30 pb-1.5 flex items-center justify-between shrink-0">
-              <span>★ LIVE DEALER PROFILE ★</span>
-              <span className="text-[10px] text-amber-300 font-bold bg-slate-950 px-2 py-0.5 rounded-md border border-amber-400/30">ONLINE</span>
-            </h4>
+      {/* Full-Width Integrated Emerald Felt Casino Stage (화면 전체 100% 꽉 채우는 초록색 카지노 테이블 패널!) */}
+      <div className="relative z-10 flex-1 p-4 sm:p-5 rounded-2xl border-2 border-emerald-500/80 bg-gradient-to-b from-emerald-950 via-emerald-900/90 to-emerald-950 backdrop-blur-md shadow-[inset_0_0_90px_rgba(16,185,129,0.4),0_0_50px_rgba(16,185,129,0.3)] my-auto py-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-3 sm:gap-4 items-stretch flex-1 min-h-0 overflow-hidden">
+          {/* 1. LEFT COLUMN: Live Dealer Showcase & Round Item Drop Reward (까만 배경 완전 제거 & 펠트 카지노 테이블 투과!) */}
+          <div className="hidden lg:flex flex-col justify-between p-2 sm:p-3 font-mono text-xs overflow-hidden bg-transparent border-none shadow-none">
+            <div className="space-y-2.5 flex-1 flex flex-col min-h-0">
+              <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest border-b border-emerald-400/40 pb-1.5 flex items-center justify-between shrink-0">
+                <span>★ LIVE DEALER PROFILE ★</span>
+                <span className="text-[10px] text-emerald-300 font-bold bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-400/40">ONLINE</span>
+              </h4>
 
-            {/* Live Dealer Media Box (세로 3:4 스탠딩 카드 비율 럭셔리 프레임 반응형 조절!) */}
-            <div className="relative w-full aspect-auto sm:aspect-[3/4] flex-1 min-h-[140px] max-h-[250px] rounded-2xl overflow-hidden border-2 border-amber-400/60 bg-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.2)] group">
-              {currentConfig.dealerMediaUrl ? (
-                currentConfig.dealerMediaType === 'video' ? (
-                  <video
-                    src={currentConfig.dealerMediaUrl}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover"
-                  />
+              {/* Live Dealer CCTV Media Box (세로 3:4 럭셔리 대형 스탠딩 카지노 카드 프레임!) */}
+              <div className="relative w-full aspect-[3/4] flex-1 min-h-[220px] max-h-[360px] rounded-2xl overflow-hidden border-2 border-amber-400/80 bg-emerald-950/60 shadow-[0_0_30px_rgba(245,158,11,0.4)] group">
+                {currentConfig.dealerMediaUrl ? (
+                  currentConfig.dealerMediaType === 'video' ? (
+                    <video
+                      src={currentConfig.dealerMediaUrl}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={currentConfig.dealerMediaUrl}
+                      alt={currentConfig.dealerName}
+                      className="w-full h-full object-cover"
+                    />
+                  )
                 ) : (
-                  <img
-                    src={currentConfig.dealerMediaUrl}
-                    alt={currentConfig.dealerName}
-                    className="w-full h-full object-cover"
-                  />
-                )
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 to-slate-950 text-slate-400">
-                  <div className="w-14 h-14 rounded-full border-2 border-amber-400/60 p-1 mb-1 bg-slate-900 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                    <span className="text-3xl">🎩</span>
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-emerald-950/80 to-emerald-900/40 text-emerald-200">
+                    <div className="w-14 h-14 rounded-full border-2 border-amber-400/70 p-1 mb-1 bg-emerald-950 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                      <span className="text-3xl">🎩</span>
+                    </div>
+                    <span className="text-xs font-black text-amber-300 uppercase tracking-widest">
+                      {currentConfig.dealerName}
+                    </span>
+                    <span className="text-[9px] text-amber-400/90 font-bold">
+                      {currentConfig.dealerTitle}
+                    </span>
                   </div>
-                  <span className="text-xs font-black text-amber-300 uppercase tracking-widest">
-                    {currentConfig.dealerName}
-                  </span>
-                  <span className="text-[9px] text-amber-400/80 font-bold">
-                    {currentConfig.dealerTitle}
-                  </span>
-                </div>
-              )}
+                )}
 
-              <div className="absolute inset-x-0 bottom-0 p-2 bg-slate-950/95 border-t border-amber-400/30 flex items-center justify-between">
-                <div>
-                  <h5 className="text-[11px] font-black text-slate-100">{currentConfig.dealerName}</h5>
-                  <span className="text-[9px] text-amber-400 font-bold">{currentConfig.dealerTitle}</span>
+                <div className="absolute inset-x-0 bottom-0 p-2 bg-emerald-950/85 backdrop-blur-sm border-t border-amber-400/40 flex items-center justify-between font-mono">
+                  <div>
+                    <h5 className="text-[11px] font-black text-slate-100">{currentConfig.dealerName}</h5>
+                    <span className="text-[9px] text-amber-400 font-bold">{currentConfig.dealerTitle}</span>
+                  </div>
+                  <span className="text-[9px] font-bold text-amber-300 bg-emerald-900/80 px-2 py-0.5 rounded-full border border-amber-400/40">
+                    ANTE ${currentConfig.ante.toLocaleString()}
+                  </span>
                 </div>
-                <span className="text-[9px] font-bold text-amber-300 bg-slate-900 px-2 py-0.5 rounded-full border border-amber-400/40">
-                  ANTE ${currentConfig.ante.toLocaleString()}
-                </span>
+              </div>
+
+              {/* THIS ROUND REWARD ITEM BOX */}
+              <div className="p-3.5 rounded-xl bg-emerald-950/50 border border-emerald-400/40 backdrop-blur-sm space-y-2 shadow-sm">
+                <div className="flex items-center justify-between border-b border-emerald-500/30 pb-1.5">
+                  <span className="text-xs font-black text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>🎁</span>
+                    <span>THIS ROUND REWARD</span>
+                  </span>
+                  <span className="text-[10px] font-bold text-amber-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-amber-400/30">
+                    DROP: {currentConfig.itemDropRate ?? 50}%
+                  </span>
+                </div>
+
+                {currentRewardItem ? (
+                  <div className="p-3 rounded-xl bg-gradient-to-r from-amber-950/80 via-emerald-950/90 to-amber-950/80 border-2 border-yellow-400 shadow-[0_0_25px_rgba(245,158,11,0.6)] flex flex-col gap-1 animate-pop-in relative overflow-hidden">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="text-2xl shrink-0 animate-bounce">{currentRewardItem.icon}</span>
+                      <h6 className="text-sm font-black text-amber-200 tracking-wide">{currentRewardItem.name}</h6>
+                    </div>
+                    <div className="text-[9px] font-bold text-amber-400/90 pl-8">
+                      ✨ 승리 시 인벤토리에 자동 수령
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-center text-emerald-300/60 text-[11px] font-bold">
+                    보상 아이템 미등장
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* THIS ROUND REWARD ITEM BOX (이번 턴 획득 가능 아이템 시각적 눈에 띄는 연출!) */}
-            <div className="p-3.5 rounded-xl bg-slate-950/90 border border-amber-400/60 space-y-2 shadow-inner">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-                <span className="text-xs font-black text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <span>🎁</span>
-                  <span>THIS ROUND REWARD</span>
-                </span>
-                <span className="text-[10px] font-bold text-amber-400 bg-slate-900 px-2 py-0.5 rounded-full border border-amber-400/30">
-                  DROP: {currentConfig.itemDropRate ?? 50}%
-                </span>
-              </div>
-
-              {currentRewardItem ? (
-                <div className="p-3 rounded-xl bg-gradient-to-r from-amber-950/80 via-slate-900 to-amber-950/80 border-2 border-yellow-400 shadow-[0_0_25px_rgba(245,158,11,0.6)] flex flex-col gap-1 animate-pop-in relative overflow-hidden">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-2xl shrink-0 animate-bounce">{currentRewardItem.icon}</span>
-                    <h6 className="text-sm font-black text-amber-200 tracking-wide">{currentRewardItem.name}</h6>
-                  </div>
-                  <div className="text-[9px] font-bold text-amber-400/90 pl-8">
-                    ✨ 승리 시 인벤토리에 자동 수령
-                  </div>
-                </div>
-              ) : (
-                <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 text-center text-slate-500 text-[11px] font-bold">
-                  보상 아이템 미등장
-                </div>
-              )}
+            <div className="pt-3 border-t border-emerald-400/30 text-[10px] text-emerald-300/80 font-bold uppercase tracking-wider flex items-center justify-between">
+              <span>HIGH-LOW DUEL SALON</span>
+              <span className="text-amber-400 font-black">VIP STAGE</span>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-amber-400/30 text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
-            <span>HIGH-LOW DUEL SALON</span>
-            <span className="text-amber-400 font-black">VIP STAGE</span>
-          </div>
-        </div>
-
-        {/* CENTER COLUMN: Main Cards Duel Arena & Bet Deck */}
-        <div className="flex flex-col items-center justify-between p-4 sm:p-6 rounded-2xl border border-amber-400/40 bg-slate-900/60 backdrop-blur-md relative shadow-2xl overflow-hidden min-h-0">
-          {/* Dealer Card Section */}
+          {/* 2. CENTER COLUMN: Main Cards Duel Arena & Bet Deck */}
+          <div className="flex flex-col items-center justify-between min-h-0 overflow-hidden">
+          {/* Dealer Card Section (흰색 라운드 처리 카지노 카드 슬롯!) */}
           <div className="flex flex-col items-center relative z-10">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-mono text-amber-300 tracking-widest uppercase font-black bg-slate-950/90 px-3.5 py-1 rounded-full border border-amber-400/50 shadow-md">
+              <span className="text-xs font-mono text-emerald-200 tracking-widest uppercase font-black bg-slate-950/90 px-3.5 py-1 rounded-full border border-emerald-400/50 shadow-md">
                 DEALER'S CARD
               </span>
               {gameResult === 'LOSS' && (
@@ -1326,19 +1311,22 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
               )}
             </div>
 
-            <div className={`relative ${isDealerFlyIn ? 'animate-fly-dealer' : ''}`}>
-              <CardView
-                card={dealerCard}
-                isFaceUp={isDealerFaceUp}
-                isRevealing={isDealerRevealing}
-                className={
-                  gameResult === 'LOSS'
-                    ? 'ring-4 ring-amber-400 shadow-[0_0_50px_rgba(245,158,11,1)] scale-105 transition-all'
-                    : gameResult === 'DRAW'
-                    ? 'ring-2 ring-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.7)]'
-                    : ''
-                }
-              />
+            {/* 흰색 라운드 카지노 카드 슬롯 매트 */}
+            <div className="p-2 sm:p-2.5 rounded-3xl border-2 border-dashed border-white/80 bg-white/10 backdrop-blur-sm shadow-[0_0_25px_rgba(255,255,255,0.35)] flex items-center justify-center">
+              <div className={`relative ${isDealerFlyIn ? 'animate-fly-dealer' : ''}`}>
+                <CardView
+                  card={dealerCard}
+                  isFaceUp={isDealerFaceUp}
+                  isRevealing={isDealerRevealing}
+                  className={
+                    gameResult === 'LOSS'
+                      ? 'ring-4 ring-amber-400 shadow-[0_0_50px_rgba(245,158,11,1)] scale-105 transition-all'
+                      : gameResult === 'DRAW'
+                      ? 'ring-2 ring-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.7)]'
+                      : ''
+                  }
+                />
+              </div>
             </div>
           </div>
 
@@ -1486,30 +1474,33 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
             )}
           </div>
 
-          {/* Player Card Section */}
+          {/* Player Card Section (흰색 라운드 처리 카지노 카드 슬롯!) */}
           <div className="flex flex-col items-center relative z-10">
-            <span className="text-xs font-mono text-amber-300 tracking-widest mb-2 uppercase font-black bg-slate-950/90 px-3.5 py-1 rounded-full border border-amber-400/50 shadow-md">
+            <span className="text-xs font-mono text-emerald-200 tracking-widest mb-2 uppercase font-black bg-slate-950/90 px-3.5 py-1 rounded-full border border-emerald-400/50 shadow-md">
               PLAYER'S CARD {userChoice ? `[BET: ${userChoice}]` : ''}
             </span>
 
-            <div className={isPlayerFlyIn ? 'animate-fly-player' : ''}>
-              <CardView
-                card={playerCard}
-                isFaceUp={isPlayerFaceUp}
-                isRevealing={isPlayerRevealing}
-                isPeeking={activeBuffs.peekCard}
-                className={
-                  gameResult === 'DRAW' ? 'ring-2 ring-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.7)]' : ''
-                }
-                onClick={
-                  phase === 'DEALING_PLAYER'
-                    ? handleFlipPlayerCard
-                    : undefined
-                }
-                pulseText={
-                  phase === 'DEALING_PLAYER' ? '카드 뒤집기 (FLIP)!' : undefined
-                }
-              />
+            {/* 흰색 라운드 카지노 카드 슬롯 매트 */}
+            <div className="p-2 sm:p-2.5 rounded-3xl border-2 border-dashed border-white/80 bg-white/10 backdrop-blur-sm shadow-[0_0_25px_rgba(255,255,255,0.35)] flex items-center justify-center">
+              <div className={isPlayerFlyIn ? 'animate-fly-player' : ''}>
+                <CardView
+                  card={playerCard}
+                  isFaceUp={isPlayerFaceUp}
+                  isRevealing={isPlayerRevealing}
+                  isPeeking={activeBuffs.peekCard}
+                  className={
+                    gameResult === 'DRAW' ? 'ring-2 ring-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.7)]' : ''
+                  }
+                  onClick={
+                    phase === 'DEALING_PLAYER'
+                      ? handleFlipPlayerCard
+                      : undefined
+                  }
+                  pulseText={
+                    phase === 'DEALING_PLAYER' ? '카드 뒤집기 (FLIP)!' : undefined
+                  }
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -1699,6 +1690,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           </div>
         </div>
       </div>
+      </div>
 
       {/* Footer Info */}
       <div className="relative z-10 flex shrink-0 items-center justify-between text-xs font-mono text-amber-400/80 border-t border-amber-400/30 pt-3">
@@ -1706,14 +1698,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         <span>LAS VEGAS VIP HIGH-LOW CASINO CLUB</span>
       </div>
 
-      {/* Casino Room & Drop Editor Modal */}
-      {isEditorOpen && (
-        <CasinoRoomEditorModal
-          configs={roomConfigs}
-          onSave={(newConf) => setRoomConfigs(newConf)}
-          onClose={() => setIsEditorOpen(false)}
-        />
-      )}
     </div>
   )
 }

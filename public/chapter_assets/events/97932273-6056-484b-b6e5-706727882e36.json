@@ -53,7 +53,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "네, 천천히 말씀하세요. (부드럽게 웃으며 고개를 든다)",
-      "text_key": "node_1787138881950_5_f52b"
+      "text_key": "node_1787138881950_5_f52b",
+      "voice": "node_1787138881950_5_f52b.wav",
+      "sound": "node_1787138881950_5_f52b.wav"
     },
     {
       "id": "node_1787138881950_6_5e03",
@@ -69,7 +71,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "감사합니다. …그렇게 들어주시니, 노래한 보람이 있네요.",
-      "text_key": "node_1787138881950_7_bbu7"
+      "text_key": "node_1787138881950_7_bbu7",
+      "voice": "node_1787138881950_7_bbu7.wav",
+      "sound": "node_1787138881950_7_bbu7.wav"
     },
     {
       "id": "node_1787138881950_8_cll4",
@@ -85,7 +89,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "제안이요? (눈을 가늘게 뜬다)",
-      "text_key": "node_1787138881950_9_8tfh"
+      "text_key": "node_1787138881950_9_8tfh",
+      "voice": "node_1787138881950_9_8tfh.wav",
+      "sound": "node_1787138881950_9_8tfh.wav"
     },
     {
       "id": "node_1787138881950_10_ixc2",
@@ -101,7 +107,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "크리에이터요… 저는 그냥 술집에서 노래나 부르는 사람인데요. (시니컬하게 웃는다)",
-      "text_key": "node_1787138881950_11_uy1u"
+      "text_key": "node_1787138881950_11_uy1u",
+      "voice": "node_1787138881950_11_uy1u.wav",
+      "sound": "node_1787138881950_11_uy1u.wav"
     },
     {
       "id": "node_1787138881950_12_8tr5",
@@ -117,7 +125,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "그런데… 혹시 어떤 방송국인가요? (조심스럽게)",
-      "text_key": "node_1787138881950_13_l9gn"
+      "text_key": "node_1787138881950_13_l9gn",
+      "voice": "node_1787138881950_13_l9gn.wav",
+      "sound": "node_1787138881950_13_l9gn.wav"
     },
     {
       "id": "node_1787138881950_14_vafg",
@@ -141,7 +151,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "성인 방송이라… 뭐, 저도 이제 나이가 있으니까요. (시니컬한 농담을 던지며 고개를 젓는다)",
-      "text_key": "node_1787138881950_16_mrzs"
+      "text_key": "node_1787138881950_16_mrzs",
+      "voice": "node_1787138881950_16_mrzs.wav",
+      "sound": "node_1787138881950_16_mrzs.wav"
     },
     {
       "id": "node_1787138881950_17_a83n",
@@ -173,7 +185,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "확신… (내 눈을 바라본다)",
-      "text_key": "node_1787138881950_20_3nl7"
+      "text_key": "node_1787138881950_20_3nl7",
+      "voice": "node_1787138881950_20_3nl7.wav",
+      "sound": "node_1787138881950_20_3nl7.wav"
     },
     {
       "id": "node_1787138881950_21_0eiz",
@@ -181,7 +195,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "…제가, 할 수 있을까요. (조용히)",
-      "text_key": "node_1787138881950_21_0eiz"
+      "text_key": "node_1787138881950_21_0eiz",
+      "voice": "node_1787138881950_21_0eiz.wav",
+      "sound": "node_1787138881950_21_0eiz.wav"
     },
     {
       "id": "node_1787138881950_22_chqi",
@@ -197,7 +213,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "그렇게까지 말씀하시니… (살짝 웃는다)",
-      "text_key": "node_1787138881950_23_f36d"
+      "text_key": "node_1787138881950_23_f36d",
+      "voice": "node_1787138881950_23_f36d.wav",
+      "sound": "node_1787138881950_23_f36d.wav"
     },
     {
       "id": "node_1787138881950_24_9vek",
@@ -213,7 +231,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "네. 조건만 괜찮다면요. (고개를 끄덕인다)",
-      "text_key": "node_1787138881950_25_sq7v"
+      "text_key": "node_1787138881950_25_sq7v",
+      "voice": "node_1787138881950_25_sq7v.wav",
+      "sound": "node_1787138881950_25_sq7v.wav"
     },
     {
       "id": "node_1787138881950_26_nl80",
@@ -229,7 +249,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "…그럼, 잘 부탁드립니다. (허리를 숙여 인사한다)",
-      "text_key": "node_1787138881950_27_m7e8"
+      "text_key": "node_1787138881950_27_m7e8",
+      "voice": "node_1787138881950_27_m7e8.wav",
+      "sound": "node_1787138881950_27_m7e8.wav"
     },
     {
       "id": "node_1787138881950_28_5sce",
@@ -245,7 +267,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "…성함, 어떻게 부르면 될까요. (시선을 올린다)",
-      "text_key": "node_1787138881950_29_j813"
+      "text_key": "node_1787138881950_29_j813",
+      "voice": "node_1787138881950_29_j813.wav",
+      "sound": "node_1787138881950_29_j813.wav"
     },
     {
       "id": "node_1787138881950_30_n33d",
@@ -261,7 +285,9 @@
       "speakerType": "character",
       "speaker": "1786851211019-59swl59",
       "text": "네, 사장님. …뭐, 술집보다는 나을 테니까요. (시니컬하게 웃으며)",
-      "text_key": "node_1787138881950_31_8sf9"
+      "text_key": "node_1787138881950_31_8sf9",
+      "voice": "node_1787138881950_31_8sf9.wav",
+      "sound": "node_1787138881950_31_8sf9.wav"
     },
     {
       "id": "node_1787138881950_32_qr56",
@@ -296,6 +322,71 @@
       "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/images/2026-08-19_00181_.png",
       "url": "media://chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/images/2026-08-19_00181_.png",
       "size": 2039524
+    },
+    {
+      "fileName": "node_1787138881950_11_uy1u.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_11_uy1u.wav"
+    },
+    {
+      "fileName": "node_1787138881950_13_l9gn.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_13_l9gn.wav"
+    },
+    {
+      "fileName": "node_1787138881950_16_mrzs.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_16_mrzs.wav"
+    },
+    {
+      "fileName": "node_1787138881950_20_3nl7.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_20_3nl7.wav"
+    },
+    {
+      "fileName": "node_1787138881950_21_0eiz.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_21_0eiz.wav"
+    },
+    {
+      "fileName": "node_1787138881950_23_f36d.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_23_f36d.wav"
+    },
+    {
+      "fileName": "node_1787138881950_25_sq7v.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_25_sq7v.wav"
+    },
+    {
+      "fileName": "node_1787138881950_27_m7e8.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_27_m7e8.wav"
+    },
+    {
+      "fileName": "node_1787138881950_29_j813.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_29_j813.wav"
+    },
+    {
+      "fileName": "node_1787138881950_31_8sf9.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_31_8sf9.wav"
+    },
+    {
+      "fileName": "node_1787138881950_5_f52b.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_5_f52b.wav"
+    },
+    {
+      "fileName": "node_1787138881950_7_bbu7.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_7_bbu7.wav"
+    },
+    {
+      "fileName": "node_1787138881950_9_8tfh.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/97932273-6056-484b-b6e5-706727882e36/sounds/node_1787138881950_9_8tfh.wav"
     }
   ],
   "sourceZipName": "직접 생성",

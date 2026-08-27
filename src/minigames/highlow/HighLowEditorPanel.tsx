@@ -356,6 +356,88 @@ export function HighLowEditorPanel() {
                 />
               </div>
             </div>
+
+            {/* 4가지 아이템 개별 등장 확률 (%) 설정 */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+              <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
+                <span>🎁</span>
+                <span>아이템별 개별 등장 확률 설정 (Item Drop Rates %)</span>
+              </h4>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                <div>
+                  <label className="block text-cyan-300 font-bold mb-1">👁️ 카드 엿보기 (%)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={currentRoomConfig.itemDropRates?.peek_card ?? 20}
+                    onChange={(e) => {
+                      const val = Math.min(100, Math.max(0, Number(e.target.value) || 0))
+                      handleUpdateConfigField(activeRoomId, 'itemDropRates', {
+                        ...currentRoomConfig.itemDropRates,
+                        peek_card: val,
+                      })
+                    }}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-cyan-200 font-bold focus:border-cyan-400 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-yellow-300 font-bold mb-1">⚡ 배당 2배 (%)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={currentRoomConfig.itemDropRates?.double_payout ?? 15}
+                    onChange={(e) => {
+                      const val = Math.min(100, Math.max(0, Number(e.target.value) || 0))
+                      handleUpdateConfigField(activeRoomId, 'itemDropRates', {
+                        ...currentRoomConfig.itemDropRates,
+                        double_payout: val,
+                      })
+                    }}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-yellow-200 font-bold focus:border-yellow-400 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-pink-300 font-bold mb-1">🛡️ 패배 쉴드 (%)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={currentRoomConfig.itemDropRates?.loss_shield ?? 10}
+                    onChange={(e) => {
+                      const val = Math.min(100, Math.max(0, Number(e.target.value) || 0))
+                      handleUpdateConfigField(activeRoomId, 'itemDropRates', {
+                        ...currentRoomConfig.itemDropRates,
+                        loss_shield: val,
+                      })
+                    }}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-pink-200 font-bold focus:border-pink-400 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-purple-300 font-bold mb-1">🎩 스태프 영입 (%)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={currentRoomConfig.itemDropRates?.staff_hire ?? 5}
+                    onChange={(e) => {
+                      const val = Math.min(100, Math.max(0, Number(e.target.value) || 0))
+                      handleUpdateConfigField(activeRoomId, 'itemDropRates', {
+                        ...currentRoomConfig.itemDropRates,
+                        staff_hire: val,
+                      })
+                    }}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-purple-200 font-bold focus:border-purple-400 outline-none"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
