@@ -1,0 +1,364 @@
+{
+  "id": "47215c35-ad07-4b2b-a633-1fbc75c2055a",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "47215c35-ad07-4b2b-a633-1fbc75c2055a",
+  "title": "스카웃",
+  "startNode": "node_1787135825636_0_7g15",
+  "nodes": [
+    {
+      "id": "node_1787135825636_0_7g15",
+      "type": "graphic",
+      "image": "2026-08-19_00148_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787135825636_1_nas3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "거리. 크리에이터를 스카웃하러 돌아다니던 중, 순찰 중인 한 여경이 눈에 들어온다.",
+      "text_key": "node_1787135825636_1_nas3"
+    },
+    {
+      "id": "node_1787135825636_2_99ia",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "좁고 긴 눈이 날카롭게 빛나고, 무쌍의 시선이 오히려 더 치명적이다. 반팔 셔츠가 가슴을 팽팽하게 받치고, 태닝된 피부가 유니폼 사이로 드러난다. 저 몸이 방송에 나오면 시청자들이 미칠 거다. 나는 그녀에게 다가가기로 마음먹는다.",
+      "text_key": "node_1787135825636_2_99ia"
+    },
+    {
+      "id": "node_1787135825636_3_u1p9",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "실례합니다, 잠시 괜찮을까요.",
+      "text_key": "node_1787135825636_3_u1p9"
+    },
+    {
+      "id": "node_1787135825636_4_kdf4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "네. (짧게 답하며, 시선을 나에게 향한다)",
+      "text_key": "node_1787135825636_4_kdf4",
+      "voice": "node_1787135825636_4_kdf4.wav",
+      "sound": "node_1787135825636_4_kdf4.wav"
+    },
+    {
+      "id": "node_1787135825636_5_9rhr",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "제가 방송국을 운영하는 사람인데요. 아키야마 씨께 꼭 드릴 제안이 있어서요.",
+      "text_key": "node_1787135825636_5_9rhr"
+    },
+    {
+      "id": "node_1787135825636_6_xzrn",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "제안이요. (눈을 가늘게 뜬다)",
+      "text_key": "node_1787135825636_6_xzrn",
+      "voice": "node_1787135825636_6_xzrn.wav",
+      "sound": "node_1787135825636_6_xzrn.wav"
+    },
+    {
+      "id": "node_1787135825636_7_cive",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저희 방송국에서, 크리에이터로 활동해 보시지 않겠습니까.",
+      "text_key": "node_1787135825636_7_cive"
+    },
+    {
+      "id": "node_1787135825636_8_9dbu",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "…크리에이터. 저는 경찰입니다. (건조하게)",
+      "text_key": "node_1787135825636_8_9dbu",
+      "voice": "node_1787135825636_8_9dbu.wav",
+      "sound": "node_1787135825636_8_9dbu.wav"
+    },
+    {
+      "id": "node_1787135825636_9_b4m8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "경찰로서의 단정함과 카리스마, 그게 저희 방송에선 최고의 무기가 됩니다.",
+      "text_key": "node_1787135825636_9_b4m8"
+    },
+    {
+      "id": "node_1787135825636_10_qv10",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "방송. 어떤 방송국이죠. (간결하게)",
+      "text_key": "node_1787135825636_10_qv10",
+      "voice": "node_1787135825636_10_qv10.wav",
+      "sound": "node_1787135825636_10_qv10.wav"
+    },
+    {
+      "id": "node_1787135825636_11_r2ln",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "성인 방송국입니다. 솔직히 말씀드리죠. (정면을 본다)",
+      "text_key": "node_1787135825636_11_r2ln"
+    },
+    {
+      "id": "node_1787135825636_12_38pu",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "…! (잠시 말을 잃는다)",
+      "text_key": "node_1787135825636_12_38pu"
+    },
+    {
+      "id": "node_1787135825636_13_0aik",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "성인 방송에, 저 같은 사람이요. (고개를 살짝 젓는다)",
+      "text_key": "node_1787135825636_13_0aik",
+      "voice": "node_1787135825636_13_0aik.wav",
+      "sound": "node_1787135825636_13_0aik.wav"
+    },
+    {
+      "id": "node_1787135825636_14_ufah",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아키야마 씨 같은 사람이니까요. (단호히)",
+      "text_key": "node_1787135825636_14_ufah"
+    },
+    {
+      "id": "node_1787135825636_15_venj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "…… (잠시 생각에 잠긴다)",
+      "text_key": "node_1787135825636_15_venj"
+    },
+    {
+      "id": "node_1787135825636_16_3o31",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "갑자기 이런 말씀 드려서 죄송합니다. 다만, 아키야마 씨의 그 단정한 모습을 보자마자 확신했어요.",
+      "text_key": "node_1787135825636_16_3o31"
+    },
+    {
+      "id": "node_1787135825636_17_jsvp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "확신. (내 눈을 바라본다)",
+      "text_key": "node_1787135825636_17_jsvp",
+      "voice": "node_1787135825636_17_jsvp.wav",
+      "sound": "node_1787135825636_17_jsvp.wav"
+    },
+    {
+      "id": "node_1787135825636_18_d9f3",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "…제가, 할 수 있을까요. (조용히)",
+      "text_key": "node_1787135825636_18_d9f3",
+      "voice": "node_1787135825636_18_d9f3.wav",
+      "sound": "node_1787135825636_18_d9f3.wav"
+    },
+    {
+      "id": "node_1787135825636_19_wd33",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "할 수 있어요. 아니, 아키야마 씨가 아니면 안 됩니다. (또박또박)",
+      "text_key": "node_1787135825636_19_wd33"
+    },
+    {
+      "id": "node_1787135825636_20_hj5w",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "그렇게까지 말씀하시니. (살짝 입꼬리를 올린다)",
+      "text_key": "node_1787135825636_20_hj5w",
+      "voice": "node_1787135825636_20_hj5w.wav",
+      "sound": "node_1787135825636_20_hj5w.wav"
+    },
+    {
+      "id": "node_1787135825636_21_4ldo",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그럼, 승낙으로 받아들여도 되겠습니까.",
+      "text_key": "node_1787135825636_21_4ldo"
+    },
+    {
+      "id": "node_1787135825636_22_jx5h",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "네. 조건만 괜찮다면요. (고개를 끄덕인다)",
+      "text_key": "node_1787135825636_22_jx5h",
+      "voice": "node_1787135825636_22_jx5h.wav",
+      "sound": "node_1787135825636_22_jx5h.wav"
+    },
+    {
+      "id": "node_1787135825636_23_0fzx",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "물론입니다. 아키야마 씨에게 불리한 조건은 절대 없어요.",
+      "text_key": "node_1787135825636_23_0fzx"
+    },
+    {
+      "id": "node_1787135825636_24_0ja4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "…잘 부탁드립니다. (허리를 숙여 인사한다)",
+      "text_key": "node_1787135825636_24_0ja4",
+      "voice": "node_1787135825636_24_0ja4.wav",
+      "sound": "node_1787135825636_24_0ja4.wav"
+    },
+    {
+      "id": "node_1787135825636_25_m4f2",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아키야마 씨야말로, 잘 부탁드립니다. (미소 짓는다)",
+      "text_key": "node_1787135825636_25_m4f2"
+    },
+    {
+      "id": "node_1787135825636_26_kumo",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "…성함, 어떻게 부르면 될까요. (시선을 올린다)",
+      "text_key": "node_1787135825636_26_kumo",
+      "voice": "node_1787135825636_26_kumo.wav",
+      "sound": "node_1787135825636_26_kumo.wav"
+    },
+    {
+      "id": "node_1787135825636_27_3n85",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사장, 이라고 불러 주세요. 앞으로 그렇게 될 테니까요.",
+      "text_key": "node_1787135825636_27_3n85"
+    },
+    {
+      "id": "node_1787135825636_28_8un6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "네, 사장님. (짧게, 입꼬리를 올린다)",
+      "text_key": "node_1787135825636_28_8un6",
+      "voice": "node_1787135825636_28_8un6.wav",
+      "sound": "node_1787135825636_28_8un6.wav"
+    },
+    {
+      "id": "node_1787135825636_29_sgr8",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 다시 순찰로 돌아간다. 나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
+      "text_key": "node_1787135825636_29_sgr8"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "미호",
+      "name": "미호"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    },
+    {
+      "id": "1786850998437-g6olmc9",
+      "name": "아키야마 미호"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "id": "1787136008483-jf14pr5",
+      "fileName": "2026-08-19_00148_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/images/2026-08-19_00148_.png",
+      "url": "media://chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/images/2026-08-19_00148_.png",
+      "size": 2540467
+    },
+    {
+      "fileName": "node_1787135825636_10_qv10.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_10_qv10.wav"
+    },
+    {
+      "fileName": "node_1787135825636_13_0aik.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_13_0aik.wav"
+    },
+    {
+      "fileName": "node_1787135825636_17_jsvp.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_17_jsvp.wav"
+    },
+    {
+      "fileName": "node_1787135825636_18_d9f3.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_18_d9f3.wav"
+    },
+    {
+      "fileName": "node_1787135825636_20_hj5w.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_20_hj5w.wav"
+    },
+    {
+      "fileName": "node_1787135825636_22_jx5h.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_22_jx5h.wav"
+    },
+    {
+      "fileName": "node_1787135825636_24_0ja4.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_24_0ja4.wav"
+    },
+    {
+      "fileName": "node_1787135825636_26_kumo.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_26_kumo.wav"
+    },
+    {
+      "fileName": "node_1787135825636_28_8un6.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_28_8un6.wav"
+    },
+    {
+      "fileName": "node_1787135825636_4_kdf4.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_4_kdf4.wav"
+    },
+    {
+      "fileName": "node_1787135825636_6_xzrn.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_6_xzrn.wav"
+    },
+    {
+      "fileName": "node_1787135825636_8_9dbu.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/47215c35-ad07-4b2b-a633-1fbc75c2055a/sounds/node_1787135825636_8_9dbu.wav"
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T05:32:58.445Z",
+  "ownerCharacterId": "1786850998437-g6olmc9"
+}

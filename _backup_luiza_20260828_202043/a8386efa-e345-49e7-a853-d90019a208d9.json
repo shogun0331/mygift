@@ -1,0 +1,374 @@
+{
+  "id": "a8386efa-e345-49e7-a853-d90019a208d9",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "a8386efa-e345-49e7-a853-d90019a208d9",
+  "title": "VIP",
+  "startNode": "node_1787185754205_2_9rl3",
+  "nodes": [
+    {
+      "id": "node_1787185754205_2_9rl3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "고급 호텔룸. 문이 열리고, 레드 실크 슬립 드레스 차림의 루이자가 들어온다. 개인 만남을 수락한 것이다.",
+      "text_key": "node_1787185754205_2_9rl3"
+    },
+    {
+      "id": "node_1787185754205_0_y488",
+      "type": "graphic",
+      "image": "2026-08-20_00014_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787185754205_3_9bjj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "…안녕! 불러줘서 고마워! (손을 흔들며 들어온다)",
+      "text_key": "node_1787185754205_3_9bjj",
+      "voice": "node_1787185754205_3_9bjj.wav",
+      "sound": "node_1787185754205_3_9bjj.wav"
+    },
+    {
+      "id": "node_1787185754205_4_hfya",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "와주셔서 고마워요. 방송에서 보던 그대로네요.",
+      "text_key": "node_1787185754205_4_hfya"
+    },
+    {
+      "id": "node_1787185754205_5_jr1i",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "VIP분이랑 개인 만남이라고 들었어.",
+      "text_key": "node_1787185754205_5_jr1i",
+      "voice": "node_1787185754205_5_jr1i.wav",
+      "sound": "node_1787185754205_5_jr1i.wav"
+    },
+    {
+      "id": "node_1787185754205_6_btqn",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "부담 드리지 않을게요. 편하게 하세요.",
+      "text_key": "node_1787185754205_6_btqn"
+    },
+    {
+      "id": "node_1787185754205_7_ysji",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "응. 방송 밖에서 보는 건 처음이네.",
+      "text_key": "node_1787185754205_7_ysji",
+      "voice": "node_1787185754205_7_ysji.wav",
+      "sound": "node_1787185754205_7_ysji.wav"
+    },
+    {
+      "id": "node_1787185754205_8_b4g6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "저도예요. 이렇게 예쁜 분을 가까이서 보니, 방송이랑은 또 다르네요.",
+      "text_key": "node_1787185754205_8_b4g6"
+    },
+    {
+      "id": "node_1787185754205_9_kc37",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "과찬이야.",
+      "text_key": "node_1787185754205_9_kc37",
+      "voice": "node_1787185754205_9_kc37.wav",
+      "sound": "node_1787185754205_9_kc37.wav"
+    },
+    {
+      "id": "node_1787185754205_10_wkz1",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "오늘은… 제가 원하는 대로 해도 되는 거죠?",
+      "text_key": "node_1787185754205_10_wkz1"
+    },
+    {
+      "id": "node_1787185754205_11_xpls",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "응. 오늘만큼은, 고객님 뜻대로.",
+      "text_key": "node_1787185754205_11_xpls",
+      "voice": "node_1787185754205_11_xpls.wav",
+      "sound": "node_1787185754205_11_xpls.wav"
+    },
+    {
+      "id": "node_1787185754205_12_mjml",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "루이자가 드레스 끈을 내려 가슴을 드러낸다.",
+      "text_key": "node_1787185754205_12_mjml"
+    },
+    {
+      "id": "node_1787185754205_13_dj28",
+      "type": "graphic",
+      "image": "2026-08-20_00001_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787185754205_14_n484",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "내가, 입으로 모실게. (내 바지 위로 손을 올린다)",
+      "text_key": "node_1787185754205_14_n484",
+      "voice": "node_1787185754205_14_n484.wav",
+      "sound": "node_1787185754205_14_n484.wav"
+    },
+    {
+      "id": "node_1787185754205_15_aexk",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "부탁해요.",
+      "text_key": "node_1787185754205_15_aexk"
+    },
+    {
+      "id": "node_1787185754205_16_8hlb",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 앞에 무릎을 꿇고, 내 바지를 천천히 내린다.",
+      "text_key": "node_1787185754205_16_8hlb"
+    },
+    {
+      "id": "node_1787185754205_17_uyfa",
+      "type": "graphic",
+      "image": "2026-08-20_00004_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787185754205_18_4y21",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "맛있게 해줄게.",
+      "text_key": "node_1787185754205_18_4y21",
+      "voice": "node_1787185754205_18_4y21.wav",
+      "sound": "node_1787185754205_18_4y21.wav"
+    },
+    {
+      "id": "node_1787185754205_19_11qc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "혀를 내밀어 귀두를 핥고, 입을 벌려 천천히 물어 넣는다.",
+      "text_key": "node_1787185754205_19_11qc"
+    },
+    {
+      "id": "node_1787185754205_20_p6h3",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "아…… 루이자 씨…",
+      "text_key": "node_1787185754205_20_p6h3"
+    },
+    {
+      "id": "node_1787185754205_21_ep9h",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 눈을 감고, 내 자지를 깊이 받아들인다.",
+      "text_key": "node_1787185754205_21_ep9h"
+    },
+    {
+      "id": "node_1787185754205_22_nt7b",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "나… 곧…",
+      "text_key": "node_1787185754205_22_nt7b"
+    },
+    {
+      "id": "node_1787185754205_23_j14i",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "그대로, 입에 내줘.",
+      "text_key": "node_1787185754205_23_j14i",
+      "voice": "node_1787185754205_23_j14i.wav",
+      "sound": "node_1787185754205_23_j14i.wav"
+    },
+    {
+      "id": "node_1787185754205_24_c1sc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입을 떼고, 얼굴을 내 쪽으로 든다.",
+      "text_key": "node_1787185754205_24_c1sc"
+    },
+    {
+      "id": "node_1787185754205_25_xjcm",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "아… 나온다…!",
+      "text_key": "node_1787185754205_25_xjcm"
+    },
+    {
+      "id": "node_1787185754205_26_57qi",
+      "type": "graphic",
+      "image": "2026-08-20_00006_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787185754205_27_6iby",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "…대단하다.",
+      "text_key": "node_1787185754205_27_6iby",
+      "voice": "node_1787185754205_27_6iby.wav",
+      "sound": "node_1787185754205_27_6iby.wav"
+    },
+    {
+      "id": "node_1787185754205_28_9nda",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입안 가득 정액을 머금고, 입꼬리를 올린다.",
+      "text_key": "node_1787185754205_28_9nda"
+    },
+    {
+      "id": "node_1787185754205_29_669f",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "오늘 밤은, 여기까지…",
+      "text_key": "node_1787185754205_29_669f",
+      "voice": "node_1787185754205_29_669f.wav",
+      "sound": "node_1787185754205_29_669f.wav"
+    },
+    {
+      "id": "node_1787185754205_30_m9m6",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "다음 만남을 약속하는 그 미소가, 나를 다시 방송으로 이끈다.",
+      "text_key": "node_1787185754205_30_m9m6"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "1786851153987-tb6qhg5",
+      "name": "루이자"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    },
+    {
+      "id": "VIP",
+      "name": "VIP"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "id": "1787185835615-dfpz5no",
+      "fileName": "2026-08-20_00001_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/images/2026-08-20_00001_.png",
+      "url": "media://chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/images/2026-08-20_00001_.png",
+      "size": 2212323
+    },
+    {
+      "id": "1787185858607-gceoqwm",
+      "fileName": "2026-08-20_00004_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/images/2026-08-20_00004_.png",
+      "url": "media://chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/images/2026-08-20_00004_.png",
+      "size": 2347496
+    },
+    {
+      "id": "1787185879390-rmxd9kv",
+      "fileName": "2026-08-20_00006_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/images/2026-08-20_00006_.png",
+      "url": "media://chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/images/2026-08-20_00006_.png",
+      "size": 2084528
+    },
+    {
+      "id": "1787185981957-l555nfx",
+      "fileName": "2026-08-20_00014_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/images/2026-08-20_00014_.png",
+      "url": "media://chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/images/2026-08-20_00014_.png",
+      "size": 2112738
+    },
+    {
+      "fileName": "node_1787185754205_11_xpls.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/sounds/node_1787185754205_11_xpls.wav"
+    },
+    {
+      "fileName": "node_1787185754205_14_n484.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/sounds/node_1787185754205_14_n484.wav"
+    },
+    {
+      "fileName": "node_1787185754205_18_4y21.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/sounds/node_1787185754205_18_4y21.wav"
+    },
+    {
+      "fileName": "node_1787185754205_23_j14i.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/sounds/node_1787185754205_23_j14i.wav"
+    },
+    {
+      "fileName": "node_1787185754205_27_6iby.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/sounds/node_1787185754205_27_6iby.wav"
+    },
+    {
+      "fileName": "node_1787185754205_29_669f.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/sounds/node_1787185754205_29_669f.wav"
+    },
+    {
+      "fileName": "node_1787185754205_3_9bjj.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/sounds/node_1787185754205_3_9bjj.wav"
+    },
+    {
+      "fileName": "node_1787185754205_5_jr1i.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/sounds/node_1787185754205_5_jr1i.wav"
+    },
+    {
+      "fileName": "node_1787185754205_7_ysji.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/sounds/node_1787185754205_7_ysji.wav"
+    },
+    {
+      "fileName": "node_1787185754205_9_kc37.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/sounds/node_1787185754205_9_kc37.wav"
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T05:48:28.954Z",
+  "ownerCharacterId": "1786851153987-tb6qhg5"
+}

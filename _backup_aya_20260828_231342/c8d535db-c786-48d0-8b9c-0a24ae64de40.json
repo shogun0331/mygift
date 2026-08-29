@@ -1,0 +1,479 @@
+{
+  "id": "c8d535db-c786-48d0-8b9c-0a24ae64de40",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "c8d535db-c786-48d0-8b9c-0a24ae64de40",
+  "title": "VIP",
+  "startNode": "node_1787012131245_0_ehw3",
+  "nodes": [
+    {
+      "id": "node_1787012131245_0_ehw3",
+      "type": "graphic",
+      "image": "2026-08-18_00001_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787012131245_1_twfb",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "고급 호텔룸. 문이 열리고, 흰 셔츠에 네이비 H라인 치마 차림의 아야가 들어온다. 개인 만남을 수락한 것이다.",
+      "text_key": "node_1787012131245_1_twfb"
+    },
+    {
+      "id": "node_1787012131245_2_lcio",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…안녕하세요. 불러주셔서 감사합니다. (고개를 살짝 숙인다)",
+      "text_key": "node_1787012131245_2_lcio",
+      "voice": "node_1787012131245_2_lcio.wav",
+      "sound": "node_1787012131245_2_lcio.wav"
+    },
+    {
+      "id": "node_1787012131245_3_bc67",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "와줘서 고마워요. 방송에서 보던 그대로네요.",
+      "text_key": "node_1787012131245_3_bc67"
+    },
+    {
+      "id": "node_1787012131245_4_db2h",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "VIP분과의 개인적인 만남이라고 들었어요. (또박또박)",
+      "text_key": "node_1787012131245_4_db2h",
+      "voice": "node_1787012131245_4_db2h.wav",
+      "sound": "node_1787012131245_4_db2h.wav"
+    },
+    {
+      "id": "node_1787012131245_5_lhh0",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "부담 주지 않을게요. 편하게 해요.",
+      "text_key": "node_1787012131245_5_lhh0"
+    },
+    {
+      "id": "node_1787012131245_6_kkvk",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "네. … (입꼬리를 올린다)",
+      "text_key": "node_1787012131245_6_kkvk",
+      "voice": "node_1787012131245_6_kkvk.wav",
+      "sound": "node_1787012131245_6_kkvk.wav"
+    },
+    {
+      "id": "node_1787012131245_7_6qta",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "이렇게 예쁜 분을 가까이서 보니, 방송이랑은 또 다르네요.",
+      "text_key": "node_1787012131245_7_6qta"
+    },
+    {
+      "id": "node_1787012131245_8_5nvg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "과찬이세요. (시선을 살짝 내린다)",
+      "text_key": "node_1787012131245_8_5nvg",
+      "voice": "node_1787012131245_8_5nvg.wav",
+      "sound": "node_1787012131245_8_5nvg.wav"
+    },
+    {
+      "id": "node_1787012131245_9_9oca",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "흰 블라우스가 호텔룸에 어색하게 빛난다. 블라우스가 D컵 가슴을 팽팽하게 받치고, 네이비 H라인 치마가 허리와 엉덩이를 따라 흐른다. 안경 너머의 냉철한 눈빛. 오늘 밤, 이 여자가 내 것이 된다.",
+      "text_key": "node_1787012131245_9_9oca"
+    },
+    {
+      "id": "node_1787012131245_10_oj4o",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "오늘은… 제가 원하는 대로 해도 되는 거죠?",
+      "text_key": "node_1787012131245_10_oj4o"
+    },
+    {
+      "id": "node_1787012131245_11_vvaa",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "네. 오늘만큼은, 고객님의 뜻대로. (눈을 맞춘다)",
+      "text_key": "node_1787012131245_11_vvaa",
+      "voice": "node_1787012131245_11_vvaa.wav",
+      "sound": "node_1787012131245_11_vvaa.wav"
+    },
+    {
+      "id": "node_1787012131245_13_oan3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "침대. 아야가 블라우스와 치마를 벗고, 완전히 드러난 몸으로 침대 위에 네 발로 엎드린다.",
+      "text_key": "node_1787012131245_13_oan3"
+    },
+    {
+      "id": "node_1787013070968_4uxd",
+      "type": "graphic",
+      "image": "2026-08-18_00007_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787012131245_14_s0v9",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…이쪽이 좋아요. (엉덩이를 살짝 든다)",
+      "text_key": "node_1787012131245_14_s0v9",
+      "voice": "node_1787012131245_14_s0v9.wav",
+      "sound": "node_1787012131245_14_s0v9.wav"
+    },
+    {
+      "id": "node_1787012131245_15_dey5",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "시라카와 씨… (그녀의 허리를 잡는다)",
+      "text_key": "node_1787012131245_15_dey5"
+    },
+    {
+      "id": "node_1787012131245_16_8hd1",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 네 발로 엎드렸다. 드러난 가슴이 아래로 매달리고, 젖은 성기가 애액으로 반짝인다. 방송에서 늘 감춰져 있던 몸이, 이제 내 앞에 그대로 드러난다.",
+      "text_key": "node_1787012131245_16_8hd1"
+    },
+    {
+      "id": "node_1787012131245_17_cof2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "넣어주세요. 제 안에… (엉덩이를 더 든다)",
+      "text_key": "node_1787012131245_17_cof2",
+      "voice": "node_1787012131245_17_cof2.wav",
+      "sound": "node_1787012131245_17_cof2.wav"
+    },
+    {
+      "id": "node_1787013088815_zpd7",
+      "type": "graphic",
+      "image": "2026-08-17_00080_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787012131245_18_kehw",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787012131245_19_dpmq",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "내 자지가 그녀의 성기를 뒤에서 밀어 넣는다.",
+      "text_key": "node_1787012131245_19_dpmq"
+    },
+    {
+      "id": "node_1787012131245_20_tmga",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "으읏…… (허리를 깊이 내민다)",
+      "text_key": "node_1787012131245_20_tmga"
+    },
+    {
+      "id": "node_1787012131245_21_6smg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "깊어요… 고객님, 제 안 깊은 곳까지… (몸을 떤다)",
+      "text_key": "node_1787012131245_21_6smg",
+      "voice": "node_1787012131245_21_6smg.wav",
+      "sound": "node_1787012131245_21_6smg.wav"
+    },
+    {
+      "id": "node_1787012131245_22_7uga",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "뒤에서 넣자, 더 깊이 들어간다. 그녀의 성기가 내 자지를 꽉 조이고, 애액이 허벅지를 타고 흘러내린다. 방송의 그녀가, 지금 내 앞에서 몸을 떨고 있다.",
+      "text_key": "node_1787012131245_22_7uga"
+    },
+    {
+      "id": "node_1787012131245_23_5v8b",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "좋아요… 더 세게… (엉덩이를 내게 밀어붙인다)",
+      "text_key": "node_1787012131245_23_5v8b",
+      "voice": "node_1787012131245_23_5v8b.wav",
+      "sound": "node_1787012131245_23_5v8b.wav"
+    },
+    {
+      "id": "node_1787012131245_24_qqy7",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "아…… 시라카와 씨… (그녀의 허리를 잡고 허리를 움직인다)",
+      "text_key": "node_1787012131245_24_qqy7"
+    },
+    {
+      "id": "node_1787012131245_25_ziqs",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "나는 그녀의 허리를 잡고 격렬하게 허리를 움직인다. 드러난 가슴이 아래로 크게 흔들리고, 젖은 성기가 내 자지를 삼켰다 뱉는다.",
+      "text_key": "node_1787012131245_25_ziqs"
+    },
+    {
+      "id": "node_1787012131245_26_dpo9",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "시라카와 씨… 나… 이제… (한계가 온다)",
+      "text_key": "node_1787012131245_26_dpo9"
+    },
+    {
+      "id": "node_1787012131245_27_g7bt",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "저도요… 같이… (낮게)",
+      "text_key": "node_1787012131245_27_g7bt",
+      "voice": "node_1787012131245_27_g7bt.wav",
+      "sound": "node_1787012131245_27_g7bt.wav"
+    },
+    {
+      "id": "node_1787012131245_28_njii",
+      "type": "graphic",
+      "image": "",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787012131245_29_8tj0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "침대. 아야가 네 발로 엎드린 채, 방금 사정한 정액이 성기에서 흘러나온다.",
+      "text_key": "node_1787012131245_29_8tj0"
+    },
+    {
+      "id": "node_1787012131245_30_bagr",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "아…… 나온다……! (허리가 떨리며 질내에 정액을 쏟아낸다)",
+      "text_key": "node_1787012131245_30_bagr"
+    },
+    {
+      "id": "node_1787012131245_31_c28l",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "고객님의… 전부… (몸을 떤다)",
+      "text_key": "node_1787012131245_31_c28l",
+      "voice": "node_1787012131245_31_c28l.wav",
+      "sound": "node_1787012131245_31_c28l.wav"
+    },
+    {
+      "id": "node_1787013120498_p9zl",
+      "type": "graphic",
+      "image": "2026-08-18_00010_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787012131245_32_trik",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "질내 사정 후, 천천히 자지를 뽑자 정액이 그녀의 성기에서 흘러나온다.",
+      "text_key": "node_1787012131245_32_trik"
+    },
+    {
+      "id": "node_1787012131245_33_pf46",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 성기에서 내 정액이 흘러나온다. 방송에서 늘 냉철하던 그 교수가, 지금은 내 정액으로 젖은 성기를 드러낸 채 엎드려 있다. 이게 오늘 밤의 끝이다.",
+      "text_key": "node_1787012131245_33_pf46"
+    },
+    {
+      "id": "node_1787012131245_34_fubb",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "하…… 고객님… 대단해요… (정액이 흐르는 성기를 드러낸 채, 어깨 너머로 나를 본다)",
+      "text_key": "node_1787012131245_34_fubb",
+      "voice": "node_1787012131245_34_fubb.wav",
+      "sound": "node_1787012131245_34_fubb.wav"
+    },
+    {
+      "id": "node_1787012131245_35_r2c3",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "VIP",
+      "text": "하…… 하…… (숨을 몰아쉰다)",
+      "text_key": "node_1787012131245_35_r2c3"
+    },
+    {
+      "id": "node_1787013136831_jzcg",
+      "type": "graphic",
+      "image": "2026-08-18_00001_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787012131245_36_vly7",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "오늘 밤은, 여기까지… (입꼬리를 올린다)",
+      "text_key": "node_1787012131245_36_vly7",
+      "voice": "node_1787012131245_36_vly7.wav",
+      "sound": "node_1787012131245_36_vly7.wav"
+    },
+    {
+      "id": "node_1787012131245_37_hsyl",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 성기에서 정액이 천천히 흘러내린다. 이 히든씬은, 이렇게 끝난다. 하지만 다음 만남을 약속하는 그 미소가, 나를 다시 방송으로 이끈다.",
+      "text_key": "node_1787012131245_37_hsyl"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "아야",
+      "name": "아야"
+    },
+    {
+      "id": "VIP",
+      "name": "VIP"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "id": "1787012898093-v5i6hsy",
+      "fileName": "2026-08-18_00001_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-18_00001_.png",
+      "url": "media://chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-18_00001_.png",
+      "size": 1962544
+    },
+    {
+      "id": "1787012943129-7sfl11g",
+      "fileName": "2026-08-18_00007_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-18_00007_.png",
+      "url": "media://chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-18_00007_.png",
+      "size": 2368257
+    },
+    {
+      "id": "1787012947560-483p29d",
+      "fileName": "2026-08-17_00080_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-17_00080_.png",
+      "url": "media://chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-17_00080_.png",
+      "size": 2072329
+    },
+    {
+      "id": "1787012950974-38hk10v",
+      "fileName": "2026-08-18_00010_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-18_00010_.png",
+      "url": "media://chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/2026-08-18_00010_.png",
+      "size": 1912113
+    },
+    {
+      "fileName": "node_1787012131245_11_vvaa.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_11_vvaa.wav"
+    },
+    {
+      "fileName": "node_1787012131245_14_s0v9.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_14_s0v9.wav"
+    },
+    {
+      "fileName": "node_1787012131245_17_cof2.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_17_cof2.wav"
+    },
+    {
+      "fileName": "node_1787012131245_21_6smg.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_21_6smg.wav"
+    },
+    {
+      "fileName": "node_1787012131245_23_5v8b.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_23_5v8b.wav"
+    },
+    {
+      "fileName": "node_1787012131245_27_g7bt.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_27_g7bt.wav"
+    },
+    {
+      "fileName": "node_1787012131245_2_lcio.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_2_lcio.wav"
+    },
+    {
+      "fileName": "node_1787012131245_31_c28l.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_31_c28l.wav"
+    },
+    {
+      "fileName": "node_1787012131245_34_fubb.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_34_fubb.wav"
+    },
+    {
+      "fileName": "node_1787012131245_36_vly7.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_36_vly7.wav"
+    },
+    {
+      "fileName": "node_1787012131245_4_db2h.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_4_db2h.wav"
+    },
+    {
+      "fileName": "node_1787012131245_6_kkvk.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_6_kkvk.wav"
+    },
+    {
+      "fileName": "node_1787012131245_8_5nvg.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/sounds/node_1787012131245_8_5nvg.wav"
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T05:45:19.401Z",
+  "ownerCharacterId": "1786851057540-5sup19s"
+}

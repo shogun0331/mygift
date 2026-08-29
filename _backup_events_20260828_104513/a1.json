@@ -1,0 +1,906 @@
+{
+  "id": "a1",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "a1",
+  "title": "데이트2",
+  "startNode": "node_1787097515369_1_k392",
+  "nodes": [
+    {
+      "id": "node_1787097515369_1_k392",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "고급 호텔 프라이빗 수영장. 미야자와 리나가 먼저 도착해 기다리고 있다.",
+      "text_key": "node_1787097515369_1_k392"
+    },
+    {
+      "id": "node_1787097515369_0_s6at",
+      "type": "graphic",
+      "image": "2026-08-18_00043_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787097515369_2_fyxg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "…오셨네요. 와주셔서 감사합니다.",
+      "text_key": "node_1787097515369_2_fyxg",
+      "voice": "node_1787097515369_2_fyxg.wav",
+      "sound": "node_1787097515369_2_fyxg.wav"
+    },
+    {
+      "id": "node_1787097515369_3_oncx",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "늦었죠? 미안합니다.",
+      "text_key": "node_1787097515369_3_oncx"
+    },
+    {
+      "id": "node_1787097515369_4_6r9q",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "아니에요. 제가 일찍 온 거니까요.",
+      "text_key": "node_1787097515369_4_6r9q",
+      "voice": "node_1787097515369_4_6r9q.wav",
+      "sound": "node_1787097515369_4_6r9q.wav"
+    },
+    {
+      "id": "node_1787097515369_5_4pzw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "이런 데를 통째로 빌리시다니, 준비가 대단하네요.",
+      "text_key": "node_1787097515369_5_4pzw"
+    },
+    {
+      "id": "node_1787097515369_6_rgi6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님을 모시려면 이 정도는 해야죠.",
+      "text_key": "node_1787097515369_6_rgi6",
+      "voice": "node_1787097515369_6_rgi6.wav",
+      "sound": "node_1787097515369_6_rgi6.wav"
+    },
+    {
+      "id": "node_1787097515369_7_3pou",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "모시시다니… 데이트 신청을 하신 건 미야자와 씨잖아요.",
+      "text_key": "node_1787097515369_7_3pou"
+    },
+    {
+      "id": "node_1787097515369_8_dsmb",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "네. 오늘은 제가 사장님을 모시는 날이에요.",
+      "text_key": "node_1787097515369_8_dsmb",
+      "voice": "node_1787097515369_8_dsmb.wav",
+      "sound": "node_1787097515369_8_dsmb.wav"
+    },
+    {
+      "id": "node_1787097515369_9_u553",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "그런데 왜 하필 저를요? 크리에이터가 사장을 부르실 이유는 없잖아요.",
+      "text_key": "node_1787097515369_9_u553"
+    },
+    {
+      "id": "node_1787097515369_10_zage",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "그런 건 오늘, 천천히 말해도 되죠.",
+      "text_key": "node_1787097515369_10_zage",
+      "voice": "node_1787097515369_10_zage.wav",
+      "sound": "node_1787097515369_10_zage.wav"
+    },
+    {
+      "id": "node_1787097515369_11_qjck",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "수영장 쪽으로 턱짓.",
+      "text_key": "node_1787097515369_11_qjck"
+    },
+    {
+      "id": "node_1787097515369_12_povl",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "…분위기가 심상치 않네요.",
+      "text_key": "node_1787097515369_12_povl"
+    },
+    {
+      "id": "node_1787097515369_13_efta",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "심상치 않을 만큼, 제가 진심이라는 거예요.",
+      "text_key": "node_1787097515369_13_efta",
+      "voice": "node_1787097515369_13_efta.wav",
+      "sound": "node_1787097515369_13_efta.wav"
+    },
+    {
+      "id": "node_1787097515369_14_kce4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "…오늘은 미야자와 씨 뜻에 맞춰 드릴게요.",
+      "text_key": "node_1787097515369_14_kce4"
+    },
+    {
+      "id": "node_1787097515369_15_71ha",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "좋아요. 그럼 들어가요.",
+      "text_key": "node_1787097515369_15_71ha",
+      "voice": "node_1787097515369_15_71ha.wav",
+      "sound": "node_1787097515369_15_71ha.wav"
+    },
+    {
+      "id": "node_1787097515369_16_tf6w",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "둘이 나란히 물에 들어간다. 물이 몸에 닿자 비키니가 젖어 피부에 달라붙는다.",
+      "text_key": "node_1787097515369_16_tf6w"
+    },
+    {
+      "id": "node_1787097515369_17_cyod",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님, 제가 왜 오늘 이렇게 했는지 아세요?",
+      "text_key": "node_1787097515369_17_cyod",
+      "voice": "node_1787097515369_17_cyod.wav",
+      "sound": "node_1787097515369_17_cyod.wav"
+    },
+    {
+      "id": "node_1787097515369_18_gt92",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "모르겠네요. 말해 주세요.",
+      "text_key": "node_1787097515369_18_gt92"
+    },
+    {
+      "id": "node_1787097515369_19_bdtx",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님이 저를 여자로 봐주셨으면 해서요.",
+      "text_key": "node_1787097515369_19_bdtx",
+      "voice": "node_1787097515369_19_bdtx.wav",
+      "sound": "node_1787097515369_19_bdtx.wav"
+    },
+    {
+      "id": "node_1787097515369_20_3wio",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "또박또박. 내 쪽으로 다가온다.",
+      "text_key": "node_1787097515369_20_3wio"
+    },
+    {
+      "id": "node_1787097515369_21_br0m",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "미야자와 씨, 너무 가까워요.",
+      "text_key": "node_1787097515369_21_br0m"
+    },
+    {
+      "id": "node_1787097515369_22_2lqg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "싫으세요?",
+      "text_key": "node_1787097515369_22_2lqg",
+      "voice": "node_1787097515369_22_2lqg.wav",
+      "sound": "node_1787097515369_22_2lqg.wav"
+    },
+    {
+      "id": "node_1787097515369_23_vk7j",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "싫은 게 아니라, 곤란하죠.",
+      "text_key": "node_1787097515369_23_vk7j"
+    },
+    {
+      "id": "node_1787097515369_24_866h",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "오늘만큼은, 곤란해지셔도 돼요.",
+      "text_key": "node_1787097515369_24_866h",
+      "voice": "node_1787097515369_24_866h.wav",
+      "sound": "node_1787097515369_24_866h.wav"
+    },
+    {
+      "id": "node_1787097515369_25_gr4r",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "물에서 나와 수영장 가장자리에 앉으며, 등 뒤로 손을 돌려 비키니 끈을 푼다.",
+      "text_key": "node_1787097515369_25_gr4r"
+    },
+    {
+      "id": "node_1787097594290_0gze",
+      "type": "graphic",
+      "image": "2026-08-18_00045_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787097515369_26_8lyi",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "미야자와 씨, 지금 뭐 하시는 거예요.",
+      "text_key": "node_1787097515369_26_8lyi"
+    },
+    {
+      "id": "node_1787097515369_27_sz5i",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "더우니까요.",
+      "text_key": "node_1787097515369_27_sz5i",
+      "voice": "node_1787097515369_27_sz5i.wav",
+      "sound": "node_1787097515369_27_sz5i.wav"
+    },
+    {
+      "id": "node_1787097515369_28_r3m0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "앞을 가린 채, 나를 본다.",
+      "text_key": "node_1787097515369_28_r3m0"
+    },
+    {
+      "id": "node_1787097515369_29_wwrt",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "…그게 더위 때문이에요?",
+      "text_key": "node_1787097515369_29_wwrt"
+    },
+    {
+      "id": "node_1787097515369_30_hat8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "아니요. 사장님 때문이에요.",
+      "text_key": "node_1787097515369_30_hat8",
+      "voice": "node_1787097515369_30_hat8.wav",
+      "sound": "node_1787097515369_30_hat8.wav"
+    },
+    {
+      "id": "node_1787097515369_33_ue4x",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠?",
+      "text_key": "node_1787097515369_33_ue4x",
+      "voice": "node_1787097515369_33_ue4x.wav",
+      "sound": "node_1787097515369_33_ue4x.wav"
+    },
+    {
+      "id": "node_1787097515369_34_z834",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "…이러시면 안 돼요.",
+      "text_key": "node_1787097515369_34_z834"
+    },
+    {
+      "id": "node_1787097515369_35_u7oj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "왜요. 저는 지금, 되게 두근거리는데.",
+      "text_key": "node_1787097515369_35_u7oj",
+      "voice": "node_1787097515369_35_u7oj.wav",
+      "sound": "node_1787097515369_35_u7oj.wav"
+    },
+    {
+      "id": "node_1787097515369_36_zxcx",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "내 손을 잡아 가슴 위에 얹는다. 손끝에 맨살이 닿는다. 젖고 따뜻한 가슴.",
+      "text_key": "node_1787097515369_36_zxcx"
+    },
+    {
+      "id": "node_1787097515369_37_jhsj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "제가 오늘 왜 이랬는지, 이제 알려드릴게요.",
+      "text_key": "node_1787097515369_37_jhsj",
+      "voice": "node_1787097515369_37_jhsj.wav",
+      "sound": "node_1787097515369_37_jhsj.wav"
+    },
+    {
+      "id": "node_1787097515369_38_wghv",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 몸 쪽으로 다가와, 내 앞에 무릎을 꿇는다.",
+      "text_key": "node_1787097515369_38_wghv"
+    },
+    {
+      "id": "node_1787097515369_40_nwzl",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님을, 제가 모시고 싶어요.",
+      "text_key": "node_1787097515369_40_nwzl",
+      "voice": "node_1787097515369_40_nwzl.wav",
+      "sound": "node_1787097515369_40_nwzl.wav"
+    },
+    {
+      "id": "node_1787097515369_42_kl7b",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "미야자와 씨, 거기까지는…",
+      "text_key": "node_1787097515369_42_kl7b"
+    },
+    {
+      "id": "node_1787097515369_43_pw8j",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "저, 하고 싶어요.",
+      "text_key": "node_1787097515369_43_pw8j",
+      "voice": "node_1787097515369_43_pw8j.wav",
+      "sound": "node_1787097515369_43_pw8j.wav"
+    },
+    {
+      "id": "node_1787097515369_44_ksj7",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "눈을 올려 나를 본다. 내 바지를 천천히 내린다.",
+      "text_key": "node_1787097515369_44_ksj7"
+    },
+    {
+      "id": "node_1787097515369_45_0lqo",
+      "type": "graphic",
+      "image": "2026-08-19_00001_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787097515369_46_05e0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "맛있게 해드릴게요.",
+      "text_key": "node_1787097515369_46_05e0",
+      "voice": "node_1787097515369_46_05e0.wav",
+      "sound": "node_1787097515369_46_05e0.wav"
+    },
+    {
+      "id": "node_1787097515369_47_v3ti",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "혀를 내밀어 귀두를 핥고, 입을 벌려 천천히 물어 넣는다. 머리를 앞뒤로 움직인다.",
+      "text_key": "node_1787097515369_47_v3ti"
+    },
+    {
+      "id": "node_1787097515369_48_t4vw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "아…… 미야자와 씨…",
+      "text_key": "node_1787097515369_48_t4vw"
+    },
+    {
+      "id": "node_1787097515369_49_zqfq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "입에 넣을게요…",
+      "text_key": "node_1787097515369_49_zqfq",
+      "voice": "node_1787097515369_49_zqfq.wav",
+      "sound": "node_1787097515369_49_zqfq.wav"
+    },
+    {
+      "id": "node_1787097515369_50_nouz",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "눈을 감고, 자지를 깊이 받아들인다.",
+      "text_key": "node_1787097515369_50_nouz"
+    },
+    {
+      "id": "node_1787097515369_51_3nnx",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "미야자와 씨… 나… 곧…",
+      "text_key": "node_1787097515369_51_3nnx"
+    },
+    {
+      "id": "node_1787097515369_52_7qc2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "그대로, 얼굴에… 내주세요.",
+      "text_key": "node_1787097515369_52_7qc2",
+      "voice": "node_1787097515369_52_7qc2.wav",
+      "sound": "node_1787097515369_52_7qc2.wav"
+    },
+    {
+      "id": "node_1787097515369_53_f459",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입을 떼고, 얼굴을 내 쪽으로 든다.",
+      "text_key": "node_1787097515369_53_f459"
+    },
+    {
+      "id": "node_1787097515369_54_gyux",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "아… 나온다…!",
+      "text_key": "node_1787097515369_54_gyux"
+    },
+    {
+      "id": "node_1787097515369_55_npma",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "허리가 떨린다.",
+      "text_key": "node_1787097515369_55_npma"
+    },
+    {
+      "id": "node_1787097515369_56_ujf7",
+      "type": "graphic",
+      "image": "2026-08-19_00003_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787097515369_57_ra49",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "…대단하세요.",
+      "text_key": "node_1787097515369_57_ra49",
+      "voice": "node_1787097515369_57_ra49.wav",
+      "sound": "node_1787097515369_57_ra49.wav"
+    },
+    {
+      "id": "node_1787097515369_58_muqs",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입꼬리를 올린다.",
+      "text_key": "node_1787097515369_58_muqs"
+    },
+    {
+      "id": "node_1787097515369_59_skin",
+      "type": "graphic",
+      "image": "2026-08-18_00043_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787097515369_60_wbky",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "수영장 옆 선베드. 미야자와 리나는 비키니 상의를 다시 입고, 나는 옷을 정리하고 있다. 평온한 표정.",
+      "text_key": "node_1787097515369_60_wbky"
+    },
+    {
+      "id": "node_1787097515369_61_00j8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "오늘, 정말 좋은 시간이었어요.",
+      "text_key": "node_1787097515369_61_00j8",
+      "voice": "node_1787097515369_61_00j8.wav",
+      "sound": "node_1787097515369_61_00j8.wav"
+    },
+    {
+      "id": "node_1787097515369_62_06gb",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "저도요. …솔직히, 이렇게 될 줄은 몰랐지만요.",
+      "text_key": "node_1787097515369_62_06gb"
+    },
+    {
+      "id": "node_1787097515369_63_fvhe",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "후회는 없으시죠?",
+      "text_key": "node_1787097515369_63_fvhe",
+      "voice": "node_1787097515369_63_fvhe.wav",
+      "sound": "node_1787097515369_63_fvhe.wav"
+    },
+    {
+      "id": "node_1787097515369_64_7ti5",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "없어요.",
+      "text_key": "node_1787097515369_64_7ti5"
+    },
+    {
+      "id": "node_1787097515369_65_fyzj",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "작게 웃는다. 미야자와 리나가 선베드에서 일어선다.",
+      "text_key": "node_1787097515369_65_fyzj"
+    },
+    {
+      "id": "node_1787097515369_66_vcap",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "이쯤이면 됐어요. 해도 지고 있고요.",
+      "text_key": "node_1787097515369_66_vcap",
+      "voice": "node_1787097515369_66_vcap.wav",
+      "sound": "node_1787097515369_66_vcap.wav"
+    },
+    {
+      "id": "node_1787097515369_67_abt7",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "그렇네요.",
+      "text_key": "node_1787097515369_67_abt7"
+    },
+    {
+      "id": "node_1787097515369_68_hwce",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "회사에선, 평소처럼 대할게요.",
+      "text_key": "node_1787097515369_68_hwce",
+      "voice": "node_1787097515369_68_hwce.wav",
+      "sound": "node_1787097515369_68_hwce.wav"
+    },
+    {
+      "id": "node_1787097515369_69_hv85",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "그래요. 평소처럼.",
+      "text_key": "node_1787097515369_69_hv85"
+    },
+    {
+      "id": "node_1787097515369_70_foba",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "그럼 저는, 이쪽으로.",
+      "text_key": "node_1787097515369_70_foba",
+      "voice": "node_1787097515369_70_foba.wav",
+      "sound": "node_1787097515369_70_foba.wav"
+    },
+    {
+      "id": "node_1787097515369_71_3iny",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "수영장 출구를 가리킨다.",
+      "text_key": "node_1787097515369_71_3iny"
+    },
+    {
+      "id": "node_1787097515369_72_5msi",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "배웅해 드릴까요?",
+      "text_key": "node_1787097515369_72_5msi"
+    },
+    {
+      "id": "node_1787097515369_73_keu8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "괜찮아요. 여기서 헤어져요.",
+      "text_key": "node_1787097515369_73_keu8",
+      "voice": "node_1787097515369_73_keu8.wav",
+      "sound": "node_1787097515369_73_keu8.wav"
+    },
+    {
+      "id": "node_1787097515369_74_exay",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미야자와 리나가 등을 돌려 걸어가다, 잠시 멈춘다.",
+      "text_key": "node_1787097515369_74_exay"
+    },
+    {
+      "id": "node_1787097515369_75_qjhj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "사장님, 다음에 또 불러도 돼요?",
+      "text_key": "node_1787097515369_75_qjhj",
+      "voice": "node_1787097515369_75_qjhj.wav",
+      "sound": "node_1787097515369_75_qjhj.wav"
+    },
+    {
+      "id": "node_1787097515369_76_dqzp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장",
+      "text": "…나중에 생각해 볼게요.",
+      "text_key": "node_1787097515369_76_dqzp"
+    },
+    {
+      "id": "node_1787097515369_77_9kky",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786792656193-i7isvfo",
+      "text": "좋아요. 그럼.",
+      "text_key": "node_1787097515369_77_9kky",
+      "voice": "node_1787097515369_77_9kky.wav",
+      "sound": "node_1787097515369_77_9kky.wav"
+    },
+    {
+      "id": "node_1787097515369_78_plul",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "걸어간다. 나는 뒷모습이 사라질 때까지 서서 바라본다.",
+      "text_key": "node_1787097515369_78_plul"
+    },
+    {
+      "id": "node_1787097515369_79_foer",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "사장(속마음)",
+      "text": "결국, 그녀는 나를 모셨다. 저 빨간 비키니가, 방금 내 앞에서 흔들리던 맨가슴이. 아, 정말로 아쉽다.",
+      "text_key": "node_1787097515369_79_foer"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "미야자와",
+      "name": "미야자와"
+    },
+    {
+      "id": "사장",
+      "name": "사장"
+    },
+    {
+      "id": "사장(속마음)",
+      "name": "사장(속마음)"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    },
+    {
+      "id": "1786792656193-i7isvfo",
+      "name": "미야자와 리나"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "id": "1787097441748-5ymp4a3",
+      "fileName": "2026-08-18_00043_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a1/images/2026-08-18_00043_.png",
+      "url": "media://chapter_assets/events/a1/images/2026-08-18_00043_.png",
+      "size": 2365095
+    },
+    {
+      "id": "1787097601614-pt7e0ub",
+      "fileName": "2026-08-18_00045_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a1/images/2026-08-18_00045_.png",
+      "url": "media://chapter_assets/events/a1/images/2026-08-18_00045_.png",
+      "size": 2526438
+    },
+    {
+      "id": "1787097741590-u3wt9vd",
+      "fileName": "2026-08-18_00047_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a1/images/2026-08-18_00047_.png",
+      "url": "media://chapter_assets/events/a1/images/2026-08-18_00047_.png",
+      "size": 2647924
+    },
+    {
+      "id": "1787097848361-0fqmcqf",
+      "fileName": "2026-08-19_00001_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a1/images/2026-08-19_00001_.png",
+      "url": "media://chapter_assets/events/a1/images/2026-08-19_00001_.png",
+      "size": 2691048
+    },
+    {
+      "id": "1787097879133-rloraxt",
+      "fileName": "2026-08-19_00003_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a1/images/2026-08-19_00003_.png",
+      "url": "media://chapter_assets/events/a1/images/2026-08-19_00003_.png",
+      "size": 2841234
+    },
+    {
+      "fileName": "node_1787097515369_10_zage.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_10_zage.wav"
+    },
+    {
+      "fileName": "node_1787097515369_13_efta.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_13_efta.wav"
+    },
+    {
+      "fileName": "node_1787097515369_15_71ha.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_15_71ha.wav"
+    },
+    {
+      "fileName": "node_1787097515369_17_cyod.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_17_cyod.wav"
+    },
+    {
+      "fileName": "node_1787097515369_19_bdtx.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_19_bdtx.wav"
+    },
+    {
+      "fileName": "node_1787097515369_22_2lqg.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_22_2lqg.wav"
+    },
+    {
+      "fileName": "node_1787097515369_24_866h.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_24_866h.wav"
+    },
+    {
+      "fileName": "node_1787097515369_27_sz5i.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_27_sz5i.wav"
+    },
+    {
+      "fileName": "node_1787097515369_2_fyxg.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_2_fyxg.wav"
+    },
+    {
+      "fileName": "node_1787097515369_30_hat8.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_30_hat8.wav"
+    },
+    {
+      "fileName": "node_1787097515369_33_ue4x.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_33_ue4x.wav"
+    },
+    {
+      "fileName": "node_1787097515369_35_u7oj.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_35_u7oj.wav"
+    },
+    {
+      "fileName": "node_1787097515369_37_jhsj.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_37_jhsj.wav"
+    },
+    {
+      "fileName": "node_1787097515369_40_nwzl.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_40_nwzl.wav"
+    },
+    {
+      "fileName": "node_1787097515369_43_pw8j.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_43_pw8j.wav"
+    },
+    {
+      "fileName": "node_1787097515369_46_05e0.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_46_05e0.wav"
+    },
+    {
+      "fileName": "node_1787097515369_49_zqfq.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_49_zqfq.wav"
+    },
+    {
+      "fileName": "node_1787097515369_4_6r9q.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_4_6r9q.wav"
+    },
+    {
+      "fileName": "node_1787097515369_52_7qc2.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_52_7qc2.wav"
+    },
+    {
+      "fileName": "node_1787097515369_57_ra49.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_57_ra49.wav"
+    },
+    {
+      "fileName": "node_1787097515369_61_00j8.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_61_00j8.wav"
+    },
+    {
+      "fileName": "node_1787097515369_63_fvhe.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_63_fvhe.wav"
+    },
+    {
+      "fileName": "node_1787097515369_66_vcap.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_66_vcap.wav"
+    },
+    {
+      "fileName": "node_1787097515369_68_hwce.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_68_hwce.wav"
+    },
+    {
+      "fileName": "node_1787097515369_6_rgi6.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_6_rgi6.wav"
+    },
+    {
+      "fileName": "node_1787097515369_70_foba.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_70_foba.wav"
+    },
+    {
+      "fileName": "node_1787097515369_73_keu8.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_73_keu8.wav"
+    },
+    {
+      "fileName": "node_1787097515369_75_qjhj.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_75_qjhj.wav"
+    },
+    {
+      "fileName": "node_1787097515369_77_9kky.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_77_9kky.wav"
+    },
+    {
+      "fileName": "node_1787097515369_8_dsmb.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/a1/sounds/node_1787097515369_8_dsmb.wav"
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T01:18:57.158Z",
+  "ownerCharacterId": "1786792656193-i7isvfo"
+}

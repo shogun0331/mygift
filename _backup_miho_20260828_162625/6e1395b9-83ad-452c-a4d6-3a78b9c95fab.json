@@ -1,0 +1,835 @@
+{
+  "id": "6e1395b9-83ad-452c-a4d6-3a78b9c95fab",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "6e1395b9-83ad-452c-a4d6-3a78b9c95fab",
+  "title": "섹스",
+  "startNode": "node_1787137422986_0_pour",
+  "nodes": [
+    {
+      "id": "node_1787137422986_0_pour",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "…어서 오세요. (살짝 고개를 숙인다)",
+      "text_key": "node_1787137422986_0_pour"
+    },
+    {
+      "id": "node_1787137637171_lm94",
+      "type": "graphic",
+      "image": "2026-08-19_00165_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787137422986_1_91pw",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "왔어요. 그런데… 그 차림은 뭡니까.",
+      "text_key": "node_1787137422986_1_91pw"
+    },
+    {
+      "id": "node_1787137422986_2_cput",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "집에선 편하게 있으라고 말씀드렸잖아요.",
+      "text_key": "node_1787137422986_2_cput",
+      "voice": "node_1787137422986_2_cput.wav",
+      "sound": "node_1787137422986_2_cput.wav"
+    },
+    {
+      "id": "node_1787137422986_3_0frz",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "편하게라도, 그건 좀…",
+      "text_key": "node_1787137422986_3_0frz"
+    },
+    {
+      "id": "node_1787137422986_4_d4s5",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "싫으세요. (눈을 가늘게 뜬다)",
+      "text_key": "node_1787137422986_4_d4s5",
+      "voice": "node_1787137422986_4_d4s5.wav",
+      "sound": "node_1787137422986_4_d4s5.wav"
+    },
+    {
+      "id": "node_1787137422986_5_1vpj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "싫다기보다, 곤란하죠.",
+      "text_key": "node_1787137422986_5_1vpj"
+    },
+    {
+      "id": "node_1787137422986_6_757x",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "일단 들어와요. 여기서 계속 서 있을 거예요.",
+      "text_key": "node_1787137422986_6_757x",
+      "voice": "node_1787137422986_6_757x.wav",
+      "sound": "node_1787137422986_6_757x.wav"
+    },
+    {
+      "id": "node_1787137422986_7_w1sm",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "나는 어쩔 수 없이 방에 들어선다. 블랙 레이스 속옷만 걸친 그녀가 눈앞에 있다.",
+      "text_key": "node_1787137422986_7_w1sm"
+    },
+    {
+      "id": "node_1787137422986_8_txxg",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…아키야마 씨. 오늘은 대체 무슨 일이에요.",
+      "text_key": "node_1787137422986_8_txxg"
+    },
+    {
+      "id": "node_1787137422986_9_v9qy",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "무슨 일이긴요. 사장님을 모시고 싶어서 부른 거죠.",
+      "text_key": "node_1787137422986_9_v9qy",
+      "voice": "node_1787137422986_9_v9qy.wav",
+      "sound": "node_1787137422986_9_v9qy.wav"
+    },
+    {
+      "id": "node_1787137422986_10_acbk",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "모시시다니, 그런 차림으로요?",
+      "text_key": "node_1787137422986_10_acbk"
+    },
+    {
+      "id": "node_1787137422986_11_3yvr",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "이 차림이 편하니까요.",
+      "text_key": "node_1787137422986_11_3yvr",
+      "voice": "node_1787137422986_11_3yvr.wav",
+      "sound": "node_1787137422986_11_3yvr.wav"
+    },
+    {
+      "id": "node_1787137422986_12_syea",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "사장님, 시선이 자꾸 제 몸에 가시네요.",
+      "text_key": "node_1787137422986_12_syea",
+      "voice": "node_1787137422986_12_syea.wav",
+      "sound": "node_1787137422986_12_syea.wav"
+    },
+    {
+      "id": "node_1787137422986_13_84hm",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…그 차림이면 당연히 가죠.",
+      "text_key": "node_1787137422986_13_84hm"
+    },
+    {
+      "id": "node_1787137422986_14_0l4c",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "좋아요. 오늘은 실컷 봐도 돼요.",
+      "text_key": "node_1787137422986_14_0l4c",
+      "voice": "node_1787137422986_14_0l4c.wav",
+      "sound": "node_1787137422986_14_0l4c.wav"
+    },
+    {
+      "id": "node_1787137422986_15_rea8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "오늘만큼은, 저를 크리에이터가 아니라 여자로 봐주세요.",
+      "text_key": "node_1787137422986_15_rea8",
+      "voice": "node_1787137422986_15_rea8.wav",
+      "sound": "node_1787137422986_15_rea8.wav"
+    },
+    {
+      "id": "node_1787137422986_16_rfek",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "……",
+      "text_key": "node_1787137422986_16_rfek"
+    },
+    {
+      "id": "node_1787137422986_17_7921",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "거절하실 건가요.",
+      "text_key": "node_1787137422986_17_7921",
+      "voice": "node_1787137422986_17_7921.wav",
+      "sound": "node_1787137422986_17_7921.wav"
+    },
+    {
+      "id": "node_1787137422986_18_55ft",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…거절하면, 어떻게 하시려고요.",
+      "text_key": "node_1787137422986_18_55ft"
+    },
+    {
+      "id": "node_1787137422986_19_66m1",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "거절 못 하게 만들 거예요.",
+      "text_key": "node_1787137422986_19_66m1",
+      "voice": "node_1787137422986_19_66m1.wav",
+      "sound": "node_1787137422986_19_66m1.wav"
+    },
+    {
+      "id": "node_1787137422986_20_7l5f",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 넥타이를 당기고, 몸을 밀착시켜 온다.",
+      "text_key": "node_1787137422986_20_7l5f"
+    },
+    {
+      "id": "node_1787137422986_21_ol2v",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "이제부터, 사장님은 제 거예요.",
+      "text_key": "node_1787137422986_21_ol2v",
+      "voice": "node_1787137422986_21_ol2v.wav",
+      "sound": "node_1787137422986_21_ol2v.wav"
+    },
+    {
+      "id": "node_1787137422986_22_vn4j",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미호가 블랙 속옷을 벗어 내린다.",
+      "text_key": "node_1787137422986_22_vn4j"
+    },
+    {
+      "id": "node_1787137422986_23_w12m",
+      "type": "graphic",
+      "image": "2026-08-19_00166_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787137422986_24_7vzc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "어때요, 제 몸. 방송에서 보는 것보다 낫죠.",
+      "text_key": "node_1787137422986_24_7vzc",
+      "voice": "node_1787137422986_24_7vzc.wav",
+      "sound": "node_1787137422986_24_7vzc.wav"
+    },
+    {
+      "id": "node_1787137422986_25_3e7r",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 앞에 무릎을 꿇는다.",
+      "text_key": "node_1787137422986_25_3e7r"
+    },
+    {
+      "id": "node_1787137422986_26_5tga",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "…사장님을, 제가 모시고 싶어요.",
+      "text_key": "node_1787137422986_26_5tga",
+      "voice": "node_1787137422986_26_5tga.wav",
+      "sound": "node_1787137422986_26_5tga.wav"
+    },
+    {
+      "id": "node_1787137422986_27_38hq",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "내 바지 위로 손을 올린다.",
+      "text_key": "node_1787137422986_27_38hq"
+    },
+    {
+      "id": "node_1787137422986_28_01vu",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아키야마 씨, 거기까지는…",
+      "text_key": "node_1787137422986_28_01vu"
+    },
+    {
+      "id": "node_1787137422986_29_1tr4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "저, 하고 싶어요.",
+      "text_key": "node_1787137422986_29_1tr4",
+      "voice": "node_1787137422986_29_1tr4.wav",
+      "sound": "node_1787137422986_29_1tr4.wav"
+    },
+    {
+      "id": "node_1787137422986_30_uuky",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "내 바지를 천천히 내린다.",
+      "text_key": "node_1787137422986_30_uuky"
+    },
+    {
+      "id": "node_1787137422986_31_skhq",
+      "type": "graphic",
+      "image": "2026-08-19_00168_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787137422986_32_k880",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "맛있게 해드릴게요.",
+      "text_key": "node_1787137422986_32_k880",
+      "voice": "node_1787137422986_32_k880.wav",
+      "sound": "node_1787137422986_32_k880.wav"
+    },
+    {
+      "id": "node_1787137422986_33_ljzu",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "혀를 내밀어 귀두를 핥고, 입을 벌려 천천히 물어 넣는다.",
+      "text_key": "node_1787137422986_33_ljzu"
+    },
+    {
+      "id": "node_1787137422986_34_pui3",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 아키야마 씨…",
+      "text_key": "node_1787137422986_34_pui3"
+    },
+    {
+      "id": "node_1787137422986_35_0ntv",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 눈을 감고, 내 자지를 깊이 받아들인다.",
+      "text_key": "node_1787137422986_35_0ntv"
+    },
+    {
+      "id": "node_1787137422986_36_rzle",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "나… 곧…",
+      "text_key": "node_1787137422986_36_rzle"
+    },
+    {
+      "id": "node_1787137422986_37_n212",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "그대로, 입에 내주세요.",
+      "text_key": "node_1787137422986_37_n212",
+      "voice": "node_1787137422986_37_n212.wav",
+      "sound": "node_1787137422986_37_n212.wav"
+    },
+    {
+      "id": "node_1787137422986_38_edma",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입을 떼고, 얼굴을 내 쪽으로 든다.",
+      "text_key": "node_1787137422986_38_edma"
+    },
+    {
+      "id": "node_1787137422986_39_4j7e",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아… 나온다…!",
+      "text_key": "node_1787137422986_39_4j7e"
+    },
+    {
+      "id": "node_1787137422986_40_v3j9",
+      "type": "graphic",
+      "image": "2026-08-19_00170_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787137422986_41_po33",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "…대단하세요.",
+      "text_key": "node_1787137422986_41_po33",
+      "voice": "node_1787137422986_41_po33.wav",
+      "sound": "node_1787137422986_41_po33.wav"
+    },
+    {
+      "id": "node_1787137422986_42_1h7u",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "아직이에요. 이제부터가 진짜니까.",
+      "text_key": "node_1787137422986_42_1h7u",
+      "voice": "node_1787137422986_42_1h7u.wav",
+      "sound": "node_1787137422986_42_1h7u.wav"
+    },
+    {
+      "id": "node_1787137422986_43_3r9o",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미호가 침대에 눕고, 다리를 벌린다. 완전히 벗은 맨몸이다.",
+      "text_key": "node_1787137422986_43_3r9o"
+    },
+    {
+      "id": "node_1787137422986_44_akxt",
+      "type": "graphic",
+      "image": "2026-08-19_00173_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787137422986_45_m1ms",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "이제, 저를 안아주세요.",
+      "text_key": "node_1787137422986_45_m1ms",
+      "voice": "node_1787137422986_45_m1ms.wav",
+      "sound": "node_1787137422986_45_m1ms.wav"
+    },
+    {
+      "id": "node_1787137422986_46_i9f6",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아키야마 씨… 정말 괜찮아요?",
+      "text_key": "node_1787137422986_46_i9f6"
+    },
+    {
+      "id": "node_1787137422986_47_c4l3",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "괜찮은 게 아니라, 원해요.",
+      "text_key": "node_1787137422986_47_c4l3",
+      "voice": "node_1787137422986_47_c4l3.wav",
+      "sound": "node_1787137422986_47_c4l3.wav"
+    },
+    {
+      "id": "node_1787137422986_48_oa5s",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "넣어주세요, 사장님.",
+      "text_key": "node_1787137422986_48_oa5s",
+      "voice": "node_1787137422986_48_oa5s.wav",
+      "sound": "node_1787137422986_48_oa5s.wav"
+    },
+    {
+      "id": "node_1787137422986_49_o71f",
+      "type": "graphic",
+      "image": "2026-08-19_00175_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787137422986_50_ghjn",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "내 자지가 그녀의 성기를 천천히 밀어 넣는다.",
+      "text_key": "node_1787137422986_50_ghjn"
+    },
+    {
+      "id": "node_1787137422986_51_bg9u",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "들어갔어요… 사장님이, 제 안에…",
+      "text_key": "node_1787137422986_51_bg9u",
+      "voice": "node_1787137422986_51_bg9u.wav",
+      "sound": "node_1787137422986_51_bg9u.wav"
+    },
+    {
+      "id": "node_1787137422986_52_ghjh",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "으읏……",
+      "text_key": "node_1787137422986_52_ghjh"
+    },
+    {
+      "id": "node_1787137422986_53_vo0l",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "기분 좋아요… 사장님 자지, 제 안에서 커지고 있어요…",
+      "text_key": "node_1787137422986_53_vo0l",
+      "voice": "node_1787137422986_53_vo0l.wav",
+      "sound": "node_1787137422986_53_vo0l.wav"
+    },
+    {
+      "id": "node_1787137422986_54_9pww",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "내가 허리를 움직일 때마다 그녀의 가슴이 크게 출렁인다.",
+      "text_key": "node_1787137422986_54_9pww"
+    },
+    {
+      "id": "node_1787137422986_55_r2v7",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "사장님, 제 가슴 만져주세요.",
+      "text_key": "node_1787137422986_55_r2v7",
+      "voice": "node_1787137422986_55_r2v7.wav",
+      "sound": "node_1787137422986_55_r2v7.wav"
+    },
+    {
+      "id": "node_1787137422986_56_kl86",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "……",
+      "text_key": "node_1787137422986_56_kl86"
+    },
+    {
+      "id": "node_1787137422986_57_rx5z",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "좋아요… 더 세게…",
+      "text_key": "node_1787137422986_57_rx5z",
+      "voice": "node_1787137422986_57_rx5z.wav",
+      "sound": "node_1787137422986_57_rx5z.wav"
+    },
+    {
+      "id": "node_1787137422986_58_5eqj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 아키야마 씨… 나… 이제…",
+      "text_key": "node_1787137422986_58_5eqj"
+    },
+    {
+      "id": "node_1787137422986_59_u1tk",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "나와요, 사장님. 저도 갈 거예요.",
+      "text_key": "node_1787137422986_59_u1tk",
+      "voice": "node_1787137422986_59_u1tk.wav",
+      "sound": "node_1787137422986_59_u1tk.wav"
+    },
+    {
+      "id": "node_1787137422986_60_9jt6",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 나온다……!",
+      "text_key": "node_1787137422986_60_9jt6"
+    },
+    {
+      "id": "node_1787137422986_61_5jk2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "사장님… 저도…",
+      "text_key": "node_1787137422986_61_5jk2",
+      "voice": "node_1787137422986_61_5jk2.wav",
+      "sound": "node_1787137422986_61_5jk2.wav"
+    },
+    {
+      "id": "node_1787137422986_62_hn5s",
+      "type": "graphic",
+      "image": "2026-08-19_00177_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787137422986_63_us30",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 침대에 누운 채 다리를 벌리고 있다. 정액이 성기에서 흘러나오고, 가슴과 배, 온몸에도 정액이 묻어 있다.",
+      "text_key": "node_1787137422986_63_us30"
+    },
+    {
+      "id": "node_1787137422986_64_8d65",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "하…… 사장님의… 전부…",
+      "text_key": "node_1787137422986_64_8d65",
+      "voice": "node_1787137422986_64_8d65.wav",
+      "sound": "node_1787137422986_64_8d65.wav"
+    },
+    {
+      "id": "node_1787137422986_65_v3oc",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… 하……",
+      "text_key": "node_1787137422986_65_v3oc"
+    },
+    {
+      "id": "node_1787137422986_66_r92d",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786850998437-g6olmc9",
+      "text": "정말, 대단했어요.",
+      "text_key": "node_1787137422986_66_r92d",
+      "voice": "node_1787137422986_66_r92d.wav",
+      "sound": "node_1787137422986_66_r92d.wav"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "미호",
+      "name": "미호"
+    },
+    {
+      "id": "1786850998437-g6olmc9",
+      "name": "아키야마 미호"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "id": "1787137658400-3ltr665",
+      "fileName": "2026-08-19_00165_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00165_.png",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00165_.png",
+      "size": 1986045
+    },
+    {
+      "id": "1787137747381-mieqzdd",
+      "fileName": "2026-08-19_00166_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00166_.png",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00166_.png",
+      "size": 2104986
+    },
+    {
+      "id": "1787138032226-iwcamyo",
+      "fileName": "2026-08-19_00168_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00168_.png",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00168_.png",
+      "size": 2285705
+    },
+    {
+      "id": "1787138050205-xo8rzs6",
+      "fileName": "2026-08-19_00170_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00170_.png",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00170_.png",
+      "size": 2174234
+    },
+    {
+      "id": "1787138218992-q6a789d",
+      "fileName": "2026-08-19_00173_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00173_.png",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00173_.png",
+      "size": 1845119
+    },
+    {
+      "id": "1787138367782-pkbt3i6",
+      "fileName": "2026-08-19_00175_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00175_.png",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00175_.png",
+      "size": 2135100
+    },
+    {
+      "id": "1787138527755-6z9bm5l",
+      "fileName": "2026-08-19_00177_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00177_.png",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-08-19_00177_.png",
+      "size": 2141884
+    },
+    {
+      "fileName": "node_1787137422986_11_3yvr.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_11_3yvr.wav"
+    },
+    {
+      "fileName": "node_1787137422986_12_syea.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_12_syea.wav"
+    },
+    {
+      "fileName": "node_1787137422986_14_0l4c.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_14_0l4c.wav"
+    },
+    {
+      "fileName": "node_1787137422986_15_rea8.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_15_rea8.wav"
+    },
+    {
+      "fileName": "node_1787137422986_17_7921.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_17_7921.wav"
+    },
+    {
+      "fileName": "node_1787137422986_19_66m1.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_19_66m1.wav"
+    },
+    {
+      "fileName": "node_1787137422986_21_ol2v.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_21_ol2v.wav"
+    },
+    {
+      "fileName": "node_1787137422986_24_7vzc.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_24_7vzc.wav"
+    },
+    {
+      "fileName": "node_1787137422986_26_5tga.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_26_5tga.wav"
+    },
+    {
+      "fileName": "node_1787137422986_29_1tr4.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_29_1tr4.wav"
+    },
+    {
+      "fileName": "node_1787137422986_2_cput.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_2_cput.wav"
+    },
+    {
+      "fileName": "node_1787137422986_32_k880.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_32_k880.wav"
+    },
+    {
+      "fileName": "node_1787137422986_37_n212.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_37_n212.wav"
+    },
+    {
+      "fileName": "node_1787137422986_41_po33.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_41_po33.wav"
+    },
+    {
+      "fileName": "node_1787137422986_42_1h7u.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_42_1h7u.wav"
+    },
+    {
+      "fileName": "node_1787137422986_45_m1ms.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_45_m1ms.wav"
+    },
+    {
+      "fileName": "node_1787137422986_47_c4l3.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_47_c4l3.wav"
+    },
+    {
+      "fileName": "node_1787137422986_48_oa5s.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_48_oa5s.wav"
+    },
+    {
+      "fileName": "node_1787137422986_4_d4s5.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_4_d4s5.wav"
+    },
+    {
+      "fileName": "node_1787137422986_51_bg9u.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_51_bg9u.wav"
+    },
+    {
+      "fileName": "node_1787137422986_53_vo0l.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_53_vo0l.wav"
+    },
+    {
+      "fileName": "node_1787137422986_55_r2v7.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_55_r2v7.wav"
+    },
+    {
+      "fileName": "node_1787137422986_57_rx5z.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_57_rx5z.wav"
+    },
+    {
+      "fileName": "node_1787137422986_59_u1tk.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_59_u1tk.wav"
+    },
+    {
+      "fileName": "node_1787137422986_61_5jk2.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_61_5jk2.wav"
+    },
+    {
+      "fileName": "node_1787137422986_64_8d65.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_64_8d65.wav"
+    },
+    {
+      "fileName": "node_1787137422986_66_r92d.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_66_r92d.wav"
+    },
+    {
+      "fileName": "node_1787137422986_6_757x.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_6_757x.wav"
+    },
+    {
+      "fileName": "node_1787137422986_9_v9qy.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/sounds/node_1787137422986_9_v9qy.wav"
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T05:33:58.333Z",
+  "ownerCharacterId": "1786850998437-g6olmc9"
+}

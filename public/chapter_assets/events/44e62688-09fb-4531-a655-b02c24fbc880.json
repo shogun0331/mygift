@@ -10,7 +10,7 @@
     {
       "id": "node_1786844399316_0_mzkt",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-28_00094_.webp",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -40,6 +40,14 @@
       "speaker": "player",
       "text": "왔어요. …예쁘네요. 정말.",
       "text_key": "node_1786844399316_3_saux"
+    },
+    {
+      "id": "graphic_44e62688_2",
+      "type": "graphic",
+      "image": "2026-08-28_00095_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1786844399316_4_lw9r",
@@ -170,7 +178,7 @@
     {
       "id": "node_1786844399316_18_ban1",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-28_00096_.webp",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -308,7 +316,7 @@
     {
       "id": "node_1786844399316_34_imie",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-28_00097_.webp",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -346,6 +354,14 @@
       "speaker": "",
       "text": "웨딩드레스 치마가 걷어 올려지고, 드러난 엉덩이와 젖은 그곳이 보인다. 신부의 몸을, 예식 직전에, 이렇게 가지다니… 나는 이제 돌이킬 수 없다.",
       "text_key": "node_1786844399316_38_c8jw"
+    },
+    {
+      "id": "graphic_44e62688_5",
+      "type": "graphic",
+      "image": "2026-08-28_00098_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1786844399316_39_khw1",
@@ -456,7 +472,7 @@
     {
       "id": "node_1786844399316_51_eog0",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-28_00099_.webp",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -544,7 +560,7 @@
     {
       "id": "node_1786844399316_61_a0tl",
       "type": "graphic",
-      "image": "",
+      "image": "2026-08-28_00100_.webp",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -642,137 +658,213 @@
     {
       "fileName": "node_1786844399316_10_dkqn.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_10_dkqn.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_10_dkqn.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_10_dkqn.wav"
     },
     {
       "fileName": "node_1786844399316_13_2e8r.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_13_2e8r.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_13_2e8r.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_13_2e8r.wav"
     },
     {
       "fileName": "node_1786844399316_15_7ajz.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_15_7ajz.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_15_7ajz.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_15_7ajz.wav"
     },
     {
       "fileName": "node_1786844399316_17_od8o.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_17_od8o.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_17_od8o.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_17_od8o.wav"
     },
     {
       "fileName": "node_1786844399316_20_7gt9.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_20_7gt9.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_20_7gt9.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_20_7gt9.wav"
     },
     {
       "fileName": "node_1786844399316_22_ji0y.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_22_ji0y.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_22_ji0y.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_22_ji0y.wav"
     },
     {
       "fileName": "node_1786844399316_25_rw3i.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_25_rw3i.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_25_rw3i.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_25_rw3i.wav"
     },
     {
       "fileName": "node_1786844399316_29_o1f6.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_29_o1f6.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_29_o1f6.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_29_o1f6.wav"
     },
     {
       "fileName": "node_1786844399316_2_uqb4.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_2_uqb4.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_2_uqb4.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_2_uqb4.wav"
     },
     {
       "fileName": "node_1786844399316_33_21vt.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_33_21vt.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_33_21vt.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_33_21vt.wav"
     },
     {
       "fileName": "node_1786844399316_36_nv39.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_36_nv39.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_36_nv39.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_36_nv39.wav"
     },
     {
       "fileName": "node_1786844399316_40_akqh.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_40_akqh.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_40_akqh.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_40_akqh.wav"
     },
     {
       "fileName": "node_1786844399316_42_sbim.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_42_sbim.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_42_sbim.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_42_sbim.wav"
     },
     {
       "fileName": "node_1786844399316_45_8da2.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_45_8da2.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_45_8da2.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_45_8da2.wav"
     },
     {
       "fileName": "node_1786844399316_48_ourp.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_48_ourp.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_48_ourp.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_48_ourp.wav"
     },
     {
       "fileName": "node_1786844399316_4_lw9r.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_4_lw9r.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_4_lw9r.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_4_lw9r.wav"
     },
     {
       "fileName": "node_1786844399316_50_if79.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_50_if79.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_50_if79.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_50_if79.wav"
     },
     {
       "fileName": "node_1786844399316_53_xa49.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_53_xa49.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_53_xa49.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_53_xa49.wav"
     },
     {
       "fileName": "node_1786844399316_55_t228.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_55_t228.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_55_t228.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_55_t228.wav"
     },
     {
       "fileName": "node_1786844399316_57_dbtk.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_57_dbtk.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_57_dbtk.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_57_dbtk.wav"
     },
     {
       "fileName": "node_1786844399316_59_apvo.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_59_apvo.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_59_apvo.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_59_apvo.wav"
     },
     {
       "fileName": "node_1786844399316_63_qmrh.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_63_qmrh.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_63_qmrh.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_63_qmrh.wav"
     },
     {
       "fileName": "node_1786844399316_65_hb87.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_65_hb87.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_65_hb87.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_65_hb87.wav"
     },
     {
       "fileName": "node_1786844399316_67_fp9m.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_67_fp9m.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_67_fp9m.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_67_fp9m.wav"
     },
     {
       "fileName": "node_1786844399316_6_nkc6.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_6_nkc6.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_6_nkc6.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_6_nkc6.wav"
     },
     {
       "fileName": "node_1786844399316_70_ol7o.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_70_ol7o.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_70_ol7o.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_70_ol7o.wav"
     },
     {
       "fileName": "node_1786844399316_8_kv2v.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_8_kv2v.wav"
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_8_kv2v.wav",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/sounds/node_1786844399316_8_kv2v.wav"
+    },
+    {
+      "fileName": "2026-08-28_00094_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00094_.webp",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00094_.webp",
+      "size": 114622
+    },
+    {
+      "fileName": "2026-08-28_00095_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00095_.webp",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00095_.webp",
+      "size": 106976
+    },
+    {
+      "fileName": "2026-08-28_00096_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00096_.webp",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00096_.webp",
+      "size": 133826
+    },
+    {
+      "fileName": "2026-08-28_00097_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00097_.webp",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00097_.webp",
+      "size": 104616
+    },
+    {
+      "fileName": "2026-08-28_00098_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00098_.webp",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00098_.webp",
+      "size": 122746
+    },
+    {
+      "fileName": "2026-08-28_00099_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00099_.webp",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00099_.webp",
+      "size": 78554
+    },
+    {
+      "fileName": "2026-08-28_00100_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00100_.webp",
+      "url": "media://chapter_assets/events/44e62688-09fb-4531-a655-b02c24fbc880/images/2026-08-28_00100_.webp",
+      "size": 80882
     }
   ],
   "sourceZipName": "직접 생성",

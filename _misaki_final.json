@@ -1,0 +1,492 @@
+[
+  {
+    "event": "스카웃",
+    "i": 1,
+    "beat": "발견",
+    "jobId": "3316e931-82e8-47f6-8ae6-7d163c8ba4f3",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00058_.png",
+    "node": "node_1787111769609_2_zy9n",
+    "insert_after": null
+  },
+  {
+    "event": "스카웃",
+    "i": 2,
+    "beat": "관찰",
+    "jobId": "acc66b08-7049-49e9-af94-7f6b9aab74cf",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00059_.png",
+    "node": null,
+    "insert_after": "node_1787111769609_2_zy9n"
+  },
+  {
+    "event": "스카웃",
+    "i": 3,
+    "beat": "대화",
+    "jobId": "5ff5bdc1-1389-4841-aae8-f6a404d6fde0",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00060_.png",
+    "node": null,
+    "insert_after": "node_1787111769609_2_zy9n"
+  },
+  {
+    "event": "스카웃",
+    "i": 4,
+    "beat": "제안",
+    "jobId": "c5f80d75-cfba-4c67-a111-f6e61069bce0",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00061_.png",
+    "node": null,
+    "insert_after": "node_1787111769609_2_zy9n"
+  },
+  {
+    "event": "스카웃",
+    "i": 5,
+    "beat": "놀람",
+    "jobId": "e6abbeb5-aff9-42e2-82de-a6ed10be040e",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00062_.png",
+    "node": null,
+    "insert_after": "node_1787111769609_2_zy9n"
+  },
+  {
+    "event": "스카웃",
+    "i": 6,
+    "beat": "고민",
+    "jobId": "434eac02-18aa-42d5-8461-45c7b8c9cb38",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00063_.png",
+    "node": null,
+    "insert_after": "node_1787111769609_2_zy9n"
+  },
+  {
+    "event": "스카웃",
+    "i": 7,
+    "beat": "확신",
+    "jobId": "6b362bf0-a032-40bc-a488-2240d2b2dc08",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00064_.png",
+    "node": null,
+    "insert_after": "node_1787111769609_2_zy9n"
+  },
+  {
+    "event": "스카웃",
+    "i": 8,
+    "beat": "승낙",
+    "jobId": "f2cdc6d4-c8dd-4f72-ae89-c5faeb7a5ac3",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00065_.png",
+    "node": null,
+    "insert_after": "node_1787111769609_2_zy9n"
+  },
+  {
+    "event": "스카웃",
+    "i": 9,
+    "beat": "인사",
+    "jobId": "ac037c08-f400-4bba-975e-892a2a625993",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00066_.png",
+    "node": null,
+    "insert_after": "node_1787111769609_2_zy9n"
+  },
+  {
+    "event": "스카웃",
+    "i": 10,
+    "beat": "뒷모습",
+    "jobId": "4cfd7981-d44d-416f-8179-b3212abd3d33",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00067_.png",
+    "node": null,
+    "insert_after": "node_1787111769609_2_zy9n"
+  },
+  {
+    "event": "데이트1",
+    "i": 1,
+    "beat": "기다림",
+    "jobId": "6af03081-2bd7-4e5a-be85-035658e6f86a",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00068_.png",
+    "node": "node_1787112506729_0_ucct",
+    "insert_after": null
+  },
+  {
+    "event": "데이트1",
+    "i": 2,
+    "beat": "대화",
+    "jobId": "5afe6a76-ff8e-449c-a273-e8c5f2209ddc",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00069_.png",
+    "node": null,
+    "insert_after": "node_1787112506729_0_ucct"
+  },
+  {
+    "event": "데이트1",
+    "i": 3,
+    "beat": "몸기울임",
+    "jobId": "ed38a26b-5734-4fd0-ac47-c7241999ac84",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00070_.png",
+    "node": null,
+    "insert_after": "node_1787112506729_0_ucct"
+  },
+  {
+    "event": "데이트1",
+    "i": 4,
+    "beat": "옷벗기",
+    "jobId": "a353c4ce-dd07-47b1-bc45-a9ce7eae3971",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00071_.png",
+    "node": null,
+    "insert_after": "node_1787112506729_0_ucct"
+  },
+  {
+    "event": "데이트1",
+    "i": 5,
+    "beat": "가슴노출",
+    "jobId": "71a2c8a3-95e7-400e-b159-4712b36adeac",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00072_.png",
+    "node": "node_1787112506729_22_ey6a",
+    "insert_after": null
+  },
+  {
+    "event": "데이트1",
+    "i": 6,
+    "beat": "손얹기",
+    "jobId": "8c192918-d54e-48b1-b75c-5475130bbc21",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00073_.png",
+    "node": null,
+    "insert_after": "node_1787112506729_22_ey6a"
+  },
+  {
+    "event": "데이트1",
+    "i": 7,
+    "beat": "정리",
+    "jobId": "354247a4-9323-4f5c-a43d-7a8aa4b4485f",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00074_.png",
+    "node": null,
+    "insert_after": "node_1787112506729_22_ey6a"
+  },
+  {
+    "event": "데이트1",
+    "i": 8,
+    "beat": "뒷모습",
+    "jobId": "0b8bc285-5c92-4a80-81be-658ff8ee92bd",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00075_.png",
+    "node": "node_1787112506729_35_z42s",
+    "insert_after": null
+  },
+  {
+    "event": "데이트2",
+    "i": 1,
+    "beat": "기다림",
+    "jobId": "e5c09ec7-d7a3-4bb6-b9d8-c8321da26735",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00107_.png",
+    "node": "node_1787112976972_0_jdjq",
+    "insert_after": null
+  },
+  {
+    "event": "데이트2",
+    "i": 2,
+    "beat": "시범",
+    "jobId": "6274bf37-aab8-4d93-a48f-a2101f8ada51",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00108_.png",
+    "node": null,
+    "insert_after": "node_1787112976972_0_jdjq"
+  },
+  {
+    "event": "데이트2",
+    "i": 3,
+    "beat": "밀착",
+    "jobId": "ca729845-b171-45f7-84a6-9e6c44f571fd",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00109_.png",
+    "node": null,
+    "insert_after": "node_1787112976972_0_jdjq"
+  },
+  {
+    "event": "데이트2",
+    "i": 4,
+    "beat": "땀닦기",
+    "jobId": "ae622b14-a686-4a93-ad16-4faa77fda82c",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00110_.png",
+    "node": null,
+    "insert_after": "node_1787112976972_0_jdjq"
+  },
+  {
+    "event": "데이트2",
+    "i": 5,
+    "beat": "옷벗기",
+    "jobId": "4b21dd47-f082-490b-9129-80547b3da10f",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00111_.png",
+    "node": "node_1787112976972_30_z4pe",
+    "insert_after": null
+  },
+  {
+    "event": "데이트2",
+    "i": 6,
+    "beat": "가슴노출",
+    "jobId": "b1b45b42-0aa0-4cf9-8d30-45dd72d87413",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00112_.png",
+    "node": null,
+    "insert_after": "node_1787112976972_30_z4pe"
+  },
+  {
+    "event": "데이트2",
+    "i": 7,
+    "beat": "오랄",
+    "jobId": "1b942083-e47d-426f-9114-2630c0646066",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00113_.png",
+    "node": "node_1787112976972_44_53ud",
+    "insert_after": null
+  },
+  {
+    "event": "데이트2",
+    "i": 8,
+    "beat": "정액",
+    "jobId": "c12d6fb4-f1e7-4bb9-ac58-b2db40faab36",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00114_.png",
+    "node": "node_1787112976972_53_d8ys",
+    "insert_after": null
+  },
+  {
+    "event": "섹스",
+    "i": 1,
+    "beat": "문",
+    "jobId": "4734d1b6-2208-4734-b36b-690e05024756",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00084_.png",
+    "node": "node_1787113705965_0_q1e4",
+    "insert_after": null
+  },
+  {
+    "event": "섹스",
+    "i": 2,
+    "beat": "대화",
+    "jobId": "5a9c3df2-a635-46d5-b261-c88956718267",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00085_.png",
+    "node": null,
+    "insert_after": "node_1787113705965_0_q1e4"
+  },
+  {
+    "event": "섹스",
+    "i": 3,
+    "beat": "밀착",
+    "jobId": "ff0bdc27-cdea-446a-a542-fe218706777f",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00119_.png",
+    "node": null,
+    "insert_after": "node_1787113705965_0_q1e4"
+  },
+  {
+    "event": "섹스",
+    "i": 4,
+    "beat": "옷벗기",
+    "jobId": "66741c74-1c4b-4ecc-9529-24ea57bfbaf9",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00087_.png",
+    "node": "node_1787113705965_24_7fks",
+    "insert_after": null
+  },
+  {
+    "event": "섹스",
+    "i": 5,
+    "beat": "오랄",
+    "jobId": "5ac7efd4-2eef-40a4-9d60-86f029921da2",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00116_.png",
+    "node": "node_1787113705965_33_cgss",
+    "insert_after": null
+  },
+  {
+    "event": "섹스",
+    "i": 6,
+    "beat": "정액",
+    "jobId": "a53866b5-2653-4271-a738-a3919bfcdb7f",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00117_.png",
+    "node": "node_1787113705965_42_1n4m",
+    "insert_after": null
+  },
+  {
+    "event": "섹스",
+    "i": 7,
+    "beat": "소파자세",
+    "jobId": "e6825284-03fa-4731-a28d-64ed89ce8b8c",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00090_.png",
+    "node": "node_1787113705965_46_2tbz",
+    "insert_after": null
+  },
+  {
+    "event": "섹스",
+    "i": 8,
+    "beat": "후배위삽입",
+    "jobId": "e3606963-acae-40c4-9e0c-cea22bd031dd",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00091_.png",
+    "node": "node_1787113705965_50_d3fc",
+    "insert_after": null
+  },
+  {
+    "event": "섹스",
+    "i": 9,
+    "beat": "온몸정액",
+    "jobId": "8aa23b1d-6e75-4044-8e51-f30367c6062e",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00092_.png",
+    "node": "node_1787113705965_60_jzgw",
+    "insert_after": null
+  },
+  {
+    "event": "엔딩",
+    "i": 1,
+    "beat": "거울",
+    "jobId": "b1d75696-b6ad-4702-b1f8-76fc3a478005",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00093_.png",
+    "node": "node_1786844399316_0_mzkt",
+    "insert_after": null
+  },
+  {
+    "event": "엔딩",
+    "i": 2,
+    "beat": "대화",
+    "jobId": "a0492a4d-14a1-4dc9-a8bd-335c66ff6a92",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00094_.png",
+    "node": null,
+    "insert_after": "node_1786844399316_0_mzkt"
+  },
+  {
+    "event": "엔딩",
+    "i": 3,
+    "beat": "오랄",
+    "jobId": "edd09447-7ad6-475b-9591-6b478993e259",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00095_.png",
+    "node": "node_1786844399316_18_ban1",
+    "insert_after": null
+  },
+  {
+    "event": "엔딩",
+    "i": 4,
+    "beat": "소파자세",
+    "jobId": "2c49d0c9-a01b-422b-9b97-29fe4ed5ff5b",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00096_.png",
+    "node": "node_1786844399316_34_imie",
+    "insert_after": null
+  },
+  {
+    "event": "엔딩",
+    "i": 5,
+    "beat": "후배위삽입",
+    "jobId": "83d0b954-a490-4ebd-b533-903bba6da166",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00097_.png",
+    "node": null,
+    "insert_after": "node_1786844399316_34_imie"
+  },
+  {
+    "event": "엔딩",
+    "i": 6,
+    "beat": "버진로드",
+    "jobId": "f0b32f64-7ae5-4db1-8823-00417f6eb03d",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00098_.png",
+    "node": "node_1786844399316_51_eog0",
+    "insert_after": null
+  },
+  {
+    "event": "엔딩",
+    "i": 7,
+    "beat": "임산부",
+    "jobId": "cdb61d0b-a5aa-47db-9f34-e72dc7f84909",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00099_.png",
+    "node": "node_1786844399316_61_a0tl",
+    "insert_after": null
+  },
+  {
+    "event": "VIP",
+    "i": 1,
+    "beat": "입장",
+    "jobId": "7e8a95fd-98ab-4caa-bab7-3869d7939999",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00100_.png",
+    "node": "node_1787115692563_0_jqad",
+    "insert_after": null
+  },
+  {
+    "event": "VIP",
+    "i": 2,
+    "beat": "대화",
+    "jobId": "a8af7aeb-3090-4097-a161-f9638393bd5a",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00101_.png",
+    "node": null,
+    "insert_after": "node_1787115692563_0_jqad"
+  },
+  {
+    "event": "VIP",
+    "i": 3,
+    "beat": "옷벗기",
+    "jobId": "6fb2db87-a914-44dc-8b56-9ea400640393",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00102_.png",
+    "node": "node_1787115692563_13_4gjb",
+    "insert_after": null
+  },
+  {
+    "event": "VIP",
+    "i": 4,
+    "beat": "침대자세",
+    "jobId": "f2103915-634c-453d-9ad5-5a5426ab8013",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00103_.png",
+    "node": "node_1787115692563_16_tsda",
+    "insert_after": null
+  },
+  {
+    "event": "VIP",
+    "i": 5,
+    "beat": "후배위삽입",
+    "jobId": "e9ab7ba2-5cc2-4dab-8ba2-4d9c333f6b77",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00104_.png",
+    "node": "node_1787115692563_20_4637",
+    "insert_after": null
+  },
+  {
+    "event": "VIP",
+    "i": 6,
+    "beat": "온몸정액",
+    "jobId": "d5d408e1-bfee-4b57-affd-cf0bb45a5468",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00118_.png",
+    "node": "node_1787115692563_31_rx3r",
+    "insert_after": null
+  },
+  {
+    "event": "VIP",
+    "i": 7,
+    "beat": "마무리",
+    "jobId": "6e463be5-6163-4ca5-b0c5-1df241c64d0d",
+    "status": "completed",
+    "resultPath": "F:/Ai/Simpligen/output/df/community--anima-anime-packanima-base-v1/2026-08-28_00106_.png",
+    "node": null,
+    "insert_after": "node_1787115692563_31_rx3r"
+  }
+]

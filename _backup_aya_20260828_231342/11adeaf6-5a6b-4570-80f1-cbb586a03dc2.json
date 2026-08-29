@@ -1,0 +1,248 @@
+{
+  "id": "11adeaf6-5a6b-4570-80f1-cbb586a03dc2",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "11adeaf6-5a6b-4570-80f1-cbb586a03dc2",
+  "title": "스카웃",
+  "startNode": "node_1787030522142_2_5mqv",
+  "nodes": [
+    {
+      "id": "node_1787030522142_2_5mqv",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "실례합니다, 교수님. 잠시 괜찮을까요.",
+      "text_key": "node_1787030522142_2_5mqv"
+    },
+    {
+      "id": "node_1787030522142_0_6lo7",
+      "type": "graphic",
+      "image": "2026-08-17_chunked_1786957285294_9198.mp4",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787030522142_3_fx35",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…뭐죠. 저는 지금 바쁩니다만. (시선도 주지 않는다)",
+      "text_key": "node_1787030522142_3_fx35",
+      "voice": "node_1787030522142_3_fx35.wav",
+      "sound": "node_1787030522142_3_fx35.wav"
+    },
+    {
+      "id": "node_1787030522142_4_wp4l",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "제가 방송국을 운영하는 사람입니다. 크리에이터로 활동해 보시지 않겠습니까.",
+      "text_key": "node_1787030522142_4_wp4l"
+    },
+    {
+      "id": "node_1787030522142_5_2eni",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "크리에이터. …농담이시죠. (차갑게 웃는다)",
+      "text_key": "node_1787030522142_5_2eni",
+      "voice": "node_1787030522142_5_2eni.wav",
+      "sound": "node_1787030522142_5_2eni.wav"
+    },
+    {
+      "id": "node_1787030522142_6_7hn4",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "농담 아닙니다. 성인 방송국입니다. 교수님의 지적인 매력과 연륜, 그게 저희 방송에선 최고의 무기가 됩니다.",
+      "text_key": "node_1787030522142_6_7hn4"
+    },
+    {
+      "id": "node_1787030522142_7_wmjs",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…! 제가 교수라는 걸 아시면서, 그런 말씀을 하시는 건가요. (정면을 본다)",
+      "text_key": "node_1787030522142_7_wmjs",
+      "voice": "node_1787030522142_7_wmjs.wav",
+      "sound": "node_1787030522142_7_wmjs.wav"
+    },
+    {
+      "id": "node_1787030522142_8_gvif",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "교수님이 아니면 안 되기 때문입니다.",
+      "text_key": "node_1787030522142_8_gvif"
+    },
+    {
+      "id": "node_1787030522142_9_fxhk",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…… (걸음을 멈춘다)",
+      "text_key": "node_1787030522142_9_fxhk"
+    },
+    {
+      "id": "node_1787030522142_10_jfrt",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "고민하고 있다. 저 냉철하던 몸이 조용히 흔들리는 게 보인다.",
+      "text_key": "node_1787030522142_10_jfrt"
+    },
+    {
+      "id": "node_1787030522142_11_4888",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…하나만 묻겠습니다. 저 같은 사람을, 왜. (눈을 맞춘다)",
+      "text_key": "node_1787030522142_11_4888",
+      "voice": "node_1787030522142_11_4888.wav",
+      "sound": "node_1787030522142_11_4888.wav"
+    },
+    {
+      "id": "node_1787030522142_12_1vck",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "교수님이 아니면 안 됩니다. 그 분위기를 보자마자 확신했어요.",
+      "text_key": "node_1787030522142_12_1vck"
+    },
+    {
+      "id": "node_1787030522142_13_0ibt",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…후. 어쩔 수 없군요. (한숨을 쉬며 안경을 고쳐 쓴다)",
+      "text_key": "node_1787030522142_13_0ibt",
+      "voice": "node_1787030522142_13_0ibt.wav",
+      "sound": "node_1787030522142_13_0ibt.wav"
+    },
+    {
+      "id": "node_1787030522142_14_4s62",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그럼, 승낙으로 받아들여도 되겠습니까.",
+      "text_key": "node_1787030522142_14_4s62"
+    },
+    {
+      "id": "node_1787030522142_15_g3cf",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "조건만 괜찮다면, 한번 생각해 보도록 하죠. (고개를 끄덕인다)",
+      "text_key": "node_1787030522142_15_g3cf",
+      "voice": "node_1787030522142_15_g3cf.wav",
+      "sound": "node_1787030522142_15_g3cf.wav"
+    },
+    {
+      "id": "node_1787030522142_16_6ezj",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "성공했다. 저 까칠하던 교수가, 이제 내 방송국의 크리에이터다.",
+      "text_key": "node_1787030522142_16_6ezj"
+    },
+    {
+      "id": "node_1787030522142_17_n1cm",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…성함을 여쭤봐도 될까요.",
+      "text_key": "node_1787030522142_17_n1cm",
+      "voice": "node_1787030522142_17_n1cm.wav",
+      "sound": "node_1787030522142_17_n1cm.wav"
+    },
+    {
+      "id": "node_1787030522142_18_wysj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사장이라고 불러 주세요.",
+      "text_key": "node_1787030522142_18_wysj"
+    },
+    {
+      "id": "node_1787030522142_19_fbbw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "네, 사장님. …저는 제 페이스대로 하겠습니다. (입꼬리를 살짝 올린다)",
+      "text_key": "node_1787030522142_19_fbbw",
+      "voice": "node_1787030522142_19_fbbw.wav",
+      "sound": "node_1787030522142_19_fbbw.wav"
+    },
+    {
+      "id": "node_1787030522142_20_38mo",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 가방을 챙겨 걸어간다. 나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
+      "text_key": "node_1787030522142_20_38mo"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "아야",
+      "name": "아야"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "id": "1786957376617-63dslko",
+      "fileName": "2026-08-17_chunked_1786957285294_9198.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/11adeaf6-5a6b-4570-80f1-cbb586a03dc2/videos/2026-08-17_chunked_1786957285294_9198.mp4",
+      "url": "media://chapter_assets/events/11adeaf6-5a6b-4570-80f1-cbb586a03dc2/videos/2026-08-17_chunked_1786957285294_9198.mp4",
+      "size": 1120866
+    },
+    {
+      "fileName": "node_1787030522142_11_4888.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/11adeaf6-5a6b-4570-80f1-cbb586a03dc2/sounds/node_1787030522142_11_4888.wav"
+    },
+    {
+      "fileName": "node_1787030522142_13_0ibt.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/11adeaf6-5a6b-4570-80f1-cbb586a03dc2/sounds/node_1787030522142_13_0ibt.wav"
+    },
+    {
+      "fileName": "node_1787030522142_15_g3cf.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/11adeaf6-5a6b-4570-80f1-cbb586a03dc2/sounds/node_1787030522142_15_g3cf.wav"
+    },
+    {
+      "fileName": "node_1787030522142_17_n1cm.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/11adeaf6-5a6b-4570-80f1-cbb586a03dc2/sounds/node_1787030522142_17_n1cm.wav"
+    },
+    {
+      "fileName": "node_1787030522142_19_fbbw.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/11adeaf6-5a6b-4570-80f1-cbb586a03dc2/sounds/node_1787030522142_19_fbbw.wav"
+    },
+    {
+      "fileName": "node_1787030522142_3_fx35.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/11adeaf6-5a6b-4570-80f1-cbb586a03dc2/sounds/node_1787030522142_3_fx35.wav"
+    },
+    {
+      "fileName": "node_1787030522142_5_2eni.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/11adeaf6-5a6b-4570-80f1-cbb586a03dc2/sounds/node_1787030522142_5_2eni.wav"
+    },
+    {
+      "fileName": "node_1787030522142_7_wmjs.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/11adeaf6-5a6b-4570-80f1-cbb586a03dc2/sounds/node_1787030522142_7_wmjs.wav"
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T05:43:58.207Z",
+  "ownerCharacterId": "1786851057540-5sup19s"
+}

@@ -1,0 +1,398 @@
+{
+  "id": "4c007732-5e08-4914-9b25-b1a221c9bd74",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "4c007732-5e08-4914-9b25-b1a221c9bd74",
+  "title": "스카웃",
+  "startNode": "node_1787180305450_1_qir0",
+  "nodes": [
+    {
+      "id": "node_1787180305450_1_qir0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "휴일, 놀이공원. 카니발 행사가 열리고, 무대에서 삼바 댄서들이 공연 중이다. 그중 한 명이 눈에 들어온다.",
+      "text_key": "node_1787180305450_1_qir0"
+    },
+    {
+      "id": "node_1787180305450_0_1soq",
+      "type": "graphic",
+      "image": "2026-08-19_00241_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787180305450_2_h5z2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "화려한 깃털 장식 사이로 긴 웨이브 금발이 흩날리고, 시퀸 브라톱이 D컵의 풍만한 가슴을 받치고 있다. 프린지 스커트 사이로 170cm의 긴 다리가 드러나고, 태닝 라인 없는 자연스러운 갈색 피부가 조명에 반짝인다. 저 몸이 방송에 나오면 시청자들이 미칠 거다. 나는 그녀에게 다가가기로 마음먹는다.",
+      "text_key": "node_1787180305450_2_h5z2"
+    },
+    {
+      "id": "node_1787180305450_3_6t5e",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "공연이 끝나고, 루이자가 무대 뒤에서 물을 마시며 쉬고 있다. 나는 그녀에게 다가가 말을 건다.",
+      "text_key": "node_1787180305450_3_6t5e"
+    },
+    {
+      "id": "node_1787180305450_4_hyn0",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "실례합니다, 잠시 괜찮을까요.",
+      "text_key": "node_1787180305450_4_hyn0"
+    },
+    {
+      "id": "node_1787180305450_5_zx6x",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "어? 응! 괜찮아! 무슨 일이야? (씩 웃는다)",
+      "text_key": "node_1787180305450_5_zx6x",
+      "voice": "node_1787180305450_5_zx6x.wav",
+      "sound": "node_1787180305450_5_zx6x.wav"
+    },
+    {
+      "id": "node_1787180305450_6_sfj1",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "방금 공연, 정말 대단했습니다. 몸이 저절로 움직이더라고요.",
+      "text_key": "node_1787180305450_6_sfj1"
+    },
+    {
+      "id": "node_1787180305450_7_wywp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "고마워! 카니발, 원래 그래야지! (활짝 웃는다)",
+      "text_key": "node_1787180305450_7_wywp",
+      "voice": "node_1787180305450_7_wywp.wav",
+      "sound": "node_1787180305450_7_wywp.wav"
+    },
+    {
+      "id": "node_1787180305450_8_ii0a",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "갑자기 실례지만, 제가 방송국을 운영하는 사람인데요. 꼭 드릴 제안이 있어서요.",
+      "text_key": "node_1787180305450_8_ii0a"
+    },
+    {
+      "id": "node_1787180305450_9_3djv",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "방송국? 오, 대단하다! 무슨 제안이야? (눈을 반짝인다)",
+      "text_key": "node_1787180305450_9_3djv",
+      "voice": "node_1787180305450_9_3djv.wav",
+      "sound": "node_1787180305450_9_3djv.wav"
+    },
+    {
+      "id": "node_1787180305450_10_e4l6",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "우리 방송국에서, 크리에이터로 활동해 보시지 않겠습니까.",
+      "text_key": "node_1787180305450_10_e4l6"
+    },
+    {
+      "id": "node_1787180305450_11_ercq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "크리에이터? 나, 춤추는 사람인데. 방송, 몰라. (어리둥절)",
+      "text_key": "node_1787180305450_11_ercq",
+      "voice": "node_1787180305450_11_ercq.wav",
+      "sound": "node_1787180305450_11_ercq.wav"
+    },
+    {
+      "id": "node_1787180305450_12_zaqz",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그 춤과 에너지, 그게 저희 방송에선 최고의 무기가 됩니다.",
+      "text_key": "node_1787180305450_12_zaqz"
+    },
+    {
+      "id": "node_1787180305450_13_wcds",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "방송… 어떤 방송이야? (고개를 갸웃)",
+      "text_key": "node_1787180305450_13_wcds",
+      "voice": "node_1787180305450_13_wcds.wav",
+      "sound": "node_1787180305450_13_wcds.wav"
+    },
+    {
+      "id": "node_1787180305450_14_cy3j",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "성인 방송국입니다. 솔직히 말씀드리죠. (정면을 본다)",
+      "text_key": "node_1787180305450_14_cy3j"
+    },
+    {
+      "id": "node_1787180305450_15_jjsn",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "성인 방송? …오, 와우. (눈이 커진다)",
+      "text_key": "node_1787180305450_15_jjsn",
+      "voice": "node_1787180305450_15_jjsn.wav",
+      "sound": "node_1787180305450_15_jjsn.wav"
+    },
+    {
+      "id": "node_1787180305450_16_lfc5",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "나 같은 사람, 괜찮아? 카니발이랑, 많이 다른데. (고개를 젓는다)",
+      "text_key": "node_1787180305450_16_lfc5",
+      "voice": "node_1787180305450_16_lfc5.wav",
+      "sound": "node_1787180305450_16_lfc5.wav"
+    },
+    {
+      "id": "node_1787180305450_17_c8tt",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "루이자 씨 같은 사람이니까요. (단호히)",
+      "text_key": "node_1787180305450_17_c8tt"
+    },
+    {
+      "id": "node_1787180305450_18_grgv",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "…… (잠시 생각에 잠긴다)",
+      "text_key": "node_1787180305450_18_grgv"
+    },
+    {
+      "id": "node_1787180305450_19_y2nq",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "갑자기 이런 말씀 드려서 죄송합니다. 다만, 루이자 씨의 그 춤과 에너지를 보자마자 확신했어요.",
+      "text_key": "node_1787180305450_19_y2nq"
+    },
+    {
+      "id": "node_1787180305450_20_j82g",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "확신… 그거, 좋은 말이네. (내 눈을 바라본다)",
+      "text_key": "node_1787180305450_20_j82g",
+      "voice": "node_1787180305450_20_j82g.wav",
+      "sound": "node_1787180305450_20_j82g.wav"
+    },
+    {
+      "id": "node_1787180305450_21_ilji",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "…나, 할 수 있을까? (조용히)",
+      "text_key": "node_1787180305450_21_ilji",
+      "voice": "node_1787180305450_21_ilji.wav",
+      "sound": "node_1787180305450_21_ilji.wav"
+    },
+    {
+      "id": "node_1787180305450_22_d9va",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "할 수 있어요. 아니, 루이자 씨가 아니면 안 됩니다. (또박또박)",
+      "text_key": "node_1787180305450_22_d9va"
+    },
+    {
+      "id": "node_1787180305450_23_bjq9",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "그렇게 말하면… 오케이, 알겠어! (씩 웃는다)",
+      "text_key": "node_1787180305450_23_bjq9",
+      "voice": "node_1787180305450_23_bjq9.wav",
+      "sound": "node_1787180305450_23_bjq9.wav"
+    },
+    {
+      "id": "node_1787180305450_24_uvht",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그럼, 승낙으로 받아들여도 되겠습니까.",
+      "text_key": "node_1787180305450_24_uvht"
+    },
+    {
+      "id": "node_1787180305450_25_v0b6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "응. 조건만 괜찮으면. (고개를 끄덕인다)",
+      "text_key": "node_1787180305450_25_v0b6",
+      "voice": "node_1787180305450_25_v0b6.wav",
+      "sound": "node_1787180305450_25_v0b6.wav"
+    },
+    {
+      "id": "node_1787180305450_26_2ies",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "물론입니다. 루이자 씨에게 불리한 조건은 절대 없어요.",
+      "text_key": "node_1787180305450_26_2ies"
+    },
+    {
+      "id": "node_1787180305450_27_1bgt",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "…그럼, 잘 부탁해! (허리를 숙여 인사한다)",
+      "text_key": "node_1787180305450_27_1bgt",
+      "voice": "node_1787180305450_27_1bgt.wav",
+      "sound": "node_1787180305450_27_1bgt.wav"
+    },
+    {
+      "id": "node_1787180305450_28_dvym",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "루이자 씨야말로, 잘 부탁드립니다. (미소 짓는다)",
+      "text_key": "node_1787180305450_28_dvym"
+    },
+    {
+      "id": "node_1787180305450_29_ppde",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "너 이름, 뭐야? (시선을 올린다)",
+      "text_key": "node_1787180305450_29_ppde",
+      "voice": "node_1787180305450_29_ppde.wav",
+      "sound": "node_1787180305450_29_ppde.wav"
+    },
+    {
+      "id": "node_1787180305450_30_9ojx",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사장, 이라고 불러 주세요. 앞으로 그렇게 될 테니까요.",
+      "text_key": "node_1787180305450_30_9ojx"
+    },
+    {
+      "id": "node_1787180305450_31_cdak",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1786851153987-tb6qhg5",
+      "text": "사장? 오케이, 사장! …카니발보다 재밌으면 좋겠다! (씩 웃는다)",
+      "text_key": "node_1787180305450_31_cdak",
+      "voice": "node_1787180305450_31_cdak.wav",
+      "sound": "node_1787180305450_31_cdak.wav"
+    },
+    {
+      "id": "node_1787180305450_32_llnp",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
+      "text_key": "node_1787180305450_32_llnp"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "1786851153987-tb6qhg5",
+      "name": "루이자"
+    },
+    {
+      "id": "루프영상",
+      "name": "루프영상"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "id": "1787267810579-mrgnb58",
+      "fileName": "2026-08-19_00241_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-19_00241_.png",
+      "url": "media://chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-19_00241_.png",
+      "size": 3063517
+    },
+    {
+      "fileName": "node_1787180305450_11_ercq.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_11_ercq.wav"
+    },
+    {
+      "fileName": "node_1787180305450_13_wcds.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_13_wcds.wav"
+    },
+    {
+      "fileName": "node_1787180305450_15_jjsn.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_15_jjsn.wav"
+    },
+    {
+      "fileName": "node_1787180305450_16_lfc5.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_16_lfc5.wav"
+    },
+    {
+      "fileName": "node_1787180305450_20_j82g.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_20_j82g.wav"
+    },
+    {
+      "fileName": "node_1787180305450_21_ilji.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_21_ilji.wav"
+    },
+    {
+      "fileName": "node_1787180305450_23_bjq9.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_23_bjq9.wav"
+    },
+    {
+      "fileName": "node_1787180305450_25_v0b6.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_25_v0b6.wav"
+    },
+    {
+      "fileName": "node_1787180305450_27_1bgt.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_27_1bgt.wav"
+    },
+    {
+      "fileName": "node_1787180305450_29_ppde.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_29_ppde.wav"
+    },
+    {
+      "fileName": "node_1787180305450_31_cdak.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_31_cdak.wav"
+    },
+    {
+      "fileName": "node_1787180305450_5_zx6x.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_5_zx6x.wav"
+    },
+    {
+      "fileName": "node_1787180305450_7_wywp.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_7_wywp.wav"
+    },
+    {
+      "fileName": "node_1787180305450_9_3djv.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/sounds/node_1787180305450_9_3djv.wav"
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T05:47:16.087Z",
+  "ownerCharacterId": "1786851153987-tb6qhg5"
+}

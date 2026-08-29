@@ -26,7 +26,7 @@
     {
       "id": "node_1787102874671_2_vayg",
       "type": "graphic",
-      "image": "2026-08-18_00029_.png",
+      "image": "2026-08-28_00016_.webp",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -58,6 +58,14 @@
       "sound": "node_1787102874671_5_ki2w.wav"
     },
     {
+      "id": "graphic_scout_a_3",
+      "type": "graphic",
+      "image": "2026-08-28_00002_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1787102874671_6_546u",
       "type": "text",
       "speakerType": "player",
@@ -74,6 +82,14 @@
       "text_key": "node_1787102874671_7_7akn",
       "voice": "node_1787102874671_7_7akn.wav",
       "sound": "node_1787102874671_7_7akn.wav"
+    },
+    {
+      "id": "graphic_scout_a_4",
+      "type": "graphic",
+      "image": "2026-08-28_00004_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787102874671_8_zifq",
@@ -100,6 +116,14 @@
       "speaker": "",
       "text": "가까이서 보니 더하다. 목 스카프 아래 쇄골, 가슴에 팽팽하게 당겨진 블라우스 단추. 저 단정한 얼굴이 방송에서 웃으면 생각만 해도 자지가 반응한다.",
       "text_key": "node_1787102874671_10_ydsk"
+    },
+    {
+      "id": "graphic_scout_a_2",
+      "type": "graphic",
+      "image": "2026-08-28_00021_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787102874671_11_7b93",
@@ -136,6 +160,14 @@
       "text_key": "node_1787102874671_14_xa4w"
     },
     {
+      "id": "graphic_scout_a_5",
+      "type": "graphic",
+      "image": "2026-08-28_00012_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1787102874671_15_nalt",
       "type": "text",
       "speakerType": "narrator",
@@ -160,6 +192,14 @@
       "speaker": "player",
       "text": "미야자와 씨 같은 사람이니까요. (단호히)",
       "text_key": "node_1787102874671_17_vpdg"
+    },
+    {
+      "id": "graphic_scout_a_6",
+      "type": "graphic",
+      "image": "2026-08-28_00006_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787102874671_18_q4lm",
@@ -196,12 +236,28 @@
       "text_key": "node_1787102874671_21_62ha"
     },
     {
+      "id": "graphic_scout_a_7",
+      "type": "graphic",
+      "image": "2026-08-28_00019_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1787102874671_22_4ikr",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "라운지 한쪽. 미야자와 씨가 고민 끝에 얼굴을 든다.",
       "text_key": "node_1787102874671_22_4ikr"
+    },
+    {
+      "id": "graphic_scout_a_8",
+      "type": "graphic",
+      "image": "2026-08-28_00011_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787102874671_23_48qy",
@@ -250,6 +306,14 @@
       "sound": "node_1787102874671_27_ubxu.wav"
     },
     {
+      "id": "graphic_scout_a_9",
+      "type": "graphic",
+      "image": "2026-08-28_00015_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1787102874671_28_u14m",
       "type": "text",
       "speakerType": "player",
@@ -266,6 +330,14 @@
       "text_key": "node_1787102874671_29_2754",
       "voice": "node_1787102874671_29_2754.wav",
       "sound": "node_1787102874671_29_2754.wav"
+    },
+    {
+      "id": "graphic_scout_a_10",
+      "type": "graphic",
+      "image": "2026-08-28_00020_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787102874671_30_vq5e",
@@ -318,6 +390,14 @@
       "speaker": "",
       "text": "그녀가 다시 라운지 업무로 돌아간다. 나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
       "text_key": "node_1787102874671_35_evwx"
+    },
+    {
+      "id": "graphic_scout_a_11",
+      "type": "graphic",
+      "image": "2026-08-28_00005_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     }
   ],
   "defaultLanguage": "ko",
@@ -330,72 +410,153 @@
   "points": [],
   "media": [
     {
-      "id": "1787102916012-79s4q8a",
-      "fileName": "2026-08-18_00029_.png",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-18_00029_.png",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-18_00029_.png",
-      "size": 2107056
-    },
-    {
       "fileName": "node_1787102874671_12_l5kv.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_12_l5kv.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_12_l5kv.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_12_l5kv.wav"
     },
     {
       "fileName": "node_1787102874671_16_dmiu.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_16_dmiu.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_16_dmiu.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_16_dmiu.wav"
     },
     {
       "fileName": "node_1787102874671_20_pfgd.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_20_pfgd.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_20_pfgd.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_20_pfgd.wav"
     },
     {
       "fileName": "node_1787102874671_23_48qy.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_23_48qy.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_23_48qy.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_23_48qy.wav"
     },
     {
       "fileName": "node_1787102874671_25_ij4k.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_25_ij4k.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_25_ij4k.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_25_ij4k.wav"
     },
     {
       "fileName": "node_1787102874671_27_ubxu.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_27_ubxu.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_27_ubxu.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_27_ubxu.wav"
     },
     {
       "fileName": "node_1787102874671_29_2754.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_29_2754.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_29_2754.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_29_2754.wav"
     },
     {
       "fileName": "node_1787102874671_32_9v5m.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_32_9v5m.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_32_9v5m.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_32_9v5m.wav"
     },
     {
       "fileName": "node_1787102874671_34_0v2l.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_34_0v2l.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_34_0v2l.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_34_0v2l.wav"
     },
     {
       "fileName": "node_1787102874671_5_ki2w.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_5_ki2w.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_5_ki2w.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_5_ki2w.wav"
     },
     {
       "fileName": "node_1787102874671_7_7akn.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_7_7akn.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_7_7akn.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_7_7akn.wav"
     },
     {
       "fileName": "node_1787102874671_9_eamt.wav",
       "kind": "sound",
-      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_9_eamt.wav"
+      "sourcePath": "chapter_assets/events/scout_a/sounds/node_1787102874671_9_eamt.wav",
+      "url": "media://chapter_assets/events/scout_a/sounds/node_1787102874671_9_eamt.wav"
+    },
+    {
+      "fileName": "2026-08-28_00002_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00002_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00002_.webp",
+      "size": 126030
+    },
+    {
+      "fileName": "2026-08-28_00004_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00004_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00004_.webp",
+      "size": 125294
+    },
+    {
+      "fileName": "2026-08-28_00005_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00005_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00005_.webp",
+      "size": 137976
+    },
+    {
+      "fileName": "2026-08-28_00006_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00006_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00006_.webp",
+      "size": 129408
+    },
+    {
+      "fileName": "2026-08-28_00011_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00011_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00011_.webp",
+      "size": 139832
+    },
+    {
+      "fileName": "2026-08-28_00012_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00012_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00012_.webp",
+      "size": 133234
+    },
+    {
+      "fileName": "2026-08-28_00015_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00015_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00015_.webp",
+      "size": 133596
+    },
+    {
+      "fileName": "2026-08-28_00016_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00016_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00016_.webp",
+      "size": 111474
+    },
+    {
+      "fileName": "2026-08-28_00019_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00019_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00019_.webp",
+      "size": 132236
+    },
+    {
+      "fileName": "2026-08-28_00020_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00020_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00020_.webp",
+      "size": 139306
+    },
+    {
+      "fileName": "2026-08-28_00021_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00021_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00021_.webp",
+      "size": 125296
     }
   ],
   "sourceZipName": "직접 생성",

@@ -1,0 +1,559 @@
+{
+  "id": "c64be57a-0bee-4ab4-a2c6-49a46f72e231",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "c64be57a-0bee-4ab4-a2c6-49a46f72e231",
+  "title": "섹스",
+  "startNode": "node_1787093989219_0_vw0s",
+  "nodes": [
+    {
+      "id": "node_1787093989219_0_vw0s",
+      "type": "graphic",
+      "image": "1.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787093989219_1_7a7m",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "아야의 집, 침실. 아야가 블랙 레이스 속옷 차림으로 나를 맞이한다.",
+      "text_key": "node_1787093989219_1_7a7m"
+    },
+    {
+      "id": "node_1787093989219_2_ptxg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…왔네요. (팔짱을 낀 채)",
+      "text_key": "node_1787093989219_2_ptxg",
+      "voice": "node_1787093989219_2_ptxg.wav",
+      "sound": "node_1787093989219_2_ptxg.wav"
+    },
+    {
+      "id": "node_1787093989219_3_bipn",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그 차림은 뭐예요.",
+      "text_key": "node_1787093989219_3_bipn"
+    },
+    {
+      "id": "node_1787093989219_4_qv6e",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "집에선 편하게 있으라고 했잖아요. (무덤덤하게)",
+      "text_key": "node_1787093989219_4_qv6e",
+      "voice": "node_1787093989219_4_qv6e.wav",
+      "sound": "node_1787093989219_4_qv6e.wav"
+    },
+    {
+      "id": "node_1787093989219_5_lxi8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "오늘만큼은, 저를 여자로 봐주세요. (정색한다)",
+      "text_key": "node_1787093989219_5_lxi8",
+      "voice": "node_1787093989219_5_lxi8.wav",
+      "sound": "node_1787093989219_5_lxi8.wav"
+    },
+    {
+      "id": "node_1787093989219_6_az07",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…… (숨을 들이쉰다)",
+      "text_key": "node_1787093989219_6_az07"
+    },
+    {
+      "id": "node_1787093989219_7_x10n",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "이제부터, 사장님은 제 거예요. (내 넥타이를 잡아당긴다)",
+      "text_key": "node_1787093989219_7_x10n",
+      "voice": "node_1787093989219_7_x10n.wav",
+      "sound": "node_1787093989219_7_x10n.wav"
+    },
+    {
+      "id": "node_1787093989219_9_vx7u",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "아야가 블랙 레이스 속옷을 벗어, 완전히 누드가 된다. 밝은 피부의 가슴과 허벅지가 그대로 드러난다.",
+      "text_key": "node_1787093989219_9_vx7u"
+    },
+    {
+      "id": "node_1787093989219_8_mukz",
+      "type": "graphic",
+      "image": "2026-08-17_00045_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787093989219_11_fv7v",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 앞에 무릎을 꿇고, 내 바지를 내려 발기한 자지를 꺼낸다.",
+      "text_key": "node_1787093989219_11_fv7v"
+    },
+    {
+      "id": "node_1787093989219_10_m4jt",
+      "type": "graphic",
+      "image": "3.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787093989219_12_aytu",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "대단해요… (자지를 두 손으로 감싼다)",
+      "text_key": "node_1787093989219_12_aytu",
+      "voice": "node_1787093989219_12_aytu.wav",
+      "sound": "node_1787093989219_12_aytu.wav"
+    },
+    {
+      "id": "node_1787093989219_13_me9c",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… (거친 숨)",
+      "text_key": "node_1787093989219_13_me9c"
+    },
+    {
+      "id": "node_1787093989219_15_806u",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "맛있게 해드릴게요. (혀를 내밀어 귀두를 핥는다)",
+      "text_key": "node_1787093989219_15_806u",
+      "voice": "node_1787093989219_15_806u.wav",
+      "sound": "node_1787093989219_15_806u.wav"
+    },
+    {
+      "id": "node_1787093989219_16_ft89",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "입에 넣을게요. (입을 벌려 귀두를 물어 넣는다)",
+      "text_key": "node_1787093989219_16_ft89",
+      "voice": "node_1787093989219_16_ft89.wav",
+      "sound": "node_1787093989219_16_ft89.wav"
+    },
+    {
+      "id": "node_1787093989219_14_gahr",
+      "type": "graphic",
+      "image": "4.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787093989219_17_4tw3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입술이 귀두를 감싸고, 천천히 머리를 깊게 움직인다. 입속이 뜨겁고 좁다.",
+      "text_key": "node_1787093989219_17_4tw3"
+    },
+    {
+      "id": "node_1787093989219_18_kr7h",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "시라카와 씨… 저… 곧… (숨을 헐떡인다)",
+      "text_key": "node_1787093989219_18_kr7h"
+    },
+    {
+      "id": "node_1787093989219_19_8s0h",
+      "type": "graphic",
+      "image": "5.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787093989219_20_0pxq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…얼굴에, 받을게요. (입에서 빼고, 혀로 귀두를 계속 자극한다)",
+      "text_key": "node_1787093989219_20_0pxq",
+      "voice": "node_1787093989219_20_0pxq.wav",
+      "sound": "node_1787093989219_20_0pxq.wav"
+    },
+    {
+      "id": "node_1787093989219_21_sdee",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아… 나온다…! (허리가 떨린다)",
+      "text_key": "node_1787093989219_21_sdee"
+    },
+    {
+      "id": "node_1787093989219_22_yybu",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "정액이 그녀의 얼굴에 쏟아진다. 안경에, 뺨에, 입술에… 흰 정액이 그 냉철한 얼굴을 더럽힌다.",
+      "text_key": "node_1787093989219_22_yybu"
+    },
+    {
+      "id": "node_1787093989219_23_gl9a",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…많네요. (손가락으로 뺨의 정액을 닦아 혀로 핥는다)",
+      "text_key": "node_1787093989219_23_gl9a",
+      "voice": "node_1787093989219_23_gl9a.wav",
+      "sound": "node_1787093989219_23_gl9a.wav"
+    },
+    {
+      "id": "node_1787093989219_24_psxc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "아직이에요. 이제부터가 진짜니까요. (입꼬리를 올린다)",
+      "text_key": "node_1787093989219_24_psxc",
+      "voice": "node_1787093989219_24_psxc.wav",
+      "sound": "node_1787093989219_24_psxc.wav"
+    },
+    {
+      "id": "node_1787093989219_29_rxvm",
+      "type": "graphic",
+      "image": "2026-08-18_00026_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787093989219_26_sx6k",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "완전히 누드인 아야가 침대에 네 발로 엎드리고, 엉덩이를 나에게 향한다.",
+      "text_key": "node_1787093989219_26_sx6k"
+    },
+    {
+      "id": "node_1787093989219_27_mgwp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "…뒤에서 해주세요. (엉덩이를 든다)",
+      "text_key": "node_1787093989219_27_mgwp",
+      "voice": "node_1787093989219_27_mgwp.wav",
+      "sound": "node_1787093989219_27_mgwp.wav"
+    },
+    {
+      "id": "node_1787093989219_28_ygag",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "넣어주세요. 제 안에… (엉덩이를 더 든다)",
+      "text_key": "node_1787093989219_28_ygag",
+      "voice": "node_1787093989219_28_ygag.wav",
+      "sound": "node_1787093989219_28_ygag.wav"
+    },
+    {
+      "id": "node_1787094173033_ipxd",
+      "type": "graphic",
+      "image": "2026-08-17_00081_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787093989219_30_xr2v",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "내 자지가 그녀의 보지를 뒤에서 밀어 넣는다. 뒤에서 넣자 더 깊이 들어간다.",
+      "text_key": "node_1787093989219_30_xr2v"
+    },
+    {
+      "id": "node_1787093989219_31_u9yg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "깊어요… 더 세게… (엉덩이를 내게 밀어붙인다)",
+      "text_key": "node_1787093989219_31_u9yg",
+      "voice": "node_1787093989219_31_u9yg.wav",
+      "sound": "node_1787093989219_31_u9yg.wav"
+    },
+    {
+      "id": "node_1787093989219_32_aat8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 시라카와 씨… 나… 이제… (허리가 격렬해진다)",
+      "text_key": "node_1787093989219_32_aat8"
+    },
+    {
+      "id": "node_1787093989219_33_8neu",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "나와요. 저도 갈 거예요. (낮게)",
+      "text_key": "node_1787093989219_33_8neu",
+      "voice": "node_1787093989219_33_8neu.wav",
+      "sound": "node_1787093989219_33_8neu.wav"
+    },
+    {
+      "id": "node_1787093989219_34_200q",
+      "type": "graphic",
+      "image": "2026-08-18_00010_.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787093989219_35_ndrq",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 나온다……! (허리가 떨리며 질내에 정액을 쏟아낸다)",
+      "text_key": "node_1787093989219_35_ndrq"
+    },
+    {
+      "id": "node_1787093989219_36_aagp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "사장님… 저도… (몸이 활처럼 휜다)",
+      "text_key": "node_1787093989219_36_aagp",
+      "voice": "node_1787093989219_36_aagp.wav",
+      "sound": "node_1787093989219_36_aagp.wav"
+    },
+    {
+      "id": "node_1787094227185_o64j",
+      "type": "graphic",
+      "image": "10.png",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1787093989219_37_2fgi",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 안에 정액을 전부 쏟아내고, 천천히 자지를 뽑는다. 정액이 그녀의 성기에서 흘러나온다.",
+      "text_key": "node_1787093989219_37_2fgi"
+    },
+    {
+      "id": "node_1787093989219_38_oxr2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "하…… 대단했어요. (숨을 몰아쉰다)",
+      "text_key": "node_1787093989219_38_oxr2",
+      "voice": "node_1787093989219_38_oxr2.wav",
+      "sound": "node_1787093989219_38_oxr2.wav"
+    },
+    {
+      "id": "node_1787093989219_39_szpp",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "아야가 몸을 돌려 나를 마주 본다. 온몸이 정액으로 젖어 있다.",
+      "text_key": "node_1787093989219_39_szpp"
+    },
+    {
+      "id": "node_1787093989219_40_rv0q",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "아야",
+      "text": "사장님… 저, 이제 사장님의 여자예요. (정액이 흐르는 얼굴로, 나를 똑바로 본다)",
+      "text_key": "node_1787093989219_40_rv0q",
+      "voice": "node_1787093989219_40_rv0q.wav",
+      "sound": "node_1787093989219_40_rv0q.wav"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "아야",
+      "name": "아야"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "id": "1787010060480-vr3uyf6",
+      "fileName": "1.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/1.png",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/1.png",
+      "size": 2001345
+    },
+    {
+      "id": "1787010142747-vv2tb5g",
+      "fileName": "2.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2.png",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2.png",
+      "size": 1932546
+    },
+    {
+      "id": "1787010212036-bqyvzvh",
+      "fileName": "3.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/3.png",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/3.png",
+      "size": 2333794
+    },
+    {
+      "id": "1787010272469-nqxvwg8",
+      "fileName": "4.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/4.png",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/4.png",
+      "size": 1179952
+    },
+    {
+      "id": "1787010316384-ojxv8wj",
+      "fileName": "5.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/5.png",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/5.png",
+      "size": 2550605
+    },
+    {
+      "id": "1787010558189-n6480mk",
+      "fileName": "2026-08-17_00081_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-17_00081_.png",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-17_00081_.png",
+      "size": 2215997
+    },
+    {
+      "id": "1787010587758-coozzrf",
+      "fileName": "10.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/10.png",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/10.png",
+      "size": 2007002
+    },
+    {
+      "id": "1787010759815-nmd5to5",
+      "fileName": "2026-08-17_00045_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-17_00045_.png",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-17_00045_.png",
+      "size": 2163085
+    },
+    {
+      "id": "1787032656591-ihqkrh0",
+      "fileName": "2026-08-18_00026_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-18_00026_.png",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-18_00026_.png",
+      "size": 2067966
+    },
+    {
+      "id": "1787032719730-dusytj2",
+      "fileName": "2026-08-18_00010_.png",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-18_00010_.png",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-18_00010_.png",
+      "size": 1912113
+    },
+    {
+      "fileName": "node_1787093989219_12_aytu.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_12_aytu.wav"
+    },
+    {
+      "fileName": "node_1787093989219_15_806u.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_15_806u.wav"
+    },
+    {
+      "fileName": "node_1787093989219_16_ft89.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_16_ft89.wav"
+    },
+    {
+      "fileName": "node_1787093989219_20_0pxq.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_20_0pxq.wav"
+    },
+    {
+      "fileName": "node_1787093989219_23_gl9a.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_23_gl9a.wav"
+    },
+    {
+      "fileName": "node_1787093989219_24_psxc.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_24_psxc.wav"
+    },
+    {
+      "fileName": "node_1787093989219_27_mgwp.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_27_mgwp.wav"
+    },
+    {
+      "fileName": "node_1787093989219_28_ygag.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_28_ygag.wav"
+    },
+    {
+      "fileName": "node_1787093989219_2_ptxg.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_2_ptxg.wav"
+    },
+    {
+      "fileName": "node_1787093989219_31_u9yg.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_31_u9yg.wav"
+    },
+    {
+      "fileName": "node_1787093989219_33_8neu.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_33_8neu.wav"
+    },
+    {
+      "fileName": "node_1787093989219_36_aagp.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_36_aagp.wav"
+    },
+    {
+      "fileName": "node_1787093989219_38_oxr2.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_38_oxr2.wav"
+    },
+    {
+      "fileName": "node_1787093989219_40_rv0q.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_40_rv0q.wav"
+    },
+    {
+      "fileName": "node_1787093989219_4_qv6e.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_4_qv6e.wav"
+    },
+    {
+      "fileName": "node_1787093989219_5_lxi8.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_5_lxi8.wav"
+    },
+    {
+      "fileName": "node_1787093989219_7_x10n.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/sounds/node_1787093989219_7_x10n.wav"
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T05:44:44.858Z",
+  "ownerCharacterId": "1786851057540-5sup19s"
+}
