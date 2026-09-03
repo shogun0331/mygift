@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useRef, type CSSProperties } from 'react'
 import {
+  findCharacterIconUrl,
   normalizeCreatorStatType,
   type CreatorStatType,
   type Grade,
@@ -443,9 +444,12 @@ export function CreatorPanel({
                     >
                       <td className="px-3 py-2.5 sm:px-4">
                         <div className="flex items-center gap-2">
-                          {creator.profileImageUrl ? (
+                          {findCharacterIconUrl(creator) || creator.profileImageUrl ? (
                             <img
-                              src={creator.profileImageUrl}
+                              src={resolveMediaSrc(
+                                findCharacterIconUrl(creator) || creator.profileImageUrl,
+                                creator.mediaRevision,
+                              )}
                               alt={displayName}
                               className="h-7 w-7 rounded-full object-cover"
                             />
@@ -953,7 +957,7 @@ function CreatorDetailView({
           <article className="game-card relative aspect-[3/4] w-full max-w-[18rem] overflow-hidden lg:max-h-full lg:w-[min(20rem,34vh)]">
             {creator.profileImageUrl ? (
               <img
-                src={creator.profileImageUrl}
+                src={resolveMediaSrc(creator.profileImageUrl, creator.mediaRevision)}
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover"
               />

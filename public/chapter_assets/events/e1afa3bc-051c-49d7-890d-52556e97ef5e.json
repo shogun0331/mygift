@@ -204,6 +204,14 @@
       "sound": "node_1787032057334_22_ov4b.wav"
     },
     {
+      "id": "node_1788400039205_8efh",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787032057334_21_kdnc",
       "type": "graphic",
       "image": "speed_3_45x_da266150cb7e407489f2daae0c2a9abe.mp4",
@@ -244,6 +252,14 @@
       "speaker": "player",
       "text": "시라카와 씨… 저… 곧… (숨을 헐떡인다)",
       "text_key": "node_1787032057334_26_9jpq"
+    },
+    {
+      "id": "node_1788400049782_ip87",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787032057334_27_e4mj",
@@ -534,7 +550,7 @@
       "fileName": "speed_3_45x_da266150cb7e407489f2daae0c2a9abe.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/e1afa3bc-051c-49d7-890d-52556e97ef5e/videos/speed_3_45x_da266150cb7e407489f2daae0c2a9abe.mp4",
-      "url": "blob:http://localhost:5173/64743753-c010-4054-9a69-e4ceadd6aed1",
+      "url": "media://chapter_assets/events/e1afa3bc-051c-49d7-890d-52556e97ef5e/videos/speed_3_45x_da266150cb7e407489f2daae0c2a9abe.mp4",
       "size": 1223543
     },
     {
@@ -542,7 +558,7 @@
       "fileName": "9f64c531-d01e-4be8-b610-01d577fc4680.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/e1afa3bc-051c-49d7-890d-52556e97ef5e/images/9f64c531-d01e-4be8-b610-01d577fc4680.webp",
-      "url": "blob:http://localhost:5173/ee80fa9a-5e03-4aab-affb-e1c0e0a0056a",
+      "url": "media://chapter_assets/events/e1afa3bc-051c-49d7-890d-52556e97ef5e/images/9f64c531-d01e-4be8-b610-01d577fc4680.webp",
       "size": 60726
     }
   ],

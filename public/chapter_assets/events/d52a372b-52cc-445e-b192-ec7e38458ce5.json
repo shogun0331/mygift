@@ -5,20 +5,8 @@
   "chapterId": 1,
   "titleKey": "d52a372b-52cc-445e-b192-ec7e38458ce5",
   "title": "데이트1",
-  "startNode": "node_1787131986609_1_929b",
+  "startNode": "node_1787131986609_0_9z25",
   "nodes": [
-    {
-      "id": "node_1787131986609_1_929b",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "1786851109772-o2n3dj3",
-      "text": "야간의 프라이빗 다이닝 레스토랑. 조용하고 고급스러운 분위기. 리나가 먼저 도착해 테이블에 앉아 기다리고 있다. 얇은 끈의 블랙 슬립 드레스 차림.\n",
-      "voice": "node_1787131986609_1_929b.wav",
-      "stopVoice": true,
-      "stopBgm": false,
-      "text_key": "node_1787131986609_1_929b",
-      "sound": "node_1787131986609_1_929b.wav"
-    },
     {
       "id": "node_1787131986609_0_9z25",
       "type": "graphic",
@@ -43,7 +31,8 @@
       "image": "2026-08-28_00172_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787131986609_3_v0vz",
@@ -265,7 +254,8 @@
       "image": "2026-08-28_00173_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787131986609_27_42jd",
@@ -355,7 +345,8 @@
       "image": "2026-08-28_00174_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787131986609_36_zqo2",
@@ -425,7 +416,8 @@
       "image": "2026-08-28_00176_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787131986609_43_bedu",
@@ -480,14 +472,6 @@
       "text_key": "node_1787131986609_48_uu1r",
       "voice": "node_1787131986609_48_uu1r.wav",
       "sound": "node_1787131986609_48_uu1r.wav"
-    },
-    {
-      "id": "node_1787131986609_49_ex62",
-      "type": "graphic",
-      "image": "2026-08-28_00178_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787131986609_50_hjhe",
@@ -650,6 +634,16 @@
       "text_key": "node_1787131986609_66_2tea",
       "voice": "node_1787131986609_66_2tea.wav",
       "sound": "node_1787131986609_66_2tea.wav"
+    },
+    {
+      "id": "node_1788401033467_8jzh",
+      "type": "graphic",
+      "image": "2026-08-28_00178_.webp",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787131986609_67_0qve",

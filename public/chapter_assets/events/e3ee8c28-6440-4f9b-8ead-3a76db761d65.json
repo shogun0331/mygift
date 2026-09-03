@@ -57,7 +57,8 @@
       "image": "2026-08-28_00281_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787182155513_5_xaey",
@@ -227,7 +228,8 @@
       "image": "2026-08-28_00282_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787182155513_23_yk9g",
@@ -318,6 +320,14 @@
       "text_key": "node_1787182155513_32_7thc"
     },
     {
+      "id": "node_1788401778098_jxfx",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787182155513_33_si86",
       "type": "graphic",
       "image": "speed_2_60x_c21c8ae2b7e047d18a4516dd113407aa.mp4",
@@ -392,6 +402,14 @@
       "speaker": "player",
       "text": "아… 나온다…!",
       "text_key": "node_1787182155513_41_phzy"
+    },
+    {
+      "id": "node_1788401794169_p6gp",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787182155513_42_4l56",
@@ -472,6 +490,14 @@
       "text_key": "node_1787182155513_50_xkju",
       "voice": "node_1787182155513_50_xkju.wav",
       "sound": "node_1787182155513_50_xkju.wav"
+    },
+    {
+      "id": "node_1788401804129_2469",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "fuck2.m4a",
+      "loop": true,
+      "stop": false
     },
     {
       "id": "node_1787182155513_51_rr9d",
@@ -560,6 +586,14 @@
       "text_key": "node_1787182155513_60_r4dw",
       "voice": "node_1787182155513_60_r4dw.wav",
       "sound": "node_1787182155513_60_r4dw.wav"
+    },
+    {
+      "id": "node_1788401812969_t2ad",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "node_1787182155513_60_r4dw.wav",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787182155513_61_h0u0",
@@ -853,7 +887,7 @@
       "fileName": "6641347d-2870-4fc6-a741-e356dd48b064.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/6641347d-2870-4fc6-a741-e356dd48b064.webp",
-      "url": "blob:http://localhost:5173/847c0953-1806-44c5-a941-47df481acaa2",
+      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/6641347d-2870-4fc6-a741-e356dd48b064.webp",
       "size": 70036
     },
     {
@@ -861,7 +895,7 @@
       "fileName": "8c59e39b-1dfb-42b4-8288-90a530fa8c46.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/8c59e39b-1dfb-42b4-8288-90a530fa8c46.webp",
-      "url": "blob:http://localhost:5173/3374586c-3a28-4a89-b88d-0bca911b2e4f",
+      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/8c59e39b-1dfb-42b4-8288-90a530fa8c46.webp",
       "size": 77198
     },
     {
@@ -869,7 +903,7 @@
       "fileName": "speed_2_60x_c21c8ae2b7e047d18a4516dd113407aa.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/speed_2_60x_c21c8ae2b7e047d18a4516dd113407aa.mp4",
-      "url": "blob:http://localhost:5173/4b0744ca-5dc8-4a32-a5aa-ba061bb5e45b",
+      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/speed_2_60x_c21c8ae2b7e047d18a4516dd113407aa.mp4",
       "size": 1392518
     },
     {
@@ -877,7 +911,7 @@
       "fileName": "speed_2_85x_242f68c304c842b9b1c6ef3e47228fe0.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/speed_2_85x_242f68c304c842b9b1c6ef3e47228fe0.mp4",
-      "url": "blob:http://localhost:5173/fca7c3a6-e3b7-4673-bcfd-5c1246e69b88",
+      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/speed_2_85x_242f68c304c842b9b1c6ef3e47228fe0.mp4",
       "size": 1800352
     }
   ],

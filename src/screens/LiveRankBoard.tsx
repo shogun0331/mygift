@@ -1,6 +1,7 @@
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { formatMoney } from '../game/money'
+import { resolveMediaSrc } from '../game/mediaUrl'
 import { useTranslation } from '../locales/i18n'
 
 export type LiveRankRow = {
@@ -237,7 +238,7 @@ export function LiveRankBoard({
                   </span>
                   {creator.profileImageUrl ? (
                     <img
-                      src={creator.profileImageUrl}
+                      src={resolveMediaSrc(creator.profileImageUrl)}
                       alt={creator.name}
                       className="h-7 w-7 rounded-full object-cover shrink-0"
                     />

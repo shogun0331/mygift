@@ -16,14 +16,6 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787121047083_1_i8cw",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "루프영상",
-      "text": "사토 메구미 상반신 IDLE (간호사 유니폼, 고급 호텔룸, 정면)",
-      "text_key": "node_1787121047083_1_i8cw"
-    },
-    {
       "id": "node_1787121047083_2_f183",
       "type": "text",
       "speakerType": "narrator",
@@ -156,6 +148,14 @@
       "text_key": "node_1787121047083_16_n722"
     },
     {
+      "id": "node_1788399228295_z3co",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787121047083_17_8q93",
       "type": "graphic",
       "image": "speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
@@ -230,6 +230,14 @@
       "speaker": "VIP",
       "text": "아… 나온다…!",
       "text_key": "node_1787121047083_25_d1z9"
+    },
+    {
+      "id": "node_1788399243127_p0uk",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787121047083_26_3r3e",
@@ -404,7 +412,7 @@
       "fileName": "speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/97e7ca57-0eed-4003-885f-c42df134b577/videos/speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
-      "url": "blob:http://localhost:5173/3c946d1c-1df8-4b16-b6f9-581ebd0581ee",
+      "url": "media://chapter_assets/events/97e7ca57-0eed-4003-885f-c42df134b577/videos/speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
       "size": 1236123
     },
     {
@@ -412,7 +420,7 @@
       "fileName": "2026-09-01_00040_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/97e7ca57-0eed-4003-885f-c42df134b577/images/2026-09-01_00040_.webp",
-      "url": "blob:http://localhost:5173/514a0994-bd9b-43c4-9464-10bd45bdd76f",
+      "url": "media://chapter_assets/events/97e7ca57-0eed-4003-885f-c42df134b577/images/2026-09-01_00040_.webp",
       "size": 28978
     }
   ],

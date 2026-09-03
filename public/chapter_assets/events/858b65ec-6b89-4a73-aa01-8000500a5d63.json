@@ -37,7 +37,8 @@
       "image": "2026-08-28_00450_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787117538729_3_me3a",
@@ -63,7 +64,8 @@
       "image": "2026-08-28_00451_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787117538729_5_lpcn",
@@ -107,7 +109,8 @@
       "image": "2026-08-28_00452_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787117538729_9_vo7s",
@@ -167,7 +170,8 @@
       "image": "2026-08-28_00453_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787117538729_15_mozg",
@@ -201,7 +205,8 @@
       "image": "2026-08-28_00454_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787117538729_18_4fe6",
@@ -227,7 +232,8 @@
       "image": "2026-08-28_00455_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787117538729_20_ee87",
@@ -281,7 +287,8 @@
       "image": "2026-08-28_00456_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787117538729_25_wdzl",
@@ -307,7 +314,8 @@
       "image": "2026-08-28_00457_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787117538729_27_0dyo",

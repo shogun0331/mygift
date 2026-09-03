@@ -318,6 +318,14 @@
       "text_key": "node_1787120009569_32_qn2z"
     },
     {
+      "id": "node_1787120009569_34_y4c0",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787120009569_33_m65a",
       "type": "graphic",
       "image": "speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
@@ -326,12 +334,12 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787120009569_34_y4c0",
+      "id": "node_1788399053977_8pp9",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786849140255-p0lxz2i",
       "text": "맛있게 해드릴게요.",
-      "text_key": "node_1787120009569_34_y4c0",
+      "text_key": "node_1788399053977_8pp9",
       "voice": "node_1787120009569_34_y4c0.wav",
       "sound": "node_1787120009569_34_y4c0.wav"
     },
@@ -392,6 +400,14 @@
       "speaker": "player",
       "text": "아… 나온다…!",
       "text_key": "node_1787120009569_41_i8kh"
+    },
+    {
+      "id": "node_1788399068401_eco8",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787120009569_42_krz2",
@@ -476,6 +492,14 @@
       "sound": "node_1787120009569_50_rw6e.wav"
     },
     {
+      "id": "node_1787120009569_52_w6s5",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "fuck2.m4a",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787120009569_51_w8jn",
       "type": "graphic",
       "image": "speed_2_95x_90f8bf95c09a487fac8cb88b6a672924.mp4",
@@ -484,12 +508,12 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787120009569_52_w6s5",
+      "id": "node_1788399078841_24eg",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "내 자지가 그녀의 성기를 천천히 밀어 넣는다.",
-      "text_key": "node_1787120009569_52_w6s5"
+      "text_key": "node_1788399078841_24eg"
     },
     {
       "id": "node_1787120009569_53_nazg",
@@ -590,6 +614,14 @@
       "text_key": "node_1787120009569_63_cwz0",
       "voice": "node_1787120009569_63_cwz0.wav",
       "sound": "node_1787120009569_63_cwz0.wav"
+    },
+    {
+      "id": "node_1788399092786_nt52",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "node_1787120009569_63_cwz0.wav",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787120009569_64_clbf",
@@ -884,7 +916,7 @@
       "fileName": "2026-09-01_00024_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00024_.webp",
-      "url": "blob:http://localhost:5173/5f848c60-1019-4dde-bfd3-9b319770e7c3",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00024_.webp",
       "size": 63194
     },
     {
@@ -892,7 +924,7 @@
       "fileName": "2026-09-01_00027_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00027_.webp",
-      "url": "blob:http://localhost:5173/04d3bd3f-629f-4ddc-8afb-89f3512b2c8b",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00027_.webp",
       "size": 65586
     },
     {
@@ -900,7 +932,7 @@
       "fileName": "speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
-      "url": "blob:http://localhost:5173/f5363d6b-2414-4123-b2e3-aa673eaf91f0",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
       "size": 1236123
     },
     {
@@ -908,7 +940,7 @@
       "fileName": "2026-09-01_00040_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00040_.webp",
-      "url": "blob:http://localhost:5173/934a4c2e-1b3e-46bc-81a2-b279979c7703",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00040_.webp",
       "size": 28978
     },
     {
@@ -916,7 +948,7 @@
       "fileName": "2026-09-01_00037_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00037_.webp",
-      "url": "blob:http://localhost:5173/34473cd0-0afc-4d1e-963f-db4b23bfea76",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00037_.webp",
       "size": 35600
     },
     {
@@ -924,7 +956,7 @@
       "fileName": "speed_2_95x_90f8bf95c09a487fac8cb88b6a672924.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/speed_2_95x_90f8bf95c09a487fac8cb88b6a672924.mp4",
-      "url": "blob:http://localhost:5173/1f51ac89-bb38-45d8-aedf-46f0de9cea5a",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/speed_2_95x_90f8bf95c09a487fac8cb88b6a672924.mp4",
       "size": 1504142
     },
     {
@@ -932,7 +964,7 @@
       "fileName": "2026-09-01_00044_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00044_.webp",
-      "url": "blob:http://localhost:5173/06fac999-acef-4b1d-8971-5aa70fda905a",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00044_.webp",
       "size": 80932
     }
   ],

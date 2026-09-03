@@ -318,6 +318,14 @@
       "text_key": "node_1787113705965_32_8yqu"
     },
     {
+      "id": "node_1787113705965_34_atdy",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787113705965_33_cgss",
       "type": "graphic",
       "image": "speed_3_50x_948050c9a75b408dae3c06ace517a4e0.mp4",
@@ -326,12 +334,12 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787113705965_34_atdy",
+      "id": "node_1788398435481_hbfh",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786833964287-iflkqh2",
       "text": "맛있게 해드릴게요.",
-      "text_key": "node_1787113705965_34_atdy",
+      "text_key": "node_1788398435481_hbfh",
       "voice": "node_1787113705965_34_atdy.wav",
       "sound": "node_1787113705965_34_atdy.wav"
     },
@@ -392,6 +400,14 @@
       "speaker": "player",
       "text": "아… 나온다…!",
       "text_key": "node_1787113705965_41_o7k2"
+    },
+    {
+      "id": "node_1788398479888_5afk",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787113705965_42_1n4m",
@@ -466,6 +482,14 @@
       "sound": "node_1787113705965_49_0my9.wav"
     },
     {
+      "id": "node_1787113705965_51_3xxl",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "fuck2.m4a",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787113705965_50_d3fc",
       "type": "graphic",
       "image": "speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
@@ -474,12 +498,12 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787113705965_51_3xxl",
+      "id": "node_1788398505800_yw7x",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "내 자지가 그녀의 보지를 뒤에서 밀어 넣는다.",
-      "text_key": "node_1787113705965_51_3xxl"
+      "text_key": "node_1788398505800_yw7x"
     },
     {
       "id": "node_1787113705965_52_uefd",
@@ -552,6 +576,14 @@
       "text_key": "node_1787113705965_59_ptt6",
       "voice": "node_1787113705965_59_ptt6.wav",
       "sound": "node_1787113705965_59_ptt6.wav"
+    },
+    {
+      "id": "node_1788398527471_sjdd",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "node_1787113705965_59_ptt6.wav",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787113705965_60_jzgw",
@@ -849,7 +881,7 @@
       "fileName": "speed_3_50x_948050c9a75b408dae3c06ace517a4e0.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/videos/speed_3_50x_948050c9a75b408dae3c06ace517a4e0.mp4",
-      "url": "blob:http://localhost:5173/9f4d8ce0-9e71-4f28-9760-f4eaa999f23b",
+      "url": "media://chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/videos/speed_3_50x_948050c9a75b408dae3c06ace517a4e0.mp4",
       "size": 1402353
     },
     {
@@ -857,7 +889,7 @@
       "fileName": "2026-08-31_00132_.png",
       "kind": "image",
       "sourcePath": "chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/images/2026-08-31_00132_.png",
-      "url": "blob:http://localhost:5173/598bc86a-47df-4a38-9572-4d7c32296445",
+      "url": "media://chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/images/2026-08-31_00132_.png",
       "size": 812643
     },
     {
@@ -865,7 +897,7 @@
       "fileName": "speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/videos/speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
-      "url": "blob:http://localhost:5173/06d8a69e-b8e2-47d2-8edc-7ba5580e54b6",
+      "url": "media://chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/videos/speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
       "size": 1091315
     },
     {
@@ -873,7 +905,7 @@
       "fileName": "2026-08-31_00116_.png",
       "kind": "image",
       "sourcePath": "chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/images/2026-08-31_00116_.png",
-      "url": "blob:http://localhost:5173/ae82f344-58a4-4276-a757-c572b2f65716",
+      "url": "media://chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/images/2026-08-31_00116_.png",
       "size": 827479
     }
   ],

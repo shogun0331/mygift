@@ -346,6 +346,50 @@ export function scoutCandidates(
   return registered.filter((c) => !ownedIds.has(c.id))
 }
 
+type CharacterMediaOwner = {
+  id?: string
+  characterIconId?: string | null
+  profileImageId?: string | null
+  profileImageUrl?: string | null
+  images?: CharacterImage[] | null
+  videos?: CharacterVideo[] | null
+}
+
+function resolveCharacterImageUrl(
+  creator: { id?: string },
+  image?: CharacterImage | null,
+): string | null {
+  if (!image) return null
+  if (creator.id && image.fileName && !image.file) {
+    return characterMediaUrl(creator.id, 'image', image.fileName)
+  }
+  if (image.url) return image.url
+  if (creator.id && image.fileName) return characterMediaUrl(creator.id, 'image', image.fileName)
+  return null
+}
+
+/** 대시보드·랭킹 원형 아이콘. 캐릭터 아이콘 → 프로필 이미지 순 */
+export function findCharacterIconUrl(creator?: CharacterMediaOwner | null): string | null {
+  if (!creator) return null
+  const images = creator.images ?? []
+  const icon = images.find((image) => image.id === creator.characterIconId)
+  const fromIcon = resolveCharacterImageUrl(creator, icon)
+  if (fromIcon) return fromIcon
+  const profile = images.find((image) => image.id === creator.profileImageId)
+  const fromProfile = resolveCharacterImageUrl(creator, profile)
+  if (fromProfile) return fromProfile
+  return creator.profileImageUrl || null
+}
+
+export function findCharacterProfileUrl(creator?: CharacterMediaOwner | null): string | null {
+  if (!creator) return null
+  const images = creator.images ?? []
+  const profile = images.find((image) => image.id === creator.profileImageId)
+  const fromProfile = resolveCharacterImageUrl(creator, profile)
+  if (fromProfile) return fromProfile
+  return creator.profileImageUrl || findCharacterIconUrl(creator)
+}
+
 /** 기본 대기(idle) 영상 URL — 수위 영상은 LV.1만 사용 */
 export function findLevelIdleVideoUrl(
   creator: { id?: string; videos?: CharacterVideo[] | null },
@@ -370,6 +414,9 @@ function resolveCharacterVideoUrl(
   video?: CharacterVideo | null,
 ): string | null {
   if (!video) return null
+  if (creator.id && video.fileName && !video.file) {
+    return characterMediaUrl(creator.id, 'video', video.fileName)
+  }
   if (video.url) return video.url
   if (creator.id && video.fileName) return characterMediaUrl(creator.id, 'video', video.fileName)
   return null
@@ -405,7 +452,7 @@ export function toStudioHandCard(creator: OwnedCreator) {
     staminaMax: creator.staminaMax,
     conditionScore: scoreOf(creator),
     statType: normalizeCreatorStatType(creator.statType),
-    profileImageUrl: creator.profileImageUrl || null,
+    profileImageUrl: findCharacterProfileUrl(creator),
     idleVideoUrl: findLevelIdleVideoUrl(creator),
     mediaRevision: creator.mediaRevision,
   }

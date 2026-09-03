@@ -318,6 +318,14 @@
       "text_key": "node_1787100604876_33_lscl"
     },
     {
+      "id": "node_1787100604876_35_apno",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787100604876_34_ggoj",
       "type": "graphic",
       "image": "speed_3_25x_77c6e5f7d34740e4a828f0c5a182df13.mp4",
@@ -326,12 +334,12 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787100604876_35_apno",
+      "id": "node_1788397751737_t427",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786792656193-i7isvfo",
       "text": "맛있게 해드릴게요.",
-      "text_key": "node_1787100604876_35_apno",
+      "text_key": "node_1788397751737_t427",
       "voice": "node_1787100604876_35_apno.wav",
       "sound": "node_1787100604876_35_apno.wav"
     },
@@ -402,6 +410,14 @@
       "speaker": "사장",
       "text": "아… 나온다…!",
       "text_key": "node_1787100604876_43_lrcj"
+    },
+    {
+      "id": "node_1788397808144_q6bp",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787100604876_44_udmn",
@@ -494,6 +510,14 @@
       "sound": "node_1787100604876_53_8why.wav"
     },
     {
+      "id": "node_1787100604876_55_rlsc",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "fuck2.m4a",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787100604876_54_0dao",
       "type": "graphic",
       "image": "speed_3_25x_9ff2dee927b24029aede576311255e6f.mp4",
@@ -502,12 +526,12 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787100604876_55_rlsc",
+      "id": "node_1788397822103_tntg",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "귀두가 보지 입구를 벌리며 천천히 안으로 들어간다.",
-      "text_key": "node_1787100604876_55_rlsc"
+      "text_key": "node_1788397822103_tntg"
     },
     {
       "id": "node_1787100604876_56_you0",
@@ -618,6 +642,14 @@
       "text_key": "node_1787100604876_67_8jfm",
       "voice": "node_1787100604876_67_8jfm.wav",
       "sound": "node_1787100604876_67_8jfm.wav"
+    },
+    {
+      "id": "node_1788397856095_k7ig",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "node_1787100604876_67_8jfm.wav",
+      "loop": true,
+      "stop": true
     },
     {
       "id": "node_1787100604876_68_g1ri",
@@ -970,7 +1002,7 @@
       "fileName": "speed_3_25x_77c6e5f7d34740e4a828f0c5a182df13.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/a3/videos/speed_3_25x_77c6e5f7d34740e4a828f0c5a182df13.mp4",
-      "url": "blob:http://localhost:5173/229a7fa2-b94c-4635-8fd4-bf02df8c9840",
+      "url": "media://chapter_assets/events/a3/videos/speed_3_25x_77c6e5f7d34740e4a828f0c5a182df13.mp4",
       "size": 1569381
     },
     {
@@ -978,7 +1010,7 @@
       "fileName": "speed_3_25x_9ff2dee927b24029aede576311255e6f.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/a3/videos/speed_3_25x_9ff2dee927b24029aede576311255e6f.mp4",
-      "url": "blob:http://localhost:5173/b45dc2bb-2ee1-42da-ac92-6863f883d1af",
+      "url": "media://chapter_assets/events/a3/videos/speed_3_25x_9ff2dee927b24029aede576311255e6f.mp4",
       "size": 1515712
     }
   ],

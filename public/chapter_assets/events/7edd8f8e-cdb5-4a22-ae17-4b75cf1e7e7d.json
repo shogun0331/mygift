@@ -148,6 +148,14 @@
       "text_key": "node_1787179099672_16_g8u3"
     },
     {
+      "id": "node_1788403171169_ujxp",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787179099672_17_vli8",
       "type": "graphic",
       "image": "speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
@@ -222,6 +230,14 @@
       "speaker": "VIP",
       "text": "아… 나온다…!",
       "text_key": "node_1787179099672_25_wdjz"
+    },
+    {
+      "id": "node_1788403185890_ac6u",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787179099672_26_77nb",
@@ -376,7 +392,7 @@
       "fileName": "speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/videos/speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
-      "url": "blob:http://localhost:5173/2182214f-289a-431b-8bc6-1c7b727566b2",
+      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/videos/speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
       "size": 1192648
     },
     {
@@ -384,7 +400,7 @@
       "fileName": "fa994ce1-4a0d-452f-833d-08be8f532356.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/fa994ce1-4a0d-452f-833d-08be8f532356.webp",
-      "url": "blob:http://localhost:5173/6f428d00-471d-42cb-80d9-c456f01fb93d",
+      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/fa994ce1-4a0d-452f-833d-08be8f532356.webp",
       "size": 66960
     }
   ],

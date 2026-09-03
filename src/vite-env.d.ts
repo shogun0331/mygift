@@ -9,7 +9,7 @@ interface ElectronAPI {
   platform: string
   saveEventAssets?: (
     eventId: string,
-    assets: Array<{ fileName: string; kind: string; buffer: ArrayBuffer }>
+    assets: Array<{ fileName: string; kind: string; buffer: ArrayBuffer | number[] }>
   ) => Promise<{ success: boolean; path?: string; error?: string }>
   saveCharacterAssets?: (
     characterId: string,
@@ -30,6 +30,17 @@ interface ElectronAPI {
   ) => Promise<{ success: boolean; error?: string }>
   loadCommonEventLinksJson?: (
   ) => Promise<{ success: boolean; links?: Record<string, string | null>; error?: string }>
+  saveCommonSoundAssets?: (
+    assets: Array<{ fileName: string; buffer: ArrayBuffer | number[] }>
+  ) => Promise<{ success: boolean; path?: string; error?: string }>
+  saveCommonSoundsJson?: (
+    sounds: any[]
+  ) => Promise<{ success: boolean; error?: string }>
+  loadCommonSoundsJson?: (
+  ) => Promise<{ success: boolean; sounds?: any[]; error?: string }>
+  deleteCommonSoundFile?: (
+    fileName: string
+  ) => Promise<{ success: boolean; error?: string }>
   saveStationGradeConfigJson?: (
     config: Record<string, unknown>
   ) => Promise<{ success: boolean; config?: any; error?: string }>

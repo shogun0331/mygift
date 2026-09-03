@@ -12,6 +12,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadEventsJson: () => ipcRenderer.invoke('load-events-json'),
   saveCommonEventLinksJson: (links) => ipcRenderer.invoke('save-common-event-links-json', { links }),
   loadCommonEventLinksJson: () => ipcRenderer.invoke('load-common-event-links-json'),
+  saveCommonSoundAssets: (assets) => ipcRenderer.invoke('save-common-sound-assets', { assets }),
+  saveCommonSoundsJson: (sounds) => ipcRenderer.invoke('save-common-sounds-json', { sounds }),
+  loadCommonSoundsJson: () => ipcRenderer.invoke('load-common-sounds-json'),
+  deleteCommonSoundFile: (fileName) => ipcRenderer.invoke('delete-common-sound-file', { fileName }),
   saveStationGradeConfigJson: (config) => ipcRenderer.invoke('save-station-grade-config-json', { config }),
   loadStationGradeConfigJson: () => ipcRenderer.invoke('load-station-grade-config-json'),
   deleteEventFile: (eventId, kind, fileName) =>

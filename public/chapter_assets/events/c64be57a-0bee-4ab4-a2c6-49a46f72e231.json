@@ -158,6 +158,14 @@
       "sound": "node_1787093989219_16_ft89.wav"
     },
     {
+      "id": "node_1788400093125_e1pz",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787093989219_14_gahr",
       "type": "graphic",
       "image": "speed_2_75x_09bda57304bb4d2cb16a7453a4eaf117.mp4",
@@ -180,6 +188,14 @@
       "speaker": "player",
       "text": "시라카와 씨… 저… 곧… (숨을 헐떡인다)",
       "text_key": "node_1787093989219_18_kr7h"
+    },
+    {
+      "id": "node_1788400103973_sqfo",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787093989219_19_8s0h",
@@ -264,6 +280,14 @@
       "sound": "node_1787093989219_28_ygag.wav"
     },
     {
+      "id": "node_1788400118733_m12b",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "fuck2.m4a",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787093989219_29_rxvm",
       "type": "graphic",
       "image": "speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
@@ -324,6 +348,14 @@
       "text_key": "node_1787093989219_36_aagp",
       "voice": "node_1787093989219_36_aagp.wav",
       "sound": "node_1787093989219_36_aagp.wav"
+    },
+    {
+      "id": "node_1788400128654_vez5",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "node_1787093989219_36_aagp.wav",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787094227185_o64j",
@@ -535,7 +567,7 @@
       "fileName": "084a212f-9b13-49b9-b40e-8c2c28e7e28e.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/084a212f-9b13-49b9-b40e-8c2c28e7e28e.webp",
-      "url": "blob:http://localhost:5173/fedcf96c-4c55-4a21-a809-9e5683f500db",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/084a212f-9b13-49b9-b40e-8c2c28e7e28e.webp",
       "size": 75016
     },
     {
@@ -543,7 +575,7 @@
       "fileName": "7da84875-f242-430f-ab42-33a9156d1801.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/7da84875-f242-430f-ab42-33a9156d1801.webp",
-      "url": "blob:http://localhost:5173/10262582-0e0f-4b55-8ee1-9c576589dd0b",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/7da84875-f242-430f-ab42-33a9156d1801.webp",
       "size": 80444
     },
     {
@@ -551,7 +583,7 @@
       "fileName": "speed_2_75x_09bda57304bb4d2cb16a7453a4eaf117.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_75x_09bda57304bb4d2cb16a7453a4eaf117.mp4",
-      "url": "blob:http://localhost:5173/462f13ab-b86d-4037-96b0-5bc7a96a7324",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_75x_09bda57304bb4d2cb16a7453a4eaf117.mp4",
       "size": 1582173
     },
     {
@@ -559,7 +591,7 @@
       "fileName": "speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
-      "url": "blob:http://localhost:5173/9b3fb894-8f35-456e-8b60-9b3df86c2847",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
       "size": 1998394
     }
   ],

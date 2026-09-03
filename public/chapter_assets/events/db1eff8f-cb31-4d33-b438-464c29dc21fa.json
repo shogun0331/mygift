@@ -176,6 +176,14 @@
       "sound": "node_1787135567398_19_z1eu.wav"
     },
     {
+      "id": "node_1788401465757_697a",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "fuck2.m4a",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "graphic_db1eff8f_4",
       "type": "graphic",
       "image": "speed_2_65x_ad0a0063ff124b27a464ae856b71ea6a.mp4",
@@ -270,6 +278,14 @@
       "speaker": "",
       "text": "그녀의 안에 정액을 쏟아낸다.",
       "text_key": "node_1787135567398_29_pnnu"
+    },
+    {
+      "id": "node_1788401479029_pz2y",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787135567398_30_0jyo",
@@ -464,7 +480,7 @@
       "fileName": "1837ffc2-7274-4b96-b12e-60b88ec76bca.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/db1eff8f-cb31-4d33-b438-464c29dc21fa/images/1837ffc2-7274-4b96-b12e-60b88ec76bca.webp",
-      "url": "blob:http://localhost:5173/4c3079e7-2fef-4d07-84ab-912b0c813c4e",
+      "url": "media://chapter_assets/events/db1eff8f-cb31-4d33-b438-464c29dc21fa/images/1837ffc2-7274-4b96-b12e-60b88ec76bca.webp",
       "size": 57676
     },
     {
@@ -472,7 +488,7 @@
       "fileName": "e06ff069-71b5-4ea5-a7f1-5581e810ea38.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/db1eff8f-cb31-4d33-b438-464c29dc21fa/images/e06ff069-71b5-4ea5-a7f1-5581e810ea38.webp",
-      "url": "blob:http://localhost:5173/bbe4f9cd-2b95-47f6-97fa-61f8248c882a",
+      "url": "media://chapter_assets/events/db1eff8f-cb31-4d33-b438-464c29dc21fa/images/e06ff069-71b5-4ea5-a7f1-5581e810ea38.webp",
       "size": 69654
     },
     {
@@ -480,7 +496,7 @@
       "fileName": "speed_2_65x_ad0a0063ff124b27a464ae856b71ea6a.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/db1eff8f-cb31-4d33-b438-464c29dc21fa/videos/speed_2_65x_ad0a0063ff124b27a464ae856b71ea6a.mp4",
-      "url": "blob:http://localhost:5173/81bfd60e-6778-4203-8e5a-ce482dce601b",
+      "url": "media://chapter_assets/events/db1eff8f-cb31-4d33-b438-464c29dc21fa/videos/speed_2_65x_ad0a0063ff124b27a464ae856b71ea6a.mp4",
       "size": 1855992
     }
   ],

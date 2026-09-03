@@ -156,12 +156,12 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787115692563_17_ssxr",
+      "id": "node_1788398592159_lyil",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786833964287-iflkqh2",
       "text": "이제, 뒤에서 해주세요, 고객님.",
-      "text_key": "node_1787115692563_17_ssxr",
+      "text_key": "node_1788398592159_lyil",
       "voice": "node_1787115692563_17_ssxr.wav",
       "sound": "node_1787115692563_17_ssxr.wav"
     },
@@ -186,18 +186,26 @@
     {
       "id": "node_1787115692563_20_4637",
       "type": "graphic",
-      "image": "2026-08-28_00113_.webp",
+      "image": "speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
       "id": "node_1787115692563_21_y9eh",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "fuck2.m4a",
+      "loop": true,
+      "stop": false
+    },
+    {
+      "id": "node_1788398670799_9pzh",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "내 자지가 그녀의 성기를 천천히 밀어 넣는다.",
-      "text_key": "node_1787115692563_21_y9eh"
+      "text_key": "node_1788398670799_9pzh"
     },
     {
       "id": "node_1787115692563_22_wlyt",
@@ -280,9 +288,17 @@
       "text_key": "node_1787115692563_30_uv8a"
     },
     {
+      "id": "node_1788398700910_tvzs",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
+    },
+    {
       "id": "node_1787115692563_31_rx3r",
       "type": "graphic",
-      "image": "2026-08-28_00106_.webp",
+      "image": "2026-08-31_00116_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -484,14 +500,6 @@
       "id": "media_image_mtjbsmbe_0sadly2"
     },
     {
-      "fileName": "2026-08-28_00106_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00106_.webp",
-      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00106_.webp",
-      "size": 152440,
-      "id": "media_image_mtjbsmbe_xw2i3nh"
-    },
-    {
       "fileName": "2026-08-28_00107_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00107_.webp",
@@ -508,12 +516,20 @@
       "id": "media_image_mtjbsmbe_0d63x9j"
     },
     {
-      "fileName": "2026-08-28_00113_.webp",
+      "id": "1788398666183-fd4swiv",
+      "fileName": "speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/videos/speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
+      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/videos/speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
+      "size": 1091315
+    },
+    {
+      "id": "1788398697999-gpo3t7t",
+      "fileName": "2026-08-31_00116_.png",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00113_.webp",
-      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00113_.webp",
-      "size": 136700,
-      "id": "media_image_mtjbsmbe_sb79zes"
+      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-31_00116_.png",
+      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-31_00116_.png",
+      "size": 827479
     }
   ],
   "sourceZipName": "직접 생성",

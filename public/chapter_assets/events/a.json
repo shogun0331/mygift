@@ -176,6 +176,14 @@
       "text_key": "node_1787096693202_19_60q6"
     },
     {
+      "id": "graphic_a_3",
+      "type": "graphic",
+      "image": "2026-08-28_00009_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1787096693202_20_mqf7",
       "type": "text",
       "speakerType": "character",
@@ -186,9 +194,9 @@
       "sound": "node_1787096693202_20_mqf7.wav"
     },
     {
-      "id": "graphic_a_3",
+      "id": "graphic_a_4",
       "type": "graphic",
-      "image": "2026-08-28_00009_.webp",
+      "image": "2026-08-28_00007_.webp",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -200,14 +208,6 @@
       "speaker": "",
       "text": "미야자와 리나가 원피스를 어깨에서 아래로 밀어 내린다. 흰 원피스와 브라가 한 번에 허리까지 흘러내리고, 가슴이 그대로 드러난다.",
       "text_key": "node_1787096693202_21_1ijo"
-    },
-    {
-      "id": "graphic_a_4",
-      "type": "graphic",
-      "image": "2026-08-28_00007_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787096693202_22_5o82",

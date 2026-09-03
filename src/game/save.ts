@@ -1,4 +1,5 @@
 import type { Grade, OwnedCreator, RegisteredCharacter } from './characters'
+import { findCharacterIconUrl } from './characters'
 import type { ScoutOffer, ScoutSystemState } from './scout'
 import type { WeeklyCreatorAccum, WeekAccumulator } from './weeklyReport'
 import type { LeagueState } from './ranking'
@@ -130,18 +131,32 @@ function mediaUrl(characterId: string, kind: 'image' | 'video', fileName: string
   return resolveMediaSrc(`media://characters/${characterId}/${folder}/${fileName}`, cacheKey ?? fileName)
 }
 
-/** 로드 후 media:// 경로로 URL 복원 (fileName 기반) */
+/** 로드 후 media:// 경로로 URL 복원 (fileName 기반, 구 URL보다 파일명 우선) */
 export function hydrateOwnedCreator(creator: OwnedCreator): OwnedCreator {
+  const images = (creator.images ?? []).map((img) => ({
+    ...img,
+    url: img.fileName
+      ? mediaUrl(creator.id, 'image', img.fileName, img.fileSize)
+      : img.url
+        ? resolveMediaSrc(img.url, img.fileSize)
+        : '',
+  }))
+  const videos = (creator.videos ?? []).map((vid) => ({
+    ...vid,
+    url: vid.fileName
+      ? mediaUrl(creator.id, 'video', vid.fileName, vid.fileSize)
+      : vid.url
+        ? resolveMediaSrc(vid.url, vid.fileSize)
+        : '',
+  }))
+  const profileImg = images.find((img) => img.id === creator.profileImageId)
   return {
     ...creator,
-    images: (creator.images ?? []).map((img) => ({
-      ...img,
-      url: img.url || (img.fileName ? mediaUrl(creator.id, 'image', img.fileName, img.fileSize) : ''),
-    })),
-    videos: (creator.videos ?? []).map((vid) => ({
-      ...vid,
-      url: vid.url || (vid.fileName ? mediaUrl(creator.id, 'video', vid.fileName, vid.fileSize) : ''),
-    })),
+    images,
+    videos,
+    profileImageUrl:
+      profileImg?.url ||
+      (creator.profileImageUrl ? resolveMediaSrc(creator.profileImageUrl) : creator.profileImageUrl),
   }
 }
 
@@ -208,8 +223,7 @@ export function getTopCreatorMeta(save: GameSave): TopCharacterMeta | null {
   if (!top) return null
 
   const hydrated = hydrateOwnedCreator(top)
-  const profileImg = (hydrated.images ?? [])[0]
-  const rawUrl = hydrated.profileImageUrl || profileImg?.url
+  const rawUrl = findCharacterIconUrl(hydrated) || hydrated.profileImageUrl
   const imageUrl = rawUrl ? resolveMediaSrc(rawUrl) : null
 
   return {

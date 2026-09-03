@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState, useMemo } from 'react'
+import { memo, useEffect, useRef, useState, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { characterDisplayName } from '../game/characterLocales'
 import type { RegisteredCharacter } from '../game/characters'
 import { useTranslation } from '../locales/i18n'
 import type { GameEvent, EventMediaAsset } from './types'
+import { loadCommonSounds } from './db'
+import { commonSoundMediaPath, resolveMediaSrc } from '../game/mediaUrl'
 import { BlurRegionOverlay, readBlurRegions } from './BlurRegionEditor'
 import {
   EVENT_DEFAULT_LOCALE,
@@ -84,6 +86,9 @@ function findNodeSound(node: any): string | null {
 
 // 4. 다국어 매핑 및 대사 텍스트 추출
 function getLocalizedText(node: any, localization: Record<string, Record<string, string>>, lang: string): string {
+  if (!node || node.type === 'graphic' || node.type === 'fade' || node.type === 'sound') {
+    return ''
+  }
   const keys = [
     node.text_key,
     node.dialogue_key,
@@ -181,6 +186,82 @@ function findMediaAsset(fileName: string, media: EventMediaAsset[]): EventMediaA
   return media.find((m) => m.fileName.toLowerCase().trim() === fn) || null
 }
 
+function findSoundAsset(
+  fileName: string,
+  media: EventMediaAsset[],
+  commonSounds: EventMediaAsset[],
+): EventMediaAsset | null {
+  return findMediaAsset(fileName, media) || findMediaAsset(fileName, commonSounds)
+}
+
+const PersistentEventVideo = memo(function PersistentEventVideo({
+  src,
+  fileName,
+  playbackRate,
+}: {
+  src: string
+  fileName: string
+  playbackRate: number
+}) {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const loadedFileRef = useRef('')
+
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    const resolved = resolveMediaSrc(src)
+    const sameFile = loadedFileRef.current === fileName
+    if (!sameFile) {
+      loadedFileRef.current = fileName
+      if (el.getAttribute('src') !== resolved) {
+        el.src = resolved
+      }
+      el.playbackRate = playbackRate
+      void el.play().catch(() => {})
+      return
+    }
+    if (Math.abs(el.playbackRate - playbackRate) > 0.001) {
+      el.playbackRate = playbackRate
+    }
+  }, [src, fileName, playbackRate])
+
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      loop
+      muted
+      playsInline
+      className="h-full w-full object-cover pointer-events-none"
+    />
+  )
+})
+
+const EventStageLayer = memo(function EventStageLayer({
+  media,
+  playbackRate,
+  blurRegions,
+}: {
+  media: EventMediaAsset
+  playbackRate: number
+  blurRegions: ReturnType<typeof readBlurRegions>
+}) {
+  return (
+    <div className="absolute inset-0 z-0 flex items-center justify-center bg-black">
+      {media.kind === 'video' ? (
+        <PersistentEventVideo src={media.url} fileName={media.fileName} playbackRate={playbackRate} />
+      ) : (
+        <img
+          src={resolveMediaSrc(media.url)}
+          alt="Event Background"
+          className="h-full w-full object-cover pointer-events-none"
+        />
+      )}
+      {blurRegions.length > 0 ? <BlurRegionOverlay regions={blurRegions} /> : null}
+    </div>
+  )
+})
+
 function IconVnBack() {
   return (
     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -228,6 +309,13 @@ export function EventSimulator({
   const [lang, setLang] = useState<string>(() => {
     return normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE)
   })
+  const [commonSounds, setCommonSounds] = useState<EventMediaAsset[]>([])
+
+  useEffect(() => {
+    void loadCommonSounds().then((sounds) => {
+      if (Array.isArray(sounds)) setCommonSounds(sounds)
+    })
+  }, [])
 
   // 플레이어 및 내비게이션 상태
   const [currentNodeId, setCurrentNodeId] = useState<string>(() => {
@@ -242,6 +330,8 @@ export function EventSimulator({
   const [sceneFadeOpacity, setSceneFadeOpacity] = useState(0)
   const [overlayColor, setOverlayColor] = useState('#000000')
   const [overlayMs, setOverlayMs] = useState(1200)
+  const [displayHold, setDisplayHold] = useState(false)
+  const displayHoldRef = useRef(false)
   const FADE_MS = 1200
   const handleNextRef = useRef<() => void>(() => {})
 
@@ -310,7 +400,7 @@ export function EventSimulator({
 
   const playChannel = (channel: AudioChannel, asset: EventMediaAsset, loop: boolean) => {
     stopChannel(channel)
-    const audio = new Audio(asset.url)
+    const audio = new Audio(resolveMediaSrc(asset.url || commonSoundMediaPath(asset.fileName)))
     audio.loop = loop
     audio.volume = volumeRef.current
     channelsRef.current[channel] = audio
@@ -344,7 +434,10 @@ export function EventSimulator({
   const characterName = currentNode
     ? getCharacterName(currentNode, event, lang, registeredCharacters)
     : ''
-  const dialogueText = currentNode ? getLocalizedText(currentNode, event.localization, lang) : ''
+  const dialogueText =
+    currentNode && currentNode.type !== 'graphic' && currentNode.type !== 'fade' && currentNode.type !== 'sound'
+      ? getLocalizedText(currentNode, event.localization, lang)
+      : ''
   const choices = currentNode ? parseNodeChoices(currentNode, event.localization, lang) : []
   const isImageNode = currentNode?.type === 'graphic'
   const isFadeNode = currentNode?.type === 'fade'
@@ -451,7 +544,7 @@ export function EventSimulator({
     return null
   }, [flatNodes, currentNodeId, currentNode, event.media])
 
-  const blurSourceNode = useMemo(() => {
+  const graphicSourceNode = useMemo(() => {
     if (!currentNode) return null
     if (currentNode.type === 'graphic') return currentNode
     const currentIndex = flatNodes.findIndex((n) => n.id === currentNodeId || n.key === currentNodeId)
@@ -462,9 +555,16 @@ export function EventSimulator({
     return null
   }, [flatNodes, currentNode, currentNodeId])
 
+  const activeVideoSpeed = useMemo(() => {
+    if (!graphicSourceNode) return 1.0
+    const raw = Number(graphicSourceNode.speed)
+    if (!Number.isFinite(raw) || raw <= 0) return 1.0
+    return Math.min(4, Math.max(0.5, raw))
+  }, [graphicSourceNode])
+
   const activeBlurRegions = useMemo(
-    () => (activeMedia ? readBlurRegions(blurSourceNode) : []),
-    [activeMedia, blurSourceNode],
+    () => (activeMedia ? readBlurRegions(graphicSourceNode) : []),
+    [activeMedia, graphicSourceNode],
   )
 
   // 3채널 오디오: 보이스는 텍스트 노드, BGM/SFX는 사운드 노드가 담당. 그래픽/페이드는 건드리지 않음.
@@ -479,7 +579,7 @@ export function EventSimulator({
       }
       const fileName = typeof currentNode.sound === 'string' ? currentNode.sound.trim() : ''
       if (!fileName) return
-      const asset = findMediaAsset(fileName, event.media)
+      const asset = findSoundAsset(fileName, event.media, commonSounds)
       if (asset) playChannel(role, asset, Boolean(currentNode.loop))
       return
     }
@@ -495,7 +595,7 @@ export function EventSimulator({
 
     const voiceName = resolveVoiceFileName(currentNode)
     if (voiceName) {
-      const asset = findMediaAsset(voiceName, event.media)
+      const asset = findSoundAsset(voiceName, event.media, commonSounds)
       if (asset) playChannel('voice', asset, false)
     }
     // 노드 ID·오디오 필드가 바뀔 때만 채널을 다시 건다 (에디터 리렌더로 BGM이 끊기지 않게)
@@ -511,6 +611,7 @@ export function EventSimulator({
     currentNode?.stopVoice,
     currentNode?.stopBgm,
     event.media,
+    commonSounds,
   ])
 
   useEffect(() => {
@@ -539,6 +640,7 @@ export function EventSimulator({
       }
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault()
+        if (displayHoldRef.current) return
         handleBoxClick()
       }
     }
@@ -628,6 +730,7 @@ export function EventSimulator({
   const handleBoxClick = () => {
     if (choices.length > 0) return
     if (playbackFinished) return
+    if (displayHoldRef.current) return
 
     if (isTyping) {
       if (typingTimerRef.current) {
@@ -683,23 +786,48 @@ export function EventSimulator({
     return () => window.clearTimeout(timer)
   }, [currentNodeId, isPlaying, playbackFinished, isClosing, currentNode, choices.length])
 
-  // 자동 진행 딜레이 타이머
+  // 화면 노출 시간: 끝나기 전에는 클릭/키로 넘길 수 없고, 끝나면 자동 진행
   useEffect(() => {
-    if (!isPlaying || playbackFinished) return
+    if (!isPlaying || playbackFinished || isClosing) return
     if (!currentNode) return
     if (currentNode.type === 'fade' || currentNode.type === 'sound') return
     if (choices.length > 0) return
     if (isTyping) return
 
+    const ignoreDelay = currentNode.type === 'graphic' && Boolean(currentNode.ignoreDelay)
     const delaySec = Number(currentNode.delay)
-    if (isNaN(delaySec) || delaySec <= 0) return
+    const shouldHold =
+      !ignoreDelay &&
+      currentNode.type === 'graphic' &&
+      Number.isFinite(delaySec) &&
+      delaySec > 0
 
-    const timer = setTimeout(() => {
-      handleBoxClick()
+    displayHoldRef.current = shouldHold
+    setDisplayHold(shouldHold)
+
+    if (ignoreDelay || isNaN(delaySec) || delaySec <= 0) return
+
+    const timer = window.setTimeout(() => {
+      displayHoldRef.current = false
+      setDisplayHold(false)
+      handleNextRef.current()
     }, delaySec * 1000)
 
-    return () => clearTimeout(timer)
-  }, [currentNodeId, isPlaying, playbackFinished, choices.length, currentNode?.delay, isTyping])
+    return () => {
+      window.clearTimeout(timer)
+      displayHoldRef.current = false
+    }
+  }, [
+    currentNodeId,
+    isPlaying,
+    playbackFinished,
+    isClosing,
+    choices.length,
+    currentNode?.delay,
+    currentNode?.ignoreDelay,
+    currentNode?.type,
+    isTyping,
+  ])
 
   // 처음부터 다시 시작
   const handleRestart = () => {
@@ -782,7 +910,7 @@ export function EventSimulator({
         <div className="relative flex min-h-0 flex-col overflow-hidden bg-black">
           <div
             className={`relative flex h-full w-full flex-col justify-end overflow-hidden bg-black vn-frame ${
-              choices.length === 0 && !playbackFinished ? 'cursor-pointer' : ''
+              choices.length === 0 && !playbackFinished && !displayHold ? 'cursor-pointer' : ''
             }`}
             onClick={() => handleBoxClick()}
           >
@@ -815,32 +943,16 @@ export function EventSimulator({
                   {langVolumeControls}
                 </div>
               </div>
-            {/* 1. 미디어 화면 (배경) */}
-            <div
-              className="absolute inset-0 z-0 flex items-center justify-center bg-black"
-            >
-              {activeMedia ? (
-                activeMedia.kind === 'video' ? (
-                  <video
-                    src={activeMedia.url}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="h-full w-full object-cover pointer-events-none"
-                  />
-                ) : (
-                  <img
-                    src={activeMedia.url}
-                    alt="Event Background"
-                    className="h-full w-full object-cover pointer-events-none"
-                  />
-                )
-              ) : null}
-              {activeBlurRegions.length > 0 ? (
-                <BlurRegionOverlay regions={activeBlurRegions} />
-              ) : null}
-            </div>
+            {/* 1. 미디어 화면 (배경) — 대사 타이핑 리렌더와 분리. 모자이크(BlurRegion)는 유지 */}
+            {activeMedia ? (
+              <EventStageLayer
+                media={activeMedia}
+                playbackRate={activeVideoSpeed}
+                blurRegions={activeBlurRegions}
+              />
+            ) : (
+              <div className="absolute inset-0 z-0 bg-black" />
+            )}
 
             {/* 장면 페이드 (페이드 노드) */}
             <div
@@ -861,7 +973,7 @@ export function EventSimulator({
               </div>
             ) : null}
 
-            {(!isImageNode && !isFadeNode && !isSoundNode) || choices.length > 0 || playbackFinished ? (
+            {(!isImageNode && !isFadeNode && !isSoundNode) || playbackFinished ? (
             <div
               className={
                 isGame
@@ -1115,8 +1227,9 @@ export function EventSimulator({
                     {filteredNodes.map((n, index) => {
                       const nid = n.id || n.key || ''
                       const isActive = nid === currentNodeId
-                      const nodeChar = getCharacterName(n, event, lang, registeredCharacters)
-                      const nodeText = getLocalizedText(n, event.localization, lang)
+                      const isStageNode = n.type === 'graphic' || n.type === 'fade' || n.type === 'sound'
+                      const nodeChar = isStageNode ? '' : getCharacterName(n, event, lang, registeredCharacters)
+                      const nodeText = isStageNode ? '' : getLocalizedText(n, event.localization, lang)
                       const nodeImg = findNodeImage(n)
                       const nodeSnd = findNodeSound(n)
 
@@ -1152,6 +1265,10 @@ export function EventSimulator({
                               {nodeChar ? `[${nodeChar}] ` : ''}
                               {nodeText}
                             </p>
+                          ) : n.type === 'graphic' ? (
+                            <p className="mt-1 text-[10px] text-slate-400">
+                              그래픽 · {n.image || '파일 없음'}
+                            </p>
                           ) : n.type === 'sound' ? (
                             <p className="mt-1 text-[10px] text-slate-400">
                               {n.stop
@@ -1169,7 +1286,7 @@ export function EventSimulator({
                           )}
 
                           {/* 분기가 있을 때 표시 */}
-                          {parseNodeChoices(n, event.localization, lang).length > 0 && (
+                          {!isStageNode && parseNodeChoices(n, event.localization, lang).length > 0 && (
                             <div className="mt-1.5 flex flex-wrap gap-1">
                               {parseNodeChoices(n, event.localization, lang).map((choice, ci) => (
                                 <span

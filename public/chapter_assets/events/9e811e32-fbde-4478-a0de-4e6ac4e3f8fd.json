@@ -475,11 +475,19 @@
     },
     {
       "id": "node_1787118693734_49_kois",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
+      "id": "node_1788398961954_19k5",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786849140255-p0lxz2i",
       "text": "맛있게 해드릴게요.",
-      "text_key": "node_1787118693734_49_kois",
+      "text_key": "node_1788398961954_19k5",
       "voice": "node_1787118693734_49_kois.wav",
       "sound": "node_1787118693734_49_kois.wav"
     },
@@ -540,6 +548,14 @@
       "speaker": "player",
       "text": "아… 나온다…!",
       "text_key": "node_1787118693734_56_yedr"
+    },
+    {
+      "id": "node_1788398977186_vm2e",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787118693734_57_oxu9",
@@ -822,7 +838,7 @@
       "fileName": "speed_3_35x_e529aa0b089540e5b4e9389e95ee7e12.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/videos/speed_3_35x_e529aa0b089540e5b4e9389e95ee7e12.mp4",
-      "url": "blob:http://localhost:5173/ce42fee8-4d73-447e-9250-d077907c95a6",
+      "url": "media://chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/videos/speed_3_35x_e529aa0b089540e5b4e9389e95ee7e12.mp4",
       "size": 1973249
     },
     {
@@ -830,7 +846,7 @@
       "fileName": "2026-09-01_00021_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/images/2026-09-01_00021_.webp",
-      "url": "blob:http://localhost:5173/cc741027-a620-4e7b-93da-65e0b94ce526",
+      "url": "media://chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/images/2026-09-01_00021_.webp",
       "size": 105534
     }
   ],

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type DragEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { parseVnfExportZip } from '../events/parseVnfExport'
 import {
@@ -25,6 +25,8 @@ import {
   mergeEventLocalization,
   normalizeEventLocale,
 } from './eventLocales'
+import { loadCommonSounds, persistCommonSoundFiles, removeCommonSoundFile, saveCommonSounds } from './db'
+import { commonSoundMediaPath, resolveMediaSrc } from '../game/mediaUrl'
 
 export async function handleOpenEventFolder(eventId?: string) {
   try {
@@ -68,6 +70,20 @@ function countByKind(media: EventMediaAsset[]) {
   }
 }
 
+/** 디스크 JSON에는 id가 빠진 미디어가 많아, 삭제 매칭은 id만 쓰면 안 된다. */
+function mediaAssetKey(asset: Pick<EventMediaAsset, 'id' | 'kind' | 'fileName'>): string {
+  if (asset.id) return `id:${asset.id}`
+  return `file:${asset.kind}:${asset.fileName}`
+}
+
+function ensureMediaAssetId(asset: EventMediaAsset): EventMediaAsset {
+  if (asset.id) return asset
+  return {
+    ...asset,
+    id: `media_${asset.kind}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`,
+  }
+}
+
 const kindLabel: Record<EventMediaKind, string> = {
   image: '이미지',
   video: '영상',
@@ -89,7 +105,7 @@ function makeNodeId() {
 
 function createEmptyNode(type: EditorNodeType, id = makeNodeId()) {
   if (type === 'graphic') {
-    return { id, type: 'graphic' as const, image: '', delay: 2.0, blurRegions: [], blurDefault: BLUR_DEFAULT }
+    return { id, type: 'graphic' as const, image: '', delay: 2.0, ignoreDelay: false, speed: 1.0, blurRegions: [], blurDefault: BLUR_DEFAULT }
   }
   if (type === 'fade') {
     return { id, type: 'fade' as const, fade: 'out' as const, duration: 1.2, color: '#000000' }
@@ -138,11 +154,14 @@ function convertNodeToType(prev: Record<string, any>, type: EditorNodeType) {
     }
   }
   if (type === 'graphic') {
+    const rawSpeed = Number(prev.speed)
     return {
       id,
       type: 'graphic',
       image: prev.image || '',
       delay: prev.delay ?? 2.0,
+      ignoreDelay: Boolean(prev.ignoreDelay),
+      speed: Number.isFinite(rawSpeed) && rawSpeed > 0 ? Math.min(4, Math.max(0.5, rawSpeed)) : 1.0,
       blurRegions: Array.isArray(prev.blurRegions) ? prev.blurRegions : [],
       blurDefault: Number.isFinite(Number(prev.blurDefault)) ? clampBlur(prev.blurDefault) : BLUR_DEFAULT,
     }
@@ -200,6 +219,7 @@ function normalizeEventLocalization(event: GameEvent): GameEvent {
     ownerCharacterId: normalizeOwnerCharacterId(event.ownerCharacterId),
     nodes: normalizedNodes,
     localization: nextLoc,
+    media: (event.media || []).filter((asset): asset is EventMediaAsset => Boolean(asset)).map(ensureMediaAssetId),
   }
 }
 
@@ -240,30 +260,53 @@ export function EventManagePanel({
   }, [events, selectedId])
 
   const handleSaveAssets = async (event: GameEvent) => {
-    if (!window.electronAPI?.saveEventAssets) {
-      alert('Electron 데스크톱 환경에서만 로컬 에셋 저장이 가능합니다.')
-      return
-    }
-
     setSavingEventId(event.id)
     try {
-      const assetsPayload = await Promise.all(
-        event.media.map(async (asset) => {
-          const buffer = await asset.blob.arrayBuffer()
-          return {
-            fileName: asset.fileName,
-            kind: asset.kind,
-            buffer: buffer,
-          }
-        })
-      )
+      const assetsPayload = (
+        await Promise.all(
+          event.media.map(async (asset) => {
+            const source =
+              asset.blob ||
+              (asset.url ? await fetch(asset.url).then((res) => (res.ok ? res.blob() : null)) : null)
+            if (!source) return null
+            const buffer = await source.arrayBuffer()
+            return {
+              fileName: asset.fileName,
+              kind: asset.kind,
+              buffer: Array.from(new Uint8Array(buffer)),
+            }
+          }),
+        )
+      ).filter((item): item is NonNullable<typeof item> => item != null)
 
-      const res = await window.electronAPI.saveEventAssets(event.id, assetsPayload)
-      if (res.success) {
-        alert(`물리 에셋 저장이 완료되었습니다!\n경로: ${res.path}`)
-      } else {
-        alert(`물리 에셋 저장에 실패했습니다:\n${res.error}`)
+      if (window.electronAPI?.saveEventAssets) {
+        const res = await window.electronAPI.saveEventAssets(event.id, assetsPayload)
+        if (res.success) {
+          alert(`물리 에셋 저장이 완료되었습니다!\n경로: ${res.path}`)
+        } else {
+          alert(`물리 에셋 저장에 실패했습니다:\n${res.error}`)
+        }
+        return
       }
+
+      if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
+        const httpRes = await fetch('/api/save-event-assets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ eventId: event.id, assets: assetsPayload }),
+        })
+        if (httpRes.ok) {
+          const json = await httpRes.json()
+          if (json.success) {
+            alert(`물리 에셋 저장이 완료되었습니다!\n경로: ${json.path}`)
+            return
+          }
+          alert(`물리 에셋 저장 실패: ${json.error}`)
+          return
+        }
+      }
+
+      alert('데스크톱 환경 또는 개발 서버 환경에서만 로컬 에셋 저장이 가능합니다.')
     } catch (err) {
       console.error(err)
       alert('에셋 데이터를 변환하여 쓰는 도중 오류가 발생했습니다.')
@@ -815,7 +858,78 @@ function EventDetail({
   const [importMode, setImportMode] = useState<'append' | 'replace'>('append')
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null)
   const [blurEditorIndex, setBlurEditorIndex] = useState<number | null>(null)
+  const [mediaTabFilter, setMediaTabFilter] = useState<'all' | 'used' | 'unused'>('all')
   const nodeCardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+
+  // 공용 사운드 및 미디어 피커 모달 상태
+  const [commonSounds, setCommonSounds] = useState<EventMediaAsset[]>([])
+  const [showCommonSoundModal, setShowCommonSoundModal] = useState(false)
+  const [commonSoundAssignNodeIndex, setCommonSoundAssignNodeIndex] = useState<number | null>(null)
+  const [mediaPickerNodeIndex, setMediaPickerNodeIndex] = useState<number | null>(null)
+  const [soundPickerNodeIndex, setSoundPickerNodeIndex] = useState<number | null>(null)
+
+  useEffect(() => {
+    void loadCommonSounds().then((sounds) => {
+      if (sounds && Array.isArray(sounds)) {
+        setCommonSounds(sounds)
+      }
+    })
+  }, [])
+
+  const handleAddCommonSounds = async (files: FileList | File[]) => {
+    const audioFiles = Array.from(files).filter((file) => mediaKindOfFile(file) === 'sound')
+    if (audioFiles.length === 0) {
+      alert('오디오 파일만 공용 사운드 라이브러리에 추가할 수 있습니다.')
+      return
+    }
+
+    const existingNames = new Set(commonSounds.map((s) => s.fileName))
+    const newAssets: EventMediaAsset[] = []
+    const payloads: Array<{ fileName: string; buffer: number[] }> = []
+
+    for (const file of audioFiles) {
+      if (existingNames.has(file.name)) continue
+      existingNames.add(file.name)
+      const buffer = Array.from(new Uint8Array(await file.arrayBuffer()))
+      payloads.push({ fileName: file.name, buffer })
+      newAssets.push({
+        id: `csound_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        fileName: file.name,
+        kind: 'sound',
+        sourcePath: `chapter_assets/common_sounds/${file.name}`,
+        url: commonSoundMediaPath(file.name),
+        size: file.size,
+      })
+    }
+
+    if (newAssets.length === 0) {
+      alert('이미 등록된 파일명이거나 추가할 오디오가 없습니다.')
+      return
+    }
+
+    const persisted = await persistCommonSoundFiles(payloads)
+    if (!persisted.success) {
+      alert(`프로젝트 폴더에 공용 사운드를 저장하지 못했습니다.\n${persisted.error || ''}`)
+      return
+    }
+
+    const next = [...commonSounds, ...newAssets]
+    setCommonSounds(next)
+    await saveCommonSounds(next)
+  }
+
+  const handleDeleteCommonSound = async (id: string) => {
+    const sound = commonSounds.find((s) => s.id === id)
+    if (!sound) return
+    if (!confirm(`공용 사운드 '${sound.fileName}'을(를) 라이브러리에서 삭제하시겠습니까?`)) return
+    if (sound.url && sound.url.startsWith('blob:')) {
+      URL.revokeObjectURL(sound.url)
+    }
+    await removeCommonSoundFile(sound.fileName)
+    const next = commonSounds.filter((s) => s.id !== id)
+    setCommonSounds(next)
+    await saveCommonSounds(next)
+  }
 
   useEffect(() => {
     if (!focusNodeId) return
@@ -926,6 +1040,8 @@ function EventDetail({
           type: 'graphic',
           image: matchedAsset ? matchedAsset.fileName : '',
           delay: 2.0,
+          ignoreDelay: false,
+          speed: 1.0,
           blurRegions: [],
           blurDefault: BLUR_DEFAULT,
         })
@@ -1027,6 +1143,32 @@ function EventDetail({
   }
 
   // 드롭된 파일을 해당 노드에 바인딩. 소비했으면 true 반환 (스크립트 txt 제외 — 호출부에서 먼저 처리)
+  // 미디어 추가 즉시 디스크(프로젝트 폴더)로 자동 실시간 복사/저장 헬퍼
+  const autoSaveMediaAssetToDisk = async (asset: EventMediaAsset) => {
+    if (!event.id || !asset || !asset.blob) return
+    try {
+      const buffer = await asset.blob.arrayBuffer()
+      const payload = [
+        {
+          fileName: asset.fileName,
+          kind: asset.kind,
+          buffer: Array.from(new Uint8Array(buffer)),
+        },
+      ]
+      if (window.electronAPI?.saveEventAssets) {
+        await window.electronAPI.saveEventAssets(event.id, payload)
+      } else if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
+        await fetch('/api/save-event-assets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ eventId: event.id, assets: payload }),
+        })
+      }
+    } catch (err) {
+      console.error('Failed to auto save media asset to disk:', err)
+    }
+  }
+
   const applyDroppedFileToNode = (file: File, targetNodeIndex: number): boolean => {
     const nodes = (event.nodes || []) as any[]
     const rawType = String(nodes[targetNodeIndex]?.type || 'text')
@@ -1069,6 +1211,9 @@ function EventDetail({
       url,
       size: file.size,
     }
+
+    // 디스크 실시간 저장 실행
+    void autoSaveMediaAssetToDisk(newAsset)
 
     const updatedMedia = [...(event.media || []), newAsset]
     const updatedNodes = [...nodes]
@@ -1208,6 +1353,9 @@ function EventDetail({
       size: file.size,
     }
 
+    // 디스크 실시간 자동 저장 실행
+    void autoSaveMediaAssetToDisk(newAsset)
+
     const updatedMedia = [...(event.media || []), newAsset]
 
     let updatedNodes = [...(event.nodes || [])]
@@ -1229,22 +1377,164 @@ function EventDetail({
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  // 연결된 미디어 삭제 핸들러
-  const handleRemoveMedia = (assetId: string) => {
-    const assetToRemove = event.media.find((m) => m.id === assetId)
-    if (!assetToRemove) return
+  const extractBasename = (filePath: string): string => {
+    if (!filePath || typeof filePath !== 'string') return ''
+    const clean = filePath.replace(/\\/g, '/').trim()
+    const idx = clean.lastIndexOf('/')
+    return idx >= 0 ? clean.slice(idx + 1) : clean
+  }
 
-    // 현재 노드에서 이 파일명을 참조하고 있는지 검사
-    const isReferenced = (event.nodes || []).some(
-      (node: any) =>
-        node.image === assetToRemove.fileName ||
-        node.voice === assetToRemove.fileName ||
-        node.sound === assetToRemove.fileName
+  // 노드에서 참조 중인 파일명 집합 계산 (깊은 탐색 & 대소문자 / 경로 호환)
+  const referencedFileNames = useMemo(() => {
+    const set = new Set<string>()
+
+    const addVal = (val: unknown) => {
+      if (!val) return
+      if (typeof val === 'string') {
+        const base = extractBasename(val)
+        if (base) {
+          set.add(base)
+          set.add(base.toLowerCase())
+        }
+      } else if (typeof val === 'object') {
+        if (Array.isArray(val)) {
+          for (const item of val) addVal(item)
+        } else {
+          for (const v of Object.values(val as Record<string, unknown>)) {
+            addVal(v)
+          }
+        }
+      }
+    }
+
+    const visit = (node: unknown) => {
+      if (!node || typeof node !== 'object') return
+      const n = node as Record<string, unknown>
+
+      if (n.image) addVal(n.image)
+      if (n.voice) addVal(n.voice)
+      if (n.sound) addVal(n.sound)
+      if (n.video) addVal(n.video)
+      if (n.media) addVal(n.media)
+      if (n.bgm) addVal(n.bgm)
+      if (n.sfx) addVal(n.sfx)
+      if (n.src) addVal(n.src)
+
+      if (n.type === 'custom' && Array.isArray(n.fields)) {
+        for (const f of n.fields) {
+          if (f && typeof f === 'object' && 'value' in (f as Record<string, unknown>)) {
+            addVal((f as Record<string, unknown>).value)
+          }
+        }
+      }
+
+      if (Array.isArray(n.nodes)) {
+        for (const child of n.nodes) visit(child)
+      }
+    }
+
+    for (const n of event.nodes || []) visit(n)
+    return set
+  }, [event.nodes])
+
+  const isMediaAssetReferenced = useCallback(
+    (fileName: string) => {
+      const base = extractBasename(fileName)
+      if (!base) return false
+      return referencedFileNames.has(base) || referencedFileNames.has(base.toLowerCase())
+    },
+    [referencedFileNames]
+  )
+
+  // 노드에 참조되지 않은 미사용 미디어 목록
+  const unreferencedMedia = useMemo(() => {
+    return (event.media || []).filter((m) => !isMediaAssetReferenced(m.fileName))
+  }, [event.media, isMediaAssetReferenced])
+
+  // 미디어 삭제 시 노드 내부의 미디어 참조 제거 헬퍼 (유효한 파일명일 때만 적용)
+  const cleanNodesForDeletedMedia = (nodes: any[], targetFileNames: string[]) => {
+    const targetBases = new Set(
+      targetFileNames
+        .map((f) => extractBasename(f).toLowerCase())
+        .filter((b) => Boolean(b && b.trim()))
     )
+    if (targetBases.size === 0) return nodes
 
-    let confirmMsg = `미디어 파일 '${assetToRemove.fileName}'을(를) 삭제하시겠습니까?\n디스크에 저장된 파일도 함께 삭제됩니다.`
+    const isMatch = (val: unknown) => {
+      if (typeof val !== 'string' || !val.trim()) return false
+      const base = extractBasename(val).toLowerCase()
+      return Boolean(base && targetBases.has(base))
+    }
+
+    const cleanNode = (n: any): any => {
+      if (!n || typeof n !== 'object') return n
+      const next = { ...n }
+      if (isMatch(next.image)) next.image = ''
+      if (isMatch(next.sound)) next.sound = ''
+      if (isMatch(next.video)) next.video = ''
+      if (isMatch(next.media)) next.media = ''
+      if (isMatch(next.bgm)) next.bgm = ''
+      if (isMatch(next.sfx)) next.sfx = ''
+      if (isMatch(next.src)) next.src = ''
+
+      if (typeof next.voice === 'string') {
+        if (isMatch(next.voice)) next.voice = ''
+      } else if (next.voice && typeof next.voice === 'object') {
+        const newVoice = { ...next.voice }
+        for (const k of Object.keys(newVoice)) {
+          if (isMatch(newVoice[k])) newVoice[k] = ''
+        }
+        next.voice = newVoice
+      }
+
+      if (next.type === 'custom' && Array.isArray(next.fields)) {
+        next.fields = next.fields.map((f: any) => {
+          if (f && typeof f === 'object' && isMatch(f.value)) {
+            return { ...f, value: '' }
+          }
+          return f
+        })
+      }
+
+      if (Array.isArray(next.nodes)) {
+        next.nodes = next.nodes.map(cleanNode)
+      }
+
+      return next
+    }
+
+    return (nodes || []).map(cleanNode)
+  }
+
+  // 미디어 파일 디스크 실제 파일 완전 삭제 헬퍼
+  const deletePhysicalMediaFile = async (kind: EventMediaKind, fileName: string) => {
+    if (!event.id || !fileName) return
+    if (window.electronAPI?.deleteEventFile) {
+      try {
+        await window.electronAPI.deleteEventFile(event.id, kind, fileName)
+      } catch (err) {
+        console.error('Failed to delete file via Electron API:', err)
+      }
+    } else if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
+      try {
+        await fetch('/api/delete-event-file', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ eventId: event.id, kind, fileName }),
+        })
+      } catch (err) {
+        console.error('Failed to delete file via Dev Server API:', err)
+      }
+    }
+  }
+
+  // 연결된 미디어 삭제 핸들러 (디스크의 실제 물리 파일까지 함께 완전 삭제)
+  const handleRemoveMedia = (assetToRemove: EventMediaAsset) => {
+    const isReferenced = isMediaAssetReferenced(assetToRemove.fileName)
+
+    let confirmMsg = `미디어 파일 '${assetToRemove.fileName}'을(를) 삭제하시겠습니까?\n폴더 내 실제 에셋 파일도 함께 완전 삭제됩니다.`
     if (isReferenced) {
-      confirmMsg = `이 미디어(${assetToRemove.fileName})는 현재 스토리 노드에서 참조 중입니다. 정말 삭제하시겠습니까?\n삭제 시 관련 노드의 미디어 연결도 함께 초기화됩니다.`
+      confirmMsg = `이 미디어(${assetToRemove.fileName})는 현재 노드 시퀀스에서 사용 중입니다. 정말 삭제하시겠습니까?\n폴더 내 실제 에셋 파일도 함께 완전히 지워집니다.`
     }
 
     if (!confirm(confirmMsg)) return
@@ -1253,30 +1543,42 @@ function EventDetail({
       URL.revokeObjectURL(assetToRemove.url)
     }
 
-    if (window.electronAPI?.deleteEventFile) {
-      void window.electronAPI
-        .deleteEventFile(event.id, assetToRemove.kind, assetToRemove.fileName)
-        .catch((err) => {
-          console.error('Failed to delete event media from disk:', err)
-        })
-    }
+    // 폴더의 실제 물리 파일 완전 삭제
+    void deletePhysicalMediaFile(assetToRemove.kind, assetToRemove.fileName)
 
-    const updatedMedia = event.media.filter((m) => m.id !== assetId)
-    let updatedNodes = [...(event.nodes || [])]
-    if (isReferenced) {
-      updatedNodes = updatedNodes.map((node: any) => {
-        const next = { ...node }
-        if (next.image === assetToRemove.fileName) next.image = ''
-        if (next.voice === assetToRemove.fileName) next.voice = ''
-        if (next.sound === assetToRemove.fileName) next.sound = ''
-        return next
-      })
-    }
+    const removeKey = mediaAssetKey(assetToRemove)
+    const updatedMedia = event.media.filter((m) => mediaAssetKey(m) !== removeKey)
+    const updatedNodes = isReferenced
+      ? cleanNodesForDeletedMedia(event.nodes || [], [assetToRemove.fileName])
+      : event.nodes
 
     onUpdateEvent({
       ...event,
       media: updatedMedia,
       nodes: updatedNodes,
+    })
+  }
+
+  // 연결되지 않은 모든 미사용 미디어 일괄 물리 삭제 핸들러
+  const handleRemoveUnusedMedia = () => {
+    if (unreferencedMedia.length === 0) return
+    const confirmMsg = `노드 시퀀스에 연결되지 않은 미사용 파일 ${unreferencedMedia.length}개를 모두 일괄 삭제하시겠습니까?\n폴더 내 실제 에셋 파일들도 함께 완전 삭제됩니다.`
+    if (!confirm(confirmMsg)) return
+
+    for (const asset of unreferencedMedia) {
+      if (asset.url && asset.url.startsWith('blob:')) {
+        URL.revokeObjectURL(asset.url)
+      }
+      void deletePhysicalMediaFile(asset.kind, asset.fileName)
+    }
+
+    const unusedKeys = new Set(unreferencedMedia.map((m) => mediaAssetKey(m)))
+    const updatedMedia = event.media.filter((m) => !unusedKeys.has(mediaAssetKey(m)))
+
+    // 미사용 미디어 삭제 시에는 노드(nodes)를 전혀 건드리지 않고 오직 media 목록만 정제함!
+    onUpdateEvent({
+      ...event,
+      media: updatedMedia,
     })
   }
 
@@ -1311,7 +1613,18 @@ function EventDetail({
             </select>
           </label>
         </div>
-        <div className="flex shrink-0 gap-2">
+        <div className="flex shrink-0 gap-2 flex-wrap sm:flex-nowrap">
+          <button
+            type="button"
+            onClick={() => {
+              setCommonSoundAssignNodeIndex(null)
+              setShowCommonSoundModal(true)
+            }}
+            title="모든 이벤트에서 공통으로 사용할 사운드(BGM/SFX)를 등록하고 관리합니다"
+            className="game-btn shrink-0 rounded-xl px-3 py-2 text-xs font-bold text-emerald-300 border-emerald-500/40 bg-emerald-950/40 hover:bg-emerald-500/30"
+          >
+            📻 공용 사운드 관리 ({commonSounds.length})
+          </button>
           <button
             type="button"
             onClick={() => void handleOpenEventFolder(event.id)}
@@ -1470,6 +1783,8 @@ function EventDetail({
                       : 'text'
                 const isFocused = focusNodeId && node.id === focusNodeId
                 const soundAssets = (event.media || []).filter((m) => m.kind === 'sound')
+                const eventSoundNames = new Set(soundAssets.map((s) => s.fileName))
+                const sharedSoundAssets = commonSounds.filter((s) => !eventSoundNames.has(s.fileName))
 
                 return (
                   <div
@@ -1665,8 +1980,8 @@ function EventDetail({
                             className="w-full rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500/50 cursor-pointer"
                           >
                             <option value="">-- 음성 없음 --</option>
-                            {soundAssets.map((asset) => (
-                              <option key={asset.id} value={asset.fileName}>
+                            {soundAssets.map((asset, idx) => (
+                              <option key={asset.id ? `voice-${asset.id}` : `voice-${asset.fileName}-${idx}`} value={asset.fileName}>
                                 {asset.fileName}
                               </option>
                             ))}
@@ -1768,17 +2083,36 @@ function EventDetail({
                             }}
                             onDrop={(e) => handleFileDrop(e, index)}
                           >
-                            <div className="flex items-center justify-between">
-                              <label className="text-[11px] font-semibold text-slate-400">사운드 파일</label>
-                              <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
-                                📁 새 파일 추가
-                                <input
-                                  type="file"
-                                  accept="audio/*"
-                                  className="hidden"
-                                  onChange={(e) => handleUploadMedia(e, index, 'sound')}
-                                />
-                              </label>
+                            <div className="flex items-center justify-between gap-2">
+                              <label className="text-[11px] font-semibold text-slate-400 shrink-0">사운드 파일</label>
+                              <div className="flex flex-wrap items-center justify-end gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => setSoundPickerNodeIndex(index)}
+                                  className="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded transition"
+                                >
+                                  🎵 미리듣고 선택 (사운드 갤러리)
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setCommonSoundAssignNodeIndex(index)
+                                    setShowCommonSoundModal(true)
+                                  }}
+                                  className="text-[10px] text-amber-300 hover:text-amber-200 font-bold bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded transition"
+                                >
+                                  📻 공용 사운드
+                                </button>
+                                <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
+                                  📁 새 파일 추가
+                                  <input
+                                    type="file"
+                                    accept="audio/*"
+                                    className="hidden"
+                                    onChange={(e) => handleUploadMedia(e, index, 'sound')}
+                                  />
+                                </label>
+                              </div>
                             </div>
                             <select
                               value={node.sound || ''}
@@ -1790,11 +2124,24 @@ function EventDetail({
                               }`}
                             >
                               <option value="">-- 사운드 선택 --</option>
-                              {soundAssets.map((asset) => (
-                                <option key={asset.id} value={asset.fileName}>
-                                  {asset.fileName}
-                                </option>
-                              ))}
+                              {soundAssets.length > 0 && (
+                                <optgroup label="이 이벤트 사운드">
+                                  {soundAssets.map((asset, idx) => (
+                                    <option key={asset.id ? `sound-${asset.id}` : `sound-${asset.fileName}-${idx}`} value={asset.fileName}>
+                                      {asset.fileName}
+                                    </option>
+                                  ))}
+                                </optgroup>
+                              )}
+                              {sharedSoundAssets.length > 0 && (
+                                <optgroup label="공용 사운드 (복사 없음)">
+                                  {sharedSoundAssets.map((asset, idx) => (
+                                    <option key={asset.id ? `csound-${asset.id}` : `csound-${asset.fileName}-${idx}`} value={asset.fileName}>
+                                      {asset.fileName}
+                                    </option>
+                                  ))}
+                                </optgroup>
+                              )}
                             </select>
                             {fileDragOverIndex === index ? (
                               <p className="text-[10px] font-semibold text-emerald-300">
@@ -1919,6 +2266,13 @@ function EventDetail({
                             <div className="flex items-center gap-2">
                               <button
                                 type="button"
+                                onClick={() => setMediaPickerNodeIndex(index)}
+                                className="text-[10px] text-amber-300 hover:text-amber-200 font-bold bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded transition shadow-sm"
+                              >
+                                🖼 갤러리에서 미리보고 선택
+                              </button>
+                              <button
+                                type="button"
                                 onClick={() => setBlurEditorIndex(index)}
                                 className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold"
                               >
@@ -1952,8 +2306,8 @@ function EventDetail({
                               <option value="" className="bg-slate-900">-- 미디어 선택 안함 --</option>
                               {event.media
                                 .filter((m) => m.kind === 'image' || m.kind === 'video')
-                                .map((asset) => (
-                                  <option key={asset.id} value={asset.fileName} className="bg-slate-900">
+                                .map((asset, idx) => (
+                                  <option key={asset.id ? `graphic-${asset.id}` : `graphic-${asset.fileName}-${idx}`} value={asset.fileName} className="bg-slate-900">
                                     [{kindLabel[asset.kind]}] {asset.fileName}
                                   </option>
                                 ))}
@@ -1984,9 +2338,14 @@ function EventDetail({
                                     />
                                   ) : asset.kind === 'video' ? (
                                     <video
+                                      ref={(el) => {
+                                        if (el) el.playbackRate = Math.min(4, Math.max(0.5, Number(node.speed) || 1.0))
+                                      }}
                                       src={asset.url}
                                       muted
                                       playsInline
+                                      autoPlay
+                                      loop
                                       className="h-full w-full object-cover"
                                     />
                                   ) : null}
@@ -2005,27 +2364,105 @@ function EventDetail({
                           })()}
                         </div>
 
-                        {/* 노출 딜레이 시간 */}
-                        <div className="space-y-1.5">
-                          <label className="block text-[11px] font-semibold text-slate-400">
-                            화면 노출 시간 (초)
-                          </label>
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.5"
-                            value={node.delay !== undefined ? node.delay : 2.0}
-                            onChange={(e) =>
-                              handleNodeChange(index, {
-                                delay: Math.max(0, parseFloat(e.target.value) || 0),
-                              })
-                            }
-                            className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500/50"
-                          />
-                          <p className="text-[10px] text-slate-500">
-                            설정된 시간이 지나면 다음 노드로 자동 진행됩니다. (0초 설정 시 수동 클릭
-                            대기)
-                          </p>
+                        {/* 노출 딜레이 시간 & 영상 속도 */}
+                        <div className="space-y-3">
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <label className="text-[11px] font-semibold text-slate-400">
+                                화면 노출 시간 (초)
+                              </label>
+                              <label className="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(node.ignoreDelay)}
+                                  onChange={(e) => handleNodeChange(index, { ignoreDelay: e.target.checked })}
+                                  className="rounded border-white/20 bg-black/40 text-amber-500 focus:ring-amber-500/40"
+                                />
+                                노출시간 무시
+                              </label>
+                            </div>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.5"
+                              disabled={Boolean(node.ignoreDelay)}
+                              value={node.delay !== undefined ? node.delay : 2.0}
+                              onChange={(e) =>
+                                handleNodeChange(index, {
+                                  delay: Math.max(0, parseFloat(e.target.value) || 0),
+                                })
+                              }
+                              className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500/50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            />
+                            <p className="text-[10px] text-slate-500">
+                              {node.ignoreDelay
+                                ? '노출시간을 무시합니다. 클릭·키로 바로 다음 노드로 넘어갈 수 있습니다.'
+                                : '설정된 시간이 지나기 전에는 클릭·키로 넘길 수 없고, 시간이 끝나면 다음 노드로 자동 진행됩니다. (0초면 바로 클릭 대기)'}
+                            </p>
+                          </div>
+
+                          {/* 영상 재생 속도 (0.5x ~ 4.0x) */}
+                          {(!node.image || event.media.find((m) => m.fileName === node.image)?.kind === 'video') && (
+                            <div className="space-y-1.5 rounded-lg border border-white/10 bg-black/30 p-2.5">
+                              <div className="flex items-center justify-between">
+                                <label className="text-[11px] font-semibold text-slate-300 flex items-center gap-1.5">
+                                  <span>🎬 영상 재생 속도</span>
+                                  <span className="rounded bg-indigo-500/20 px-1.5 py-0.5 text-[10px] font-mono text-indigo-300">
+                                    {(node.speed ?? 1.0).toFixed(1)}x
+                                  </span>
+                                </label>
+                                <div className="flex items-center gap-1">
+                                  {[0.5, 1.0, 1.5, 2.0, 4.0].map((s) => (
+                                    <button
+                                      key={s}
+                                      type="button"
+                                      onClick={() => handleNodeChange(index, { speed: s })}
+                                      className={`rounded px-1.5 py-0.5 text-[10px] transition ${
+                                        (node.speed ?? 1.0) === s
+                                          ? 'bg-indigo-600 text-white font-bold'
+                                          : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-200'
+                                      }`}
+                                    >
+                                      {s}x
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="range"
+                                  min="0.5"
+                                  max="4.0"
+                                  step="0.1"
+                                  value={node.speed ?? 1.0}
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value)
+                                    handleNodeChange(index, {
+                                      speed: Math.min(4, Math.max(0.5, Number.isFinite(val) ? val : 1.0)),
+                                    })
+                                  }}
+                                  className="flex-1 accent-indigo-500 cursor-pointer h-1.5 bg-slate-700 rounded-lg"
+                                />
+                                <input
+                                  type="number"
+                                  min="0.5"
+                                  max="4.0"
+                                  step="0.1"
+                                  value={node.speed ?? 1.0}
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value)
+                                    handleNodeChange(index, {
+                                      speed: Math.min(4, Math.max(0.5, Number.isFinite(val) ? val : 1.0)),
+                                    })
+                                  }}
+                                  className="w-14 rounded border border-white/10 bg-black/40 px-1.5 py-1 text-xs text-center text-slate-200 outline-none focus:border-indigo-500/50"
+                                />
+                              </div>
+                              <p className="text-[10px] text-slate-500">
+                                영상 미디어의 재생 속도를 0.5배속 ~ 4.0배속 범위로 조절합니다. (기본: 1.0배속)
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -2037,60 +2474,135 @@ function EventDetail({
         </div>
       )}
 
-      {/* Tab Contents: Media List (기존 기능) */}
+      {/* Tab Contents: Media List */}
       {activeTab === 'media' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-slate-400">
-              이미지 {counts.image} · 영상 {counts.video} · 사운드 {counts.sound} · 총{' '}
-              {event.media?.length ?? 0}개 파일
-            </p>
-            {/* 공통 파일 업로드 버튼 */}
-            <label className="rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-3 py-1.5 text-xs text-indigo-300 font-medium transition cursor-pointer">
-              📁 로컬 미디어 추가
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*,video/*,audio/*"
-                className="hidden"
-                onChange={(e) => handleUploadMedia(e)}
-              />
-            </label>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+            <div className="space-y-1">
+              <p className="text-xs text-slate-300 font-medium">
+                이미지 {counts.image} · 영상 {counts.video} · 사운드 {counts.sound} · 총{' '}
+                <b className="text-white">{event.media?.length ?? 0}개</b> 파일
+              </p>
+              <p className="text-[11px] text-slate-400 flex items-center gap-2 flex-wrap">
+                <span className="flex items-center gap-1">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
+                  <span>노드 사용 중: <b className="text-emerald-300">{event.media.length - unreferencedMedia.length}개</b></span>
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse"></span>
+                  <span>노드 미연결 (미사용): <b className="text-amber-300 font-bold">{unreferencedMedia.length}개</b></span>
+                </span>
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              {unreferencedMedia.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleRemoveUnusedMedia}
+                  title="스토리 노드 시퀀스에 연결되지 않은 모든 미사용 파일을 폴더 내 실제 에셋과 함께 일괄 삭제합니다"
+                  className="rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 px-3 py-1.5 text-xs text-rose-300 font-bold transition flex items-center gap-1.5 shadow-sm"
+                >
+                  <span>🗑️</span>
+                  <span>미사용 미디어 일괄 삭제 ({unreferencedMedia.length})</span>
+                </button>
+              )}
+              <label className="rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-3 py-1.5 text-xs text-indigo-300 font-semibold transition cursor-pointer">
+                📁 로컬 미디어 추가
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/*,audio/*"
+                  className="hidden"
+                  onChange={(e) => handleUploadMedia(e)}
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* 미디어 필터버튼 */}
+          <div className="flex items-center gap-1.5 pb-1">
+            {(['all', 'used', 'unused'] as const).map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setMediaTabFilter(f)}
+                className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+                  mediaTabFilter === f
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'bg-black/30 text-slate-400 hover:bg-white/10 hover:text-slate-200'
+                }`}
+              >
+                {f === 'all'
+                  ? `전체 보기 (${event.media?.length ?? 0})`
+                  : f === 'used'
+                    ? `✓ 노드 사용 중 (${event.media.length - unreferencedMedia.length})`
+                    : `⚠️ 미사용 파일만 보기 (${unreferencedMedia.length})`}
+              </button>
+            ))}
           </div>
 
           {['image', 'video', 'sound'].map((kind) => {
-            const items = (event.media || []).filter((asset) => asset.kind === kind)
+            const items = (event.media || []).filter((asset) => {
+              if (asset.kind !== kind) return false
+              const isReferenced = isMediaAssetReferenced(asset.fileName)
+              if (mediaTabFilter === 'used' && !isReferenced) return false
+              if (mediaTabFilter === 'unused' && isReferenced) return false
+              return true
+            })
             if (items.length === 0) return null
             return (
               <div key={kind} className="space-y-2 animate-fade-in">
-                <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">
-                  {kindLabel[kind as EventMediaKind]} ({items.length})
+                <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase flex items-center justify-between">
+                  <span>{kindLabel[kind as EventMediaKind]} ({items.length})</span>
                 </p>
-                <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {items.map((asset) => (
-                    <li
-                      key={asset.id}
-                      className="overflow-hidden rounded-xl border border-white/10 bg-black/25 flex flex-col justify-between"
-                    >
-                      <MediaThumb asset={asset} />
-                      <div className="px-2 py-1.5 border-t border-white/5 bg-black/10 flex items-center justify-between gap-1">
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-xs text-slate-200" title={asset.fileName}>
-                            {asset.fileName}
-                          </p>
-                          <p className="text-[10px] text-slate-500">{formatFileSize(asset.size)}</p>
+                <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                  {items.map((asset, idx) => {
+                    const isReferenced = isMediaAssetReferenced(asset.fileName)
+                    return (
+                      <li
+                        key={asset.id ? `asset-${asset.id}` : `asset-${asset.fileName}-${idx}`}
+                        className={`relative overflow-hidden rounded-xl border flex flex-col justify-between transition ${
+                          isReferenced
+                            ? 'border-white/10 bg-black/30 hover:border-white/20'
+                            : 'border-amber-500/50 bg-amber-950/20 ring-1 ring-amber-500/40 hover:border-amber-400'
+                        }`}
+                      >
+                        {/* 참조 상태 뱃지 */}
+                        <div className="absolute top-2 left-2 z-10">
+                          {isReferenced ? (
+                            <span className="rounded bg-emerald-600/80 px-1.5 py-0.5 text-[9px] font-bold text-white shadow backdrop-blur-md">
+                              ✓ 사용 중
+                            </span>
+                          ) : (
+                            <span className="rounded bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold text-slate-950 shadow backdrop-blur-md animate-pulse">
+                              ⚠️ 노드 미연결
+                            </span>
+                          )}
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveMedia(asset.id)}
-                          className="shrink-0 rounded p-1 hover:bg-white/5 text-[10px] text-slate-500 hover:text-rose-400 transition"
-                          title="미디어 삭제"
-                        >
-                          🗑
-                        </button>
-                      </div>
-                    </li>
-                  ))}
+
+                        <MediaThumb asset={asset} />
+
+                        <div className="px-2.5 py-2 border-t border-white/5 bg-black/40 flex items-center justify-between gap-1">
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-semibold text-slate-200" title={asset.fileName}>
+                              {asset.fileName}
+                            </p>
+                            <p className="text-[10px] text-slate-500">{formatFileSize(asset.size)}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveMedia(asset)}
+                            className="shrink-0 rounded p-1.5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-300 transition"
+                            title="실제 파일까지 폴더에서 완전 삭제"
+                          >
+                            🗑
+                          </button>
+                        </div>
+                      </li>
+                    )
+                  })}
                 </ul>
               </div>
             )
@@ -2271,34 +2783,772 @@ function EventDetail({
           }
           regions={readBlurRegions(event.nodes[blurEditorIndex])}
           blurDefault={clampBlur(Number((event.nodes[blurEditorIndex] as any).blurDefault))}
+          speed={Number((event.nodes[blurEditorIndex] as any).speed) || 1.0}
           onChange={({ blurRegions, blurDefault }) => {
             handleNodeChange(blurEditorIndex, { blurRegions, blurDefault })
           }}
           onClose={() => setBlurEditorIndex(null)}
         />
       ) : null}
+
+      {/* 🖼️ 배경 미디어 갤러리 피커 모달 */}
+      {mediaPickerNodeIndex !== null && event.nodes?.[mediaPickerNodeIndex] ? (
+        <MediaGalleryPickerModal
+          media={event.media}
+          selectedFileName={(event.nodes[mediaPickerNodeIndex] as any).image || ''}
+          onSelect={(fileName) => {
+            handleNodeChange(mediaPickerNodeIndex, { image: fileName })
+          }}
+          onUploadMedia={(files) => {
+            handleUploadMedia({ target: { files } } as any, mediaPickerNodeIndex)
+          }}
+          onClose={() => setMediaPickerNodeIndex(null)}
+        />
+      ) : null}
+
+      {/* 🎵 사운드 갤러리/미리듣기 피커 모달 */}
+      {soundPickerNodeIndex !== null && event.nodes?.[soundPickerNodeIndex] ? (
+        <SoundGalleryPickerModal
+          media={event.media}
+          commonSounds={commonSounds}
+          selectedFileName={(event.nodes[soundPickerNodeIndex] as any).sound || ''}
+          onSelect={(fileName) => {
+            handleNodeChange(soundPickerNodeIndex, { sound: fileName })
+          }}
+          onUploadSound={(files) => {
+            handleUploadMedia({ target: { files } } as any, soundPickerNodeIndex, 'sound')
+          }}
+          onClose={() => setSoundPickerNodeIndex(null)}
+        />
+      ) : null}
+
+      {/* 📻 공용 사운드 라이브러리 모달 */}
+      {showCommonSoundModal && (
+        <CommonSoundManagerModal
+          commonSounds={commonSounds}
+          selectedFileName={
+            commonSoundAssignNodeIndex != null
+              ? String((event.nodes[commonSoundAssignNodeIndex] as any)?.sound || '')
+              : ''
+          }
+          assignMode={commonSoundAssignNodeIndex != null}
+          onSelectSound={
+            commonSoundAssignNodeIndex != null
+              ? (fileName) => {
+                  handleNodeChange(commonSoundAssignNodeIndex, { sound: fileName })
+                  setShowCommonSoundModal(false)
+                  setCommonSoundAssignNodeIndex(null)
+                }
+              : undefined
+          }
+          onAddSounds={handleAddCommonSounds}
+          onDeleteSound={handleDeleteCommonSound}
+          onClose={() => {
+            setShowCommonSoundModal(false)
+            setCommonSoundAssignNodeIndex(null)
+          }}
+        />
+      )}
     </div>
   )
 }
 
 function MediaThumb({ asset }: { asset: EventMediaAsset }) {
+  const [hasError, setHasError] = useState(false)
+
+  if (hasError) {
+    return (
+      <div className="aspect-video bg-black/60 flex flex-col items-center justify-center p-2 text-center text-rose-400">
+        <span className="text-lg">⚠️</span>
+        <span className="text-[10px] mt-0.5">파일을 찾을 수 없음 (404)</span>
+      </div>
+    )
+  }
+
   if (asset.kind === 'image') {
     return (
       <div className="aspect-video bg-black/40">
-        <img src={asset.url} alt="" className="h-full w-full object-cover" />
+        <img src={asset.url} alt="" onError={() => setHasError(true)} className="h-full w-full object-cover" />
       </div>
     )
   }
   if (asset.kind === 'video') {
     return (
       <div className="aspect-video bg-black/40">
-        <video src={asset.url} muted playsInline className="h-full w-full object-cover" />
+        <video src={asset.url} muted playsInline onError={() => setHasError(true)} className="h-full w-full object-cover" />
       </div>
     )
   }
   return (
     <div className="flex aspect-video items-center justify-center bg-black/40 px-2">
-      <audio src={asset.url} controls preload="metadata" className="w-full" />
+      <audio src={asset.url} controls preload="metadata" onError={() => setHasError(true)} className="w-full" />
     </div>
+  )
+}
+
+/* ========================================================================
+ * 🖼️ 갤러리 피커 모달 (미디어를 썸네일 그리드로 보고 시각적으로 선택)
+ * ======================================================================== */
+type MediaGalleryPickerModalProps = {
+  media: EventMediaAsset[]
+  selectedFileName: string
+  onSelect: (fileName: string) => void
+  onUploadMedia: (files: FileList) => void
+  onClose: () => void
+}
+
+function MediaGalleryPickerModal({
+  media,
+  selectedFileName,
+  onSelect,
+  onUploadMedia,
+  onClose,
+}: MediaGalleryPickerModalProps) {
+  const [filterKind, setFilterKind] = useState<'all' | 'image' | 'video'>('all')
+  const [search, setSearch] = useState('')
+  const [hoverId, setHoverId] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const items = media.filter((m) => {
+    if (m.kind !== 'image' && m.kind !== 'video') return false
+    if (filterKind !== 'all' && m.kind !== filterKind) return false
+    if (search.trim()) {
+      return m.fileName.toLowerCase().includes(search.toLowerCase().trim())
+    }
+    return true
+  })
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
+      <div className="relative flex max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-white/10 bg-slate-900 shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4 bg-slate-950/60">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🖼️</span>
+            <div>
+              <h3 className="text-base font-bold text-slate-100">배경 미디어 선택 (갤러리)</h3>
+              <p className="text-xs text-slate-400">썸네일을 보고 선택할 미디어를 클릭하세요</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-slate-200"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-3 bg-black/20">
+          <div className="flex items-center gap-1.5">
+            {(['all', 'image', 'video'] as const).map((k) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => setFilterKind(k)}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                  filterKind === k
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-200'
+                }`}
+              >
+                {k === 'all'
+                  ? `전체 (${media.filter((m) => m.kind !== 'sound').length})`
+                  : k === 'image'
+                    ? `이미지 (${media.filter((m) => m.kind === 'image').length})`
+                    : `영상 (${media.filter((m) => m.kind === 'video').length})`}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="🔍 미디어 파일명 검색..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-48 sm:w-64 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="rounded-lg bg-indigo-500/20 border border-indigo-500/30 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/30 transition flex items-center gap-1"
+            >
+              📁 새 파일 추가
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  onUploadMedia(e.target.files)
+                  e.target.value = ''
+                }
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Media Grid */}
+        <div className="flex-1 overflow-y-auto p-5">
+          {items.length === 0 ? (
+            <div className="flex h-48 flex-col items-center justify-center text-slate-500">
+              <span className="text-3xl">📂</span>
+              <p className="mt-2 text-xs">일치하는 미디어 파일이 없습니다.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {/* 선택 해제 카드 */}
+              <button
+                type="button"
+                onClick={() => {
+                  onSelect('')
+                  onClose()
+                }}
+                className={`group flex flex-col items-center justify-center rounded-xl border border-dashed p-4 text-center transition ${
+                  !selectedFileName
+                    ? 'border-indigo-500 bg-indigo-500/10 text-indigo-300'
+                    : 'border-white/15 text-slate-400 hover:border-white/30 hover:bg-white/5'
+                }`}
+              >
+                <span className="text-2xl">🚫</span>
+                <span className="mt-1 text-xs font-medium">선택 안 함</span>
+              </button>
+
+              {items.map((asset, idx) => {
+                const isSelected = selectedFileName === asset.fileName
+                return (
+                  <div
+                    key={asset.id ? `picker-${asset.id}` : `picker-${asset.fileName}-${idx}`}
+                    onClick={() => {
+                      onSelect(asset.fileName)
+                      onClose()
+                    }}
+                    onMouseEnter={() => setHoverId(asset.id)}
+                    onMouseLeave={() => setHoverId(null)}
+                    className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border transition ${
+                      isSelected
+                        ? 'border-indigo-500 bg-indigo-500/15 ring-2 ring-indigo-500'
+                        : 'border-white/10 bg-black/40 hover:border-indigo-400/60 hover:bg-black/60'
+                    }`}
+                  >
+                    {/* Media Thumbnail */}
+                    <div className="relative aspect-video w-full overflow-hidden bg-black/60">
+                      {asset.kind === 'image' ? (
+                        <img
+                          src={asset.url}
+                          alt={asset.fileName}
+                          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                        />
+                      ) : asset.kind === 'video' ? (
+                        <video
+                          src={asset.url}
+                          muted
+                          loop
+                          playsInline
+                          autoPlay={isSelected || hoverId === asset.id}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : null}
+
+                      {/* Kind Badge */}
+                      <span
+                        className={`absolute top-2 left-2 rounded px-1.5 py-0.5 text-[10px] font-bold text-white shadow backdrop-blur-md ${
+                          asset.kind === 'image' ? 'bg-blue-600/80' : 'bg-purple-600/80'
+                        }`}
+                      >
+                        {asset.kind === 'image' ? '이미지' : '영상'}
+                      </span>
+
+                      {isSelected && (
+                        <div className="absolute top-2 right-2 rounded-full bg-indigo-600 p-1 text-white shadow font-bold text-xs">
+                          ✓
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Info Footer */}
+                    <div className="p-2.5">
+                      <p
+                        className={`truncate text-xs font-semibold ${
+                          isSelected ? 'text-indigo-300' : 'text-slate-200 group-hover:text-white'
+                        }`}
+                        title={asset.fileName}
+                      >
+                        {asset.fileName}
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-slate-500">
+                        {formatFileSize(asset.size)}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between border-t border-white/10 px-5 py-3 bg-slate-950/60">
+          <span className="text-xs text-slate-400">
+            연결 가능한 배경 미디어 {media.filter((m) => m.kind !== 'sound').length}개
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="game-btn rounded-xl px-4 py-1.5 text-xs font-medium"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
+/* ========================================================================
+ * 🎵 사운드 미리듣기 & 갤러리 피커 모달
+ * ======================================================================== */
+type SoundGalleryPickerModalProps = {
+  media: EventMediaAsset[]
+  commonSounds: EventMediaAsset[]
+  selectedFileName: string
+  onSelect: (fileName: string) => void
+  onUploadSound: (files: FileList) => void
+  onClose: () => void
+}
+
+function SoundGalleryPickerModal({
+  media,
+  commonSounds,
+  selectedFileName,
+  onSelect,
+  onUploadSound,
+  onClose,
+}: SoundGalleryPickerModalProps) {
+  const [playingId, setPlayingId] = useState<string | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [search, setSearch] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const eventSounds = media.filter((m) => m.kind === 'sound')
+
+  const combinedSounds = [
+    ...eventSounds.map((s) => ({ ...s, isCommon: false })),
+    ...commonSounds.map((s) => ({ ...s, isCommon: true })),
+  ].filter((s) => {
+    if (search.trim()) {
+      return s.fileName.toLowerCase().includes(search.toLowerCase().trim())
+    }
+    return true
+  })
+
+  const togglePlay = (asset: EventMediaAsset) => {
+    if (playingId === asset.id) {
+      audioRef.current?.pause()
+      setPlayingId(null)
+    } else {
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
+      const audio = new Audio(resolveMediaSrc(asset.url || commonSoundMediaPath(asset.fileName)))
+      audioRef.current = audio
+      audio.play().catch(console.error)
+      audio.onended = () => setPlayingId(null)
+      setPlayingId(asset.id)
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
+    }
+  }, [])
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
+      <div className="relative flex max-h-[85vh] w-full max-w-2xl flex-col rounded-2xl border border-white/10 bg-slate-900 shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4 bg-slate-950/60">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🎵</span>
+            <div>
+              <h3 className="text-base font-bold text-slate-100">사운드 리소스 선택</h3>
+              <p className="text-xs text-slate-400">사운드를 미리 들어보고 노드에 지정하세요 (공용 사운드 포함)</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-slate-200"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Toolbar */}
+        <div className="flex items-center justify-between gap-3 border-b border-white/10 px-5 py-3 bg-black/20">
+          <input
+            type="text"
+            placeholder="🔍 사운드 파일명 검색..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500"
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="rounded-lg bg-indigo-500/20 border border-indigo-500/30 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/30 transition flex items-center gap-1 shrink-0"
+          >
+            📁 새 사운드 추가
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="audio/*"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                onUploadSound(e.target.files)
+                e.target.value = ''
+              }
+            }}
+          />
+        </div>
+
+        {/* Sound List */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          {/* 선택 해제 Item */}
+          <div
+            onClick={() => {
+              onSelect('')
+              onClose()
+            }}
+            className={`flex cursor-pointer items-center justify-between rounded-xl border p-3 transition ${
+              !selectedFileName
+                ? 'border-indigo-500 bg-indigo-500/15'
+                : 'border-white/10 bg-black/30 hover:bg-white/5'
+            }`}
+          >
+            <span className="text-xs text-slate-400">-- 사운드 선택 안 함 --</span>
+            {!selectedFileName && <span className="text-xs font-bold text-indigo-400">✓ 선택됨</span>}
+          </div>
+
+          {combinedSounds.map((sound) => {
+            const isSelected = selectedFileName === sound.fileName
+            const isPlaying = playingId === sound.id
+
+            return (
+              <div
+                key={sound.id}
+                className={`flex items-center justify-between rounded-xl border p-3 transition ${
+                  isSelected
+                    ? 'border-indigo-500 bg-indigo-500/15'
+                    : 'border-white/10 bg-black/40 hover:bg-white/5'
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <button
+                    type="button"
+                    onClick={() => togglePlay(sound)}
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition ${
+                      isPlaying
+                        ? 'bg-rose-500 text-white animate-pulse'
+                        : 'bg-indigo-600/80 hover:bg-indigo-600 text-white'
+                    }`}
+                  >
+                    {isPlaying ? '⏸' : '▶'}
+                  </button>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-xs font-semibold text-slate-200" title={sound.fileName}>
+                        {sound.fileName}
+                      </p>
+                      {sound.isCommon ? (
+                        <span className="rounded bg-emerald-500/20 border border-emerald-500/30 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300">
+                          공용 사운드
+                        </span>
+                      ) : (
+                        <span className="rounded bg-indigo-500/20 border border-indigo-500/30 px-1.5 py-0.5 text-[9px] font-bold text-indigo-300">
+                          이벤트 사운드
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-0.5 text-[10px] text-slate-500">
+                      {formatFileSize(sound.size)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onSelect(sound.fileName)
+                      onClose()
+                    }}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                      isSelected
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white/10 text-slate-300 hover:bg-indigo-600 hover:text-white'
+                    }`}
+                  >
+                    {isSelected ? '✓ 선택됨' : '선택'}
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between border-t border-white/10 px-5 py-3 bg-slate-950/60">
+          <span className="text-xs text-slate-400">
+            총 {combinedSounds.length}개 사운드 (공용 {commonSounds.length}개)
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="game-btn rounded-xl px-4 py-1.5 text-xs font-medium"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
+/* ========================================================================
+ * 📻 공용 사운드 라이브러리 관리 모달
+ * ======================================================================== */
+type CommonSoundManagerModalProps = {
+  commonSounds: EventMediaAsset[]
+  selectedFileName?: string
+  assignMode?: boolean
+  onSelectSound?: (fileName: string) => void
+  onAddSounds: (files: FileList) => void
+  onDeleteSound: (id: string) => void
+  onClose: () => void
+}
+
+function CommonSoundManagerModal({
+  commonSounds,
+  selectedFileName = '',
+  assignMode = false,
+  onSelectSound,
+  onAddSounds,
+  onDeleteSound,
+  onClose,
+}: CommonSoundManagerModalProps) {
+  const [playingId, setPlayingId] = useState<string | null>(null)
+  const [fileDragOver, setFileDragOver] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const togglePlay = (asset: EventMediaAsset) => {
+    if (playingId === asset.id) {
+      audioRef.current?.pause()
+      setPlayingId(null)
+    } else {
+      if (audioRef.current) audioRef.current.pause()
+      const audio = new Audio(resolveMediaSrc(asset.url || commonSoundMediaPath(asset.fileName)))
+      audioRef.current = audio
+      audio.play().catch(console.error)
+      audio.onended = () => setPlayingId(null)
+      setPlayingId(asset.id)
+    }
+  }
+
+  const acceptDroppedFiles = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setFileDragOver(false)
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      onAddSounds(e.dataTransfer.files)
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) audioRef.current.pause()
+    }
+  }, [])
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
+      <div
+        className={`relative flex max-h-[85vh] w-full max-w-2xl flex-col rounded-2xl border bg-slate-900 shadow-2xl overflow-hidden ${
+          fileDragOver ? 'border-emerald-400 ring-2 ring-emerald-400/40' : 'border-white/10'
+        }`}
+        onDragOver={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          if (Array.from(e.dataTransfer.types).includes('Files')) {
+            e.dataTransfer.dropEffect = 'copy'
+            if (!fileDragOver) setFileDragOver(true)
+          }
+        }}
+        onDragLeave={(e) => {
+          const next = e.relatedTarget as Node | null
+          if (next && e.currentTarget.contains(next)) return
+          setFileDragOver(false)
+        }}
+        onDrop={acceptDroppedFiles}
+      >
+        {fileDragOver && (
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-emerald-500/15">
+            <div className="rounded-xl border border-emerald-400/50 bg-slate-950/80 px-4 py-2 text-sm font-semibold text-emerald-200">
+              오디오 파일을 여기에 놓으면 공용 사운드에 추가됩니다
+            </div>
+          </div>
+        )}
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4 bg-slate-950/60">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">📻</span>
+            <div>
+              <h3 className="text-base font-bold text-slate-100">
+                {assignMode ? '공용 사운드 선택' : '공용 사운드 라이브러리'}
+              </h3>
+              <p className="text-xs text-slate-400">
+                {assignMode
+                  ? '미리 듣고 현재 사운드 노드에 지정합니다. 이벤트 폴더로 복사되지 않습니다.'
+                  : '모든 이벤트에서 파일 복사 없이 공통으로 참조할 사운드(BGM/SFX)를 관리합니다'}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-slate-200"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Toolbar */}
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-3 bg-black/20">
+          <span className="text-xs text-slate-400">
+            등록된 공용 사운드: <b className="text-emerald-400">{commonSounds.length}개</b>
+            <span className="ml-2 text-[11px] text-slate-500">`chapter_assets/common_sounds`에 1회 저장 · 이벤트별 복사 없음 · 드래그 앤 드롭 가능</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 text-xs font-bold transition flex items-center gap-1.5 shadow"
+          >
+            📁 공용 사운드 파일 추가
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="audio/*"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                onAddSounds(e.target.files)
+                e.target.value = ''
+              }
+            }}
+          />
+        </div>
+
+        {/* List */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          {commonSounds.length === 0 ? (
+            <div className="flex h-48 flex-col items-center justify-center text-slate-500">
+              <span className="text-3xl">🔊</span>
+              <p className="mt-2 text-xs">등록된 공용 사운드가 없습니다.</p>
+              <p className="mt-1 text-[11px] text-slate-600">파일을 끌어다 놓거나 '공용 사운드 파일 추가'를 눌러 추가하세요.</p>
+            </div>
+          ) : (
+            commonSounds.map((sound) => {
+              const isPlaying = playingId === sound.id
+              const isSelected = assignMode && selectedFileName === sound.fileName
+              return (
+                <div
+                  key={sound.id}
+                  className={`flex items-center justify-between rounded-xl border p-3 transition ${
+                    isSelected
+                      ? 'border-amber-400/50 bg-amber-500/10'
+                      : 'border-white/10 bg-black/40 hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <button
+                      type="button"
+                      onClick={() => togglePlay(sound)}
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition ${
+                        isPlaying
+                          ? 'bg-rose-500 text-white animate-pulse'
+                          : 'bg-emerald-600/80 hover:bg-emerald-600 text-white'
+                      }`}
+                    >
+                      {isPlaying ? '⏸' : '▶'}
+                    </button>
+
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-semibold text-slate-200" title={sound.fileName}>
+                        {sound.fileName}
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-slate-500">
+                        {formatFileSize(sound.size)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {assignMode && onSelectSound && (
+                      <button
+                        type="button"
+                        onClick={() => onSelectSound(sound.fileName)}
+                        className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
+                          isSelected
+                            ? 'bg-amber-500 text-slate-950'
+                            : 'bg-amber-500/20 border border-amber-500/30 text-amber-200 hover:bg-amber-500/30'
+                        }`}
+                      >
+                        {isSelected ? '지정됨' : '이 노드에 지정'}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => onDeleteSound(sound.id)}
+                      className="rounded-lg bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 text-xs text-rose-400 hover:bg-rose-500/20 transition"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
+              )
+            })
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end border-t border-white/10 px-5 py-3 bg-slate-950/60">
+          <button
+            type="button"
+            onClick={onClose}
+            className="game-btn rounded-xl px-4 py-1.5 text-xs font-medium"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
   )
 }

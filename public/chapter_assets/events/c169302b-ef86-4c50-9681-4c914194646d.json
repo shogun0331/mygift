@@ -155,7 +155,8 @@
       "image": "2026-08-28_00319_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787178069328_16_4q3x",
@@ -299,7 +300,8 @@
       "image": "2026-08-28_00320_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787178069328_31_wele",
@@ -351,7 +353,8 @@
       "image": "2026-08-28_00321_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787178069328_36_bjek",
@@ -522,6 +525,14 @@
       "text_key": "node_1787178069328_54_8i8o"
     },
     {
+      "id": "node_1788402938188_u815",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787178069328_55_w6qe",
       "type": "graphic",
       "image": "speed_2_65x_321335ee600340c49f4379a7658e0980.mp4",
@@ -596,6 +607,14 @@
       "speaker": "player",
       "text": "아… 나온다…!",
       "text_key": "node_1787178069328_63_49m8"
+    },
+    {
+      "id": "node_1788402950533_uemv",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787178069328_64_eeds",
@@ -969,7 +988,7 @@
       "fileName": "speed_2_65x_321335ee600340c49f4379a7658e0980.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/videos/speed_2_65x_321335ee600340c49f4379a7658e0980.mp4",
-      "url": "blob:http://localhost:5173/8eca1a0f-c416-4878-8ab0-a821a0c5c6d8",
+      "url": "media://chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/videos/speed_2_65x_321335ee600340c49f4379a7658e0980.mp4",
       "size": 1573552
     },
     {
@@ -977,7 +996,7 @@
       "fileName": "5f1a8604-fc41-445a-b1ba-75e0510a3d46.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/images/5f1a8604-fc41-445a-b1ba-75e0510a3d46.webp",
-      "url": "blob:http://localhost:5173/339a63fe-b6ab-4117-bf38-18343ce19072",
+      "url": "media://chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/images/5f1a8604-fc41-445a-b1ba-75e0510a3d46.webp",
       "size": 76056
     }
   ],

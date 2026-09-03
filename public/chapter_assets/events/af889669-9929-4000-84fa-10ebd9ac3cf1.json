@@ -16,14 +16,6 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787138628785_1_9zji",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "루프영상",
-      "text": "아키야마 미호 상반신 IDLE (경찰 유니폼, 고급 호텔룸, 정면)",
-      "text_key": "node_1787138628785_1_9zji"
-    },
-    {
       "id": "node_1787138628785_2_utdl",
       "type": "text",
       "speakerType": "narrator",
@@ -156,6 +148,14 @@
       "text_key": "node_1787138628785_16_75n0"
     },
     {
+      "id": "node_1788399909903_3znf",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787138628785_17_rqlm",
       "type": "graphic",
       "image": "speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
@@ -230,6 +230,14 @@
       "speaker": "VIP",
       "text": "아… 나온다…!",
       "text_key": "node_1787138628785_25_i9vb"
+    },
+    {
+      "id": "node_1788399921039_qh11",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787138628785_26_wrwu",
@@ -380,7 +388,7 @@
       "fileName": "2026-09-01_00101_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/af889669-9929-4000-84fa-10ebd9ac3cf1/images/2026-09-01_00101_.webp",
-      "url": "blob:http://localhost:5173/52e6145f-2ef5-45a0-b0fb-786dd4d8f5be",
+      "url": "media://chapter_assets/events/af889669-9929-4000-84fa-10ebd9ac3cf1/images/2026-09-01_00101_.webp",
       "size": 41374
     },
     {
@@ -388,7 +396,7 @@
       "fileName": "speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/af889669-9929-4000-84fa-10ebd9ac3cf1/videos/speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
-      "url": "blob:http://localhost:5173/d74f4eaf-4974-476c-9e08-a8c9db3ad691",
+      "url": "media://chapter_assets/events/af889669-9929-4000-84fa-10ebd9ac3cf1/videos/speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
       "size": 910887
     },
     {
@@ -396,7 +404,7 @@
       "fileName": "2026-09-01_00114_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/af889669-9929-4000-84fa-10ebd9ac3cf1/images/2026-09-01_00114_.webp",
-      "url": "blob:http://localhost:5173/b67e513d-4509-4c06-9e89-44bdc3e4dbe9",
+      "url": "media://chapter_assets/events/af889669-9929-4000-84fa-10ebd9ac3cf1/images/2026-09-01_00114_.webp",
       "size": 54926
     }
   ],

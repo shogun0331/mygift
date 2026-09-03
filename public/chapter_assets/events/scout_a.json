@@ -29,7 +29,8 @@
       "image": "2026-08-28_00016_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787102874671_3_5392",
@@ -63,7 +64,8 @@
       "image": "2026-08-28_00002_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787102874671_6_546u",
@@ -89,7 +91,8 @@
       "image": "2026-08-28_00004_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787102874671_8_zifq",
@@ -123,7 +126,8 @@
       "image": "2026-08-28_00021_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787102874671_11_7b93",
@@ -165,7 +169,8 @@
       "image": "2026-08-28_00012_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787102874671_15_nalt",
@@ -199,7 +204,8 @@
       "image": "2026-08-28_00006_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787102874671_18_q4lm",
@@ -241,7 +247,8 @@
       "image": "2026-08-28_00019_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787102874671_22_4ikr",
@@ -311,7 +318,8 @@
       "image": "2026-08-28_00015_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787102874671_28_u14m",
@@ -337,7 +345,8 @@
       "image": "2026-08-28_00020_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787102874671_30_vq5e",

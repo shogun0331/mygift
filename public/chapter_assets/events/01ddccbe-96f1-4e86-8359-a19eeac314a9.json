@@ -57,7 +57,8 @@
       "image": "b0dc3e5b-36ad-4c7c-8d7f-64d7049c1b27.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787179147661_5_49v6",
@@ -227,7 +228,8 @@
       "image": "a10a481b-541e-4221-9270-4c4c0b71cf5e.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787179147661_23_s1od",
@@ -318,6 +320,14 @@
       "text_key": "node_1787179147661_32_z9ee"
     },
     {
+      "id": "node_1788403053179_xmr9",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787179147661_33_gn6m",
       "type": "graphic",
       "image": "speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
@@ -392,6 +402,14 @@
       "speaker": "player",
       "text": "아… 나온다…!",
       "text_key": "node_1787179147661_41_1278"
+    },
+    {
+      "id": "node_1788403069986_t9q3",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787179147661_42_vlqd",
@@ -474,6 +492,14 @@
       "text_key": "node_1787179147661_50_3u5n",
       "voice": "node_1787179147661_50_3u5n.wav",
       "sound": "node_1787179147661_50_3u5n.wav"
+    },
+    {
+      "id": "node_1788403084755_okyv",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "fuck2.m4a",
+      "loop": true,
+      "stop": false
     },
     {
       "id": "node_1787179147661_51_vnfi",
@@ -590,6 +616,14 @@
       "text_key": "node_1787179147661_63_9isd",
       "voice": "node_1787179147661_63_9isd.wav",
       "sound": "node_1787179147661_63_9isd.wav"
+    },
+    {
+      "id": "node_1788403096018_lqi7",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "node_1787179147661_63_9isd.wav",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787179147661_64_0ywo",
@@ -864,7 +898,7 @@
       "fileName": "b472eb1e-9ffc-4b93-8713-6be38dc4a6cc.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/b472eb1e-9ffc-4b93-8713-6be38dc4a6cc.webp",
-      "url": "blob:http://localhost:5173/f8afdcb0-a8db-44f1-a255-11197ec2f86e",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/b472eb1e-9ffc-4b93-8713-6be38dc4a6cc.webp",
       "size": 67794
     },
     {
@@ -872,7 +906,7 @@
       "fileName": "b0dc3e5b-36ad-4c7c-8d7f-64d7049c1b27.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/b0dc3e5b-36ad-4c7c-8d7f-64d7049c1b27.webp",
-      "url": "blob:http://localhost:5173/9255fc33-9939-4f70-8d62-cc074b6acada",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/b0dc3e5b-36ad-4c7c-8d7f-64d7049c1b27.webp",
       "size": 63512
     },
     {
@@ -880,7 +914,7 @@
       "fileName": "a10a481b-541e-4221-9270-4c4c0b71cf5e.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/a10a481b-541e-4221-9270-4c4c0b71cf5e.webp",
-      "url": "blob:http://localhost:5173/0f970e6c-728e-434d-8880-eb9b1a2ccbec",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/a10a481b-541e-4221-9270-4c4c0b71cf5e.webp",
       "size": 64912
     },
     {
@@ -888,7 +922,7 @@
       "fileName": "36418839-3dd7-43d1-a3f0-77e6fe94274f.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/36418839-3dd7-43d1-a3f0-77e6fe94274f.webp",
-      "url": "blob:http://localhost:5173/83dc70c6-08e3-447f-8a84-ce36ee4f04ef",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/36418839-3dd7-43d1-a3f0-77e6fe94274f.webp",
       "size": 62988
     },
     {
@@ -896,7 +930,7 @@
       "fileName": "speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
-      "url": "blob:http://localhost:5173/83d62806-b5d2-4070-a705-b8722b259b2a",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
       "size": 1192648
     },
     {
@@ -904,7 +938,7 @@
       "fileName": "fa994ce1-4a0d-452f-833d-08be8f532356.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/fa994ce1-4a0d-452f-833d-08be8f532356.webp",
-      "url": "blob:http://localhost:5173/21a85290-59e5-4c21-ad04-f15bc8cd9eb7",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/fa994ce1-4a0d-452f-833d-08be8f532356.webp",
       "size": 66960
     },
     {
@@ -912,7 +946,7 @@
       "fileName": "0a69d3a4-1518-469f-9d92-e4b85aa5f942.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/0a69d3a4-1518-469f-9d92-e4b85aa5f942.webp",
-      "url": "blob:http://localhost:5173/eda68c1d-561f-4956-8303-ba593b4108bc",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/0a69d3a4-1518-469f-9d92-e4b85aa5f942.webp",
       "size": 57780
     },
     {
@@ -920,7 +954,7 @@
       "fileName": "speed_2_80x_d554eba430644078b1365de716a5eda0.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/speed_2_80x_d554eba430644078b1365de716a5eda0.mp4",
-      "url": "blob:http://localhost:5173/d9cbee7b-a6f0-45e2-a52d-ad7e0bf52c97",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/speed_2_80x_d554eba430644078b1365de716a5eda0.mp4",
       "size": 1560191
     },
     {
@@ -928,7 +962,7 @@
       "fileName": "c3a9b183-afe5-4db9-a74c-de8dd461074f.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/c3a9b183-afe5-4db9-a74c-de8dd461074f.webp",
-      "url": "blob:http://localhost:5173/9e1e48fa-7873-4969-8d57-53a7403142e7",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/c3a9b183-afe5-4db9-a74c-de8dd461074f.webp",
       "size": 60484
     },
     {
@@ -936,7 +970,7 @@
       "fileName": "c3a9b183-afe5-4db9-a74c-de8dd461074f.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/c3a9b183-afe5-4db9-a74c-de8dd461074f.webp",
-      "url": "blob:http://localhost:5173/357845ca-0da7-4154-a8b0-4127b97475de",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/c3a9b183-afe5-4db9-a74c-de8dd461074f.webp",
       "size": 60484
     }
   ],

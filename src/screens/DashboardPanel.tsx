@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
+  findCharacterIconUrl,
   findLevelIdleVideoUrl,
   type OwnedCreator,
 } from '../game/characters'
@@ -161,6 +162,8 @@ function toBroadcastSlot(
       : idleVideoUrl
   const mediaRevision =
     owned?.mediaRevision ?? slot.assignment.mediaRevision ?? playVideoUrl ?? undefined
+  const iconUrl =
+    findCharacterIconUrl(owned) || slot.assignment.profileImageUrl || null
 
   return {
     id: slot.id,
@@ -172,7 +175,7 @@ function toBroadcastSlot(
       concept: displayJob || slot.assignment.grade,
       avatar: visuals.avatar,
       avatarTone: visuals.avatarTone,
-      profileImageUrl: slot.assignment.profileImageUrl || null,
+      profileImageUrl: iconUrl,
       playVideoUrl,
       mediaRevision,
       stamina,
@@ -335,7 +338,11 @@ export function DashboardPanel({
         concept: displayJob,
         avatar: visuals.avatar,
         avatarTone: visuals.avatarTone,
-        profileImageUrl: owned?.profileImageUrl || assignment?.profileImageUrl || null,
+        profileImageUrl:
+          findCharacterIconUrl(owned) ||
+          owned?.profileImageUrl ||
+          assignment?.profileImageUrl ||
+          null,
         revenue: liveRevenueByCreator[creatorId] ?? 0,
         viewers: '—',
         blocked: !canBroadcastByStamina(owned?.stamina ?? stamina),
@@ -830,7 +837,7 @@ function StreamCard({
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
             {creator?.profileImageUrl ? (
               <img
-                src={creator.profileImageUrl}
+                src={resolveMediaSrc(creator.profileImageUrl, creator.mediaRevision)}
                 alt={creator.name}
                 className="h-8 w-8 rounded-full object-cover shrink-0 border border-white/10"
               />

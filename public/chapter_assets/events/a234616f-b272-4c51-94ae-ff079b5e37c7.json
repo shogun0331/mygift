@@ -292,20 +292,20 @@
       "sound": "node_1787112976972_28_nbj5.wav"
     },
     {
-      "id": "node_1787112976972_29_of00",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "미사키가 크롭탑을 천천히 벗어 올린다.",
-      "text_key": "node_1787112976972_29_of00"
-    },
-    {
       "id": "graphic_a234616f_6",
       "type": "graphic",
       "image": "2026-08-28_00082_.webp",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
+    },
+    {
+      "id": "node_1787112976972_29_of00",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "미사키가 크롭탑을 천천히 벗어 올린다.",
+      "text_key": "node_1787112976972_29_of00"
     },
     {
       "id": "node_1787112976972_30_z4pe",
@@ -432,6 +432,14 @@
       "text_key": "node_1787112976972_43_3eip"
     },
     {
+      "id": "node_1787112976972_45_1dp1",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787112976972_44_53ud",
       "type": "graphic",
       "image": "speed_3_20x_ea765c831f1543f281540ed3153671ec.mp4",
@@ -440,12 +448,12 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787112976972_45_1dp1",
+      "id": "node_1788398332617_k11n",
       "type": "text",
       "speakerType": "character",
       "speaker": "1786833964287-iflkqh2",
       "text": "맛있게 해드릴게요.",
-      "text_key": "node_1787112976972_45_1dp1",
+      "text_key": "node_1788398332617_k11n",
       "voice": "node_1787112976972_45_1dp1.wav",
       "sound": "node_1787112976972_45_1dp1.wav"
     },
@@ -506,6 +514,14 @@
       "speaker": "player",
       "text": "아… 나온다…!",
       "text_key": "node_1787112976972_52_4ygb"
+    },
+    {
+      "id": "node_1788398357737_rmip",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1788308402813_6ze2",
@@ -766,7 +782,7 @@
       "fileName": "speed_3_20x_ea765c831f1543f281540ed3153671ec.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/videos/speed_3_20x_ea765c831f1543f281540ed3153671ec.mp4",
-      "url": "blob:http://localhost:5173/416b2f71-c572-4d73-a95f-768377a4cd98",
+      "url": "media://chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/videos/speed_3_20x_ea765c831f1543f281540ed3153671ec.mp4",
       "size": 1175493
     },
     {
@@ -774,7 +790,7 @@
       "fileName": "2026-08-31_002200_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/images/2026-08-31_002200_.webp",
-      "url": "blob:http://localhost:5173/21a820df-76b3-4fa6-96e2-1368f3d5eef8",
+      "url": "media://chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/images/2026-08-31_002200_.webp",
       "size": 34620
     }
   ],

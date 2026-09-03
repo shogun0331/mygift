@@ -25,6 +25,7 @@ import { setViewerBalance } from './game/viewerBalance'
 import { normalizeOwnerCharacterId } from './events/types'
 import {
   createRegisteredCharacter,
+  findCharacterProfileUrl,
   findLevelIdleVideoUrl,
   normalizeOwnedCreator,
   normalizeRegisteredCharacter,
@@ -116,7 +117,15 @@ function hydrateRegisteredCharacter(c: any): RegisteredCharacter {
     ...c,
     images,
     videos,
-    profileImageUrl: profileImg?.url || (c.profileImageUrl ? resolveMediaSrc(c.profileImageUrl) : c.profileImageUrl),
+    profileImageUrl:
+      profileImg?.url ||
+      findCharacterProfileUrl({
+        id: c.id,
+        characterIconId: c.characterIconId,
+        profileImageId: c.profileImageId,
+        profileImageUrl: c.profileImageUrl ? resolveMediaSrc(c.profileImageUrl) : c.profileImageUrl,
+        images,
+      }),
   })
 }
 
@@ -343,7 +352,7 @@ function syncStudioSlotsWithOwned(slots: StudioSlot[], owned: OwnedCreator[]): S
     const creator = owned.find((item) => item.id === slot.assignment!.creatorId)
     if (!creator) return slot
     const idleVideoUrl = findLevelIdleVideoUrl(creator)
-    const profileImageUrl = creator.profileImageUrl || null
+    const profileImageUrl = findCharacterProfileUrl(creator)
     const revision = creator.mediaRevision
     if (
       slot.assignment.idleVideoUrl === idleVideoUrl &&
@@ -1123,8 +1132,14 @@ export default function App() {
     if (!save) return
     setCompanyMeta({ id: save.id, name: save.companyName, createdAt: save.createdAt })
     setInitialSave(save)
-    setOwnedCreators((save.ownedCreators ?? []).map(hydrateOwnedCreator))
-    setStudioSlots(save.studioSlots ?? createInitialStudioSlots())
+    const owned = syncOwnedWithRegistered(
+      (save.ownedCreators ?? []).map(hydrateOwnedCreator),
+      registeredCharacters,
+    )
+    setOwnedCreators(owned)
+    setStudioSlots(
+      syncStudioSlotsWithOwned(save.studioSlots ?? createInitialStudioSlots(), owned),
+    )
     setManagerState(save.managerState ?? createEmptySlotManagerState())
     setWatchedEventIds(save.watchedEventIds ?? [])
     setScreen('game')
@@ -1144,7 +1159,8 @@ export default function App() {
       alert(`이벤트 데이터가 ${saveTarget}에 저장되었습니다.`)
     } catch (err) {
       console.error(err)
-      alert('이벤트 데이터 저장 중 오류가 발생했습니다.')
+      const detail = err instanceof Error ? err.message : String(err)
+      alert(`이벤트 데이터 저장 중 오류가 발생했습니다.\n${detail}`)
     }
   }
 

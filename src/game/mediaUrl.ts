@@ -39,3 +39,11 @@ export function characterMediaUrl(
 export function staffMediaUrl(staffId: string, fileName: string): string {
   return resolveMediaSrc(`media://staff/${staffId}/images/${fileName}`)
 }
+
+export function commonSoundMediaPath(fileName: string): string {
+  return `media://chapter_assets/common_sounds/${fileName}`
+}
+
+export function commonSoundMediaUrl(fileName: string, cacheKey?: string | number | null): string {
+  return resolveMediaSrc(commonSoundMediaPath(fileName), cacheKey)
+}

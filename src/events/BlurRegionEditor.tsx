@@ -142,6 +142,7 @@ type BlurRegionEditorProps = {
   asset: BlurMediaAsset | null
   regions: BlurRegion[]
   blurDefault: number
+  speed?: number
   onChange: (next: { blurRegions: BlurRegion[]; blurDefault: number }) => void
   onClose: () => void
   /** cover: 이벤트 그래픽(16:9 크롭). fit: SNS처럼 원본 비율 유지 */
@@ -152,6 +153,7 @@ export function BlurRegionEditor({
   asset,
   regions,
   blurDefault,
+  speed = 1.0,
   onChange,
   onClose,
   layout = 'cover',
@@ -352,6 +354,9 @@ export function BlurRegionEditor({
               {asset ? (
                 asset.kind === 'video' ? (
                   <video
+                    ref={(el) => {
+                      if (el) el.playbackRate = Math.min(4, Math.max(0.5, Number(speed) || 1.0))
+                    }}
                     src={asset.url}
                     muted
                     loop

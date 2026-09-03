@@ -1,6 +1,7 @@
 const { app, BrowserWindow, protocol, Menu, shell, ipcMain } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const { Readable } = require('stream')
 
 // 이벤트 대사 파일 키 (src/events/eventLocales.ts 와 동일)
 const EVENT_LOCALES = ['ko', 'en', 'ja', 'zh-cn', 'ru', 'es', 'de']
@@ -139,45 +140,77 @@ function contentTypeFor(filePath) {
       return 'audio/wav'
     case '.ogg':
       return 'audio/ogg'
+    case '.m4a':
+      return 'audio/mp4'
+    case '.aac':
+      return 'audio/aac'
     default:
       return 'application/octet-stream'
   }
 }
 
-function mediaResponseFromFile(filePath, request) {
-  const data = fs.readFileSync(filePath)
-  const total = data.length
+function parseByteRange(rangeHeader, total) {
+  if (!rangeHeader) return null
+  const match = /bytes=(\d*)-(\d*)/.exec(rangeHeader)
+  if (!match) return null
+  const start = match[1] ? Number(match[1]) : 0
+  let end = match[2] ? Number(match[2]) : total - 1
+  if (Number.isNaN(start) || Number.isNaN(end)) return null
+  if (end >= total) end = total - 1
+  if (start > end || start >= total || end < 0) return 'unsatisfiable'
+  return { start, end }
+}
+
+function streamFileResponse(filePath, start, end, status, headers) {
+  const stream = fs.createReadStream(filePath, { start, end })
+  return new Response(Readable.toWeb(stream), { status, headers })
+}
+
+async function mediaResponseFromFile(filePath, request) {
+  const stat = await fs.promises.stat(filePath)
+  if (!stat.isFile()) {
+    return new Response('Not Found', { status: 404 })
+  }
+  const total = stat.size
   const mime = contentTypeFor(filePath)
   const rangeHeader = request.headers.get('Range') || request.headers.get('range')
+  const parsed = parseByteRange(rangeHeader, total)
 
-  if (rangeHeader) {
-    const match = /bytes=(\d*)-(\d*)/.exec(rangeHeader)
-    if (match) {
-      const start = match[1] ? Number(match[1]) : 0
-      let end = match[2] ? Number(match[2]) : total - 1
-      if (end >= total) end = total - 1
-      if (!Number.isNaN(start) && !Number.isNaN(end) && start <= end && start < total) {
-        const slice = data.subarray(start, end + 1)
-        return new Response(slice, {
-          status: 206,
-          headers: {
-            'Content-Type': mime,
-            'Content-Length': String(slice.length),
-            'Content-Range': `bytes ${start}-${end}/${total}`,
-            'Accept-Ranges': 'bytes',
-          },
-        })
-      }
-    }
+  if (parsed === 'unsatisfiable') {
+    return new Response(null, {
+      status: 416,
+      headers: {
+        'Content-Range': `bytes */${total}`,
+        'Accept-Ranges': 'bytes',
+      },
+    })
   }
 
-  return new Response(data, {
-    status: 200,
-    headers: {
+  if (parsed) {
+    const { start, end } = parsed
+    return streamFileResponse(filePath, start, end, 206, {
       'Content-Type': mime,
-      'Content-Length': String(total),
+      'Content-Length': String(end - start + 1),
+      'Content-Range': `bytes ${start}-${end}/${total}`,
       'Accept-Ranges': 'bytes',
-    },
+    })
+  }
+
+  if (total === 0) {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        'Content-Type': mime,
+        'Content-Length': '0',
+        'Accept-Ranges': 'bytes',
+      },
+    })
+  }
+
+  return streamFileResponse(filePath, 0, total - 1, 200, {
+    'Content-Type': mime,
+    'Content-Length': String(total),
+    'Accept-Ranges': 'bytes',
   })
 }
 
@@ -232,18 +265,17 @@ function createWindow() {
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null)
-  protocol.handle('media', (request) => {
+  protocol.handle('media', async (request) => {
     try {
       const parsed = new URL(request.url)
       const filePath = path.normalize(publicPath(parsed.hostname, decodeURIComponent(parsed.pathname)))
 
-      if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+      // asar 안 파일은 Chromium file:// 로 못 재생함. Node fs로 읽어 프로토콜로 공급.
+      return await mediaResponseFromFile(filePath, request)
+    } catch (err) {
+      if (err && err.code === 'ENOENT') {
         return new Response('Not Found', { status: 404 })
       }
-
-      // asar 안 파일은 Chromium file:// 로 못 재생함. Node fs로 읽어 프로토콜로 공급.
-      return mediaResponseFromFile(filePath, request)
-    } catch (err) {
       console.error('media protocol error:', err)
       return new Response('Internal Error', { status: 500 })
     }
@@ -448,6 +480,68 @@ ipcMain.handle('load-common-event-links-json', async (event) => {
   }
 })
 
+ipcMain.handle('save-common-sound-assets', async (event, { assets }) => {
+  try {
+    const targetDir = publicWritePath('chapter_assets', 'common_sounds')
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true })
+    }
+
+    for (const asset of assets || []) {
+      const safeName = path.basename(String(asset?.fileName || ''))
+      if (!safeName || !asset.buffer) continue
+      const filePath = path.join(targetDir, safeName)
+      fs.writeFileSync(filePath, Buffer.from(asset.buffer))
+    }
+
+    return { success: true, path: targetDir }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('save-common-sounds-json', async (event, { sounds }) => {
+  try {
+    const dir = publicWritePath('chapter_assets')
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    writeJson(path.join(dir, 'common_sounds.json'), Array.isArray(sounds) ? sounds : [])
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('load-common-sounds-json', async (event) => {
+  try {
+    const filePath = publicPath('chapter_assets', 'common_sounds.json')
+    if (!fs.existsSync(filePath)) {
+      return { success: true, sounds: [] }
+    }
+    const sounds = parseJsonFile(fs.readFileSync(filePath)) || []
+    return { success: true, sounds: Array.isArray(sounds) ? sounds : [] }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('delete-common-sound-file', async (event, { fileName }) => {
+  try {
+    const safeName = path.basename(String(fileName || ''))
+    if (!safeName) {
+      return { success: false, error: 'invalid path' }
+    }
+    const filePath = publicWritePath('chapter_assets', 'common_sounds', safeName)
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath)
+    }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
 function saveBase64MediaFile(dataUrl, targetDir, filePrefix, urlPrefix = 'media://chapter_assets/audits') {
   if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
     return dataUrl
@@ -540,23 +634,33 @@ ipcMain.handle('save-events-json', async (event, { events }) => {
       fs.mkdirSync(eventsDir, { recursive: true })
     }
 
+    const list = Array.isArray(events) ? events : []
     const activeIds = new Set()
-    for (const ev of events) {
-      activeIds.add(ev.id)
-      const media = (ev.media || []).map(m => {
-        const { blob, ...rest } = m
-        return rest
-      })
+    for (const ev of list) {
+      if (!ev || typeof ev !== 'object') continue
+      const safeId = path.basename(String(ev.id || '')).replace(/[<>:"|?*]/g, '')
+      if (!safeId) continue
+      activeIds.add(safeId)
+      const media = (Array.isArray(ev.media) ? ev.media : [])
+        .filter((m) => m && typeof m === 'object')
+        .map((m) => {
+          const { blob, ...rest } = m
+          return rest
+        })
       const { localization, ...eventWithoutLoc } = ev
-      const fullEventData = { ...eventWithoutLoc, media }
-      const singleFilePath = path.join(eventsDir, `${ev.id}.json`)
-      writeJson(singleFilePath, fullEventData)
+      const fullEventData = { ...eventWithoutLoc, id: safeId, media }
+      try {
+        const singleFilePath = path.join(eventsDir, `${safeId}.json`)
+        writeJson(singleFilePath, fullEventData)
 
-      const locDir = path.join(eventsDir, String(ev.id), 'loc')
-      fs.mkdirSync(locDir, { recursive: true })
-      const locMaps = mergeEventLocalization(localization)
-      for (const lang of EVENT_LOCALES) {
-        writeJson(path.join(locDir, `${lang}.json`), locMaps[lang] || {})
+        const locDir = path.join(eventsDir, safeId, 'loc')
+        fs.mkdirSync(locDir, { recursive: true })
+        const locMaps = mergeEventLocalization(localization)
+        for (const lang of EVENT_LOCALES) {
+          writeJson(path.join(locDir, `${lang}.json`), locMaps[lang] || {})
+        }
+      } catch (writeErr) {
+        throw new Error(`이벤트 '${safeId}' 저장 실패: ${writeErr.message}`)
       }
     }
 
@@ -586,10 +690,12 @@ ipcMain.handle('save-events-json', async (event, { events }) => {
       }
     }
 
-    const metadataList = events.map(ev => {
-      const { nodes, localization, characters, points, media, ...meta } = ev
-      return meta
-    })
+    const metadataList = list
+      .filter((ev) => ev && typeof ev === 'object' && ev.id)
+      .map((ev) => {
+        const { nodes, localization, characters, points, media, ...meta } = ev
+        return { ...meta, id: path.basename(String(ev.id)) }
+      })
 
     const listFilePath = path.join(assetsDir, 'events.json')
     writeJson(listFilePath, metadataList)

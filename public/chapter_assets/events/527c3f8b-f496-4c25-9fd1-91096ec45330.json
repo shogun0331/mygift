@@ -775,7 +775,7 @@
       "fileName": "2026-08-31_00008 (1).mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/527c3f8b-f496-4c25-9fd1-91096ec45330/videos/2026-08-31_00008 (1).mp4",
-      "url": "blob:http://localhost:5173/0807a190-0ef1-4b70-af65-a067831b9d7c",
+      "url": "media://chapter_assets/events/527c3f8b-f496-4c25-9fd1-91096ec45330/videos/2026-08-31_00008 (1).mp4",
       "size": 15775188
     },
     {
@@ -783,7 +783,7 @@
       "fileName": "speed_1_90x_7366f0fbf8f34dfdbd803f56585b275f.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/527c3f8b-f496-4c25-9fd1-91096ec45330/videos/speed_1_90x_7366f0fbf8f34dfdbd803f56585b275f.mp4",
-      "url": "blob:http://localhost:5173/aa9a8044-ad1f-4686-a6e9-dcfbc35a8834",
+      "url": "media://chapter_assets/events/527c3f8b-f496-4c25-9fd1-91096ec45330/videos/speed_1_90x_7366f0fbf8f34dfdbd803f56585b275f.mp4",
       "size": 1738875
     },
     {
@@ -791,7 +791,7 @@
       "fileName": "speed_1_65x_ea7bfc810238484a8d918a9924bf67ea.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/527c3f8b-f496-4c25-9fd1-91096ec45330/videos/speed_1_65x_ea7bfc810238484a8d918a9924bf67ea.mp4",
-      "url": "blob:http://localhost:5173/48c54cfa-74ba-4291-8643-ce874d1f5b86",
+      "url": "media://chapter_assets/events/527c3f8b-f496-4c25-9fd1-91096ec45330/videos/speed_1_65x_ea7bfc810238484a8d918a9924bf67ea.mp4",
       "size": 2366216
     }
   ],

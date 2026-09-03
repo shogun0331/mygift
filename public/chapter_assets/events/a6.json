@@ -163,11 +163,19 @@
     },
     {
       "id": "node_1787102213876_18_ac9e",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "fuck2.m4a",
+      "loop": true,
+      "stop": false
+    },
+    {
+      "id": "node_1788397951718_g7ea",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "내 자지가 그녀의 성기를 천천히 밀고 들어간다.",
-      "text_key": "node_1787102213876_18_ac9e"
+      "text_key": "node_1788397951718_g7ea"
     },
     {
       "id": "node_1787102213876_19_rj70",
@@ -258,6 +266,14 @@
       "text_key": "node_1787102213876_28_lcog"
     },
     {
+      "id": "node_1788397980589_2t4h",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
+    },
+    {
       "id": "node_1787102213876_29_vjih",
       "type": "graphic",
       "image": "2026-08-31_00192_.webp",
@@ -266,12 +282,12 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1787102213876_30_s1z0",
+      "id": "node_1788397973166_fq8s",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "내가 물러나자, 그녀가 침대에 누운 채 다리를 벌리고 있다. 정액이 성기에서 흘러나오고, 가슴과 몸 위에도 정액이 묻어 있다.",
-      "text_key": "node_1787102213876_30_s1z0"
+      "text_key": "node_1788397973166_fq8s"
     },
     {
       "id": "node_1787102213876_31_225g",
@@ -462,7 +478,7 @@
       "fileName": "speed_3_25x_9ff2dee927b24029aede576311255e6f.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/a6/videos/speed_3_25x_9ff2dee927b24029aede576311255e6f.mp4",
-      "url": "blob:http://localhost:5173/2e1d497b-1b57-407f-a2e7-d096dc861aae",
+      "url": "media://chapter_assets/events/a6/videos/speed_3_25x_9ff2dee927b24029aede576311255e6f.mp4",
       "size": 1515712
     },
     {
@@ -470,7 +486,7 @@
       "fileName": "2026-08-31_00192_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/a6/images/2026-08-31_00192_.webp",
-      "url": "blob:http://localhost:5173/526626e9-6dac-489c-88c0-bae5bfb9e644",
+      "url": "media://chapter_assets/events/a6/images/2026-08-31_00192_.webp",
       "size": 99230
     }
   ],

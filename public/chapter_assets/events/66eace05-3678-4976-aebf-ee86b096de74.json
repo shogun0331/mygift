@@ -39,7 +39,8 @@
       "image": "2026-08-28_00266_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787180802637_3_21d4",
@@ -183,7 +184,8 @@
       "image": "2026-08-28_00267_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787180802637_18_0j90",
@@ -281,7 +283,8 @@
       "image": "2026-08-28_00270_.webp",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "ignoreDelay": true
     },
     {
       "id": "node_1787180802637_28_s19d",
@@ -507,7 +510,7 @@
       "fileName": "2026-09-01_00021.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/66eace05-3678-4976-aebf-ee86b096de74/videos/2026-09-01_00021.mp4",
-      "url": "blob:http://localhost:5173/2ed35f53-833e-40b2-905c-da172c8e3673",
+      "url": "media://chapter_assets/events/66eace05-3678-4976-aebf-ee86b096de74/videos/2026-09-01_00021.mp4",
       "size": 8497225
     }
   ],

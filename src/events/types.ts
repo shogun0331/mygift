@@ -51,7 +51,7 @@ export type EventMediaAsset = {
   kind: EventMediaKind
   /** Original path inside the export ZIP */
   sourcePath: string
-  blob: Blob
+  blob?: Blob
   url: string
   size: number
 }

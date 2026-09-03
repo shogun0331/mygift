@@ -292,6 +292,14 @@
       "text_key": "node_1787137422986_30_uuky"
     },
     {
+      "id": "node_1788399800784_amr4",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "sucking.mp3",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787137422986_31_skhq",
       "type": "graphic",
       "image": "speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
@@ -366,6 +374,14 @@
       "speaker": "player",
       "text": "아… 나온다…!",
       "text_key": "node_1787137422986_39_4j7e"
+    },
+    {
+      "id": "node_1788399816008_xcz0",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787137422986_40_v3j9",
@@ -448,6 +464,14 @@
       "text_key": "node_1787137422986_48_oa5s",
       "voice": "node_1787137422986_48_oa5s.wav",
       "sound": "node_1787137422986_48_oa5s.wav"
+    },
+    {
+      "id": "node_1788399826840_88t3",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "fuck2.m4a",
+      "loop": true,
+      "stop": false
     },
     {
       "id": "node_1787137422986_49_o71f",
@@ -564,6 +588,14 @@
       "text_key": "node_1787137422986_61_5jk2",
       "voice": "node_1787137422986_61_5jk2.wav",
       "sound": "node_1787137422986_61_5jk2.wav"
+    },
+    {
+      "id": "node_1788399840449_p8ww",
+      "type": "sound",
+      "role": "sfx",
+      "sound": "node_1787137422986_61_5jk2.wav",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1787137422986_62_hn5s",
@@ -835,7 +867,7 @@
       "fileName": "2026-09-01_00098_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00098_.webp",
-      "url": "blob:http://localhost:5173/ecd3fa7b-4c10-4f62-b93c-3b0a4c510c2a",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00098_.webp",
       "size": 44596
     },
     {
@@ -843,7 +875,7 @@
       "fileName": "2026-09-01_00101_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00101_.webp",
-      "url": "blob:http://localhost:5173/e9b69564-2da8-4de0-8e1b-2853c0566545",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00101_.webp",
       "size": 41374
     },
     {
@@ -851,7 +883,7 @@
       "fileName": "speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
-      "url": "blob:http://localhost:5173/5550969d-b6b0-416a-a545-5c198fa9240f",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
       "size": 910887
     },
     {
@@ -859,7 +891,7 @@
       "fileName": "2026-09-01_00114_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00114_.webp",
-      "url": "blob:http://localhost:5173/b9de400e-2183-4ec3-aba2-149b167e8e1c",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00114_.webp",
       "size": 54926
     },
     {
@@ -867,7 +899,7 @@
       "fileName": "2026-09-01_00109_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00109_.webp",
-      "url": "blob:http://localhost:5173/b756a7b7-df8f-4b79-bed5-0450638b0437",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00109_.webp",
       "size": 70656
     },
     {
@@ -875,7 +907,7 @@
       "fileName": "speed_3_10x_e5b73205365f429c8133b3fda40049f9.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/speed_3_10x_e5b73205365f429c8133b3fda40049f9.mp4",
-      "url": "blob:http://localhost:5173/e1a54d8c-d187-4aae-9ba6-6ec0731aeb91",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/speed_3_10x_e5b73205365f429c8133b3fda40049f9.mp4",
       "size": 1111150
     },
     {
@@ -883,7 +915,7 @@
       "fileName": "2026-09-01_00110_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00110_.webp",
-      "url": "blob:http://localhost:5173/1bfe0d0d-eac2-461c-9939-e100902f3d16",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00110_.webp",
       "size": 34800
     }
   ],

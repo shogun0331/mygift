@@ -19,6 +19,7 @@ import type { CommonEventLinks } from '../events/commonEventLinks'
 import type { StationGradeConfig, StationTierId } from '../game/stationGradeConfig'
 import {
   CREATOR_STAT_TYPES,
+  findCharacterIconUrl,
   normalizeCreatorStatType,
   type CreatorStatType,
   type RegisteredCharacter,
@@ -71,7 +72,9 @@ const STAT_TYPE_LABEL: Record<CreatorStatType, string> = {
 }
 
 function isImageFile(file: File | undefined | null): file is File {
-  return Boolean(file && file.type.startsWith('image/'))
+  if (!file) return false
+  if (file.type.startsWith('image/')) return true
+  return /\.(png|jpe?g|webp|gif|bmp|avif)$/i.test(file.name)
 }
 
 function isVideoFile(file: File | undefined | null): file is File {
@@ -267,14 +270,16 @@ export function EditorScreen({
                   </p>
                 ) : (
                   <ul className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    {registeredCharacters.map((character) => (
+                    {registeredCharacters.map((character) => {
+                      const iconUrl = findCharacterIconUrl(character)
+                      return (
                       <li
                         key={character.id}
                         className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 px-3 py-3"
                       >
-                        {character.profileImageUrl ? (
+                        {iconUrl ? (
                           <img
-                            src={resolveMediaSrc(character.profileImageUrl)}
+                            src={resolveMediaSrc(iconUrl, character.mediaRevision)}
                             alt=""
                             className="h-10 w-10 shrink-0 rounded-full object-cover"
                           />
@@ -344,7 +349,8 @@ export function EditorScreen({
                           </button>
                         </div>
                       </li>
-                    ))}
+                      )
+                    })}
                   </ul>
                 )}
               </div>
@@ -1140,7 +1146,7 @@ function AddCharacterPanel({
           onRemove={removeImage}
           renderPreview={(item) => (
             <img
-              src={item.url}
+              src={resolveMediaSrc(item.url)}
               alt={item.file?.name || item.fileName || '이미지'}
               className="h-28 w-full rounded-xl bg-black object-cover sm:w-44"
             />
@@ -1311,7 +1317,7 @@ function ProfilePickPreview({
           {selected ? (
             kind === 'image' ? (
               <img
-                src={selected.url}
+                src={resolveMediaSrc(selected.url)}
                 alt={`${label} 미리보기`}
                 className="h-full w-full object-cover"
               />

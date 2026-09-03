@@ -16,9 +16,9 @@
       "text_key": "node_1787111769609_0_pejf"
     },
     {
-      "id": "node_1787111769609_2_zy9n",
+      "id": "graphic_08e8e28c_2",
       "type": "graphic",
-      "image": "2026-08-28_00059_.webp",
+      "image": "2026-08-28_00060_.webp",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -30,14 +30,6 @@
       "speaker": "",
       "text": "눈에 띄는 몸이다. 크롭탑 사이로 드러난 허리, 레깅스에 감싸인 엉덩이와 허벅지. 저 유연한 동작 하나하나가 자연스럽고 평화로운데, 왜 이렇게 섹시한 거지.",
       "text_key": "node_1787111769609_1_4jm5"
-    },
-    {
-      "id": "graphic_08e8e28c_2",
-      "type": "graphic",
-      "image": "2026-08-28_00060_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787111769609_3_cdv3",
@@ -416,14 +408,6 @@
   "points": [],
   "media": [
     {
-      "id": "1787111969769-8nj6qnq",
-      "fileName": "2026-08-19_00050_.png",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-19_00050_.png",
-      "url": "media://chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-19_00050_.png",
-      "size": 2403151
-    },
-    {
       "fileName": "node_1787111769609_10_185x.wav",
       "kind": "sound",
       "sourcePath": "chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/sounds/node_1787111769609_10_185x.wav",
@@ -513,14 +497,6 @@
       "sourcePath": "chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/sounds/node_1787111769609_7_6pvq.wav",
       "url": "media://chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/sounds/node_1787111769609_7_6pvq.wav",
       "id": "media_sound_mtjbsmbd_tvua5a6"
-    },
-    {
-      "fileName": "2026-08-28_00059_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00059_.webp",
-      "url": "media://chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00059_.webp",
-      "size": 114612,
-      "id": "media_image_mtjbsmbd_kpgwslo"
     },
     {
       "fileName": "2026-08-28_00060_.webp",
