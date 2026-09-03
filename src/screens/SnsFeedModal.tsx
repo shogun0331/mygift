@@ -7,25 +7,24 @@ import { resolveMediaSrc } from '../game/mediaUrl'
 import {
   calcCreatorSnsRatio,
   calcSnsPostCost,
+  hasSnsComposeStock,
   MAX_CREATOR_SNS_SUBSCRIBERS,
-  nextSnsPost,
   snsCaptionOf,
-  snsHeatProgress,
   snsPostMedia,
   type SnsHeat,
 } from '../game/sns'
 import { snsCommentText, type SnsComment } from '../game/snsComments'
+import { playSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
+import { RedDot } from './RedDot'
 import { SnsMediaLightbox, SnsMediaWithBlur } from './SnsMediaWithBlur'
 
 type SnsFeedModalProps = {
   creator: OwnedCreator
   assets: number
   onClose: () => void
-  onCompose: (heat: SnsHeat) => void
+  onCompose: () => SnsHeat | null
 }
-
-const HEATS: SnsHeat[] = [2, 3]
 
 function snsHandle(name: string) {
   const compact = name.replace(/\s+/g, '')
@@ -63,9 +62,8 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
   const { t, locale } = useTranslation()
   const feedScrollRef = useRef<HTMLDivElement>(null)
   const waitRevealRef = useRef(false)
-  const [composeOpen, setComposeOpen] = useState(false)
-  const [pickedHeat, setPickedHeat] = useState<SnsHeat>(2)
   const [revealPostId, setRevealPostId] = useState<string | null>(null)
+  const [heat3Burst, setHeat3Burst] = useState(false)
   const [lightbox, setLightbox] = useState<{
     url: string
     kind: 'image' | 'video'
@@ -123,18 +121,26 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         if (lightbox) setLightbox(null)
-        else if (composeOpen) setComposeOpen(false)
         else onClose()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [composeOpen, lightbox, onClose])
+  }, [lightbox, onClose])
+
+  const postCost = calcSnsPostCost(posts.length)
+  const canCompose =
+    !pending && hasSnsComposeStock(posts, publishedIds) && assets >= postCost
 
   function submitCompose() {
+    if (!canCompose) return
     waitRevealRef.current = true
-    onCompose(pickedHeat)
-    setComposeOpen(false)
+    const heat = onCompose()
+    if (heat === 3) {
+      playSfx('sns-heat3')
+      setHeat3Burst(true)
+      window.setTimeout(() => setHeat3Burst(false), 1500)
+    }
   }
 
   return createPortal(
@@ -215,10 +221,13 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
                   const media = snsPostMedia(posts, creator.images, creator.videos, item.postId)
                   const post = posts.find((row) => row.id === item.postId)
                   const caption = post ? snsCaptionOf(post, locale) : ''
+                  const heat = item.pending ? pending?.heat ?? post?.heat : post?.heat
                   return (
                     <FeedArticle
                       key={item.key}
                       reveal={item.postId === revealPostId || Boolean(waitRevealRef.current && item.pending)}
+                      heat={heat}
+                      heat3Label={t('sns.heat3')}
                       displayName={displayName}
                       handle={handle}
                       avatarUrl={avatarUrl}
@@ -250,98 +259,45 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
           <div className="shrink-0 border-t border-white/8 bg-[#080c16] px-3 py-2.5">
             <button
               type="button"
-              disabled={Boolean(pending)}
-              onClick={() => setComposeOpen(true)}
-              className="game-btn game-btn-primary w-full rounded-full py-2.5 text-[13px] font-bold disabled:cursor-not-allowed disabled:opacity-35"
+              disabled={!canCompose}
+              onClick={submitCompose}
+              className="game-btn game-btn-primary relative flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-[13px] font-bold disabled:cursor-not-allowed disabled:opacity-35"
             >
-              📷 {t('sns.compose')}
+              {canCompose ? <RedDot label={t('sns.composeAvailable')} /> : null}
+              <span>📷 {t('sns.compose')}</span>
+              <span className="tabular-nums text-amber-200">{formatMoney(postCost)}</span>
             </button>
             {pending ? (
               <p className="mt-1.5 text-center text-[11px] font-semibold text-amber-300">
                 {t('sns.alreadyPosted')}
               </p>
+            ) : !hasSnsComposeStock(posts, publishedIds) ? (
+              <p className="mt-1.5 text-center text-[11px] font-semibold text-rose-300">
+                {t('sns.noStock')}
+              </p>
+            ) : assets < postCost ? (
+              <p className="mt-1.5 text-center text-[11px] font-semibold text-rose-300">
+                {t('sns.needAssets')}
+              </p>
             ) : null}
             <div className="mx-auto mt-2 h-1 w-20 rounded-full bg-white/18" />
           </div>
 
-          {composeOpen ? (
-            <div className="absolute inset-0 z-10 flex flex-col bg-[#070b12]/96">
-              <div className="flex items-center justify-between border-b border-white/8 px-3 py-2.5">
-                <button
-                  type="button"
-                  onClick={() => setComposeOpen(false)}
-                  className="game-btn rounded-lg px-3 py-1.5 text-xs"
-                >
-                  {t('sns.cancel')}
-                </button>
-                <button
-                  type="button"
-                  disabled={
-                    Boolean(pending) ||
-                    !nextSnsPost(posts, publishedIds, pickedHeat) ||
-                    assets < calcSnsPostCost(pickedHeat, posts.length)
-                  }
-                  onClick={submitCompose}
-                  className="game-btn game-btn-primary rounded-lg px-3 py-1.5 text-xs disabled:opacity-35"
-                >
-                  {t('sns.postNow')}
-                </button>
-              </div>
-              <div className="min-h-0 flex-1 overflow-auto px-4 py-4">
-                <div className="flex gap-3">
-                  <Face name={displayName} imageUrl={avatarUrl} sizeClass="h-9 w-9" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-slate-100">{displayName}</p>
-                    <p className="text-[11px] text-slate-500">{t('sns.composeHint')}</p>
-                    {pending ? (
-                      <p className="mt-4 text-sm text-amber-300">{t('sns.alreadyPosted')}</p>
-                    ) : (
-                      <div className="mt-3 space-y-2">
-                        {HEATS.map((heat) => {
-                          const cost = calcSnsPostCost(heat, posts.length)
-                          const stock = nextSnsPost(posts, publishedIds, heat)
-                          const progress = snsHeatProgress(posts, publishedIds, heat, undefined)
-                          const broke = assets < cost
-                          const disabled = !stock || broke
-                          const selected = pickedHeat === heat
-                          return (
-                            <button
-                              key={heat}
-                              type="button"
-                              disabled={disabled}
-                              onClick={() => setPickedHeat(heat)}
-                              className={`flex w-full items-start justify-between gap-3 rounded-2xl border px-3 py-3 text-left transition disabled:opacity-40 ${
-                                selected
-                                  ? 'border-indigo-400/50 bg-indigo-500/15'
-                                  : 'border-white/10 bg-white/[0.03]'
-                              }`}
-                            >
-                              <span>
-                                <span className="block text-[13px] font-semibold text-slate-100">
-                                  {t(`sns.heat${heat}`)}
-                                </span>
-                                <span className="mt-0.5 block text-[11px] text-slate-500">
-                                  {t(`sns.heat${heat}Desc`)}
-                                </span>
-                                <span className="mt-1 block text-[11px] text-rose-300/80">
-                                  {!stock ? t('sns.noStock') : broke ? t('sns.needAssets') : ''}
-                                </span>
-                              </span>
-                              <span className="shrink-0 text-right">
-                                <span className="block text-[12px] font-black tabular-nums text-amber-300">
-                                  {formatMoney(cost)}
-                                </span>
-                                <span className="mt-1 block text-[11px] font-semibold tabular-nums text-slate-400">
-                                  {progress.used}/{progress.total}
-                                </span>
-                              </span>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </div>
+          {heat3Burst ? (
+            <div className="sns-heat3-burst pointer-events-none absolute inset-0 z-20" aria-hidden>
+              <div className="sns-heat3-burst-flash" />
+              <div className="sns-heat3-burst-ring" />
+              <div className="sns-heat3-burst-ring is-late" />
+              {Array.from({ length: 8 }, (_, i) => (
+                <span
+                  key={i}
+                  className="sns-heat3-burst-spark"
+                  style={{ ['--ang' as string]: `${i * 45}deg` }}
+                />
+              ))}
+              <div className="sns-heat3-burst-copy">
+                <p className="sns-heat3-burst-kicker">BREAKING</p>
+                <p className="sns-heat3-burst-title">{t('sns.heat3')}</p>
               </div>
             </div>
           ) : null}
@@ -382,6 +338,8 @@ function useTypedCaption(text: string, active: boolean, ms = 34) {
 
 function FeedArticle({
   reveal,
+  heat,
+  heat3Label,
   displayName,
   handle,
   avatarUrl,
@@ -396,6 +354,8 @@ function FeedArticle({
   onPhotoClick,
 }: {
   reveal: boolean
+  heat?: SnsHeat
+  heat3Label: string
   displayName: string
   handle: string
   avatarUrl?: string | null
@@ -461,6 +421,11 @@ function FeedArticle({
           <div className="flex flex-wrap items-baseline gap-x-1.5">
             <span className="text-[13px] font-bold text-white">{displayName}</span>
             <span className="text-[11px] text-slate-500">{handle}</span>
+            {heat === 3 ? (
+              <span className="sns-heat3-ribbon ml-0.5 rounded-full border border-fuchsia-400/45 bg-fuchsia-500/20 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-fuchsia-100">
+                {heat3Label}
+              </span>
+            ) : null}
             {pending ? (
               <span className="text-[10px] font-semibold text-amber-300">· {pendingLabel}</span>
             ) : null}
@@ -483,7 +448,9 @@ function FeedArticle({
                 url={media.url}
                 kind={media.kind}
                 regions={regions}
-                className="mt-2.5 w-[78%] overflow-hidden rounded-2xl border border-white/12 bg-black/30"
+                className={`mt-2.5 w-[78%] overflow-hidden rounded-2xl border bg-black/30 ${
+                  heat === 3 ? 'border-fuchsia-400/55 shadow-[0_0_18px_rgba(232,121,249,0.28)]' : 'border-white/12'
+                }`}
                 mediaClassName="block max-h-52 w-full object-contain"
                 onClick={photoIn ? onPhotoClick : undefined}
               />

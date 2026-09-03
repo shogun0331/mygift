@@ -252,3 +252,20 @@ export function nextJanuaryAfter(from: Date, epoch: Date): Date {
 export function stationGradeLabel(grade: StationGrade): string {
   return STATION_TIER_LABEL[grade]
 }
+
+/**
+ * 방송국 승급 시 도착 등급별 자산 보상.
+ * (심사·미니게임까지 통과해 등급이 실제로 오를 때 지급)
+ */
+export const STATION_PROMOTION_ASSET_REWARD: Record<Exclude<StationGrade, 'black'>, number> = {
+  tiny: 120_000,
+  sme: 250_000,
+  mid: 450_000,
+  large: 700_000,
+  top: 1_200_000,
+}
+
+export function stationPromotionAssetReward(nextGrade: StationGrade): number {
+  if (nextGrade === 'black') return 0
+  return STATION_PROMOTION_ASSET_REWARD[nextGrade] ?? 0
+}

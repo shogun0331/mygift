@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
+import { useGameBgm } from '../game/bgm'
+import { getSeVolumePercent, playSfx, setSeVolumePercent } from '../game/uiSfx'
 import {
   deserializeWeekAccum,
   hydrateScoutSystem,
@@ -18,8 +20,12 @@ import {
   toStudioHandCard,
   pickRandomBroadcastVideoUrl,
   type Grade,
+  mergeAuditMedia,
+  mergeShortsVn,
+  shortsVnBeatsForSlot,
   type OwnedCreator,
   type RegisteredCharacter,
+  type ShortsVnBeat,
 } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
 import {
@@ -70,7 +76,6 @@ import {
 } from '../game/broadcast'
 import {
   applyConditionFullCare,
-  applyStaminaMaxPenalty,
   applyVitalsDelta,
   applyToxicStaminaPenalty,
   applyWeeklyStaminaAndCondition,
@@ -110,9 +115,9 @@ import {
   calcSnsPostCost,
   calcSnsSubscribersGain,
   MAX_CREATOR_SNS_SUBSCRIBERS,
-  nextSnsPost,
   previewBulkSnsCompose,
   resolveSnsPending,
+  rollSnsCompose,
   snsCaptionOf,
   snsPostMedia,
   type BulkSnsRevealEntry,
@@ -183,6 +188,7 @@ import {
   capStationViewers,
   isAnnualReviewMonth,
   setStationGradeConfig,
+  stationPromotionAssetReward,
   stationRankForGrade,
   stationSpec,
   type StationGrade,
@@ -194,8 +200,9 @@ import {
   slotUnlockMinGradeOf,
 } from '../game/stationGradeConfig'
 import {
+  applyVipStaminaDrain,
+  rollVipAcceptPayout,
   rollVipRejectViewers,
-  VIP_ACCEPT_BY_GRADE,
   type VipOffer,
 } from '../game/vip'
 import {
@@ -216,6 +223,8 @@ import { DateOfferModal, DateResultModal } from './DateEventModal'
 import { HRetryOfferModal, HRetryResultModal } from './HRetryEventModal'
 import { VipOfferModal } from './VipOfferModal'
 import { VipResultModal, type VipResult } from './VipResultModal'
+import { ShortsVnPlayer } from './ShortsVnPlayer'
+import { SpecialVacationPlayer } from './SpecialVacationPlayer'
 import { WeeklySettlementModal } from './WeeklySettlementModal'
 import { EventSimulator } from '../events/EventSimulator'
 import type { GameEvent } from '../events/types'
@@ -552,7 +561,7 @@ function GoldenDustParticles() {
   }, [])
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[2] select-none">
       <style>{VEGAS_SPARKLE_STYLES}</style>
       {particles.map((p) => (
         <span
@@ -578,13 +587,16 @@ function GoldenDustParticles() {
 function GoldenVegasLoungeBackground() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
-      {/* Whole Screen Golden Ambient Spotlight Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-500/28 via-slate-950/95 to-slate-950" />
-
-      {/* Rotating Sparkling Light Rays */}
-      <div className="absolute -top-1/3 left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] bg-[conic-gradient(from_0deg_at_50%_50%,_transparent_0deg,_rgba(251,191,36,0.08)_30deg,_transparent_60deg,_rgba(245,158,11,0.08)_150deg,_transparent_210deg)] animate-[spin_40s_linear_infinite]" />
-
-      {/* High-Density Sparkling Particles */}
+      <img
+        src={`${import.meta.env.BASE_URL}casino/lounge-bg.webp`}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+        draggable={false}
+      />
+      {/* UI 가독성을 위한 살짝 어두운 베일 */}
+      <div className="absolute inset-0 z-[1] bg-slate-950/55" />
+      <div className="absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,_transparent_20%,_rgba(2,6,23,0.72)_100%)]" />
+      {/* 배경 이미지 위에 파티클 */}
       <GoldenDustParticles />
     </div>
   )
@@ -804,11 +816,24 @@ export function InGame({
   const [vipEventPlay, setVipEventPlay] = useState<{
     offer: VipOffer
     event: GameEvent
-    staminaMaxLoss: number
+    payout: number
   } | null>(null)
+  const [vipShortsPlay, setVipShortsPlay] = useState<{
+    offer: VipOffer
+    event: GameEvent
+    payout: number
+    beats: ShortsVnBeat[]
+  } | null>(null)
+  const [vacationPlay, setVacationPlay] = useState<OwnedCreator | null>(null)
   type SocialUi =
     | { mode: 'dateOffer'; pending: DatePending }
     | { mode: 'dateVn'; pending: DatePending; event: GameEvent }
+    | {
+        mode: 'hShorts'
+        pending: DatePending
+        event: GameEvent
+        beats: ShortsVnBeat[]
+      }
     | { mode: 'dateResult'; pending: DatePending }
     | { mode: 'hRetryOffer'; pending: HRetryPending }
     | {
@@ -816,6 +841,13 @@ export function InGame({
         pending: HRetryPending
         event: GameEvent
         staminaLoss: number
+      }
+    | {
+        mode: 'hRetryShorts'
+        pending: HRetryPending
+        event: GameEvent
+        staminaLoss: number
+        beats: ShortsVnBeat[]
       }
     | {
         mode: 'hRetryResult'
@@ -1030,9 +1062,7 @@ export function InGame({
     const check = canHireScoutOffer(offer, assets, freeHire)
     if (!check.ok) return
     const creator = hireScoutOffer(offer)
-    if (!freeHire) {
-      setAssets((prev) => prev - offer.salary)
-    }
+    if (!freeHire && !spendAssets(offer.salary)) return
     setOpenCreatorScout(false)
     setScoutSystem((prev) => clearScoutOfferAfterHire(prev))
     const maxScout = maxScoutCreatorsForGrade(stationGradeConfig, stationGradeRef.current)
@@ -1208,6 +1238,17 @@ export function InGame({
   leagueRef.current = league
   stationGradeRef.current = stationGrade
 
+  function spendAssets(amount: number): boolean {
+    const cost = Math.max(0, Math.round(amount))
+    if (cost <= 0) return true
+    if (assetsRef.current < cost) return false
+    const next = assetsRef.current - cost
+    assetsRef.current = next
+    setAssets(next)
+    playSfx('asset-spend')
+    return true
+  }
+
   // ── 세이브/플레이타임 ──────────────────────────────────────────
   const playtimeMsRef = useRef<number>(initialSave?.playtimeMs ?? 0)
   const lastPlaytimeMarkRef = useRef(Date.now())
@@ -1316,12 +1357,10 @@ export function InGame({
     }
     const price =
       slotUnlockPriceOf(stationGradeConfig, unlocked) ?? calcSlotUnlockCost(unlocked)
-    if (assetsRef.current < price) {
+    if (!spendAssets(price)) {
       alert(t('alert.insufficientAssets'))
       return
     }
-    setAssets((prev) => prev - price)
-    assetsRef.current -= price
     const nextSlots = unlockNextStudioSlot(studioSlotsRef.current)
     studioSlotsRef.current = nextSlots
     onStudioSlotsChange(nextSlots)
@@ -1568,6 +1607,12 @@ export function InGame({
     if (visible.length === 0) return
     creditLiveDonations(visible)
     setLiveEvents((prev) => [...visible.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+    if (visible.some((event) => event.type === 'donation' && event.amount > 0)) {
+      playSfx('live-donation')
+    }
+    if (visible.some((event) => event.type === 'viewers')) {
+      playSfx('live-viewers')
+    }
   }
 
   function ingestLiveFeedEvents(due: DayEvent[], plan: StudioDayPlan, force: boolean) {
@@ -1659,6 +1704,7 @@ export function InGame({
       }
     })
     setLiveEvents((prev) => [...failEvents.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+    playSfx('gear-fail')
   }
 
   function staffNameOf(staffId: string | null) {
@@ -1744,6 +1790,7 @@ export function InGame({
       creatorId,
       creatorName,
     )
+    if (bonus > 0) playSfx('live-viewers')
   }
 
   function tryCareRestore(creatorId: string, slotId: string) {
@@ -1772,6 +1819,7 @@ export function InGame({
       creator.id,
       creatorNameOf(creator.id),
     )
+    playSfx('condition-recover')
     return true
   }
 
@@ -1817,6 +1865,7 @@ export function InGame({
     }))
     toxicQteQueueRef.current = [...toxicQteQueueRef.current, ...qteItems]
     setToxicQteQueue(toxicQteQueueRef.current)
+    playSfx('toxic')
     for (const crash of crashes) {
       weekAccumRef.current = {
         ...weekAccumRef.current,
@@ -1861,6 +1910,7 @@ export function InGame({
         creator.id,
         characterDisplayName(creator, locale),
       )
+      playSfx('gear-defend')
     }
 
     // 이미 장비 고장이 나 있는 상태인지 확인
@@ -1886,6 +1936,7 @@ export function InGame({
           creator.id,
           characterDisplayName(creator, locale),
         )
+        playSfx('toxic-defend')
       } else {
         const drop = rollInt(CONDITION_CRASH_DROP.min, CONDITION_CRASH_DROP.max)
         const staminaDrop = rollInt(
@@ -1940,6 +1991,7 @@ export function InGame({
               creator.id,
               characterDisplayName(creator, locale),
             )
+            playSfx('gear-defend')
             blockedOrResolved = true
           }
         } else {
@@ -1979,6 +2031,7 @@ export function InGame({
   }
 
   function repairBrokenSlot(slotId: string) {
+    playSfx('gear-cctv-fix')
     setGearFailBursts((prev) => prev.filter((row) => row.slotId !== slotId))
     setSlotGearById((prev) => {
       const current = prev[slotId]
@@ -2022,8 +2075,7 @@ export function InGame({
 
   function handleHireStaff(staffId: string, hireCost: number, salary: number) {
     if (managerStateRef.current.hiredStaffIds.includes(staffId)) return false
-    if (assetsRef.current < hireCost) return false
-    setAssets((prev) => prev - hireCost)
+    if (!spendAssets(hireCost)) return false
     setHiredStaffSalaries((prev) => ({
       ...prev,
       [staffId]: salary,
@@ -2175,6 +2227,7 @@ export function InGame({
     if (!current) return
 
     if (success) {
+      playSfx('toxic-cctv-fix')
       setLiveEvents((prev) =>
         [
           {
@@ -2756,6 +2809,16 @@ export function InGame({
     flushAutoSave()
   }
 
+  /** 방송국 등급 승급 확정 시 자산 보상 지급 */
+  function grantStationPromotionAssets(nextGrade: StationGrade) {
+    const reward = stationPromotionAssetReward(nextGrade)
+    if (reward <= 0) return 0
+    const nextAssets = assetsRef.current + reward
+    assetsRef.current = nextAssets
+    setAssets(nextAssets)
+    return reward
+  }
+
   function continueAfterMonthModals(openScout: boolean) {
     const next = pendingSocialQueueRef.current.shift() ?? null
     if (next) {
@@ -2791,6 +2854,12 @@ export function InGame({
     scheduleAutoSave()
   }
 
+  function resolveShortsBeats(creatorId: string, slot: 'vip' | 'h'): ShortsVnBeat[] {
+    const owned = ownedCreatorsRef.current.find((creator) => creator.id === creatorId)
+    const registered = registeredCharactersRef.current.find((row) => row.id === creatorId)
+    return shortsVnBeatsForSlot(mergeShortsVn(owned?.shortsVn, registered?.shortsVn), slot)
+  }
+
   const handleDateStart = () => {
     if (socialUi?.mode !== 'dateOffer') return
     const pending = socialUi.pending
@@ -2799,24 +2868,32 @@ export function InGame({
     const eventId = charDef?.eventLinks?.[slot]
     const event = eventId ? eventsRef.current.find((e) => e.id === eventId) ?? null : null
     if (event) {
+      if (pending.step === 'h') {
+        const beats = resolveShortsBeats(pending.creatorId, 'h')
+        if (watchedEventIds.includes(event.id) && beats.length > 0) {
+          setSocialUi({ mode: 'hShorts', pending, event, beats })
+          return
+        }
+      }
       setSocialUi({ mode: 'dateVn', pending, event })
       return
     }
     completeDateEvent(pending)
   }
 
-  function applyVipAcceptRewards(offer: VipOffer, staminaMaxLoss: number) {
+  function applyVipAcceptRewards(offer: VipOffer, payout: number) {
     const nextOwned = ownedCreatorsRef.current.map((creator) =>
-      creator.id === offer.creatorId
-        ? applyStaminaMaxPenalty(creator, staminaMaxLoss)
-        : creator,
+      creator.id === offer.creatorId ? applyVipStaminaDrain(creator) : creator,
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    const nextAssets = assetsRef.current + Math.max(0, Math.round(payout))
+    assetsRef.current = nextAssets
+    setAssets(nextAssets)
     setVipResult({
       kind: 'accept',
       creatorName: offer.creatorName,
-      staminaMaxLoss,
+      payout: Math.max(0, Math.round(payout)),
     })
   }
 
@@ -2824,21 +2901,26 @@ export function InGame({
     if (!vipOffer) return
     const offer = vipOffer
     setVipOffer(null)
-    const spec = VIP_ACCEPT_BY_GRADE[offer.grade]
+    const payout = rollVipAcceptPayout(leagueRef.current.currentRank)
     const charDef = registeredCharactersRef.current.find((c) => c.id === offer.creatorId)
     const vipEventId = charDef?.eventLinks?.vip
     const vipEvent = vipEventId
       ? eventsRef.current.find((e) => e.id === vipEventId) ?? null
       : null
     if (vipEvent) {
+      const beats = resolveShortsBeats(offer.creatorId, 'vip')
+      if (watchedEventIds.includes(vipEvent.id) && beats.length > 0) {
+        setVipShortsPlay({ offer, event: vipEvent, payout, beats })
+        return
+      }
       setVipEventPlay({
         offer,
         event: vipEvent,
-        staminaMaxLoss: spec.staminaMaxLoss,
+        payout,
       })
       return
     }
-    applyVipAcceptRewards(offer, spec.staminaMaxLoss)
+    applyVipAcceptRewards(offer, payout)
     scheduleAutoSave()
   }
 
@@ -2871,6 +2953,17 @@ export function InGame({
     const eventId = charDef?.eventLinks?.h
     const event = eventId ? eventsRef.current.find((e) => e.id === eventId) ?? null : null
     if (event) {
+      const beats = resolveShortsBeats(pending.creatorId, 'h')
+      if (watchedEventIds.includes(event.id) && beats.length > 0) {
+        setSocialUi({
+          mode: 'hRetryShorts',
+          pending,
+          event,
+          staminaLoss: spec.staminaLoss,
+          beats,
+        })
+        return
+      }
       setSocialUi({
         mode: 'hRetryVn',
         pending,
@@ -2919,8 +3012,7 @@ export function InGame({
     if (!target) return
     if (scoreOf(target) >= 100) return
     const cost = calcConditionFullCareCost(target.grade)
-    if (assets < cost) return
-    setAssets((prev) => prev - cost)
+    if (!spendAssets(cost)) return
     weekAccumRef.current = recordCareExpense(weekAccumRef.current, {
       creatorId: target.id,
       name: target.name,
@@ -2931,6 +3023,8 @@ export function InGame({
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    playSfx('condition-recover')
+    scheduleAutoSave()
   }
 
   function queuePromotionSalary(
@@ -2983,11 +3077,7 @@ export function InGame({
       if (assetsRef.current < examCost) return
       const result = resolvePromotionExam(target, examCost)
       if (!result) return
-      if (examCost > 0) {
-        const nextAssets = assetsRef.current - examCost
-        assetsRef.current = nextAssets
-        setAssets(nextAssets)
-      }
+      if (examCost > 0 && !spendAssets(examCost)) return
       const exam = {
         creatorId: target.id,
         creatorName: characterDisplayName(target, locale),
@@ -2995,6 +3085,7 @@ export function InGame({
       }
       promotionExamRef.current = exam
       setPromotionExam(exam)
+      playSfx('training-promote')
       return
     }
 
@@ -3007,16 +3098,13 @@ export function InGame({
     if (totalGain <= 0) return
     const trainingCost = calcTrainingCost(target)
     if (assetsRef.current < trainingCost) return
-    if (trainingCost > 0) {
-      const nextAssets = assetsRef.current - trainingCost
-      assetsRef.current = nextAssets
-      setAssets(nextAssets)
-    }
+    if (trainingCost > 0 && !spendAssets(trainingCost)) return
     const nextOwned = ownedCreatorsRef.current.map((creator) =>
       creator.id === creatorId ? result.creator : creator,
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    playSfx('training')
     scheduleAutoSave()
   }
 
@@ -3043,80 +3131,95 @@ export function InGame({
     scheduleAutoSave()
   }
 
-  function handleSnsCompose(creatorId: string, heat: SnsHeat) {
+  function handleSnsCompose(creatorId: string): SnsHeat | null {
     const target = ownedCreatorsRef.current.find((creator) => creator.id === creatorId)
-    if (!target || target.snsPending) return
+    if (!target || target.snsPending) return null
     const published = target.snsPublishedIds ?? []
-    const post = nextSnsPost(target.snsPosts ?? [], published, heat)
-    const cost = calcSnsPostCost(heat, (target.snsPosts ?? []).length)
-    if (!post || assetsRef.current < cost) return
-    const nextAssets = assetsRef.current - cost
-    assetsRef.current = nextAssets
-    setAssets(nextAssets)
+    const rolled = rollSnsCompose(target.snsPosts ?? [], published, target.snsHeat3Pity ?? 0)
+    const cost = calcSnsPostCost((target.snsPosts ?? []).length)
+    if (!rolled || !spendAssets(cost)) return null
     const nextOwned = ownedCreatorsRef.current.map((creator) =>
-      creator.id === creatorId ? { ...creator, snsPending: { postId: post.id, heat } } : creator,
+      creator.id === creatorId
+        ? {
+            ...creator,
+            snsPending: { postId: rolled.post.id, heat: rolled.heat },
+            snsHeat3Pity: rolled.nextPity,
+          }
+        : creator,
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
     scheduleAutoSave()
+    playSfx('sns-write')
+    return rolled.heat
   }
 
-  function handleBulkSnsCompose(heat: SnsHeat): BulkSnsRevealEntry[] {
-    const preview = previewBulkSnsCompose(ownedCreatorsRef.current, heat)
+  function handleBulkSnsCompose(): BulkSnsRevealEntry[] {
+    const preview = previewBulkSnsCompose(ownedCreatorsRef.current)
     const totalCost = preview.eligibleIds.reduce((sum, id) => {
       const creator = ownedCreatorsRef.current.find((c) => c.id === id)
       const postCount = (creator?.snsPosts ?? []).length
-      return sum + calcSnsPostCost(heat, postCount)
+      return sum + calcSnsPostCost(postCount)
     }, 0)
-    if (preview.eligibleIds.length === 0 || assetsRef.current < totalCost) return []
+    if (preview.eligibleIds.length === 0 || !spendAssets(totalCost)) return []
 
     const eligibleSet = new Set(preview.eligibleIds)
-    const nextAssets = assetsRef.current - totalCost
-    assetsRef.current = nextAssets
-    setAssets(nextAssets)
 
     const posted: BulkSnsRevealEntry[] = []
     const nextOwned = ownedCreatorsRef.current.map((creator) => {
       if (!eligibleSet.has(creator.id)) return creator
-      const post = nextSnsPost(creator.snsPosts ?? [], creator.snsPublishedIds ?? [], heat)
-      if (!post) return creator
-      const media = snsPostMedia(creator.snsPosts ?? [], creator.images, creator.videos, post.id)
+      const rolled = rollSnsCompose(
+        creator.snsPosts ?? [],
+        creator.snsPublishedIds ?? [],
+        creator.snsHeat3Pity ?? 0,
+      )
+      if (!rolled) return creator
+      const media = snsPostMedia(creator.snsPosts ?? [], creator.images, creator.videos, rolled.post.id)
       posted.push({
         creatorId: creator.id,
-        postId: post.id,
-        heat,
+        postId: rolled.post.id,
+        heat: rolled.heat,
         displayName: characterDisplayName(creator, locale),
         avatarUrl: creator.profileImageUrl,
-        caption: snsCaptionOf(post, locale),
+        caption: snsCaptionOf(rolled.post, locale),
         media,
-        blurRegions: post.blurRegions ?? [],
+        blurRegions: rolled.post.blurRegions ?? [],
       })
-      return { ...creator, snsPending: { postId: post.id, heat } }
+      return {
+        ...creator,
+        snsPending: { postId: rolled.post.id, heat: rolled.heat },
+        snsHeat3Pity: rolled.nextPity,
+      }
     })
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
     scheduleAutoSave()
+    if (posted.length > 0) playSfx('sns-write')
     return posted
   }
 
   function handleVacation(creatorId: string) {
     const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
     if (!target) return
+    if (vacationPlay) return
     const month = broadcastMonthNumberRef.current
     if (target.lastVacationMonth === month) return
     const cost = calcVacationCost(target.salary, target.grade)
-    if (assets < cost) return
-    setAssets((prev) => prev - cost)
+    if (!spendAssets(cost)) return
+    let recovered: OwnedCreator | null = null
     const nextOwned = ownedCreatorsRef.current.map((creator) => {
       if (creator.id !== creatorId) return creator
-      return {
+      recovered = {
         ...applyVacationRecovery(creator),
         lastVacationMonth: month,
       }
+      return recovered
     })
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
     scheduleAutoSave()
+    playSfx('condition-recover')
+    if (recovered) setVacationPlay(recovered)
   }
 
   function handleStartBroadcast() {
@@ -3192,6 +3295,7 @@ export function InGame({
           slot.assignment.creatorId,
           creatorNameOf(slot.assignment.creatorId, slot.assignment.creatorName),
         )
+        playSfx('gear-defend')
       }
       if (gearChanged) {
         slotGearByIdRef.current = gearMap
@@ -3223,17 +3327,40 @@ export function InGame({
       performance.now() - Math.min(elapsed * (nextWeekMs / plan.dayMs), nextWeekMs - 1)
   }, [speed, broadcastPhase])
 
-  // 진상 QTE 중 방송 시계 일시정지
+  // 진상 QTE·VN 오버레이 중 방송 시계 일시정지
   const toxicQteActive = toxicQteQueue.length > 0
+  const vnOverlayActive = Boolean(
+    scoutEventState ||
+      vipEventPlay ||
+      vipShortsPlay ||
+      vacationPlay ||
+      salaryEventPlay?.salaryEvent ||
+      socialUi?.mode === 'dateVn' ||
+      socialUi?.mode === 'hShorts' ||
+      socialUi?.mode === 'hRetryVn' ||
+      socialUi?.mode === 'hRetryShorts',
+  )
+  useGameBgm(
+    vnOverlayActive
+      ? null
+      : stationAuditTarget
+        ? 'audit'
+        : showCasinoModal
+          ? 'casino'
+          : broadcastPhase === 'live'
+            ? 'live'
+            : 'ingame',
+  )
+  const liveClockPaused = toxicQteActive || vnOverlayActive
   useEffect(() => {
-    if (!toxicQteActive) return
+    if (!liveClockPaused) return
     const pausedAt = performance.now()
     return () => {
       if (dayStartedAtRef.current != null) {
         dayStartedAtRef.current += performance.now() - pausedAt
       }
     }
-  }, [toxicQteActive])
+  }, [liveClockPaused])
 
   // QTE 종료 후 보류된 주차 진행
   useEffect(() => {
@@ -3253,6 +3380,7 @@ export function InGame({
       setLiveWeekProgress(0)
       return
     }
+    if (liveClockPaused) return
     const id = window.setInterval(() => {
       const plan = dayPlanRef.current
       const startedAt = dayStartedAtRef.current
@@ -3261,12 +3389,12 @@ export function InGame({
       setLiveWeekProgress(Math.max(0, Math.min(1, elapsed / plan.dayMs)))
     }, 80)
     return () => window.clearInterval(id)
-  }, [broadcastPhase, toxicQteActive])
+  }, [broadcastPhase, liveClockPaused])
 
   // 주 진행: 이벤트 공개
   useEffect(() => {
     if (broadcastPhase !== 'live') return
-    if (toxicQteActive) return
+    if (liveClockPaused) return
     const id = window.setInterval(() => {
       const plan = dayPlanRef.current
       const startedAt = dayStartedAtRef.current
@@ -3283,12 +3411,12 @@ export function InGame({
       runDueInspections(elapsed)
     }, 50)
     return () => window.clearInterval(id)
-  }, [broadcastPhase, toxicQteActive])
+  }, [broadcastPhase, liveClockPaused])
 
-  // 주 틱: 결산 → 월 내 주차 진행 → 턴 종료 시 다음 달 (진상 QTE 중 일시정지)
+  // 주 틱: 결산 → 월 내 주차 진행 → 턴 종료 시 다음 달 (진상 QTE·VN 중 일시정지)
   useEffect(() => {
     if (broadcastPhase !== 'live') return
-    if (toxicQteActive) return
+    if (liveClockPaused) return
     const tickMs = weekDurationMs(speed)
     const timer = window.setInterval(() => {
       if (toxicQteQueueRef.current.length > 0) return
@@ -3300,7 +3428,7 @@ export function InGame({
       advanceBroadcastWeek()
     }, tickMs)
     return () => window.clearInterval(timer)
-  }, [broadcastPhase, speed, toxicQteActive])
+  }, [broadcastPhase, speed, liveClockPaused])
 
   useEffect(() => {
     document.documentElement.classList.toggle('theme-on-air', broadcastPhase === 'live')
@@ -3366,7 +3494,7 @@ export function InGame({
         broadcastPhase === 'live'
           ? 'is-on-air grid-rows-[auto_1fr]'
           : 'grid-rows-[auto_1fr_auto]'
-      }`}
+      }${vnOverlayActive ? ' ingame-behind-vn' : ''}`}
     >
       <header className="game-hud relative z-40 flex shrink-0 items-center justify-between gap-4 px-6 pt-6 pb-3">
         <div className="flex min-w-0 items-center gap-3">
@@ -3741,7 +3869,14 @@ export function InGame({
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[10px] text-slate-500 font-semibold">{t('settings.se')}</span>
-                    <input type="range" className="accent-pink-500 bg-slate-900 border border-indigo-500/20 h-1.5 rounded-lg appearance-none cursor-pointer" defaultValue={80} />
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      defaultValue={getSeVolumePercent()}
+                      onChange={(event) => setSeVolumePercent(Number(event.target.value))}
+                      className="accent-pink-500 bg-slate-900 border border-indigo-500/20 h-1.5 rounded-lg appearance-none cursor-pointer"
+                    />
                   </div>
                 </div>
               </div>
@@ -4058,7 +4193,11 @@ export function InGame({
                 star: assets,
                 legend: assets,
               }}
-              onUpdateChips={(_roomId, newAssets) => setAssets(newAssets)}
+              onUpdateChips={(_roomId, newAssets) => {
+                if (newAssets < assetsRef.current) playSfx('asset-spend')
+                assetsRef.current = newAssets
+                setAssets(newAssets)
+              }}
               onHireStaff={() => {
                 const hired = managerStateRef.current.hiredStaffIds
                 const available = registeredStaff.filter((s) => !hired.includes(s.id))
@@ -4179,6 +4318,7 @@ export function InGame({
               const newRank = stationRankForGrade(nextGrade, leagueRef.current.viewers)
               stationGradeRef.current = nextGrade
               setStationGrade(nextGrade)
+              grantStationPromotionAssets(nextGrade)
               pendingPromotionRef.current = { nextGrade, oldRank, newRank }
               setTab('ranking')
               setPromotionFx({
@@ -4242,7 +4382,14 @@ export function InGame({
       {stationAuditTarget && !auditDocPassNoticeOpen && !auditDeckSelecting ? (
         <PromotionAuditModal
           tier={stationAuditTarget.nextTier}
-          creators={selectedAuditCreators || ownedCreators}
+          creators={(selectedAuditCreators || ownedCreators).map((creator) => ({
+            ...creator,
+            auditMedia: mergeAuditMedia(
+              creator.auditMedia,
+              registeredCharacters.find((row) => row.id === creator.id)?.auditMedia,
+            ),
+          }))}
+          events={events}
           config={stationGradeConfig}
           onComplete={(success, staminaDeductions) => {
             setSelectedAuditCreators(null)
@@ -4267,6 +4414,7 @@ export function InGame({
               const newRank = stationRankForGrade(nextGrade, leagueRef.current.viewers)
               stationGradeRef.current = nextGrade
               setStationGrade(nextGrade)
+              grantStationPromotionAssets(nextGrade)
               pendingPromotionRef.current = { nextGrade, oldRank, newRank }
               setTab('ranking')
               setPromotionFx({
@@ -4311,6 +4459,7 @@ export function InGame({
       {vipOffer ? (
         <VipOfferModal
           offer={vipOffer}
+          stationRank={league.currentRank}
           onAccept={handleVipAccept}
           onReject={handleVipReject}
         />
@@ -4378,10 +4527,36 @@ export function InGame({
             const play = vipEventPlay
             onEventWatched?.(play.event.id)
             setVipEventPlay(null)
-            applyVipAcceptRewards(play.offer, play.staminaMaxLoss)
+            applyVipAcceptRewards(play.offer, play.payout)
           }}
           registeredCharacters={registeredCharacters}
           allowSkip={watchedEventIds.includes(vipEventPlay.event.id)}
+        />
+      ) : null}
+
+      {vipShortsPlay ? (
+        <ShortsVnPlayer
+          key={`vip-shorts-${vipShortsPlay.offer.creatorId}-${vipShortsPlay.event.id}`}
+          beats={vipShortsPlay.beats}
+          event={vipShortsPlay.event}
+          title={t('shortsVn.playerVipTitle').replace(
+            '{name}',
+            vipShortsPlay.offer.creatorName,
+          )}
+          onClose={() => {
+            const play = vipShortsPlay
+            onEventWatched?.(play.event.id)
+            setVipShortsPlay(null)
+            applyVipAcceptRewards(play.offer, play.payout)
+          }}
+        />
+      ) : null}
+
+      {vacationPlay ? (
+        <SpecialVacationPlayer
+          key={`vacation-${vacationPlay.id}-${vacationPlay.lastVacationMonth ?? 0}`}
+          creator={vacationPlay}
+          onClose={() => setVacationPlay(null)}
         />
       ) : null}
 
@@ -4400,6 +4575,20 @@ export function InGame({
         />
       ) : null}
 
+      {socialUi?.mode === 'hShorts' ? (
+        <ShortsVnPlayer
+          key={`h-shorts-${socialUi.pending.creatorId}-${socialUi.event.id}`}
+          beats={socialUi.beats}
+          event={socialUi.event}
+          title={t('shortsVn.playerHTitle').replace('{name}', socialUi.pending.creatorName)}
+          onClose={() => {
+            if (socialUi.mode !== 'hShorts') return
+            onEventWatched?.(socialUi.event.id)
+            completeDateEvent(socialUi.pending)
+          }}
+        />
+      ) : null}
+
       {socialUi?.mode === 'hRetryVn' ? (
         <EventSimulator
           key={`hretry-${socialUi.pending.creatorId}-${socialUi.event.id}`}
@@ -4412,6 +4601,20 @@ export function InGame({
           }}
           registeredCharacters={registeredCharacters}
           allowSkip={watchedEventIds.includes(socialUi.event.id)}
+        />
+      ) : null}
+
+      {socialUi?.mode === 'hRetryShorts' ? (
+        <ShortsVnPlayer
+          key={`hretry-shorts-${socialUi.pending.creatorId}-${socialUi.event.id}`}
+          beats={socialUi.beats}
+          event={socialUi.event}
+          title={t('shortsVn.playerHTitle').replace('{name}', socialUi.pending.creatorName)}
+          onClose={() => {
+            if (socialUi.mode !== 'hRetryShorts') return
+            onEventWatched?.(socialUi.event.id)
+            applyHRetryAccept(socialUi.pending, socialUi.staminaLoss)
+          }}
         />
       ) : null}
 

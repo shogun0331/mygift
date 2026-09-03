@@ -553,6 +553,7 @@ function StreamCard({
     creator && creator.staminaMax > 0
       ? Math.max(0, Math.min(100, (creator.stamina / creator.staminaMax) * 100))
       : 0
+  const staminaTone = staminaToneClass(staminaPct, blocked)
   const conditionFull = Boolean(creator && creator.conditionScore >= 100)
   const careCost = creator ? calcConditionFullCareCost(creator.grade) : 0
   const canAffordCare = assets >= careCost
@@ -641,18 +642,16 @@ function StreamCard({
           </div>
 
           <div className="flex items-center justify-between gap-3 pt-0.5">
-            <div className="min-w-0 flex-1">
-              <div className="mb-0.5 flex items-center justify-between text-[10px]">
-                <span className="font-semibold tracking-wide text-slate-500">Stamina</span>
-                <span className="font-semibold text-slate-600">—</span>
-              </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
-                <div className="h-full w-0 rounded-full bg-gradient-to-r from-cyan-400 to-teal-300" />
+            <div className="relative min-w-0 flex-1 overflow-hidden rounded-md border border-white/10 bg-slate-900 shadow-inner">
+              <div className="h-6 w-0 bg-gradient-to-r from-cyan-400 to-teal-300" />
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-2 text-[10px] font-bold tracking-wide text-slate-400">
+                <span>Stamina</span>
+                <span className="tabular-nums">—</span>
               </div>
             </div>
 
             {managerState ? (
-              <div className="shrink-0 pt-2">
+              <div className="shrink-0">
                 <StaffSlotIcons
                   slotId={slotId}
                   managerState={managerState}
@@ -808,6 +807,7 @@ function StreamCard({
           <button
             type="button"
             className="cctv-gear-fail-repair"
+            data-no-ui-click
             onClick={() => onRepairSlot(slot.id)}
             aria-label={`${t('dashboard.gearFail')} — ${t('dashboard.gearFailHint')}`}
           >
@@ -940,31 +940,31 @@ function StreamCard({
 
           {/* Stamina 게이지바 & 우측 스태프 아이콘 (한 줄로 통합 배치) */}
           <div className="flex items-center justify-between gap-3 pt-0.5">
-            <div className="min-w-0 flex-1">
-              <div className="mb-0.5 flex items-center justify-between text-[10px]">
-                <span className={`font-bold tracking-wide ${blocked ? 'text-rose-400 animate-pulse' : 'text-slate-400'}`}>
-                  {blocked ? '🚨 Stamina (고갈)' : 'Stamina'}
+            <div
+              className={`relative min-w-0 flex-1 overflow-hidden rounded-md bg-slate-900 shadow-inner border transition-all duration-300 ${
+                staminaTone.track
+              }`}
+            >
+              <div
+                className={`h-6 rounded-sm transition-[width] duration-150 ease-linear ${
+                  staminaTone.fill
+                }`}
+                style={{ width: `${staminaPct}%` }}
+              />
+              <div
+                className={`pointer-events-none absolute inset-0 flex items-center justify-between px-2 text-[10px] font-black tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.85)] ${
+                  staminaTone.text
+                }`}
+              >
+                <span>{blocked ? '🚨 Stamina (고갈)' : 'Stamina'}</span>
+                <span className="tabular-nums">
+                  {creator ? `${Math.round(creator.stamina)}/${creator.staminaMax}` : '—'}
                 </span>
-                <span className={`font-black tabular-nums ${blocked ? 'text-rose-300 animate-pulse' : 'text-cyan-300'}`}>
-                  {creator
-                    ? `${Math.round(creator.stamina)}/${creator.staminaMax}`
-                    : '—'}
-                </span>
-              </div>
-              <div className={`h-1.5 overflow-hidden rounded-full bg-slate-900 border transition-all duration-300 shadow-inner ${
-                blocked ? 'border-rose-500/80 shadow-[0_0_12px_rgba(244,63,94,0.6)] animate-pulse' : 'border-white/10'
-              }`}>
-                <div
-                  className={`h-full rounded-full transition-[width] duration-150 ease-linear ${
-                    blocked ? 'bg-gradient-to-r from-rose-600 via-rose-500 to-amber-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]' : 'bg-gradient-to-r from-cyan-400 to-teal-300 shadow-[0_0_8px_rgba(34,211,238,0.4)]'
-                  }`}
-                  style={{ width: `${staminaPct}%` }}
-                />
               </div>
             </div>
 
             {managerState ? (
-              <div className="shrink-0 pt-2">
+              <div className="shrink-0">
                 <StaffSlotIcons
                   slotId={slotId}
                   managerState={managerState}
@@ -985,6 +985,35 @@ function StreamCard({
       </div>
     </article>
   )
+}
+
+function staminaToneClass(pct: number, blocked: boolean) {
+  if (blocked || pct <= 0) {
+    return {
+      track: 'border-rose-500/80 shadow-[0_0_12px_rgba(244,63,94,0.6)] animate-pulse',
+      fill: 'bg-gradient-to-r from-rose-700 via-rose-500 to-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.8)]',
+      text: 'text-rose-50',
+    }
+  }
+  if (pct < 30) {
+    return {
+      track: 'border-rose-400/50',
+      fill: 'bg-gradient-to-r from-rose-600 to-orange-400 shadow-[0_0_10px_rgba(244,63,94,0.45)]',
+      text: 'text-rose-50',
+    }
+  }
+  if (pct < 60) {
+    return {
+      track: 'border-amber-400/40',
+      fill: 'bg-gradient-to-r from-amber-500 to-yellow-300 shadow-[0_0_10px_rgba(251,191,36,0.4)]',
+      text: 'text-amber-50',
+    }
+  }
+  return {
+    track: 'border-cyan-400/25',
+    fill: 'bg-gradient-to-r from-cyan-500 to-teal-300 shadow-[0_0_10px_rgba(34,211,238,0.45)]',
+    text: 'text-white',
+  }
 }
 
 function formatCareCostShort(amount: number) {

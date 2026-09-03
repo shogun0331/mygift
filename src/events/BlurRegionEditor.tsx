@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useMosaicStrength } from '../game/visualFx'
 import type { BlurRegion, EventMediaAsset } from './types'
 
 export const BLUR_MIN = 0
@@ -72,20 +73,22 @@ export function BlurRegionOverlay({
   showHandles?: boolean
   draft?: { x: number; y: number; w: number; h: number } | null
 }) {
+  const strength = useMosaicStrength()
+  const scale = strength / 50
   return (
-    <div className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
+    <div className="event-mosaic-layer pointer-events-none absolute inset-0 z-[5] overflow-hidden">
       {regions.map((region) => (
         <div
           key={region.id}
-          className="absolute"
+          className="event-mosaic-region absolute"
           style={{
             left: `${region.x * 100}%`,
             top: `${region.y * 100}%`,
             width: `${region.w * 100}%`,
             height: `${region.h * 100}%`,
-            backdropFilter: blurFilterCss(region.blur),
-            WebkitBackdropFilter: blurFilterCss(region.blur),
-            background: blurTint(region.blur),
+            backdropFilter: blurFilterCss(region.blur * scale),
+            WebkitBackdropFilter: blurFilterCss(region.blur * scale),
+            background: blurTint(region.blur * scale),
             outline:
               selectedId === region.id
                 ? '2px solid rgba(165, 180, 252, 0.95)'

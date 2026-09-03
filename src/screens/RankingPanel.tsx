@@ -18,6 +18,7 @@ import {
 } from '../game/station'
 import type { StationGradeConfig, StationPromotionRule } from '../game/stationGradeConfig'
 import type { Grade } from '../game/characters'
+import { playSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
 
 export type RankBubblePlay = {
@@ -78,6 +79,7 @@ export function RankingPanel({
     const playKey = `${rankPlay.fromRank}:${rankPlay.toRank}`
     playDoneRef.current = null
     setPlayProgress(0)
+    if (rankPlay.fromRank > rankPlay.toRank) playSfx('rank-up')
     let raf = 0
     const started = performance.now()
     const tick = (now: number) => {

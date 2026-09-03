@@ -47,6 +47,7 @@ export function ToxicWhackQte({ item, onResolve }: ToxicWhackQteProps) {
     <button
       type="button"
       onClick={() => finish(true)}
+      data-no-ui-click
       className="absolute inset-0 z-40 flex cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-[inherit] border-0 bg-rose-950/50 p-2 text-center transition hover:bg-rose-900/55 active:bg-rose-800/60"
       aria-label={t('toxic.ariaLabel').replace('{name}', item.creatorName)}
     >

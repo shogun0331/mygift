@@ -44,7 +44,7 @@
     "characterIllustrationId": "1787982369291-euwbqyb",
     "profileImageId": "1787982369291-euwbqyb",
     "profileVideoId": null,
-    "mediaRevision": 1788137433068,
+    "mediaRevision": 1788436754113,
     "images": [
       {
         "id": "1787982369291-euwbqyb",
@@ -220,6 +220,96 @@
         "url": "media://characters/1786792656193-i7isvfo/images/1788137348762-pmw0e4a__2026-08-30_00189.webp",
         "keys": [
           "sns"
+        ]
+      },
+      {
+        "id": "1788434679451-o431trp",
+        "fileName": "1788434679451-o431trp__2026-09-03_00026.webp",
+        "fileSize": 139960,
+        "url": "media://characters/1786792656193-i7isvfo/images/1788434679451-o431trp__2026-09-03_00026.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788434679453-0dr6ifl",
+        "fileName": "1788434679453-0dr6ifl__2026-09-03_00011.webp",
+        "fileSize": 147738,
+        "url": "media://characters/1786792656193-i7isvfo/images/1788434679453-0dr6ifl__2026-09-03_00011.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788434679454-pddahh6",
+        "fileName": "1788434679454-pddahh6__2026-09-03_00015.webp",
+        "fileSize": 102268,
+        "url": "media://characters/1786792656193-i7isvfo/images/1788434679454-pddahh6__2026-09-03_00015.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788434679454-q0q60be",
+        "fileName": "1788434679454-q0q60be__2026-09-03_00016.webp",
+        "fileSize": 112178,
+        "url": "media://characters/1786792656193-i7isvfo/images/1788434679454-q0q60be__2026-09-03_00016.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788434679455-331r6no",
+        "fileName": "1788434679455-331r6no__2026-09-03_00017.webp",
+        "fileSize": 121514,
+        "url": "media://characters/1786792656193-i7isvfo/images/1788434679455-331r6no__2026-09-03_00017.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788434679455-7gi5d7j",
+        "fileName": "1788434679455-7gi5d7j__2026-09-03_00018.webp",
+        "fileSize": 108986,
+        "url": "media://characters/1786792656193-i7isvfo/images/1788434679455-7gi5d7j__2026-09-03_00018.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788434679455-of4nolt",
+        "fileName": "1788434679455-of4nolt__2026-09-03_00019.webp",
+        "fileSize": 131484,
+        "url": "media://characters/1786792656193-i7isvfo/images/1788434679455-of4nolt__2026-09-03_00019.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788434679456-wwbistg",
+        "fileName": "1788434679456-wwbistg__2026-09-03_00020.webp",
+        "fileSize": 153226,
+        "url": "media://characters/1786792656193-i7isvfo/images/1788434679456-wwbistg__2026-09-03_00020.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788434679456-y79fu8d",
+        "fileName": "1788434679456-y79fu8d__2026-09-03_00021.webp",
+        "fileSize": 151632,
+        "url": "media://characters/1786792656193-i7isvfo/images/1788434679456-y79fu8d__2026-09-03_00021.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788434679456-sr5405u",
+        "fileName": "1788434679456-sr5405u__2026-09-03_00022.webp",
+        "fileSize": 118412,
+        "url": "media://characters/1786792656193-i7isvfo/images/1788434679456-sr5405u__2026-09-03_00022.webp",
+        "keys": [
+          "specialVacation"
         ]
       }
     ],
@@ -714,7 +804,146 @@
         ],
         "blurDefault": 4
       }
-    ]
+    ],
+    "auditMedia": {
+      "A": {
+        "url": "media://chapter_assets/events/a3/videos/speed_3_25x_9ff2dee927b24029aede576311255e6f.mp4",
+        "blurRegions": [
+          {
+            "id": "blur_1788407495614_hcrt",
+            "x": 0.6184895833333334,
+            "y": 0.5237268518518519,
+            "w": 0.17708333333333326,
+            "h": 0.27314814814814814,
+            "blur": 1.5
+          }
+        ]
+      },
+      "B": {
+        "url": "media://chapter_assets/events/a1/videos/speed_4_30x_569f492a6c3f483fa22ec57a9fa67227.mp4",
+        "blurRegions": [
+          {
+            "id": "blur_1788407353417_p55a",
+            "x": 0.2630208333333333,
+            "y": 0.3038194444444444,
+            "w": 0.12630208333333337,
+            "h": 0.09953703703703703,
+            "blur": 2
+          }
+        ]
+      },
+      "C": {
+        "url": "media://chapter_assets/events/a/videos/speed_1_75x_e3c524a0e19a4938a6a29ebe5892a0af.mp4",
+        "blurRegions": []
+      }
+    },
+    "shortsVn": {
+      "vip": [
+        {
+          "id": "shorts-1788431889681-bw6eq9",
+          "mediaUrl": "media://chapter_assets/events/a6/videos/speed_3_25x_9ff2dee927b24029aede576311255e6f.mp4",
+          "caption": "들어갔어요… 고객님의, 제 안에…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407495614_hcrt",
+              "x": 0.6184895833333334,
+              "y": 0.5237268518518519,
+              "w": 0.17708333333333326,
+              "h": 0.27314814814814814,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787100604876_54_0dao",
+          "captionNodeId": "node_1787102213876_19_rj70"
+        },
+        {
+          "id": "shorts-1788431913465-2b9737",
+          "mediaUrl": "media://chapter_assets/events/a6/images/2026-08-31_00192_.webp",
+          "caption": "하…… 고객님… 대단해요…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407612693_6gxf",
+              "x": 0.515625,
+              "y": 0.484375,
+              "w": 0.0859375,
+              "h": 0.25462962962962965,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787102213876_29_vjih",
+          "captionNodeId": "node_1787102213876_31_225g"
+        }
+      ],
+      "h": [
+        {
+          "id": "shorts-1788431959089-hken8z",
+          "mediaUrl": "media://chapter_assets/events/a3/videos/speed_3_25x_9ff2dee927b24029aede576311255e6f.mp4",
+          "caption": "좋아요… 더 세게…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407495614_hcrt",
+              "x": 0.6184895833333334,
+              "y": 0.5237268518518519,
+              "w": 0.17708333333333326,
+              "h": 0.27314814814814814,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787100604876_54_0dao",
+          "captionNodeId": "node_1787100604876_62_b5ix"
+        },
+        {
+          "id": "shorts-1788431967232-heugt9",
+          "mediaUrl": "media://chapter_assets/events/a3/images/2026-08-31_00051_.webp",
+          "caption": "정말, 대단했어요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407517430_72k3",
+              "x": 0.59765625,
+              "y": 0.36863425925925924,
+              "w": 0.13932291666666663,
+              "h": 0.11805555555555558,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787100604876_68_g1ri",
+          "captionNodeId": "node_1787100604876_72_h7jc"
+        }
+      ]
+    },
+    "specialVacation": {
+      "imageIds": [
+        "1788434679451-o431trp",
+        "1788434679453-0dr6ifl",
+        "1788434679454-pddahh6",
+        "1788434679454-q0q60be",
+        "1788434679455-331r6no",
+        "1788434679455-7gi5d7j",
+        "1788434679455-of4nolt",
+        "1788434679456-wwbistg",
+        "1788434679456-y79fu8d",
+        "1788434679456-sr5405u"
+      ],
+      "captions": {
+        "ko": "사장님, 정말 감사했습니다.",
+        "en": "Boss, thank you so very much.",
+        "ja": "社長さん、本当にありがとうございました。",
+        "zh-cn": "社长，真的非常感谢您。",
+        "ru": "Босс, правда большое спасибо.",
+        "es": "Jefe, de verdad muchas gracias.",
+        "de": "Chef, wirklich vielen Dank."
+      },
+      "voice": {
+        "id": "1788436747208-n57l2dh",
+        "fileName": "1788436747208-n57l2dh__miyazawa_rina.wav",
+        "fileSize": 157484,
+        "url": "media://characters/1786792656193-i7isvfo/sounds/1788436747208-n57l2dh__miyazawa_rina.wav?v=157484"
+      }
+    }
   },
   {
     "id": "1786833964287-iflkqh2",
@@ -761,7 +990,7 @@
     "characterIllustrationId": "1787982427836-0drfnc2",
     "profileImageId": "1787982427836-0drfnc2",
     "profileVideoId": null,
-    "mediaRevision": 1788137559378,
+    "mediaRevision": 1788436915412,
     "images": [
       {
         "id": "1787982427836-0drfnc2",
@@ -946,6 +1175,96 @@
         "url": "media://characters/1786833964287-iflkqh2/images/1788137487418-ktrbl5s__2026-08-30_00224.webp",
         "keys": [
           "sns"
+        ]
+      },
+      {
+        "id": "1788435728201-47cii7m",
+        "fileName": "1788435728201-47cii7m__2026-09-03_00037.webp",
+        "fileSize": 136966,
+        "url": "media://characters/1786833964287-iflkqh2/images/1788435728201-47cii7m__2026-09-03_00037.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788435728202-nzdh08t",
+        "fileName": "1788435728202-nzdh08t__2026-09-03_00038.webp",
+        "fileSize": 178264,
+        "url": "media://characters/1786833964287-iflkqh2/images/1788435728202-nzdh08t__2026-09-03_00038.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788435728202-xo23csv",
+        "fileName": "1788435728202-xo23csv__2026-09-03_00039.webp",
+        "fileSize": 128188,
+        "url": "media://characters/1786833964287-iflkqh2/images/1788435728202-xo23csv__2026-09-03_00039.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788435728203-352vta6",
+        "fileName": "1788435728203-352vta6__2026-09-03_00040.webp",
+        "fileSize": 129628,
+        "url": "media://characters/1786833964287-iflkqh2/images/1788435728203-352vta6__2026-09-03_00040.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788435728203-hwqtpy0",
+        "fileName": "1788435728203-hwqtpy0__2026-09-03_00041.webp",
+        "fileSize": 126452,
+        "url": "media://characters/1786833964287-iflkqh2/images/1788435728203-hwqtpy0__2026-09-03_00041.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788435728203-t9js8ta",
+        "fileName": "1788435728203-t9js8ta__2026-09-03_00042.webp",
+        "fileSize": 189196,
+        "url": "media://characters/1786833964287-iflkqh2/images/1788435728203-t9js8ta__2026-09-03_00042.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788435728203-f9ywtre",
+        "fileName": "1788435728203-f9ywtre__2026-09-03_00043.webp",
+        "fileSize": 150554,
+        "url": "media://characters/1786833964287-iflkqh2/images/1788435728203-f9ywtre__2026-09-03_00043.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788435728204-sx58b41",
+        "fileName": "1788435728204-sx58b41__2026-09-03_00044.webp",
+        "fileSize": 97510,
+        "url": "media://characters/1786833964287-iflkqh2/images/1788435728204-sx58b41__2026-09-03_00044.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788435728204-x25m9gv",
+        "fileName": "1788435728204-x25m9gv__2026-09-03_00045.webp",
+        "fileSize": 163662,
+        "url": "media://characters/1786833964287-iflkqh2/images/1788435728204-x25m9gv__2026-09-03_00045.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788435728204-7uvulnc",
+        "fileName": "1788435728204-7uvulnc__2026-09-03_00046.webp",
+        "fileSize": 101772,
+        "url": "media://characters/1786833964287-iflkqh2/images/1788435728204-7uvulnc__2026-09-03_00046.webp",
+        "keys": [
+          "specialVacation"
         ]
       }
     ],
@@ -1449,7 +1768,128 @@
         ],
         "blurDefault": 4
       }
-    ]
+    ],
+    "auditMedia": {
+      "A": {
+        "url": "media://chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/videos/speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
+        "blurRegions": []
+      },
+      "B": {
+        "url": "media://chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/videos/speed_3_50x_948050c9a75b408dae3c06ace517a4e0.mp4",
+        "blurRegions": []
+      },
+      "C": {
+        "url": "media://chapter_assets/events/527c3f8b-f496-4c25-9fd1-91096ec45330/videos/speed_1_65x_ea7bfc810238484a8d918a9924bf67ea.mp4",
+        "blurRegions": []
+      }
+    },
+    "shortsVn": {
+      "vip": [
+        {
+          "id": "shorts-1788432000192-t8hehu",
+          "mediaUrl": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/videos/speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
+          "caption": "더 세게 해주세요. 저도, 고객님을 느끼고 있으니까요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407793315_zqv6",
+              "x": 0.7981770833333334,
+              "y": 0.3917824074074074,
+              "w": 0.12760416666666663,
+              "h": 0.20370370370370378,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787113705965_50_d3fc",
+          "captionNodeId": "node_1787115692563_26_satn"
+        },
+        {
+          "id": "shorts-1788432038287-ns454c",
+          "mediaUrl": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-31_00116_.png",
+          "caption": "하…… 고객님… 대단해요…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407803531_dadc",
+              "x": 0.7317708333333334,
+              "y": 0.21585648148148148,
+              "w": 0.14583333333333326,
+              "h": 0.30092592592592593,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787113705965_60_jzgw",
+          "captionNodeId": "node_1787115692563_33_pi45"
+        }
+      ],
+      "h": [
+        {
+          "id": "shorts-1788432066519-3om69j",
+          "mediaUrl": "media://chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/videos/speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
+          "caption": "깊어요… 사장님, 제 안 깊은 곳까지…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407793315_zqv6",
+              "x": 0.7981770833333334,
+              "y": 0.3917824074074074,
+              "w": 0.12760416666666663,
+              "h": 0.20370370370370378,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787113705965_50_d3fc",
+          "captionNodeId": "node_1787113705965_52_uefd"
+        },
+        {
+          "id": "shorts-1788432076847-4l4inf",
+          "mediaUrl": "media://chapter_assets/events/56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601/images/2026-08-31_00116_.png",
+          "caption": "정말, 대단했어요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407803531_dadc",
+              "x": 0.7317708333333334,
+              "y": 0.21585648148148148,
+              "w": 0.14583333333333326,
+              "h": 0.30092592592592593,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787113705965_60_jzgw",
+          "captionNodeId": "node_1787113705965_64_i33m"
+        }
+      ]
+    },
+    "specialVacation": {
+      "imageIds": [
+        "1788435728201-47cii7m",
+        "1788435728202-nzdh08t",
+        "1788435728202-xo23csv",
+        "1788435728203-352vta6",
+        "1788435728203-hwqtpy0",
+        "1788435728203-t9js8ta",
+        "1788435728203-f9ywtre",
+        "1788435728204-sx58b41",
+        "1788435728204-x25m9gv",
+        "1788435728204-7uvulnc"
+      ],
+      "captions": {
+        "ko": "사장님~! 감사합니다!",
+        "en": "Boss~! Thank you!",
+        "ja": "社長さん～！ありがとうございます！",
+        "zh-cn": "社长～！谢谢您！",
+        "ru": "Босс~! Спасибо!",
+        "es": "¡Jefe~! ¡Gracias!",
+        "de": "Chef~! Danke!"
+      },
+      "voice": {
+        "id": "1788436762054-qx3o0pm",
+        "fileName": "1788436762054-qx3o0pm__tachibana_misaki.wav",
+        "fileSize": 145964,
+        "url": "media://characters/1786833964287-iflkqh2/sounds/1788436762054-qx3o0pm__tachibana_misaki.wav?v=145964"
+      }
+    }
   },
   {
     "id": "1786849140255-p0lxz2i",
@@ -1494,7 +1934,7 @@
     "characterIllustrationId": "1787982469617-m9tq17b",
     "profileImageId": "1787982469617-m9tq17b",
     "profileVideoId": null,
-    "mediaRevision": 1788137696346,
+    "mediaRevision": 1788438239916,
     "images": [
       {
         "id": "1787982469617-m9tq17b",
@@ -1688,6 +2128,96 @@
         "url": "media://characters/1786849140255-p0lxz2i/images/1788137613521-rsqo10q__2026-08-31_00040.webp",
         "keys": [
           "sns"
+        ]
+      },
+      {
+        "id": "1788438232828-a0aenxp",
+        "fileName": "1788438232828-a0aenxp__2026-09-03_00057.webp",
+        "fileSize": 224296,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1788438232828-a0aenxp__2026-09-03_00057.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788438232828-5v9fc87",
+        "fileName": "1788438232828-5v9fc87__2026-09-03_00058.webp",
+        "fileSize": 159802,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1788438232828-5v9fc87__2026-09-03_00058.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788438232828-px74peg",
+        "fileName": "1788438232828-px74peg__2026-09-03_00059.webp",
+        "fileSize": 124534,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1788438232828-px74peg__2026-09-03_00059.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788438232828-u2l0fqm",
+        "fileName": "1788438232828-u2l0fqm__2026-09-03_00060.webp",
+        "fileSize": 167464,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1788438232828-u2l0fqm__2026-09-03_00060.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788438232828-78s3h88",
+        "fileName": "1788438232828-78s3h88__2026-09-03_00061.webp",
+        "fileSize": 68570,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1788438232828-78s3h88__2026-09-03_00061.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788438232829-bvps0zp",
+        "fileName": "1788438232829-bvps0zp__2026-09-03_00062.webp",
+        "fileSize": 157346,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1788438232829-bvps0zp__2026-09-03_00062.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788438232829-g0cqwvr",
+        "fileName": "1788438232829-g0cqwvr__2026-09-03_00063.webp",
+        "fileSize": 112800,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1788438232829-g0cqwvr__2026-09-03_00063.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788438232829-4karjjw",
+        "fileName": "1788438232829-4karjjw__2026-09-03_00064.webp",
+        "fileSize": 157042,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1788438232829-4karjjw__2026-09-03_00064.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788438232829-q68flkq",
+        "fileName": "1788438232829-q68flkq__2026-09-03_00065.webp",
+        "fileSize": 204714,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1788438232829-q68flkq__2026-09-03_00065.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788438232829-7an0msf",
+        "fileName": "1788438232829-7an0msf__2026-09-03_00066.webp",
+        "fileSize": 173544,
+        "url": "media://characters/1786849140255-p0lxz2i/images/1788438232829-7an0msf__2026-09-03_00066.webp",
+        "keys": [
+          "specialVacation"
         ]
       }
     ],
@@ -2191,7 +2721,54 @@
         ],
         "blurDefault": 4
       }
-    ]
+    ],
+    "auditMedia": {
+      "A": {
+        "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/speed_2_95x_90f8bf95c09a487fac8cb88b6a672924.mp4",
+        "blurRegions": []
+      },
+      "B": {
+        "url": "media://chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/videos/speed_3_35x_e529aa0b089540e5b4e9389e95ee7e12.mp4",
+        "blurRegions": []
+      },
+      "C": {
+        "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00014_.webp",
+        "blurRegions": []
+      }
+    },
+    "shortsVn": {
+      "vip": [],
+      "h": []
+    },
+    "specialVacation": {
+      "imageIds": [
+        "1788438232828-a0aenxp",
+        "1788438232828-5v9fc87",
+        "1788438232828-px74peg",
+        "1788438232828-u2l0fqm",
+        "1788438232828-78s3h88",
+        "1788438232829-bvps0zp",
+        "1788438232829-g0cqwvr",
+        "1788438232829-4karjjw",
+        "1788438232829-q68flkq",
+        "1788438232829-7an0msf"
+      ],
+      "captions": {
+        "ko": "저……정말 감사합니다.",
+        "en": "Um… thank you so much.",
+        "ja": "あの……本当にありがとうございます。",
+        "zh-cn": "那个……真的非常感谢。",
+        "ru": "Эм… правда большое спасибо.",
+        "es": "Eh… de verdad muchas gracias.",
+        "de": "Ähm… wirklich vielen Dank."
+      },
+      "voice": {
+        "id": "1788436773629-x68ec6w",
+        "fileName": "1788436773629-x68ec6w__sato_megumi.wav",
+        "fileSize": 184364,
+        "url": "media://characters/1786849140255-p0lxz2i/sounds/1788436773629-x68ec6w__sato_megumi.wav?v=184364"
+      }
+    }
   },
   {
     "id": "1786850998437-g6olmc9",
@@ -2236,7 +2813,7 @@
     "characterIllustrationId": "1787982488665-no2ynqd",
     "profileImageId": "1787982488665-no2ynqd",
     "profileVideoId": null,
-    "mediaRevision": 1788137804191,
+    "mediaRevision": 1788436788019,
     "images": [
       {
         "id": "1787982488665-no2ynqd",
@@ -2942,7 +3519,43 @@
         ],
         "blurDefault": 4
       }
-    ]
+    ],
+    "auditMedia": {
+      "A": {
+        "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/speed_3_10x_e5b73205365f429c8133b3fda40049f9.mp4",
+        "blurRegions": []
+      },
+      "B": {
+        "url": "media://chapter_assets/events/e80cb0f4-8839-45a6-97ca-42f2ed18c988/videos/speed_1_95x_4ba566403b344a309c872b4ecf075af6.mp4",
+        "blurRegions": []
+      },
+      "C": {
+        "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-09-01_00005.mp4",
+        "blurRegions": []
+      }
+    },
+    "shortsVn": {
+      "vip": [],
+      "h": []
+    },
+    "specialVacation": {
+      "imageIds": [],
+      "captions": {
+        "ko": "……감사합니다.",
+        "en": "…Thank you.",
+        "ja": "……ありがとうございます。",
+        "zh-cn": "……谢谢您。",
+        "ru": "…Спасибо.",
+        "es": "…Gracias.",
+        "de": "…Danke."
+      },
+      "voice": {
+        "id": "1788436785276-io66qym",
+        "fileName": "1788436785276-io66qym__akiyama_miho.wav",
+        "fileSize": 73004,
+        "url": "media://characters/1786850998437-g6olmc9/sounds/1788436785276-io66qym__akiyama_miho.wav?v=73004"
+      }
+    }
   },
   {
     "id": "1786851057540-5sup19s",
@@ -2987,7 +3600,7 @@
     "characterIllustrationId": "1787982515769-uje63zv",
     "profileImageId": "1787982515769-uje63zv",
     "profileVideoId": null,
-    "mediaRevision": 1788137915585,
+    "mediaRevision": 1788436885712,
     "images": [
       {
         "id": "1787982515769-uje63zv",
@@ -3181,6 +3794,96 @@
         "url": "media://characters/1786851057540-5sup19s/images/1788137844240-i3uwfse__2026-08-31_00030.webp",
         "keys": [
           "sns"
+        ]
+      },
+      {
+        "id": "1788436884570-0owzxma",
+        "fileName": "1788436884570-0owzxma__2026-09-03_00047.webp",
+        "fileSize": 95216,
+        "url": "media://characters/1786851057540-5sup19s/images/1788436884570-0owzxma__2026-09-03_00047.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788436884571-59kgsn6",
+        "fileName": "1788436884571-59kgsn6__2026-09-03_00048.webp",
+        "fileSize": 105756,
+        "url": "media://characters/1786851057540-5sup19s/images/1788436884571-59kgsn6__2026-09-03_00048.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788436884571-bbxc35a",
+        "fileName": "1788436884571-bbxc35a__2026-09-03_00049.webp",
+        "fileSize": 143456,
+        "url": "media://characters/1786851057540-5sup19s/images/1788436884571-bbxc35a__2026-09-03_00049.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788436884571-oku9ugj",
+        "fileName": "1788436884571-oku9ugj__2026-09-03_00050.webp",
+        "fileSize": 125830,
+        "url": "media://characters/1786851057540-5sup19s/images/1788436884571-oku9ugj__2026-09-03_00050.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788436884572-h4yv220",
+        "fileName": "1788436884572-h4yv220__2026-09-03_00051.webp",
+        "fileSize": 164752,
+        "url": "media://characters/1786851057540-5sup19s/images/1788436884572-h4yv220__2026-09-03_00051.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788436884572-i9l4ipi",
+        "fileName": "1788436884572-i9l4ipi__2026-09-03_00052.webp",
+        "fileSize": 130436,
+        "url": "media://characters/1786851057540-5sup19s/images/1788436884572-i9l4ipi__2026-09-03_00052.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788436884572-yjbvwin",
+        "fileName": "1788436884572-yjbvwin__2026-09-03_00053.webp",
+        "fileSize": 152702,
+        "url": "media://characters/1786851057540-5sup19s/images/1788436884572-yjbvwin__2026-09-03_00053.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788436884573-zeubu8m",
+        "fileName": "1788436884573-zeubu8m__2026-09-03_00054.webp",
+        "fileSize": 142820,
+        "url": "media://characters/1786851057540-5sup19s/images/1788436884573-zeubu8m__2026-09-03_00054.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788436884573-kacfp9h",
+        "fileName": "1788436884573-kacfp9h__2026-09-03_00055.webp",
+        "fileSize": 91182,
+        "url": "media://characters/1786851057540-5sup19s/images/1788436884573-kacfp9h__2026-09-03_00055.webp",
+        "keys": [
+          "specialVacation"
+        ]
+      },
+      {
+        "id": "1788436884573-v6lx2r4",
+        "fileName": "1788436884573-v6lx2r4__2026-09-03_00056.webp",
+        "fileSize": 114404,
+        "url": "media://characters/1786851057540-5sup19s/images/1788436884573-v6lx2r4__2026-09-03_00056.webp",
+        "keys": [
+          "specialVacation"
         ]
       }
     ],
@@ -3693,7 +4396,54 @@
         ],
         "blurDefault": 4
       }
-    ]
+    ],
+    "auditMedia": {
+      "A": {
+        "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
+        "blurRegions": []
+      },
+      "B": {
+        "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_75x_09bda57304bb4d2cb16a7453a4eaf117.mp4",
+        "blurRegions": []
+      },
+      "C": {
+        "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/videos/speed_2_15x_94f1a07ba6784d64824ff9e9dd273a57.mp4",
+        "blurRegions": []
+      }
+    },
+    "shortsVn": {
+      "vip": [],
+      "h": []
+    },
+    "specialVacation": {
+      "imageIds": [
+        "1788436884570-0owzxma",
+        "1788436884571-59kgsn6",
+        "1788436884571-bbxc35a",
+        "1788436884571-oku9ugj",
+        "1788436884572-h4yv220",
+        "1788436884572-i9l4ipi",
+        "1788436884572-yjbvwin",
+        "1788436884573-zeubu8m",
+        "1788436884573-kacfp9h",
+        "1788436884573-v6lx2r4"
+      ],
+      "captions": {
+        "ko": "……고마워. 나쁘지 않은 휴가였어.",
+        "en": "…Thanks. Not a bad vacation.",
+        "ja": "……ありがとう。悪くない休暇だったわ。",
+        "zh-cn": "……谢谢。不算坏的假期。",
+        "ru": "…Спасибо. Неплохой отпуск.",
+        "es": "…Gracias. No estuvo mal la vacación.",
+        "de": "…Danke. Kein schlechter Urlaub."
+      },
+      "voice": {
+        "id": "1788436795255-2erxou9",
+        "fileName": "1788436795255-2erxou9__shirakawa_aya.wav",
+        "fileSize": 380204,
+        "url": "media://characters/1786851057540-5sup19s/sounds/1788436795255-2erxou9__shirakawa_aya.wav?v=380204"
+      }
+    }
   },
   {
     "id": "1786851109772-o2n3dj3",
@@ -3738,7 +4488,7 @@
     "characterIllustrationId": "1787982543675-lh3vdtj",
     "profileImageId": "1787982543675-lh3vdtj",
     "profileVideoId": null,
-    "mediaRevision": 1788138033972,
+    "mediaRevision": 1788436815072,
     "images": [
       {
         "id": "1787982543675-lh3vdtj",
@@ -4372,7 +5122,43 @@
         ],
         "blurDefault": 4
       }
-    ]
+    ],
+    "auditMedia": {
+      "A": {
+        "url": "media://chapter_assets/events/89ab7df5-6c22-43bb-83d3-0d4df5d67843/videos/speed_2_65x_ad0a0063ff124b27a464ae856b71ea6a.mp4",
+        "blurRegions": []
+      },
+      "B": {
+        "url": "media://chapter_assets/events/55a714c6-13aa-41bf-a4f4-a511956c6079/videos/speed_2_35x_591c951bda2a471486fa3350e8713b24.mp4",
+        "blurRegions": []
+      },
+      "C": {
+        "url": "media://chapter_assets/events/89ab7df5-6c22-43bb-83d3-0d4df5d67843/images/41de5d9c-8f71-4fad-8280-be3fd6ba227b.webp",
+        "blurRegions": []
+      }
+    },
+    "shortsVn": {
+      "vip": [],
+      "h": []
+    },
+    "specialVacation": {
+      "imageIds": [],
+      "captions": {
+        "ko": "이런 휴가를 주셔서 감사드립니다.",
+        "en": "Thank you for granting me this time off.",
+        "ja": "このようなお休みをいただき、ありがとうございます。",
+        "zh-cn": "能得到这样的假期，非常感谢。",
+        "ru": "Благодарю вас за такой отпуск.",
+        "es": "Gracias por concederme estas vacaciones.",
+        "de": "Danke, dass Sie mir diesen Urlaub gewährt haben."
+      },
+      "voice": {
+        "id": "1788436809196-lbokrup",
+        "fileName": "1788436809196-lbokrup__senno_rina.wav",
+        "fileSize": 211244,
+        "url": "media://characters/1786851109772-o2n3dj3/sounds/1788436809196-lbokrup__senno_rina.wav?v=211244"
+      }
+    }
   },
   {
     "id": "1786851153987-tb6qhg5",
@@ -4417,7 +5203,7 @@
     "characterIllustrationId": "1787982563132-02ifwpr",
     "profileImageId": "1787982563132-02ifwpr",
     "profileVideoId": null,
-    "mediaRevision": 1788138131371,
+    "mediaRevision": 1788436825071,
     "images": [
       {
         "id": "1787982563132-02ifwpr",
@@ -5132,7 +5918,43 @@
         ],
         "blurDefault": 4
       }
-    ]
+    ],
+    "auditMedia": {
+      "A": {
+        "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/speed_2_85x_242f68c304c842b9b1c6ef3e47228fe0.mp4",
+        "blurRegions": []
+      },
+      "B": {
+        "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/videos/speed_2_50x_de5fb28e9be3405f8f5df7e9be026f90.mp4",
+        "blurRegions": []
+      },
+      "C": {
+        "url": "media://chapter_assets/events/66eace05-3678-4976-aebf-ee86b096de74/videos/2026-09-01_00021.mp4",
+        "blurRegions": []
+      }
+    },
+    "shortsVn": {
+      "vip": [],
+      "h": []
+    },
+    "specialVacation": {
+      "imageIds": [],
+      "captions": {
+        "ko": "사장님, 고마워! 정말 재밌었어!",
+        "en": "Boss, thanks! That was so much fun!",
+        "ja": "社長さん、ありがとう！すごく楽しかった！",
+        "zh-cn": "社长，谢谢！超开心的！",
+        "ru": "Босс, спасибо! Было супер весело!",
+        "es": "¡Jefe, gracias! ¡Fue genial!",
+        "de": "Chef, danke! Das hat mega Spaß gemacht!"
+      },
+      "voice": {
+        "id": "1788436820806-lov69ym",
+        "fileName": "1788436820806-lov69ym__luiza.wav",
+        "fileSize": 153644,
+        "url": "media://characters/1786851153987-tb6qhg5/sounds/1788436820806-lov69ym__luiza.wav?v=153644"
+      }
+    }
   },
   {
     "id": "1786851211019-59swl59",
@@ -5177,7 +5999,7 @@
     "characterIllustrationId": "1787982585733-jxb2shc",
     "profileImageId": "1787982585733-jxb2shc",
     "profileVideoId": null,
-    "mediaRevision": 1788138225272,
+    "mediaRevision": 1788436839954,
     "images": [
       {
         "id": "1787982585733-jxb2shc",
@@ -5811,7 +6633,43 @@
         ],
         "blurDefault": 4
       }
-    ]
+    ],
+    "auditMedia": {
+      "A": {
+        "url": "media://chapter_assets/events/3f011019-f38b-4731-8cc2-4608bc293759/videos/speed_4_15x_380818773bd8471fbbcbb338fcbcba3b.mp4",
+        "blurRegions": []
+      },
+      "B": {
+        "url": "media://chapter_assets/events/8b86e5ed-00e4-44d9-b30f-beaca82e14f0/videos/speed_2_35x_951a53898bad481c88dbb6ca29342739.mp4",
+        "blurRegions": []
+      },
+      "C": {
+        "url": "media://chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/videos/2026-09-01_00026.mp4",
+        "blurRegions": []
+      }
+    },
+    "shortsVn": {
+      "vip": [],
+      "h": []
+    },
+    "specialVacation": {
+      "imageIds": [],
+      "captions": {
+        "ko": "……정말 즐거웠어. 고마워, 사장님.",
+        "en": "…I really had fun. Thank you, boss.",
+        "ja": "……本当に楽しかったわ。ありがとう、社長さん。",
+        "zh-cn": "……真的很开心。谢谢你，社长。",
+        "ru": "…Правда было весело. Спасибо, босс.",
+        "es": "…De verdad lo pasé bien. Gracias, jefe.",
+        "de": "…Es hat wirklich Spaß gemacht. Danke, Chef."
+      },
+      "voice": {
+        "id": "1788436835275-57rdlee",
+        "fileName": "1788436835275-57rdlee__sakuragi_mai.wav",
+        "fileSize": 169004,
+        "url": "media://characters/1786851211019-59swl59/sounds/1788436835275-57rdlee__sakuragi_mai.wav?v=169004"
+      }
+    }
   },
   {
     "id": "1786851291899-dqn64g6",
@@ -5856,7 +6714,7 @@
     "characterIllustrationId": "1787982616017-xwm18tz",
     "profileImageId": "1787982616017-xwm18tz",
     "profileVideoId": null,
-    "mediaRevision": 1788138346761,
+    "mediaRevision": 1788436855417,
     "images": [
       {
         "id": "1787982616017-xwm18tz",
@@ -6543,6 +7401,42 @@
         ],
         "blurDefault": 4
       }
-    ]
+    ],
+    "auditMedia": {
+      "A": {
+        "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/speed_2_80x_d554eba430644078b1365de716a5eda0.mp4",
+        "blurRegions": []
+      },
+      "B": {
+        "url": "media://chapter_assets/events/c169302b-ef86-4c50-9681-4c914194646d/videos/speed_2_65x_321335ee600340c49f4379a7658e0980.mp4",
+        "blurRegions": []
+      },
+      "C": {
+        "url": "media://chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/videos/speed_1_55x_59a5d2b7042141a9ae4ad8c396c37e3c.mp4",
+        "blurRegions": []
+      }
+    },
+    "shortsVn": {
+      "vip": [],
+      "h": []
+    },
+    "specialVacation": {
+      "imageIds": [],
+      "captions": {
+        "ko": "……고마워. 잘 쉬었어.",
+        "en": "…Thanks. I rested well.",
+        "ja": "……ありがとう。よく休めた。",
+        "zh-cn": "……谢谢。好好休息了。",
+        "ru": "…Спасибо. Хорошо отдохнула.",
+        "es": "…Gracias. Descansé bien.",
+        "de": "…Danke. Hab gut ausgeruht."
+      },
+      "voice": {
+        "id": "1788436851013-z1pe9cd",
+        "fileName": "1788436851013-z1pe9cd__reimei.wav",
+        "fileSize": 99884,
+        "url": "media://characters/1786851291899-dqn64g6/sounds/1788436851013-z1pe9cd__reimei.wav?v=99884"
+      }
+    }
   }
 ]

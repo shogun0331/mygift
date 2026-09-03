@@ -41,6 +41,23 @@ interface ElectronAPI {
   deleteCommonSoundFile?: (
     fileName: string
   ) => Promise<{ success: boolean; error?: string }>
+  saveBgmAssets?: (
+    assets: Array<{ fileName: string; buffer: ArrayBuffer | number[] }>
+  ) => Promise<{ success: boolean; path?: string; error?: string }>
+  saveBgmConfigJson?: (
+    config: Record<string, unknown>
+  ) => Promise<{ success: boolean; error?: string }>
+  loadBgmConfigJson?: (
+  ) => Promise<{ success: boolean; config?: Record<string, unknown>; error?: string }>
+  deleteBgmFile?: (
+    fileName: string
+  ) => Promise<{ success: boolean; error?: string }>
+  pruneBgmFiles?: (
+    keep: string[]
+  ) => Promise<{ success: boolean; error?: string }>
+  openBgmFolder?: (
+    fileName?: string
+  ) => Promise<{ success: boolean; error?: string }>
   saveStationGradeConfigJson?: (
     config: Record<string, unknown>
   ) => Promise<{ success: boolean; config?: any; error?: string }>
@@ -59,19 +76,19 @@ interface ElectronAPI {
   ) => Promise<{ success: boolean; error?: string }>
   deleteCharacterFile?: (
     characterId: string,
-    kind: 'image' | 'video',
+    kind: 'image' | 'video' | 'sound',
     fileName: string
   ) => Promise<{ success: boolean; error?: string }>
   pruneCharacterFiles?: (
     characterId: string,
-    keep: { image: string[]; video: string[] }
+    keep: { image: string[]; video: string[]; sound?: string[] }
   ) => Promise<{ success: boolean; error?: string }>
   deleteCharacterFolder?: (
     characterId: string
   ) => Promise<{ success: boolean; error?: string }>
   cloneCharacterFile?: (
     characterId: string,
-    kind: 'image' | 'video',
+    kind: 'image' | 'video' | 'sound',
     sourceFileName: string,
     targetFileName: string
   ) => Promise<{ success: boolean; error?: string }>

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { BulkSnsRevealEntry } from '../game/sns'
+import { playSfx } from '../game/uiSfx'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { useTranslation } from '../locales/i18n'
-import { SnsMediaWithBlur } from './SnsMediaWithBlur'
+import { SnsMediaLightbox, SnsMediaWithBlur } from './SnsMediaWithBlur'
 
 type SnsBulkPostRevealModalProps = {
   entries: BulkSnsRevealEntry[]
@@ -42,8 +43,16 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
   const { t } = useTranslation()
   const [visibleCount, setVisibleCount] = useState(0)
   const [finished, setFinished] = useState(false)
+  const [heat3Burst, setHeat3Burst] = useState<{ name: string; key: number } | null>(null)
+  const [heat3CardKey, setHeat3CardKey] = useState<string | null>(null)
+  const [lightbox, setLightbox] = useState<{
+    url: string
+    kind: 'image' | 'video'
+    regions?: import('../events/types').BlurRegion[]
+  } | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const startedRef = useRef(false)
+  const heat3SeenRef = useRef(new Set<string>())
 
   const intervalMs = useMemo(() => {
     const count = entries.length
@@ -56,9 +65,28 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
 
   useEffect(() => {
     startedRef.current = true
+    heat3SeenRef.current = new Set()
     const kick = window.setTimeout(() => setVisibleCount(1), 120)
     return () => window.clearTimeout(kick)
   }, [])
+
+  useEffect(() => {
+    if (visibleCount <= 0) return
+    const entry = entries[visibleCount - 1]
+    if (!entry || entry.heat !== 3) return
+    const key = `${entry.creatorId}-${entry.postId}`
+    if (heat3SeenRef.current.has(key)) return
+    heat3SeenRef.current.add(key)
+    playSfx('sns-heat3')
+    setHeat3CardKey(key)
+    setHeat3Burst({ name: entry.displayName, key: Date.now() })
+    const clearBurst = window.setTimeout(() => setHeat3Burst(null), 1500)
+    const clearCard = window.setTimeout(() => setHeat3CardKey(null), 1800)
+    return () => {
+      window.clearTimeout(clearBurst)
+      window.clearTimeout(clearCard)
+    }
+  }, [visibleCount, entries])
 
   useEffect(() => {
     if (!startedRef.current) return
@@ -70,9 +98,11 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
       setFinished(true)
       return
     }
-    const timer = window.setTimeout(() => setVisibleCount((count) => count + 1), intervalMs)
+    const last = entries[visibleCount - 1]
+    const wait = last?.heat === 3 ? Math.max(intervalMs + 1200, 1650) : intervalMs
+    const timer = window.setTimeout(() => setVisibleCount((count) => count + 1), wait)
     return () => window.clearTimeout(timer)
-  }, [visibleCount, entries.length, intervalMs, onDone])
+  }, [visibleCount, entries, intervalMs, onDone])
 
   useEffect(() => {
     const scroller = scrollRef.current
@@ -85,19 +115,25 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
+      if (lightbox) {
+        setLightbox(null)
+        return
+      }
       if (finished) onDone()
       else {
         setVisibleCount(entries.length)
         setFinished(true)
+        setHeat3Burst(null)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [finished, onDone, entries.length])
+  }, [finished, onDone, entries.length, lightbox])
 
   function skip() {
     setVisibleCount(entries.length)
     setFinished(true)
+    setHeat3Burst(null)
   }
 
   if (entries.length === 0) return null
@@ -105,7 +141,9 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
   return createPortal(
     <div className="sns-bulk-reveal-overlay fixed inset-0 z-[93] flex items-center justify-center bg-black/84 p-4 backdrop-blur-[6px]">
       <div
-        className="sns-bulk-reveal-phone relative flex h-[min(88dvh,42rem)] w-[min(92vw,24rem)] flex-col overflow-hidden rounded-[2rem] p-[0.65rem] shadow-[0_28px_80px_rgba(0,0,0,0.55)]"
+        className={`sns-bulk-reveal-phone relative flex h-[min(88dvh,42rem)] w-[min(92vw,24rem)] flex-col overflow-hidden rounded-[2rem] p-[0.65rem] shadow-[0_28px_80px_rgba(0,0,0,0.55)] ${
+          heat3Burst ? 'sns-bulk-reveal-phone--heat3' : ''
+        }`}
         style={{
           background:
             'linear-gradient(165deg, #3a3f4d 0%, #1a1d26 38%, #0d0f14 100%)',
@@ -148,42 +186,63 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
 
           <div ref={scrollRef} className="sns-bulk-reveal-feed relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
             <div className="sns-bulk-reveal-list px-3 py-2">
-              {visible.map((entry, index) => (
-                <article
-                  key={`${entry.creatorId}-${entry.postId}`}
-                  className="sns-bulk-reveal-card border-b border-white/8 py-3 last:border-b-0"
-                  style={{ animationDelay: `${Math.min(index * 20, 120)}ms` }}
-                >
-                  <div className="flex gap-2.5">
-                    <Face name={entry.displayName} imageUrl={entry.avatarUrl} />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-baseline gap-x-1.5">
-                        <span className="text-[12px] font-bold text-white">{entry.displayName}</span>
-                        <span className="text-[10px] text-slate-500">{snsHandle(entry.displayName)}</span>
-                        <span className="sns-bulk-reveal-badge text-[10px] font-semibold text-amber-300">
-                          · {t('sns.pending')}
-                        </span>
-                      </div>
-                      {entry.caption ? (
-                        <p className="mt-1 line-clamp-2 text-[12px] leading-5 text-slate-200">
-                          {entry.caption}
-                        </p>
-                      ) : null}
-                      {entry.media ? (
-                        <div className="sns-bulk-reveal-media mt-2 w-[72%] overflow-hidden rounded-xl border border-white/10 bg-black/30">
+              {visible.map((entry, index) => {
+                const cardKey = `${entry.creatorId}-${entry.postId}`
+                const isHeat3 = entry.heat === 3
+                const isHot = heat3CardKey === cardKey
+                return (
+                  <article
+                    key={cardKey}
+                    className={`sns-bulk-reveal-card border-b border-white/8 py-3 last:border-b-0 ${
+                      isHeat3 ? 'sns-bulk-reveal-card--heat3' : ''
+                    } ${isHot ? 'is-heat3-hot' : ''}`}
+                    style={{ animationDelay: `${Math.min(index * 20, 120)}ms` }}
+                  >
+                    <div className="flex gap-2.5">
+                      <Face name={entry.displayName} imageUrl={entry.avatarUrl} />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-baseline gap-x-1.5">
+                          <span className="text-[12px] font-bold text-white">{entry.displayName}</span>
+                          <span className="text-[10px] text-slate-500">{snsHandle(entry.displayName)}</span>
+                          {isHeat3 ? (
+                            <span className="sns-heat3-ribbon rounded-full border border-fuchsia-400/45 bg-fuchsia-500/20 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-fuchsia-100">
+                              {t('sns.heat3')}
+                            </span>
+                          ) : null}
+                          <span className="sns-bulk-reveal-badge text-[10px] font-semibold text-amber-300">
+                            · {t('sns.pending')}
+                          </span>
+                        </div>
+                        {entry.caption ? (
+                          <p className="mt-1 line-clamp-2 text-[12px] leading-5 text-slate-200">
+                            {entry.caption}
+                          </p>
+                        ) : null}
+                        {entry.media ? (
                           <SnsMediaWithBlur
                             url={entry.media.url}
                             kind={entry.media.kind}
                             regions={entry.blurRegions}
-                            className="overflow-hidden rounded-xl"
+                            className={`sns-bulk-reveal-media mt-2 w-[72%] overflow-hidden rounded-xl border bg-black/30 ${
+                              isHeat3
+                                ? 'border-fuchsia-400/45 shadow-[0_0_18px_rgba(232,121,249,0.28)]'
+                                : 'border-white/10'
+                            }`}
                             mediaClassName="block max-h-28 w-full object-cover"
+                            onClick={() =>
+                              setLightbox({
+                                url: entry.media!.url,
+                                kind: entry.media!.kind,
+                                regions: entry.blurRegions,
+                              })
+                            }
                           />
-                        </div>
-                      ) : null}
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                )
+              })}
             </div>
           </div>
 
@@ -207,8 +266,36 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
             )}
             <div className="mx-auto mt-2 h-1 w-20 rounded-full bg-white/18" />
           </footer>
+
+          {heat3Burst ? (
+            <div key={heat3Burst.key} className="sns-heat3-burst sns-heat3-burst--bulk" aria-hidden>
+              <div className="sns-heat3-burst-flash" />
+              <div className="sns-heat3-burst-ring" />
+              <div className="sns-heat3-burst-ring is-late" />
+              {Array.from({ length: 10 }, (_, i) => (
+                <span
+                  key={i}
+                  className="sns-heat3-burst-spark"
+                  style={{ ['--ang' as string]: `${i * 36}deg` }}
+                />
+              ))}
+              <div className="sns-heat3-burst-copy">
+                <p className="sns-heat3-burst-kicker">BREAKING</p>
+                <p className="sns-heat3-burst-title">{t('sns.heat3')}</p>
+                <p className="sns-heat3-burst-name">{heat3Burst.name}</p>
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
+      {lightbox ? (
+        <SnsMediaLightbox
+          url={lightbox.url}
+          kind={lightbox.kind}
+          regions={lightbox.regions}
+          onClose={() => setLightbox(null)}
+        />
+      ) : null}
     </div>,
     document.body,
   )

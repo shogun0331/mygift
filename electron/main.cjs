@@ -77,6 +77,9 @@ const isDev = process.env.ELECTRON_DEV === '1'
 // GPU 가속은 유지하되 GPU 샌드박스를 해제해 GPU 프로세스 access violation(0xC0000005) 크래시 방지
 // (하이브리드 GPU 노트북에서 흔한 원인. 성능 영향 없음)
 app.commandLine.appendSwitch('disable-gpu-sandbox')
+app.commandLine.appendSwitch('enable-accelerated-video-decode')
+app.commandLine.appendSwitch('enable-gpu-rasterization')
+app.commandLine.appendSwitch('enable-zero-copy')
 
 function splitPublicSegments(segments) {
   return segments.flatMap((seg) =>
@@ -367,6 +370,7 @@ ipcMain.handle('save-character-assets', async (event, { characterId, assets }) =
     const folderMap = {
       image: 'images',
       video: 'videos',
+      sound: 'sounds',
     }
 
     for (const asset of assets) {
@@ -427,9 +431,9 @@ ipcMain.handle('save-characters-json', async (event, { characters }) => {
         const charAuditsDir = publicWritePath('characters', String(char.id), 'audits')
         const urlPrefix = `media://characters/${char.id}/audits`
         
-        char.auditMedia.A = saveBase64MediaFile(char.auditMedia.A, charAuditsDir, 'video_A', urlPrefix)
-        char.auditMedia.B = saveBase64MediaFile(char.auditMedia.B, charAuditsDir, 'video_B', urlPrefix)
-        char.auditMedia.C = saveBase64MediaFile(char.auditMedia.C, charAuditsDir, 'video_C', urlPrefix)
+        char.auditMedia.A = persistAuditMediaSlot(char.auditMedia.A, charAuditsDir, 'video_A', urlPrefix)
+        char.auditMedia.B = persistAuditMediaSlot(char.auditMedia.B, charAuditsDir, 'video_B', urlPrefix)
+        char.auditMedia.C = persistAuditMediaSlot(char.auditMedia.C, charAuditsDir, 'video_C', urlPrefix)
       }
     }
 
@@ -526,6 +530,104 @@ ipcMain.handle('load-common-sounds-json', async (event) => {
   }
 })
 
+ipcMain.handle('save-bgm-assets', async (event, { assets }) => {
+  try {
+    const targetDir = publicWritePath('chapter_assets', 'bgm')
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true })
+    }
+    for (const asset of assets || []) {
+      const safeName = path.basename(String(asset?.fileName || ''))
+      if (!safeName || !asset.buffer) continue
+      fs.writeFileSync(path.join(targetDir, safeName), Buffer.from(asset.buffer))
+    }
+    return { success: true, path: targetDir }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('save-bgm-config-json', async (event, { config }) => {
+  try {
+    const dir = publicWritePath('chapter_assets')
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    writeJson(path.join(dir, 'bgm.json'), config ?? {})
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('load-bgm-config-json', async (event) => {
+  try {
+    const filePath = publicPath('chapter_assets', 'bgm.json')
+    if (!fs.existsSync(filePath)) {
+      return { success: true, config: {} }
+    }
+    const config = parseJsonFile(fs.readFileSync(filePath)) || {}
+    return { success: true, config }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('delete-bgm-file', async (event, { fileName }) => {
+  try {
+    const safeName = path.basename(String(fileName || ''))
+    if (!safeName) {
+      return { success: false, error: 'invalid path' }
+    }
+    const filePath = publicWritePath('chapter_assets', 'bgm', safeName)
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath)
+    }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('prune-bgm-files', async (event, { keep }) => {
+  try {
+    const dirPath = publicWritePath('chapter_assets', 'bgm')
+    if (!fs.existsSync(dirPath)) {
+      return { success: true }
+    }
+    const keepSet = new Set(
+      (Array.isArray(keep) ? keep : []).map((name) => path.basename(String(name || ''))).filter(Boolean),
+    )
+    for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+      if (!entry.isFile()) continue
+      if (keepSet.has(entry.name)) continue
+      fs.unlinkSync(path.join(dirPath, entry.name))
+    }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('open-bgm-folder', async (event, { fileName } = {}) => {
+  try {
+    const dirPath = publicWritePath('chapter_assets', 'bgm')
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true })
+    }
+    const safeName = path.basename(String(fileName || ''))
+    const filePath = safeName ? path.join(dirPath, safeName) : ''
+    if (filePath && fs.existsSync(filePath)) {
+      shell.showItemInFolder(filePath)
+    } else {
+      await shell.openPath(dirPath)
+    }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
 ipcMain.handle('delete-common-sound-file', async (event, { fileName }) => {
   try {
     const safeName = path.basename(String(fileName || ''))
@@ -541,6 +643,22 @@ ipcMain.handle('delete-common-sound-file', async (event, { fileName }) => {
     return { success: false, error: err.message }
   }
 })
+
+function persistAuditMediaSlot(slot, targetDir, filePrefix, urlPrefix) {
+  if (slot == null || slot === '') {
+    return { url: null, blurRegions: [] }
+  }
+  if (typeof slot === 'string') {
+    return {
+      url: saveBase64MediaFile(slot, targetDir, filePrefix, urlPrefix),
+      blurRegions: [],
+    }
+  }
+  return {
+    url: saveBase64MediaFile(slot.url, targetDir, filePrefix, urlPrefix),
+    blurRegions: Array.isArray(slot.blurRegions) ? slot.blurRegions : [],
+  }
+}
 
 function saveBase64MediaFile(dataUrl, targetDir, filePrefix, urlPrefix = 'media://chapter_assets/audits') {
   if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
@@ -771,6 +889,7 @@ ipcMain.handle('delete-character-file', async (event, { characterId, kind, fileN
     const folderMap = {
       image: 'images',
       video: 'videos',
+      sound: 'sounds',
     }
     const safeName = safeCharacterFileName(fileName)
     if (!safeName) return { success: true }
@@ -791,6 +910,7 @@ ipcMain.handle('prune-character-files', async (event, { characterId, keep }) => 
     const folders = [
       { kind: 'image', dirName: 'images', keep: keep?.image ?? [] },
       { kind: 'video', dirName: 'videos', keep: keep?.video ?? [] },
+      { kind: 'sound', dirName: 'sounds', keep: keep?.sound ?? [] },
     ]
     for (const folder of folders) {
       const dir = publicWritePath('characters', String(characterId), folder.dirName)
@@ -818,6 +938,7 @@ ipcMain.handle('clone-character-file', async (event, { characterId, kind, source
     const folderMap = {
       image: 'images',
       video: 'videos',
+      sound: 'sounds',
     }
     const folderName = folderMap[kind] || 'assets'
     const dir = publicWritePath('characters', String(characterId), folderName)

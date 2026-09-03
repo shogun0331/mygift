@@ -1,20 +1,22 @@
+import { formatMoney } from '../game/money'
 import { formatViewers } from '../game/ranking'
 import {
-  VIP_ACCEPT_BY_GRADE,
   VIP_REJECT_VIEWERS_BY_GRADE,
+  vipAcceptPayoutRange,
   type VipOffer,
 } from '../game/vip'
 import { useTranslation } from '../locales/i18n'
 
 type VipOfferModalProps = {
   offer: VipOffer
+  stationRank: number
   onAccept: () => void
   onReject: () => void
 }
 
-export function VipOfferModal({ offer, onAccept, onReject }: VipOfferModalProps) {
+export function VipOfferModal({ offer, stationRank, onAccept, onReject }: VipOfferModalProps) {
   const { t } = useTranslation()
-  const accept = VIP_ACCEPT_BY_GRADE[offer.grade]
+  const payout = vipAcceptPayoutRange(stationRank)
   const reject = VIP_REJECT_VIEWERS_BY_GRADE[offer.grade]
 
   return (
@@ -47,11 +49,19 @@ export function VipOfferModal({ offer, onAccept, onReject }: VipOfferModalProps)
           <p className="text-[10px] font-black tracking-wide text-emerald-300/80">
             {t('vip.acceptHeader')}
           </p>
+          <p className="mt-1.5 text-[12px] font-semibold text-amber-200">
+            {t('vip.acceptPayout')
+              .replace('{rank}', String(Math.max(1, Math.round(stationRank))))
+              .replace(
+                '{range}',
+                `${formatMoney(payout.min)} ~ ${formatMoney(payout.max)}`,
+              )}
+          </p>
           <p className="mt-1.5 text-[12px] font-semibold text-rose-200">
-            {t('vip.acceptStamina').replace('{n}', String(accept.staminaMaxLoss))}
+            {t('vip.acceptStamina')}
           </p>
           <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
-            {t('vip.acceptStaminaHint').replace('{n}', String(accept.staminaMaxLoss))}
+            {t('vip.acceptStaminaHint')}
           </p>
         </section>
 

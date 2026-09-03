@@ -253,5 +253,6 @@ export function hireScoutOffer(offer: ScoutOffer): OwnedCreator {
     snsPublishedIds: [],
     snsFeed: [],
     snsPending: null,
+    snsHeat3Pity: 0,
   }
 }

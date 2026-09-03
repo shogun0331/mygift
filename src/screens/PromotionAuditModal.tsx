@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   CREATOR_TYPE_LABEL,
   createAuditSession,
@@ -6,7 +6,11 @@ import {
   type AuditSession,
 } from '../game/auditEngine'
 import { pickCharacterLocaleText } from '../game/characterLocales'
-import type { Grade, RegisteredCreator } from '../game/characters'
+import { auditMediaSlotUrl, type Grade, type RegisteredCreator } from '../game/characters'
+import { readBlurRegions } from '../events/BlurRegionEditor'
+import type { BlurRegion, GameEvent } from '../events/types'
+import { blurRegionsForVnFile } from './CharacterAuditEditorModal'
+import { MosaicMediaFrame } from './MosaicMediaFrame'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { stationGradeLabel, type StationGrade } from '../game/station'
 import type { StationGradeConfig, CreatorType } from '../game/stationGradeConfig'
@@ -19,6 +23,35 @@ import {
   getSatisfyJudgeTitle,
   getSelectCardPrompt,
 } from '../game/judgeDialogues'
+import { playSfx } from '../game/uiSfx'
+
+function isVideoMediaUrl(url: string) {
+  const clean = url.split('?')[0].toLowerCase()
+  return (
+    clean.startsWith('data:video') ||
+    /\.(mp4|webm|ogv|ogg|mov|mkv|m4v)$/.test(clean)
+  )
+}
+
+function fileNameFromUrl(url: string) {
+  const clean = url.split('?')[0]
+  try {
+    return decodeURIComponent(clean.split('/').pop() || '')
+  } catch {
+    return clean.split('/').pop() || ''
+  }
+}
+
+function resolveCutsceneBlur(
+  slot: unknown,
+  mediaUrl: string,
+  events?: GameEvent[],
+): BlurRegion[] {
+  const stored = readBlurRegions(slot && typeof slot === 'object' ? slot : { blurRegions: [] })
+  if (stored.length > 0) return stored
+  if (!events?.length) return []
+  return blurRegionsForVnFile(events, fileNameFromUrl(mediaUrl))
+}
 
 /** 등급별(S, A, B, C) 프리미엄 네온 글로우 뱃지 스타일 헬퍼 */
 export function getGradeBadgeStyle(grade: string = 'B') {
@@ -39,6 +72,7 @@ export function getGradeBadgeStyle(grade: string = 'B') {
 type PromotionAuditModalProps = {
   tier: Exclude<StationGrade, 'black' | 'tiny'>
   creators: RegisteredCreator[]
+  events?: GameEvent[]
   config?: StationGradeConfig
   onComplete: (success: boolean, staminaDeductions: Record<string, number>) => void
   onClose?: () => void
@@ -47,6 +81,7 @@ type PromotionAuditModalProps = {
 export function PromotionAuditModal({
   tier,
   creators,
+  events,
   config,
   onComplete,
   onClose,
@@ -58,7 +93,10 @@ export function PromotionAuditModal({
 
   const [lastPerformedCreator, setLastPerformedCreator] = useState<RegisteredCreator | null>(null)
   const [popupCutsceneMediaUrl, setPopupCutsceneMediaUrl] = useState<string | null>(null)
+  const [popupCutsceneBlurRegions, setPopupCutsceneBlurRegions] = useState<BlurRegion[]>([])
   const [isCutsceneModalOpen, setIsCutsceneModalOpen] = useState<boolean>(false)
+  const [canCloseCutscene, setCanCloseCutscene] = useState(false)
+  const cutsceneHoldRef = useRef<number | null>(null)
 
   // 매혹/야한 댄스 퍼포먼스 심쿵 폭발 연출 (Seductive Heart Attack & Temptation Burst)
   const [lastScoreGained, setLastScoreGained] = useState<number | null>(null)
@@ -89,6 +127,12 @@ export function PromotionAuditModal({
     }, 2000)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    return () => {
+      if (cutsceneHoldRef.current != null) window.clearTimeout(cutsceneHoldRef.current)
+    }
+  }, [])
   const [isJudgeTurn, setIsJudgeTurn] = useState<boolean>(false)
   const [isJudgeEnergyFlying, setIsJudgeEnergyFlying] = useState<boolean>(false)
   const [hitFlashingCardId, setHitFlashingCardId] = useState<string | null>(null)
@@ -107,6 +151,7 @@ export function PromotionAuditModal({
     }
 
     setIsJudgeTurn(true)
+    playSfx('audit-judge-attack')
     const attackDmg = Math.round(session.judge.attackPower || 20)
     setLastDamageDealt(attackDmg)
 
@@ -125,6 +170,7 @@ export function PromotionAuditModal({
       // 2단계: 크리에이터 카드 도착 & CCTV 지진 카메라 피격 흔들림 + 붉은 번쩍임 (420ms 시점)
       setIsJudgeEnergyFlying(false)
       setHitFlashingCardId(targetCreatorId)
+      playSfx('audit-card-hit')
 
       // 3단계: 피격 크리에이터 스테미너 실시간 삭감
       setCreatorStaminaMap((prev) => {
@@ -154,6 +200,7 @@ export function PromotionAuditModal({
     critMult = 1.0
   ) => {
     setLastScoreGained(score)
+    playSfx('audit-judge-hit')
     setIsTypeMatchedHit(isMatched)
     setIsCriticalHit(isCrit)
     setCriticalMult(critMult)
@@ -189,7 +236,9 @@ export function PromotionAuditModal({
   }
 
   const handleCloseCutscene = () => {
+    if (!canCloseCutscene) return
     setIsCutsceneModalOpen(false)
+    setCanCloseCutscene(false)
     if (lastScoreGained !== null && lastPerformedCreator) {
       const nextPct = Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100)
       triggerImpactParticle(
@@ -213,10 +262,7 @@ export function PromotionAuditModal({
     return map
   })
 
-  const satisfactionPct = Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100)
-  const auditMediaKey = satisfactionPct >= 80 ? 'A' : satisfactionPct >= 30 ? 'B' : 'C'
-  const characterMediaUrl = lastPerformedCreator?.auditMedia?.[auditMediaKey] ?? null
-  const activeDisplayMediaUrl = characterMediaUrl || session.judge.avatarUrl
+  const judgeDisplayMediaUrl = session.judge.avatarUrl || null
 
   const judgeName = pickCharacterLocaleText(session.judge.names, locale, session.judge.name)
 
@@ -231,6 +277,7 @@ export function PromotionAuditModal({
     }
 
     setIsActionLocked(true) // 카드 선택 즉시 잠금 개시!
+    playSfx('audit-card-perform')
 
     // ⚡ 퍼포먼스 1회 제출 당 스테미너 15 차감!
     setCreatorStaminaMap((prev) => {
@@ -275,11 +322,19 @@ export function PromotionAuditModal({
     // 카드를 클릭하여 제출 시, 중간 사이즈 미디어 추가 오버레이 팝업 띄우기
     const nextPct = Math.round((nextSession.currentSatisfaction / nextSession.targetSatisfaction) * 100)
     const nextMediaKey = nextPct >= 80 ? 'A' : nextPct >= 30 ? 'B' : 'C'
-    const targetMedia = creator.auditMedia?.[nextMediaKey] || creator.profileImageUrl || session.judge.avatarUrl
+    const targetSlot = creator.auditMedia?.[nextMediaKey]
+    const targetMedia = auditMediaSlotUrl(targetSlot)
 
     if (targetMedia) {
       setPopupCutsceneMediaUrl(targetMedia)
+      setPopupCutsceneBlurRegions(resolveCutsceneBlur(targetSlot, targetMedia, events))
+      setCanCloseCutscene(false)
       setIsCutsceneModalOpen(true)
+      if (cutsceneHoldRef.current != null) window.clearTimeout(cutsceneHoldRef.current)
+      cutsceneHoldRef.current = window.setTimeout(() => {
+        cutsceneHoldRef.current = null
+        setCanCloseCutscene(true)
+      }, 2000)
       setLastScoreGained(gained)
       setIsTypeMatchedHit(matched)
     } else {
@@ -369,33 +424,25 @@ export function PromotionAuditModal({
         {isCutsceneModalOpen && popupCutsceneMediaUrl ? (
           <div
             onClick={handleCloseCutscene}
-            className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-black/85 p-4 backdrop-blur-md cursor-pointer transition-all"
+            className={`absolute inset-0 z-[100] flex flex-col items-center justify-center bg-black/88 p-4 transition-all ${
+              canCloseCutscene ? 'cursor-pointer' : 'cursor-wait'
+            }`}
           >
             <div className="relative aspect-[16/9] w-full max-w-2xl sm:max-w-3xl overflow-hidden rounded-3xl border-2 border-purple-400/60 bg-black shadow-[0_0_80px_rgba(168,85,247,0.5)]">
-              {popupCutsceneMediaUrl.startsWith('data:video') ||
-              popupCutsceneMediaUrl.endsWith('.mp4') ||
-              popupCutsceneMediaUrl.endsWith('.webm') ||
-              popupCutsceneMediaUrl.endsWith('.ogv') ? (
-                <video
-                  key={popupCutsceneMediaUrl}
-                  src={resolveMediaSrc(popupCutsceneMediaUrl)}
-                  className="h-full w-full object-cover"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                />
-              ) : (
-                <img
-                  src={resolveMediaSrc(popupCutsceneMediaUrl)}
-                  alt="퍼포먼스 컷씬"
-                  className="h-full w-full object-cover"
-                />
-              )}
+              <MosaicMediaFrame
+                src={resolveMediaSrc(popupCutsceneMediaUrl)}
+                kind={isVideoMediaUrl(popupCutsceneMediaUrl) ? 'video' : 'image'}
+                regions={popupCutsceneBlurRegions}
+                className="h-full w-full"
+              />
 
               {/* 하단 닫기 안내 뱃지 */}
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-white/20 bg-black/80 px-4 py-1.5 text-xs font-black text-white shadow-xl backdrop-blur-md flex items-center gap-2">
-                <span>🎭 퍼포먼스 컷씬 (클릭하여 닫기 ✕)</span>
+                <span>
+                  {canCloseCutscene
+                    ? '🎭 퍼포먼스 컷씬 (클릭하여 닫기 ✕)'
+                    : '🎭 퍼포먼스 컷씬'}
+                </span>
               </div>
             </div>
           </div>
@@ -505,14 +552,11 @@ export function PromotionAuditModal({
                     </p>
                   </div>
                 </div>
-              ) : activeDisplayMediaUrl ? (
-                activeDisplayMediaUrl.startsWith('data:video') ||
-                activeDisplayMediaUrl.endsWith('.mp4') ||
-                activeDisplayMediaUrl.endsWith('.webm') ||
-                activeDisplayMediaUrl.endsWith('.ogv') ? (
+              ) : judgeDisplayMediaUrl ? (
+                isVideoMediaUrl(judgeDisplayMediaUrl) ? (
                   <video
-                    key={activeDisplayMediaUrl}
-                    src={resolveMediaSrc(activeDisplayMediaUrl)}
+                    key={judgeDisplayMediaUrl}
+                    src={resolveMediaSrc(judgeDisplayMediaUrl)}
                     width={1280}
                     height={720}
                     className="h-full w-full aspect-[16/9] object-contain border-0"
@@ -523,7 +567,7 @@ export function PromotionAuditModal({
                   />
                 ) : (
                   <img
-                    src={resolveMediaSrc(activeDisplayMediaUrl)}
+                    src={resolveMediaSrc(judgeDisplayMediaUrl)}
                     alt={judgeName}
                     width={1280}
                     height={720}
@@ -628,11 +672,6 @@ export function PromotionAuditModal({
                 <div className="mb-1 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-slate-200">⚖️ 심사관 만족도</span>
-                    {lastPerformedCreator && characterMediaUrl && (
-                      <span className="rounded bg-purple-600/80 px-2 py-0.5 text-[9px] font-black text-white">
-                        {lastPerformedCreator.name} - {auditMediaKey} 영상 재생 중
-                      </span>
-                    )}
                   </div>
                   <span className="font-black tabular-nums text-amber-300">
                     {session.currentSatisfaction} / {session.targetSatisfaction} 점 (

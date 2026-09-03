@@ -41,6 +41,7 @@ export const STAMINA_BROADCAST_COST_MIN = 8
 /** 기품 1당 방송 스테미나 소모 감소. 0.2는 C급 구간이 주당 반올림에 묻힘 */
 export const ELEGANCE_STAMINA_REDUCTION = 0.5
 export const STAMINA_REST_GAIN = 20
+/** @deprecated 특별휴가는 스테미나 풀 충전 */
 export const STAMINA_VACATION_GAIN = 30
 /** 이 값 미만(0)이면 방송 불가 */
 export const STAMINA_BROADCAST_MIN = 1
@@ -82,7 +83,7 @@ export function rollToxicIncident(ownedCount: number, chanceMul = 1): {
 
 /**
  * 등급별 컨디션 풀케어(최상 100) 비용
- * C 저렴 · S 고가 — 휴가비보다 낮게, 반복 사용 가능 수준
+ * C 저렴 · S 고가 — 특별휴가보다 낮게, 반복 사용 가능 수준
  */
 export const CONDITION_FULL_CARE_COST: Record<Grade, number> = {
   C: 200,
@@ -102,12 +103,22 @@ export function calcConditionFullCareCost(grade: Grade) {
   return CONDITION_FULL_CARE_COST[grade] ?? CONDITION_FULL_CARE_COST.C
 }
 
-/** 휴가비 = 연봉 × 비율 (5,000만 기준 표와 동일 비율) */
+/**
+ * 특별휴가비 = max(등급 하한, 연봉 × 비율)
+ * 풀 스테미나 회복 + 월(턴) 1회라서 의도적으로 부담스럽게
+ */
 export const VACATION_SALARY_RATE: Record<Grade, number> = {
-  C: 0.006,
-  B: 0.0096,
-  A: 0.012,
-  S: 0.018,
+  C: 0.04,
+  B: 0.055,
+  A: 0.075,
+  S: 0.1,
+}
+
+export const VACATION_COST_FLOOR: Record<Grade, number> = {
+  C: 1_800,
+  B: 4_500,
+  A: 12_000,
+  S: 28_000,
 }
 
 export const CONDITION_LABEL_KEY: Record<CreatorCondition, string> = {
@@ -262,7 +273,8 @@ export function calcWeeklyBroadcastStaminaCost(elegance = 0): number {
 
 export function calcVacationCost(annualSalary: number, grade: Grade) {
   const rate = VACATION_SALARY_RATE[grade] ?? VACATION_SALARY_RATE.C
-  return Math.max(0, Math.round(annualSalary * rate))
+  const floor = VACATION_COST_FLOOR[grade] ?? VACATION_COST_FLOOR.C
+  return Math.max(floor, Math.round(Math.max(0, annualSalary) * rate))
 }
 
 type StaminaConditionState = {
@@ -474,11 +486,13 @@ export function applyConditionFullCare<T extends StaminaConditionState>(creator:
   )
 }
 
+/** 특별휴가 — 스테미나 풀 충전 + 컨디션 소폭 회복 */
 export function applyVacationRecovery<T extends StaminaConditionState>(creator: T): T {
+  const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
   return withVitals(
     creator,
     scoreOf(creator) + VACATION_CONDITION_GAIN,
-    (creator.stamina ?? 0) + STAMINA_VACATION_GAIN,
+    staminaMax,
     creator.restStreak ?? 0,
   )
 }

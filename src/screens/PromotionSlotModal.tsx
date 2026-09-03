@@ -3,6 +3,7 @@ import type { CreatorStatType } from '../game/characters'
 import type { PromotionExamResult } from '../game/promotionExam'
 import { PROMOTION_STAT_TYPES } from '../game/promotionExam'
 import { formatMoneySigned } from '../game/money'
+import { playSfx, stopSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
 
 const REEL_META: Record<CreatorStatType, { labelKey: string; tone: string }> = {
@@ -27,6 +28,7 @@ export function PromotionSlotModal({ creatorName, result, onConfirm }: Promotion
   const [showResult, setShowResult] = useState(false)
 
   useEffect(() => {
+    playSfx('training-roll', { loop: true })
     const timers = STOP_MS.map((ms, index) =>
       window.setTimeout(() => setStopped(index + 1), ms),
     )
@@ -35,10 +37,17 @@ export function PromotionSlotModal({ creatorName, result, onConfirm }: Promotion
       STOP_MS[2] + RESULT_DELAY_MS,
     )
     return () => {
+      stopSfx('training-roll')
       for (const timer of timers) window.clearTimeout(timer)
       window.clearTimeout(resultTimer)
     }
   }, [result])
+
+  useEffect(() => {
+    if (!showResult) return
+    stopSfx('training-roll')
+    playSfx(result.kind === 'fail' ? 'training-exam-fail' : 'training-exam-success')
+  }, [result.kind, showResult])
 
   const bannerKey =
     result.kind === 'jackpot'

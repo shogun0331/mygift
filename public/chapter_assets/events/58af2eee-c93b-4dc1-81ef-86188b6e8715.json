@@ -184,14 +184,6 @@
       "sound": "node_1786860403048_17_boou.wav"
     },
     {
-      "id": "node_1786860403048_18_h8an",
-      "type": "graphic",
-      "image": "2026-08-28_00254_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1786860403048_19_ozj9",
       "type": "text",
       "speakerType": "narrator",
@@ -368,7 +360,16 @@
       "type": "graphic",
       "image": "2026-08-28_00251_.webp",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788408861397_aogo",
+          "x": 0.4518229166666667,
+          "y": 0.8292824074074074,
+          "w": 0.08333333333333331,
+          "h": 0.17071759259259256,
+          "blur": 2
+        }
+      ],
       "blurDefault": 4
     },
     {

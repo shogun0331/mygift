@@ -36,6 +36,10 @@ export function characterMediaUrl(
   return resolveMediaSrc(`media://characters/${characterId}/${folder}/${fileName}`)
 }
 
+export function characterSoundUrl(characterId: string, fileName: string): string {
+  return resolveMediaSrc(`media://characters/${characterId}/sounds/${fileName}`)
+}
+
 export function staffMediaUrl(staffId: string, fileName: string): string {
   return resolveMediaSrc(`media://staff/${staffId}/images/${fileName}`)
 }

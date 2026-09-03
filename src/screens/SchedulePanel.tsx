@@ -17,6 +17,7 @@ import {
   type StudioHandCard,
   type StudioSlot,
 } from '../game/studioSlots'
+import { playSfx } from '../game/uiSfx'
 import { UnlockSlotModal } from './UnlockSlotModal'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import {
@@ -252,6 +253,7 @@ export function SchedulePanel({
     if (!card) return
     if (!canBroadcastByStamina(card.stamina)) return
     onSlotsChange(assignCreatorToSlot(slots, slotId, card))
+    playSfx('studio-place')
     setSelectedCard(null)
   }
 
@@ -266,6 +268,7 @@ export function SchedulePanel({
     const slot = slots.find((row) => row.id === slotId)
     if (!staff || !slot || slot.status === 'locked') return
     onEquipStaff(slotId, staff.kind, staff.id)
+    playSfx('studio-place')
     setSelectedStaffId(null)
   }
 
@@ -449,6 +452,7 @@ export function SchedulePanel({
 
                     if (sourceSlotId) {
                       onSlotsChange(moveCreatorBetweenSlots(slots, sourceSlotId, slot.id))
+                      playSfx('studio-place')
                       return
                     }
 
@@ -457,6 +461,7 @@ export function SchedulePanel({
                     const card = handCards.find((item) => item.id === cardId)
                     if (!card || !canBroadcastByStamina(card.stamina)) return
                     onSlotsChange(assignCreatorToSlot(slots, slot.id, card))
+                    playSfx('studio-place')
                   }}
                 >
                   <button

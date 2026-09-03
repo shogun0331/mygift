@@ -12,6 +12,7 @@ import {
   normalizeStationGradeConfig,
   type StationGradeConfig,
 } from '../game/stationGradeConfig'
+import { emptyBgmConfig, normalizeBgmConfig, type GameBgmConfig } from '../game/bgm'
 
 const STATION_GRADE_CONFIG_KEY = 'broadcast-station-grade-config'
 const STATION_GRADE_CONFIG_PUBLIC = '/chapter_assets/station_grade_config.json'
@@ -490,4 +491,97 @@ export async function loadCommonSounds(): Promise<any[]> {
     console.warn('Failed to load common sounds from IndexedDB:', err)
     return []
   }
+}
+
+const BGM_CONFIG_KEY = 'broadcast-bgm-config'
+const BGM_CONFIG_PUBLIC = '/chapter_assets/bgm.json'
+
+async function postDevJson<T>(url: string, body: unknown): Promise<T | null> {
+  if (typeof window === 'undefined' || !window.location.protocol.startsWith('http')) return null
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) return null
+  return res.json() as Promise<T>
+}
+
+export async function persistBgmFiles(
+  assets: Array<{ fileName: string; buffer: ArrayBuffer | number[] }>,
+): Promise<{ success: boolean; path?: string; error?: string }> {
+  const payload = assets.map((asset) => ({
+    fileName: asset.fileName,
+    buffer: asset.buffer instanceof ArrayBuffer ? Array.from(new Uint8Array(asset.buffer)) : asset.buffer,
+  }))
+  if (window.electronAPI?.saveBgmAssets) {
+    return window.electronAPI.saveBgmAssets(payload)
+  }
+  const fromDev = await postDevJson<{ success: boolean; path?: string; error?: string }>(
+    '/api/save-bgm-assets',
+    { assets: payload },
+  )
+  if (fromDev) return fromDev
+  return { success: false, error: '로컬 프로젝트 폴더에 저장할 수 없습니다.' }
+}
+
+export async function removeBgmFile(fileName: string): Promise<void> {
+  if (window.electronAPI?.deleteBgmFile) {
+    await window.electronAPI.deleteBgmFile(fileName)
+    return
+  }
+  await postDevJson('/api/delete-bgm-file', { fileName })
+}
+
+export async function pruneUnusedBgmFiles(keep: string[]): Promise<void> {
+  if (window.electronAPI?.pruneBgmFiles) {
+    await window.electronAPI.pruneBgmFiles(keep)
+    return
+  }
+  await postDevJson('/api/prune-bgm-files', { keep })
+}
+
+export async function openBgmFolder(fileName?: string | null): Promise<{ success: boolean; error?: string }> {
+  if (window.electronAPI?.openBgmFolder) {
+    return window.electronAPI.openBgmFolder(fileName ?? undefined)
+  }
+  const fromDev = await postDevJson<{ success: boolean; error?: string }>('/api/open-bgm-folder', {
+    fileName: fileName ?? undefined,
+  })
+  return fromDev ?? { success: false, error: 'BGM 폴더를 열 수 없습니다.' }
+}
+
+export async function saveBgmConfig(config: GameBgmConfig) {
+  const normalized = normalizeBgmConfig(config)
+  if (window.electronAPI?.saveBgmConfigJson) {
+    const res = await window.electronAPI.saveBgmConfigJson(normalized)
+    if (!res.success) throw new Error(res.error || 'Failed to save BGM config')
+  } else {
+    const fromDev = await postDevJson<{ success: boolean; error?: string }>('/api/save-bgm-config-json', {
+      config: normalized,
+    })
+    if (fromDev && !fromDev.success) throw new Error(fromDev.error || 'Failed to save BGM config')
+  }
+  try {
+    localStorage.setItem(BGM_CONFIG_KEY, JSON.stringify(normalized))
+  } catch {
+    // ignore
+  }
+  return normalized
+}
+
+export async function loadBgmConfig(): Promise<GameBgmConfig> {
+  if (window.electronAPI?.loadBgmConfigJson) {
+    const res = await window.electronAPI.loadBgmConfigJson()
+    if (res.success) return normalizeBgmConfig(res.config)
+  }
+  const fromPublic = await fetchPublicJson<unknown>(BGM_CONFIG_PUBLIC)
+  if (fromPublic) return normalizeBgmConfig(fromPublic)
+  try {
+    const raw = localStorage.getItem(BGM_CONFIG_KEY)
+    if (raw) return normalizeBgmConfig(JSON.parse(raw))
+  } catch {
+    // ignore
+  }
+  return emptyBgmConfig()
 }

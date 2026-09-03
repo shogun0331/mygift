@@ -47,7 +47,7 @@ import { SnsFeedModal } from './SnsFeedModal'
 import { RedDot } from './RedDot'
 import { SnsBulkComposeModal } from './SnsBulkComposeModal'
 import { SnsBulkPostRevealModal } from './SnsBulkPostRevealModal'
-import type { BulkSnsRevealEntry } from '../game/sns'
+import { previewBulkSnsCompose, canComposeSnsCreator, canAffordBulkSnsCompose, type BulkSnsRevealEntry, type SnsHeat } from '../game/sns'
 import type { RegisteredStaff, StaffKind } from '../game/staff'
 import { staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
@@ -55,8 +55,6 @@ import { findSlotIdForStaff } from '../game/slotManagers'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import type { ScoutedStaffCandidate } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
-
-import type { SnsHeat } from '../game/sns'
 
 type CreatorPanelProps = {
   companyViewers?: number
@@ -79,8 +77,8 @@ type CreatorPanelProps = {
   onConditionCare: (creatorId: string) => void
   onVacation: (creatorId: string) => void
   onProductionTraining: (creatorId: string) => void
-  onSnsCompose: (creatorId: string, heat: SnsHeat) => void
-  onBulkSnsCompose: (heat: SnsHeat) => BulkSnsRevealEntry[]
+  onSnsCompose: (creatorId: string) => SnsHeat | null
+  onBulkSnsCompose: () => BulkSnsRevealEntry[]
   registeredStaff: RegisteredStaff[]
   managerState: SlotManagerState
   onHireStaff: (staffId: string, hireCost: number, salary: number) => boolean
@@ -121,6 +119,36 @@ const STAT_VALUE_LABEL_KEY: Record<CreatorStatType, string> = {
 
 function formatSalary(value: number) {
   return formatMoney(value)
+}
+
+/** CCTV 스테미나 바와 동일 톤 — 리스트용 축소 게이지 */
+function listStaminaTone(pct: number, blocked: boolean) {
+  if (blocked || pct <= 0) {
+    return {
+      track: 'border-rose-500/80 shadow-[0_0_12px_rgba(244,63,94,0.6)] animate-pulse',
+      fill: 'bg-gradient-to-r from-rose-700 via-rose-500 to-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.8)]',
+      text: 'text-rose-50',
+    }
+  }
+  if (pct < 30) {
+    return {
+      track: 'border-rose-400/50',
+      fill: 'bg-gradient-to-r from-rose-600 to-orange-400 shadow-[0_0_10px_rgba(244,63,94,0.45)]',
+      text: 'text-rose-50',
+    }
+  }
+  if (pct < 60) {
+    return {
+      track: 'border-amber-400/40',
+      fill: 'bg-gradient-to-r from-amber-500 to-yellow-300 shadow-[0_0_10px_rgba(251,191,36,0.4)]',
+      text: 'text-amber-50',
+    }
+  }
+  return {
+    track: 'border-cyan-400/25',
+    fill: 'bg-gradient-to-r from-cyan-500 to-teal-300 shadow-[0_0_10px_rgba(34,211,238,0.45)]',
+    text: 'text-white',
+  }
 }
 
 function formatContract(weeks: number, t: (key: string) => string) {
@@ -178,6 +206,14 @@ export function CreatorPanel({
   const [snsCreatorId, setSnsCreatorId] = useState<string | null>(null)
   const [bulkSnsOpen, setBulkSnsOpen] = useState(false)
   const [bulkRevealEntries, setBulkRevealEntries] = useState<BulkSnsRevealEntry[] | null>(null)
+  const bulkSnsEligible = useMemo(
+    () => previewBulkSnsCompose(ownedCreators).eligibleIds.length > 0,
+    [ownedCreators],
+  )
+  const bulkSnsAffordable = useMemo(
+    () => canAffordBulkSnsCompose(ownedCreators, assets),
+    [ownedCreators, assets],
+  )
 
   useEffect(() => {
     if (!openScout) return
@@ -373,10 +409,13 @@ export function CreatorPanel({
             {ownedCreators.length > 0 ? (
               <button
                 type="button"
+                disabled={!bulkSnsEligible}
                 onClick={() => setBulkSnsOpen(true)}
-                className="game-btn rounded-lg px-3 py-1 text-xs"
+                className="game-btn relative rounded-lg px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+                title={!bulkSnsEligible ? t('sns.bulkComposeNone') : undefined}
               >
                 📱 {t('sns.bulkCompose')}
+                {bulkSnsAffordable ? <RedDot label={t('sns.composeAvailable')} /> : null}
               </button>
             ) : null}
             {!canScoutMore ? (
@@ -417,11 +456,12 @@ export function CreatorPanel({
               <p className="text-xs text-slate-500">{t('creator.noCreatorsDesc')}</p>
             </div>
           ) : (
-            <table className="w-full min-w-[56rem] border-collapse text-left text-sm">
+            <table className="w-full min-w-[64rem] border-collapse text-left text-sm">
               <thead className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur-sm">
                 <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase">
                   <th className="px-3 py-2.5 font-semibold sm:px-4">{t('common.name')}</th>
                   <th className="px-3 py-2.5 font-semibold">{t('common.grade')}</th>
+                  <th className="px-3 py-2.5 font-semibold">{t('creator.statStamina')}</th>
                   <th className="px-3 py-2.5 font-semibold">{t('creator.statType')}</th>
                   <th className="px-3 py-2.5 font-semibold">{t('creator.currentSalary')}</th>
                   <th className="px-3 py-2.5 font-semibold text-emerald-400">{t('creator.expectedRevenue')}</th>
@@ -435,6 +475,21 @@ export function CreatorPanel({
                   const displayName = characterDisplayName(creator, locale)
                   const displayJob = characterDisplayJob(creator, locale)
                   const snsSubs = creator.snsSubscribers ?? 0
+                  const snsPosted = Boolean(creator.snsPending)
+                  const snsComposable = canComposeSnsCreator(creator, assets)
+                  const staminaMax = Math.max(1, creator.staminaMax)
+                  const staminaPct = Math.max(
+                    0,
+                    Math.min(100, Math.round((creator.stamina / staminaMax) * 100)),
+                  )
+                  const staminaBlocked = !canBroadcastByStamina(creator.stamina)
+                  const staminaTone = listStaminaTone(staminaPct, staminaBlocked)
+                  const examReady = isPromotionExamReady(creator)
+                  const trainingCost = examReady
+                    ? calcPromotionExamCost(creator)
+                    : calcTrainingCost(creator)
+                  const trainAvailable =
+                    canTrainCreator(creator) && assets >= trainingCost
                   return (
                     <tr
                       key={creator.id}
@@ -461,7 +516,17 @@ export function CreatorPanel({
                             </div>
                           )}
                           <div className="min-w-0">
-                            <p className="truncate font-semibold text-slate-100">{displayName}</p>
+                            <div className="flex min-w-0 items-center gap-1.5">
+                              <p className="truncate font-semibold text-slate-100">{displayName}</p>
+                              {snsPosted ? (
+                                <span
+                                  title={t('sns.alreadyPosted')}
+                                  className="shrink-0 rounded-full border border-emerald-400/40 bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-emerald-200"
+                                >
+                                  {t('sns.postedMark')}
+                                </span>
+                              ) : null}
+                            </div>
                             <p className="text-[10px] text-slate-500">{displayJob}</p>
                           </div>
                         </div>
@@ -472,6 +537,27 @@ export function CreatorPanel({
                         >
                           {creator.grade}
                         </span>
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <div
+                          className={`relative h-6 w-36 overflow-hidden rounded-md bg-slate-900 shadow-inner border transition-all duration-300 ${staminaTone.track}`}
+                          title={`${t('creator.statStamina')} ${Math.round(creator.stamina)}/${creator.staminaMax}`}
+                        >
+                          <div
+                            className={`h-6 rounded-sm transition-[width] duration-150 ease-linear ${staminaTone.fill}`}
+                            style={{ width: `${staminaPct}%` }}
+                          />
+                          <div
+                            className={`pointer-events-none absolute inset-0 flex items-center justify-between px-2 text-[10px] font-black tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.85)] ${staminaTone.text}`}
+                          >
+                            <span>
+                              {staminaBlocked ? '🚨 Stamina' : 'Stamina'}
+                            </span>
+                            <span className="tabular-nums">
+                              {Math.round(creator.stamina)}/{creator.staminaMax}
+                            </span>
+                          </div>
+                        </div>
                       </td>
                       <td className="px-3 py-2.5 text-slate-300">
                         {t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(creator.statType)])}
@@ -490,16 +576,29 @@ export function CreatorPanel({
                           <button
                             type="button"
                             onClick={() => setSnsCreatorId(creator.id)}
-                            className="game-btn rounded-lg px-2.5 py-1 text-xs"
+                            className={`game-btn relative rounded-lg px-2.5 py-1 text-xs ${
+                              snsPosted
+                                ? 'border-emerald-400/35 bg-emerald-500/10 text-emerald-100'
+                                : ''
+                            }`}
                           >
                             📱 {t('sns.action')}
+                            {snsPosted ? (
+                              <span className="ml-1 text-[9px] font-black text-emerald-300">
+                                ✓
+                              </span>
+                            ) : null}
+                            {snsComposable ? <RedDot label={t('sns.composeAvailable')} /> : null}
                           </button>
                           <button
                             type="button"
                             onClick={() => setSelectedId(creator.id)}
-                            className="game-btn rounded-lg px-2.5 py-1 text-xs"
+                            className="game-btn relative rounded-lg px-2.5 py-1 text-xs"
                           >
                             {t('creator.detailView')}
+                            {trainAvailable ? (
+                              <RedDot label={t('creator.trainingAvailable')} />
+                            ) : null}
                           </button>
                         </div>
                       </td>
@@ -665,7 +764,7 @@ export function CreatorPanel({
           creator={snsCreator}
           assets={assets}
           onClose={() => setSnsCreatorId(null)}
-          onCompose={(heat) => onSnsCompose(snsCreator.id, heat)}
+          onCompose={() => onSnsCompose(snsCreator.id)}
         />
       ) : null}
       {bulkSnsOpen ? (
@@ -673,8 +772,8 @@ export function CreatorPanel({
           creators={ownedCreators}
           assets={assets}
           onClose={() => setBulkSnsOpen(false)}
-          onCompose={(heat) => {
-            const posted = onBulkSnsCompose(heat)
+          onCompose={() => {
+            const posted = onBulkSnsCompose()
             if (posted.length > 0) {
               setBulkSnsOpen(false)
               setBulkRevealEntries(posted)
@@ -1178,6 +1277,7 @@ function CreatorDetailView({
                     : 'border-white/10 bg-slate-950/70 text-slate-400 opacity-50'
                 } ${trainHot ? 'training-fx-btn-hot' : ''}`}
               >
+                {canTrain ? <RedDot label={t('creator.trainingAvailable')} /> : null}
                 <span className="text-base font-bold tracking-wide text-current">
                   {trainButtonLabel}
                 </span>

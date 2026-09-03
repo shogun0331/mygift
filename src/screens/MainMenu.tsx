@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from '../locales/i18n'
+import { useGameBgm } from '../game/bgm'
 import { listSaveMetas } from '../game/saveService'
 
 type MenuId =
@@ -51,6 +52,7 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
   const latestSave = saves.length > 0 ? saves[0] : null
   const [active, setActive] = useState<MenuId>(latestSave ? 'continue' : 'new')
   const showEditor = import.meta.env.DEV
+  useGameBgm('menu')
 
   const handleSelect = (id: MenuId) => {
     setActive(id)

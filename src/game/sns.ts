@@ -57,19 +57,60 @@ export type SnsResult = {
   snsSubscribersGained?: number
 }
 
-/** 캐릭터의 전체 포스팅 개수에 연동된 동적 발주 비용 공식 (수위 2·3만 사용) */
-export function calcSnsPostCost(heat: SnsHeat, totalAssetCount: number): number {
+export const SNS_HEAT3_PITY_BASE = 0.1
+export const SNS_HEAT3_PITY_STEP = 0.06
+export const SNS_HEAT3_PITY_CAP = 0.34
+
+/** 콘셉트와 무관한 단일 촬영비 (에셋 장수에 연동) */
+export function calcSnsPostCost(totalAssetCount: number): number {
   const count = Math.max(1, Math.round(totalAssetCount))
-  if (heat === 3) {
-    return 60_000 + count * 6_000
-  }
-  return 17_500 + count * 1_750
+  return 8_000 + count * 800
 }
 
-/** 수위별 기본 촬영/의상비 (1장 기준 하한) */
-export const SNS_HEAT_COST: Record<SnsHeat, number> = {
-  2: 19_250,
-  3: 66_000,
+export function normalizeSnsHeat3Pity(raw: unknown): number {
+  const n = Math.round(Number(raw ?? 0) || 0)
+  return Number.isFinite(n) ? Math.max(0, n) : 0
+}
+
+export function snsHeat3Chance(pity: number): number {
+  return Math.min(
+    SNS_HEAT3_PITY_CAP,
+    SNS_HEAT3_PITY_BASE + Math.max(0, pity) * SNS_HEAT3_PITY_STEP,
+  )
+}
+
+export type SnsComposeRoll = {
+  post: SnsPostDef
+  heat: SnsHeat
+  nextPity: number
+}
+
+export function hasSnsComposeStock(
+  posts: SnsPostDef[],
+  publishedIds: readonly string[],
+): boolean {
+  return Boolean(nextSnsPost(posts, publishedIds, 2) || nextSnsPost(posts, publishedIds, 3))
+}
+
+/** 가벼운 어필이 기본. 파격 확률은 연속 어필(pity)마다 올라가고 파격 시 리셋. */
+export function rollSnsCompose(
+  posts: SnsPostDef[],
+  publishedIds: readonly string[],
+  pity: number,
+): SnsComposeRoll | null {
+  const light = nextSnsPost(posts, publishedIds, 2)
+  const bold = nextSnsPost(posts, publishedIds, 3)
+  if (!light && !bold) return null
+  if (!bold && light) {
+    return { post: light, heat: 2, nextPity: normalizeSnsHeat3Pity(pity) + 1 }
+  }
+  if (!light && bold) {
+    return { post: bold, heat: 3, nextPity: 0 }
+  }
+  if (Math.random() < snsHeat3Chance(pity)) {
+    return { post: bold!, heat: 3, nextPity: 0 }
+  }
+  return { post: light!, heat: 2, nextPity: normalizeSnsHeat3Pity(pity) + 1 }
 }
 
 /** 캐릭터당 최대 모을 수 있는 영구 SNS 구독자 캡 (10만 명) */
@@ -194,6 +235,7 @@ export type SnsComposeCandidate = {
   snsPosts?: SnsPostDef[]
   snsPublishedIds?: readonly string[]
   snsPending?: SnsPendingPost | null
+  snsHeat3Pity?: number
 }
 
 export type BulkSnsComposePreview = {
@@ -215,7 +257,6 @@ export type BulkSnsRevealEntry = {
 
 export function previewBulkSnsCompose(
   creators: readonly SnsComposeCandidate[],
-  heat: SnsHeat,
 ): BulkSnsComposePreview {
   const eligibleIds: string[] = []
   let skippedPending = 0
@@ -225,14 +266,39 @@ export function previewBulkSnsCompose(
       skippedPending += 1
       continue
     }
-    const post = nextSnsPost(creator.snsPosts ?? [], creator.snsPublishedIds ?? [], heat)
-    if (!post) {
+    if (!hasSnsComposeStock(creator.snsPosts ?? [], creator.snsPublishedIds ?? [])) {
       skippedNoStock += 1
       continue
     }
     eligibleIds.push(creator.id)
   }
   return { eligibleIds, skippedPending, skippedNoStock }
+}
+
+/** 해당 캐릭터 SNS를 지금 등록할 수 있는지 (대기·스톡·자산) */
+export function canComposeSnsCreator(
+  creator: SnsComposeCandidate,
+  assets: number,
+): boolean {
+  if (creator.snsPending) return false
+  const posts = creator.snsPosts ?? []
+  if (!hasSnsComposeStock(posts, creator.snsPublishedIds ?? [])) return false
+  return assets >= calcSnsPostCost(posts.length)
+}
+
+/** 일괄 SNS: 대상이 있고 총 촬영비를 감당할 수 있는지 */
+export function canAffordBulkSnsCompose(
+  creators: readonly SnsComposeCandidate[],
+  assets: number,
+): boolean {
+  const { eligibleIds } = previewBulkSnsCompose(creators)
+  if (eligibleIds.length === 0) return false
+  const byId = new Map(creators.map((creator) => [creator.id, creator]))
+  let totalCost = 0
+  for (const id of eligibleIds) {
+    totalCost += calcSnsPostCost((byId.get(id)?.snsPosts ?? []).length)
+  }
+  return assets >= totalCost
 }
 
 export function snsHeatProgress(

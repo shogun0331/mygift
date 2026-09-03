@@ -2889,20 +2889,24 @@ function MediaThumb({ asset }: { asset: EventMediaAsset }) {
 /* ========================================================================
  * 🖼️ 갤러리 피커 모달 (미디어를 썸네일 그리드로 보고 시각적으로 선택)
  * ======================================================================== */
-type MediaGalleryPickerModalProps = {
+export type MediaGalleryPickerModalProps = {
   media: EventMediaAsset[]
   selectedFileName: string
   onSelect: (fileName: string) => void
-  onUploadMedia: (files: FileList) => void
+  onUploadMedia?: (files: FileList) => void
   onClose: () => void
+  title?: string
+  hint?: string
 }
 
-function MediaGalleryPickerModal({
+export function MediaGalleryPickerModal({
   media,
   selectedFileName,
   onSelect,
   onUploadMedia,
   onClose,
+  title,
+  hint,
 }: MediaGalleryPickerModalProps) {
   const [filterKind, setFilterKind] = useState<'all' | 'image' | 'video'>('all')
   const [search, setSearch] = useState('')
@@ -2919,15 +2923,19 @@ function MediaGalleryPickerModal({
   })
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
       <div className="relative flex max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-white/10 bg-slate-900 shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 px-5 py-4 bg-slate-950/60">
           <div className="flex items-center gap-2">
             <span className="text-xl">🖼️</span>
             <div>
-              <h3 className="text-base font-bold text-slate-100">배경 미디어 선택 (갤러리)</h3>
-              <p className="text-xs text-slate-400">썸네일을 보고 선택할 미디어를 클릭하세요</p>
+              <h3 className="text-base font-bold text-slate-100">
+                {title ?? '배경 미디어 선택 (갤러리)'}
+              </h3>
+              <p className="text-xs text-slate-400">
+                {hint ?? '썸네일을 보고 선택할 미디어를 클릭하세요'}
+              </p>
             </div>
           </div>
           <button
@@ -2970,26 +2978,30 @@ function MediaGalleryPickerModal({
               onChange={(e) => setSearch(e.target.value)}
               className="w-48 sm:w-64 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500"
             />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="rounded-lg bg-indigo-500/20 border border-indigo-500/30 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/30 transition flex items-center gap-1"
-            >
-              📁 새 파일 추가
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,video/*"
-              multiple
-              className="hidden"
-              onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                  onUploadMedia(e.target.files)
-                  e.target.value = ''
-                }
-              }}
-            />
+            {onUploadMedia ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="rounded-lg bg-indigo-500/20 border border-indigo-500/30 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/30 transition flex items-center gap-1"
+                >
+                  📁 새 파일 추가
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      onUploadMedia(e.target.files)
+                      e.target.value = ''
+                    }
+                  }}
+                />
+              </>
+            ) : null}
           </div>
         </div>
 

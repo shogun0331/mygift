@@ -8,6 +8,11 @@ import {
   loadCommonEventLinks,
   saveStationGradeConfig,
   loadStationGradeConfig,
+  saveBgmConfig,
+  loadBgmConfig,
+  persistBgmFiles,
+  pruneUnusedBgmFiles,
+  removeBgmFile,
 } from './events/db'
 import type { GameEvent } from './events/types'
 import {
@@ -63,6 +68,14 @@ import {
 } from './game/saveService'
 import { NewGameModal } from './screens/NewGameModal'
 import { LoadGameModal } from './screens/LoadGameModal'
+import {
+  BGM_TRACKS,
+  emptyBgmConfig,
+  normalizeBgmConfig,
+  setBgmLibrary,
+  type BgmTrack,
+  type GameBgmConfig,
+} from './game/bgm'
 
 const STAFF_STORAGE_KEY = 'broadcast-staff-json'
 
@@ -89,6 +102,13 @@ function mediaUrl(characterId: string, kind: 'image' | 'video', fileName: string
   return resolveMediaSrc(`media://characters/${characterId}/${folder}/${fileName}`, cacheKey ?? fileName)
 }
 
+function soundMediaUrl(characterId: string, fileName: string, cacheKey?: string | number) {
+  return resolveMediaSrc(
+    `media://characters/${characterId}/sounds/${fileName}`,
+    cacheKey ?? fileName,
+  )
+}
+
 function hydrateRegisteredCharacter(c: any): RegisteredCharacter {
   const images = (c.images ?? []).map((img: any) => ({
     ...img,
@@ -113,10 +133,29 @@ function hydrateRegisteredCharacter(c: any): RegisteredCharacter {
           : '',
   }))
   const profileImg = images.find((img: any) => img.id === c.profileImageId)
+  const specialVacationRaw = c.specialVacation
+  const specialVacation =
+    specialVacationRaw && typeof specialVacationRaw === 'object'
+      ? {
+          ...specialVacationRaw,
+          voice:
+            specialVacationRaw.voice?.fileName
+              ? {
+                  ...specialVacationRaw.voice,
+                  url: soundMediaUrl(
+                    c.id,
+                    specialVacationRaw.voice.fileName,
+                    specialVacationRaw.voice.fileSize,
+                  ),
+                }
+              : specialVacationRaw.voice ?? null,
+        }
+      : specialVacationRaw
   return normalizeRegisteredCharacter({
     ...c,
     images,
     videos,
+    specialVacation,
     profileImageUrl:
       profileImg?.url ||
       findCharacterProfileUrl({
@@ -308,6 +347,9 @@ function syncOwnedWithRegistered(
       source.videos === creator.videos &&
       source.images === creator.images &&
       source.snsPosts === creator.snsPosts &&
+      source.auditMedia === creator.auditMedia &&
+      source.shortsVn === creator.shortsVn &&
+      source.specialVacation === creator.specialVacation &&
       source.profileImageUrl === creator.profileImageUrl &&
       source.name === creator.name &&
       source.names === creator.names &&
@@ -339,6 +381,9 @@ function syncOwnedWithRegistered(
       images: source.images,
       videos: source.videos,
       snsPosts: source.snsPosts,
+      auditMedia: source.auditMedia,
+      shortsVn: source.shortsVn,
+      specialVacation: source.specialVacation,
       mediaRevision: source.mediaRevision,
     })
   })
@@ -399,10 +444,10 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
   const assetsToSave: Array<{
     id: string
     fileName: string
-    kind: 'image' | 'video'
+    kind: 'image' | 'video' | 'sound'
     buffer: ArrayBuffer
   }> = []
-  const obsoleteNames: Array<{ kind: 'image' | 'video'; fileName: string }> = []
+  const obsoleteNames: Array<{ kind: 'image' | 'video' | 'sound'; fileName: string }> = []
 
   const images = await Promise.all(
     payload.images.map(async (img) => {
@@ -492,6 +537,45 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
     }),
   )
 
+  let specialVacation = payload.specialVacation
+  if (specialVacation?.voice?.file) {
+    const voice = specialVacation.voice
+    const buffer = await voice.file.arrayBuffer()
+    const safeName = buildSafeFileName(voice.id, voice.file.name)
+    if (voice.fileName && voice.fileName !== safeName) {
+      obsoleteNames.push({ kind: 'sound', fileName: voice.fileName })
+    }
+    assetsToSave.push({
+      id: voice.id,
+      fileName: safeName,
+      kind: 'sound',
+      buffer,
+    })
+    specialVacation = {
+      ...specialVacation,
+      voice: {
+        id: voice.id,
+        fileName: safeName,
+        fileSize: voice.file.size,
+        url: soundMediaUrl(characterId, safeName, voice.file.size),
+        file: undefined,
+      },
+    }
+  } else if (specialVacation?.voice?.fileName) {
+    specialVacation = {
+      ...specialVacation,
+      voice: {
+        ...specialVacation.voice,
+        file: undefined,
+        url: soundMediaUrl(
+          characterId,
+          specialVacation.voice.fileName,
+          specialVacation.voice.fileSize,
+        ),
+      },
+    }
+  }
+
   if (assetsToSave.length > 0) {
     const res = await window.electronAPI.saveCharacterAssets(characterId, assetsToSave)
     if (!res.success) {
@@ -500,6 +584,12 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
   }
 
   const keptRefs = collectFileNameRefs(images, videos)
+  if (specialVacation?.voice?.fileName) {
+    keptRefs.set(
+      specialVacation.voice.fileName,
+      (keptRefs.get(specialVacation.voice.fileName) || 0) + 1,
+    )
+  }
   if (window.electronAPI.deleteCharacterFile) {
     for (const obsolete of obsoleteNames) {
       if ((keptRefs.get(obsolete.fileName) || 0) > 0) continue
@@ -511,6 +601,7 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
     ...payload,
     images,
     videos,
+    specialVacation,
   }
 }
 
@@ -623,6 +714,8 @@ export default function App() {
     defaultStationGradeConfig,
   )
   const [isStationGradeConfigLoaded, setIsStationGradeConfigLoaded] = useState(false)
+  const [bgmConfig, setBgmConfig] = useState<GameBgmConfig>(emptyBgmConfig)
+  const [isBgmConfigLoaded, setIsBgmConfigLoaded] = useState(false)
   /** 데이터 로드 완료 상태 플래그 */
   const [isLoaded, setIsLoaded] = useState(false)
   /** 인게임에서 1회 이상 시청한 시뮬레이터 이벤트 */
@@ -701,6 +794,18 @@ export default function App() {
         setIsStationGradeConfigLoaded(true)
       })
 
+    loadBgmConfig()
+      .then((config) => {
+        const normalized = normalizeBgmConfig(config)
+        setBgmConfig(normalized)
+        setBgmLibrary(normalized)
+        setIsBgmConfigLoaded(true)
+      })
+      .catch((err) => {
+        console.error('Failed to load BGM config:', err)
+        setIsBgmConfigLoaded(true)
+      })
+
     loadRegisteredStaffFromDisk()
       .then((rows) => {
         setRegisteredStaff(rows)
@@ -726,6 +831,14 @@ export default function App() {
       console.error('Failed to save station grade config:', err)
     })
   }, [stationGradeConfig, isStationGradeConfigLoaded])
+
+  useEffect(() => {
+    if (!isBgmConfigLoaded) return
+    setBgmLibrary(bgmConfig)
+    saveBgmConfig(bgmConfig).catch((err) => {
+      console.error('Failed to save BGM config:', err)
+    })
+  }, [bgmConfig, isBgmConfigLoaded])
 
   // 3. 캐릭터 상태 변경 시 자동 저장
   useEffect(() => {
@@ -787,6 +900,60 @@ export default function App() {
             blurRegions: post.blurRegions ?? [],
             blurDefault: post.blurDefault ?? 4,
           })),
+          auditMedia: {
+            A: {
+              url: c.auditMedia?.A?.url ?? null,
+              blurRegions: c.auditMedia?.A?.blurRegions ?? [],
+            },
+            B: {
+              url: c.auditMedia?.B?.url ?? null,
+              blurRegions: c.auditMedia?.B?.blurRegions ?? [],
+            },
+            C: {
+              url: c.auditMedia?.C?.url ?? null,
+              blurRegions: c.auditMedia?.C?.blurRegions ?? [],
+            },
+          },
+          shortsVn: {
+            vip: (c.shortsVn?.vip ?? []).map((beat) => ({
+              id: beat.id,
+              mediaUrl: beat.mediaUrl,
+              caption: beat.caption,
+              durationSec: beat.durationSec,
+              blurRegions: beat.blurRegions ?? [],
+              sourceNodeId: beat.sourceNodeId ?? null,
+              captionNodeId: beat.captionNodeId ?? null,
+            })),
+            h: (c.shortsVn?.h ?? []).map((beat) => ({
+              id: beat.id,
+              mediaUrl: beat.mediaUrl,
+              caption: beat.caption,
+              durationSec: beat.durationSec,
+              blurRegions: beat.blurRegions ?? [],
+              sourceNodeId: beat.sourceNodeId ?? null,
+              captionNodeId: beat.captionNodeId ?? null,
+            })),
+          },
+          specialVacation: {
+            imageIds: c.specialVacation?.imageIds ?? [],
+            captions: c.specialVacation?.captions ?? {
+              ko: '',
+              en: '',
+              ja: '',
+              'zh-cn': '',
+              ru: '',
+              es: '',
+              de: '',
+            },
+            voice: c.specialVacation?.voice
+              ? {
+                  id: c.specialVacation.voice.id,
+                  fileName: c.specialVacation.voice.fileName,
+                  fileSize: c.specialVacation.voice.fileSize,
+                  url: c.specialVacation.voice.url,
+                }
+              : null,
+          },
         }
       })
       window.electronAPI.saveCharactersJson(cleanCharacters)
@@ -956,6 +1123,9 @@ export default function App() {
           images: savedPayload.images,
           videos: savedPayload.videos as CharacterVideo[],
           snsPosts: savedPayload.snsPosts,
+          auditMedia: savedPayload.auditMedia,
+          shortsVn: savedPayload.shortsVn,
+          specialVacation: savedPayload.specialVacation,
           mediaRevision: Date.now(),
         }),
       ])
@@ -993,6 +1163,15 @@ export default function App() {
             await window.electronAPI.deleteCharacterFile(id, 'video', oldVid.fileName)
           }
         }
+        const oldVoice = oldChar.specialVacation?.voice
+        const nextVoice = savedPayload.specialVacation?.voice
+        if (
+          oldVoice?.fileName &&
+          oldVoice.fileName !== nextVoice?.fileName &&
+          (!nextVoice?.fileName || oldVoice.fileName !== nextVoice.fileName)
+        ) {
+          await window.electronAPI.deleteCharacterFile(id, 'sound', oldVoice.fileName)
+        }
       }
 
       if (window.electronAPI?.pruneCharacterFiles) {
@@ -1003,6 +1182,9 @@ export default function App() {
           video: savedPayload.videos
             .map((video) => video.fileName)
             .filter((name): name is string => Boolean(name)),
+          sound: savedPayload.specialVacation?.voice?.fileName
+            ? [savedPayload.specialVacation.voice.fileName]
+            : [],
         })
       }
 
@@ -1032,6 +1214,9 @@ export default function App() {
         images: savedPayload.images,
         videos: savedPayload.videos as CharacterVideo[],
         snsPosts: savedPayload.snsPosts ?? oldChar?.snsPosts ?? [],
+        auditMedia: savedPayload.auditMedia ?? oldChar?.auditMedia,
+        shortsVn: savedPayload.shortsVn ?? oldChar?.shortsVn,
+        specialVacation: savedPayload.specialVacation ?? oldChar?.specialVacation,
         mediaRevision: Date.now(),
       })
 
@@ -1196,6 +1381,42 @@ export default function App() {
     }
   }
 
+  function buildBgmFileName(track: BgmTrack, originalName: string) {
+    const trimmed = (originalName || 'bgm').trim()
+    const lastDot = trimmed.lastIndexOf('.')
+    const ext =
+      lastDot >= 0 ? trimmed.slice(lastDot).replace(/[^a-zA-Z0-9.]/g, '').slice(0, 8) : '.mp3'
+    return `${track}__${Date.now()}${ext || '.mp3'}`
+  }
+
+  function keptBgmFiles(next: GameBgmConfig) {
+    return BGM_TRACKS.map((key) => next[key].fileName).filter((name): name is string => Boolean(name))
+  }
+
+  async function handleUploadBgm(track: BgmTrack, file: File) {
+    const fileName = buildBgmFileName(track, file.name)
+    const buffer = await file.arrayBuffer()
+    const res = await persistBgmFiles([{ fileName, buffer }])
+    if (!res.success) throw new Error(res.error || 'BGM 파일 저장 실패')
+    const next = { ...bgmConfig, [track]: { fileName } }
+    const prev = bgmConfig[track].fileName
+    if (prev && prev !== fileName) {
+      await removeBgmFile(prev)
+    }
+    await pruneUnusedBgmFiles(keptBgmFiles(next))
+    setBgmConfig(next)
+  }
+
+  async function handleClearBgm(track: BgmTrack) {
+    const prev = bgmConfig[track].fileName
+    const next = { ...bgmConfig, [track]: { fileName: null } }
+    if (prev) {
+      await removeBgmFile(prev)
+    }
+    await pruneUnusedBgmFiles(keptBgmFiles(next))
+    setBgmConfig(next)
+  }
+
   if (screen === 'editor') {
     return (
       <EditorScreen
@@ -1217,6 +1438,10 @@ export default function App() {
         onRegisterStaff={handleRegisterStaff}
         onUpdateStaff={handleUpdateStaff}
         onDeleteStaff={handleDeleteStaff}
+        bgmConfig={bgmConfig}
+        onBgmConfigChange={setBgmConfig}
+        onUploadBgm={handleUploadBgm}
+        onClearBgm={handleClearBgm}
         onBack={() => setScreen(editorReturnScreen === 'game' ? 'game' : 'main')}
       />
     )

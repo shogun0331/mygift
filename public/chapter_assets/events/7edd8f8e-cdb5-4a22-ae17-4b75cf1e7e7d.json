@@ -160,7 +160,16 @@
       "type": "graphic",
       "image": "speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788409053644_fk6m",
+          "x": 0.40625,
+          "y": 0.23206018518518517,
+          "w": 0.07421875,
+          "h": 0.11574074074074076,
+          "blur": 2
+        }
+      ],
       "blurDefault": 4
     },
     {
@@ -244,7 +253,16 @@
       "type": "graphic",
       "image": "fa994ce1-4a0d-452f-833d-08be8f532356.webp",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788409061044_a2cm",
+          "x": 0.18489583333333334,
+          "y": 0.08159722222222222,
+          "w": 0.19401041666666666,
+          "h": 0.2986111111111111,
+          "blur": 2
+        }
+      ],
       "blurDefault": 4
     },
     {

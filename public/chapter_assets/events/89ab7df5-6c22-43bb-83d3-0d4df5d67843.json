@@ -333,7 +333,16 @@
       "type": "graphic",
       "image": "speed_2_75x_714a6effafa846bf9e55895602c0a6ca.mp4",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788408446947_t2oo",
+          "x": 0.17708333333333334,
+          "y": 0.2899305555555556,
+          "w": 0.13541666666666666,
+          "h": 0.19675925925925924,
+          "blur": 2
+        }
+      ],
       "blurDefault": 4
     },
     {
@@ -417,7 +426,16 @@
       "type": "graphic",
       "image": "f4e0788b-b543-4eff-abb5-f122522f361d.webp",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788408458107_89ac",
+          "x": 0.17447916666666666,
+          "y": 0.22974537037037038,
+          "w": 0.06380208333333334,
+          "h": 0.15277777777777776,
+          "blur": 2
+        }
+      ],
       "blurDefault": 4
     },
     {
@@ -453,7 +471,16 @@
       "type": "graphic",
       "image": "1837ffc2-7274-4b96-b12e-60b88ec76bca.webp",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788408468779_5nj7",
+          "x": 0.6770833333333334,
+          "y": 0.6302083333333334,
+          "w": 0.05078125,
+          "h": 0.12268518518518512,
+          "blur": 1
+        }
+      ],
       "blurDefault": 4
     },
     {
@@ -497,7 +524,16 @@
       "type": "graphic",
       "image": "speed_2_65x_ad0a0063ff124b27a464ae856b71ea6a.mp4",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788408476939_jjbl",
+          "x": 0.71875,
+          "y": 0.28761574074074076,
+          "w": 0.23177083333333337,
+          "h": 0.2916666666666667,
+          "blur": 2
+        }
+      ],
       "blurDefault": 4
     },
     {
@@ -593,7 +629,16 @@
       "type": "graphic",
       "image": "e06ff069-71b5-4ea5-a7f1-5581e810ea38.webp",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788408499426_pmcm",
+          "x": 0.7330729166666666,
+          "y": 0.4542824074074074,
+          "w": 0.08072916666666674,
+          "h": 0.28472222222222227,
+          "blur": 1.5
+        }
+      ],
       "blurDefault": 4
     },
     {

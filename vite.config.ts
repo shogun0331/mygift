@@ -405,6 +405,147 @@ function saveEventsDevPlugin(): Plugin {
           return
         }
 
+        if (req.url.startsWith('/api/save-bgm-assets')) {
+          let body = ''
+          req.on('data', (chunk) => {
+            body += chunk
+          })
+          req.on('end', () => {
+            try {
+              const data = body ? JSON.parse(body) : {}
+              const assets = Array.isArray(data.assets) ? data.assets : []
+              const targetDir = path.resolve(process.cwd(), 'public', 'chapter_assets', 'bgm')
+              fs.mkdirSync(targetDir, { recursive: true })
+              for (const item of assets) {
+                if (!item.fileName || !item.buffer) continue
+                const safeName = path.basename(String(item.fileName))
+                fs.writeFileSync(path.join(targetDir, safeName), Buffer.from(item.buffer))
+              }
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ success: true, path: targetDir }))
+            } catch (err: any) {
+              console.error('[save-bgm-assets-dev-api]', err)
+              res.statusCode = 500
+              res.end(JSON.stringify({ success: false, error: err.message }))
+            }
+          })
+          return
+        }
+
+        if (req.url.startsWith('/api/save-bgm-config-json')) {
+          let body = ''
+          req.on('data', (chunk) => {
+            body += chunk
+          })
+          req.on('end', () => {
+            try {
+              const data = body ? JSON.parse(body) : {}
+              const filePath = path.resolve(process.cwd(), 'public', 'chapter_assets', 'bgm.json')
+              writeJsonFile(filePath, data.config ?? {})
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ success: true }))
+            } catch (err: any) {
+              console.error('[save-bgm-config-json-dev-api]', err)
+              res.statusCode = 500
+              res.end(JSON.stringify({ success: false, error: err.message }))
+            }
+          })
+          return
+        }
+
+        if (req.url.startsWith('/api/delete-bgm-file')) {
+          let body = ''
+          req.on('data', (chunk) => {
+            body += chunk
+          })
+          req.on('end', () => {
+            try {
+              const data = body ? JSON.parse(body) : {}
+              const safeName = path.basename(String(data.fileName || ''))
+              if (!safeName) {
+                res.statusCode = 400
+                res.end(JSON.stringify({ success: false, error: 'Invalid fileName' }))
+                return
+              }
+              const filePath = path.resolve(process.cwd(), 'public', 'chapter_assets', 'bgm', safeName)
+              if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath)
+              }
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ success: true }))
+            } catch (err: any) {
+              console.error('[delete-bgm-file-dev-api]', err)
+              res.statusCode = 500
+              res.end(JSON.stringify({ success: false, error: err.message }))
+            }
+          })
+          return
+        }
+
+        if (req.url.startsWith('/api/prune-bgm-files')) {
+          let body = ''
+          req.on('data', (chunk) => {
+            body += chunk
+          })
+          req.on('end', () => {
+            try {
+              const data = body ? JSON.parse(body) : {}
+              const dirPath = path.resolve(process.cwd(), 'public', 'chapter_assets', 'bgm')
+              if (fs.existsSync(dirPath)) {
+                const keepSet = new Set(
+                  (Array.isArray(data.keep) ? data.keep : [])
+                    .map((name: unknown) => path.basename(String(name || '')))
+                    .filter(Boolean),
+                )
+                for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+                  if (!entry.isFile() || keepSet.has(entry.name)) continue
+                  fs.unlinkSync(path.join(dirPath, entry.name))
+                }
+              }
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ success: true }))
+            } catch (err: any) {
+              console.error('[prune-bgm-files-dev-api]', err)
+              res.statusCode = 500
+              res.end(JSON.stringify({ success: false, error: err.message }))
+            }
+          })
+          return
+        }
+
+        if (req.url.startsWith('/api/open-bgm-folder')) {
+          let body = ''
+          req.on('data', (chunk) => {
+            body += chunk
+          })
+          req.on('end', () => {
+            try {
+              const data = body ? JSON.parse(body) : {}
+              const dirPath = path.resolve(process.cwd(), 'public', 'chapter_assets', 'bgm')
+              fs.mkdirSync(dirPath, { recursive: true })
+              const safeName = path.basename(String(data.fileName || ''))
+              const filePath = safeName ? path.join(dirPath, safeName) : ''
+              const target = filePath && fs.existsSync(filePath) ? filePath : dirPath
+              const command =
+                process.platform === 'win32'
+                  ? filePath && fs.existsSync(filePath)
+                    ? `explorer.exe /select,"${target}"`
+                    : `explorer.exe "${target}"`
+                  : filePath && fs.existsSync(filePath)
+                    ? `open -R "${target}"`
+                    : `open "${target}"`
+              exec(command)
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ success: true }))
+            } catch (err: any) {
+              console.error('[open-bgm-folder-dev-api]', err)
+              res.statusCode = 500
+              res.end(JSON.stringify({ success: false, error: err.message }))
+            }
+          })
+          return
+        }
+
         if (req.url.startsWith('/api/delete-common-sound-file')) {
           let body = ''
           req.on('data', (chunk) => {

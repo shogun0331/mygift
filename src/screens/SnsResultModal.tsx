@@ -38,6 +38,11 @@ export function SnsResultModal({ result, onConfirm }: SnsResultModalProps) {
           <p className="text-[10px] font-semibold tracking-wide text-slate-500">SNS</p>
           <h2 className="mt-1 text-lg font-bold text-slate-100">{t('sns.resultTitle')}</h2>
           <p className="mt-1 text-sm text-slate-400">{result.creatorName}</p>
+          {result.heat === 3 ? (
+            <p className="sns-heat3-result mt-2 text-sm font-black tracking-wide text-fuchsia-200">
+              {t('sns.heat3')}
+            </p>
+          ) : null}
         </div>
         {result.imageUrl && result.mediaKind ? (
           <SnsMediaWithBlur

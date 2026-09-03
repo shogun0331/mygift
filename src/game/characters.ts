@@ -1,6 +1,8 @@
-import type { CharacterEventLinks } from '../events/types'
+import type { BlurRegion, CharacterEventLinks } from '../events/types'
 import { emptyCharacterEventLinks } from '../events/types'
+import { readBlurRegions } from '../events/BlurRegionEditor'
 import {
+  CHARACTER_LOCALES,
   type CharacterLocaleText,
   mergeCharacterLocaleText,
   normalizeCharacterNamedFields,
@@ -20,6 +22,7 @@ import {
   type SnsPostDef,
   type SnsPublishedPost,
 } from './sns'
+import { defaultSpecialVacationCaptionsForCharacter } from './specialVacationLines'
 import { creatorVisuals } from './studioSlots'
 import type { RegisteredStaff } from './staff'
 
@@ -62,10 +65,246 @@ export type CharacterVideo = {
 }
 
 /** 캐릭터별 승급심사 3단계 퍼포먼스 영상 (A: 고만족도 80%↑, B: 중만족도 30~79%, C: 저만족도 0~29%) */
+export type CharacterAuditMediaSlot = {
+  url: string | null
+  blurRegions: BlurRegion[]
+}
+
 export type CharacterAuditMedia = {
-  A?: string | null
-  B?: string | null
-  C?: string | null
+  A: CharacterAuditMediaSlot
+  B: CharacterAuditMediaSlot
+  C: CharacterAuditMediaSlot
+}
+
+function sanitizeAuditMediaUrl(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null
+  const url = raw.trim()
+  if (!url) return null
+  if (url.startsWith('blob:')) return null
+  return url
+}
+
+export function emptyAuditMediaSlot(): CharacterAuditMediaSlot {
+  return { url: null, blurRegions: [] }
+}
+
+export function normalizeAuditMediaSlot(raw: unknown): CharacterAuditMediaSlot {
+  if (typeof raw === 'string') {
+    return { url: sanitizeAuditMediaUrl(raw), blurRegions: [] }
+  }
+  if (!raw || typeof raw !== 'object') return emptyAuditMediaSlot()
+  const row = raw as Record<string, unknown>
+  return {
+    url: sanitizeAuditMediaUrl(row.url),
+    blurRegions: readBlurRegions(row),
+  }
+}
+
+export function normalizeAuditMedia(raw: unknown): CharacterAuditMedia {
+  const row = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {}
+  return {
+    A: normalizeAuditMediaSlot(row.A),
+    B: normalizeAuditMediaSlot(row.B),
+    C: normalizeAuditMediaSlot(row.C),
+  }
+}
+
+export function mergeAuditMedia(
+  primary?: CharacterAuditMedia | null,
+  fallback?: CharacterAuditMedia | null,
+): CharacterAuditMedia {
+  const a = normalizeAuditMedia(primary)
+  const b = normalizeAuditMedia(fallback)
+  const slot = (left: CharacterAuditMediaSlot, right: CharacterAuditMediaSlot) => ({
+    url: left.url ?? right.url,
+    blurRegions: left.blurRegions.length > 0 ? left.blurRegions : right.blurRegions,
+  })
+  return {
+    A: slot(a.A, b.A),
+    B: slot(a.B, b.B),
+    C: slot(a.C, b.C),
+  }
+}
+
+export function auditMediaSlotUrl(
+  slot: CharacterAuditMediaSlot | string | null | undefined,
+): string | null {
+  if (!slot) return null
+  if (typeof slot === 'string') return sanitizeAuditMediaUrl(slot)
+  return sanitizeAuditMediaUrl(slot.url)
+}
+
+/** 재시청 VIP/H 숏츠 VN 한 컷 (영상·이미지 + 대사 노드) */
+export type ShortsVnBeat = {
+  id: string
+  mediaUrl: string
+  /** 선택한 대사 노드에서 해석한 미리보기/폴백 텍스트 */
+  caption: string
+  durationSec: number
+  blurRegions: BlurRegion[]
+  /** 미디어를 고른 VN 그래픽/영상 노드 (선택) */
+  sourceNodeId?: string | null
+  /** 하단에 표시할 원본 대사 노드 ID */
+  captionNodeId?: string | null
+}
+
+export type CharacterShortsVn = {
+  vip: ShortsVnBeat[]
+  h: ShortsVnBeat[]
+}
+
+export type ShortsVnSlotKey = keyof CharacterShortsVn
+
+export function emptyShortsVn(): CharacterShortsVn {
+  return { vip: [], h: [] }
+}
+
+function createShortsBeatId() {
+  return `shorts-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+}
+
+export function normalizeShortsVnBeat(raw: unknown): ShortsVnBeat | null {
+  if (!raw || typeof raw !== 'object') return null
+  const row = raw as Record<string, unknown>
+  const mediaUrl = sanitizeAuditMediaUrl(row.mediaUrl ?? row.url)
+  if (!mediaUrl) return null
+  const durationRaw = Number(row.durationSec ?? row.duration ?? 2)
+  const durationSec =
+    Number.isFinite(durationRaw) && durationRaw > 0 ? Math.min(30, Math.max(0.5, durationRaw)) : 2
+  return {
+    id: typeof row.id === 'string' && row.id.trim() ? row.id.trim() : createShortsBeatId(),
+    mediaUrl,
+    caption: typeof row.caption === 'string' ? row.caption : typeof row.text === 'string' ? row.text : '',
+    durationSec,
+    blurRegions: readBlurRegions(row),
+    sourceNodeId:
+      typeof row.sourceNodeId === 'string' && row.sourceNodeId.trim()
+        ? row.sourceNodeId.trim()
+        : null,
+    captionNodeId:
+      typeof row.captionNodeId === 'string' && row.captionNodeId.trim()
+        ? row.captionNodeId.trim()
+        : null,
+  }
+}
+
+export function normalizeShortsVn(raw: unknown): CharacterShortsVn {
+  const row = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {}
+  const list = (value: unknown): ShortsVnBeat[] => {
+    if (!Array.isArray(value)) return []
+    return value.map(normalizeShortsVnBeat).filter((beat): beat is ShortsVnBeat => Boolean(beat))
+  }
+  return {
+    vip: list(row.vip),
+    h: list(row.h),
+  }
+}
+
+export function mergeShortsVn(
+  primary?: CharacterShortsVn | null,
+  fallback?: CharacterShortsVn | null,
+): CharacterShortsVn {
+  const a = normalizeShortsVn(primary)
+  const b = normalizeShortsVn(fallback)
+  return {
+    vip: a.vip.length > 0 ? a.vip : b.vip,
+    h: a.h.length > 0 ? a.h : b.h,
+  }
+}
+
+export function shortsVnBeatsForSlot(
+  shorts: CharacterShortsVn | null | undefined,
+  slot: ShortsVnSlotKey,
+): ShortsVnBeat[] {
+  return normalizeShortsVn(shorts)[slot]
+}
+
+/** 특별휴가에 등록하는 이미지 키 / 최대 장수 */
+export const SPECIAL_VACATION_IMAGE_KEY = 'specialVacation'
+export const SPECIAL_VACATION_IMAGE_MAX = 10
+
+export type SpecialVacationVoice = {
+  id: string
+  fileName?: string
+  fileSize?: number
+  url?: string
+  /** 업로드 시만 존재 (직렬화 제외) */
+  file?: File
+}
+
+export type CharacterSpecialVacation = {
+  /** character.images 중 특별휴가용 이미지 id (최대 10) */
+  imageIds: string[]
+  /** 7개국 감사 대본 */
+  captions: CharacterLocaleText
+  /** 음성 1개 (다국어 아님) */
+  voice: SpecialVacationVoice | null
+}
+
+export function emptySpecialVacation(characterName?: string | null): CharacterSpecialVacation {
+  return {
+    imageIds: [],
+    captions: defaultSpecialVacationCaptionsForCharacter(characterName),
+    voice: null,
+  }
+}
+
+function sanitizeVacationVoice(raw: unknown): SpecialVacationVoice | null {
+  if (!raw || typeof raw !== 'object') return null
+  const row = raw as Record<string, unknown>
+  const id = typeof row.id === 'string' && row.id.trim() ? row.id.trim() : ''
+  const fileName = typeof row.fileName === 'string' && row.fileName.trim() ? row.fileName.trim() : ''
+  const url = typeof row.url === 'string' && row.url.trim() && !row.url.startsWith('blob:') ? row.url.trim() : ''
+  if (!id && !fileName && !url) return null
+  const fileSizeRaw = Number(row.fileSize)
+  return {
+    id: id || `vac-voice-${Date.now()}`,
+    fileName: fileName || undefined,
+    fileSize: Number.isFinite(fileSizeRaw) ? fileSizeRaw : undefined,
+    url: url || undefined,
+    file: row.file instanceof File ? row.file : undefined,
+  }
+}
+
+export function normalizeSpecialVacation(
+  raw: unknown,
+  characterName?: string | null,
+): CharacterSpecialVacation {
+  const defaults = defaultSpecialVacationCaptionsForCharacter(characterName)
+  if (!raw || typeof raw !== 'object') {
+    return { imageIds: [], captions: defaults, voice: null }
+  }
+  const row = raw as Record<string, unknown>
+  const ids = Array.isArray(row.imageIds)
+    ? row.imageIds
+        .map((id) => (typeof id === 'string' ? id.trim() : ''))
+        .filter(Boolean)
+        .slice(0, SPECIAL_VACATION_IMAGE_MAX)
+    : []
+  const captions = mergeCharacterLocaleText(row.captions as CharacterLocaleText | undefined)
+  const hasAnyCaption = CHARACTER_LOCALES.some((lang) => captions[lang]?.trim())
+  return {
+    imageIds: ids,
+    captions: hasAnyCaption ? captions : defaults,
+    voice: sanitizeVacationVoice(row.voice),
+  }
+}
+
+export function mergeSpecialVacation(
+  primary?: CharacterSpecialVacation | null,
+  fallback?: CharacterSpecialVacation | null,
+  characterName?: string | null,
+): CharacterSpecialVacation {
+  const a = normalizeSpecialVacation(primary, characterName)
+  const b = normalizeSpecialVacation(fallback, characterName)
+  const captions = CHARACTER_LOCALES.some((lang) => a.captions[lang]?.trim())
+    ? a.captions
+    : b.captions
+  return {
+    imageIds: a.imageIds.length > 0 ? a.imageIds : b.imageIds,
+    captions,
+    voice: a.voice ?? b.voice,
+  }
 }
 
 /** 에디터에 등록된 캐릭터 (스카우트 대상 풀) */
@@ -102,6 +341,10 @@ export type RegisteredCharacter = {
   snsPosts?: SnsPostDef[]
   /** 승급심사 3단계 퍼포먼스 미디어 (A: 80%↑, B: 30~79%, C: 0~29%) */
   auditMedia?: CharacterAuditMedia
+  /** 재시청 VIP/H 숏츠 VN 비트 */
+  shortsVn?: CharacterShortsVn
+  /** 특별휴가 컷 이미지 (최대 10) */
+  specialVacation?: CharacterSpecialVacation
   /** 미디어 교체 시 증가 — 영상 캐시/리마운트용 */
   mediaRevision?: number
 }
@@ -125,7 +368,7 @@ export type OwnedCreator = RegisteredCharacter & {
   conditionScore: number
   /** 연속 휴식 주수 */
   restStreak: number
-  /** 휴가를 사용한 방송월 번호 (월 1회) */
+  /** 특별휴가를 사용한 방송 턴(월) 번호 — 턴당 1회 */
   lastVacationMonth?: number | null
   /** 데이트 아크: 0=데이트1 대기, 1=데이트2, 2=H, 3=H 완료 */
   dateArcStep?: 0 | 1 | 2 | 3
@@ -133,6 +376,8 @@ export type OwnedCreator = RegisteredCharacter & {
   snsFeed?: SnsPublishedPost[]
   snsPending?: SnsPendingPost | null
   snsSubscribers?: number
+  /** 연속 가벼운 어필 횟수. 파격적인 화보 가중치 */
+  snsHeat3Pity?: number
   /** @deprecated trust 사용. 구 세이브 호환용 */
   loyalty?: number
 }
@@ -158,6 +403,8 @@ export type CharacterDraft = {
   videos?: CharacterVideo[]
   snsPosts?: SnsPostDef[]
   auditMedia?: CharacterAuditMedia
+  shortsVn?: CharacterShortsVn
+  specialVacation?: CharacterSpecialVacation
   mediaRevision?: number
 }
 
@@ -210,6 +457,9 @@ export function normalizeRegisteredCharacter(
     images: raw.images ?? [],
     videos: (raw.videos ?? []).map((video) => ({ ...video, level: 1 })),
     snsPosts: normalizeSnsPosts(raw.snsPosts),
+    auditMedia: normalizeAuditMedia(raw.auditMedia),
+    shortsVn: normalizeShortsVn(raw.shortsVn),
+    specialVacation: normalizeSpecialVacation(raw.specialVacation, named.name),
     mediaRevision: raw.mediaRevision,
   }
 }
@@ -239,6 +489,9 @@ export function createRegisteredCharacter(draft: CharacterDraft): RegisteredChar
     images: draft.images ?? [],
     videos: draft.videos ?? [],
     snsPosts: normalizeSnsPosts(draft.snsPosts),
+    auditMedia: normalizeAuditMedia(draft.auditMedia),
+    shortsVn: normalizeShortsVn(draft.shortsVn),
+    specialVacation: normalizeSpecialVacation(draft.specialVacation, name),
     mediaRevision: draft.mediaRevision,
   })
 }
@@ -267,6 +520,7 @@ export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
     snsPublishedIds: [],
     snsFeed: [],
     snsPending: null,
+    snsHeat3Pity: 0,
   }
 }
 
@@ -334,6 +588,7 @@ export function normalizeOwnedCreator(
     snsFeed: normalizeSnsPublishedPosts(raw.snsFeed),
     snsPending: raw.snsPending && typeof raw.snsPending === 'object' ? raw.snsPending : null,
     snsSubscribers: Math.max(0, Math.round(Number(raw.snsSubscribers ?? 0) || 0)),
+    snsHeat3Pity: Math.max(0, Math.round(Number(raw.snsHeat3Pity ?? 0) || 0)),
     loyalty: undefined,
   }
 }

@@ -232,7 +232,10 @@ const PersistentEventVideo = memo(function PersistentEventVideo({
       loop
       muted
       playsInline
-      className="h-full w-full object-cover pointer-events-none"
+      preload="auto"
+      disablePictureInPicture
+      disableRemotePlayback
+      className="event-stage-video h-full w-full object-cover pointer-events-none"
     />
   )
 })
@@ -247,7 +250,7 @@ const EventStageLayer = memo(function EventStageLayer({
   blurRegions: ReturnType<typeof readBlurRegions>
 }) {
   return (
-    <div className="absolute inset-0 z-0 flex items-center justify-center bg-black">
+    <div className="event-stage-layer absolute inset-0 z-0 flex items-center justify-center bg-black">
       {media.kind === 'video' ? (
         <PersistentEventVideo src={media.url} fileName={media.fileName} playbackRate={playbackRate} />
       ) : (
@@ -327,6 +330,7 @@ export function EventSimulator({
 
   const [fadeOpacity, setFadeOpacity] = useState(1)
   const [isClosing, setIsClosing] = useState(false)
+  const [exitConfirmOpen, setExitConfirmOpen] = useState(false)
   const [sceneFadeOpacity, setSceneFadeOpacity] = useState(0)
   const [overlayColor, setOverlayColor] = useState('#000000')
   const [overlayMs, setOverlayMs] = useState(1200)
@@ -334,6 +338,8 @@ export function EventSimulator({
   const displayHoldRef = useRef(false)
   const FADE_MS = 1200
   const handleNextRef = useRef<() => void>(() => {})
+  const historyRef = useRef<string[]>([])
+  historyRef.current = history
 
   // 시작: 첫 노드가 페이드가 아니면 전체를 잠깐 유지한 뒤 부드럽게 밝아짐
   useEffect(() => {
@@ -347,6 +353,7 @@ export function EventSimulator({
 
   const triggerClose = () => {
     if (isClosing) return
+    setExitConfirmOpen(false)
     setIsClosing(true)
     setOverlayColor('#000000')
     setOverlayMs(FADE_MS)
@@ -362,6 +369,16 @@ export function EventSimulator({
     window.setTimeout(() => {
       onClose()
     }, FADE_MS)
+  }
+
+  /** 인게임: 실수로 ESC/뒤로가기로 이벤트가 끝나 완료 처리되지 않게 확인 */
+  const requestExit = () => {
+    if (isClosing) return
+    if (mode === 'game') {
+      setExitConfirmOpen(true)
+      return
+    }
+    triggerClose()
   }
 
   // 디버거 UI 상태
@@ -635,9 +652,14 @@ export function EventSimulator({
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        triggerClose()
+        if (exitConfirmOpen) {
+          setExitConfirmOpen(false)
+          return
+        }
+        requestExit()
         return
       }
+      if (exitConfirmOpen) return
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault()
         if (displayHoldRef.current) return
@@ -646,7 +668,7 @@ export function EventSimulator({
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isClosing, isTyping, dialogueText, choices.length])
+  }, [isClosing, isTyping, dialogueText, choices.length, exitConfirmOpen, mode])
 
 
 
@@ -670,6 +692,16 @@ export function EventSimulator({
     setHistory((prev) => prev.slice(0, -1))
     setCurrentNodeId(prevNodeId)
     setPlaybackFinished(false)
+  }
+
+  /** 크롬 뒤로가기: 이전이 있으면 한 칸 되돌리고, 없으면 종료 확인 */
+  const handleChromeBack = () => {
+    if (isClosing) return
+    if (mode === 'game' && historyRef.current.length > 0) {
+      handleBack()
+      return
+    }
+    requestExit()
   }
 
   // 다음 노드로 진행
@@ -855,7 +887,9 @@ export function EventSimulator({
   }, [flatNodes, searchQuery, lang, event])
 
   const isGame = mode === 'game'
-  const exitLabel = returnLabel ?? (mode === 'debug' ? '에디터로 돌아가기' : '뒤로가기 [ESC]')
+  const exitLabel = returnLabel ?? (mode === 'debug' ? '에디터로 돌아가기' : t('hud.exitEvent'))
+  const chromeBackLabel =
+    isGame && history.length > 0 ? t('hud.prevLine') : exitLabel
 
   const langVolumeControls = (
     <>
@@ -919,10 +953,10 @@ export function EventSimulator({
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation()
-                    triggerClose()
+                    handleChromeBack()
                   }}
-                  title={exitLabel}
-                  aria-label={exitLabel}
+                  title={chromeBackLabel}
+                  aria-label={chromeBackLabel}
                   className="game-hud-icon-btn"
                 >
                   <IconVnBack />
@@ -934,7 +968,7 @@ export function EventSimulator({
                       className="vn-skip"
                       onClick={(e) => {
                         e.stopPropagation()
-                        triggerClose()
+                        requestExit()
                       }}
                     >
                       {t('hud.skip')}
@@ -1339,6 +1373,41 @@ export function EventSimulator({
           </aside>
         )}
       </div>
+
+      {exitConfirmOpen ? (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-[3px]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="vn-exit-confirm-title"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="game-panel w-full max-w-sm rounded-2xl border border-white/15 px-5 py-6">
+            <h2 id="vn-exit-confirm-title" className="text-lg font-black text-slate-100">
+              {t('hud.exitEventTitle')}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">
+              {t('hud.exitEventBody')}
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                className="game-btn px-4 py-2 text-sm"
+                onClick={() => setExitConfirmOpen(false)}
+              >
+                {t('hud.exitEventCancel')}
+              </button>
+              <button
+                type="button"
+                className="game-btn game-btn-primary px-4 py-2 text-sm"
+                onClick={triggerClose}
+              >
+                {t('hud.exitEventConfirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 

@@ -4,9 +4,11 @@ import { CommonEventPanel } from '../events/CommonEventPanel'
 import { EventManagePanel } from '../events/EventManagePanel'
 import { EventSimulator } from '../events/EventSimulator'
 import { CharacterSnsEditor } from './CharacterSnsEditor'
+import { CharacterSpecialVacationEditor } from './CharacterSpecialVacationEditor'
 import { CharacterAuditEditorModal } from './CharacterAuditEditorModal'
 import { AuditSimulatorDeckModal } from './AuditSimulatorDeckModal'
 import { PromotionAuditModal } from './PromotionAuditModal'
+import { ShortsVnEditorPanel } from './ShortsVnEditorPanel'
 import {
   CHARACTER_EVENT_SLOTS,
   emptyCharacterEventLinks,
@@ -35,9 +37,12 @@ import { AuditEditorPanel } from './AuditEditorPanel'
 import { StaffEditorPanel } from './StaffEditorPanel'
 import { StationGradeEditorPanel } from './StationGradeEditorPanel'
 import { HighLowEditorPanel } from '../minigames/highlow/HighLowEditorPanel'
+import { BgmEditorPanel } from './BgmEditorPanel'
+import { useGameBgm, type BgmTrack, type GameBgmConfig } from '../game/bgm'
+import { setMosaicStrength, useMosaicStrength } from '../game/visualFx'
 
-type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent' | 'stationGrade' | 'staff' | 'audit' | 'highlow'
-type CharacterView = 'list' | 'add' | 'edit' | 'sns'
+type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent' | 'stationGrade' | 'staff' | 'audit' | 'shortsVn' | 'highlow' | 'bgm'
+type CharacterView = 'list' | 'add' | 'edit' | 'sns' | 'specialVacation'
 
 type EditorScreenProps = {
   registeredCharacters: RegisteredCharacter[]
@@ -58,6 +63,10 @@ type EditorScreenProps = {
   onRegisterStaff: (payload: AddStaffPayload) => void | Promise<void>
   onUpdateStaff: (id: string, payload: AddStaffPayload) => void | Promise<void>
   onDeleteStaff: (id: string) => void
+  bgmConfig: GameBgmConfig
+  onBgmConfigChange: (config: GameBgmConfig) => void
+  onUploadBgm: (track: BgmTrack, file: File) => Promise<void>
+  onClearBgm: (track: BgmTrack) => Promise<void>
   onBack: () => void
 }
 
@@ -108,6 +117,10 @@ export function EditorScreen({
   onRegisterStaff,
   onUpdateStaff,
   onDeleteStaff,
+  bgmConfig,
+  onBgmConfigChange,
+  onUploadBgm,
+  onClearBgm,
   onBack,
 }: EditorScreenProps) {
   const [tab, setTab] = useState<EditorTab>('character')
@@ -117,6 +130,7 @@ export function EditorScreen({
   const [simulatorTierKey, setSimulatorTierKey] = useState<Exclude<StationTierId, 'black' | 'tiny'> | null>(null)
   const [simulatorCreators, setSimulatorCreators] = useState<RegisteredCharacter[] | null>(null)
   const [isAuditSimulatorActive, setIsAuditSimulatorActive] = useState(false)
+  useGameBgm(isAuditSimulatorActive ? 'audit' : null)
   const [showSimulator, setShowSimulator] = useState(false)
   const [simulatorMode, setSimulatorMode] = useState<'debug' | 'game'>('debug')
   const [selectedSimulatorEvent, setSelectedSimulatorEvent] = useState<GameEvent | null>(null)
@@ -187,6 +201,15 @@ export function EditorScreen({
           </button>
           <button
             type="button"
+            onClick={() => setTab('bgm')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'bgm' ? 'is-active' : ''
+            }`}
+          >
+            BGM 설정
+          </button>
+          <button
+            type="button"
             onClick={() => setTab('event')}
             className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
               tab === 'event' ? 'is-active' : ''
@@ -232,6 +255,15 @@ export function EditorScreen({
           </button>
           <button
             type="button"
+            onClick={() => setTab('shortsVn')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'shortsVn' ? 'is-active' : ''
+            }`}
+          >
+            숏츠 VN
+          </button>
+          <button
+            type="button"
             onClick={() => setTab('highlow')}
             className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
               tab === 'highlow' ? 'is-active' : ''
@@ -239,6 +271,7 @@ export function EditorScreen({
           >
             ♠ VIP 하이-로우
           </button>
+          <MosaicStrengthSlider />
         </aside>
 
         <section className="relative z-10 min-h-0 overflow-auto p-6">
@@ -327,6 +360,16 @@ export function EditorScreen({
                           </button>
                           <button
                             type="button"
+                            onClick={() => {
+                              setEditingCharacter(character)
+                              setCharacterView('specialVacation')
+                            }}
+                            className="game-btn rounded-lg px-2.5 py-1.5 text-xs text-amber-200 border border-amber-500/35 hover:border-amber-400/60 hover:bg-amber-950/30"
+                          >
+                            특별휴가
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => setAuditMediaCharacter(character)}
                             className="game-btn rounded-lg px-2.5 py-1.5 text-xs text-purple-300 border border-purple-500/40 hover:border-purple-400 hover:bg-purple-950/40"
                           >
@@ -394,7 +437,20 @@ export function EditorScreen({
                       stage: video.stage ?? 1,
                     })),
                     snsPosts: next.snsPosts,
+                    auditMedia: editingCharacter.auditMedia,
+                    shortsVn: editingCharacter.shortsVn,
+                    specialVacation: editingCharacter.specialVacation,
                   })
+                  openCharacterList()
+                }}
+              />
+            ) : characterView === 'specialVacation' && editingCharacter ? (
+              <CharacterSpecialVacationEditor
+                key={`vacation-${editingCharacter.id}`}
+                character={editingCharacter}
+                onCancel={openCharacterList}
+                onSave={async (payload) => {
+                  await onUpdateCharacter(editingCharacter.id, payload)
                   openCharacterList()
                 }}
               />
@@ -464,8 +520,21 @@ export function EditorScreen({
               onSaveManual={onSaveStationGradeManual}
               onStartSimulator={(tierKey) => setSimulatorTierKey(tierKey)}
             />
+          ) : tab === 'shortsVn' ? (
+            <ShortsVnEditorPanel
+              registeredCharacters={registeredCharacters}
+              events={events}
+              onUpdateCharacter={onUpdateCharacter}
+            />
           ) : tab === 'highlow' ? (
             <HighLowEditorPanel />
+          ) : tab === 'bgm' ? (
+            <BgmEditorPanel
+              config={bgmConfig}
+              onConfigChange={onBgmConfigChange}
+              onUpload={onUploadBgm}
+              onClear={onClearBgm}
+            />
           ) : null}
         </section>
       </div>
@@ -485,6 +554,7 @@ export function EditorScreen({
       {auditMediaCharacter && (
         <CharacterAuditEditorModal
           character={auditMediaCharacter}
+          events={events}
           onSave={(nextAuditMedia) => {
             onUpdateCharacter(auditMediaCharacter.id, {
               name: auditMediaCharacter.name,
@@ -520,6 +590,8 @@ export function EditorScreen({
               })),
               snsPosts: auditMediaCharacter.snsPosts,
               auditMedia: nextAuditMedia,
+              shortsVn: auditMediaCharacter.shortsVn,
+              specialVacation: auditMediaCharacter.specialVacation,
             })
           }}
           onClose={() => setAuditMediaCharacter(null)}
@@ -540,6 +612,7 @@ export function EditorScreen({
         <PromotionAuditModal
           tier={simulatorTierKey}
           creators={simulatorCreators as any}
+          events={events}
           config={stationGradeConfig}
           onComplete={() => {
             setIsAuditSimulatorActive(false)
@@ -554,6 +627,25 @@ export function EditorScreen({
         />
       )}
     </main>
+  )
+}
+
+function MosaicStrengthSlider() {
+  const strength = useMosaicStrength()
+  return (
+    <div className="mt-auto rounded-xl border border-white/10 bg-black/25 px-3 py-3">
+      <p className="text-[10px] font-bold tracking-wide text-slate-400">블러 강도</p>
+      <p className="mt-0.5 text-[10px] leading-4 text-slate-500">VN · 승급심사 퍼포먼스</p>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={strength}
+        onChange={(event) => setMosaicStrength(Number(event.target.value))}
+        className="mt-2 w-full accent-indigo-400"
+      />
+      <p className="mt-1 text-right text-[10px] tabular-nums text-slate-400">{strength}%</p>
+    </div>
   )
 }
 
@@ -605,6 +697,8 @@ export type AddCharacterPayload = {
   }>
   snsPosts?: import('../game/sns').SnsPostDef[]
   auditMedia?: import('../game/characters').CharacterAuditMedia
+  shortsVn?: import('../game/characters').CharacterShortsVn
+  specialVacation?: import('../game/characters').CharacterSpecialVacation
 }
 
 type AddCharacterPanelProps = {
@@ -925,6 +1019,9 @@ function AddCharacterPanel({
           stage: video.stage,
         })),
         snsPosts: initialCharacter?.snsPosts ?? [],
+        auditMedia: initialCharacter?.auditMedia,
+        shortsVn: initialCharacter?.shortsVn,
+        specialVacation: initialCharacter?.specialVacation,
       })
     } finally {
       setSaving(false)

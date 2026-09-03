@@ -1,4 +1,9 @@
-import { stationGradeLabel, type StationReviewStatus } from '../game/station'
+import { formatMoney } from '../game/money'
+import {
+  stationGradeLabel,
+  stationPromotionAssetReward,
+  type StationReviewStatus,
+} from '../game/station'
 import { useTranslation } from '../locales/i18n'
 
 type StationReviewModalProps = {
@@ -10,6 +15,8 @@ type StationReviewModalProps = {
 export function StationReviewModal({ promoted, status, onConfirm }: StationReviewModalProps) {
   const { t } = useTranslation()
   const maxed = status.next == null
+  const assetReward =
+    promoted && status.next ? stationPromotionAssetReward(status.next) : 0
 
   return (
     <div
@@ -64,9 +71,16 @@ export function StationReviewModal({ promoted, status, onConfirm }: StationRevie
             <p className="text-[10px] font-bold tracking-wide text-slate-500">
               {t('station.rewardTitle')}
             </p>
-            <p className="mt-1 text-[11px] font-semibold text-slate-200">
-              - {t(`station.rewardScout.${status.next}` as 'station.rewardScout.sme')}
-            </p>
+            {assetReward > 0 ? (
+              <p className="mt-1 text-[12px] font-semibold text-amber-200">
+                - {t('station.rewardAssets').replace('{amount}', formatMoney(assetReward))}
+              </p>
+            ) : null}
+            {status.next !== 'tiny' ? (
+              <p className="mt-1 text-[11px] font-semibold text-slate-200">
+                - {t(`station.rewardScout.${status.next}` as 'station.rewardScout.sme')}
+              </p>
+            ) : null}
           </div>
         ) : null}
 

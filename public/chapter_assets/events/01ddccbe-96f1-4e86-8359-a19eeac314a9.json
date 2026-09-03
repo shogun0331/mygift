@@ -332,7 +332,16 @@
       "type": "graphic",
       "image": "speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788408959389_46gt",
+          "x": 0.4010416666666667,
+          "y": 0.23668981481481483,
+          "w": 0.06640625,
+          "h": 0.1111111111111111,
+          "blur": 2
+        }
+      ],
       "blurDefault": 4
     },
     {
@@ -416,7 +425,16 @@
       "type": "graphic",
       "image": "fa994ce1-4a0d-452f-833d-08be8f532356.webp",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788408969261_l610",
+          "x": 0.18359375,
+          "y": 0.07696759259259259,
+          "w": 0.19140625,
+          "h": 0.31018518518518523,
+          "blur": 2.5
+        }
+      ],
       "blurDefault": 4
     },
     {
@@ -452,7 +470,16 @@
       "type": "graphic",
       "image": "0a69d3a4-1518-469f-9d92-e4b85aa5f942.webp",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788408977581_yrds",
+          "x": 0.4114583333333333,
+          "y": 0.49363425925925924,
+          "w": 0.07942708333333337,
+          "h": 0.300925925925926,
+          "blur": 2
+        }
+      ],
       "blurDefault": 4
     },
     {
@@ -506,7 +533,16 @@
       "type": "graphic",
       "image": "speed_2_80x_d554eba430644078b1365de716a5eda0.mp4",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788408988541_3deg",
+          "x": 0.18229166666666666,
+          "y": 0.36863425925925924,
+          "w": 0.26041666666666663,
+          "h": 0.5393518518518519,
+          "blur": 2
+        }
+      ],
       "blurDefault": 4
     },
     {
@@ -630,7 +666,16 @@
       "type": "graphic",
       "image": "c3a9b183-afe5-4db9-a74c-de8dd461074f.webp",
       "delay": 2,
-      "blurRegions": [],
+      "blurRegions": [
+        {
+          "id": "blur_1788409004126_xyu1",
+          "x": 0.4049479166666667,
+          "y": 0.4681712962962963,
+          "w": 0.11848958333333331,
+          "h": 0.4027777777777778,
+          "blur": 2.5
+        }
+      ],
       "blurDefault": 4
     },
     {
