@@ -99,6 +99,13 @@ export function PromotionAuditModal({
   const [isCutsceneModalOpen, setIsCutsceneModalOpen] = useState<boolean>(false)
   const [canCloseCutscene, setCanCloseCutscene] = useState(false)
   const cutsceneHoldRef = useRef<number | null>(null)
+  const pendingPerformResultRef = useRef<{
+    score: number
+    isMatched: boolean
+    creator: RegisteredCreator
+    isCrit: boolean
+    critMult: number
+  } | null>(null)
 
   // 매혹/야한 댄스 퍼포먼스 심쿵 폭발 연출 (Seductive Heart Attack & Temptation Burst)
   const [lastScoreGained, setLastScoreGained] = useState<number | null>(null)
@@ -273,7 +280,21 @@ export function PromotionAuditModal({
     }
     setIsCutsceneModalOpen(false)
     setCanCloseCutscene(false)
-    if (lastScoreGained !== null && lastPerformedCreator) {
+
+    const pending = pendingPerformResultRef.current
+    if (pending) {
+      pendingPerformResultRef.current = null
+      const curSession = sessionRef.current
+      const nextPct = Math.round((curSession.currentSatisfaction / curSession.targetSatisfaction) * 100)
+      triggerImpactParticle(
+        pending.score,
+        pending.isMatched,
+        pending.creator.id,
+        nextPct,
+        pending.isCrit,
+        pending.critMult,
+      )
+    } else if (lastScoreGained !== null && lastPerformedCreator) {
       const curSession = sessionRef.current
       const nextPct = Math.round((curSession.currentSatisfaction / curSession.targetSatisfaction) * 100)
       triggerImpactParticle(
@@ -457,6 +478,14 @@ export function PromotionAuditModal({
     setIsCriticalHit(isCrit)
     setCriticalMult(critMult)
 
+    pendingPerformResultRef.current = {
+      score: gained,
+      isMatched: matched,
+      creator,
+      isCrit,
+      critMult,
+    }
+
     setSession(nextSession)
     sessionRef.current = nextSession
     setSelectedCreatorId(null)
@@ -600,11 +629,6 @@ export function PromotionAuditModal({
                 regions={popupCutsceneBlurRegions}
                 className="h-full w-full"
               />
-
-              {/* 하단 퍼포먼스 컷씬 뱃지 */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-purple-400/50 bg-black/80 px-4 py-1.5 text-xs font-black text-purple-200 shadow-xl backdrop-blur-md flex items-center gap-2">
-                <span>🎭 퍼포먼스 컷씬</span>
-              </div>
             </div>
           </div>
         ) : null}
