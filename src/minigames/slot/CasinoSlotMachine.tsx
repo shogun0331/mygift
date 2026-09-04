@@ -378,9 +378,11 @@ export function CasinoSlotMachine({
             <div className="px-6 py-2.5 flex items-center justify-center">
               <div className="flex flex-col items-center">
                 <div className="pachislot-777-box">
-                  <span className="text-2xl sm:text-3xl font-black font-mono tracking-widest text-yellow-300 drop-shadow-[0_2px_8px_rgba(250,204,21,0.9)] animate-pulse">
-                    7️⃣ 7️⃣ 7️⃣
-                  </span>
+                  <div className="flex items-center gap-1 px-3.5 py-1 rounded-xl border-2 border-yellow-300 bg-gradient-to-r from-red-700 via-amber-500 to-red-700 shadow-[0_0_20px_rgba(250,204,21,0.95)]">
+                    <span className="text-2xl sm:text-3xl font-black font-mono tracking-widest text-yellow-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] animate-pulse">
+                      7️⃣ 7️⃣ 7️⃣
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -460,9 +462,17 @@ export function CasinoSlotMachine({
                                 key={`${symId}-${idx}`}
                                 className={`pachislot-reel-cell ${isWinningCell ? 'is-winner' : ''}`}
                               >
-                                <span className="text-3xl sm:text-4xl filter drop-shadow-md">
-                                  {sym.icon}
-                                </span>
+                                {symId === 'seven' ? (
+                                  <div className="relative flex items-center justify-center px-2.5 py-1 rounded-xl border-2 border-yellow-300 bg-gradient-to-b from-red-600 via-amber-500 to-red-800 shadow-[0_0_14px_rgba(250,204,21,0.95)] animate-pulse scale-105">
+                                    <span className="text-2xl sm:text-3xl font-black font-mono tracking-wider text-yellow-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                                      7️⃣
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-3xl sm:text-4xl filter drop-shadow-md">
+                                    {sym.icon}
+                                  </span>
+                                )}
                               </div>
                             )
                           })}

@@ -28,7 +28,7 @@ export const SLOT_SYMBOLS: Record<SlotSymbolId, SlotSymbolDef> = {
   bell: { id: 'bell', name: '벨', icon: '🔔', multiplier: 5, weight: 16 },
   star: { id: 'star', name: '별', icon: '⭐', multiplier: 8, weight: 12 },
   diamond: { id: 'diamond', name: '다이아', icon: '💎', multiplier: 12, weight: 8 },
-  seven: { id: 'seven', name: '세븐', icon: '7️⃣', multiplier: 20, weight: 5 },
+  seven: { id: 'seven', name: '세븐', icon: '✨7️⃣✨', multiplier: 20, weight: 5 },
   scatter: { id: 'scatter', name: '스캐터', icon: '🎰', multiplier: 10, weight: 4, isScatter: true },
   wild: { id: 'wild', name: '와일드', icon: '🃏', multiplier: 15, weight: 3, isWild: true },
 }
