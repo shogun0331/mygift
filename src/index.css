@@ -4332,3 +4332,205 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
     mask-image: none;
   }
 }
+
+/* ==========================================================================
+   LAS VEGAS VIP 3x3 REEL SLOT MACHINE STYLING & ANIMATIONS
+   ========================================================================== */
+
+.casino-slot-cabinet-panel {
+  position: relative;
+  width: 100%;
+  max-width: 56rem;
+  margin: 0 auto;
+  border-radius: 2rem;
+  border: 3px solid rgba(251, 191, 36, 0.7);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(251, 191, 36, 0.2), transparent 50%),
+    linear-gradient(180deg, #1e150c 0%, #0d0f1a 40%, #05060b 100%);
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.85),
+    0 0 50px rgba(245, 158, 11, 0.35),
+    inset 0 2px 3px rgba(255, 255, 255, 0.25),
+    inset 0 -4px 10px rgba(0, 0, 0, 0.9);
+}
+
+.casino-slot-cabinet-panel.is-spinning {
+  border-color: rgba(250, 204, 21, 0.9);
+  box-shadow:
+    0 0 60px rgba(250, 204, 21, 0.5),
+    0 30px 90px rgba(0, 0, 0, 0.85);
+}
+
+.casino-slot-cabinet-panel.is-win {
+  border-color: #34d399;
+  box-shadow:
+    0 0 70px rgba(52, 211, 153, 0.6),
+    0 30px 90px rgba(0, 0, 0, 0.85);
+}
+
+.casino-slot-cabinet-panel.is-jackpot {
+  border-color: #fbbf24;
+  box-shadow:
+    0 0 100px rgba(251, 191, 36, 0.95),
+    0 30px 90px rgba(0, 0, 0, 0.9);
+  animation: casino-jackpot-pulse 0.8s ease-in-out infinite alternate;
+}
+
+.casino-slot-lamps {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: rgba(0, 0, 0, 0.45);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.25);
+  border-top-left-radius: 1.8rem;
+  border-top-right-radius: 1.8rem;
+}
+
+.casino-slot-lamps span {
+  height: 0.75rem;
+  flex: 1;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.25);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.casino-slot-cabinet-panel.is-spinning .casino-slot-lamps span {
+  animation: casino-lamp-chase 0.5s ease-in-out infinite;
+}
+
+.casino-slot-cabinet-panel.is-win .casino-slot-lamps span,
+.casino-slot-cabinet-panel.is-jackpot .casino-slot-lamps span {
+  background: #fbbf24;
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.9), inset 0 0 4px #ffffff;
+}
+
+.casino-lcd-display {
+  position: relative;
+  border-radius: 1.25rem;
+  border: 3px solid rgba(245, 158, 11, 0.5);
+  background:
+    radial-gradient(ellipse at center, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98)),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 3px);
+  box-shadow:
+    inset 0 0 35px rgba(0, 0, 0, 0.9),
+    inset 0 0 10px rgba(245, 158, 11, 0.2),
+    0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.casino-reel-window {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 1.1rem 1rem;
+  border-radius: 1.1rem;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(8, 12, 24, 0.96));
+  box-shadow:
+    inset 0 0 0 2px rgba(251, 191, 36, 0.3),
+    inset 0 20px 30px rgba(0, 0, 0, 0.75),
+    inset 0 -20px 30px rgba(0, 0, 0, 0.75);
+}
+
+.casino-reel-column {
+  position: relative;
+  flex: 1;
+  height: 252px;
+  overflow: hidden;
+  border-radius: 0.9rem;
+  border: 2px solid rgba(251, 191, 36, 0.35);
+  background: linear-gradient(180deg, #090d16 0%, #030509 50%, #090d16 100%);
+  box-shadow:
+    inset 0 24px 20px rgba(0, 0, 0, 0.85),
+    inset 0 -24px 20px rgba(0, 0, 0, 0.85);
+}
+
+.casino-reel-column::before,
+.casino-reel-column::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 5;
+  height: 2.5rem;
+}
+
+.casino-reel-column::before {
+  top: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent);
+}
+
+.casino-reel-column::after {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.9), transparent);
+}
+
+.casino-reel-strip {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.casino-reel-strip.is-spinning {
+  animation: casino-reel-spin 0.22s linear infinite;
+  filter: blur(2.5px) brightness(1.2);
+}
+
+.casino-reel-strip.is-stopped {
+  transform: translateY(var(--reel-land, 0px));
+  animation: casino-reel-land 0.45s cubic-bezier(0.14, 1.25, 0.28, 1) forwards;
+}
+
+.casino-reel-cell {
+  display: flex;
+  height: 84px;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+  transition: all 0.2s ease-out;
+}
+
+.casino-reel-cell.is-winner {
+  background: radial-gradient(circle at center, rgba(250, 204, 21, 0.35), rgba(245, 158, 11, 0.08));
+  box-shadow: inset 0 0 18px rgba(250, 204, 21, 0.7);
+  animation: casino-cell-pulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes casino-reel-spin {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-252px); }
+}
+
+@keyframes casino-reel-land {
+  0% {
+    transform: translateY(calc(var(--reel-land, 0px) + 65px));
+    filter: blur(2px);
+  }
+  70% {
+    transform: translateY(calc(var(--reel-land, 0px) - 8px));
+    filter: blur(0);
+  }
+  100% {
+    transform: translateY(var(--reel-land, 0px));
+  }
+}
+
+@keyframes casino-cell-pulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.08); filter: brightness(1.35) drop-shadow(0 0 14px rgba(250, 204, 21, 0.9)); }
+}
+
+@keyframes casino-jackpot-pulse {
+  0% { box-shadow: 0 0 60px rgba(251, 191, 36, 0.6); }
+  100% { box-shadow: 0 0 120px rgba(251, 191, 36, 1); }
+}
+
+@keyframes casino-lamp-chase {
+  0%, 100% { background: rgba(251, 191, 36, 0.25); box-shadow: none; }
+  50% { background: #fbbf24; box-shadow: 0 0 14px #fbbf24; }
+}
+

@@ -1,14 +1,16 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { StationGrade } from '../../game/stationGradeConfig'
 import {
   SLOT_SYMBOLS,
   PAYLINES,
   getBetAmountByGrade,
+  getRandomSlotSymbol,
   generateRandomSlotGrid,
   evaluateSlotSpin,
   type SlotSymbolId,
   type SlotSpinResult,
 } from './slotConfig'
+import { playSfx, stopSfx, playAuditPassFanfare } from '../../game/uiSfx'
 
 export type CasinoSlotMachineProps = {
   stationGrade?: StationGrade | null
@@ -17,76 +19,14 @@ export type CasinoSlotMachineProps = {
   onClose: () => void
 }
 
-/** Web Audio 기반 슬롯머신 SFX 효과음 생성 */
-function playSlotSound(type: 'spin' | 'win' | 'scatter' | 'jackpot') {
-  try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
-    if (!AudioCtx) return
-    const ctx = new AudioCtx()
-    const now = ctx.currentTime
-
-    if (type === 'spin') {
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
-      osc.type = 'sawtooth'
-      osc.frequency.setValueAtTime(180, now)
-      osc.frequency.exponentialRampToValueAtTime(60, now + 0.15)
-      gain.gain.setValueAtTime(0.15, now)
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15)
-      osc.connect(gain)
-      gain.connect(ctx.destination)
-      osc.start(now)
-      osc.stop(now + 0.15)
-      setTimeout(() => ctx.close().catch(() => {}), 200)
-    } else if (type === 'win') {
-      const notes = [523.25, 659.25, 783.99, 1046.5]
-      notes.forEach((freq, idx) => {
-        const osc = ctx.createOscillator()
-        const gain = ctx.createGain()
-        osc.type = 'triangle'
-        osc.frequency.setValueAtTime(freq, now + idx * 0.08)
-        gain.gain.setValueAtTime(0.2, now + idx * 0.08)
-        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.25)
-        osc.connect(gain)
-        gain.connect(ctx.destination)
-        osc.start(now + idx * 0.08)
-        osc.stop(now + idx * 0.08 + 0.25)
-      })
-      setTimeout(() => ctx.close().catch(() => {}), 600)
-    } else if (type === 'scatter') {
-      const notes = [440, 554.37, 659.25, 880, 1108.73]
-      notes.forEach((freq, idx) => {
-        const osc = ctx.createOscillator()
-        const gain = ctx.createGain()
-        osc.type = 'sine'
-        osc.frequency.setValueAtTime(freq, now + idx * 0.07)
-        gain.gain.setValueAtTime(0.3, now + idx * 0.07)
-        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.3)
-        osc.connect(gain)
-        gain.connect(ctx.destination)
-        osc.start(now + idx * 0.07)
-        osc.stop(now + idx * 0.07 + 0.3)
-      })
-      setTimeout(() => ctx.close().catch(() => {}), 800)
-    } else if (type === 'jackpot') {
-      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51, 1567.98, 2093.0]
-      notes.forEach((freq, idx) => {
-        const osc = ctx.createOscillator()
-        const gain = ctx.createGain()
-        osc.type = 'square'
-        osc.frequency.setValueAtTime(freq, now + idx * 0.06)
-        gain.gain.setValueAtTime(0.25, now + idx * 0.06)
-        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.4)
-        osc.connect(gain)
-        gain.connect(ctx.destination)
-        osc.start(now + idx * 0.06)
-        osc.stop(now + idx * 0.06 + 0.4)
-      })
-      setTimeout(() => ctx.close().catch(() => {}), 1200)
-    }
-  } catch {
-    // Audio Context not allowed or failed
+/** 릴 스코프 생성을 위한 무작위 스트립 빌더 */
+function buildReelColumnStrip(targetColSymbols: SlotSymbolId[]): SlotSymbolId[] {
+  const dummyCount = 9
+  const dummies: SlotSymbolId[] = []
+  for (let i = 0; i < dummyCount; i += 1) {
+    dummies.push(getRandomSlotSymbol())
   }
+  return [...dummies, ...targetColSymbols]
 }
 
 export function CasinoSlotMachine({
@@ -102,9 +42,13 @@ export function CasinoSlotMachine({
   const [sessionTotalWon, setSessionTotalWon] = useState(0)
   const [sessionTotalBet, setSessionTotalBet] = useState(0)
 
-  const [isSpinning, setIsSpinning] = useState(false)
+  // 릴 회전 멈춤 스태거 상태 (0: 3개 모두 회전, 1: 1번릴 멈춤, 2: 2번릴 멈춤, 3: 3개 모두 멈춤)
+  const [stoppedCount, setStoppedCount] = useState(3)
+  const isSpinning = stoppedCount < 3
+
   const [currentGrid, setCurrentGrid] = useState<SlotSymbolId[][]>(() => generateRandomSlotGrid())
   const [lastResult, setLastResult] = useState<SlotSpinResult | null>(null)
+  const [isLeverPulled, setIsLeverPulled] = useState(false)
 
   const [showPaytable, setShowPaytable] = useState(false)
   const [showSummary, setShowSummary] = useState(false)
@@ -113,7 +57,21 @@ export function CasinoSlotMachine({
   const userAssetsRef = useRef(userAssets)
   userAssetsRef.current = userAssets
 
-  // 스핀 액션
+  // 3개 칼럼용 스트립 데이터 (릴 스핀용)
+  const [colStrips, setColStrips] = useState<SlotSymbolId[][]>(() => [
+    buildReelColumnStrip(currentGrid.map((r) => r[0])),
+    buildReelColumnStrip(currentGrid.map((r) => r[1])),
+    buildReelColumnStrip(currentGrid.map((r) => r[2])),
+  ])
+
+  // 언마운트 시 사운드 정리
+  useEffect(() => {
+    return () => {
+      stopSfx('training-roll')
+    }
+  }, [])
+
+  // 레버 당기기 & 스핀 동작
   const handleSpin = () => {
     if (isSpinning) return
     const isFreeSpin = freeSpinsLeft > 0
@@ -127,75 +85,91 @@ export function CasinoSlotMachine({
         alert(`베팅 금액($${betAmount.toLocaleString()})이 부족합니다!`)
         return
       }
-      // 일반 스핀: 베팅금 차감
       onUpdateAssets(userAssetsRef.current - betAmount)
       setSessionTotalBet((prev) => prev + betAmount)
       setSpinsLeft((prev) => prev - 1)
     } else {
-      // 프리 스핀: 기회 차감 (베팅금 0)
       setFreeSpinsLeft((prev) => prev - 1)
     }
 
-    setIsSpinning(true)
+    // 레버 애니메이션 트리거
+    setIsLeverPulled(true)
+    setTimeout(() => setIsLeverPulled(false), 500)
+
+    // 최종 타겟 그리드 & 평가 생성
+    const targetGrid = generateRandomSlotGrid()
+    const result = evaluateSlotSpin(targetGrid, betAmount)
+
     setLastResult(null)
-    playSlotSound('spin')
+    setStoppedCount(0)
 
-    // 릴 애니메이션
-    let spinCount = 0
-    const interval = setInterval(() => {
-      setCurrentGrid(generateRandomSlotGrid())
-      playSlotSound('spin')
-      spinCount += 1
-      if (spinCount > 10) {
-        clearInterval(interval)
+    // 각 컬럼용 신규 스트립 준비
+    const newStrips = [
+      buildReelColumnStrip(targetGrid.map((r) => r[0])),
+      buildReelColumnStrip(targetGrid.map((r) => r[1])),
+      buildReelColumnStrip(targetGrid.map((r) => r[2])),
+    ]
+    setColStrips(newStrips)
 
-        // 최종 스핀 결과 산출
-        const finalGrid = generateRandomSlotGrid()
-        const result = evaluateSlotSpin(finalGrid, betAmount)
+    // 회전 사운드 루프 시작
+    playSfx('training-roll', { loop: true })
 
-        setCurrentGrid(result.grid)
-        setLastResult(result)
-        setIsSpinning(false)
+    // 스태거드(Staggered) 릴 스톱 타임아웃 (700ms, 1300ms, 1900ms)
+    setTimeout(() => {
+      setStoppedCount(1)
+      playSfx('audit-card-hit')
+    }, 700)
 
-        // 당첨금 처리
-        if (result.totalWinAmount > 0) {
-          onUpdateAssets(userAssetsRef.current + result.totalWinAmount)
-          setSessionTotalWon((prev) => prev + result.totalWinAmount)
+    setTimeout(() => {
+      setStoppedCount(2)
+      playSfx('audit-card-hit')
+    }, 1300)
 
-          if (result.isJackpot) {
-            setJackpotBanner(true)
-            playSlotSound('jackpot')
-          } else if (result.isScatterWon) {
-            playSlotSound('scatter')
-          } else {
-            playSlotSound('win')
-          }
+    setTimeout(() => {
+      setStoppedCount(3)
+      playSfx('audit-card-hit')
+      stopSfx('training-roll')
+
+      // 최종 릴 멈춤 완료 후 결과 적용
+      setCurrentGrid(targetGrid)
+      setLastResult(result)
+
+      // 당첨 처리
+      if (result.totalWinAmount > 0) {
+        onUpdateAssets(userAssetsRef.current + result.totalWinAmount)
+        setSessionTotalWon((prev) => prev + result.totalWinAmount)
+
+        if (result.isJackpot) {
+          setJackpotBanner(true)
+          playAuditPassFanfare()
+        } else if (result.isScatterWon) {
+          playSfx('rank-up')
+        } else {
+          playSfx('live-donation')
         }
-
-        // 프리 스핀 지급
-        if (result.freeSpinsAwarded > 0) {
-          setFreeSpinsLeft((prev) => prev + result.freeSpinsAwarded)
-        }
-
-        // 스핀 종료 후 남은 기회가 전혀 없으면 결과 요약창 팝업
-        setTimeout(() => {
-          setFreeSpinsLeft((f) => {
-            setSpinsLeft((s) => {
-              if (s <= 0 && f <= 0) {
-                setShowSummary(true)
-              }
-              return s
-            })
-            return f
-          })
-        }, 1200)
       }
-    }, 100)
+
+      if (result.freeSpinsAwarded > 0) {
+        setFreeSpinsLeft((prev) => prev + result.freeSpinsAwarded)
+      }
+
+      // 기회 소진 시 결과 요약
+      setTimeout(() => {
+        setFreeSpinsLeft((f) => {
+          setSpinsLeft((s) => {
+            if (s <= 0 && f <= 0) {
+              setShowSummary(true)
+            }
+            return s
+          })
+          return f
+        })
+      }, 1400)
+    }, 1900)
   }
 
   // 5개 페이라인 SVG Coordinate 계산 (3x3 Grid)
   const getLineSvgCoords = (coords: [number, number][]) => {
-    // 3x3 셀의 센터 % 좌표 (0->16.6%, 1->50%, 2->83.3%)
     const getPosPercent = (row: number, col: number) => ({
       x: col * 33.333 + 16.666,
       y: row * 33.333 + 16.666,
@@ -207,17 +181,26 @@ export function CasinoSlotMachine({
     return `M ${p0.x}% ${p0.y}% L ${p1.x}% ${p1.y}% L ${p2.x}% ${p2.y}%`
   }
 
+  const machineToneClass =
+    stoppedCount < 3
+      ? 'is-spinning'
+      : lastResult?.isJackpot
+      ? 'is-jackpot'
+      : (lastResult?.totalWinAmount ?? 0) > 0
+      ? 'is-win'
+      : ''
+
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-between p-4 sm:p-6 text-white select-none overflow-hidden font-sans">
+    <div className="relative w-full h-full flex flex-col items-center justify-between p-3 sm:p-5 text-white select-none overflow-hidden font-sans">
       {/* HEADER BAR */}
-      <div className="w-full flex items-center justify-between px-6 py-3 bg-slate-900/90 border-2 border-amber-400/70 rounded-2xl shadow-[0_0_30px_rgba(245,158,11,0.3)] backdrop-blur-md z-20">
+      <div className="w-full flex items-center justify-between px-6 py-2.5 bg-slate-900/90 border-2 border-amber-400/70 rounded-2xl shadow-[0_0_30px_rgba(245,158,11,0.3)] backdrop-blur-md z-20">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-200 flex items-center justify-center text-2xl font-black text-slate-950 shadow-lg shadow-amber-500/40 animate-pulse">
             🎰
           </div>
           <div>
             <div className="text-[10px] font-mono font-bold tracking-widest text-amber-400 uppercase">
-              LAS VEGAS 3x3 REEL SLOT MACHINE
+              LAS VEGAS VIP 3x3 REEL SLOT MACHINE
             </div>
             <h1 className="text-xl sm:text-2xl font-black bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-400 bg-clip-text text-transparent drop-shadow-md">
               GOLDEN CASINO REEL
@@ -250,161 +233,241 @@ export function CasinoSlotMachine({
         </div>
       </div>
 
-      {/* MAIN SLOT CABINET STAGE */}
-      <div className="relative my-auto flex flex-col items-center justify-center w-full max-w-2xl">
-        {/* TOP CABINET BANNER */}
-        <div className="w-full max-w-lg bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600 p-[2px] rounded-t-3xl shadow-[0_0_40px_rgba(245,158,11,0.5)]">
-          <div className="bg-slate-950 px-6 py-2.5 rounded-t-[22px] flex items-center justify-between border-b border-amber-400/30">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-amber-400">1회 베팅금:</span>
-              <span className="text-sm font-black font-mono text-yellow-300">
-                ${betAmount.toLocaleString()}
-              </span>
-              <span className="text-[10px] text-amber-400/70 border border-amber-400/40 px-1.5 py-0.5 rounded uppercase">
-                {stationGrade ?? 'SME'} TIER
-              </span>
+      {/* MAIN SLOT MACHINE CABINET BODY */}
+      <div className="relative my-auto flex items-center justify-center w-full max-w-4xl px-4">
+        {/* CABINET PANEL FRAME */}
+        <div className={`casino-slot-cabinet-panel ${machineToneClass} flex flex-col overflow-hidden relative z-10`}>
+          {/* TOP LED MARQUEE LAMPS */}
+          <div className="casino-slot-lamps">
+            {Array.from({ length: 12 }, (_, index) => (
+              <span key={index} style={{ animationDelay: `${index * 80}ms` }} />
+            ))}
+          </div>
+
+          {/* LCD DISPLAY SCREEN AREA */}
+          <div className="p-4 sm:p-5 flex flex-col gap-4">
+            {/* DIGITAL STATUS LED BAR */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
+              <div className="p-2.5 rounded-xl bg-slate-950/90 border border-amber-400/40 shadow-inner flex flex-col items-center">
+                <span className="text-[10px] text-amber-400/80 font-bold">1회 베팅금</span>
+                <span className="text-sm font-black text-yellow-300 mt-0.5">
+                  ${betAmount.toLocaleString()}
+                </span>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-slate-950/90 border border-amber-400/40 shadow-inner flex flex-col items-center">
+                <span className="text-[10px] text-amber-400/80 font-bold">남은 스핀 기회</span>
+                <span className="text-sm font-black text-amber-300 mt-0.5">
+                  {spinsLeft}회 {freeSpinsLeft > 0 && <span className="text-yellow-400 text-xs">(+FREE {freeSpinsLeft})</span>}
+                </span>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-slate-950/90 border border-amber-400/40 shadow-inner flex flex-col items-center">
+                <span className="text-[10px] text-amber-400/80 font-bold">누적 당첨금</span>
+                <span className="text-sm font-black text-green-400 mt-0.5">
+                  ${sessionTotalWon.toLocaleString()}
+                </span>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-slate-950/90 border border-amber-400/40 shadow-inner flex flex-col items-center">
+                <span className="text-[10px] text-amber-400/80 font-bold">방송국 등급</span>
+                <span className="text-sm font-black text-amber-200 mt-0.5 uppercase">
+                  {stationGrade ?? 'SME'} TIER
+                </span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-4 text-xs font-mono">
-              <div>
-                <span className="text-slate-400">남은 스핀: </span>
-                <span className="text-amber-300 font-black text-sm">{spinsLeft}회</span>
+            {/* 3x3 REEL WINDOW WITH PAYLINE SIDE BADGES */}
+            <div className="relative flex items-center justify-between gap-2">
+              {/* LEFT PAYLINE BADGES (L2, L1, L3) */}
+              <div className="flex flex-col gap-8 text-[10px] font-mono font-bold shrink-0">
+                {PAYLINES.slice(0, 3).map((line) => {
+                  const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
+                  return (
+                    <div
+                      key={line.id}
+                      style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
+                      className={`px-2 py-1 rounded-md border-2 ${
+                        isWon
+                          ? 'bg-amber-400 animate-bounce shadow-[0_0_12px_currentColor]'
+                          : 'bg-slate-950/80'
+                      } transition-all`}
+                    >
+                      L{line.id}
+                    </div>
+                  )
+                })}
               </div>
-              {freeSpinsLeft > 0 && (
-                <div className="animate-bounce">
-                  <span className="text-yellow-400 font-bold">⭐ 프리 스핀: </span>
-                  <span className="text-yellow-300 font-black text-sm">{freeSpinsLeft}회</span>
+
+              {/* REEL DISPLAY WINDOW CONTAINER */}
+              <div className="casino-lcd-display flex-1 p-3">
+                <div className="casino-reel-window">
+                  {/* PAYLINES SVG NEON LASERS OVERLAY */}
+                  <svg className="absolute inset-3 w-[calc(100%-24px)] h-[calc(100%-24px)] pointer-events-none z-30">
+                    {PAYLINES.map((line) => {
+                      const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
+                      return (
+                        <path
+                          key={line.id}
+                          d={getLineSvgCoords(line.coords)}
+                          fill="none"
+                          stroke={isWon ? line.color : 'transparent'}
+                          strokeWidth={isWon ? 6 : 0}
+                          className={isWon ? 'animate-pulse filter drop-shadow-[0_0_12px_currentColor]' : ''}
+                        />
+                      )
+                    })}
+                  </svg>
+
+                  {/* 3 REEL COLUMNS */}
+                  {[0, 1, 2].map((colIdx) => {
+                    const isColumnSpinning = stoppedCount <= colIdx
+                    const stripSymbols = colStrips[colIdx] ?? []
+                    const landOffsetPx = 9 * 84 // 9 dummy items * 84px cell height = 756px offset
+
+                    return (
+                      <div key={colIdx} className="casino-reel-column">
+                        <div
+                          className={`casino-reel-strip ${
+                            isColumnSpinning ? 'is-spinning' : 'is-stopped'
+                          }`}
+                          style={{
+                            ['--reel-land' as string]: `-${landOffsetPx}px`,
+                          }}
+                        >
+                          {stripSymbols.map((symId, idx) => {
+                            const sym = SLOT_SYMBOLS[symId] ?? SLOT_SYMBOLS.cherry
+                            // 멈췄을 때 최종 타겟 셀 여부 및 당첨 강조
+                            const rowIdx = idx - 9
+                            const isTargetCell = !isColumnSpinning && rowIdx >= 0 && rowIdx < 3
+                            const isWinningCell =
+                              isTargetCell &&
+                              lastResult?.winningLines.some((w) =>
+                                w.payline.coords.some(([r, c]) => r === rowIdx && c === colIdx),
+                              )
+
+                            return (
+                              <div
+                                key={`${symId}-${idx}`}
+                                className={`casino-reel-cell ${isWinningCell ? 'is-winner' : ''}`}
+                              >
+                                <span className="text-4xl sm:text-5xl filter drop-shadow-md">
+                                  {sym.icon}
+                                </span>
+                                <span className="text-[10px] font-bold text-slate-300 mt-0.5 font-mono">
+                                  {sym.name}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
+              </div>
+
+              {/* RIGHT PAYLINE BADGES (L4, L5) */}
+              <div className="flex flex-col gap-12 text-[10px] font-mono font-bold shrink-0">
+                {PAYLINES.slice(3, 5).map((line) => {
+                  const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
+                  return (
+                    <div
+                      key={line.id}
+                      style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
+                      className={`px-2 py-1 rounded-md border-2 ${
+                        isWon
+                          ? 'bg-amber-400 animate-bounce shadow-[0_0_12px_currentColor]'
+                          : 'bg-slate-950/80'
+                      } transition-all`}
+                    >
+                      L{line.id}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* SPIN RESULTS MESSAGE BANNER */}
+            <div className="min-h-[46px] flex items-center justify-center px-4 py-2 bg-slate-950/90 rounded-xl border border-amber-400/40 text-center font-mono">
+              {isSpinning ? (
+                <span className="text-amber-400 font-bold animate-pulse text-sm">
+                  🎰 릴 회전 중... (대박 당첨 기원!)
+                </span>
+              ) : lastResult ? (
+                lastResult.totalWinAmount > 0 ? (
+                  <div className="flex items-center gap-2 text-yellow-300 font-black text-base animate-bounce">
+                    <span>🎉 당첨!</span>
+                    <span className="text-amber-400 text-lg">
+                      +${lastResult.totalWinAmount.toLocaleString()}
+                    </span>
+                    {lastResult.freeSpinsAwarded > 0 && (
+                      <span className="text-xs text-yellow-200 bg-yellow-600/70 px-2.5 py-0.5 rounded-full">
+                        🎁 FREE SPIN +3회!
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <span className="text-slate-400 text-xs">
+                    아쉽습니다! 다음 스핀 기회를 도전하세요.
+                  </span>
+                )
+              ) : (
+                <span className="text-amber-300/80 text-xs">
+                  하단의 스핀 버튼 또는 오른쪽 레버를 당겨 스핀하세요!
+                </span>
               )}
             </div>
           </div>
         </div>
 
-        {/* 3x3 REEL DISPLAY CABINET */}
-        <div className="relative w-full max-w-lg bg-slate-900/95 border-4 border-amber-400 rounded-b-3xl p-5 shadow-[0_0_60px_rgba(245,158,11,0.4),inset_0_0_30px_rgba(0,0,0,0.8)] backdrop-blur-xl">
-          {/* PAYLINES SVG OVERLAY */}
-          <svg className="absolute inset-5 w-[calc(100%-40px)] h-[calc(100%-40px)] pointer-events-none z-10">
-            {PAYLINES.map((line) => {
-              const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
-              return (
-                <path
-                  key={line.id}
-                  d={getLineSvgCoords(line.coords)}
-                  fill="none"
-                  stroke={isWon ? line.color : 'rgba(255,255,255,0.06)'}
-                  strokeWidth={isWon ? 6 : 2}
-                  strokeDasharray={isWon ? undefined : '4 4'}
-                  className={isWon ? 'animate-pulse filter drop-shadow-[0_0_10px_currentColor]' : ''}
-                />
-              )
-            })}
-          </svg>
-
-          {/* 3x3 GRID CELLS */}
-          <div className="grid grid-cols-3 gap-3 relative z-0">
-            {currentGrid.map((row, rIdx) =>
-              row.map((symId, cIdx) => {
-                const sym = SLOT_SYMBOLS[symId] ?? SLOT_SYMBOLS.cherry
-                const isWinningCell = lastResult?.winningLines.some((w) =>
-                  w.payline.coords.some(([r, c]) => r === rIdx && c === cIdx),
-                )
-
-                return (
-                  <div
-                    key={`${rIdx}-${cIdx}`}
-                    className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center bg-gradient-to-b from-slate-800 to-slate-950 border-2 ${
-                      isWinningCell
-                        ? 'border-yellow-400 shadow-[0_0_25px_rgba(250,204,21,0.8)] scale-105 z-20 bg-amber-950/40'
-                        : 'border-amber-500/30 shadow-inner'
-                    } transition-all duration-200 overflow-hidden select-none`}
-                  >
-                    <span
-                      className={`text-5xl sm:text-6xl transition-transform duration-100 ${
-                        isSpinning ? 'blur-[2px] scale-90 animate-pulse' : 'scale-100 hover:scale-110'
-                      }`}
-                    >
-                      {sym.icon}
-                    </span>
-                    <span className="text-[11px] font-bold text-slate-300 mt-1 font-mono tracking-tight">
-                      {sym.name}
-                    </span>
-
-                    {/* Cell Highlight Glow */}
-                    {isWinningCell && (
-                      <div className="absolute inset-0 bg-yellow-400/10 pointer-events-none animate-pulse rounded-2xl" />
-                    )}
-                  </div>
-                )
-              }),
-            )}
+        {/* PHYSICAL MECHANICAL PULL LEVER (RIGHT SIDE) */}
+        <div className="hidden lg:flex flex-col items-center justify-center ml-4 relative select-none">
+          <div className="w-6 h-36 bg-gradient-to-r from-slate-700 via-slate-500 to-slate-800 rounded-full border border-slate-950 shadow-2xl relative flex flex-col items-center">
+            {/* LEVER HANDLE ROD */}
+            <div
+              className={`w-3 bg-gradient-to-b from-amber-300 via-yellow-400 to-amber-500 rounded-full transition-all duration-300 origin-bottom ${
+                isLeverPulled ? 'h-16 transform rotate-[45deg]' : 'h-28'
+              }`}
+            >
+              {/* LEVER KNOB BALL */}
+              <button
+                type="button"
+                disabled={isSpinning || (spinsLeft <= 0 && freeSpinsLeft <= 0)}
+                onClick={handleSpin}
+                className="w-10 h-10 rounded-full bg-gradient-to-tr from-red-600 via-red-500 to-amber-400 border-2 border-yellow-200 shadow-[0_0_20px_rgba(239,68,68,0.8)] -translate-x-3.5 -translate-y-4 hover:scale-110 active:scale-95 transition-transform"
+                title="레버 당기기!"
+              />
+            </div>
           </div>
-
-          {/* SPIN DISPLAY RESULTS BANNER */}
-          <div className="mt-4 min-h-[48px] flex items-center justify-center px-4 py-2 bg-slate-950/80 rounded-xl border border-amber-400/30 text-center font-mono">
-            {isSpinning ? (
-              <span className="text-amber-400 font-bold animate-pulse text-sm">
-                🎰 릴 스핀 중... 대박 당첨을 기원합니다!
-              </span>
-            ) : lastResult ? (
-              lastResult.totalWinAmount > 0 ? (
-                <div className="flex items-center gap-2 text-yellow-300 font-black text-base animate-bounce">
-                  <span>🎉 당첨!</span>
-                  <span className="text-amber-400 text-lg">
-                    +${lastResult.totalWinAmount.toLocaleString()}
-                  </span>
-                  {lastResult.freeSpinsAwarded > 0 && (
-                    <span className="text-xs text-yellow-200 bg-yellow-600/60 px-2 py-0.5 rounded-full">
-                      🎁 프리 스핀 +3회!
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <span className="text-slate-400 text-xs">
-                  아쉽습니다! 다음 스핀 기회를 도전하세요.
-                </span>
-              )
-            ) : (
-              <span className="text-amber-300/80 text-xs">
-                하단의 레버/스핀 버튼을 눌러 게임을 시작하세요!
-              </span>
-            )}
-          </div>
+          <span className="text-[9px] font-mono font-bold text-amber-400 mt-2 uppercase tracking-widest">
+            PULL LEVER
+          </span>
         </div>
+      </div>
 
-        {/* SPIN CONTROLS FOOTER */}
-        <div className="w-full max-w-lg mt-4 flex items-center justify-between gap-4 px-2">
-          {/* TOTAL SESSION WIN COUNTER */}
-          <div className="flex-1 px-4 py-3 bg-slate-900/90 border border-amber-400/40 rounded-2xl backdrop-blur-md flex flex-col justify-center">
-            <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">
-              누적 획득 당첨금
-            </span>
-            <span className="text-lg sm:text-xl font-black font-mono text-yellow-300">
-              ${sessionTotalWon.toLocaleString()}
-            </span>
-          </div>
-
-          {/* BIG SPIN BUTTON */}
-          <button
-            disabled={isSpinning || (spinsLeft <= 0 && freeSpinsLeft <= 0)}
-            onClick={handleSpin}
-            className={`px-8 py-4 rounded-2xl font-black text-lg sm:text-xl tracking-wider shadow-2xl transition-all duration-150 transform flex items-center justify-center gap-2 ${
-              isSpinning || (spinsLeft <= 0 && freeSpinsLeft <= 0)
-                ? 'bg-slate-800 border-2 border-slate-700 text-slate-500 cursor-not-allowed opacity-60'
-                : freeSpinsLeft > 0
-                ? 'bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 border-2 border-yellow-200 text-slate-950 hover:scale-105 active:scale-95 shadow-[0_0_35px_rgba(250,204,21,0.8)] animate-pulse'
-                : 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 border-2 border-yellow-300 text-slate-950 hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(245,158,11,0.6)]'
-            }`}
-          >
-            <span>🎰</span>
-            <span>
-              {isSpinning
-                ? '스핀 중...'
-                : freeSpinsLeft > 0
-                ? `FREE SPIN (${freeSpinsLeft})`
-                : 'SPIN! (돌리기)'}
-            </span>
-          </button>
-        </div>
+      {/* BIG PUSH BUTTON FOOTER */}
+      <div className="w-full max-w-xl mt-3 flex items-center justify-center">
+        <button
+          disabled={isSpinning || (spinsLeft <= 0 && freeSpinsLeft <= 0)}
+          onClick={handleSpin}
+          className={`w-full py-4 rounded-2xl font-black text-xl tracking-wider shadow-2xl transition-all duration-150 transform flex items-center justify-center gap-3 ${
+            isSpinning || (spinsLeft <= 0 && freeSpinsLeft <= 0)
+              ? 'bg-slate-800 border-2 border-slate-700 text-slate-500 cursor-not-allowed opacity-60'
+              : freeSpinsLeft > 0
+              ? 'bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 border-2 border-yellow-200 text-slate-950 hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(250,204,21,0.9)] animate-pulse'
+              : 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 border-2 border-yellow-300 text-slate-950 hover:scale-105 active:scale-95 shadow-[0_0_35px_rgba(245,158,11,0.7)]'
+          }`}
+        >
+          <span className="text-2xl">🎰</span>
+          <span>
+            {isSpinning
+              ? '릴 회전 중...'
+              : freeSpinsLeft > 0
+              ? `FREE SPIN (${freeSpinsLeft}회 남음)`
+              : 'SPIN! (슬롯 돌리기)'}
+          </span>
+        </button>
       </div>
 
       {/* PAYTABLE MODAL */}
@@ -459,28 +522,12 @@ export function CasinoSlotMachine({
                 {PAYLINES.map((line) => (
                   <li key={line.id}>
                     <span style={{ color: line.color }} className="font-bold">
-                      {line.name}
+                      {line.name} (L{line.id})
                     </span>
                     : row/col 연결선 3칸 동일 매칭 판정
                   </li>
                 ))}
               </ul>
-            </div>
-
-            {/* SPECIAL RULES */}
-            <div className="space-y-1.5 border-t border-amber-400/20 pt-3 text-xs text-slate-300">
-              <p>
-                <span className="text-amber-400 font-bold">🎰 Scatter (스캐터):</span> 위치 상관없이 3개
-                이상 등장 시 베팅금 10배 지급 + 프리 스핀 3회 부여!
-              </p>
-              <p>
-                <span className="text-yellow-400 font-bold">🃏 Wild (와일드):</span> 스캐터를 제외한 모든
-                심볼 대신 적용 (조커 역할).
-              </p>
-              <p>
-                <span className="text-red-400 font-bold">💥 JACKPOT (잭팟):</span> 3x3 9개 칸 전체 동일
-                심볼 완성 시 베팅금 100배 초대형 잭팟!
-              </p>
             </div>
 
             <button
@@ -540,7 +587,9 @@ export function CasinoSlotMachine({
                 <span className="text-amber-400">순 손익:</span>
                 <span
                   className={
-                    sessionTotalWon >= sessionTotalBet ? 'text-green-400 font-black' : 'text-red-400 font-black'
+                    sessionTotalWon >= sessionTotalBet
+                      ? 'text-green-400 font-black'
+                      : 'text-red-400 font-black'
                   }
                 >
                   {sessionTotalWon >= sessionTotalBet ? '+' : ''}$
