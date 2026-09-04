@@ -14,11 +14,11 @@ export type SocialSpawnSpec = {
 }
 
 /** 데이트 1→2차. 대기 후 확률 실패 시 다시 min~max 대기 */
-export const DATE_SPAWN: SocialSpawnSpec = { minWait: 2, maxWait: 5, chance: 0.5 }
+export const DATE_SPAWN: SocialSpawnSpec = { minWait: 1, maxWait: 2, chance: 0.85 }
 /** 보유 크리에이터 대상 */
-export const VIP_SPAWN: SocialSpawnSpec = { minWait: 3, maxWait: 6, chance: 0.5 }
+export const VIP_SPAWN: SocialSpawnSpec = { minWait: 2, maxWait: 4, chance: 0.6 }
 /** 데이트 1·2차 완료 후 H(첫 회) 및 이후 H 재요청 */
-export const H_SPAWN: SocialSpawnSpec = { minWait: 3, maxWait: 6, chance: 0.5 }
+export const H_SPAWN: SocialSpawnSpec = { minWait: 1, maxWait: 2, chance: 0.9 }
 
 export const DATE_SP_BY_STEP: Record<DateStepKey, Record<Grade, number>> = {
   date1: { C: 1, B: 2, A: 3, S: 5 },
@@ -246,6 +246,18 @@ export function advanceAndPickSocialEvent(
 
   if (blocked) {
     return { state: next, event: null }
+  }
+
+  // 데이트 2차 완료 후 H씬 해금 대기 중인 캐릭터가 있으면 최우선 스폰
+  const hUnlockTarget = pickHUnlockTarget(roster)
+  if (hUnlockTarget) {
+    const hPending = buildDatePending(hUnlockTarget)
+    if (hPending) {
+      return {
+        state: { ...next, h: consumeChannel(H_SPAWN) },
+        event: hPending,
+      }
+    }
   }
 
   const candidates: SocialPending[] = []

@@ -2841,9 +2841,14 @@ export function InGame({
   }
 
   function checkProposalEvent(openScout: boolean): boolean {
-    if (leagueRef.current.currentRank !== 1) return false
+    const isTopRank =
+      leagueRef.current.currentRank === 1 ||
+      stationGradeRef.current === 'top' ||
+      companyTierOf(leagueRef.current.currentRank).id === 'top'
 
-    const allEligible = ownedCreatorsRef.current.filter((c) => (c.dateArcStep ?? 0) >= 3)
+    if (!isTopRank) return false
+
+    const allEligible = ownedCreatorsRef.current.filter((c) => (c.dateArcStep ?? 0) >= 2)
     if (allEligible.length === 0) return false
 
     let pendingCreators = allEligible.filter((c) => !c.proposalState)
@@ -2851,11 +2856,11 @@ export function InGame({
     // 모두 거부(rejected)한 상태인 경우, 리셋하여 한 명씩 다시 고백할 수 있게 업데이트
     if (pendingCreators.length === 0 && allEligible.every((c) => c.proposalState === 'rejected')) {
       const resetOwned = ownedCreatorsRef.current.map((c) =>
-        (c.dateArcStep ?? 0) >= 3 ? { ...c, proposalState: null } : c,
+        (c.dateArcStep ?? 0) >= 2 ? { ...c, proposalState: null } : c,
       )
       ownedCreatorsRef.current = resetOwned
       onOwnedCreatorsChangeRef.current(resetOwned)
-      pendingCreators = resetOwned.filter((c) => (c.dateArcStep ?? 0) >= 3 && !c.proposalState)
+      pendingCreators = resetOwned.filter((c) => (c.dateArcStep ?? 0) >= 2 && !c.proposalState)
     }
 
     if (pendingCreators.length === 0) return false
