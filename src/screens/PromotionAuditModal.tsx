@@ -321,8 +321,34 @@ export function PromotionAuditModal({
   const currentSatisfactionPct = Math.round(
     (session.currentSatisfaction / session.targetSatisfaction) * 100,
   )
-  const judgeDisplayMediaUrl =
-    getJudgeSatisfactionMediaUrl(session.judge, currentSatisfactionPct) || session.judge.avatarUrl || null
+
+  const isCompletedNow = session.isCompleted || showResultModal || currentSatisfactionPct >= 100
+
+  // 1. 성공/실패/만족도 구간별 심사관 16:9 미디어 교체 추적
+  let judgeDisplayMediaUrl = ''
+  let currentJudgeMediaSlot: unknown = null
+
+  if (isCompletedNow && (session.isSuccess || currentSatisfactionPct >= 100) && session.judge.successMediaUrl) {
+    judgeDisplayMediaUrl = session.judge.successMediaUrl
+    currentJudgeMediaSlot = session.judge.successMediaUrl
+  } else if (isCompletedNow && !session.isSuccess && session.judge.failMediaUrl) {
+    judgeDisplayMediaUrl = session.judge.failMediaUrl
+    currentJudgeMediaSlot = session.judge.failMediaUrl
+  } else {
+    judgeDisplayMediaUrl = getJudgeSatisfactionMediaUrl(session.judge, currentSatisfactionPct)
+    const key = currentSatisfactionPct >= 80 ? 'A' : currentSatisfactionPct >= 30 ? 'B' : 'C'
+    currentJudgeMediaSlot = session.judge.auditMedia?.[key]
+  }
+
+  if (!judgeDisplayMediaUrl) {
+    judgeDisplayMediaUrl = session.judge.avatarUrl || ''
+  }
+
+  const judgeBlurRegions = resolveCutsceneBlur(
+    currentJudgeMediaSlot,
+    judgeDisplayMediaUrl,
+    events,
+  )
 
   const judgeName = pickCharacterLocaleText(session.judge.names, locale, session.judge.name)
 
@@ -635,27 +661,13 @@ export function PromotionAuditModal({
                   </div>
                 </div>
               ) : judgeDisplayMediaUrl ? (
-                isVideoMediaUrl(judgeDisplayMediaUrl) ? (
-                  <video
-                    key={judgeDisplayMediaUrl}
-                    src={resolveMediaSrc(judgeDisplayMediaUrl)}
-                    width={1280}
-                    height={720}
-                    className="h-full w-full aspect-[16/9] object-contain border-0"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
-                ) : (
-                  <img
-                    src={resolveMediaSrc(judgeDisplayMediaUrl)}
-                    alt={judgeName}
-                    width={1280}
-                    height={720}
-                    className="h-full w-full aspect-[16/9] object-contain border-0"
-                  />
-                )
+                <MosaicMediaFrame
+                  key={judgeDisplayMediaUrl}
+                  src={resolveMediaSrc(judgeDisplayMediaUrl)}
+                  kind={isVideoMediaUrl(judgeDisplayMediaUrl) ? 'video' : 'image'}
+                  regions={judgeBlurRegions}
+                  className="h-full w-full aspect-[16/9] object-contain border-0"
+                />
               ) : (
                 <div className="flex h-full w-full aspect-[16/9] flex-col items-center justify-center bg-gradient-to-br from-purple-950 via-slate-950 to-indigo-950 text-5xl">
                   <span>⚖️</span>
