@@ -153,12 +153,26 @@ export function initUiClickSounds() {
   )
 }
 
+let sharedAudioCtx: AudioContext | null = null
+
+function getSharedAudioContext(): AudioContext | null {
+  if (typeof window === 'undefined') return null
+  const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+  if (!AudioCtx) return null
+  if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
+    sharedAudioCtx = new AudioCtx()
+  }
+  if (sharedAudioCtx.state === 'suspended') {
+    void sharedAudioCtx.resume()
+  }
+  return sharedAudioCtx
+}
+
 /** 승급 통과 성공 웅장한 팡파르 (Web Audio Synth Fanfare) */
 export function playAuditPassFanfare() {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
-    if (!AudioCtx) return
-    const ctx = new AudioCtx()
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
     const vol = volume * 0.85
     if (vol <= 0.01) return
 
@@ -207,10 +221,6 @@ export function playAuditPassFanfare() {
     drumGain.connect(ctx.destination)
     drumOsc.start(now + 0.8)
     drumOsc.stop(now + 1.25)
-
-    setTimeout(() => {
-      ctx.close().catch(() => {})
-    }, 2500)
   } catch {
     // ignore AudioContext error
   }
@@ -219,9 +229,8 @@ export function playAuditPassFanfare() {
 /** 슬롯머신 소형 당첨 사운드 (3단계 상쾌한 차임벨) */
 export function playSlotWinSmallSound() {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
-    if (!AudioCtx) return
-    const ctx = new AudioCtx()
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
     const vol = volume * 0.7
     if (vol <= 0.01) return
 
@@ -249,8 +258,6 @@ export function playSlotWinSmallSound() {
       osc.start(now + start)
       osc.stop(now + start + duration)
     })
-
-    setTimeout(() => ctx.close().catch(() => {}), 1000)
   } catch {
     // ignore
   }
@@ -259,9 +266,8 @@ export function playSlotWinSmallSound() {
 /** 슬롯머신 중형 당첨 사운드 (화려한 5음 팡파르 & 신디 차임) */
 export function playSlotWinMediumSound() {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
-    if (!AudioCtx) return
-    const ctx = new AudioCtx()
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
     const vol = volume * 0.8
     if (vol <= 0.01) return
 
@@ -292,8 +298,6 @@ export function playSlotWinMediumSound() {
       osc.start(now + start)
       osc.stop(now + start + duration)
     })
-
-    setTimeout(() => ctx.close().catch(() => {}), 1500)
   } catch {
     // ignore
   }
@@ -302,9 +306,8 @@ export function playSlotWinMediumSound() {
 /** 슬롯머신 잭팟/대형 당첨 사운드 (웅장한 메가 팡파르 & 쿵 심벌즈) */
 export function playSlotWinBigSound() {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
-    if (!AudioCtx) return
-    const ctx = new AudioCtx()
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
     const vol = volume * 0.9
     if (vol <= 0.01) return
 
@@ -349,8 +352,6 @@ export function playSlotWinBigSound() {
     bassGain.connect(ctx.destination)
     bassOsc.start(now + 0.45)
     bassOsc.stop(now + 1.2)
-
-    setTimeout(() => ctx.close().catch(() => {}), 2500)
   } catch {
     // ignore
   }
@@ -359,10 +360,9 @@ export function playSlotWinBigSound() {
 /** 돈 올라가는 카운트업 틱 사운드 */
 export function playCoinCountUpTickSound(step = 0) {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
-    if (!AudioCtx) return
-    const ctx = new AudioCtx()
-    const vol = volume * 0.5
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.4
     if (vol <= 0.01) return
 
     const now = ctx.currentTime
@@ -374,16 +374,14 @@ export function playCoinCountUpTickSound(step = 0) {
     osc.frequency.setValueAtTime(baseFreq, now)
 
     gain.gain.setValueAtTime(0, now)
-    gain.gain.linearRampToValueAtTime(vol * 0.3, now + 0.005)
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05)
+    gain.gain.linearRampToValueAtTime(vol * 0.25, now + 0.005)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04)
 
     osc.connect(gain)
     gain.connect(ctx.destination)
 
     osc.start(now)
-    osc.stop(now + 0.05)
-
-    setTimeout(() => ctx.close().catch(() => {}), 200)
+    osc.stop(now + 0.04)
   } catch {
     // ignore
   }

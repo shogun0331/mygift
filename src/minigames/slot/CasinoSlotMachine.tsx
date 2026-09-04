@@ -79,6 +79,8 @@ export function CasinoSlotMachine({
   const [coinParticles, setCoinParticles] = useState<CoinParticle[]>([])
   const [confettiParticles, setConfettiParticles] = useState<ConfettiParticle[]>([])
 
+  const winAmountTextRef = useRef<HTMLSpanElement>(null)
+
   const [showPaytable, setShowPaytable] = useState(false)
   const [jackpotBanner, setJackpotBanner] = useState(false)
 
@@ -211,9 +213,9 @@ export function CasinoSlotMachine({
           setConfettiParticles(confettis)
         }
 
-        // 3. 돈 올라가는(Count-up) 실시간 롤업 애니메이션
+        // 3. 돈 올라가는(Count-up) 실시간 롤업 애니메이션 (Direct DOM update - zero re-render frame drops)
         const targetVal = result.totalWinAmount
-        const duration = currentTier === 'big' ? 1400 : currentTier === 'medium' ? 1000 : 700
+        const duration = currentTier === 'big' ? 1200 : currentTier === 'medium' ? 900 : 600
         const startTimestamp = performance.now()
         setIsCountingUp(true)
         let lastStep = -1
@@ -224,7 +226,10 @@ export function CasinoSlotMachine({
           // Ease-out cubic for realistic casino countup
           const easeOut = 1 - Math.pow(1 - progress, 3)
           const currentAmount = Math.round(targetVal * easeOut)
-          setAnimWinAmount(currentAmount)
+
+          if (winAmountTextRef.current) {
+            winAmountTextRef.current.textContent = `+$${currentAmount.toLocaleString()}`
+          }
 
           const currentStep = Math.floor(progress * 10)
           if (currentStep !== lastStep && progress < 1) {
@@ -235,7 +240,9 @@ export function CasinoSlotMachine({
           if (progress < 1) {
             requestAnimationFrame(stepCountUp)
           } else {
-            setAnimWinAmount(targetVal)
+            if (winAmountTextRef.current) {
+              winAmountTextRef.current.textContent = `+$${targetVal.toLocaleString()}`
+            }
             setIsCountingUp(false)
           }
         }
@@ -503,6 +510,7 @@ export function CasinoSlotMachine({
                           : '🎉 WIN!'}
                       </span>
                       <span
+                        ref={winAmountTextRef}
                         className={`text-amber-400 text-sm sm:text-base font-extrabold ${
                           isCountingUp ? 'animate-money-pulse text-yellow-200 scale-110' : ''
                         }`}

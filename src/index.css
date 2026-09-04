@@ -4516,16 +4516,19 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
   display: flex;
   flex-direction: column;
   will-change: transform;
+  transform: translateZ(0);
 }
 
 .pachislot-reel-strip.is-spinning {
-  animation: pachislot-reel-spin 0.2s linear infinite;
-  filter: blur(2.5px) brightness(1.2);
+  animation: pachislot-reel-spin 0.16s linear infinite;
+  filter: blur(1.5px);
+  will-change: transform;
 }
 
 .pachislot-reel-strip.is-stopped {
   transform: translateY(var(--reel-land, 0px));
-  animation: pachislot-reel-land 0.45s cubic-bezier(0.14, 1.25, 0.28, 1) forwards;
+  animation: pachislot-reel-land 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform;
 }
 
 .pachislot-reel-cell {
@@ -4671,15 +4674,12 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 
 @keyframes pachislot-reel-land {
   0% {
-    transform: translateY(calc(var(--reel-land, 0px) + 60px));
-    filter: blur(2px);
-  }
-  70% {
-    transform: translateY(calc(var(--reel-land, 0px) - 8px));
-    filter: blur(0);
+    transform: translateY(calc(var(--reel-land, 0px) + 50px));
+    filter: blur(1px);
   }
   100% {
     transform: translateY(var(--reel-land, 0px));
+    filter: blur(0);
   }
 }
 
