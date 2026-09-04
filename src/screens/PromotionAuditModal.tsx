@@ -88,6 +88,8 @@ export function PromotionAuditModal({
 }: PromotionAuditModalProps) {
   const { locale } = useI18n()
   const [session, setSession] = useState<AuditSession>(() => createAuditSession(tier, config))
+  const sessionRef = useRef(session)
+  sessionRef.current = session
   const [selectedCreatorId, setSelectedCreatorId] = useState<string | null>(null)
   const [draggedCreatorId, setDraggedCreatorId] = useState<string | null>(null)
 
@@ -213,7 +215,7 @@ export function PromotionAuditModal({
     _targetCreatorId?: string,
     nextPct?: number,
     isCrit = false,
-    critMult = 1.0
+    critMult = 1.0,
   ) => {
     setLastScoreGained(score)
     playSfx('audit-judge-hit')
@@ -224,7 +226,8 @@ export function PromotionAuditModal({
     setIsHeartShaking(true)
 
     // 💬 심사관 만족도 반응 멘트 7개국어 픽업하여 말풍선 표시
-    const currentPct = nextPct ?? Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100)
+    const curSession = sessionRef.current
+    const currentPct = nextPct ?? Math.round((curSession.currentSatisfaction / curSession.targetSatisfaction) * 100)
     const reactionDialogueText = getJudgeReactionDialogue(currentPct, locale)
     setJudgeSpeechBubble({ text: reactionDialogueText, type: 'reaction' })
 
@@ -236,8 +239,14 @@ export function PromotionAuditModal({
     // 650ms 유혹 폭발 마무리 후 -> 만족도 채워짐 & 피격 파티클 감상 후 승급 성공 팝업 표출!
     setTimeout(() => {
       setShowImpactEffect(false)
-      const currentPct = nextPct ?? Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100)
-      const isCompletedNow = session.isCompleted || session.currentSatisfaction >= session.targetSatisfaction || currentPct >= 100
+      const liveSession = sessionRef.current
+      const livePct = Math.round((liveSession.currentSatisfaction / liveSession.targetSatisfaction) * 100)
+      const isCompletedNow =
+        liveSession.isCompleted ||
+        liveSession.isSuccess ||
+        liveSession.currentSatisfaction >= liveSession.targetSatisfaction ||
+        livePct >= 100 ||
+        (nextPct ?? 0) >= 100
 
       if (isCompletedNow) {
         // 🎉 피격 파티클과 만족도 100% 채워짐 연출을 감상하도록 750ms 뒤에 승급 성공 팝업 오픈!
@@ -265,7 +274,8 @@ export function PromotionAuditModal({
     setIsCutsceneModalOpen(false)
     setCanCloseCutscene(false)
     if (lastScoreGained !== null && lastPerformedCreator) {
-      const nextPct = Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100)
+      const curSession = sessionRef.current
+      const nextPct = Math.round((curSession.currentSatisfaction / curSession.targetSatisfaction) * 100)
       triggerImpactParticle(
         lastScoreGained,
         isTypeMatchedHit,
@@ -305,12 +315,16 @@ export function PromotionAuditModal({
         (c) => (creatorStaminaMap[c.id] ?? 100) >= 15,
       )
       if (!hasPlayableCard) {
-        setSession((prev) => ({
-          ...prev,
-          isCompleted: true,
-          isSuccess: prev.currentSatisfaction >= prev.targetSatisfaction,
-          failReason: 'no_cards',
-        }))
+        setSession((prev) => {
+          const next = {
+            ...prev,
+            isCompleted: true,
+            isSuccess: prev.currentSatisfaction >= prev.targetSatisfaction,
+            failReason: 'no_cards' as const,
+          }
+          sessionRef.current = next
+          return next
+        })
         setShowResultModal(true)
       }
     }
@@ -323,6 +337,27 @@ export function PromotionAuditModal({
     isCutsceneModalOpen,
     displayCreators,
     creatorStaminaMap,
+  ])
+
+  // 🏆 심사 완수(성공/실패) 또는 목표 만족도 도달 시 승급 결과 모달 표출 보장
+  useEffect(() => {
+    if (
+      (session.isCompleted || session.isSuccess || session.currentSatisfaction >= session.targetSatisfaction) &&
+      !showResultModal &&
+      !isCutsceneModalOpen
+    ) {
+      const timer = setTimeout(() => {
+        setShowResultModal(true)
+      }, 750)
+      return () => clearTimeout(timer)
+    }
+  }, [
+    session.isCompleted,
+    session.isSuccess,
+    session.currentSatisfaction,
+    session.targetSatisfaction,
+    showResultModal,
+    isCutsceneModalOpen,
   ])
 
   const currentSatisfactionPct = Math.round(
@@ -423,6 +458,7 @@ export function PromotionAuditModal({
     setCriticalMult(critMult)
 
     setSession(nextSession)
+    sessionRef.current = nextSession
     setSelectedCreatorId(null)
 
     // 카드를 클릭하여 제출 시, 중간 사이즈 미디어 추가 오버레이 팝업 띄우기
