@@ -766,7 +766,7 @@ export function PromotionAuditModal({
 
         {/* 하단 4인 크리에이터 카드 드래그 앤 드롭 & 선택 덱 (완료 시 딤딩) */}
         <div
-          className={`shrink-0 border-t border-purple-500/20 bg-slate-950/90 px-4 py-2.5 transition-all ${
+          className={`shrink-0 border-t border-purple-500/20 bg-slate-950/90 px-4 py-2.5 transition-all relative ${
             session.isCompleted ? 'pointer-events-none opacity-40 grayscale-[40%]' : ''
           }`}
           onDragOver={(e) => e.preventDefault()}
@@ -778,6 +778,27 @@ export function PromotionAuditModal({
             }
           }}
         >
+          {/* 👆 핑거 카드 선택 가이드 (심사관 영상 바로 아래, 카드 선택 안내 문구 위치) */}
+          {showActionGuide && !showCinematicIntro && !session.isCompleted ? (
+            <div className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 z-[110] flex flex-col items-center">
+              <div className="flex flex-col items-center animate-[cardDeckTap_1.4s_ease-in-out_infinite]">
+                {/* 카드를 클릭하라는 탭 안내 뱃지 */}
+                <div className="mb-1 flex items-center gap-1.5 rounded-full border-2 border-amber-300 bg-slate-950/95 px-4 py-1.5 shadow-[0_0_30px_rgba(251,191,36,0.95)] backdrop-blur-md">
+                  <span className="text-xs sm:text-sm font-black text-amber-200 uppercase tracking-wider animate-pulse">
+                    👇 아래 카드 중 하나를 선택하세요!
+                  </span>
+                </div>
+
+                {/* 3D 핑거 클릭 손가락 아이콘 */}
+                <div className="relative flex items-center justify-center">
+                  <span className="text-5xl sm:text-6xl drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] filter drop-shadow-[0_0_25px_rgba(251,191,36,1)]">
+                    👇
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           {/* 오직 유저 카드 선택이 가능한 차례일 때만 카드 선택 가이드 라인 팝업! */}
           <div className="mb-2 text-center min-h-[28px] flex items-center justify-center">
             {!isActionLocked && !isJudgeTurn && !showCinematicIntro && !session.isCompleted ? (
