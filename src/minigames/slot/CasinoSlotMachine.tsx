@@ -319,9 +319,6 @@ export function CasinoSlotMachine({
                                 <span className="text-3xl sm:text-4xl filter drop-shadow-md">
                                   {sym.icon}
                                 </span>
-                                <span className="text-[9px] font-bold text-slate-200 mt-0.5 font-mono">
-                                  {sym.name}
-                                </span>
                               </div>
                             )
                           })}
