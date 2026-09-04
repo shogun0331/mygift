@@ -188,7 +188,7 @@ export function CasinoSlotMachine({
           </div>
           <div>
             <h1 className="text-base sm:text-lg font-black bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-400 bg-clip-text text-transparent">
-              GOLDEN CASINO REEL (8개 페이라인 / 무료 3회)
+              골든 슬롯머신
             </h1>
           </div>
         </div>
@@ -198,7 +198,7 @@ export function CasinoSlotMachine({
             onClick={() => setShowPaytable(true)}
             className="px-3 py-1 rounded-xl border border-amber-400/50 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-bold transition-all"
           >
-            📖 배당표 안내
+            📖 배당표
           </button>
 
           <div className="flex items-center gap-2 px-3.5 py-1 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono">
@@ -234,9 +234,6 @@ export function CasinoSlotMachine({
                   <span className="text-2xl sm:text-3xl font-black font-mono tracking-widest text-yellow-300 drop-shadow-[0_2px_8px_rgba(250,204,21,0.9)] animate-pulse">
                     7️⃣ 7️⃣ 7️⃣
                   </span>
-                </div>
-                <div className="text-[9px] font-black font-mono tracking-widest text-amber-300 bg-amber-950/90 px-3 py-0.5 rounded-full border border-amber-400/60 mt-1 shadow-md uppercase">
-                  ★ PACHISLOT 8-PAYLINE CHAMPION ★
                 </div>
               </div>
             </div>
@@ -353,29 +350,29 @@ export function CasinoSlotMachine({
               <div className="min-h-[38px] flex items-center justify-center px-4 py-1 bg-slate-950/95 rounded-xl border border-amber-400/50 text-center font-mono shadow-inner">
                 {isSpinning ? (
                   <span className="text-amber-400 font-bold animate-pulse text-xs">
-                    🎰 릴 스핀 중... (무료 스핀 대박 기원!)
+                    🎰 릴 회전 중...
                   </span>
                 ) : lastResult ? (
                   lastResult.totalWinAmount > 0 ? (
                     <div className="flex items-center gap-2 text-yellow-300 font-black text-xs sm:text-sm animate-bounce">
-                      <span>🎉 당첨 상금!</span>
+                      <span>🎉 당첨 상금</span>
                       <span className="text-amber-400 text-sm sm:text-base">
                         +${lastResult.totalWinAmount.toLocaleString()}
                       </span>
                       {lastResult.freeSpinsAwarded > 0 && (
                         <span className="text-[10px] text-yellow-200 bg-yellow-600/90 px-2 py-0.5 rounded-full shadow">
-                          🎁 BONUS FREE SPIN +3회!
+                          🎁 보너스 스핀 +3회!
                         </span>
                       )}
                     </div>
                   ) : (
                     <span className="text-slate-400 text-xs">
-                      {isOutOfSpins ? '도전 기회를 모두 사용했습니다. 상단 [게임 종료]로 나가주세요.' : '아쉽습니다! 다음 스핀 기회를 도전하세요.'}
+                      {isOutOfSpins ? '도전 기회가 소진되었습니다.' : '아쉽습니다!'}
                     </span>
                   )
                 ) : (
                   <span className="text-amber-300/90 text-xs">
-                    무료 3회 스핀 기회가 제공됩니다! 하단 SPIN 버튼을 누르거나 레버를 당기세요.
+                    스핀 버튼을 눌러 시작하세요!
                   </span>
                 )}
               </div>
@@ -422,28 +419,19 @@ export function CasinoSlotMachine({
                   : isOutOfSpins
                   ? '도전 기회 소진 (0/3회)'
                   : freeSpinsLeft > 0
-                  ? `FREE SPIN (${freeSpinsLeft}회)`
-                  : `SPIN! (${spinsLeft}/3회)`}
+                  ? `보너스 스핀 (${freeSpinsLeft}회)`
+                  : `도전하기 (${spinsLeft}/3회)`}
               </span>
             </button>
           </div>
 
           {/* 4. BOTTOM GRAPHIC ARTWORK PANEL & 3D METALLIC COIN TRAY */}
           <div className="pachislot-bottom-deck">
-            <div className="px-4 py-1 flex items-center justify-between border-b border-slate-700/80 bg-slate-900/90 text-xs font-mono">
-              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">
-                ★ PACHISLOT COIN TRAY ★
-              </span>
-              <span className="text-xs font-black text-green-400">
-                획득 상금: +${sessionTotalWon.toLocaleString()}
-              </span>
-            </div>
-
             {/* METALLIC COIN OUTLET TRAY */}
             <div className="pachislot-coin-tray flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
                 <span className="text-2xl animate-bounce">🪙</span>
-                <span className="text-xs">코인 배출구 (누적 당첨 상금)</span>
+                <span className="text-xs">누적 당첨 상금</span>
               </div>
               <div className="text-sm font-black font-mono text-yellow-300 bg-amber-950/90 px-3 py-1 rounded-lg border border-amber-400/50 shadow-md">
                 +${sessionTotalWon.toLocaleString()}
@@ -469,9 +457,6 @@ export function CasinoSlotMachine({
               />
             </div>
           </div>
-          <span className="text-[9px] font-mono font-black text-amber-400 mt-2 uppercase tracking-widest drop-shadow">
-            PULL LEVER
-          </span>
         </div>
       </div>
 
