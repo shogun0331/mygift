@@ -215,3 +215,177 @@ export function playAuditPassFanfare() {
     // ignore AudioContext error
   }
 }
+
+/** 슬롯머신 소형 당첨 사운드 (3단계 상쾌한 차임벨) */
+export function playSlotWinSmallSound() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+    if (!AudioCtx) return
+    const ctx = new AudioCtx()
+    const vol = volume * 0.7
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+    const notes = [
+      { freq: 783.99, start: 0, duration: 0.15 }, // G5
+      { freq: 987.77, start: 0.08, duration: 0.15 }, // B5
+      { freq: 1174.66, start: 0.16, duration: 0.35 }, // D6
+    ]
+
+    notes.forEach(({ freq, start, duration }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, now + start)
+
+      gain.gain.setValueAtTime(0, now + start)
+      gain.gain.linearRampToValueAtTime(vol * 0.4, now + start + 0.01)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(now + start)
+      osc.stop(now + start + duration)
+    })
+
+    setTimeout(() => ctx.close().catch(() => {}), 1000)
+  } catch {
+    // ignore
+  }
+}
+
+/** 슬롯머신 중형 당첨 사운드 (화려한 5음 팡파르 & 신디 차임) */
+export function playSlotWinMediumSound() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+    if (!AudioCtx) return
+    const ctx = new AudioCtx()
+    const vol = volume * 0.8
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+    const notes = [
+      { freq: 523.25, start: 0, duration: 0.1 }, // C5
+      { freq: 659.25, start: 0.08, duration: 0.1 }, // E5
+      { freq: 783.99, start: 0.16, duration: 0.1 }, // G5
+      { freq: 1046.5, start: 0.24, duration: 0.18 }, // C6
+      { freq: 1318.51, start: 0.36, duration: 0.6 }, // E6
+      { freq: 1567.98, start: 0.36, duration: 0.6 }, // G6
+    ]
+
+    notes.forEach(({ freq, start, duration }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(freq, now + start)
+
+      gain.gain.setValueAtTime(0, now + start)
+      gain.gain.linearRampToValueAtTime(vol * 0.45, now + start + 0.015)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(now + start)
+      osc.stop(now + start + duration)
+    })
+
+    setTimeout(() => ctx.close().catch(() => {}), 1500)
+  } catch {
+    // ignore
+  }
+}
+
+/** 슬롯머신 잭팟/대형 당첨 사운드 (웅장한 메가 팡파르 & 쿵 심벌즈) */
+export function playSlotWinBigSound() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+    if (!AudioCtx) return
+    const ctx = new AudioCtx()
+    const vol = volume * 0.9
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+    const notes = [
+      { freq: 523.25, start: 0, duration: 0.12 },
+      { freq: 659.25, start: 0.1, duration: 0.12 },
+      { freq: 783.99, start: 0.2, duration: 0.12 },
+      { freq: 1046.5, start: 0.3, duration: 0.15 },
+      { freq: 1318.51, start: 0.45, duration: 0.8 },
+      { freq: 1567.98, start: 0.45, duration: 0.8 },
+      { freq: 2093.0, start: 0.45, duration: 1.0 },
+    ]
+
+    notes.forEach(({ freq, start, duration }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+
+      osc.type = 'sawtooth'
+      osc.frequency.setValueAtTime(freq, now + start)
+
+      gain.gain.setValueAtTime(0, now + start)
+      gain.gain.linearRampToValueAtTime(vol * 0.35, now + start + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(now + start)
+      osc.stop(now + start + duration)
+    })
+
+    // 임팩트 베이스 쿵
+    const bassOsc = ctx.createOscillator()
+    const bassGain = ctx.createGain()
+    bassOsc.type = 'sine'
+    bassOsc.frequency.setValueAtTime(150, now + 0.45)
+    bassOsc.frequency.exponentialRampToValueAtTime(30, now + 1.2)
+    bassGain.gain.setValueAtTime(vol * 0.7, now + 0.45)
+    bassGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2)
+    bassOsc.connect(bassGain)
+    bassGain.connect(ctx.destination)
+    bassOsc.start(now + 0.45)
+    bassOsc.stop(now + 1.2)
+
+    setTimeout(() => ctx.close().catch(() => {}), 2500)
+  } catch {
+    // ignore
+  }
+}
+
+/** 돈 올라가는 카운트업 틱 사운드 */
+export function playCoinCountUpTickSound(step = 0) {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+    if (!AudioCtx) return
+    const ctx = new AudioCtx()
+    const vol = volume * 0.5
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+    const baseFreq = 900 + (step % 8) * 80 // 계단식 피치 상승
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(baseFreq, now)
+
+    gain.gain.setValueAtTime(0, now)
+    gain.gain.linearRampToValueAtTime(vol * 0.3, now + 0.005)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05)
+
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+
+    osc.start(now)
+    osc.stop(now + 0.05)
+
+    setTimeout(() => ctx.close().catch(() => {}), 200)
+  } catch {
+    // ignore
+  }
+}
+

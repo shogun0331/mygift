@@ -4698,4 +4698,55 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
   50% { background: #fbbf24; box-shadow: 0 0 12px #fbbf24; }
 }
 
+/* Slot Machine Win Effects & Particle Animations */
+@keyframes coin-float-up {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0.6) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-90px) scale(1.25) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-180px) scale(0.8) rotate(360deg);
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(-40px) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(380px) rotate(720deg);
+  }
+}
+
+@keyframes money-roll-pulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.7));
+  }
+  50% {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 22px rgba(250, 204, 21, 1));
+  }
+}
+
+.animate-money-pulse {
+  animation: money-roll-pulse 0.4s ease-in-out infinite;
+}
+
+.animate-coin-float {
+  animation: coin-float-up 1.6s ease-out forwards;
+}
+
+.animate-confetti-fall {
+  animation: confetti-fall 2.2s linear forwards;
+}
+
+
 

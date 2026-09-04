@@ -10,7 +10,15 @@ import {
   type SlotSymbolId,
   type SlotSpinResult,
 } from './slotConfig'
-import { playSfx, stopSfx, playAuditPassFanfare } from '../../game/uiSfx'
+import {
+  playSfx,
+  stopSfx,
+  playAuditPassFanfare,
+  playSlotWinSmallSound,
+  playSlotWinMediumSound,
+  playSlotWinBigSound,
+  playCoinCountUpTickSound,
+} from '../../game/uiSfx'
 
 export type CasinoSlotMachineProps = {
   stationGrade?: StationGrade | null
@@ -27,6 +35,20 @@ function buildReelColumnStrip(targetColSymbols: SlotSymbolId[]): SlotSymbolId[] 
     dummies.push(getRandomSlotSymbol())
   }
   return [...dummies, ...targetColSymbols]
+}
+
+type CoinParticle = {
+  id: number
+  x: number
+  icon: string
+  delay: number
+}
+
+type ConfettiParticle = {
+  id: number
+  x: number
+  color: string
+  delay: number
 }
 
 export function CasinoSlotMachine({
@@ -49,6 +71,13 @@ export function CasinoSlotMachine({
   const [currentGrid, setCurrentGrid] = useState<SlotSymbolId[][]>(() => generateRandomSlotGrid())
   const [lastResult, setLastResult] = useState<SlotSpinResult | null>(null)
   const [isLeverPulled, setIsLeverPulled] = useState(false)
+
+  // 당첨 연출 및 돈 카운트업 상태
+  const [animWinAmount, setAnimWinAmount] = useState(0)
+  const [isCountingUp, setIsCountingUp] = useState(false)
+  const [winTier, setWinTier] = useState<'small' | 'medium' | 'big' | 'jackpot' | null>(null)
+  const [coinParticles, setCoinParticles] = useState<CoinParticle[]>([])
+  const [confettiParticles, setConfettiParticles] = useState<ConfettiParticle[]>([])
 
   const [showPaytable, setShowPaytable] = useState(false)
   const [jackpotBanner, setJackpotBanner] = useState(false)
@@ -81,6 +110,12 @@ export function CasinoSlotMachine({
     } else {
       setFreeSpinsLeft((prev) => prev - 1)
     }
+
+    // 초기화
+    setWinTier(null)
+    setAnimWinAmount(0)
+    setCoinParticles([])
+    setConfettiParticles([])
 
     // 레버 애니메이션 트리거
     setIsLeverPulled(true)
@@ -124,19 +159,87 @@ export function CasinoSlotMachine({
       setCurrentGrid(targetGrid)
       setLastResult(result)
 
-      // 당첨 시 보상 지급 (순수 상금 획득)
+      // 당첨 시 연출 & 사운드 다변화 및 돈 올라가는 애니메이션 실행
       if (result.totalWinAmount > 0) {
         onUpdateAssets(userAssetsRef.current + result.totalWinAmount)
         setSessionTotalWon((prev) => prev + result.totalWinAmount)
 
+        // 당첨 등급(Tier) 판정
+        let currentTier: 'small' | 'medium' | 'big' | 'jackpot' = 'small'
         if (result.isJackpot) {
+          currentTier = 'jackpot'
+        } else if (result.winningLines.length >= 3 || result.totalWinAmount >= baseReward * 8) {
+          currentTier = 'big'
+        } else if (result.winningLines.length >= 2 || result.totalWinAmount >= baseReward * 3) {
+          currentTier = 'medium'
+        } else {
+          currentTier = 'small'
+        }
+        setWinTier(currentTier)
+
+        // 1. 사운드 이펙트 다변화 실행
+        if (currentTier === 'jackpot') {
           setJackpotBanner(true)
           playAuditPassFanfare()
-        } else if (result.isScatterWon) {
-          playSfx('rank-up')
+        } else if (currentTier === 'big') {
+          playSlotWinBigSound()
+        } else if (currentTier === 'medium') {
+          playSlotWinMediumSound()
         } else {
-          playSfx('live-donation')
+          playSlotWinSmallSound()
         }
+
+        // 2. 파티클 이펙트 생성 (황금 코인 폭포수 & 컨페티)
+        const coinIcons = ['🪙', '💰', '✨', '⭐', '💎']
+        const coinCount = currentTier === 'big' || currentTier === 'jackpot' ? 30 : currentTier === 'medium' ? 18 : 10
+        const coins: CoinParticle[] = Array.from({ length: coinCount }, (_, i) => ({
+          id: i,
+          x: Math.random() * 90 + 5, // 5% ~ 95%
+          icon: coinIcons[Math.floor(Math.random() * coinIcons.length)],
+          delay: Math.random() * 0.4,
+        }))
+        setCoinParticles(coins)
+
+        if (currentTier === 'medium' || currentTier === 'big' || currentTier === 'jackpot') {
+          const colors = ['#f59e0b', '#ec4899', '#3b82f6', '#10b981', '#a855f7', '#eab308']
+          const confettis: ConfettiParticle[] = Array.from({ length: 25 }, (_, i) => ({
+            id: i,
+            x: Math.random() * 95,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            delay: Math.random() * 0.5,
+          }))
+          setConfettiParticles(confettis)
+        }
+
+        // 3. 돈 올라가는(Count-up) 실시간 롤업 애니메이션
+        const targetVal = result.totalWinAmount
+        const duration = currentTier === 'big' ? 1400 : currentTier === 'medium' ? 1000 : 700
+        const startTimestamp = performance.now()
+        setIsCountingUp(true)
+        let lastStep = -1
+
+        const stepCountUp = (now: number) => {
+          const elapsed = now - startTimestamp
+          const progress = Math.min(1, elapsed / duration)
+          // Ease-out cubic for realistic casino countup
+          const easeOut = 1 - Math.pow(1 - progress, 3)
+          const currentAmount = Math.round(targetVal * easeOut)
+          setAnimWinAmount(currentAmount)
+
+          const currentStep = Math.floor(progress * 10)
+          if (currentStep !== lastStep && progress < 1) {
+            lastStep = currentStep
+            playCoinCountUpTickSound(currentStep)
+          }
+
+          if (progress < 1) {
+            requestAnimationFrame(stepCountUp)
+          } else {
+            setAnimWinAmount(targetVal)
+            setIsCountingUp(false)
+          }
+        }
+        requestAnimationFrame(stepCountUp)
       }
 
       if (result.freeSpinsAwarded > 0) {
@@ -220,6 +323,43 @@ export function CasinoSlotMachine({
       {/* REAL AUTHENTIC HIGH-GLOSS 3D PACHISLOT CABINET CONTAINER (NO SCROLLBAR) */}
       <div className="relative my-auto flex items-center justify-center w-full max-w-3xl py-1">
         <div className={`pachislot-cabinet ${machineToneClass} flex flex-col relative`}>
+          {/* FLOATING COIN PARTICLES OVERLAY */}
+          {coinParticles.length > 0 && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
+              {coinParticles.map((p) => (
+                <div
+                  key={p.id}
+                  style={{
+                    left: `${p.x}%`,
+                    bottom: '15%',
+                    animationDelay: `${p.delay}s`,
+                  }}
+                  className="absolute text-2xl sm:text-3xl animate-coin-float filter drop-shadow-[0_0_10px_rgba(250,204,21,0.9)]"
+                >
+                  {p.icon}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* CONFETTI PARTICLES OVERLAY */}
+          {confettiParticles.length > 0 && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
+              {confettiParticles.map((p) => (
+                <div
+                  key={p.id}
+                  style={{
+                    left: `${p.x}%`,
+                    top: '0%',
+                    backgroundColor: p.color,
+                    animationDelay: `${p.delay}s`,
+                  }}
+                  className="absolute w-2.5 h-2.5 rounded-sm animate-confetti-fall shadow-md"
+                />
+              ))}
+            </div>
+          )}
+
           {/* 1. CLEAN TOP RED ACRYLIC MARQUEE HEADER */}
           <div className="pachislot-top-marquee">
             <div className="pachislot-marquee-lamps">
@@ -346,18 +486,28 @@ export function CasinoSlotMachine({
                 </div>
               </div>
 
-              {/* SPIN DISPLAY RESULTS BANNER */}
-              <div className="min-h-[38px] flex items-center justify-center px-4 py-1 bg-slate-950/95 rounded-xl border border-amber-400/50 text-center font-mono shadow-inner">
+              {/* SPIN DISPLAY RESULTS BANNER WITH COUNTUP ANIMATION */}
+              <div className="min-h-[38px] flex items-center justify-center px-4 py-1 bg-slate-950/95 rounded-xl border border-amber-400/50 text-center font-mono shadow-inner relative overflow-hidden">
                 {isSpinning ? (
                   <span className="text-amber-400 font-bold animate-pulse text-xs">
                     🎰 릴 회전 중...
                   </span>
                 ) : lastResult ? (
                   lastResult.totalWinAmount > 0 ? (
-                    <div className="flex items-center gap-2 text-yellow-300 font-black text-xs sm:text-sm animate-bounce">
-                      <span>🎉 당첨 상금</span>
-                      <span className="text-amber-400 text-sm sm:text-base">
-                        +${lastResult.totalWinAmount.toLocaleString()}
+                    <div className="flex items-center gap-2 text-yellow-300 font-black text-xs sm:text-sm">
+                      <span className="text-xs bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-400/40 text-amber-300 animate-pulse">
+                        {winTier === 'big' || winTier === 'jackpot'
+                          ? '👑 MEGA WIN!'
+                          : winTier === 'medium'
+                          ? '🌟 BIG WIN!'
+                          : '🎉 WIN!'}
+                      </span>
+                      <span
+                        className={`text-amber-400 text-sm sm:text-base font-extrabold ${
+                          isCountingUp ? 'animate-money-pulse text-yellow-200 scale-110' : ''
+                        }`}
+                      >
+                        +${(isCountingUp ? animWinAmount : lastResult.totalWinAmount).toLocaleString()}
                       </span>
                       {lastResult.freeSpinsAwarded > 0 && (
                         <span className="text-[10px] text-yellow-200 bg-yellow-600/90 px-2 py-0.5 rounded-full shadow">
