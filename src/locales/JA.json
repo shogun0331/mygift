@@ -710,5 +710,31 @@
     "playtime": "プレイ時間",
     "assets": "資産",
     "viewers": "視聴者"
+  },
+  "casino": {
+    "title": "ゴールデンスロット",
+    "paytable": "配当表",
+    "userAssets": "所持資産",
+    "exit": "退出",
+    "spin": "挑戦 ({spins}/3回)",
+    "bonusSpin": "ボーナススピン ({spins}回)",
+    "spinsExhausted": "挑戦回数終了 (0/3回)",
+    "spinning": "スピン中...",
+    "startPrompt": "SPINボタンを押してスタート！",
+    "tryNext": "残念！",
+    "outOfSpinsMsg": "挑戦回数が終了しました。",
+    "win": "🎉 獲得賞金",
+    "bigWin": "🌟 BIG WIN!",
+    "megaWin": "👑 MEGA WIN!",
+    "bonusSpinAwarded": "🎁 ボーナススピン +3回！",
+    "accumulatedWin": "累計獲得賞金",
+    "paytableTitle": "3x3 スロット配当表＆ルール",
+    "symbolMultiplierTitle": "シンボル別配当倍率 (3個一致時)",
+    "paylinesTitle": "全8ラインのヒットペイライン",
+    "paylineDesc": "縦・横・斜めの3マス一致判定",
+    "confirmClose": "確認して閉じる",
+    "stop": "STOP",
+    "scatterBonus": "10倍 + Free Spin",
+    "wildMultiplier": "15倍 (Wild)"
   }
 }

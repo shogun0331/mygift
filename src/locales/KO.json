@@ -764,5 +764,31 @@
     "simulatorBadge": "숏츠 VN 시뮬레이터",
     "simulatorHint": "영상 영역을 클릭하면 다음 비트로 진행합니다.",
     "close": "닫기 ✕"
+  },
+  "casino": {
+    "title": "골든 슬롯머신",
+    "paytable": "배당표",
+    "userAssets": "보유 자산",
+    "exit": "나가기",
+    "spin": "도전하기 ({spins}/3회)",
+    "bonusSpin": "보너스 스핀 ({spins}회)",
+    "spinsExhausted": "도전 기회 소진 (0/3회)",
+    "spinning": "릴 회전 중...",
+    "startPrompt": "스핀 버튼을 눌러 시작하세요!",
+    "tryNext": "아쉽습니다!",
+    "outOfSpinsMsg": "도전 기회가 소진되었습니다.",
+    "win": "🎉 당첨 상금",
+    "bigWin": "🌟 BIG WIN!",
+    "megaWin": "👑 MEGA WIN!",
+    "bonusSpinAwarded": "🎁 보너스 스핀 +3회!",
+    "accumulatedWin": "누적 당첨 상금",
+    "paytableTitle": "3x3 슬롯머신 배당표 & 규칙",
+    "symbolMultiplierTitle": "심볼별 당첨 배율 (3개 매칭 시)",
+    "paylinesTitle": "총 8개 당첨 페이라인 (PAYLINES)",
+    "paylineDesc": "row/col 연결선 3칸 동일 매칭 판정",
+    "confirmClose": "확인 및 닫기",
+    "stop": "STOP",
+    "scatterBonus": "10배 + Free Spin",
+    "wildMultiplier": "15배 (Wild)"
   }
 }

@@ -755,5 +755,31 @@
     "simulatorBadge": "Simulador Shorts VN",
     "simulatorHint": "Clic en el media para avanzar.",
     "close": "Cerrar ✕"
+  },
+  "casino": {
+    "title": "Tragamonedas Dorado",
+    "paytable": "Tabla de Pagos",
+    "userAssets": "Fondos",
+    "exit": "Salir",
+    "spin": "Girar ({spins}/3)",
+    "bonusSpin": "Giro Gratis ({spins})",
+    "spinsExhausted": "Sin Giros (0/3)",
+    "spinning": "Girando...",
+    "startPrompt": "¡Presiona para girar!",
+    "tryNext": "¡Casi!",
+    "outOfSpinsMsg": "Intentos agotados.",
+    "win": "🎉 GANANCIA",
+    "bigWin": "🌟 GRAN GANANCIA",
+    "megaWin": "👑 MEGA GANANCIA",
+    "bonusSpinAwarded": "🎁 GIROS EXTRA +3!",
+    "accumulatedWin": "Ganancia Total",
+    "paytableTitle": "Tabla de Pagos 3x3",
+    "symbolMultiplierTitle": "Multiplicadores (3 iguales)",
+    "paylinesTitle": "8 Líneas de Pago Totales",
+    "paylineDesc": "3 símbolos iguales en línea",
+    "confirmClose": "Confirmar y Cerrar",
+    "stop": "PARAR",
+    "scatterBonus": "10x + Giros Gratis",
+    "wildMultiplier": "15x (Comodín)"
   }
 }

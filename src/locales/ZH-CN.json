@@ -755,5 +755,31 @@
     "simulatorBadge": "短片 VN 模拟器",
     "simulatorHint": "点击画面进入下一段。",
     "close": "关闭 ✕"
+  },
+  "casino": {
+    "title": "黄金老虎机",
+    "paytable": "赔率表",
+    "userAssets": "持有资产",
+    "exit": "退出",
+    "spin": "旋转 ({spins}/3次)",
+    "bonusSpin": "免费旋转 ({spins}次)",
+    "spinsExhausted": "次数用尽 (0/3次)",
+    "spinning": "旋转中...",
+    "startPrompt": "点击旋转按钮开始！",
+    "tryNext": "可惜！",
+    "outOfSpinsMsg": "挑战次数已用尽。",
+    "win": "🎉 获得奖金",
+    "bigWin": "🌟 大奖!",
+    "megaWin": "👑 超级大奖!",
+    "bonusSpinAwarded": "🎁 免费旋转 +3次!",
+    "accumulatedWin": "累计中奖",
+    "paytableTitle": "3x3 老虎机赔率表与规则",
+    "symbolMultiplierTitle": "图案中奖倍率 (匹配3个)",
+    "paylinesTitle": "共8条中奖线 (PAYLINES)",
+    "paylineDesc": "横·竖·斜向 3格相同判定",
+    "confirmClose": "确认并关闭",
+    "stop": "STOP",
+    "scatterBonus": "10倍 + 免费旋转",
+    "wildMultiplier": "15倍 (Wild)"
   }
 }

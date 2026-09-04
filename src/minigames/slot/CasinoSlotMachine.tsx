@@ -20,6 +20,8 @@ import {
   playCoinCountUpTickSound,
 } from '../../game/uiSfx'
 
+import { useTranslation } from '../../locales/i18n'
+
 export type CasinoSlotMachineProps = {
   stationGrade?: StationGrade | null
   userAssets: number
@@ -57,6 +59,8 @@ export function CasinoSlotMachine({
   onUpdateAssets,
   onClose,
 }: CasinoSlotMachineProps) {
+  const { t } = useTranslation()
+
   // 등급별 기본 보상 기준금 (3회 무료 도전)
   const baseReward = getBetAmountByGrade(stationGrade)
 
@@ -298,7 +302,7 @@ export function CasinoSlotMachine({
           </div>
           <div>
             <h1 className="text-base sm:text-lg font-black bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-400 bg-clip-text text-transparent">
-              골든 슬롯머신
+              {t('casino.title')}
             </h1>
           </div>
         </div>
@@ -306,13 +310,13 @@ export function CasinoSlotMachine({
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowPaytable(true)}
-            className="px-3 py-1 rounded-xl border border-amber-400/50 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-bold transition-all"
+            className="px-3.5 py-1.5 rounded-xl border border-amber-300/80 bg-gradient-to-b from-amber-400/25 via-yellow-500/15 to-amber-600/30 text-amber-300 hover:text-yellow-200 hover:border-yellow-200 hover:bg-amber-400/40 text-xs font-black shadow-[0_0_12px_rgba(245,158,11,0.35)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
-            📖 배당표
+            📖 {t('casino.paytable')}
           </button>
 
           <div className="flex items-center gap-2 px-3.5 py-1 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono">
-            <span className="text-amber-400 font-bold">보유 자산:</span>
+            <span className="text-amber-400 font-bold">{t('casino.userAssets')}:</span>
             <span className="text-amber-300 font-black text-sm">
               ${userAssets.toLocaleString()}
             </span>
@@ -320,9 +324,9 @@ export function CasinoSlotMachine({
 
           <button
             onClick={onClose}
-            className="px-3.5 py-1 rounded-xl bg-red-600/90 hover:bg-red-500 border border-red-400 text-white font-bold text-xs shadow-md transition-all active:scale-95"
+            className="px-4 py-1.5 rounded-xl border-2 border-red-400/90 bg-gradient-to-b from-red-500 via-red-600 to-red-800 text-white font-extrabold text-xs shadow-[0_4px_12px_rgba(239,68,68,0.5),inset_0_1px_2px_rgba(255,255,255,0.6)] hover:brightness-110 hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
-            🚪 게임 종료
+            🚪 {t('casino.exit')}
           </button>
         </div>
       </div>
@@ -507,17 +511,17 @@ export function CasinoSlotMachine({
               <div className="min-h-[38px] flex items-center justify-center px-4 py-1 bg-slate-950/95 rounded-xl border border-amber-400/50 text-center font-mono shadow-inner relative overflow-hidden">
                 {isSpinning ? (
                   <span className="text-amber-400 font-bold animate-pulse text-xs">
-                    🎰 릴 회전 중...
+                    🎰 {t('casino.spinning')}
                   </span>
                 ) : lastResult ? (
                   lastResult.totalWinAmount > 0 ? (
                     <div className="flex items-center gap-2 text-yellow-300 font-black text-xs sm:text-sm">
                       <span className="text-xs bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-400/40 text-amber-300 animate-pulse">
                         {winTier === 'big' || winTier === 'jackpot'
-                          ? '👑 MEGA WIN!'
+                          ? t('casino.megaWin')
                           : winTier === 'medium'
-                          ? '🌟 BIG WIN!'
-                          : '🎉 WIN!'}
+                          ? t('casino.bigWin')
+                          : t('casino.win')}
                       </span>
                       <span
                         ref={winAmountTextRef}
@@ -529,18 +533,18 @@ export function CasinoSlotMachine({
                       </span>
                       {lastResult.freeSpinsAwarded > 0 && (
                         <span className="text-[10px] text-yellow-200 bg-yellow-600/90 px-2 py-0.5 rounded-full shadow">
-                          🎁 보너스 스핀 +3회!
+                          {t('casino.bonusSpinAwarded')}
                         </span>
                       )}
                     </div>
                   ) : (
                     <span className="text-slate-400 text-xs">
-                      {isOutOfSpins ? '도전 기회가 소진되었습니다.' : '아쉽습니다!'}
+                      {isOutOfSpins ? t('casino.outOfSpinsMsg') : t('casino.tryNext')}
                     </span>
                   )
                 ) : (
                   <span className="text-amber-300/90 text-xs">
-                    스핀 버튼을 눌러 시작하세요!
+                    {t('casino.startPrompt')}
                   </span>
                 )}
               </div>
@@ -561,8 +565,8 @@ export function CasinoSlotMachine({
                     onClick={() => handleStopColumn(idx)}
                     className={`pachislot-btn-stop ${isStopped ? 'is-pressed opacity-50' : ''}`}
                   >
-                    <span>STOP</span>
-                    <span className="text-[9px] font-bold text-slate-700">{idx + 1}</span>
+                    <span>{t('casino.stop')}</span>
+                    <span className="text-[9px] font-bold text-amber-400">{idx + 1}</span>
                   </button>
                 )
               })}
@@ -583,12 +587,12 @@ export function CasinoSlotMachine({
               <span className="text-xl">🎰</span>
               <span>
                 {isSpinning
-                  ? '릴 회전 중...'
+                  ? t('casino.spinning')
                   : isOutOfSpins
-                  ? '도전 기회 소진 (0/3회)'
+                  ? t('casino.spinsExhausted')
                   : freeSpinsLeft > 0
-                  ? `보너스 스핀 (${freeSpinsLeft}회)`
-                  : `도전하기 (${spinsLeft}/3회)`}
+                  ? t('casino.bonusSpin').replace('{spins}', String(freeSpinsLeft))
+                  : t('casino.spin').replace('{spins}', String(spinsLeft))}
               </span>
             </button>
           </div>
@@ -599,7 +603,7 @@ export function CasinoSlotMachine({
             <div className="pachislot-coin-tray flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
                 <span className="text-2xl animate-bounce">🪙</span>
-                <span className="text-xs">누적 당첨 상금</span>
+                <span className="text-xs">{t('casino.accumulatedWin')}</span>
               </div>
               <div className="text-sm font-black font-mono text-yellow-300 bg-amber-950/90 px-3 py-1 rounded-lg border border-amber-400/50 shadow-md">
                 +${sessionTotalWon.toLocaleString()}
@@ -620,8 +624,8 @@ export function CasinoSlotMachine({
                 type="button"
                 disabled={isSpinning || isOutOfSpins}
                 onClick={handleSpin}
-                className="w-10 h-10 rounded-full bg-gradient-to-tr from-red-700 via-red-500 to-yellow-300 border-2 border-yellow-200 shadow-[0_0_20px_rgba(239,68,68,0.9)] -translate-x-3.5 -translate-y-4 hover:scale-110 active:scale-95 transition-transform"
-                title="레버 당기기!"
+                className="w-10 h-10 rounded-full bg-gradient-to-tr from-red-700 via-red-500 to-yellow-300 border-2 border-yellow-200 shadow-[0_0_20px_rgba(239,68,68,0.9)] -translate-x-3.5 -translate-y-4 hover:scale-110 active:scale-95 transition-transform cursor-pointer"
+                title={t('casino.spin').replace('{spins}', String(spinsLeft))}
               />
             </div>
           </div>
@@ -634,11 +638,11 @@ export function CasinoSlotMachine({
           <div className="bg-slate-900 border-2 border-amber-400 rounded-3xl p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-amber-400/30 pb-3">
               <h2 className="text-xl font-black text-amber-300 flex items-center gap-2">
-                <span>📖</span> 3x3 슬롯머신 배당표 & 규칙
+                <span>📖</span> {t('casino.paytableTitle')}
               </h2>
               <button
                 onClick={() => setShowPaytable(false)}
-                className="text-slate-400 hover:text-white font-bold text-lg"
+                className="text-slate-400 hover:text-white font-bold text-lg cursor-pointer"
               >
                 ✕
               </button>
@@ -647,7 +651,7 @@ export function CasinoSlotMachine({
             {/* SYMBOLS MULTIPLIER TABLE */}
             <div className="space-y-2">
               <h3 className="text-xs font-bold text-amber-400 uppercase tracking-widest">
-                심볼별 당첨 배율 (3개 매칭 시)
+                {t('casino.symbolMultiplierTitle')}
               </h3>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {Object.values(SLOT_SYMBOLS).map((sym) => (
@@ -661,10 +665,10 @@ export function CasinoSlotMachine({
                     </div>
                     <span className="font-mono font-black text-amber-300">
                       {sym.isScatter
-                        ? '10배 + Free Spin'
+                        ? t('casino.scatterBonus')
                         : sym.isWild
-                        ? '15배 (Wild)'
-                        : `${sym.multiplier}배`}
+                        ? t('casino.wildMultiplier')
+                        : `${sym.multiplier}x`}
                     </span>
                   </div>
                 ))}
@@ -674,7 +678,7 @@ export function CasinoSlotMachine({
             {/* PAYLINES GUIDE (8 PAYLINES) */}
             <div className="space-y-2 border-t border-amber-400/20 pt-3">
               <h3 className="text-xs font-bold text-amber-400 uppercase tracking-widest">
-                총 8개 당첨 페이라인 (Paylines)
+                {t('casino.paylinesTitle')}
               </h3>
               <ul className="text-xs text-slate-300 space-y-1 list-disc list-inside font-mono">
                 {PAYLINES.map((line) => (
@@ -682,7 +686,7 @@ export function CasinoSlotMachine({
                     <span style={{ color: line.color }} className="font-bold">
                       {line.name} (L{line.id})
                     </span>
-                    : row/col 연결선 3칸 동일 매칭 판정
+                    : {t('casino.paylineDesc')}
                   </li>
                 ))}
               </ul>
@@ -690,9 +694,9 @@ export function CasinoSlotMachine({
 
             <button
               onClick={() => setShowPaytable(false)}
-              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm shadow-lg transition-all"
+              className="w-full py-3 rounded-xl border-2 border-yellow-300 bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-600 text-slate-950 font-black text-sm shadow-[0_4px_15px_rgba(245,158,11,0.6),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:brightness-110 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
             >
-              확인 및 닫기
+              {t('casino.confirmClose')}
             </button>
           </div>
         </div>
@@ -713,7 +717,7 @@ export function CasinoSlotMachine({
           </div>
           <button
             onClick={() => setJackpotBanner(false)}
-            className="px-8 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-lg shadow-2xl transition-all"
+            className="px-8 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-lg shadow-2xl transition-all cursor-pointer"
           >
             잭팟 당첨금 수령하기
           </button>

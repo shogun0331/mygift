@@ -755,5 +755,31 @@
     "simulatorBadge": "Симулятор Shorts VN",
     "simulatorHint": "Клик по медиа — дальше.",
     "close": "Закрыть ✕"
+  },
+  "casino": {
+    "title": "Золотой слот",
+    "paytable": "Таблица выплат",
+    "userAssets": "Активы",
+    "exit": "Выход",
+    "spin": "Крутить ({spins}/3)",
+    "bonusSpin": "Бонус-спин ({spins})",
+    "spinsExhausted": "Попытки исчерпаны (0/3)",
+    "spinning": "Вращение...",
+    "startPrompt": "Нажмите, чтобы начать!",
+    "tryNext": "Увы!",
+    "outOfSpinsMsg": "Все попытки использованы.",
+    "win": "🎉 ВЫИГРЫШ",
+    "bigWin": "🌟 БОЛЬШОЙ ВЫИГРЫШ",
+    "megaWin": "👑 МЕГА ВЫИГРЫШ",
+    "bonusSpinAwarded": "🎁 БОНУС-СПИН +3!",
+    "accumulatedWin": "Общий выигрыш",
+    "paytableTitle": "Таблица выплат 3x3 слота",
+    "symbolMultiplierTitle": "Множители символов (3 совпадения)",
+    "paylinesTitle": "Всего 8 выигрышных линий",
+    "paylineDesc": "Совпадение 3 символов по линии",
+    "confirmClose": "Закрыть",
+    "stop": "СТОП",
+    "scatterBonus": "10x + Бонус-спин",
+    "wildMultiplier": "15x (Wild)"
   }
 }

@@ -755,5 +755,31 @@
     "simulatorBadge": "Shorts-VN-Simulator",
     "simulatorHint": "Klick auf das Medium für weiter.",
     "close": "Schließen ✕"
+  },
+  "casino": {
+    "title": "Goldener Spielautomat",
+    "paytable": "Auszahlungstabelle",
+    "userAssets": "Guthaben",
+    "exit": "Beenden",
+    "spin": "Drehen ({spins}/3)",
+    "bonusSpin": "Bonus-Spin ({spins})",
+    "spinsExhausted": "Keine Versuche (0/3)",
+    "spinning": "Dreht sich...",
+    "startPrompt": "Drücke Drehen zum Starten!",
+    "tryNext": "Schade!",
+    "outOfSpinsMsg": "Alle Versuche verbraucht.",
+    "win": "🎉 GEWINN",
+    "bigWin": "🌟 GROSSER GEWINN",
+    "megaWin": "👑 MEGA-GEWINN",
+    "bonusSpinAwarded": "🎁 BONUS-SPINS +3!",
+    "accumulatedWin": "Gesamtgewinn",
+    "paytableTitle": "3x3 Spielautomat Regeln",
+    "symbolMultiplierTitle": "Symbol-Multiplikatoren (3 Treffer)",
+    "paylinesTitle": "Insgesamt 8 Gewinnlinien",
+    "paylineDesc": "3 gleiche Symbole in einer Reihe",
+    "confirmClose": "Schließen",
+    "stop": "STOPP",
+    "scatterBonus": "10x + Bonus-Spin",
+    "wildMultiplier": "15x (Wild)"
   }
 }

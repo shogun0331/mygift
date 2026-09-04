@@ -764,5 +764,31 @@
     "simulatorBadge": "Shorts VN Simulator",
     "simulatorHint": "Click the media to advance.",
     "close": "Close ✕"
+  },
+  "casino": {
+    "title": "Golden Slot Machine",
+    "paytable": "Paytable",
+    "userAssets": "Assets",
+    "exit": "Exit",
+    "spin": "Spin ({spins}/3)",
+    "bonusSpin": "Free Spin ({spins})",
+    "spinsExhausted": "Spins Exhausted (0/3)",
+    "spinning": "Spinning...",
+    "startPrompt": "Press SPIN to start!",
+    "tryNext": "Too bad!",
+    "outOfSpinsMsg": "All spin attempts used.",
+    "win": "🎉 WIN!",
+    "bigWin": "🌟 BIG WIN!",
+    "megaWin": "👑 MEGA WIN!",
+    "bonusSpinAwarded": "🎁 BONUS FREE SPIN +3!",
+    "accumulatedWin": "Total Win",
+    "paytableTitle": "3x3 Slot Machine Paytable & Rules",
+    "symbolMultiplierTitle": "Symbol Multipliers (3 Matching)",
+    "paylinesTitle": "8 Total Winning Paylines",
+    "paylineDesc": "3 matching symbols on row/col/diagonal line",
+    "confirmClose": "Confirm & Close",
+    "stop": "STOP",
+    "scatterBonus": "10x + Free Spin",
+    "wildMultiplier": "15x (Wild)"
   }
 }
