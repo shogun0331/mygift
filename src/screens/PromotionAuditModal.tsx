@@ -585,39 +585,34 @@ export function PromotionAuditModal({
 
 
 
-              {/* 💬 심사관 VN (Visual Novel) 스타일 하단 대화창 코멘트 오버레이 */}
+              {/* 💬 심사관 VN (Visual Novel) 스타일 하단 반투명 정중앙 대화창 코멘트 오버레이 */}
               {judgeSpeechBubble ? (
-                <div className="absolute bottom-14 left-3 right-3 z-30 max-w-4xl mx-auto animate-in slide-in-from-bottom-3 fade-in duration-200">
+                <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-30 w-[92%] max-w-2xl text-center animate-in slide-in-from-bottom-3 fade-in duration-200">
                   <div
-                    className={`relative rounded-2xl border-2 p-3 sm:p-4 shadow-2xl backdrop-blur-md ${
+                    className={`relative rounded-2xl border-2 p-3 sm:p-4 shadow-2xl backdrop-blur-md transition-all ${
                       judgeSpeechBubble.type === 'attack'
-                        ? 'border-rose-500/90 bg-rose-950/95 shadow-[0_0_35px_rgba(244,63,94,0.7)]'
-                        : 'border-purple-400/90 bg-slate-950/95 shadow-[0_0_35px_rgba(168,85,247,0.7)]'
+                        ? 'border-rose-500/80 bg-black/60 shadow-[0_0_35px_rgba(244,63,94,0.5)]'
+                        : 'border-purple-400/80 bg-black/60 shadow-[0_0_35px_rgba(168,85,247,0.5)]'
                     }`}
                   >
-                    {/* VN 대화창 네임플레이트 상단 헤더 */}
-                    <div className="mb-1.5 flex items-center justify-between border-b border-white/15 pb-1">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`rounded-md border px-2 py-0.5 text-xs font-black ${
-                            judgeSpeechBubble.type === 'attack'
-                              ? 'border-rose-400/60 bg-rose-900/70 text-rose-200'
-                              : 'border-purple-400/60 bg-purple-900/70 text-purple-200'
-                          }`}
-                        >
-                          {judgeSpeechBubble.type === 'attack' ? '⚔️ 심사관 반격!' : '⚖️ 심사평'}
-                        </span>
-                        <span className="text-xs sm:text-sm font-black text-slate-100 tracking-wide">
-                          {judgeName}
-                        </span>
-                      </div>
-                      <span className="rounded bg-black/60 px-2 py-0.5 text-[10px] font-bold text-slate-400">
-                        🌐 {locale.toUpperCase()}
+                    {/* VN 대화창 네임플레이트 중앙 헤더 */}
+                    <div className="mb-1.5 flex items-center justify-center gap-2 border-b border-white/15 pb-1">
+                      <span
+                        className={`rounded-md border px-2 py-0.5 text-xs font-black ${
+                          judgeSpeechBubble.type === 'attack'
+                            ? 'border-rose-400/60 bg-rose-950/80 text-rose-200'
+                            : 'border-purple-400/60 bg-purple-950/80 text-purple-200'
+                        }`}
+                      >
+                        {judgeSpeechBubble.type === 'attack' ? '⚔️ 심사관 반격!' : '⚖️ 심사평'}
+                      </span>
+                      <span className="text-xs sm:text-sm font-black text-slate-100 tracking-wide">
+                        {judgeName}
                       </span>
                     </div>
 
-                    {/* VN 스타일 7개국어 대화 본문 */}
-                    <p className="text-sm sm:text-base font-bold text-slate-100 leading-relaxed drop-shadow-md">
+                    {/* VN 스타일 7개국어 정중앙 정렬 대화 본문 */}
+                    <p className="text-center text-sm sm:text-base md:text-lg font-bold text-slate-100 leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
                       "{judgeSpeechBubble.text}"
                     </p>
                   </div>
