@@ -6,7 +6,7 @@ import {
   type AuditSession,
 } from '../game/auditEngine'
 import { pickCharacterLocaleText } from '../game/characterLocales'
-import { auditMediaSlotUrl, type Grade, type RegisteredCreator } from '../game/characters'
+import { auditMediaSlotUrl, type RegisteredCharacter as RegisteredCreator } from '../game/characters'
 import { readBlurRegions } from '../events/BlurRegionEditor'
 import type { BlurRegion, GameEvent } from '../events/types'
 import { blurRegionsForVnFile } from './CharacterAuditEditorModal'
@@ -23,7 +23,7 @@ import {
   getSatisfyJudgeTitle,
   getSelectCardPrompt,
 } from '../game/judgeDialogues'
-import { playSfx } from '../game/uiSfx'
+import { playSfx, playAuditPassFanfare } from '../game/uiSfx'
 
 function isVideoMediaUrl(url: string) {
   const clean = url.split('?')[0].toLowerCase()
@@ -127,6 +127,18 @@ export function PromotionAuditModal({
     }, 2000)
     return () => clearTimeout(timer)
   }, [])
+
+  const passAudioPlayedRef = useRef(false)
+  useEffect(() => {
+    if (
+      (session.isSuccess || session.currentSatisfaction >= session.targetSatisfaction) &&
+      !passAudioPlayedRef.current
+    ) {
+      passAudioPlayedRef.current = true
+      playSfx('training-exam-success')
+      playAuditPassFanfare()
+    }
+  }, [session.isSuccess, session.currentSatisfaction, session.targetSatisfaction])
 
   useEffect(() => {
     return () => {
@@ -262,6 +274,37 @@ export function PromotionAuditModal({
     return map
   })
 
+  // 🪫 제출 가능한 크리에이터 카드(스테미나 15 이상)가 0개인 경우 심사 실패 자동 종료
+  useEffect(() => {
+    if (
+      !session.isCompleted &&
+      !isActionLocked &&
+      !isJudgeTurn &&
+      !showCinematicIntro &&
+      !isCutsceneModalOpen
+    ) {
+      const hasPlayableCard = displayCreators.some(
+        (c) => (creatorStaminaMap[c.id] ?? 100) >= 15,
+      )
+      if (!hasPlayableCard) {
+        setSession((prev) => ({
+          ...prev,
+          isCompleted: true,
+          isSuccess: prev.currentSatisfaction >= prev.targetSatisfaction,
+          failReason: 'no_cards',
+        }))
+      }
+    }
+  }, [
+    session.isCompleted,
+    isActionLocked,
+    isJudgeTurn,
+    showCinematicIntro,
+    isCutsceneModalOpen,
+    displayCreators,
+    creatorStaminaMap,
+  ])
+
   const judgeDisplayMediaUrl = session.judge.avatarUrl || null
 
   const judgeName = pickCharacterLocaleText(session.judge.names, locale, session.judge.name)
@@ -295,7 +338,7 @@ export function PromotionAuditModal({
       {
         id: creator.id,
         name: creator.name,
-        type: creator.type || (creator as any).statType,
+        type: (creator as any).type || (creator as any).statType,
         statSexy: (creator as any).statSexy,
         statElegance: (creator as any).statElegance,
         statCommunication: (creator as any).statCommunication,
@@ -459,7 +502,7 @@ export function PromotionAuditModal({
             <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/40 px-3 py-1 text-xs font-bold text-slate-300">
               <span>TURN</span>
               <span className="text-amber-400 font-black tabular-nums">
-                {Math.min(session.maxTurn, session.currentTurn)} / {session.maxTurn}
+                {session.currentTurn}
               </span>
             </div>
             {onClose && !session.isCompleted ? (
@@ -603,7 +646,7 @@ export function PromotionAuditModal({
               ) : null}
 
               {/* ❌ 승급심사 통과 실패 미디어 중앙 네온 타이틀 오버레이 (7개국어 연동) */}
-              {(session.isCompleted || session.currentTurn > session.maxTurn) &&
+              {session.isCompleted &&
               !session.isSuccess &&
               session.currentSatisfaction < session.targetSatisfaction ? (
                 <div className="pointer-events-none absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/50 backdrop-blur-xs animate-in zoom-in-95 duration-300">
@@ -694,239 +737,304 @@ export function PromotionAuditModal({
           </div>
         </div>
 
-        {/* 하단 4인 크리에이터 카드 드래그 앤 드롭 & 선택 덱 */}
-        {!session.isCompleted ? (
-          <div
-            className="shrink-0 border-t border-purple-500/20 bg-slate-950/90 px-4 py-2.5"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => {
-              if (draggedCreatorId) {
-                const target = displayCreators.find((c) => c.id === draggedCreatorId)
-                if (target) handlePerform(target)
-                setDraggedCreatorId(null)
-              }
-            }}
-          >
-            {/* 오직 유저 카드 선택이 가능한 차례(!isActionLocked && !isJudgeTurn && !showCinematicIntro)일 때만 카드 선택 가이드 라인 팝업! */}
-            <div className="mb-2 text-center min-h-[28px] flex items-center justify-center">
-              {!isActionLocked && !isJudgeTurn && !showCinematicIntro ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-950/80 px-4 py-1 text-xs sm:text-sm font-black text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.35)] animate-pulse">
-                  {getSelectCardPrompt(locale)}
-                </span>
-              ) : isJudgeTurn ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/80 px-4 py-1 text-xs sm:text-sm font-black text-rose-200 shadow-[0_0_15px_rgba(244,63,94,0.35)] animate-bounce">
-                  ⚔️ 심사관 반격 진행 중...
-                </span>
-              ) : null}
-            </div>
+        {/* 하단 4인 크리에이터 카드 드래그 앤 드롭 & 선택 덱 (완료 시 딤딩) */}
+        <div
+          className={`shrink-0 border-t border-purple-500/20 bg-slate-950/90 px-4 py-2.5 transition-all ${
+            session.isCompleted ? 'pointer-events-none opacity-40 grayscale-[40%]' : ''
+          }`}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={() => {
+            if (draggedCreatorId) {
+              const target = displayCreators.find((c) => c.id === draggedCreatorId)
+              if (target) handlePerform(target)
+              setDraggedCreatorId(null)
+            }
+          }}
+        >
+          {/* 오직 유저 카드 선택이 가능한 차례일 때만 카드 선택 가이드 라인 팝업! */}
+          <div className="mb-2 text-center min-h-[28px] flex items-center justify-center">
+            {!isActionLocked && !isJudgeTurn && !showCinematicIntro && !session.isCompleted ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-950/80 px-4 py-1 text-xs sm:text-sm font-black text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.35)] animate-pulse">
+                {getSelectCardPrompt(locale)}
+              </span>
+            ) : isJudgeTurn ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/80 px-4 py-1 text-xs sm:text-sm font-black text-rose-200 shadow-[0_0_15px_rgba(244,63,94,0.35)] animate-bounce">
+                ⚔️ 심사관 반격 진행 중...
+              </span>
+            ) : null}
+          </div>
 
-            <div className="grid grid-cols-4 gap-1.5 sm:gap-2 max-w-xl sm:max-w-2xl mx-auto">
-              {displayCreators.map((creator) => {
-                const rawType = creator.statType || (creator as any).type || (creator as any).primaryStat || 'elegance'
-                const cType: CreatorType =
-                  rawType === 'sexy' || rawType === 'communication' || rawType === 'elegance' || rawType === 'performance'
-                    ? rawType
-                    : 'elegance'
-                const typeInfo = CREATOR_TYPE_LABEL[cType]
-                const isTypeMatched = cType === currentDemand
-                const creatorGrade = creator.grade ?? 'B'
-                const profileUrl = (creator as any).profileImageUrl || (creator as any).avatarUrl
-                const currentStamina = creatorStaminaMap[creator.id] ?? 100
-                const isStaminaExhausted = currentStamina < 15
-                const isHitFlashing = hitFlashingCardId === creator.id
-                const isCardDisabled = isStaminaExhausted || isJudgeTurn || isActionLocked
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-2 max-w-xl sm:max-w-2xl mx-auto">
+            {displayCreators.map((creator) => {
+              const rawType = creator.statType || (creator as any).type || (creator as any).primaryStat || 'elegance'
+              const cType: CreatorType =
+                rawType === 'sexy' || rawType === 'communication' || rawType === 'elegance' || rawType === 'performance'
+                  ? rawType
+                  : 'elegance'
+              const typeInfo = CREATOR_TYPE_LABEL[cType]
+              const isTypeMatched = cType === currentDemand
+              const creatorGrade = creator.grade ?? 'B'
+              const profileUrl = (creator as any).profileImageUrl || (creator as any).avatarUrl
+              const currentStamina = creatorStaminaMap[creator.id] ?? 100
+              const isStaminaExhausted = currentStamina < 15
+              const isHitFlashing = hitFlashingCardId === creator.id
+              const isCardDisabled = isStaminaExhausted || isJudgeTurn || isActionLocked || session.isCompleted
 
-                return (
-                  <div
-                    key={creator.id}
-                    draggable={!isCardDisabled}
-                    onDragStart={() => {
-                      if (!isCardDisabled) setDraggedCreatorId(creator.id)
-                    }}
-                    onClick={() => {
-                      if (!isCardDisabled) handlePerform(creator)
-                    }}
-                    style={
-                      isHitFlashing
-                        ? { animation: 'cctvCameraShake 600ms cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite' }
-                        : undefined
+              return (
+                <div
+                  key={creator.id}
+                  draggable={!isCardDisabled}
+                  onDragStart={() => {
+                    if (!isCardDisabled) setDraggedCreatorId(creator.id)
+                  }}
+                  onClick={() => {
+                    if (!isCardDisabled) handlePerform(creator)
+                  }}
+                  style={
+                    isHitFlashing
+                      ? { animation: 'cctvCameraShake 600ms cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite' }
+                      : undefined
+                  }
+                  className={`group relative aspect-[3/4] max-h-[155px] sm:max-h-[185px] flex flex-col justify-between overflow-hidden rounded-xl border transition-all ${
+                    isHitFlashing
+                      ? 'border-rose-500 ring-4 ring-rose-500 shadow-[0_0_50px_rgba(244,63,94,1)] bg-rose-950 z-30'
+                      : isCardDisabled
+                      ? 'cursor-not-allowed border-purple-900/40 opacity-40 grayscale-[30%]'
+                      : selectedCreatorId === creator.id
+                      ? 'cursor-pointer border-amber-400 ring-2 ring-amber-400/60 shadow-[0_0_22px_rgba(251,191,36,0.38)] scale-[1.02]'
+                      : 'cursor-pointer border-purple-500/30 hover:border-purple-400 hover:scale-[1.03] hover:shadow-[0_0_18px_rgba(168,85,247,0.3)]'
+                  }`}
+                >
+                  {/* CCTV 진상 카메라 지진 셰이크 키프레임 */}
+                  <style>{`
+                    @keyframes cctvCameraShake {
+                      0% { transform: translate(0, 0) rotate(0deg) scale(1.08); }
+                      10% { transform: translate(-14px, 10px) rotate(-8deg) scale(1.12); }
+                      20% { transform: translate(14px, -12px) rotate(9deg) scale(1.08); }
+                      30% { transform: translate(-12px, -8px) rotate(-7deg) scale(1.14); }
+                      40% { transform: translate(12px, 10px) rotate(8deg) scale(1.09); }
+                      50% { transform: translate(-10px, 8px) rotate(-6deg) scale(1.11); }
+                      60% { transform: translate(10px, -8px) rotate(7deg) scale(1.08); }
+                      70% { transform: translate(-8px, -6px) rotate(-4deg) scale(1.06); }
+                      80% { transform: translate(8px, 6px) rotate(5deg) scale(1.04); }
+                      90% { transform: translate(-4px, 4px) rotate(-2deg) scale(1.02); }
+                      100% { transform: translate(0, 0) rotate(0deg) scale(1); }
                     }
-                    className={`group relative aspect-[3/4] max-h-[155px] sm:max-h-[185px] flex flex-col justify-between overflow-hidden rounded-xl border transition-all ${
-                      isHitFlashing
-                        ? 'border-rose-500 ring-4 ring-rose-500 shadow-[0_0_50px_rgba(244,63,94,1)] bg-rose-950 z-30'
-                        : isCardDisabled
-                        ? 'cursor-not-allowed border-purple-900/40 opacity-40 grayscale-[30%]'
-                        : selectedCreatorId === creator.id
-                        ? 'cursor-pointer border-amber-400 ring-2 ring-amber-400/60 shadow-[0_0_22px_rgba(251,191,36,0.38)] scale-[1.02]'
-                        : 'cursor-pointer border-purple-500/30 hover:border-purple-400 hover:scale-[1.03] hover:shadow-[0_0_18px_rgba(168,85,247,0.3)]'
-                    }`}
-                  >
-                    {/* CCTV 진상 카메라 지진 셰이크 키프레임 */}
-                    <style>{`
-                      @keyframes cctvCameraShake {
-                        0% { transform: translate(0, 0) rotate(0deg) scale(1.08); }
-                        10% { transform: translate(-14px, 10px) rotate(-8deg) scale(1.12); }
-                        20% { transform: translate(14px, -12px) rotate(9deg) scale(1.08); }
-                        30% { transform: translate(-12px, -8px) rotate(-7deg) scale(1.14); }
-                        40% { transform: translate(12px, 10px) rotate(8deg) scale(1.09); }
-                        50% { transform: translate(-10px, 8px) rotate(-6deg) scale(1.11); }
-                        60% { transform: translate(10px, -8px) rotate(7deg) scale(1.08); }
-                        70% { transform: translate(-8px, -6px) rotate(-4deg) scale(1.06); }
-                        80% { transform: translate(8px, 6px) rotate(5deg) scale(1.04); }
-                        90% { transform: translate(-4px, 4px) rotate(-2deg) scale(1.02); }
-                        100% { transform: translate(0, 0) rotate(0deg) scale(1); }
-                      }
-                    `}</style>
-                    {/* 3:4 프로필 미디어 배경 커버 */}
-                    {profileUrl ? (
-                      <img
-                        src={resolveMediaSrc(profileUrl)}
-                        alt={creator.name}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 text-xl font-bold text-purple-300">
-                        <span>👤</span>
-                        <span className="text-[10px]">{creator.name.slice(0, 2)}</span>
-                      </div>
-                    )}
+                  `}</style>
+                  {/* 3:4 프로필 미디어 배경 커버 */}
+                  {profileUrl ? (
+                    <img
+                      src={resolveMediaSrc(profileUrl)}
+                      alt={creator.name}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 text-xl font-bold text-purple-300">
+                      <span>👤</span>
+                      <span className="text-[10px]">{creator.name.slice(0, 2)}</span>
+                    </div>
+                  )}
 
-                    {/* ⚔️ 심사관 피격 흔들림 & 붉은 번쩍임 핏빛 오버레이 (이모지 100% 제거) */}
-                    {isHitFlashing ? (
-                      <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-rose-600/70 animate-pulse backdrop-blur-xs">
-                        <span className="rounded-lg border-2 border-rose-300 bg-rose-950/90 px-2.5 py-1 text-xs sm:text-sm font-black text-rose-200 shadow-[0_0_25px_rgba(244,63,94,1)] drop-shadow">
-                          -{lastDamageDealt}
-                        </span>
-                      </div>
-                    ) : null}
-
-                    {/* 상단 뱃지 오버레이 (S, A, B, C 단 1글자 프리미엄 네온 & 매칭) */}
-                    <div className="relative z-10 flex items-center justify-between p-1.5 bg-gradient-to-b from-black/80 to-transparent">
-                      <span className={`rounded-md border px-2 py-0.5 text-xs sm:text-sm font-black italic tracking-widest backdrop-blur-xs ${getGradeBadgeStyle(creatorGrade)}`}>
-                        {creatorGrade}
+                  {/* ⚔️ 심사관 피격 흔들림 & 붉은 번쩍임 핏빛 오버레이 (이모지 100% 제거) */}
+                  {isHitFlashing ? (
+                    <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-rose-600/70 animate-pulse backdrop-blur-xs">
+                      <span className="rounded-lg border-2 border-rose-300 bg-rose-950/90 px-2.5 py-1 text-xs sm:text-sm font-black text-rose-200 shadow-[0_0_25px_rgba(244,63,94,1)] drop-shadow">
+                        -{lastDamageDealt}
                       </span>
-                      {isTypeMatched ? (
-                        <span className="rounded bg-emerald-500/90 px-1.5 py-0.3 text-[9px] font-black text-white shadow-md animate-pulse">
-                          🔥 1.5배!
-                        </span>
-                      ) : null}
+                    </div>
+                  ) : null}
+
+                  {/* 상단 뱃지 오버레이 (S, A, B, C 단 1글자 프리미엄 네온 & 매칭) */}
+                  <div className="relative z-10 flex items-center justify-between p-1.5 bg-gradient-to-b from-black/80 to-transparent">
+                    <span className={`rounded-md border px-2 py-0.5 text-xs sm:text-sm font-black italic tracking-widest backdrop-blur-xs ${getGradeBadgeStyle(creatorGrade)}`}>
+                      {creatorGrade}
+                    </span>
+                    {isTypeMatched ? (
+                      <span className="rounded bg-emerald-500/90 px-1.5 py-0.3 text-[9px] font-black text-white shadow-md animate-pulse">
+                        🔥 1.5배!
+                      </span>
+                    ) : null}
+                  </div>
+
+                  {/* 스테미나 부족 제시 불가 레이어 */}
+                  {isStaminaExhausted ? (
+                    <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/90 p-1 text-center backdrop-blur-xs">
+                      <span className="text-base">🪫</span>
+                      <span className="mt-0.5 text-[9px] font-black text-rose-400 leading-tight">
+                        스테미나 부족
+                      </span>
+                      <span className="text-[8px] text-slate-400">제시 불가</span>
+                    </div>
+                  ) : null}
+
+                  {/* 하단 캐릭터 프로필 & 타입 아이콘 & 스테미나 비주얼 게이지 바 */}
+                  <div className="relative z-10 flex flex-col justify-end p-2 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent pt-5 space-y-1">
+                    <div className="flex items-center justify-between gap-1">
+                      <h4 className="truncate text-xs font-black text-white drop-shadow-md">{creator.name}</h4>
+                      <span
+                        className={`flex items-center justify-center rounded border px-1.5 py-0.5 text-xs font-black shadow-md ${typeInfo.tone}`}
+                        title={typeInfo.label}
+                      >
+                        <span>{typeInfo.icon}</span>
+                      </span>
                     </div>
 
-                    {/* 스테미나 부족 제시 불가 레이어 */}
-                    {isStaminaExhausted ? (
-                      <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/90 p-1 text-center backdrop-blur-xs">
-                        <span className="text-base">🪫</span>
-                        <span className="mt-0.5 text-[9px] font-black text-rose-400 leading-tight">
-                          스테미나 부족
-                        </span>
-                        <span className="text-[8px] text-slate-400">제시 불가</span>
+                    {/* 스테미나 실시간 프로그레스 게이지 바 */}
+                    <div className="flex flex-col space-y-0.5 border-t border-white/10 pt-1">
+                      <div className="flex items-center justify-between text-[8px] font-black text-amber-300">
+                        <span>⚡ STAMINA</span>
+                        <span className="tabular-nums font-bold text-slate-200">{currentStamina} / 100</span>
                       </div>
-                    ) : null}
-
-                    {/* 하단 캐릭터 프로필 & 타입 아이콘 & 스테미나 비주얼 게이지 바 */}
-                    <div className="relative z-10 flex flex-col justify-end p-2 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent pt-5 space-y-1">
-                      <div className="flex items-center justify-between gap-1">
-                        <h4 className="truncate text-xs font-black text-white drop-shadow-md">{creator.name}</h4>
-                        {/* 한글 텍스트 라벨 삭제 - 순수 타입 아이콘 뱃지 전용 표출 */}
-                        <span
-                          className={`flex items-center justify-center rounded border px-1.5 py-0.5 text-xs font-black shadow-md ${typeInfo.tone}`}
-                          title={typeInfo.label}
-                        >
-                          <span>{typeInfo.icon}</span>
-                        </span>
-                      </div>
-
-                      {/* 스테미나 실시간 프로그레스 게이지 바 */}
-                      <div className="flex flex-col space-y-0.5 border-t border-white/10 pt-1">
-                        <div className="flex items-center justify-between text-[8px] font-black text-amber-300">
-                          <span>⚡ STAMINA</span>
-                          <span className="tabular-nums font-bold text-slate-200">{currentStamina} / 100</span>
-                        </div>
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-900 border border-white/15 shadow-inner">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-300 transition-all duration-300"
-                            style={{ width: `${Math.min(100, Math.max(0, currentStamina))}%` }}
-                          />
-                        </div>
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-900 border border-white/15 shadow-inner">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-300 transition-all duration-300"
+                          style={{ width: `${Math.min(100, Math.max(0, currentStamina))}%` }}
+                        />
                       </div>
                     </div>
                   </div>
-                )
-              })}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* 👑 승급 심사 완료 독립 정중앙 게임 팝업 모달 (Arcade / Esports Game Style Result Modal) */}
+        {session.isCompleted ? (
+          <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md animate-in fade-in zoom-in-95 duration-300">
+            <div
+              className={`relative flex w-full max-w-xl flex-col items-center overflow-hidden rounded-[2.5rem] border-2 p-6 sm:p-9 text-center shadow-[0_0_120px_rgba(0,0,0,0.9)] ${
+                session.isSuccess
+                  ? 'border-amber-400/90 bg-gradient-to-b from-slate-950 via-purple-950/70 to-slate-950 ring-2 ring-amber-400/40 shadow-[0_0_130px_rgba(251,191,36,0.6)]'
+                  : 'border-rose-500/90 bg-gradient-to-b from-slate-950 via-rose-950/70 to-slate-950 ring-2 ring-rose-500/40 shadow-[0_0_130px_rgba(244,63,94,0.6)]'
+              }`}
+            >
+              {/* 회전하는 광채 후광 라이트 링 */}
+              <div
+                className={`pointer-events-none absolute -top-32 h-96 w-96 rounded-full blur-3xl opacity-60 animate-pulse ${
+                  session.isSuccess ? 'bg-amber-400/30' : 'bg-rose-500/30'
+                }`}
+              />
+
+              {/* 상단 아케이드 헤더 뱃지 */}
+              <div className="relative z-10 mb-4 inline-flex items-center gap-2 rounded-full border border-amber-400/60 bg-black/80 px-5 py-1 text-xs font-black tracking-widest text-amber-300 uppercase shadow-[0_0_20px_rgba(251,191,36,0.5)]">
+                <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+                <span>{session.isSuccess ? '✦ STAGE CLEARED ✦' : '✦ AUDIT FAILED ✦'}</span>
+              </div>
+
+              {/* 승급 성공 / 실패 16:9 미디어 컷씬 비주얼 */}
+              {session.isSuccess && session.judge.successMediaUrl ? (
+                <div className="relative z-10 mb-5 aspect-[16/9] w-full max-w-md overflow-hidden rounded-2xl border-2 border-amber-400/70 shadow-[0_0_50px_rgba(251,191,36,0.5)]">
+                  {isVideoMediaUrl(session.judge.successMediaUrl) ? (
+                    <video
+                      src={resolveMediaSrc(session.judge.successMediaUrl)}
+                      className="h-full w-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={resolveMediaSrc(session.judge.successMediaUrl)}
+                      alt="승급 성공"
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
+              ) : !session.isSuccess && session.judge.failMediaUrl ? (
+                <div className="relative z-10 mb-5 aspect-[16/9] w-full max-w-md overflow-hidden rounded-2xl border-2 border-rose-500/70 shadow-[0_0_50px_rgba(244,63,94,0.5)]">
+                  {isVideoMediaUrl(session.judge.failMediaUrl) ? (
+                    <video
+                      src={resolveMediaSrc(session.judge.failMediaUrl)}
+                      className="h-full w-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={resolveMediaSrc(session.judge.failMediaUrl)}
+                      alt="승급 실패"
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
+              ) : null}
+
+              {/* 대형 승리 타이틀 & 아이콘 */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="relative flex items-center justify-center mb-1">
+                  <span className="text-6xl sm:text-7xl animate-bounce drop-shadow-[0_0_40px_rgba(251,191,36,1)]">
+                    {session.isSuccess ? '👑' : '💔'}
+                  </span>
+                  {session.isSuccess ? (
+                    <span className="absolute -top-3 -right-6 text-4xl animate-pulse drop-shadow-[0_0_20px_rgba(251,191,36,1)]">
+                      ✨
+                    </span>
+                  ) : null}
+                </div>
+
+                <h3
+                  className={`text-3xl sm:text-5xl font-black italic tracking-tight drop-shadow-2xl ${
+                    session.isSuccess
+                      ? 'text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 drop-shadow-[0_0_35px_rgba(251,191,36,1)]'
+                      : 'text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-red-500 to-rose-300 drop-shadow-[0_0_35px_rgba(244,63,94,1)]'
+                  }`}
+                >
+                  {session.isSuccess ? getAuditPassTitle(locale) : getAuditFailTitle(locale)}
+                </h3>
+
+                {/* 게임 스탯 카드 (Result Card) */}
+                <div className="mt-4 w-full max-w-md rounded-2xl border border-white/15 bg-black/60 p-3.5 backdrop-blur-md shadow-xl text-left space-y-2">
+                  <div className="flex items-center justify-between text-xs border-b border-white/10 pb-2">
+                    <span className="text-slate-400 font-bold">🏆 승급 등급</span>
+                    <span className="font-black text-amber-300">
+                      {stationGradeLabel(session.tier)} 등급
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs border-b border-white/10 pb-2">
+                    <span className="text-slate-400 font-bold">⚖️ 전담 심사관</span>
+                    <span className="font-bold text-slate-200">{judgeName}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400 font-bold">🔥 최종 달성 만족도</span>
+                    <span className="font-black tabular-nums text-emerald-400">
+                      {session.currentSatisfaction} / {session.targetSatisfaction} 점 (
+                      {Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100)}%)
+                    </span>
+                  </div>
+                </div>
+
+                <p className="mt-4 max-w-md text-xs sm:text-sm font-bold text-slate-300 leading-relaxed drop-shadow">
+                  {session.isSuccess
+                    ? `축하합니다! ${judgeName} 심사관의 자격 심사를 통과하고 ${stationGradeLabel(
+                        session.tier,
+                      )} 등급으로 정식 승급하였습니다!`
+                    : session.failReason === 'no_cards'
+                    ? `제출 가능한 크리에이터 카드가 소진되었습니다. 스테미나를 회복한 후 재도전해 주세요.`
+                    : `목표 만족도 달성에 실패하였습니다. 덱을 보강한 후 재도전해 주세요.`}
+                </p>
+              </div>
+
+              {/* 3D 볼륨 게임 액션 버튼 */}
+              <div className="relative z-10 mt-6 w-full max-w-xs">
+                <button
+                  type="button"
+                  onClick={handleFinish}
+                  className={`game-btn w-full py-4 px-6 rounded-2xl font-black text-base sm:text-lg tracking-wider uppercase shadow-2xl transition-all active:scale-95 ${
+                    session.isSuccess
+                      ? 'bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-slate-950 border-2 border-yellow-200 shadow-[0_0_40px_rgba(251,191,36,0.85)] hover:scale-105 hover:shadow-[0_0_65px_rgba(251,191,36,1)]'
+                      : 'bg-gradient-to-r from-rose-600 via-red-500 to-rose-600 text-white border-2 border-rose-400 shadow-[0_0_40px_rgba(244,63,94,0.85)] hover:scale-105 hover:shadow-[0_0_65px_rgba(244,63,94,1)]'
+                  }`}
+                >
+                  {session.isSuccess ? '🎉 승급 확정 및 계속하기' : '확인 및 재도전'}
+                </button>
+              </div>
             </div>
           </div>
-        ) : (
-          /* 승급 심사 종료 (성공 / 실패 결과 연출) */
-          <div className="shrink-0 border-t border-purple-500/20 bg-slate-950 p-6 text-center">
-            {/* 승급 성공 / 실패 16:9 미디어 컷씬 비주얼 */}
-            {session.isSuccess && session.judge.successMediaUrl ? (
-              <div className="mx-auto mb-4 aspect-[16/9] w-full max-w-lg overflow-hidden rounded-2xl border-2 border-emerald-400/50 shadow-[0_0_30px_rgba(52,211,153,0.3)]">
-                {session.judge.successMediaUrl.startsWith('data:video') ||
-                session.judge.successMediaUrl.endsWith('.mp4') ||
-                session.judge.successMediaUrl.endsWith('.webm') ? (
-                  <video
-                    src={resolveMediaSrc(session.judge.successMediaUrl)}
-                    className="h-full w-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
-                ) : (
-                  <img
-                    src={resolveMediaSrc(session.judge.successMediaUrl)}
-                    alt="승급 성공"
-                    className="h-full w-full object-cover"
-                  />
-                )}
-              </div>
-            ) : !session.isSuccess && session.judge.failMediaUrl ? (
-              <div className="mx-auto mb-4 aspect-[16/9] w-full max-w-lg overflow-hidden rounded-2xl border-2 border-rose-500/50 shadow-[0_0_30px_rgba(244,63,94,0.3)]">
-                {session.judge.failMediaUrl.startsWith('data:video') ||
-                session.judge.failMediaUrl.endsWith('.mp4') ||
-                session.judge.failMediaUrl.endsWith('.webm') ? (
-                  <video
-                    src={resolveMediaSrc(session.judge.failMediaUrl)}
-                    className="h-full w-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
-                ) : (
-                  <img
-                    src={resolveMediaSrc(session.judge.failMediaUrl)}
-                    alt="승급 실패"
-                    className="h-full w-full object-cover"
-                  />
-                )}
-              </div>
-            ) : null}
-
-            <div className="mb-2 text-2xl font-black">
-              {session.isSuccess ? (
-                <span className="text-emerald-400">🎉 승급 심사 통과 성공!</span>
-              ) : (
-                <span className="text-rose-400">❌ 승급 심사 실패</span>
-              )}
-            </div>
-            <p className="text-xs font-medium text-slate-300 max-w-md mx-auto">
-              {session.isSuccess
-                ? `축하합니다! ${judgeName}의 심사를 만족시키고 ${stationGradeLabel(session.tier)} 등급으로 승급하였습니다.`
-                : `목표 만족도 달성에 실패하였습니다. 심사관의 요구 타입과 크리에이터 덱을 보강하여 재도전하세요.`}
-            </p>
-
-            <div className="mt-4 flex justify-center gap-3">
-              <button
-                type="button"
-                onClick={handleFinish}
-                className="game-btn game-btn-primary min-w-[140px] px-5 py-2.5 text-sm"
-              >
-                확인 및 진행
-              </button>
-            </div>
-          </div>
-        )}
+        ) : null}
       </div>
     </div>
   )

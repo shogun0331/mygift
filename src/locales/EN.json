@@ -176,7 +176,8 @@
     "se": "SFX Volume",
     "devMode": "Developer Mode",
     "devModeDesc": "Enabling Dev Mode unlocks the [EDIT] tab constantly.",
-    "saveSuccess": "Settings have been saved successfully."
+    "saveSuccess": "Settings have been saved successfully.",
+    "exitToMenu": "Exit"
   },
   "creator": {
     "scout": "SCOUT",

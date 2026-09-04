@@ -6,6 +6,7 @@ import { useTranslation } from '../locales/i18n'
 import type { GameEvent, EventMediaAsset } from './types'
 import { loadCommonSounds } from './db'
 import { commonSoundMediaPath, resolveMediaSrc } from '../game/mediaUrl'
+import { useBgmSilence } from '../game/bgm'
 import { BlurRegionOverlay, readBlurRegions } from './BlurRegionEditor'
 import {
   EVENT_DEFAULT_LOCALE,
@@ -302,23 +303,33 @@ export function EventSimulator({
   registeredCharacters = [],
   allowSkip = false,
 }: EventSimulatorProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   // 모든 노드 추출 및 평탄화
   const flatNodes = useMemo(() => flattenNodes(event.nodes), [event.nodes])
 
-  // 언어 설정 (기본값 설정)
+  // 언어 설정 — 인게임은 UI 언어, 에디터는 이벤트 기본 언어
   const availableLangs = EVENT_LOCALES
+  const uiEventLocale = normalizeEventLocale(locale)
 
   const [lang, setLang] = useState<string>(() => {
+    if (mode === 'game') return uiEventLocale
     return normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE)
   })
   const [commonSounds, setCommonSounds] = useState<EventMediaAsset[]>([])
+
+  useEffect(() => {
+    if (mode !== 'game') return
+    setLang(uiEventLocale)
+  }, [mode, uiEventLocale])
 
   useEffect(() => {
     void loadCommonSounds().then((sounds) => {
       if (Array.isArray(sounds)) setCommonSounds(sounds)
     })
   }, [])
+
+  // 인게임 VN 진입 시 게임 BGM 강제 무음 (해제 시 InGame useGameBgm이 재개)
+  useBgmSilence(mode === 'game')
 
   // 플레이어 및 내비게이션 상태
   const [currentNodeId, setCurrentNodeId] = useState<string>(() => {
@@ -893,20 +904,22 @@ export function EventSimulator({
 
   const langVolumeControls = (
     <>
-      <div className={isGame ? 'vn-chip' : 'flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/30 px-2 py-1'}>
-        {!isGame ? <span className="text-xs text-slate-500 font-medium uppercase">LANG:</span> : null}
-        <select
-          value={lang}
-          onChange={(e) => setLang(e.target.value)}
-          className={isGame ? undefined : 'bg-transparent text-xs font-semibold text-indigo-300 outline-none cursor-pointer'}
-        >
-          {availableLangs.map((l) => (
-            <option key={l} value={l} className="bg-slate-900 text-slate-100">
-              {l.toUpperCase()}
-            </option>
-          ))}
-        </select>
-      </div>
+      {!isGame ? (
+        <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/30 px-2 py-1">
+          <span className="text-xs text-slate-500 font-medium uppercase">LANG:</span>
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            className="bg-transparent text-xs font-semibold text-indigo-300 outline-none cursor-pointer"
+          >
+            {availableLangs.map((l) => (
+              <option key={l} value={l} className="bg-slate-900 text-slate-100">
+                {l.toUpperCase()}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
       <div className={isGame ? 'vn-chip' : 'flex items-center gap-2 rounded-lg border border-white/10 bg-black/30 px-3 py-1'}>
         {isGame ? <IconVnVolume /> : <span className="text-xs text-slate-400 font-medium">🔈</span>}
         <input

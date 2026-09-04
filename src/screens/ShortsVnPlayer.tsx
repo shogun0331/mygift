@@ -11,6 +11,7 @@ import {
   resolveShortsVoiceSrc,
 } from '../game/shortsVnDialogue'
 import { getSeVolumePercent } from '../game/uiSfx'
+import { useBgmSilence } from '../game/bgm'
 import { useTranslation } from '../locales/i18n'
 import { MosaicMediaFrame } from './MosaicMediaFrame'
 
@@ -55,6 +56,8 @@ export function ShortsVnPlayer({
       if (Array.isArray(sounds)) setCommonSounds(sounds)
     })
   }, [])
+
+  useBgmSilence(presentation === 'overlay')
 
   useEffect(() => {
     if (beats.length === 0) onClose()

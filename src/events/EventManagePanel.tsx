@@ -24,6 +24,7 @@ import {
   emptyEventLocalization,
   mergeEventLocalization,
   normalizeEventLocale,
+  type EventLocale,
 } from './eventLocales'
 import { loadCommonSounds, persistCommonSoundFiles, removeCommonSoundFile, saveCommonSounds } from './db'
 import { commonSoundMediaPath, resolveMediaSrc } from '../game/mediaUrl'
@@ -845,6 +846,9 @@ function EventDetail({
   onUpdateEvent,
 }: EventDetailProps) {
   const [activeTab, setActiveTab] = useState<'nodes' | 'media'>('nodes')
+  const [contentLang, setContentLang] = useState<EventLocale>(() =>
+    normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE),
+  )
   const fileInputRef = useRef<HTMLInputElement>(null)
   const counts = countByKind(event.media)
 
@@ -1248,8 +1252,11 @@ function EventDetail({
 
   // 노드 값 변경 처리
   const handleNodeChange = (index: number, fields: Record<string, any>) => {
+    const { contentLang: fieldLang, ...nodeFields } = fields
     const updatedNodes = [...(event.nodes || [])]
-    const targetNode = { ...(updatedNodes[index] as Record<string, any>), ...fields }
+    const targetNode = { ...(updatedNodes[index] as Record<string, any>), ...nodeFields }
+    // contentLang은 노드 필드가 아님
+    delete (targetNode as { contentLang?: unknown }).contentLang
     updatedNodes[index] = targetNode
 
     let nextCharacters = event.characters || []
@@ -1276,12 +1283,20 @@ function EventDetail({
     const nextEvent: GameEvent = { ...event, nodes: updatedNodes, characters: nextCharacters }
     if (typeof fields.text === 'string' && targetNode.type === 'text') {
       const textKey = String(targetNode.text_key || targetNode.id || '')
-      const lang = normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE)
+      const lang = normalizeEventLocale(
+        typeof fieldLang === 'string' ? fieldLang : contentLang || event.defaultLanguage,
+      )
+      const defaultLang = normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE)
       if (textKey) {
         nextEvent.localization = mergeEventLocalization(event.localization)
         nextEvent.localization[lang] = {
           ...nextEvent.localization[lang],
           [textKey]: fields.text,
+        }
+        // 기본 언어면 node.text도 같이 맞춤
+        if (lang === defaultLang) {
+          updatedNodes[index] = { ...targetNode, text: fields.text }
+          nextEvent.nodes = updatedNodes
         }
       }
     }
@@ -1951,11 +1966,54 @@ function EventDetail({
 
                         {/* 대사 텍스트 에어리어 */}
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-[11px] font-semibold text-slate-400"> 대사 </label>
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <label className="text-[11px] font-semibold text-slate-400">대사</label>
+                            <div className="flex flex-wrap gap-1">
+                              {EVENT_LOCALES.map((lang) => {
+                                const textKey = String(node.text_key || node.id || '')
+                                const filled = Boolean(
+                                  textKey &&
+                                    String(event.localization?.[lang]?.[textKey] || '').trim(),
+                                )
+                                const active = contentLang === lang
+                                return (
+                                  <button
+                                    key={lang}
+                                    type="button"
+                                    onClick={() => setContentLang(lang)}
+                                    className={`rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase ${
+                                      active
+                                        ? 'border-indigo-400/60 bg-indigo-500/25 text-indigo-100'
+                                        : filled
+                                          ? 'border-emerald-500/30 bg-emerald-950/30 text-emerald-200/90'
+                                          : 'border-white/10 bg-black/30 text-slate-500'
+                                    }`}
+                                  >
+                                    {lang}
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          </div>
                           <textarea
-                            value={node.text || ''}
-                            onChange={(e) => handleNodeChange(index, { text: e.target.value })}
-                            placeholder="노출될 대사를 여기에 입력하세요..."
+                            value={(() => {
+                              const textKey = String(node.text_key || node.id || '')
+                              const fromLoc = textKey
+                                ? event.localization?.[contentLang]?.[textKey]
+                                : ''
+                              if (typeof fromLoc === 'string') return fromLoc
+                              const defaultLang = normalizeEventLocale(
+                                event.defaultLanguage || EVENT_DEFAULT_LOCALE,
+                              )
+                              return contentLang === defaultLang ? node.text || '' : ''
+                            })()}
+                            onChange={(e) =>
+                              handleNodeChange(index, {
+                                text: e.target.value,
+                                contentLang,
+                              })
+                            }
+                            placeholder={`${contentLang.toUpperCase()} 대사를 입력하세요...`}
                             rows={2}
                             className="w-full rounded-xl border border-white/10 bg-black/40 p-3 text-xs text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/50 resize-y"
                           />

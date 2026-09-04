@@ -390,6 +390,7 @@ export function CharacterSnsEditor({ character, onCancel, onSave }: CharacterSns
                       url={preview}
                       kind="image"
                       regions={post.blurRegions}
+                      objectFit="cover"
                       className="h-16 w-16 shrink-0 rounded-lg"
                       mediaClassName="h-16 w-16 object-cover"
                     />
@@ -398,6 +399,7 @@ export function CharacterSnsEditor({ character, onCancel, onSave }: CharacterSns
                       url={preview}
                       kind="video"
                       regions={post.blurRegions}
+                      objectFit="cover"
                       className="h-16 w-16 shrink-0 rounded-lg"
                       mediaClassName="h-16 w-16 object-cover"
                     />

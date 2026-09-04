@@ -152,3 +152,66 @@ export function initUiClickSounds() {
     true,
   )
 }
+
+/** 승급 통과 성공 웅장한 팡파르 (Web Audio Synth Fanfare) */
+export function playAuditPassFanfare() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+    if (!AudioCtx) return
+    const ctx = new AudioCtx()
+    const vol = volume * 0.85
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+
+    // 1. 팡파르 트럼펫 아르페지오 (C5 - E5 - G5 - C6) & 빅 승리 3화음
+    const notes = [
+      { freq: 523.25, start: 0, duration: 0.12 },
+      { freq: 659.25, start: 0.12, duration: 0.12 },
+      { freq: 783.99, start: 0.24, duration: 0.12 },
+      { freq: 1046.5, start: 0.36, duration: 0.4 },
+      // 💥 메인 하이라이트 승리 화음 (C6 + E6 + G6)
+      { freq: 1046.5, start: 0.8, duration: 1.1 },
+      { freq: 1318.51, start: 0.8, duration: 1.1 },
+      { freq: 1567.98, start: 0.8, duration: 1.1 },
+      { freq: 2093.0, start: 0.8, duration: 1.1 },
+    ]
+
+    notes.forEach(({ freq, start, duration }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(freq, now + start)
+
+      gain.gain.setValueAtTime(0, now + start)
+      gain.gain.linearRampToValueAtTime(vol * 0.35, now + start + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(now + start)
+      osc.stop(now + start + duration)
+    })
+
+    // 축하 팀파니 드럼 쿵 소리
+    const drumOsc = ctx.createOscillator()
+    const drumGain = ctx.createGain()
+    drumOsc.type = 'sine'
+    drumOsc.frequency.setValueAtTime(140, now + 0.8)
+    drumOsc.frequency.exponentialRampToValueAtTime(35, now + 1.25)
+    drumGain.gain.setValueAtTime(vol * 0.6, now + 0.8)
+    drumGain.gain.exponentialRampToValueAtTime(0.001, now + 1.25)
+    drumOsc.connect(drumGain)
+    drumGain.connect(ctx.destination)
+    drumOsc.start(now + 0.8)
+    drumOsc.stop(now + 1.25)
+
+    setTimeout(() => {
+      ctx.close().catch(() => {})
+    }, 2500)
+  } catch {
+    // ignore AudioContext error
+  }
+}

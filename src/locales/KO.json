@@ -176,7 +176,8 @@
     "se": "효과음 볼륨",
     "devMode": "개발자 모드",
     "devModeDesc": "개발 모드 활성화 시 [EDIT] 탭이 상시 활성화됩니다.",
-    "saveSuccess": "설정이 성공적으로 저장되었습니다."
+    "saveSuccess": "설정이 성공적으로 저장되었습니다.",
+    "exitToMenu": "나가기"
   },
   "creator": {
     "scout": "스카우트",

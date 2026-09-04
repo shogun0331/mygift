@@ -41,7 +41,7 @@ export type AuditSession = {
   tier: Exclude<StationGrade, 'black' | 'tiny'>
   judge: AuditJudgeConfig
   currentTurn: number
-  maxTurn: number
+  maxTurn?: number
   turnDemands: CreatorType[]
   currentSatisfaction: number
   targetSatisfaction: number
@@ -52,6 +52,7 @@ export type AuditSession = {
   history: TurnActionResult[]
   isCompleted: boolean
   isSuccess: boolean
+  failReason?: 'no_cards' | 'satisfaction_failed'
 }
 
 const GRADE_ORDER: Record<Grade, number> = { C: 0, B: 1, A: 2, S: 3 }
@@ -93,9 +94,9 @@ export function createAuditSession(
     judge = pool[randIdx] ?? judges[0]!
   }
 
-  // 5턴 각 턴별 무작위 요구 타입 결정
+  // 턴별 무작위 요구 타입 결정 (무제한 턴을 위해 초기 10개 생성)
   const turnDemands: CreatorType[] = []
-  for (let t = 0; t < 5; t += 1) {
+  for (let t = 0; t < 10; t += 1) {
     const randType = ALL_CREATOR_TYPES[Math.floor(Math.random() * ALL_CREATOR_TYPES.length)]!
     turnDemands.push(randType)
   }
@@ -104,7 +105,6 @@ export function createAuditSession(
     tier,
     judge,
     currentTurn: 1,
-    maxTurn: 5,
     turnDemands,
     currentSatisfaction: 0,
     targetSatisfaction: stage.targetSatisfaction,
@@ -181,12 +181,17 @@ export function submitTurnPerformance(
   creatorGrade: Grade,
   stageAttackMod = 1.0,
 ): AuditSession {
-  if (session.isCompleted || session.currentTurn > session.maxTurn) {
+  if (session.isCompleted) {
     return session
   }
 
   const turn = session.currentTurn
-  const demandedType = session.turnDemands[turn - 1] ?? 'elegance'
+  const nextTurnDemands = [...session.turnDemands]
+  while (nextTurnDemands.length <= turn) {
+    const randType = ALL_CREATOR_TYPES[Math.floor(Math.random() * ALL_CREATOR_TYPES.length)]!
+    nextTurnDemands.push(randType)
+  }
+  const demandedType = nextTurnDemands[turn - 1] ?? 'elegance'
   const cType = typeForCreator(creator.id, creator.type)
   const typeMatched = cType === demandedType
 
@@ -287,11 +292,12 @@ export function submitTurnPerformance(
   }
 
   const isSuccess = nextSatisfaction >= session.targetSatisfaction
-  const isCompleted = isSuccess || turn >= session.maxTurn
+  const isCompleted = isSuccess
 
   return {
     ...session,
     currentTurn: turn + 1,
+    turnDemands: nextTurnDemands,
     currentSatisfaction: nextSatisfaction,
     cooldownMap: nextCooldownMap,
     staminaDeductions: nextStaminaDeductions,

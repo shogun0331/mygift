@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
-import { useGameBgm } from '../game/bgm'
+import { getBgmVolumePercent, setBgmVolumePercent, useGameBgm } from '../game/bgm'
 import { getSeVolumePercent, playSfx, setSeVolumePercent } from '../game/uiSfx'
 import {
   deserializeWeekAccum,
@@ -656,7 +656,23 @@ export function InGame({
   useEffect(() => {
     setStationGradeConfig(stationGradeConfig)
   }, [stationGradeConfig])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        const tag = (document.activeElement?.tagName || '').toLowerCase()
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') {
+          return
+        }
+        setTab((prev) => (prev === 'settings' ? 'dashboard' : 'settings'))
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
   const [tab, setTab] = useState<GameTab>('dashboard')
+  const [bgmVolume, setBgmVolume] = useState(() => getBgmVolumePercent())
+  const [seVolume, setSeVolume] = useState(() => getSeVolumePercent())
   const [scheduleStudioMode, setScheduleStudioMode] = useState<'creator' | 'staff' | undefined>(undefined)
   const [scheduleSelectedStaffId, setScheduleSelectedStaffId] = useState<string | null>(null)
 
@@ -3865,7 +3881,23 @@ export function InGame({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[10px] text-slate-500 font-semibold">{t('settings.bgm')}</span>
-                    <input type="range" className="accent-pink-500 bg-slate-900 border border-indigo-500/20 h-1.5 rounded-lg appearance-none cursor-pointer" defaultValue={70} />
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      value={bgmVolume}
+                      onInput={(event) => {
+                        const next = Number(event.currentTarget.value)
+                        setBgmVolume(next)
+                        setBgmVolumePercent(next)
+                      }}
+                      onChange={(event) => {
+                        const next = Number(event.currentTarget.value)
+                        setBgmVolume(next)
+                        setBgmVolumePercent(next)
+                      }}
+                      className="accent-pink-500 bg-slate-900 border border-indigo-500/20 h-1.5 rounded-lg appearance-none cursor-pointer"
+                    />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[10px] text-slate-500 font-semibold">{t('settings.se')}</span>
@@ -3873,8 +3905,17 @@ export function InGame({
                       type="range"
                       min={0}
                       max={100}
-                      defaultValue={getSeVolumePercent()}
-                      onChange={(event) => setSeVolumePercent(Number(event.target.value))}
+                      value={seVolume}
+                      onInput={(event) => {
+                        const next = Number(event.currentTarget.value)
+                        setSeVolume(next)
+                        setSeVolumePercent(next)
+                      }}
+                      onChange={(event) => {
+                        const next = Number(event.currentTarget.value)
+                        setSeVolume(next)
+                        setSeVolumePercent(next)
+                      }}
                       className="accent-pink-500 bg-slate-900 border border-indigo-500/20 h-1.5 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -3893,6 +3934,19 @@ export function InGame({
                 <span className="text-[10px] text-slate-500 font-bold bg-slate-900 border border-indigo-500/25 px-2.5 py-1 rounded-lg">
                   OFF
                 </span>
+              </div>
+
+              <div className="border-t border-white/10 pt-6 mt-6 flex flex-col items-center gap-2">
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="game-btn w-full py-3.5 px-6 rounded-xl font-black text-sm bg-gradient-to-r from-pink-600 via-fuchsia-600 to-pink-600 hover:from-pink-500 hover:to-fuchsia-500 border border-pink-400/60 text-white shadow-[0_0_25px_rgba(244,114,182,0.55)] hover:shadow-[0_0_40px_rgba(244,114,182,0.85)] transition-all flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4.5 h-4.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 0 1 2 2v2h-2V4H5v16h9v-2h2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9z" />
+                  </svg>
+                  <span>{t('settings.exitToMenu') || '나가기'}</span>
+                </button>
               </div>
             </div>
           </div>
@@ -4426,6 +4480,11 @@ export function InGame({
               setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
               return
             }
+            continueMonthEndFlow()
+          }}
+          onClose={() => {
+            setSelectedAuditCreators(null)
+            setStationAuditTarget(null)
             continueMonthEndFlow()
           }}
         />

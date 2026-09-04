@@ -8,6 +8,7 @@ import {
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { pickSpecialVacationCaption } from '../game/specialVacationLines'
 import { getSeVolumePercent } from '../game/uiSfx'
+import { useBgmSilence } from '../game/bgm'
 import { characterDisplayName } from '../game/characterLocales'
 import { useTranslation } from '../locales/i18n'
 
@@ -63,6 +64,8 @@ export function SpecialVacationPlayer({ creator, onClose }: Props) {
   const [visible, setVisible] = useState(false)
   const voiceRef = useRef<HTMLAudioElement | null>(null)
   const closingRef = useRef(false)
+
+  useBgmSilence(true)
 
   useEffect(() => {
     const raf = window.requestAnimationFrame(() => setVisible(true))

@@ -166,7 +166,8 @@
     "se": "SE 音量",
     "devMode": "开发者模式",
     "devModeDesc": "启用开发模式时，[EDIT] 选项卡将常时启用。",
-    "saveSuccess": "设置保存成功。"
+    "saveSuccess": "设置保存成功。",
+    "exitToMenu": "退出"
   },
   "studio": {
     "placementTitle": "可部署的创作者",

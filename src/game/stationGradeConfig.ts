@@ -47,6 +47,7 @@ export type CreatorType = 'elegance' | 'performance' | 'communication' | 'sexy'
 export type AuditJudgeConfig = {
   id: string
   name: string
+  names?: Record<string, string>
   avatarUrl: string
   targetTier?: Exclude<StationTierId, 'black' | 'tiny'> | 'all'
   successMediaUrl?: string

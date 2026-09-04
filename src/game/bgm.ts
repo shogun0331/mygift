@@ -72,55 +72,162 @@ export function bgmTrackUrl(config: GameBgmConfig, track: BgmTrack): string | nu
   return resolveMediaSrc(bgmMediaPath(fileName))
 }
 
-let library: GameBgmConfig = emptyBgmConfig()
-let currentTrack: BgmTrack | null = null
-let audio: HTMLAudioElement | null = null
+const VOLUME_KEY = 'broadcast-bgm-volume'
+
+type BgmRuntime = {
+  library: GameBgmConfig
+  desiredTrack: BgmTrack | null
+  silenceLocks: number
+  audio: HTMLAudioElement | null
+  volume: number
+  persistTimer: ReturnType<typeof setTimeout> | null
+}
+
+function clamp01(value: number) {
+  if (Number.isNaN(value)) return 0
+  return Math.min(1, Math.max(0, value))
+}
+
+function loadBgmVolume() {
+  try {
+    const raw = localStorage.getItem(VOLUME_KEY)
+    if (raw == null) return 0.7
+    const asPercent = Number(raw)
+    if (asPercent > 1) return clamp01(asPercent / 100)
+    return clamp01(asPercent)
+  } catch {
+    return 0.7
+  }
+}
+
+/** HMR 후에도 같은 Audio 인스턴스를 쓰도록 런타임 상태를 유지 */
+const runtime: BgmRuntime = (() => {
+  const g = globalThis as typeof globalThis & { __broadcastBgmRuntime?: BgmRuntime }
+  if (g.__broadcastBgmRuntime) return g.__broadcastBgmRuntime
+  const created: BgmRuntime = {
+    library: emptyBgmConfig(),
+    desiredTrack: null,
+    silenceLocks: 0,
+    audio: null,
+    volume: loadBgmVolume(),
+    persistTimer: null,
+  }
+  g.__broadcastBgmRuntime = created
+  return created
+})()
+
+function applyBgmVolume() {
+  const el = runtime.audio
+  if (!el) return
+  const level = runtime.volume
+  el.muted = level <= 0.001
+  el.volume = level
+}
+
+export function getBgmVolumePercent() {
+  return Math.round(runtime.volume * 100)
+}
+
+export function setBgmVolumePercent(percent: number) {
+  runtime.volume = clamp01(percent / 100)
+  applyBgmVolume()
+  if (runtime.persistTimer) clearTimeout(runtime.persistTimer)
+  runtime.persistTimer = setTimeout(() => {
+    runtime.persistTimer = null
+    try {
+      localStorage.setItem(VOLUME_KEY, String(Math.round(runtime.volume * 100)))
+    } catch {
+      // ignore
+    }
+  }, 120)
+}
 
 export function setBgmLibrary(config: GameBgmConfig) {
-  library = normalizeBgmConfig(config)
-  if (currentTrack) startTrack(currentTrack, true)
+  runtime.library = normalizeBgmConfig(config)
+  syncPlayback()
+}
+
+function stopBgmAudio() {
+  const el = runtime.audio
+  if (!el) return
+  try {
+    el.pause()
+    el.currentTime = 0
+    el.removeAttribute('src')
+    el.load()
+  } catch {
+    // ignore
+  }
+}
+
+function ensureAudio() {
+  if (runtime.audio) return runtime.audio
+  const el = new Audio()
+  el.loop = true
+  el.preload = 'auto'
+  runtime.audio = el
+  applyBgmVolume()
+  return el
 }
 
 function startTrack(track: BgmTrack, force = false) {
-  const url = bgmTrackUrl(library, track)
+  const url = bgmTrackUrl(runtime.library, track)
   if (!url) {
-    stopBgm()
-    currentTrack = track
+    stopBgmAudio()
     return
   }
-  if (!force && currentTrack === track && audio && !audio.paused && audio.getAttribute('src') === url) {
+  const el = ensureAudio()
+  applyBgmVolume()
+  if (!force && !el.paused && el.getAttribute('src') === url) {
     return
   }
-  currentTrack = track
-  if (!audio) {
-    audio = new Audio()
-    audio.loop = true
-    audio.volume = 0.7
+  if (el.getAttribute('src') !== url) {
+    el.src = url
   }
-  if (audio.getAttribute('src') !== url) {
-    audio.src = url
-  }
-  void audio.play().catch(() => {})
+  void el.play().catch(() => {})
 }
 
+function syncPlayback(force = false) {
+  if (runtime.silenceLocks > 0 || !runtime.desiredTrack) {
+    stopBgmAudio()
+    return
+  }
+  startTrack(runtime.desiredTrack, force)
+}
+
+/** 게임 BGM 즉시 정지 */
 export function stopBgm() {
-  if (!audio) return
-  audio.pause()
-  audio.removeAttribute('src')
-  audio.load()
+  runtime.desiredTrack = null
+  stopBgmAudio()
+}
+
+/** VN 등 오버레이용 — 잠금 동안 게임 BGM 재생 금지 */
+export function acquireBgmSilence() {
+  runtime.silenceLocks += 1
+  stopBgmAudio()
+}
+
+export function releaseBgmSilence() {
+  runtime.silenceLocks = Math.max(0, runtime.silenceLocks - 1)
+  syncPlayback()
 }
 
 export function playBgmTrack(track: BgmTrack | null) {
-  if (!track) {
-    currentTrack = null
-    stopBgm()
-    return
-  }
-  startTrack(track)
+  runtime.desiredTrack = track
+  syncPlayback()
 }
 
 export function useGameBgm(track: BgmTrack | null) {
   useEffect(() => {
     playBgmTrack(track)
   }, [track])
+}
+
+/** 마운트 동안 게임 BGM을 강제 무음 */
+export function useBgmSilence(active = true) {
+  useEffect(() => {
+    if (!active) return
+    acquireBgmSilence()
+    return () => releaseBgmSilence()
+  }, [active])
 }

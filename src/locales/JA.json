@@ -160,7 +160,8 @@
     "se": "SE音量",
     "devMode": "開発者モード",
     "devModeDesc": "開発モード有効時、[EDIT]タブが常時有効になります。",
-    "saveSuccess": "設定が正常に保存されました。"
+    "saveSuccess": "設定が正常に保存されました。",
+    "exitToMenu": "退出"
   },
   "studio": {
     "placementTitle": "配置するクリエイター",
