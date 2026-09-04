@@ -399,49 +399,44 @@ export function PromotionAuditModal({
       aria-modal="true"
     >
       <div className="game-panel relative flex h-[97vh] w-[99vw] max-w-[1800px] flex-col overflow-hidden rounded-3xl border border-purple-500/50 bg-slate-950/95 shadow-[0_0_90px_rgba(168,85,247,0.35)]">
-        {/* 👆 3D 핑거 카드 클릭 탭(Tap/Click) 포인터 가이드 애니메이션 (showActionGuide 일 때 진입 가이드 표출) */}
+        {/* 👆 3D 핑거 카드 선택 가이드 포인터 애니메이션 (showActionGuide 일 때 진입 가이드 표출) */}
         {showActionGuide && !showCinematicIntro && !session.isCompleted ? (
           <div className="pointer-events-none absolute inset-0 z-[110] overflow-hidden">
-            {/* 1번 카드를 콕-콕- 누르는 3D 클릭 탭 핑거 포인터 */}
-            <div className="absolute bottom-[16%] left-[calc(50%-180px)] sm:left-[calc(50%-215px)] flex flex-col items-center animate-[cardClickTap_1.4s_ease-in-out_infinite]">
+            {/* 덱 전체 4명 카드를 지목하도록 하단 덱 중앙 위쪽 공중에 배치 */}
+            <div className="absolute bottom-[23%] left-1/2 -translate-x-1/2 flex flex-col items-center animate-[cardDeckTap_1.4s_ease-in-out_infinite]">
               {/* 카드를 클릭하라는 탭 안내 뱃지 */}
-              <div className="mb-2 flex items-center gap-1.5 rounded-full border-2 border-amber-300 bg-black/90 px-3.5 py-1 shadow-[0_0_25px_rgba(251,191,36,0.95)] backdrop-blur-md">
+              <div className="mb-2 flex items-center gap-1.5 rounded-full border-2 border-amber-300 bg-slate-950/95 px-4 py-1.5 shadow-[0_0_30px_rgba(251,191,36,0.95)] backdrop-blur-md">
                 <span className="text-xs sm:text-sm font-black text-amber-200 uppercase tracking-wider animate-pulse">
-                  👈 카드를 클릭하세요!
+                  👇 아래 카드 중 하나를 선택하세요!
                 </span>
               </div>
 
-              {/* 3D 핑거 클릭 손가락 아이콘 & 클릭 파티클 링 */}
+              {/* 3D 핑거 클릭 손가락 아이콘 */}
               <div className="relative flex items-center justify-center">
                 <span className="text-5xl sm:text-6xl drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] filter drop-shadow-[0_0_25px_rgba(251,191,36,1)]">
                   👇
                 </span>
-                <div className="absolute -bottom-3 h-10 w-10 rounded-full border-4 border-amber-300/80 bg-amber-400/30 blur-xs animate-ping" />
               </div>
             </div>
 
-            {/* 카드 클릭 탭(Click Tap) 키프레임 */}
+            {/* 카드 선택 탭 키프레임 */}
             <style>{`
-              @keyframes cardClickTap {
+              @keyframes cardDeckTap {
                 0% {
-                  transform: translateY(0px) scale(1);
-                  opacity: 0.2;
+                  transform: translate(-50%, 0px) scale(1);
+                  opacity: 0.3;
                 }
-                25% {
-                  transform: translateY(-12px) scale(1.1);
+                30% {
+                  transform: translate(-50%, -10px) scale(1.1);
                   opacity: 1;
                 }
-                50% {
-                  transform: translateY(6px) scale(0.92);
-                  opacity: 1;
-                }
-                75% {
-                  transform: translateY(-6px) scale(1.05);
+                60% {
+                  transform: translate(-50%, 8px) scale(0.95);
                   opacity: 1;
                 }
                 100% {
-                  transform: translateY(0px) scale(1);
-                  opacity: 0.2;
+                  transform: translate(-50%, 0px) scale(1);
+                  opacity: 0.3;
                 }
               }
             `}</style>
@@ -595,23 +590,7 @@ export function PromotionAuditModal({
                 </span>
               </div>
 
-              {/* 🎯 심사관 타겟 조준 링 & 가이드 오버레이 (showActionGuide 일 때 활성화) */}
-              {showActionGuide && !showCinematicIntro && !session.isCompleted ? (
-                <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center animate-in fade-in duration-300">
-                  <div className="relative flex flex-col items-center justify-center">
-                    <div className="h-32 w-32 sm:h-44 sm:w-44 rounded-full border-4 border-amber-400/90 shadow-[0_0_60px_rgba(251,191,36,0.9)] animate-ping" />
-                    <div className="absolute h-24 w-24 sm:h-32 sm:w-32 rounded-full border-2 border-dashed border-amber-300 shadow-[0_0_30px_rgba(251,191,36,0.8)] animate-[spin_4s_linear_infinite]" />
-                    <div className="absolute flex flex-col items-center gap-1 rounded-2xl border-2 border-amber-400 bg-slate-950/90 px-4 py-2 shadow-[0_0_40px_rgba(251,191,36,0.95)] backdrop-blur-md animate-bounce">
-                      <span className="text-xl sm:text-2xl font-black italic tracking-widest text-amber-300 drop-shadow-[0_0_15px_rgba(251,191,36,1)]">
-                        🎯 TARGET
-                      </span>
-                      <span className="rounded-full border border-amber-400/40 bg-amber-950/80 px-3 py-0.5 text-[10px] sm:text-xs font-black text-amber-100 uppercase tracking-wider">
-                        카드를 클릭하여 퍼포먼스 제시!
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
+
 
               {/* 💬 심사관 오른쪽 상단 네온 말풍선 코멘트 (7개국어 반응 & 공격 멘트 오버레이) */}
               {judgeSpeechBubble ? (
@@ -835,7 +814,7 @@ export function PromotionAuditModal({
           </div>
 
           <div className="grid grid-cols-4 gap-1.5 sm:gap-2 max-w-xl sm:max-w-2xl mx-auto">
-            {displayCreators.map((creator, index) => {
+            {displayCreators.map((creator) => {
               const rawType = creator.statType || (creator as any).type || (creator as any).primaryStat || 'elegance'
               const cType: CreatorType =
                 rawType === 'sexy' || rawType === 'communication' || rawType === 'elegance' || rawType === 'performance'
@@ -870,8 +849,6 @@ export function PromotionAuditModal({
                       ? 'border-rose-500 ring-4 ring-rose-500 shadow-[0_0_50px_rgba(244,63,94,1)] bg-rose-950 z-30'
                       : isCardDisabled
                       ? 'cursor-not-allowed border-purple-900/40 opacity-40 grayscale-[30%]'
-                      : showActionGuide && index === 0
-                      ? 'cursor-pointer border-amber-400 ring-4 ring-amber-400 shadow-[0_0_35px_rgba(251,191,36,0.9)] scale-[1.05] animate-bounce z-40'
                       : selectedCreatorId === creator.id
                       ? 'cursor-pointer border-amber-400 ring-2 ring-amber-400/60 shadow-[0_0_22px_rgba(251,191,36,0.38)] scale-[1.02]'
                       : 'cursor-pointer border-purple-500/30 hover:border-purple-400 hover:scale-[1.03] hover:shadow-[0_0_18px_rgba(168,85,247,0.3)]'
