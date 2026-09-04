@@ -1251,7 +1251,7 @@ export default function App() {
 
       // 이미 스카우트된 크리에이터에도 새 영상/이미지 반영 (대시보드 idle 재생용)
       setOwnedCreators((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, ...nextCharacter } : c)),
+        prev.map((c) => (c.id === id ? { ...c, ...nextCharacter, grade: c.grade, salary: c.salary } : c)),
       )
     } catch (err) {
       console.error('handleUpdateCharacter error:', err)
