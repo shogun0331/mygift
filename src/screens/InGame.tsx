@@ -18,6 +18,7 @@ import {
 } from '../game/saveService'
 import {
   toStudioHandCard,
+  findCharacterProfileUrl,
   pickRandomBroadcastVideoUrl,
   type Grade,
   mergeAuditMedia,
@@ -4546,6 +4547,10 @@ export function InGame({
       {promotionExam ? (
         <PromotionSlotModal
           creatorName={promotionExam.creatorName}
+          profileImageUrl={findCharacterProfileUrl(
+            ownedCreators.find((c) => c.id === promotionExam.creatorId) ||
+            registeredCharacters.find((c) => c.id === promotionExam.creatorId)
+          )}
           result={promotionExam.result}
           onConfirm={confirmPromotionExam}
         />
