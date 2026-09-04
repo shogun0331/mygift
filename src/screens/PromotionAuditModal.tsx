@@ -118,12 +118,14 @@ export function PromotionAuditModal({
   // 🎬 진입 직후 암전 시네마틱 스케일 트윈 타이틀 연출 상태 (0ms ~ 2000ms)
   const [showCinematicIntro, setShowCinematicIntro] = useState<boolean>(true)
   const [isActionLocked, setIsActionLocked] = useState<boolean>(true)
+  const [showActionGuide, setShowActionGuide] = useState<boolean>(false)
 
   useEffect(() => {
-    // 🎬 까만 화면에서 "심사관을 만족시켜라!" 스케일 트윈 2초 연출 후 심사관 미디어 & 카드 활성화!
+    // 🎬 까만 화면에서 "심사관을 만족시켜라!" 스케일 트윈 2초 연출 후 심사관 미디어 & 액션 가이드 활성화!
     const timer = setTimeout(() => {
       setShowCinematicIntro(false)
       setIsActionLocked(false)
+      setShowActionGuide(true)
     }, 2000)
     return () => clearTimeout(timer)
   }, [])
@@ -319,6 +321,7 @@ export function PromotionAuditModal({
       return // 스테미나 15 미만 시 퍼포먼스 제시 불가!
     }
 
+    setShowActionGuide(false) // 조작 개시 시 가이드 해제
     setIsActionLocked(true) // 카드 선택 즉시 잠금 개시!
     playSfx('audit-card-perform')
 
@@ -396,6 +399,59 @@ export function PromotionAuditModal({
       aria-modal="true"
     >
       <div className="game-panel relative flex h-[97vh] w-[99vw] max-w-[1800px] flex-col overflow-hidden rounded-3xl border border-purple-500/50 bg-slate-950/95 shadow-[0_0_90px_rgba(168,85,247,0.35)]">
+        {/* 👆 3D 핑거 무빙 애니메이션 & 상승 궤적 빔 (showActionGuide 일 때 진입 가이드 표출) */}
+        {showActionGuide && !showCinematicIntro && !session.isCompleted ? (
+          <div className="pointer-events-none absolute inset-0 z-[110] overflow-hidden">
+            {/* 1번 카드에서 상단 심사관 미디어를 가리키는 3D 핑거 포인터 무빙 */}
+            <div className="absolute bottom-[9%] left-[calc(50%-180px)] sm:left-[calc(50%-215px)] flex flex-col items-center animate-[dragGuideMotion_2.2s_ease-in-out_infinite]">
+              {/* 상승 궤적 화살표 빔 */}
+              <div className="flex flex-col items-center gap-1 opacity-90">
+                <span className="text-2xl text-amber-300 animate-bounce drop-shadow-[0_0_15px_rgba(251,191,36,1)]">
+                  ▲
+                </span>
+                <span className="text-xl text-amber-400 animate-pulse drop-shadow-[0_0_12px_rgba(251,191,36,0.9)]">
+                  ▲
+                </span>
+                <span className="text-lg text-amber-500 opacity-60">▲</span>
+              </div>
+
+              {/* 3D 핑거 손가락 아이콘 */}
+              <div className="relative mt-2 flex items-center justify-center">
+                <span className="text-5xl sm:text-6xl drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] filter drop-shadow-[0_0_20px_rgba(251,191,36,1)]">
+                  👆
+                </span>
+                <div className="absolute -bottom-2 h-6 w-14 rounded-full bg-amber-400/50 blur-md animate-ping" />
+              </div>
+            </div>
+
+            {/* 드래그 가이드 모션 키프레임 */}
+            <style>{`
+              @keyframes dragGuideMotion {
+                0% {
+                  transform: translateY(0px) scale(0.9);
+                  opacity: 0.1;
+                }
+                20% {
+                  transform: translateY(0px) scale(1.2);
+                  opacity: 1;
+                }
+                75% {
+                  transform: translateY(-260px) scale(1);
+                  opacity: 0.95;
+                }
+                90% {
+                  transform: translateY(-290px) scale(0.85);
+                  opacity: 0;
+                }
+                100% {
+                  transform: translateY(0px) scale(0.9);
+                  opacity: 0;
+                }
+              }
+            `}</style>
+          </div>
+        ) : null}
+
         {/* ⚔️ 최상위 Z-INDEX (z-[120]) 심사관 반격 4칸 대각선 비행 혜성 투사체 (카드 정중앙 정밀 타격) */}
         {isJudgeEnergyFlying ? (
           <div className="pointer-events-none absolute inset-0 z-[120] flex items-center justify-center overflow-hidden bg-rose-950/20 backdrop-blur-xs">
@@ -542,6 +598,24 @@ export function PromotionAuditModal({
                   <span>{currentDemandInfo.label}</span>
                 </span>
               </div>
+
+              {/* 🎯 심사관 타겟 조준 링 & 가이드 오버레이 (showActionGuide 일 때 활성화) */}
+              {showActionGuide && !showCinematicIntro && !session.isCompleted ? (
+                <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center animate-in fade-in duration-300">
+                  <div className="relative flex flex-col items-center justify-center">
+                    <div className="h-32 w-32 sm:h-44 sm:w-44 rounded-full border-4 border-amber-400/90 shadow-[0_0_60px_rgba(251,191,36,0.9)] animate-ping" />
+                    <div className="absolute h-24 w-24 sm:h-32 sm:w-32 rounded-full border-2 border-dashed border-amber-300 shadow-[0_0_30px_rgba(251,191,36,0.8)] animate-[spin_4s_linear_infinite]" />
+                    <div className="absolute flex flex-col items-center gap-1 rounded-2xl border-2 border-amber-400 bg-slate-950/90 px-4 py-2 shadow-[0_0_40px_rgba(251,191,36,0.95)] backdrop-blur-md animate-bounce">
+                      <span className="text-xl sm:text-2xl font-black italic tracking-widest text-amber-300 drop-shadow-[0_0_15px_rgba(251,191,36,1)]">
+                        🎯 TARGET
+                      </span>
+                      <span className="rounded-full border border-amber-400/40 bg-amber-950/80 px-3 py-0.5 text-[10px] sm:text-xs font-black text-amber-100 uppercase tracking-wider">
+                        카드를 여기로 제시하세요!
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
 
               {/* 💬 심사관 오른쪽 상단 네온 말풍선 코멘트 (7개국어 반응 & 공격 멘트 오버레이) */}
               {judgeSpeechBubble ? (
@@ -765,7 +839,7 @@ export function PromotionAuditModal({
           </div>
 
           <div className="grid grid-cols-4 gap-1.5 sm:gap-2 max-w-xl sm:max-w-2xl mx-auto">
-            {displayCreators.map((creator) => {
+            {displayCreators.map((creator, index) => {
               const rawType = creator.statType || (creator as any).type || (creator as any).primaryStat || 'elegance'
               const cType: CreatorType =
                 rawType === 'sexy' || rawType === 'communication' || rawType === 'elegance' || rawType === 'performance'
@@ -800,6 +874,8 @@ export function PromotionAuditModal({
                       ? 'border-rose-500 ring-4 ring-rose-500 shadow-[0_0_50px_rgba(244,63,94,1)] bg-rose-950 z-30'
                       : isCardDisabled
                       ? 'cursor-not-allowed border-purple-900/40 opacity-40 grayscale-[30%]'
+                      : showActionGuide && index === 0
+                      ? 'cursor-pointer border-amber-400 ring-4 ring-amber-400 shadow-[0_0_35px_rgba(251,191,36,0.9)] scale-[1.05] animate-bounce z-40'
                       : selectedCreatorId === creator.id
                       ? 'cursor-pointer border-amber-400 ring-2 ring-amber-400/60 shadow-[0_0_22px_rgba(251,191,36,0.38)] scale-[1.02]'
                       : 'cursor-pointer border-purple-500/30 hover:border-purple-400 hover:scale-[1.03] hover:shadow-[0_0_18px_rgba(168,85,247,0.3)]'
