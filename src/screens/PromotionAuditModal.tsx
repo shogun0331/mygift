@@ -257,8 +257,11 @@ export function PromotionAuditModal({
     }, 650)
   }
 
-  const handleCloseCutscene = () => {
-    if (!canCloseCutscene) return
+  const executeCutsceneClose = () => {
+    if (cutsceneHoldRef.current != null) {
+      window.clearTimeout(cutsceneHoldRef.current)
+      cutsceneHoldRef.current = null
+    }
     setIsCutsceneModalOpen(false)
     setCanCloseCutscene(false)
     if (lastScoreGained !== null && lastPerformedCreator) {
@@ -274,6 +277,10 @@ export function PromotionAuditModal({
     } else {
       setIsActionLocked(false)
     }
+  }
+
+  const handleCloseCutscene = () => {
+    executeCutsceneClose()
   }
 
   const [creatorStaminaMap, setCreatorStaminaMap] = useState<Record<string, number>>(() => {
@@ -415,15 +422,16 @@ export function PromotionAuditModal({
     if (targetMedia) {
       setPopupCutsceneMediaUrl(targetMedia)
       setPopupCutsceneBlurRegions(resolveCutsceneBlur(targetSlot, targetMedia, events))
-      setCanCloseCutscene(false)
+      setCanCloseCutscene(true)
       setIsCutsceneModalOpen(true)
+      setLastScoreGained(gained)
+      setIsTypeMatchedHit(matched)
+
       if (cutsceneHoldRef.current != null) window.clearTimeout(cutsceneHoldRef.current)
       cutsceneHoldRef.current = window.setTimeout(() => {
         cutsceneHoldRef.current = null
-        setCanCloseCutscene(true)
+        executeCutsceneClose()
       }, 2000)
-      setLastScoreGained(gained)
-      setIsTypeMatchedHit(matched)
     } else {
       triggerImpactParticle(gained, matched, creator.id, nextPct, isCrit, critMult)
     }
@@ -545,13 +553,9 @@ export function PromotionAuditModal({
                 className="h-full w-full"
               />
 
-              {/* 하단 닫기 안내 뱃지 */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-white/20 bg-black/80 px-4 py-1.5 text-xs font-black text-white shadow-xl backdrop-blur-md flex items-center gap-2">
-                <span>
-                  {canCloseCutscene
-                    ? '🎭 퍼포먼스 컷씬 (클릭하여 닫기 ✕)'
-                    : '🎭 퍼포먼스 컷씬'}
-                </span>
+              {/* 하단 퍼포먼스 컷씬 뱃지 */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-purple-400/50 bg-black/80 px-4 py-1.5 text-xs font-black text-purple-200 shadow-xl backdrop-blur-md flex items-center gap-2">
+                <span>🎭 퍼포먼스 컷씬</span>
               </div>
             </div>
           </div>
