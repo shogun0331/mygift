@@ -2848,19 +2848,18 @@ export function InGame({
 
     if (!isTopRank) return false
 
-    const allEligible = ownedCreatorsRef.current.filter((c) => (c.dateArcStep ?? 0) >= 2)
+    const allEligible = ownedCreatorsRef.current
     if (allEligible.length === 0) return false
 
     let pendingCreators = allEligible.filter((c) => !c.proposalState)
 
-    // 모두 거부(rejected)한 상태인 경우, 리셋하여 한 명씩 다시 고백할 수 있게 업데이트
+    // 모두 거부(rejected)한 상태인 경우, 다음 사이클을 위해 상태를 리셋하고 이번 턴은 넘김
     if (pendingCreators.length === 0 && allEligible.every((c) => c.proposalState === 'rejected')) {
-      const resetOwned = ownedCreatorsRef.current.map((c) =>
-        (c.dateArcStep ?? 0) >= 2 ? { ...c, proposalState: null } : c,
-      )
+      const resetOwned = ownedCreatorsRef.current.map((c) => ({ ...c, proposalState: null }))
       ownedCreatorsRef.current = resetOwned
       onOwnedCreatorsChangeRef.current(resetOwned)
-      pendingCreators = resetOwned.filter((c) => (c.dateArcStep ?? 0) >= 2 && !c.proposalState)
+      flushAutoSave()
+      return false
     }
 
     if (pendingCreators.length === 0) return false
