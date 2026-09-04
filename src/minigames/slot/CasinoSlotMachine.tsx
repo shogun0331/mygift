@@ -35,12 +35,12 @@ export function CasinoSlotMachine({
   onUpdateAssets,
   onClose,
 }: CasinoSlotMachineProps) {
-  const betAmount = getBetAmountByGrade(stationGrade)
+  // 등급별 기본 보상 기준금 (베팅 차감 없음, 3회 무료 도전)
+  const baseReward = getBetAmountByGrade(stationGrade)
 
-  const [spinsLeft, setSpinsLeft] = useState(5)
+  const [spinsLeft, setSpinsLeft] = useState(3)
   const [freeSpinsLeft, setFreeSpinsLeft] = useState(0)
   const [sessionTotalWon, setSessionTotalWon] = useState(0)
-  const [sessionTotalBet, setSessionTotalBet] = useState(0)
 
   // 릴 회전 멈춤 스태거 상태 (0: 3개 모두 회전, 1: 1번릴 멈춤, 2: 2번릴 멈춤, 3: 3개 모두 멈춤)
   const [stoppedCount, setStoppedCount] = useState(3)
@@ -71,7 +71,7 @@ export function CasinoSlotMachine({
     }
   }, [])
 
-  // 레버 당기기 & 스핀 동작
+  // 레버 당기기 & 스핀 동작 (베팅금 차감 없음, 3회 기회 사용)
   const handleSpin = () => {
     if (isSpinning) return
     const isFreeSpin = freeSpinsLeft > 0
@@ -81,12 +81,6 @@ export function CasinoSlotMachine({
         setShowSummary(true)
         return
       }
-      if (userAssetsRef.current < betAmount) {
-        alert(`베팅 금액($${betAmount.toLocaleString()})이 부족합니다!`)
-        return
-      }
-      onUpdateAssets(userAssetsRef.current - betAmount)
-      setSessionTotalBet((prev) => prev + betAmount)
       setSpinsLeft((prev) => prev - 1)
     } else {
       setFreeSpinsLeft((prev) => prev - 1)
@@ -98,7 +92,7 @@ export function CasinoSlotMachine({
 
     // 최종 타겟 그리드 & 평가 생성
     const targetGrid = generateRandomSlotGrid()
-    const result = evaluateSlotSpin(targetGrid, betAmount)
+    const result = evaluateSlotSpin(targetGrid, baseReward)
 
     setLastResult(null)
     setStoppedCount(0)
@@ -134,7 +128,7 @@ export function CasinoSlotMachine({
       setCurrentGrid(targetGrid)
       setLastResult(result)
 
-      // 당첨 처리
+      // 당첨 시 보상 지급 (베팅금 차감 없이 순수 상금 획득!)
       if (result.totalWinAmount > 0) {
         onUpdateAssets(userAssetsRef.current + result.totalWinAmount)
         setSessionTotalWon((prev) => prev + result.totalWinAmount)
@@ -203,7 +197,7 @@ export function CasinoSlotMachine({
               LAS VEGAS VIP 3x3 REEL SLOT MACHINE
             </div>
             <h1 className="text-xl sm:text-2xl font-black bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-400 bg-clip-text text-transparent drop-shadow-md">
-              GOLDEN CASINO REEL
+              GOLDEN CASINO REEL (무료 3회 도전)
             </h1>
           </div>
         </div>
@@ -249,23 +243,23 @@ export function CasinoSlotMachine({
             {/* DIGITAL STATUS LED BAR */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
               <div className="p-2.5 rounded-xl bg-slate-950/90 border border-amber-400/40 shadow-inner flex flex-col items-center">
-                <span className="text-[10px] text-amber-400/80 font-bold">1회 베팅금</span>
+                <span className="text-[10px] text-amber-400/80 font-bold">기본 당첨금 기준</span>
                 <span className="text-sm font-black text-yellow-300 mt-0.5">
-                  ${betAmount.toLocaleString()}
+                  ${baseReward.toLocaleString()}
                 </span>
               </div>
 
               <div className="p-2.5 rounded-xl bg-slate-950/90 border border-amber-400/40 shadow-inner flex flex-col items-center">
-                <span className="text-[10px] text-amber-400/80 font-bold">남은 스핀 기회</span>
+                <span className="text-[10px] text-amber-400/80 font-bold">남은 무료 스핀</span>
                 <span className="text-sm font-black text-amber-300 mt-0.5">
                   {spinsLeft}회 {freeSpinsLeft > 0 && <span className="text-yellow-400 text-xs">(+FREE {freeSpinsLeft})</span>}
                 </span>
               </div>
 
               <div className="p-2.5 rounded-xl bg-slate-950/90 border border-amber-400/40 shadow-inner flex flex-col items-center">
-                <span className="text-[10px] text-amber-400/80 font-bold">누적 당첨금</span>
+                <span className="text-[10px] text-amber-400/80 font-bold">획득 당첨 상금</span>
                 <span className="text-sm font-black text-green-400 mt-0.5">
-                  ${sessionTotalWon.toLocaleString()}
+                  +${sessionTotalWon.toLocaleString()}
                 </span>
               </div>
 
@@ -392,18 +386,18 @@ export function CasinoSlotMachine({
             <div className="min-h-[46px] flex items-center justify-center px-4 py-2 bg-slate-950/90 rounded-xl border border-amber-400/40 text-center font-mono">
               {isSpinning ? (
                 <span className="text-amber-400 font-bold animate-pulse text-sm">
-                  🎰 릴 회전 중... (대박 당첨 기원!)
+                  🎰 릴 회전 중... (무료 스핀 대박 기원!)
                 </span>
               ) : lastResult ? (
                 lastResult.totalWinAmount > 0 ? (
                   <div className="flex items-center gap-2 text-yellow-300 font-black text-base animate-bounce">
-                    <span>🎉 당첨!</span>
+                    <span>🎉 당첨 상금 획득!</span>
                     <span className="text-amber-400 text-lg">
                       +${lastResult.totalWinAmount.toLocaleString()}
                     </span>
                     {lastResult.freeSpinsAwarded > 0 && (
                       <span className="text-xs text-yellow-200 bg-yellow-600/70 px-2.5 py-0.5 rounded-full">
-                        🎁 FREE SPIN +3회!
+                        🎁 보너스 FREE SPIN +3회!
                       </span>
                     )}
                   </div>
@@ -414,7 +408,7 @@ export function CasinoSlotMachine({
                 )
               ) : (
                 <span className="text-amber-300/80 text-xs">
-                  하단의 스핀 버튼 또는 오른쪽 레버를 당겨 스핀하세요!
+                  무료 3회 스핀 기회가 주어집니다! 하단의 스핀 버튼 또는 우측 레버를 당겨주세요.
                 </span>
               )}
             </div>
@@ -464,8 +458,8 @@ export function CasinoSlotMachine({
             {isSpinning
               ? '릴 회전 중...'
               : freeSpinsLeft > 0
-              ? `FREE SPIN (${freeSpinsLeft}회 남음)`
-              : 'SPIN! (슬롯 돌리기)'}
+              ? `BONUS FREE SPIN (${freeSpinsLeft}회 남음)`
+              : `FREE SPIN! (${spinsLeft}/3회 남음)`}
           </span>
         </button>
       </div>
@@ -476,7 +470,7 @@ export function CasinoSlotMachine({
           <div className="bg-slate-900 border-2 border-amber-400 rounded-3xl p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-amber-400/30 pb-3">
               <h2 className="text-xl font-black text-amber-300 flex items-center gap-2">
-                <span>📖</span> 3x3 슬롯머신 배당표 & 심볼 규칙
+                <span>📖</span> 3x3 슬롯머신 배당표 & 규칙
               </h2>
               <button
                 onClick={() => setShowPaytable(false)}
@@ -548,10 +542,10 @@ export function CasinoSlotMachine({
             SUPER MEGA JACKPOT!!
           </h1>
           <p className="text-xl font-bold text-amber-300 mt-2 font-mono">
-            3x3 9개 칸 올 매칭! 베팅금 100배 당첨!
+            3x3 9개 칸 올 매칭! 당첨 기준금 100배 획득!
           </p>
           <div className="my-6 text-3xl sm:text-4xl font-black text-yellow-300 font-mono bg-amber-950/80 px-8 py-4 rounded-3xl border-2 border-yellow-400 shadow-[0_0_40px_rgba(250,204,21,0.6)]">
-            +${(betAmount * 100).toLocaleString()}
+            +${(baseReward * 100).toLocaleString()}
           </div>
           <button
             onClick={() => setJackpotBanner(false)}
@@ -569,31 +563,18 @@ export function CasinoSlotMachine({
             <div className="text-5xl">🎰</div>
             <h2 className="text-2xl font-black text-amber-300">카지노 슬롯 세션 종료</h2>
             <p className="text-xs text-slate-400">
-              슬롯머신 기회를 모두 소진했습니다. 카지노는 3턴 후 다시 이용할 수 있습니다.
+              무료 3회 스핀 기회를 모두 사용했습니다. 카지노는 3턴 후 다시 무료로 이용할 수 있습니다.
             </p>
 
             <div className="bg-slate-950 p-4 rounded-2xl border border-amber-400/30 space-y-2 text-sm font-mono">
               <div className="flex justify-between text-slate-300">
-                <span>총 베팅 금액:</span>
-                <span className="text-red-400 font-bold">-${sessionTotalBet.toLocaleString()}</span>
+                <span>무료 도전 횟수:</span>
+                <span className="text-amber-400 font-bold">3회 완료</span>
               </div>
-              <div className="flex justify-between text-slate-300">
-                <span>총 획득 당첨금:</span>
-                <span className="text-yellow-300 font-bold">
+              <div className="flex justify-between text-slate-300 border-t border-slate-800 pt-2 text-base font-bold">
+                <span className="text-amber-400">총 획득 당첨 상금:</span>
+                <span className="text-green-400 font-black">
                   +${sessionTotalWon.toLocaleString()}
-                </span>
-              </div>
-              <div className="border-t border-slate-800 pt-2 flex justify-between text-base font-bold">
-                <span className="text-amber-400">순 손익:</span>
-                <span
-                  className={
-                    sessionTotalWon >= sessionTotalBet
-                      ? 'text-green-400 font-black'
-                      : 'text-red-400 font-black'
-                  }
-                >
-                  {sessionTotalWon >= sessionTotalBet ? '+' : ''}$
-                  {(sessionTotalWon - sessionTotalBet).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -605,7 +586,7 @@ export function CasinoSlotMachine({
               }}
               className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-base shadow-xl transition-all"
             >
-              결과 확인 및 카지노 퇴장
+              상금 수령 및 카지노 퇴장
             </button>
           </div>
         </div>
