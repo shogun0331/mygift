@@ -843,14 +843,16 @@ export function PromotionAuditModal({
                       ? { animation: 'cctvCameraShake 600ms cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite' }
                       : undefined
                   }
-                  className={`group relative aspect-[3/4] max-h-[155px] sm:max-h-[185px] flex flex-col justify-between overflow-hidden rounded-xl border transition-all ${
+                  className={`group relative aspect-[3/4] max-h-[155px] sm:max-h-[185px] flex flex-col justify-between overflow-hidden rounded-xl transition-all ${
                     isHitFlashing
                       ? 'border-rose-500 ring-4 ring-rose-500 shadow-[0_0_50px_rgba(244,63,94,1)] bg-rose-950 z-30'
                       : isCardDisabled
-                      ? 'cursor-not-allowed border-purple-900/40 opacity-40 grayscale-[30%]'
+                      ? 'cursor-not-allowed border border-purple-900/40 opacity-40 grayscale-[30%]'
                       : selectedCreatorId === creator.id
-                      ? 'cursor-pointer border-amber-400 ring-2 ring-amber-400/60 shadow-[0_0_22px_rgba(251,191,36,0.38)] scale-[1.02]'
-                      : 'cursor-pointer border-purple-500/30 hover:border-purple-400 hover:scale-[1.03] hover:shadow-[0_0_18px_rgba(168,85,247,0.3)]'
+                      ? 'cursor-pointer border-2 border-amber-400 ring-2 ring-amber-400/60 shadow-[0_0_22px_rgba(251,191,36,0.38)] scale-[1.02]'
+                      : isTypeMatched
+                      ? 'cursor-pointer border-2 border-emerald-400 ring-4 ring-emerald-500/60 shadow-[0_0_35px_rgba(52,211,153,0.8)] scale-[1.02] hover:scale-[1.04]'
+                      : 'cursor-pointer border border-purple-500/30 hover:border-purple-400 hover:scale-[1.03] hover:shadow-[0_0_18px_rgba(168,85,247,0.3)]'
                   }`}
                 >
                   {/* CCTV 진상 카메라 지진 셰이크 키프레임 */}
@@ -882,6 +884,11 @@ export function PromotionAuditModal({
                       <span className="text-[10px]">{creator.name.slice(0, 2)}</span>
                     </div>
                   )}
+
+                  {/* 🌟 심사관 만족 조건 충족 1.5배 아웃라인 글로우 오버레이 */}
+                  {isTypeMatched && !isCardDisabled && !isHitFlashing ? (
+                    <div className="pointer-events-none absolute inset-0 z-20 rounded-xl border-2 border-emerald-400/90 shadow-[inset_0_0_20px_rgba(52,211,153,0.6)] animate-pulse" />
+                  ) : null}
 
                   {/* ⚔️ 심사관 피격 흔들림 & 붉은 번쩍임 핏빛 오버레이 (이모지 100% 제거) */}
                   {isHitFlashing ? (
