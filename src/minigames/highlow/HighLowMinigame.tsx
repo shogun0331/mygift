@@ -1188,16 +1188,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 z-10">
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-xl border-2 border-amber-400/80 bg-slate-900/90 text-[11px] sm:text-xs font-black tracking-wider text-amber-300 hover:text-slate-950 hover:bg-amber-400 hover:shadow-[0_0_25px_rgba(245,158,11,0.6)] transition-all"
-            >
-              ✕ 게임 종료 (EXIT)
-            </button>
-          )}
-        </div>
+        <div className="flex items-center gap-2.5 z-10" />
       </div>
 
       {/* Full-Width Integrated Emerald Felt Casino Stage (화면 전체 100% 꽉 채우는 초록색 카지노 테이블 패널!) */}
@@ -1456,15 +1447,27 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                   </span>
                 </div>
 
-                {/* 3D Golden Next Round Button */}
-                <button
-                  onClick={() => startNewGameLoop()}
-                  className="w-full py-3 rounded-xl font-black text-sm tracking-wider uppercase bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.6)] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2"
-                >
-                  <span>♠</span>
-                  <span>[ 다음 라운드 진행 (한판더) ]</span>
-                  <span>♣</span>
-                </button>
+                {/* Action Buttons: Next Round & Exit Game */}
+                <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full">
+                  <button
+                    onClick={() => startNewGameLoop()}
+                    className="w-full sm:flex-1 py-3 px-3 rounded-xl font-black text-xs sm:text-sm tracking-wider uppercase bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
+                  >
+                    <span>♠</span>
+                    <span>다음 라운드 진행 (한판더)</span>
+                    <span>♣</span>
+                  </button>
+
+                  {onClose && (
+                    <button
+                      onClick={onClose}
+                      className="w-full sm:w-auto py-3 px-4 rounded-xl font-black text-xs sm:text-sm tracking-wider uppercase border-2 border-rose-500/80 bg-gradient-to-r from-rose-950 via-rose-900 to-slate-950 text-rose-200 hover:bg-rose-600 hover:text-white shadow-[0_0_20px_rgba(244,63,94,0.4)] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5 shrink-0"
+                    >
+                      <span>🚪</span>
+                      <span>게임에서 나가기 (EXIT)</span>
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="h-12 flex items-center justify-center font-mono text-xs text-amber-300/80 font-bold">
