@@ -4334,127 +4334,161 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 }
 
 /* ==========================================================================
-   AUTHENTIC PACHISLOT CASINO CABINET STYLING & ANIMATIONS
+   AUTHENTIC HIGH-GLOSS 3D PACHISLOT CABINET STYLING & ANIMATIONS
    ========================================================================== */
 
-/* 1. Main Metallic Pachislot Cabinet Frame */
+/* 1. Main Metallic Pachislot Cabinet Frame (3D Depth & Heavy Chrome Border) */
 .pachislot-cabinet {
   position: relative;
   width: 100%;
-  max-width: 48rem;
+  max-width: 50rem;
   margin: 0 auto;
-  border-radius: 1.5rem;
-  border: 4px solid #94a3b8;
+  border-radius: 2.2rem;
+  border: 6px solid #64748b;
   background:
-    linear-gradient(180deg, #334155 0%, #1e293b 30%, #0f172a 70%, #020617 100%);
+    radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.2), transparent 60%),
+    linear-gradient(180deg, #475569 0%, #1e293b 25%, #0f172a 60%, #020617 100%);
   box-shadow:
-    0 30px 100px rgba(0, 0, 0, 0.95),
-    0 0 0 2px #cbd5e1,
-    inset 0 2px 4px rgba(255, 255, 255, 0.4),
-    inset 0 -6px 12px rgba(0, 0, 0, 0.8);
+    0 40px 120px rgba(0, 0, 0, 0.98),
+    0 0 0 3px #cbd5e1,
+    0 0 0 8px #1e293b,
+    0 0 0 11px #94a3b8,
+    inset 0 3px 6px rgba(255, 255, 255, 0.6),
+    inset 0 -10px 20px rgba(0, 0, 0, 0.95);
+  transform-style: preserve-3d;
 }
 
 .pachislot-cabinet.is-spinning {
   border-color: #f59e0b;
   box-shadow:
-    0 0 60px rgba(245, 158, 11, 0.5),
-    0 30px 100px rgba(0, 0, 0, 0.95);
+    0 0 70px rgba(245, 158, 11, 0.6),
+    0 40px 120px rgba(0, 0, 0, 0.98),
+    0 0 0 3px #fbbf24,
+    0 0 0 8px #78350f,
+    0 0 0 11px #f59e0b;
 }
 
 .pachislot-cabinet.is-win {
   border-color: #10b981;
   box-shadow:
-    0 0 70px rgba(16, 185, 129, 0.6),
-    0 30px 100px rgba(0, 0, 0, 0.95);
+    0 0 80px rgba(16, 185, 129, 0.7),
+    0 40px 120px rgba(0, 0, 0, 0.98),
+    0 0 0 3px #34d399,
+    0 0 0 8px #064e3b,
+    0 0 0 11px #10b981;
 }
 
 .pachislot-cabinet.is-jackpot {
   border-color: #fbbf24;
   box-shadow:
-    0 0 110px rgba(251, 191, 36, 0.95),
-    0 30px 100px rgba(0, 0, 0, 0.95);
-  animation: pachislot-jackpot-glow 0.7s ease-in-out infinite alternate;
+    0 0 130px rgba(251, 191, 36, 1),
+    0 40px 120px rgba(0, 0, 0, 0.98);
+  animation: pachislot-jackpot-glow 0.6s ease-in-out infinite alternate;
 }
 
-/* 2. Top Red Acrylic Marquee Header with 777 Logo */
+/* 2. Top Red Acrylic Marquee Header with Glass Sheen */
 .pachislot-top-marquee {
   position: relative;
-  margin: 0.6rem 0.6rem 0;
-  border-radius: 1rem 1rem 0 0;
-  border: 3px solid #cbd5e1;
-  background: linear-gradient(180deg, #991b1b 0%, #7f1d1d 50%, #450a0a 100%);
+  margin: 0.75rem 0.75rem 0;
+  border-radius: 1.4rem 1.4rem 0 0;
+  border: 4px solid #cbd5e1;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, transparent 40%),
+    linear-gradient(180deg, #dc2626 0%, #991b1b 45%, #450a0a 100%);
   box-shadow:
-    inset 0 0 25px rgba(250, 204, 21, 0.3),
-    inset 0 2px 4px rgba(255, 255, 255, 0.4),
-    0 4px 10px rgba(0, 0, 0, 0.6);
+    inset 0 0 35px rgba(250, 204, 21, 0.4),
+    inset 0 3px 6px rgba(255, 255, 255, 0.7),
+    0 8px 16px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
 }
 
 .pachislot-marquee-lamps {
   display: flex;
   justify-content: space-between;
-  gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
-  background: rgba(0, 0, 0, 0.5);
-  border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  background: rgba(0, 0, 0, 0.6);
+  border-bottom: 2px solid rgba(251, 191, 36, 0.4);
 }
 
 .pachislot-marquee-lamps span {
-  height: 0.65rem;
+  height: 0.75rem;
   flex: 1;
   border-radius: 999px;
-  background: rgba(251, 191, 36, 0.25);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  background: rgba(251, 191, 36, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
 
 .pachislot-cabinet.is-spinning .pachislot-marquee-lamps span {
-  animation: pachislot-lamp-chase 0.45s ease-in-out infinite;
+  animation: pachislot-lamp-chase 0.4s ease-in-out infinite;
 }
 
 .pachislot-cabinet.is-win .pachislot-marquee-lamps span,
 .pachislot-cabinet.is-jackpot .pachislot-marquee-lamps span {
   background: #fbbf24;
-  box-shadow: 0 0 12px #fbbf24, inset 0 0 4px #ffffff;
+  box-shadow: 0 0 16px #fbbf24, inset 0 0 6px #ffffff;
 }
 
-/* 3. Central Glass Reel Showcase Deck */
+/* 3D 777 Payout Marquee Box */
+.pachislot-777-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1.2rem;
+  border-radius: 0.9rem;
+  border: 2px solid #fef08a;
+  background: linear-gradient(180deg, #b45309 0%, #78350f 50%, #451a03 100%);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.7),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 0 15px rgba(250, 204, 21, 0.6);
+}
+
+/* 3. Central Glass Reel Showcase Deck with 3D Chrome Bevel */
 .pachislot-reel-showcase {
   position: relative;
-  margin: 0.5rem 0.6rem;
-  border-radius: 0.9rem;
-  border: 4px solid #cbd5e1;
+  margin: 0.6rem 0.75rem;
+  border-radius: 1.2rem;
+  border: 5px solid #cbd5e1;
   background:
-    radial-gradient(ellipse at center, rgba(217, 119, 6, 0.25) 0%, rgba(120, 53, 15, 0.6) 60%, rgba(15, 23, 42, 0.95) 100%),
-    linear-gradient(180deg, #1e293b, #0f172a);
+    radial-gradient(ellipse at center, rgba(245, 158, 11, 0.3) 0%, rgba(180, 83, 9, 0.65) 55%, rgba(15, 23, 42, 0.98) 100%),
+    linear-gradient(180deg, #334155, #0f172a);
   box-shadow:
-    inset 0 0 35px rgba(0, 0, 0, 0.9),
-    0 8px 20px rgba(0, 0, 0, 0.7);
+    inset 0 0 45px rgba(0, 0, 0, 0.95),
+    0 10px 25px rgba(0, 0, 0, 0.8),
+    inset 0 2px 3px rgba(255, 255, 255, 0.6);
 }
 
 .pachislot-reel-window {
   position: relative;
   display: flex;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 0.85rem 0.75rem;
-  border-radius: 0.8rem;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.92), rgba(15, 23, 42, 0.98));
+  gap: 0.85rem;
+  padding: 1rem 0.85rem;
+  border-radius: 1rem;
+  border: 3px solid rgba(245, 158, 11, 0.6);
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.12) 1px, transparent 1px, transparent 3px),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.96), rgba(15, 23, 42, 0.98));
   box-shadow:
-    inset 0 0 0 2px rgba(251, 191, 36, 0.4),
-    inset 0 18px 24px rgba(0, 0, 0, 0.8),
-    inset 0 -18px 24px rgba(0, 0, 0, 0.8);
+    inset 0 0 0 2px rgba(251, 191, 36, 0.5),
+    inset 0 25px 35px rgba(0, 0, 0, 0.9),
+    inset 0 -25px 35px rgba(0, 0, 0, 0.9);
 }
 
 .pachislot-reel-column {
   position: relative;
   flex: 1;
-  height: 240px;
+  height: 252px;
   overflow: hidden;
-  border-radius: 0.75rem;
-  border: 2px solid rgba(251, 191, 36, 0.4);
-  background: linear-gradient(180deg, #090d16 0%, #030509 50%, #090d16 100%);
+  border-radius: 0.85rem;
+  border: 3px solid rgba(251, 191, 36, 0.5);
+  background: linear-gradient(180deg, #05070d 0%, #0d1322 50%, #05070d 100%);
   box-shadow:
-    inset 0 22px 18px rgba(0, 0, 0, 0.85),
-    inset 0 -22px 18px rgba(0, 0, 0, 0.85);
+    inset 0 28px 24px rgba(0, 0, 0, 0.95),
+    inset 0 -28px 24px rgba(0, 0, 0, 0.95),
+    0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .pachislot-reel-column::before,
@@ -4465,17 +4499,17 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
   right: 0;
   left: 0;
   z-index: 5;
-  height: 2.2rem;
+  height: 2.6rem;
 }
 
 .pachislot-reel-column::before {
   top: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.92), transparent);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.95), transparent);
 }
 
 .pachislot-reel-column::after {
   bottom: 0;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.92), transparent);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.95), transparent);
 }
 
 .pachislot-reel-strip {
@@ -4485,8 +4519,8 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 }
 
 .pachislot-reel-strip.is-spinning {
-  animation: pachislot-reel-spin 0.22s linear infinite;
-  filter: blur(2.5px) brightness(1.2);
+  animation: pachislot-reel-spin 0.2s linear infinite;
+  filter: blur(3px) brightness(1.25);
 }
 
 .pachislot-reel-strip.is-stopped {
@@ -4496,87 +4530,137 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 
 .pachislot-reel-cell {
   display: flex;
-  height: 80px;
+  height: 84px;
   flex-shrink: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
   transition: all 0.2s ease-out;
 }
 
 .pachislot-reel-cell.is-winner {
-  background: radial-gradient(circle at center, rgba(250, 204, 21, 0.4), rgba(245, 158, 11, 0.1));
-  box-shadow: inset 0 0 18px rgba(250, 204, 21, 0.8);
-  animation: pachislot-cell-pulse 0.6s ease-in-out infinite alternate;
+  background: radial-gradient(circle at center, rgba(250, 204, 21, 0.45), rgba(245, 158, 11, 0.15));
+  box-shadow: inset 0 0 22px rgba(250, 204, 21, 0.9);
+  animation: pachislot-cell-pulse 0.55s ease-in-out infinite alternate;
 }
 
-/* 4. Physical Arcade Slanted Button Deck */
+/* 4. Physical Arcade Slanted Button Deck with 3D Raised Buttons */
 .pachislot-button-deck {
   position: relative;
-  margin: 0 0.6rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  border: 3px solid #cbd5e1;
-  background: linear-gradient(180deg, #64748b 0%, #334155 40%, #1e293b 100%);
+  margin: 0 0.75rem;
+  padding: 0.85rem 1.2rem;
+  border-radius: 0.75rem;
+  border: 4px solid #cbd5e1;
+  background:
+    linear-gradient(180deg, #94a3b8 0%, #475569 35%, #1e293b 100%);
   box-shadow:
-    inset 0 2px 3px rgba(255, 255, 255, 0.5),
-    inset 0 -4px 6px rgba(0, 0, 0, 0.6),
-    0 6px 12px rgba(0, 0, 0, 0.6);
+    inset 0 3px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.8),
+    0 8px 16px rgba(0, 0, 0, 0.7);
 }
 
-/* 3D Physical Push Button */
+/* High-Gloss 3D Push Button */
 .pachislot-btn-stop {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
+  min-width: 4.8rem;
+  padding: 0.6rem 1.1rem;
   border-radius: 999px;
-  border: 2px solid #cbd5e1;
-  background: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 50%, #94a3b8 100%);
+  border: 3px solid #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 50%, #64748b 100%);
   box-shadow:
-    0 4px 0 #475569,
-    0 6px 10px rgba(0, 0, 0, 0.5),
-    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+    0 6px 0 #334155,
+    0 8px 15px rgba(0, 0, 0, 0.7),
+    inset 0 2px 3px rgba(255, 255, 255, 0.9);
   font-family: monospace;
   font-weight: 900;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: #0f172a;
-  transition: transform 0.1s, box-shadow 0.1s;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.pachislot-btn-stop:not(:disabled):hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 0 #334155,
+    0 12px 20px rgba(0, 0, 0, 0.7),
+    inset 0 2px 3px rgba(255, 255, 255, 0.9);
 }
 
 .pachislot-btn-stop:active,
 .pachislot-btn-stop.is-pressed {
-  transform: translateY(3px);
+  transform: translateY(4px);
   box-shadow:
-    0 1px 0 #475569,
-    inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    0 2px 0 #334155,
+    inset 0 3px 6px rgba(0, 0, 0, 0.5);
 }
 
-/* 5. Bottom Graphic Artwork Panel & Coin Tray */
+/* High-Gloss 3D Golden Arcade SPIN Button */
+.pachislot-btn-spin {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.8rem;
+  border-radius: 1.2rem;
+  border: 3px solid #fef08a;
+  background:
+    linear-gradient(180deg, #fef08a 0%, #f59e0b 45%, #b45309 100%);
+  box-shadow:
+    0 7px 0 #78350f,
+    0 10px 25px rgba(245, 158, 11, 0.7),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  font-weight: 900;
+  color: #0f172a;
+  text-shadow: 0 1px 1px rgba(254, 240, 138, 0.8);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.pachislot-btn-spin:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 9px 0 #78350f,
+    0 14px 30px rgba(245, 158, 11, 0.9),
+    inset 0 2px 4px rgba(255, 255, 255, 0.9);
+}
+
+.pachislot-btn-spin:active {
+  transform: translateY(5px);
+  box-shadow:
+    0 2px 0 #78350f,
+    inset 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* 5. Bottom Graphic Artwork Panel & 3D Metallic Coin Tray */
 .pachislot-bottom-deck {
   position: relative;
-  margin: 0.5rem 0.6rem 0.6rem;
-  border-radius: 0 0 1.1rem 1.1rem;
-  border: 3px solid #cbd5e1;
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  margin: 0.6rem 0.75rem 0.75rem;
+  border-radius: 0 0 1.4rem 1.4rem;
+  border: 4px solid #cbd5e1;
+  background: linear-gradient(180deg, #334155 0%, #0f172a 100%);
   box-shadow:
-    inset 0 2px 3px rgba(255, 255, 255, 0.3),
-    0 6px 15px rgba(0, 0, 0, 0.7);
+    inset 0 3px 4px rgba(255, 255, 255, 0.4),
+    0 8px 20px rgba(0, 0, 0, 0.8);
 }
 
 .pachislot-coin-tray {
   position: relative;
-  margin: 0.5rem;
-  padding: 0.6rem 1rem;
-  border-radius: 0.75rem;
-  border: 2px solid #64748b;
-  background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+  margin: 0.6rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.9rem;
+  border: 3px solid #475569;
+  background:
+    linear-gradient(180deg, #020617 0%, #0f172a 100%);
   box-shadow:
-    inset 0 10px 15px rgba(0, 0, 0, 0.9),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    inset 0 12px 20px rgba(0, 0, 0, 0.95),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
 }
 
 /* Keyframe Animations */
