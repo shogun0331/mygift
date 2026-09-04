@@ -1937,7 +1937,7 @@
     "characterIllustrationId": "1787982469617-m9tq17b",
     "profileImageId": "1787982469617-m9tq17b",
     "profileVideoId": null,
-    "mediaRevision": 1788506737498,
+    "mediaRevision": 1788510485057,
     "images": [
       {
         "id": "1787982469617-m9tq17b",
@@ -2740,8 +2740,82 @@
       }
     },
     "shortsVn": {
-      "vip": [],
-      "h": []
+      "vip": [
+        {
+          "id": "shorts-1788510402352-hebo8y",
+          "mediaUrl": "media://chapter_assets/events/97e7ca57-0eed-4003-885f-c42df134b577/videos/speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
+          "caption": "맛있게 해드릴게요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407951161_wiof",
+              "x": 0.421875,
+              "y": 0.22280092592592593,
+              "w": 0.09895833333333337,
+              "h": 0.1111111111111111,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787120009569_33_m65a",
+          "captionNodeId": "node_1787121047083_18_pllk"
+        },
+        {
+          "id": "shorts-1788510427880-72ekfg",
+          "mediaUrl": "media://chapter_assets/events/97e7ca57-0eed-4003-885f-c42df134b577/images/2026-09-01_00040_.webp",
+          "caption": "…대단하세요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407962681_zxt6",
+              "x": 0.4270833333333333,
+              "y": 0.10011574074074074,
+              "w": 0.08854166666666669,
+              "h": 0.20370370370370366,
+              "blur": 2.5
+            }
+          ],
+          "sourceNodeId": "node_1787120009569_42_krz2",
+          "captionNodeId": "node_1787121047083_27_mwn9"
+        }
+      ],
+      "h": [
+        {
+          "id": "shorts-1788510449584-esempp",
+          "mediaUrl": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/speed_2_95x_90f8bf95c09a487fac8cb88b6a672924.mp4",
+          "caption": "좋아요… 더 세게…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407978089_ajx9",
+              "x": 0.6731770833333334,
+              "y": 0.46122685185185186,
+              "w": 0.20182291666666663,
+              "h": 0.34259259259259256,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787120009569_51_w8jn",
+          "captionNodeId": "node_1787120009569_59_arka"
+        },
+        {
+          "id": "shorts-1788510452975-jg9awz",
+          "mediaUrl": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00044_.webp",
+          "caption": "정말, 대단했어요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788407989200_b6jt",
+              "x": 0.4609375,
+              "y": 0.6186342592592593,
+              "w": 0.1015625,
+              "h": 0.28240740740740733,
+              "blur": 2.5
+            }
+          ],
+          "sourceNodeId": "node_1787120009569_64_clbf",
+          "captionNodeId": "node_1787120009569_68_fvxj"
+        }
+      ]
     },
     "specialVacation": {
       "imageIds": [
@@ -2817,7 +2891,7 @@
     "characterIllustrationId": "1787982488665-no2ynqd",
     "profileImageId": "1787982488665-no2ynqd",
     "profileVideoId": null,
-    "mediaRevision": 1788506743488,
+    "mediaRevision": 1788510567322,
     "images": [
       {
         "id": "1787982488665-no2ynqd",
@@ -3629,8 +3703,82 @@
       }
     },
     "shortsVn": {
-      "vip": [],
-      "h": []
+      "vip": [
+        {
+          "id": "shorts-1788510503903-rxe8hv",
+          "mediaUrl": "media://chapter_assets/events/af889669-9929-4000-84fa-10ebd9ac3cf1/videos/speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
+          "caption": "맛있게 해드릴게요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408114943_siu9",
+              "x": 0.2955729166666667,
+              "y": 0.2621527777777778,
+              "w": 0.1171875,
+              "h": 0.17592592592592593,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787137422986_31_skhq",
+          "captionNodeId": "node_1787138628785_18_kbes"
+        },
+        {
+          "id": "shorts-1788510516247-nr5npj",
+          "mediaUrl": "media://chapter_assets/events/af889669-9929-4000-84fa-10ebd9ac3cf1/images/2026-09-01_00114_.webp",
+          "caption": "…대단하세요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408128071_0a94",
+              "x": 0.2903645833333333,
+              "y": 0.23900462962962962,
+              "w": 0.12760416666666669,
+              "h": 0.20138888888888892,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787137422986_40_v3j9",
+          "captionNodeId": "node_1787138628785_27_jket"
+        }
+      ],
+      "h": [
+        {
+          "id": "shorts-1788510540896-aeklfk",
+          "mediaUrl": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/speed_3_10x_e5b73205365f429c8133b3fda40049f9.mp4",
+          "caption": "좋아요… 더 세게…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408146655_1dvh",
+              "x": 0.5677083333333334,
+              "y": 0.43113425925925924,
+              "w": 0.27604166666666663,
+              "h": 0.3819444444444445,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787137422986_49_o71f",
+          "captionNodeId": "node_1787137422986_57_rx5z"
+        },
+        {
+          "id": "shorts-1788510546071-4vhion",
+          "mediaUrl": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00110_.webp",
+          "caption": "정말, 대단했어요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408155798_e3ct",
+              "x": 0.6497395833333334,
+              "y": 0.6649305555555556,
+              "w": 0.12630208333333326,
+              "h": 0.3350694444444444,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787137422986_62_hn5s",
+          "captionNodeId": "node_1787137422986_66_r92d"
+        }
+      ]
     },
     "specialVacation": {
       "imageIds": [
@@ -3706,7 +3854,7 @@
     "characterIllustrationId": "1787982515769-uje63zv",
     "profileImageId": "1787982515769-uje63zv",
     "profileVideoId": null,
-    "mediaRevision": 1788506750770,
+    "mediaRevision": 1788510626986,
     "images": [
       {
         "id": "1787982515769-uje63zv",
@@ -4518,8 +4666,82 @@
       }
     },
     "shortsVn": {
-      "vip": [],
-      "h": []
+      "vip": [
+        {
+          "id": "shorts-1788510581783-1w15sw",
+          "mediaUrl": "media://chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/videos/speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
+          "caption": "좋아요… 더 세게… (엉덩이를 내게 밀어붙인다)",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408302293_j29k",
+              "x": 0.8072916666666666,
+              "y": 0.4010416666666667,
+              "w": 0.12890625,
+              "h": 0.21064814814814808,
+              "blur": 2.5
+            }
+          ],
+          "sourceNodeId": "node_1787093989219_29_rxvm",
+          "captionNodeId": "node_1787012131245_23_5v8b"
+        },
+        {
+          "id": "shorts-1788510591487-1cuhz9",
+          "mediaUrl": "media://chapter_assets/events/c8d535db-c786-48d0-8b9c-0a24ae64de40/images/7da84875-f242-430f-ab42-33a9156d1801.webp",
+          "caption": "하…… 고객님… 대단해요… (정액이 흐르는 성기를 드러낸 채, 어깨 너머로 나를 본다)",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408311637_ud96",
+              "x": 0.7552083333333334,
+              "y": 0.43344907407407407,
+              "w": 0.05078125,
+              "h": 0.15509259259259256,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787094227185_o64j",
+          "captionNodeId": "node_1787012131245_34_fubb"
+        }
+      ],
+      "h": [
+        {
+          "id": "shorts-1788510610623-76p5pe",
+          "mediaUrl": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
+          "caption": "깊어요… 더 세게… (엉덩이를 내게 밀어붙인다)",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408302293_j29k",
+              "x": 0.8072916666666666,
+              "y": 0.4010416666666667,
+              "w": 0.12890625,
+              "h": 0.21064814814814808,
+              "blur": 2.5
+            }
+          ],
+          "sourceNodeId": "node_1787093989219_29_rxvm",
+          "captionNodeId": "node_1787093989219_31_u9yg"
+        },
+        {
+          "id": "shorts-1788510616535-wj1gc3",
+          "mediaUrl": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/7da84875-f242-430f-ab42-33a9156d1801.webp",
+          "caption": "하…… 대단했어요. (숨을 몰아쉰다)",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408311637_ud96",
+              "x": 0.7552083333333334,
+              "y": 0.43344907407407407,
+              "w": 0.05078125,
+              "h": 0.15509259259259256,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787094227185_o64j",
+          "captionNodeId": "node_1787093989219_38_oxr2"
+        }
+      ]
     },
     "specialVacation": {
       "imageIds": [
@@ -4595,7 +4817,7 @@
     "characterIllustrationId": "1787982543675-lh3vdtj",
     "profileImageId": "1787982543675-lh3vdtj",
     "profileVideoId": null,
-    "mediaRevision": 1788506755458,
+    "mediaRevision": 1788510707689,
     "images": [
       {
         "id": "1787982543675-lh3vdtj",
@@ -5335,8 +5557,82 @@
       }
     },
     "shortsVn": {
-      "vip": [],
-      "h": []
+      "vip": [
+        {
+          "id": "shorts-1788510645367-xokz67",
+          "mediaUrl": "media://chapter_assets/events/db1eff8f-cb31-4d33-b438-464c29dc21fa/videos/speed_2_65x_ad0a0063ff124b27a464ae856b71ea6a.mp4",
+          "caption": "기분 좋아요… 고객님 자지, 제 안 깊은 곳까지…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408476939_jjbl",
+              "x": 0.71875,
+              "y": 0.28761574074074076,
+              "w": 0.23177083333333337,
+              "h": 0.2916666666666667,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787133586562_50_ii30",
+          "captionNodeId": "node_1787135567398_23_8x7w"
+        },
+        {
+          "id": "shorts-1788510662991-vfaqqa",
+          "mediaUrl": "media://chapter_assets/events/db1eff8f-cb31-4d33-b438-464c29dc21fa/images/e06ff069-71b5-4ea5-a7f1-5581e810ea38.webp",
+          "caption": "하…… 고객님의… 전부…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408499426_pmcm",
+              "x": 0.7330729166666666,
+              "y": 0.4542824074074074,
+              "w": 0.08072916666666674,
+              "h": 0.28472222222222227,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787135064374_956j",
+          "captionNodeId": "node_1787135567398_32_s2qp"
+        }
+      ],
+      "h": [
+        {
+          "id": "shorts-1788510688623-gqna1b",
+          "mediaUrl": "media://chapter_assets/events/89ab7df5-6c22-43bb-83d3-0d4df5d67843/videos/speed_2_65x_ad0a0063ff124b27a464ae856b71ea6a.mp4",
+          "caption": "좋아요… 더 세게…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408476939_jjbl",
+              "x": 0.71875,
+              "y": 0.28761574074074076,
+              "w": 0.23177083333333337,
+              "h": 0.2916666666666667,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787133586562_50_ii30",
+          "captionNodeId": "node_1787133586562_55_do6e"
+        },
+        {
+          "id": "shorts-1788510700358-8h4aze",
+          "mediaUrl": "media://chapter_assets/events/89ab7df5-6c22-43bb-83d3-0d4df5d67843/images/e06ff069-71b5-4ea5-a7f1-5581e810ea38.webp",
+          "caption": "정말, 대단했어요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408499426_pmcm",
+              "x": 0.7330729166666666,
+              "y": 0.4542824074074074,
+              "w": 0.08072916666666674,
+              "h": 0.28472222222222227,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787135064374_956j",
+          "captionNodeId": "node_1787133586562_64_8jpn"
+        }
+      ]
     },
     "specialVacation": {
       "imageIds": [
@@ -5412,7 +5708,7 @@
     "characterIllustrationId": "1787982563132-02ifwpr",
     "profileImageId": "1787982563132-02ifwpr",
     "profileVideoId": null,
-    "mediaRevision": 1788506760723,
+    "mediaRevision": 1788510784040,
     "images": [
       {
         "id": "1787982563132-02ifwpr",
@@ -6233,8 +6529,82 @@
       }
     },
     "shortsVn": {
-      "vip": [],
-      "h": []
+      "vip": [
+        {
+          "id": "shorts-1788510723087-6uprrx",
+          "mediaUrl": "media://chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/videos/speed_2_60x_c21c8ae2b7e047d18a4516dd113407aa.mp4",
+          "caption": "그대로, 입에 내줘.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408631193_47nb",
+              "x": 0.3502604166666667,
+              "y": 0.14641203703703703,
+              "w": 0.06770833333333331,
+              "h": 0.1111111111111111,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787182155513_33_si86",
+          "captionNodeId": "node_1787185754205_23_j14i"
+        },
+        {
+          "id": "shorts-1788510736991-sndnml",
+          "mediaUrl": "media://chapter_assets/events/a8386efa-e345-49e7-a853-d90019a208d9/images/6641347d-2870-4fc6-a741-e356dd48b064.webp",
+          "caption": "…대단하다.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408641337_e9n4",
+              "x": 0.26171875,
+              "y": 0.10706018518518519,
+              "w": 0.15494791666666669,
+              "h": 0.34490740740740744,
+              "blur": 1.5
+            }
+          ],
+          "sourceNodeId": "node_1787182155513_42_4l56",
+          "captionNodeId": "node_1787185754205_27_6iby"
+        }
+      ],
+      "h": [
+        {
+          "id": "shorts-1788510758632-09cf01",
+          "mediaUrl": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/speed_2_85x_242f68c304c842b9b1c6ef3e47228fe0.mp4",
+          "caption": "좋아… 더 세게…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408663368_apor",
+              "x": 0.08854166666666667,
+              "y": 0.1857638888888889,
+              "w": 0.2265625,
+              "h": 0.33796296296296297,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787182155513_51_rr9d",
+          "captionNodeId": "node_1787182155513_56_5xxj"
+        },
+        {
+          "id": "shorts-1788510770374-48lzvm",
+          "mediaUrl": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/8c59e39b-1dfb-42b4-8288-90a530fa8c46.webp",
+          "caption": "정말, 대단했어.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408675240_ojd6",
+              "x": 0.24739583333333334,
+              "y": 0.18113425925925927,
+              "w": 0.06901041666666666,
+              "h": 0.3101851851851851,
+              "blur": 2.5
+            }
+          ],
+          "sourceNodeId": "node_1787182155513_61_h0u0",
+          "captionNodeId": "node_1787182155513_65_5jll"
+        }
+      ]
     },
     "specialVacation": {
       "imageIds": [
@@ -6310,7 +6680,7 @@
     "characterIllustrationId": "1787982585733-jxb2shc",
     "profileImageId": "1787982585733-jxb2shc",
     "profileVideoId": null,
-    "mediaRevision": 1788506773722,
+    "mediaRevision": 1788510844425,
     "images": [
       {
         "id": "1787982585733-jxb2shc",
@@ -7050,8 +7420,82 @@
       }
     },
     "shortsVn": {
-      "vip": [],
-      "h": []
+      "vip": [
+        {
+          "id": "shorts-1788510822646-nqrqx3",
+          "mediaUrl": "media://chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/videos/speed_2_90x_557c0a67e9944dbba91491214d63e851.mp4",
+          "caption": "맛있게 해드릴게요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408794031_hy81",
+              "x": 0.4778645833333333,
+              "y": 0.18344907407407407,
+              "w": 0.08333333333333331,
+              "h": 0.1597222222222222,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787140334560_33_0714",
+          "captionNodeId": "node_1787264690002_18_kyus"
+        },
+        {
+          "id": "shorts-1788510832422-wsni7g",
+          "mediaUrl": "media://chapter_assets/events/b55d4260-8b00-467e-a696-301888eeb32c/images/d250d5b1-e476-4ada-a791-a1879f76df2c.webp",
+          "caption": "…대단하세요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408889110_8psk",
+              "x": 0.296875,
+              "y": 0.25983796296296297,
+              "w": 0.16145833333333331,
+              "h": 0.21759259259259262,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787264690002_26_4hmz",
+          "captionNodeId": "node_1787264690002_27_rcfh"
+        }
+      ],
+      "h": [
+        {
+          "id": "shorts-1788510788574-wj9u1e",
+          "mediaUrl": "media://chapter_assets/events/3f011019-f38b-4731-8cc2-4608bc293759/videos/speed_4_15x_380818773bd8471fbbcbb338fcbcba3b.mp4",
+          "caption": "좋아요… 더 세게…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408812847_ncz6",
+              "x": 0.71484375,
+              "y": 0.39872685185185186,
+              "w": 0.13541666666666663,
+              "h": 0.22685185185185186,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787140334560_50_mqow",
+          "captionNodeId": "node_1787140334560_55_23g7"
+        },
+        {
+          "id": "shorts-1788510805950-s4p8hz",
+          "mediaUrl": "media://chapter_assets/events/3f011019-f38b-4731-8cc2-4608bc293759/images/80b76fde-8b98-4072-b54f-974d124541ac.webp",
+          "caption": "정말, 대단했어요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408822095_r1u0",
+              "x": 0.64453125,
+              "y": 0.48900462962962965,
+              "w": 0.05859375,
+              "h": 0.2407407407407407,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787140334560_60_1cyz",
+          "captionNodeId": "node_1787140334560_64_c75m"
+        }
+      ]
     },
     "specialVacation": {
       "imageIds": [
@@ -7127,7 +7571,7 @@
     "characterIllustrationId": "1787982616017-xwm18tz",
     "profileImageId": "1787982616017-xwm18tz",
     "profileVideoId": null,
-    "mediaRevision": 1788506770235,
+    "mediaRevision": 1788510892407,
     "images": [
       {
         "id": "1787982616017-xwm18tz",
@@ -7920,8 +8364,82 @@
       }
     },
     "shortsVn": {
-      "vip": [],
-      "h": []
+      "vip": [
+        {
+          "id": "shorts-1788510848494-m92o7m",
+          "mediaUrl": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/videos/speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
+          "caption": "맛있게 해드릴게요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408959389_46gt",
+              "x": 0.4010416666666667,
+              "y": 0.23668981481481483,
+              "w": 0.06640625,
+              "h": 0.1111111111111111,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787179147661_33_gn6m",
+          "captionNodeId": "node_1787179099672_18_q0jd"
+        },
+        {
+          "id": "shorts-1788510850638-wjrcr0",
+          "mediaUrl": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/fa994ce1-4a0d-452f-833d-08be8f532356.webp",
+          "caption": "…대단하세요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408969261_l610",
+              "x": 0.18359375,
+              "y": 0.07696759259259259,
+              "w": 0.19140625,
+              "h": 0.31018518518518523,
+              "blur": 2.5
+            }
+          ],
+          "sourceNodeId": "node_1787179147661_42_vlqd",
+          "captionNodeId": "node_1787179099672_27_1aor"
+        }
+      ],
+      "h": [
+        {
+          "id": "shorts-1788510870486-m5s8hd",
+          "mediaUrl": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/speed_2_80x_d554eba430644078b1365de716a5eda0.mp4",
+          "caption": "좋아요… 더 세게…",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788408988541_3deg",
+              "x": 0.18229166666666666,
+              "y": 0.36863425925925924,
+              "w": 0.26041666666666663,
+              "h": 0.5393518518518519,
+              "blur": 2
+            }
+          ],
+          "sourceNodeId": "node_1787179147661_51_vnfi",
+          "captionNodeId": "node_1787179147661_59_x0zq"
+        },
+        {
+          "id": "shorts-1788510879414-48ycnu",
+          "mediaUrl": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/images/c3a9b183-afe5-4db9-a74c-de8dd461074f.webp",
+          "caption": "정말, 대단했어요.",
+          "durationSec": 2,
+          "blurRegions": [
+            {
+              "id": "blur_1788409004126_xyu1",
+              "x": 0.4049479166666667,
+              "y": 0.4681712962962963,
+              "w": 0.11848958333333331,
+              "h": 0.4027777777777778,
+              "blur": 2.5
+            }
+          ],
+          "sourceNodeId": "node_1787179147661_64_0ywo",
+          "captionNodeId": "node_1787179147661_68_nd1q"
+        }
+      ]
     },
     "specialVacation": {
       "imageIds": [

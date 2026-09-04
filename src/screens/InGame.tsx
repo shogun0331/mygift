@@ -2911,6 +2911,9 @@ export function InGame({
   }
 
   function continueAfterMonthModals(openScout: boolean) {
+    if (checkProposalEvent(openScout)) {
+      return
+    }
     const next = pendingSocialQueueRef.current.shift() ?? null
     if (next) {
       pendingScoutAfterRankRef.current = openScout
@@ -2923,9 +2926,6 @@ export function InGame({
     if (snsResultQueueRef.current.length > 0) {
       pendingScoutAfterRankRef.current = openScout
       setStartBroadcastLocked(true)
-      return
-    }
-    if (checkProposalEvent(openScout)) {
       return
     }
     releaseMonthEndLock(openScout)
