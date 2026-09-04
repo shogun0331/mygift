@@ -1020,7 +1020,7 @@ function formatCareCostShort(amount: number) {
   return formatMoneyCompact(amount)
 }
 
-function StreamAction({
+export function StreamAction({
   label,
   icon,
   disabled = false,
@@ -1086,7 +1086,7 @@ function IconEye() {
   )
 }
 
-function IconAssign() {
+export function IconAssign() {
   return (
     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden>
       <circle cx="10" cy="8" r="3" stroke="currentColor" strokeWidth="1.6" />
@@ -1117,7 +1117,7 @@ function IconTrain() {
   )
 }
 
-function IconStats() {
+export function IconStats() {
   return (
     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path d="M5 18V11M10 18V7M15 18v-5M20 18V9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
@@ -1125,7 +1125,7 @@ function IconStats() {
   )
 }
 
-function IconGear() {
+export function IconGear() {
   return (
     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden>
       <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />

@@ -1,5 +1,5 @@
 import type { Grade } from './characters'
-import { mergeCharacterLocaleText, type CharacterLocaleText } from './characterLocales'
+import { type CharacterLocaleText } from './characterLocales'
 import { companyTierOf, type CompanyTierId } from './ranking'
 import { DEFAULT_VIEWER_BALANCE, type ViewerBalance } from './viewerBalance'
 
@@ -42,21 +42,32 @@ export type StationPromotionRule = {
   creatorRequirements: CreatorCountRequirement[]
 }
 
+import { readBlurRegions } from '../events/BlurRegionEditor'
+import type { BlurRegion } from '../events/types'
+
 export type CreatorType = 'elegance' | 'performance' | 'communication' | 'sexy'
+
+export type AuditJudgeMediaSlot = {
+  url: string | null
+  blurRegions: BlurRegion[]
+}
 
 export type AuditJudgeConfig = {
   id: string
   name: string
   names?: Record<string, string>
   avatarUrl: string
+  avatarBlurRegions?: BlurRegion[]
   targetTier?: Exclude<StationTierId, 'black' | 'tiny'> | 'all'
   successMediaUrl?: string
+  successBlurRegions?: BlurRegion[]
   failMediaUrl?: string
-  /** 만족도 구간별 심사관 16:9 미디어 (A: 고만족 80%↑, B: 중만족 30~79%, C: 저만족 0~29%) */
+  failBlurRegions?: BlurRegion[]
+  /** 만족도 구간별 심사관 16:9 미디어 및 모자이크/블러 영역 (A: 고만족 80%↑, B: 중만족 30~79%, C: 저만족 0~29%) */
   auditMedia?: {
-    A?: string
-    B?: string
-    C?: string
+    A?: AuditJudgeMediaSlot | string
+    B?: AuditJudgeMediaSlot | string
+    C?: AuditJudgeMediaSlot | string
   }
   attackPower: number
   satisfactionMod: number
@@ -64,20 +75,36 @@ export type AuditJudgeConfig = {
   descriptions?: Record<string, string>
 }
 
-export function getJudgeSatisfactionMediaUrl(judge?: AuditJudgeConfig | null, currentPct = 0): string {
-  if (!judge) return ''
+export function normalizeJudgeMediaSlot(raw: unknown): AuditJudgeMediaSlot {
+  if (!raw) return { url: null, blurRegions: [] }
+  if (typeof raw === 'string') return { url: raw.trim() || null, blurRegions: [] }
+  if (typeof raw === 'object') {
+    const row = raw as Record<string, unknown>
+    const url = typeof row.url === 'string' ? row.url.trim() || null : null
+    const blurRegions = readBlurRegions(row)
+    return { url, blurRegions }
+  }
+  return { url: null, blurRegions: [] }
+}
+
+export function getJudgeSatisfactionMediaSlot(judge?: AuditJudgeConfig | null, currentPct = 0): AuditJudgeMediaSlot {
+  if (!judge) return { url: null, blurRegions: [] }
   const mediaObj = judge.auditMedia
   if (currentPct >= 80) {
-    const aUrl = typeof mediaObj?.A === 'string' ? mediaObj.A : (mediaObj?.A as any)?.url
-    if (aUrl) return aUrl
+    const aSlot = normalizeJudgeMediaSlot(mediaObj?.A)
+    if (aSlot.url) return aSlot
   } else if (currentPct >= 30) {
-    const bUrl = typeof mediaObj?.B === 'string' ? mediaObj.B : (mediaObj?.B as any)?.url
-    if (bUrl) return bUrl
+    const bSlot = normalizeJudgeMediaSlot(mediaObj?.B)
+    if (bSlot.url) return bSlot
   } else {
-    const cUrl = typeof mediaObj?.C === 'string' ? mediaObj.C : (mediaObj?.C as any)?.url
-    if (cUrl) return cUrl
+    const cSlot = normalizeJudgeMediaSlot(mediaObj?.C)
+    if (cSlot.url) return cSlot
   }
-  return judge.avatarUrl || ''
+  return { url: judge.avatarUrl || null, blurRegions: judge.avatarBlurRegions || [] }
+}
+
+export function getJudgeSatisfactionMediaUrl(judge?: AuditJudgeConfig | null, currentPct = 0): string {
+  return getJudgeSatisfactionMediaSlot(judge, currentPct).url || ''
 }
 
 export type AuditStageSetting = {
@@ -735,11 +762,15 @@ function normalizeAuditConfig(
     const description = fixedInfo.descriptions.ko
     const descriptions = fixedInfo.descriptions
 
+    const avatarBlurRegions = readBlurRegions({ blurRegions: rowItem.avatarBlurRegions })
+    const successBlurRegions = readBlurRegions({ blurRegions: rowItem.successBlurRegions })
+    const failBlurRegions = readBlurRegions({ blurRegions: rowItem.failBlurRegions })
+
     const auditMediaRaw = rowItem.auditMedia && typeof rowItem.auditMedia === 'object' ? (rowItem.auditMedia as Record<string, unknown>) : {}
     const auditMedia = {
-      A: typeof auditMediaRaw.A === 'string' ? auditMediaRaw.A : '',
-      B: typeof auditMediaRaw.B === 'string' ? auditMediaRaw.B : '',
-      C: typeof auditMediaRaw.C === 'string' ? auditMediaRaw.C : '',
+      A: normalizeJudgeMediaSlot(auditMediaRaw.A),
+      B: normalizeJudgeMediaSlot(auditMediaRaw.B),
+      C: normalizeJudgeMediaSlot(auditMediaRaw.C),
     }
 
     return {
@@ -747,9 +778,12 @@ function normalizeAuditConfig(
       name,
       names,
       avatarUrl: typeof rowItem.avatarUrl === 'string' ? rowItem.avatarUrl : '',
+      avatarBlurRegions,
       targetTier,
       successMediaUrl: typeof rowItem.successMediaUrl === 'string' ? rowItem.successMediaUrl : '',
+      successBlurRegions,
       failMediaUrl: typeof rowItem.failMediaUrl === 'string' ? rowItem.failMediaUrl : '',
+      failBlurRegions,
       auditMedia,
       attackPower: Math.max(0, Math.round(Number(rowItem.attackPower) || fallbackJudge.attackPower || 10)),
       satisfactionMod: Math.max(0.1, Number(rowItem.satisfactionMod) || fallbackJudge.satisfactionMod || 1.0),

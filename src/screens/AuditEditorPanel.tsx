@@ -3,15 +3,17 @@ import type { Grade } from '../game/characters'
 import {
   CHARACTER_LOCALE_LABELS,
   CHARACTER_LOCALES,
-  pickCharacterLocaleText,
   type CharacterLocale,
 } from '../game/characterLocales'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import { BlurRegionEditor, BlurRegionOverlay } from '../events/BlurRegionEditor'
 import {
   FIXED_JUDGES_LOCALES,
   STATION_TIER_LABEL,
   defaultAuditConfig,
+  normalizeJudgeMediaSlot,
   type AuditJudgeConfig,
+  type AuditJudgeMediaSlot,
   type PromotionAuditConfig,
   type StationGradeConfig,
   type StationTierId,
@@ -126,7 +128,7 @@ export function AuditEditorPanel({
             const targetTierKey = (judge.targetTier && judge.targetTier !== 'all' ? judge.targetTier : defaultTargetTiers[idx % 4]) ?? 'sme'
             const displayName = fixedData.names.ko
             const displayDesc = fixedData.descriptions.ko
-            const stageTierKey = targetTierKey !== 'all' ? targetTierKey : defaultTargetTiers[idx % 4]
+            const stageTierKey = targetTierKey
             const stage = auditConfig.stageSettings[stageTierKey] ?? auditConfig.stageSettings.sme
 
             return (
@@ -480,20 +482,26 @@ function JudgeDetailModal({
                 <MediaDropBox
                   label="대표 16:9 미디어"
                   description="심사 무대 기본 비주얼"
-                  url={judge.avatarUrl}
-                  onUpdateUrl={(nextUrl) => onUpdate({ avatarUrl: nextUrl })}
+                  slot={{ url: judge.avatarUrl, blurRegions: judge.avatarBlurRegions || [] }}
+                  onUpdateSlot={(next) =>
+                    onUpdate({ avatarUrl: next.url || '', avatarBlurRegions: next.blurRegions })
+                  }
                 />
                 <MediaDropBox
                   label="🎉 승급 성공 16:9 미디어"
                   description="심사 통과 성공 컷씬"
-                  url={judge.successMediaUrl}
-                  onUpdateUrl={(nextUrl) => onUpdate({ successMediaUrl: nextUrl })}
+                  slot={{ url: judge.successMediaUrl || null, blurRegions: judge.successBlurRegions || [] }}
+                  onUpdateSlot={(next) =>
+                    onUpdate({ successMediaUrl: next.url || '', successBlurRegions: next.blurRegions })
+                  }
                 />
                 <MediaDropBox
                   label="❌ 승급 실패 16:9 미디어"
                   description="심사 탈락 실패 컷씬"
-                  url={judge.failMediaUrl}
-                  onUpdateUrl={(nextUrl) => onUpdate({ failMediaUrl: nextUrl })}
+                  slot={{ url: judge.failMediaUrl || null, blurRegions: judge.failBlurRegions || [] }}
+                  onUpdateSlot={(next) =>
+                    onUpdate({ failMediaUrl: next.url || '', failBlurRegions: next.blurRegions })
+                  }
                 />
               </div>
             </div>
@@ -513,12 +521,12 @@ function JudgeDetailModal({
                 <MediaDropBox
                   label="🌟 A 영상 (고만족도 80% ↑)"
                   description="심사관 만족도 80% 이상일 때 재생"
-                  url={judge.auditMedia?.A}
-                  onUpdateUrl={(nextUrl) =>
+                  slot={judge.auditMedia?.A}
+                  onUpdateSlot={(next) =>
                     onUpdate({
                       auditMedia: {
                         ...(judge.auditMedia || {}),
-                        A: nextUrl,
+                        A: next,
                       },
                     })
                   }
@@ -526,12 +534,12 @@ function JudgeDetailModal({
                 <MediaDropBox
                   label="⚡ B 영상 (중만족도 30~79%)"
                   description="심사관 만족도 30~79%일 때 재생"
-                  url={judge.auditMedia?.B}
-                  onUpdateUrl={(nextUrl) =>
+                  slot={judge.auditMedia?.B}
+                  onUpdateSlot={(next) =>
                     onUpdate({
                       auditMedia: {
                         ...(judge.auditMedia || {}),
-                        B: nextUrl,
+                        B: next,
                       },
                     })
                   }
@@ -539,12 +547,12 @@ function JudgeDetailModal({
                 <MediaDropBox
                   label="💧 C 영상 (저만족도 0~29%)"
                   description="심사관 만족도 0~29%일 때 재생"
-                  url={judge.auditMedia?.C}
-                  onUpdateUrl={(nextUrl) =>
+                  slot={judge.auditMedia?.C}
+                  onUpdateSlot={(next) =>
                     onUpdate({
                       auditMedia: {
                         ...(judge.auditMedia || {}),
-                        C: nextUrl,
+                        C: next,
                       },
                     })
                   }
@@ -602,14 +610,18 @@ function JudgeDetailModal({
 function MediaDropBox({
   label,
   description,
-  url,
-  onUpdateUrl,
+  slot,
+  onUpdateSlot,
 }: {
   label: string
   description: string
-  url?: string
-  onUpdateUrl: (nextUrl: string) => void
+  slot?: AuditJudgeMediaSlot | string | null
+  onUpdateSlot: (nextSlot: AuditJudgeMediaSlot) => void
 }) {
+  const normalizedSlot = normalizeJudgeMediaSlot(slot)
+  const url = normalizedSlot.url || ''
+  const blurRegions = normalizedSlot.blurRegions || []
+  const [isEditingBlur, setIsEditingBlur] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
 
@@ -617,7 +629,7 @@ function MediaDropBox({
     const reader = new FileReader()
     reader.onload = (event) => {
       const dataUrl = event.target?.result as string
-      if (dataUrl) onUpdateUrl(dataUrl)
+      if (dataUrl) onUpdateSlot({ url: dataUrl, blurRegions })
     }
     reader.readAsDataURL(file)
   }
@@ -628,15 +640,24 @@ function MediaDropBox({
   }
 
   const isVideo =
-    url?.startsWith('data:video') ||
-    url?.endsWith('.mp4') ||
-    url?.endsWith('.webm')
+    url.startsWith('data:video') ||
+    /\.(mp4|webm|ogv|ogg|mov|mkv|m4v)$/i.test(url.split('?')[0])
 
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <label className="block text-[11px] font-bold text-slate-300">{label}</label>
+        {url ? (
+          <button
+            type="button"
+            onClick={() => setIsEditingBlur(true)}
+            className="text-[10px] font-bold text-purple-300 hover:text-purple-200 flex items-center gap-1"
+          >
+            🔍 블러 ({blurRegions.length})
+          </button>
+        ) : null}
       </div>
+
       <div
         onDragOver={(e) => {
           e.preventDefault()
@@ -656,22 +677,25 @@ function MediaDropBox({
         } group`}
       >
         {url ? (
-          isVideo ? (
-            <video
-              src={resolveMediaSrc(url)}
-              className="h-full w-full object-cover"
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
-          ) : (
-            <img
-              src={resolveMediaSrc(url)}
-              alt=""
-              className="h-full w-full object-cover"
-            />
-          )
+          <>
+            {isVideo ? (
+              <video
+                src={resolveMediaSrc(url)}
+                className="h-full w-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+            ) : (
+              <img
+                src={resolveMediaSrc(url)}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            )}
+            {blurRegions.length > 0 ? <BlurRegionOverlay regions={blurRegions} /> : null}
+          </>
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center p-3 text-center">
             <span className="text-2xl mb-1">📁</span>
@@ -689,13 +713,22 @@ function MediaDropBox({
             📷 파일 선택
           </button>
           {url ? (
-            <button
-              type="button"
-              className="rounded-lg border border-rose-500/40 bg-rose-950/80 px-2.5 py-1 text-[10px] font-bold text-rose-200 hover:bg-rose-900"
-              onClick={() => onUpdateUrl('')}
-            >
-              삭제
-            </button>
+            <>
+              <button
+                type="button"
+                className="rounded-lg border border-purple-400/50 bg-purple-950/90 px-2.5 py-1 text-[10px] font-bold text-purple-200 hover:bg-purple-900"
+                onClick={() => setIsEditingBlur(true)}
+              >
+                🔍 블러 영역 편집 ({blurRegions.length})
+              </button>
+              <button
+                type="button"
+                className="rounded-lg border border-rose-500/40 bg-rose-950/80 px-2.5 py-1 text-[10px] font-bold text-rose-200 hover:bg-rose-900"
+                onClick={() => onUpdateSlot({ url: null, blurRegions: [] })}
+              >
+                삭제
+              </button>
+            </>
           ) : null}
         </div>
       </div>
@@ -707,6 +740,18 @@ function MediaDropBox({
         className="hidden"
         onChange={handleFileChange}
       />
+
+      {isEditingBlur && url ? (
+        <BlurRegionEditor
+          asset={{ url, kind: isVideo ? 'video' : 'image' }}
+          regions={blurRegions}
+          blurDefault={4}
+          onChange={({ blurRegions: nextRegions }) => {
+            onUpdateSlot({ url, blurRegions: nextRegions })
+          }}
+          onClose={() => setIsEditingBlur(false)}
+        />
+      ) : null}
     </div>
   )
 }

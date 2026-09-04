@@ -6,6 +6,7 @@ import {
   STATION_TIER_LABEL,
   STATION_TIER_ORDER,
   defaultAuditConfig,
+  normalizeJudgeMediaSlot,
   tierMaxRank,
   tierViewerCap,
   type AuditJudgeConfig,
@@ -409,7 +410,7 @@ export function StationGradeEditorPanel({
                         className={fieldClassName}
                         value={config.topClearViewers ?? 750_000}
                         onChange={(event) =>
-                          onChange({
+                          onConfigChange({
                             ...config,
                             topClearViewers: Math.max(
                               0,
@@ -433,7 +434,7 @@ export function StationGradeEditorPanel({
       {/* 승급 심사 미니게임 4인 심사관 및 밸런스 설정 */}
       <AuditEditorSection
         auditConfig={config.auditConfig ?? defaultAuditConfig()}
-        onChange={(nextAudit) => onChange({ ...config, auditConfig: nextAudit })}
+        onChange={(nextAudit) => onConfigChange({ ...config, auditConfig: nextAudit })}
       />
     </div>
   )
@@ -560,12 +561,12 @@ function AuditEditorSection({
                     type="text"
                     className={fieldClassName}
                     placeholder="/assets/judges/judge_1_high.mp4"
-                    value={judge.auditMedia?.A || ''}
+                    value={normalizeJudgeMediaSlot(judge.auditMedia?.A).url || ''}
                     onChange={(e) =>
                       updateJudge(idx, {
                         auditMedia: {
                           ...(judge.auditMedia || {}),
-                          A: e.target.value,
+                          A: { ...normalizeJudgeMediaSlot(judge.auditMedia?.A), url: e.target.value },
                         },
                       })
                     }
@@ -577,12 +578,12 @@ function AuditEditorSection({
                     type="text"
                     className={fieldClassName}
                     placeholder="/assets/judges/judge_1_mid.mp4"
-                    value={judge.auditMedia?.B || ''}
+                    value={normalizeJudgeMediaSlot(judge.auditMedia?.B).url || ''}
                     onChange={(e) =>
                       updateJudge(idx, {
                         auditMedia: {
                           ...(judge.auditMedia || {}),
-                          B: e.target.value,
+                          B: { ...normalizeJudgeMediaSlot(judge.auditMedia?.B), url: e.target.value },
                         },
                       })
                     }
@@ -594,12 +595,12 @@ function AuditEditorSection({
                     type="text"
                     className={fieldClassName}
                     placeholder="/assets/judges/judge_1_low.mp4"
-                    value={judge.auditMedia?.C || ''}
+                    value={normalizeJudgeMediaSlot(judge.auditMedia?.C).url || ''}
                     onChange={(e) =>
                       updateJudge(idx, {
                         auditMedia: {
                           ...(judge.auditMedia || {}),
-                          C: e.target.value,
+                          C: { ...normalizeJudgeMediaSlot(judge.auditMedia?.C), url: e.target.value },
                         },
                       })
                     }

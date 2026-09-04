@@ -538,15 +538,16 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
   )
 
   let specialVacation = payload.specialVacation
-  if (specialVacation?.voice?.file) {
-    const voice = specialVacation.voice
-    const buffer = await voice.file.arrayBuffer()
-    const safeName = buildSafeFileName(voice.id, voice.file.name)
-    if (voice.fileName && voice.fileName !== safeName) {
-      obsoleteNames.push({ kind: 'sound', fileName: voice.fileName })
+  const specialVoice = specialVacation?.voice
+  const voiceFile = specialVoice?.file
+  if (specialVacation && specialVoice && voiceFile) {
+    const buffer = await voiceFile.arrayBuffer()
+    const safeName = buildSafeFileName(specialVoice.id, voiceFile.name)
+    if (specialVoice.fileName && specialVoice.fileName !== safeName) {
+      obsoleteNames.push({ kind: 'sound', fileName: specialVoice.fileName })
     }
     assetsToSave.push({
-      id: voice.id,
+      id: specialVoice.id,
       fileName: safeName,
       kind: 'sound',
       buffer,
@@ -554,10 +555,10 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
     specialVacation = {
       ...specialVacation,
       voice: {
-        id: voice.id,
+        id: specialVoice.id,
         fileName: safeName,
-        fileSize: voice.file.size,
-        url: soundMediaUrl(characterId, safeName, voice.file.size),
+        fileSize: voiceFile.size,
+        url: soundMediaUrl(characterId, safeName, voiceFile.size),
         file: undefined,
       },
     }
