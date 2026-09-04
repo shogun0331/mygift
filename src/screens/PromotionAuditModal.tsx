@@ -119,6 +119,7 @@ export function PromotionAuditModal({
   const [showCinematicIntro, setShowCinematicIntro] = useState<boolean>(true)
   const [isActionLocked, setIsActionLocked] = useState<boolean>(true)
   const [showActionGuide, setShowActionGuide] = useState<boolean>(false)
+  const [showResultModal, setShowResultModal] = useState<boolean>(false)
 
   useEffect(() => {
     // 🎬 까만 화면에서 "심사관을 만족시켜라!" 스케일 트윈 2초 연출 후 심사관 미디어 & 액션 가이드 활성화!
@@ -133,6 +134,7 @@ export function PromotionAuditModal({
   const passAudioPlayedRef = useRef(false)
   useEffect(() => {
     if (
+      showResultModal &&
       (session.isSuccess || session.currentSatisfaction >= session.targetSatisfaction) &&
       !passAudioPlayedRef.current
     ) {
@@ -140,7 +142,7 @@ export function PromotionAuditModal({
       playSfx('training-exam-success')
       playAuditPassFanfare()
     }
-  }, [session.isSuccess, session.currentSatisfaction, session.targetSatisfaction])
+  }, [showResultModal, session.isSuccess, session.currentSatisfaction, session.targetSatisfaction])
 
   useEffect(() => {
     return () => {
@@ -231,12 +233,18 @@ export function PromotionAuditModal({
       setIsHeartShaking(false)
     }, 220)
 
-    // 650ms 유혹 폭발 마무리 후 -> 4인 크리에이터 덱 중 무작위 1명 픽업하여 심사관 반격 타겟 지정!
+    // 650ms 유혹 폭발 마무리 후 -> 만족도 채워짐 & 피격 파티클 감상 후 승급 성공 팝업 표출!
     setTimeout(() => {
       setShowImpactEffect(false)
-      const isSuccessNow = session.isSuccess || session.currentSatisfaction >= session.targetSatisfaction
+      const currentPct = nextPct ?? Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100)
+      const isCompletedNow = session.isCompleted || session.currentSatisfaction >= session.targetSatisfaction || currentPct >= 100
 
-      if (!isSuccessNow && displayCreators.length > 0) {
+      if (isCompletedNow) {
+        // 🎉 피격 파티클과 만족도 100% 채워짐 연출을 감상하도록 750ms 뒤에 승급 성공 팝업 오픈!
+        setTimeout(() => {
+          setShowResultModal(true)
+        }, 750)
+      } else if (displayCreators.length > 0) {
         // 🎯 4인 덱 중 무작위 1명 크리에이터 픽업!
         const randIdx = Math.floor(Math.random() * displayCreators.length)
         const randomTarget = displayCreators[randIdx] || displayCreators[0]!
@@ -280,6 +288,7 @@ export function PromotionAuditModal({
   useEffect(() => {
     if (
       !session.isCompleted &&
+      !showResultModal &&
       !isActionLocked &&
       !isJudgeTurn &&
       !showCinematicIntro &&
@@ -295,10 +304,12 @@ export function PromotionAuditModal({
           isSuccess: prev.currentSatisfaction >= prev.targetSatisfaction,
           failReason: 'no_cards',
         }))
+        setShowResultModal(true)
       }
     }
   }, [
     session.isCompleted,
+    showResultModal,
     isActionLocked,
     isJudgeTurn,
     showCinematicIntro,
@@ -659,7 +670,7 @@ export function PromotionAuditModal({
               <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black/70 to-transparent z-10" />
 
               {/* 🏆 승급심사 통과 성공 미디어 중앙 네온 순수 타이틀 오버레이 (7개국어 연동) */}
-              {session.isSuccess || session.currentSatisfaction >= session.targetSatisfaction ? (
+              {showResultModal && (session.isSuccess || session.currentSatisfaction >= session.targetSatisfaction) ? (
                 <div className="pointer-events-none absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/40 backdrop-blur-xs animate-in zoom-in-95 duration-300">
                   <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-emerald-400/90 bg-slate-950/90 px-8 py-6 shadow-[0_0_90px_rgba(52,211,153,0.8)] text-center">
                     <span className="text-6xl sm:text-7xl animate-bounce mb-2 drop-shadow-[0_0_30px_rgba(52,211,153,0.9)]">
@@ -673,7 +684,7 @@ export function PromotionAuditModal({
               ) : null}
 
               {/* ❌ 승급심사 통과 실패 미디어 중앙 네온 타이틀 오버레이 (7개국어 연동) */}
-              {session.isCompleted &&
+              {showResultModal &&
               !session.isSuccess &&
               session.currentSatisfaction < session.targetSatisfaction ? (
                 <div className="pointer-events-none absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/50 backdrop-blur-xs animate-in zoom-in-95 duration-300">
@@ -767,7 +778,7 @@ export function PromotionAuditModal({
         {/* 하단 4인 크리에이터 카드 드래그 앤 드롭 & 선택 덱 (완료 시 딤딩) */}
         <div
           className={`shrink-0 border-t border-purple-500/20 bg-slate-950/90 px-4 py-2.5 transition-all relative ${
-            session.isCompleted ? 'pointer-events-none opacity-40 grayscale-[40%]' : ''
+            showResultModal ? 'pointer-events-none opacity-40 grayscale-[40%]' : ''
           }`}
           onDragOver={(e) => e.preventDefault()}
           onDrop={() => {
@@ -779,7 +790,7 @@ export function PromotionAuditModal({
           }}
         >
           {/* 👆 핑거 카드 선택 가이드 (심사관 영상 바로 아래, 카드 선택 안내 문구 위치) */}
-          {showActionGuide && !showCinematicIntro && !session.isCompleted ? (
+          {showActionGuide && !showCinematicIntro && !showResultModal ? (
             <div className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 z-[110] flex flex-col items-center">
               <div className="flex flex-col items-center animate-[cardDeckTap_1.4s_ease-in-out_infinite]">
                 {/* 카드를 클릭하라는 탭 안내 뱃지 */}
@@ -801,7 +812,7 @@ export function PromotionAuditModal({
 
           {/* 오직 유저 카드 선택이 가능한 차례일 때만 카드 선택 가이드 라인 팝업! */}
           <div className="mb-2 text-center min-h-[28px] flex items-center justify-center">
-            {!isActionLocked && !isJudgeTurn && !showCinematicIntro && !session.isCompleted ? (
+            {!isActionLocked && !isJudgeTurn && !showCinematicIntro && !showResultModal ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-950/80 px-4 py-1 text-xs sm:text-sm font-black text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.35)] animate-pulse">
                 {getSelectCardPrompt(locale)}
               </span>
@@ -826,7 +837,7 @@ export function PromotionAuditModal({
               const currentStamina = creatorStaminaMap[creator.id] ?? 100
               const isStaminaExhausted = currentStamina < 15
               const isHitFlashing = hitFlashingCardId === creator.id
-              const isCardDisabled = isStaminaExhausted || isJudgeTurn || isActionLocked || session.isCompleted
+              const isCardDisabled = isStaminaExhausted || isJudgeTurn || isActionLocked || showResultModal
 
               return (
                 <div
@@ -955,7 +966,7 @@ export function PromotionAuditModal({
         </div>
 
         {/* 👑 승급 심사 완료 독립 정중앙 게임 팝업 모달 (Arcade / Esports Game Style Result Modal) */}
-        {session.isCompleted ? (
+        {showResultModal ? (
           <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md animate-in fade-in zoom-in-95 duration-300">
             <div
               className={`relative flex w-full max-w-xl flex-col items-center overflow-hidden rounded-[2.5rem] border-2 p-6 sm:p-9 text-center shadow-[0_0_120px_rgba(0,0,0,0.9)] ${
