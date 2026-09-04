@@ -109,6 +109,36 @@ export const PAYLINES: PaylineDef[] = [
     ],
     color: '#ec4899', // pink
   },
+  {
+    id: 6,
+    name: '좌측 세로줄',
+    coords: [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+    ],
+    color: '#06b6d4', // cyan
+  },
+  {
+    id: 7,
+    name: '중앙 세로줄',
+    coords: [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+    ],
+    color: '#f97316', // orange
+  },
+  {
+    id: 8,
+    name: '우측 세로줄',
+    coords: [
+      [0, 2],
+      [1, 2],
+      [2, 2],
+    ],
+    color: '#84cc16', // lime
+  },
 ]
 
 export type WinningLine = {
