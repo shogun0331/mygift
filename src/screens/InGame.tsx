@@ -4392,28 +4392,58 @@ export function InGame({
       {stationAuditTarget && auditDocPassNoticeOpen ? (() => {
         const tierName = t(companyTierLabelKey(stationAuditTarget.nextTier))
         const notice = getAuditDocPassNotice(locale, tierName)
+        const bodyParts = notice.body.split('\n\n')
+        const congratsText = bodyParts[0] || notice.body
+        const missionText = bodyParts.slice(1).join('\n\n')
+
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="relative w-full max-w-md overflow-hidden rounded-3xl border-2 border-amber-400/80 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 p-6 sm:p-8 text-center shadow-[0_0_50px_rgba(251,191,36,0.35)] animate-in zoom-in-95 duration-200">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-amber-400 bg-amber-500/20 text-3xl shadow-[0_0_20px_rgba(251,191,36,0.5)]">
-                📋
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border-2 border-amber-400/90 bg-gradient-to-b from-slate-950 via-purple-950/80 to-slate-950 p-6 sm:p-8 text-center shadow-[0_0_90px_rgba(251,191,36,0.45)] ring-1 ring-amber-400/50 animate-in zoom-in-95 duration-200">
+              {/* 회전하는 황금 빛 광채 후광 효과 */}
+              <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-72 rounded-full bg-amber-400/20 blur-3xl opacity-70 animate-pulse" />
+
+              {/* 상단 아케이드 헤더 뱃지 */}
+              <div className="relative z-10 mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-amber-400/60 bg-black/80 px-4 py-1 text-xs font-black tracking-widest text-amber-300 uppercase shadow-[0_0_20px_rgba(251,191,36,0.5)]">
+                <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+                <span>✦ STAGE 1: DOCUMENT REVIEW PASSED ✦</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-black text-amber-300 tracking-tight drop-shadow">
+
+              {/* 황금 서류 통과 아이콘 뱃지 */}
+              <div className="relative z-10 mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-amber-400/90 bg-gradient-to-br from-amber-950 via-yellow-900/60 to-amber-950 text-4xl shadow-[0_0_35px_rgba(251,191,36,0.6)] ring-1 ring-amber-400/40">
+                <span>📜</span>
+              </div>
+
+              {/* 타이틀 */}
+              <h3 className="relative z-10 text-xl sm:text-2xl font-black bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-200 bg-clip-text text-transparent tracking-tight drop-shadow">
                 {notice.title}
               </h3>
-              <p className="mt-4 whitespace-pre-line text-xs sm:text-sm font-medium leading-relaxed text-slate-200">
-                {notice.body}
-              </p>
-              <div className="mt-6 flex justify-center">
+
+              {/* 1차 축하 안내 카드 */}
+              <div className="relative z-10 mt-4 rounded-2xl border border-amber-400/30 bg-amber-500/10 p-3.5 text-xs sm:text-sm font-semibold leading-relaxed text-amber-100/90 shadow-inner">
+                <span>🎉 {congratsText}</span>
+              </div>
+
+              {/* 미션 안내 카드 */}
+              {missionText ? (
+                <div className="relative z-10 mt-3 rounded-2xl border border-purple-400/30 bg-purple-950/60 p-3.5 text-xs sm:text-sm font-bold leading-relaxed text-purple-200 shadow-inner flex items-center gap-3 text-left">
+                  <span className="text-2xl shrink-0">🎯</span>
+                  <span>{missionText}</span>
+                </div>
+              ) : null}
+
+              {/* 3D 황금 고광택 도전 버튼 */}
+              <div className="relative z-10 mt-6 flex justify-center">
                 <button
                   type="button"
                   onClick={() => {
                     setAuditDocPassNoticeOpen(false)
                     setAuditDeckSelecting(true)
                   }}
-                  className="game-btn game-btn-primary w-full px-6 py-3 text-sm sm:text-base font-black shadow-[0_0_20px_rgba(251,191,36,0.5)] transition hover:scale-105"
+                  className="group relative w-full overflow-hidden rounded-2xl border-2 border-amber-300/80 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3.5 px-6 font-black text-slate-950 shadow-[0_0_35px_rgba(245,158,11,0.6)] transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_rgba(245,158,11,0.85)] active:scale-95 flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
-                  {notice.button}
+                  <span>⚔️</span>
+                  <span>{notice.button}</span>
+                  <span>🚀</span>
                 </button>
               </div>
             </div>

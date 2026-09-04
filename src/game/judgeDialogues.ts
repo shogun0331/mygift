@@ -268,39 +268,39 @@ export const AUDIT_DOC_PASS_NOTICE: Record<
   (tierName: string) => { title: string; body: string; button: string }
 > = {
   ko: (tierName) => ({
-    title: `📋 [${tierName}] 승급심사 서류 통과!`,
+    title: `[${tierName}] 승급심사 서류 통과!`,
     body: `축하합니다! ${tierName} 승급을 위한 자격 요건 및 1차 서류 심사에 통과하였습니다.\n\n승급심사 진행을 위해 출전할 4명의 크리에이터 덱 카드를 배치해 주세요.`,
-    button: `🚀 출전 덱 세팅 및 심사 도전`,
+    button: `출전 덱 세팅 및 심사 도전`,
   }),
   en: (tierName) => ({
-    title: `📋 [${tierName}] Audit Documents Passed!`,
+    title: `[${tierName}] Audit Documents Passed!`,
     body: `Congratulations! You have passed the eligibility and document review for ${tierName} promotion.\n\nPlease arrange your 4 creator deck cards to begin the official performance audit.`,
-    button: `🚀 Set Up Deck & Begin Audit`,
+    button: `Set Up Deck & Begin Audit`,
   }),
   ja: (tierName) => ({
-    title: `📋 [${tierName}] 昇格審査 書類通過！`,
+    title: `[${tierName}] 昇格審査 書類通過！`,
     body: `おめでとうございます！ ${tierName} 昇格のための資格要件および第1次書類審査に通過しました。\n\n正式なパフォーマンス審査のため、出陣する4人のクリエイターデッキカードを配置してください。`,
-    button: `🚀 デッキ設定＆審査挑戦`,
+    button: `デッキ設定＆審査挑戦`,
   }),
   zh: (tierName) => ({
-    title: `📋 [${tierName}] 晋升审查 材料审核通过！`,
+    title: `[${tierName}] 晋升审查 材料审核通过！`,
     body: `恭喜！您已通过 ${tierName} 晋升的资格要求及第一轮材料审核。\n\n请配置出战的4位创作者卡组，准备开启正式绩效审查。`,
-    button: `🚀 配置卡组并开始审查`,
+    button: `配置卡组并开始审查`,
   }),
   es: (tierName) => ({
-    title: `📋 ¡Documentos Aprobados para ${tierName}!`,
+    title: `¡Documentos Aprobados para ${tierName}!`,
     body: `¡Felicidades! Ha pasado los requisitos y la revisión de documentos para el ascenso a ${tierName}.\n\nPor favor coloque sus 4 cartas de creadores para comenzar la auditoría oficial.`,
-    button: `🚀 Configurar Mazo y Comenzar`,
+    button: `Configurar Mazo y Comenzar`,
   }),
   th: (tierName) => ({
-    title: `📋 ผ่านการพิจารณาเอกสาร ${tierName}!`,
+    title: `ผ่านการพิจารณาเอกสาร ${tierName}!`,
     body: `ยินดีด้วย! คุณผ่านคุณสมบัติและการพิจารณาเอกสารสำหรับการเลื่อนขั้นเป็น ${tierName} แล้ว\n\nโปรดวางการ์ดครีเอเตอร์ 4 คนเพื่อเริ่มการประเมินอย่างเป็นทางการ`,
-    button: `🚀 ตั้งค่าเด็ค & เริ่มการประเมิน`,
+    button: `ตั้งค่าเด็ค & เริ่มการประเมิน`,
   }),
   vi: (tierName) => ({
-    title: `📋 Thông Qua Hồ Sơ Thăng Hạng ${tierName}!`,
+    title: `Thông Qua Hồ Sơ Thăng Hạng ${tierName}!`,
     body: `Xin chúc mừng! Bạn đã vượt qua điều kiện và xét duyệt hồ sơ cho đợt thăng hạng ${tierName}.\n\nVui lòng sắp xếp 4 thẻ creator để bắt đầu buổi đánh giá chính thức.`,
-    button: `🚀 Cấu Hình Thẻ & Bắt Đầu`,
+    button: `Cấu Hình Thẻ & Bắt Đầu`,
   }),
 }
 
