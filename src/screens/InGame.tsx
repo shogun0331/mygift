@@ -3860,11 +3860,11 @@ export function InGame({
                   >
                     <option value="KO">한국어 (KO)</option>
                     <option value="EN">English (EN)</option>
-                    <option value="JA">日本語 (JA) (일본어)</option>
-                    <option value="ZH-CN">简体中文 (ZH-CN) (중국어 간체)</option>
-                    <option value="RU">Русский (RU) (러시아어)</option>
-                    <option value="ES">Español (ES) (스페인어)</option>
-                    <option value="DE">Deutsch (DE) (독일어)</option>
+                    <option value="JA">日本語 (JA)</option>
+                    <option value="ZH-CN">简体中文 (ZH-CN)</option>
+                    <option value="RU">Русский (RU)</option>
+                    <option value="ES">Español (ES)</option>
+                    <option value="DE">Deutsch (DE)</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-indigo-400">
                     <svg className="fill-current h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
