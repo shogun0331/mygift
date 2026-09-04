@@ -13,7 +13,7 @@ import { blurRegionsForVnFile } from './CharacterAuditEditorModal'
 import { MosaicMediaFrame } from './MosaicMediaFrame'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { stationGradeLabel, type StationGrade } from '../game/station'
-import type { StationGradeConfig, CreatorType } from '../game/stationGradeConfig'
+import { getJudgeSatisfactionMediaUrl, type StationGradeConfig, type CreatorType } from '../game/stationGradeConfig'
 import { useI18n } from '../locales/i18n'
 import {
   getJudgeReactionDialogue,
@@ -318,7 +318,11 @@ export function PromotionAuditModal({
     creatorStaminaMap,
   ])
 
-  const judgeDisplayMediaUrl = session.judge.avatarUrl || null
+  const currentSatisfactionPct = Math.round(
+    (session.currentSatisfaction / session.targetSatisfaction) * 100,
+  )
+  const judgeDisplayMediaUrl =
+    getJudgeSatisfactionMediaUrl(session.judge, currentSatisfactionPct) || session.judge.avatarUrl || null
 
   const judgeName = pickCharacterLocaleText(session.judge.names, locale, session.judge.name)
 

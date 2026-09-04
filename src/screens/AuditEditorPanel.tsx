@@ -462,30 +462,94 @@ function JudgeDetailModal({
             </div>
           </div>
 
-          {/* 3. 16:9 미디어 3종 (드래그 앤 드롭 업로드 지원) */}
+          {/* 3. 16:9 미디어 6종 (상태별 & 만족도 구간별 드래그 앤 드롭 지원) */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold text-purple-300">
-              🖼️ 16:9 미디어 등록 (드래그 앤 드롭 지원)
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <MediaDropBox
-                label="대표 16:9 미디어"
-                description="심사 무대 기본 비주얼"
-                url={judge.avatarUrl}
-                onUpdateUrl={(nextUrl) => onUpdate({ avatarUrl: nextUrl })}
-              />
-              <MediaDropBox
-                label="🎉 승급 성공 16:9 미디어"
-                description="심사 통과 성공 컷씬"
-                url={judge.successMediaUrl}
-                onUpdateUrl={(nextUrl) => onUpdate({ successMediaUrl: nextUrl })}
-              />
-              <MediaDropBox
-                label="❌ 승급 실패 16:9 미디어"
-                description="심사 탈락 실패 컷씬"
-                url={judge.failMediaUrl}
-                onUpdateUrl={(nextUrl) => onUpdate({ failMediaUrl: nextUrl })}
-              />
+            <div>
+              <h4 className="text-xs font-bold text-purple-300">
+                🖼️ 16:9 미디어 등록 (드래그 앤 드롭 지원)
+              </h4>
+              <p className="mt-0.5 text-[11px] text-slate-400">
+                기본 미디어 및 승급 성공/실패 컷씬과, 심사관 만족도 구간에 따라 실시간 교체될 16:9 비주얼을 세팅합니다.
+              </p>
+            </div>
+
+            {/* 기본 & 성공 / 실패 컷씬 미디어 */}
+            <div className="rounded-2xl border border-purple-500/20 bg-purple-950/20 p-3 space-y-2">
+              <span className="text-xs font-bold text-purple-200">📌 심사관 기본 & 컷씬 미디어</span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <MediaDropBox
+                  label="대표 16:9 미디어"
+                  description="심사 무대 기본 비주얼"
+                  url={judge.avatarUrl}
+                  onUpdateUrl={(nextUrl) => onUpdate({ avatarUrl: nextUrl })}
+                />
+                <MediaDropBox
+                  label="🎉 승급 성공 16:9 미디어"
+                  description="심사 통과 성공 컷씬"
+                  url={judge.successMediaUrl}
+                  onUpdateUrl={(nextUrl) => onUpdate({ successMediaUrl: nextUrl })}
+                />
+                <MediaDropBox
+                  label="❌ 승급 실패 16:9 미디어"
+                  description="심사 탈락 실패 컷씬"
+                  url={judge.failMediaUrl}
+                  onUpdateUrl={(nextUrl) => onUpdate({ failMediaUrl: nextUrl })}
+                />
+              </div>
+            </div>
+
+            {/* 만족도 구간별 심사관 미디어 (저만족 0~29%, 중만족 30~79%, 고만족 80%↑) */}
+            <div className="rounded-2xl border border-amber-500/20 bg-amber-950/20 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-amber-300">
+                  💖 심사관 만족도 구간별 16:9 미디어 (실시간 반응 교체)
+                </span>
+                <span className="text-[10px] text-slate-400">
+                  미설정 시 기본 대표 16:9 미디어가 재생됩니다.
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <MediaDropBox
+                  label="🌟 A 영상 (고만족도 80% ↑)"
+                  description="심사관 만족도 80% 이상일 때 재생"
+                  url={judge.auditMedia?.A}
+                  onUpdateUrl={(nextUrl) =>
+                    onUpdate({
+                      auditMedia: {
+                        ...(judge.auditMedia || {}),
+                        A: nextUrl,
+                      },
+                    })
+                  }
+                />
+                <MediaDropBox
+                  label="⚡ B 영상 (중만족도 30~79%)"
+                  description="심사관 만족도 30~79%일 때 재생"
+                  url={judge.auditMedia?.B}
+                  onUpdateUrl={(nextUrl) =>
+                    onUpdate({
+                      auditMedia: {
+                        ...(judge.auditMedia || {}),
+                        B: nextUrl,
+                      },
+                    })
+                  }
+                />
+                <MediaDropBox
+                  label="💧 C 영상 (저만족도 0~29%)"
+                  description="심사관 만족도 0~29%일 때 재생"
+                  url={judge.auditMedia?.C}
+                  onUpdateUrl={(nextUrl) =>
+                    onUpdate({
+                      auditMedia: {
+                        ...(judge.auditMedia || {}),
+                        C: nextUrl,
+                      },
+                    })
+                  }
+                />
+              </div>
             </div>
           </div>
 

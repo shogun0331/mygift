@@ -543,7 +543,7 @@ function AuditEditorSection({
               </label>
 
               <label className="block text-[11px] font-semibold text-slate-400">
-                초상화 미디어 URL (선택)
+                초상화 미디어 URL (기본)
                 <input
                   type="text"
                   className={fieldClassName}
@@ -552,6 +552,60 @@ function AuditEditorSection({
                   onChange={(e) => updateJudge(idx, { avatarUrl: e.target.value })}
                 />
               </label>
+
+              <div className="grid grid-cols-3 gap-2">
+                <label className="block text-[10px] font-semibold text-amber-300">
+                  🌟 A 영상 (고만족 80%↑)
+                  <input
+                    type="text"
+                    className={fieldClassName}
+                    placeholder="/assets/judges/judge_1_high.mp4"
+                    value={judge.auditMedia?.A || ''}
+                    onChange={(e) =>
+                      updateJudge(idx, {
+                        auditMedia: {
+                          ...(judge.auditMedia || {}),
+                          A: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </label>
+                <label className="block text-[10px] font-semibold text-cyan-300">
+                  ⚡ B 영상 (중만족 30~79%)
+                  <input
+                    type="text"
+                    className={fieldClassName}
+                    placeholder="/assets/judges/judge_1_mid.mp4"
+                    value={judge.auditMedia?.B || ''}
+                    onChange={(e) =>
+                      updateJudge(idx, {
+                        auditMedia: {
+                          ...(judge.auditMedia || {}),
+                          B: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </label>
+                <label className="block text-[10px] font-semibold text-rose-300">
+                  💧 C 영상 (저만족 0~29%)
+                  <input
+                    type="text"
+                    className={fieldClassName}
+                    placeholder="/assets/judges/judge_1_low.mp4"
+                    value={judge.auditMedia?.C || ''}
+                    onChange={(e) =>
+                      updateJudge(idx, {
+                        auditMedia: {
+                          ...(judge.auditMedia || {}),
+                          C: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </label>
+              </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <label className="block text-[11px] font-semibold text-slate-400">

@@ -52,9 +52,32 @@ export type AuditJudgeConfig = {
   targetTier?: Exclude<StationTierId, 'black' | 'tiny'> | 'all'
   successMediaUrl?: string
   failMediaUrl?: string
+  /** 만족도 구간별 심사관 16:9 미디어 (A: 고만족 80%↑, B: 중만족 30~79%, C: 저만족 0~29%) */
+  auditMedia?: {
+    A?: string
+    B?: string
+    C?: string
+  }
   attackPower: number
   satisfactionMod: number
   description: string
+  descriptions?: Record<string, string>
+}
+
+export function getJudgeSatisfactionMediaUrl(judge?: AuditJudgeConfig | null, currentPct = 0): string {
+  if (!judge) return ''
+  const mediaObj = judge.auditMedia
+  if (currentPct >= 80) {
+    const aUrl = typeof mediaObj?.A === 'string' ? mediaObj.A : (mediaObj?.A as any)?.url
+    if (aUrl) return aUrl
+  } else if (currentPct >= 30) {
+    const bUrl = typeof mediaObj?.B === 'string' ? mediaObj.B : (mediaObj?.B as any)?.url
+    if (bUrl) return bUrl
+  } else {
+    const cUrl = typeof mediaObj?.C === 'string' ? mediaObj.C : (mediaObj?.C as any)?.url
+    if (cUrl) return cUrl
+  }
+  return judge.avatarUrl || ''
 }
 
 export type AuditStageSetting = {
@@ -712,6 +735,13 @@ function normalizeAuditConfig(
     const description = fixedInfo.descriptions.ko
     const descriptions = fixedInfo.descriptions
 
+    const auditMediaRaw = rowItem.auditMedia && typeof rowItem.auditMedia === 'object' ? (rowItem.auditMedia as Record<string, unknown>) : {}
+    const auditMedia = {
+      A: typeof auditMediaRaw.A === 'string' ? auditMediaRaw.A : '',
+      B: typeof auditMediaRaw.B === 'string' ? auditMediaRaw.B : '',
+      C: typeof auditMediaRaw.C === 'string' ? auditMediaRaw.C : '',
+    }
+
     return {
       id: typeof rowItem.id === 'string' && rowItem.id.trim() ? rowItem.id.trim() : `judge_${idx + 1}`,
       name,
@@ -720,6 +750,7 @@ function normalizeAuditConfig(
       targetTier,
       successMediaUrl: typeof rowItem.successMediaUrl === 'string' ? rowItem.successMediaUrl : '',
       failMediaUrl: typeof rowItem.failMediaUrl === 'string' ? rowItem.failMediaUrl : '',
+      auditMedia,
       attackPower: Math.max(0, Math.round(Number(rowItem.attackPower) || fallbackJudge.attackPower || 10)),
       satisfactionMod: Math.max(0.1, Number(rowItem.satisfactionMod) || fallbackJudge.satisfactionMod || 1.0),
       description,
