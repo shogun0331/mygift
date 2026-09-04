@@ -812,27 +812,7 @@ export function PromotionAuditModal({
             ) : null}
           </div>
 
-          <div className="relative grid grid-cols-4 gap-1.5 sm:gap-2 max-w-xl sm:max-w-2xl mx-auto">
-            {/* 👆 핑거 카드 선택 가이드 (카드 덱 정중앙 위치) */}
-            {showActionGuide && !showCinematicIntro && !session.isCompleted ? (
-              <div className="pointer-events-none absolute inset-0 z-[110] flex flex-col items-center justify-center">
-                <div className="flex flex-col items-center animate-[cardDeckTap_1.4s_ease-in-out_infinite]">
-                  {/* 카드를 클릭하라는 탭 안내 뱃지 */}
-                  <div className="mb-2 flex items-center gap-1.5 rounded-full border-2 border-amber-300 bg-slate-950/95 px-4 py-1.5 shadow-[0_0_30px_rgba(251,191,36,0.95)] backdrop-blur-md">
-                    <span className="text-xs sm:text-sm font-black text-amber-200 uppercase tracking-wider animate-pulse">
-                      👇 아래 카드 중 하나를 선택하세요!
-                    </span>
-                  </div>
-
-                  {/* 3D 핑거 클릭 손가락 아이콘 */}
-                  <div className="relative flex items-center justify-center">
-                    <span className="text-5xl sm:text-6xl drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] filter drop-shadow-[0_0_25px_rgba(251,191,36,1)]">
-                      👇
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ) : null}
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-2 max-w-xl sm:max-w-2xl mx-auto">
             {displayCreators.map((creator) => {
               const rawType = creator.statType || (creator as any).type || (creator as any).primaryStat || 'elegance'
               const cType: CreatorType =
