@@ -231,6 +231,7 @@ import type { GameEvent } from '../events/types'
 import { HighLowMinigame } from '../minigames/highlow/HighLowMinigame'
 import { loadHighLowConfig } from '../minigames/highlow/highLowStore'
 import { type HighLowRoomId } from '../minigames/highlow/highLowConfig'
+import { CasinoSlotMachine } from '../minigames/slot/CasinoSlotMachine'
 
 export type GameTab =
   | 'dashboard'
@@ -717,12 +718,11 @@ export function InGame({
     initialSave?.slotGearById ?? createSlotGearMapFromSlots(studioSlots),
   )
   const [weeklyStatement, setWeeklyStatement] = useState<WeeklyStatement | null>(null)
-  const [casinoTurnCount, setCasinoTurnCount] = useState(0) // 0..3 (3턴에 1번 활성화)
+  const [casinoTurnCount, setCasinoTurnCount] = useState(3) // 0..3 (3턴에 1번 활성화)
   const [showCasinoModal, setShowCasinoModal] = useState(false)
   const [activeCasinoRoomId, setActiveCasinoRoomId] = useState<HighLowRoomId | null>(null)
-  const [hoveredCasinoRoomId, setHoveredCasinoRoomId] = useState<HighLowRoomId>('legend')
 
-  const isCasinoAvailable = true || casinoTurnCount >= 0 // 테스트/확인 용도로 항상 활성화!
+  const isCasinoAvailable = casinoTurnCount >= 3
 
   const highLowConfigs = useMemo(() => loadHighLowConfig(), [])
   const [settlementAssetsAfter, setSettlementAssetsAfter] = useState(0)
@@ -4016,6 +4016,10 @@ export function InGame({
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-pink-600 text-white rounded-full animate-bounce shadow">
                     OPEN
                   </span>
+                ) : isCasino && !isCasinoAvailable ? (
+                  <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-slate-900 border border-amber-400/60 text-amber-400 rounded-full shadow">
+                    {Math.max(0, 3 - casinoTurnCount)}턴
+                  </span>
                 ) : alert ? (
                   <RedDot label={alertLabel} />
                 ) : null}
@@ -4027,207 +4031,25 @@ export function InGame({
       )}
 
       {/* -------------------------------------------------------------------- */}
-      {/* FULLSCREEN DUAL-STAGE VIP CASINO LOUNGE MODAL (GOLDEN LAS VEGAS 5.0)  */}
+      {/* 3x3 REEL SLOT MACHINE FULLSCREEN MODAL                              */}
       {/* -------------------------------------------------------------------- */}
       {showCasinoModal && (
-        <div className="fixed inset-0 z-[99990] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-6 animate-fade-in select-none">
-          {/* Whole Screen Golden Las Vegas Ambient Glow + Sparkling Dust Particles */}
+        <div className="fixed inset-0 z-[99990] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-2 sm:p-4 animate-fade-in select-none">
           <GoldenVegasLoungeBackground />
 
-          <div className="relative w-full max-w-6xl rounded-3xl bg-slate-950/95 border-2 border-amber-400/80 shadow-[0_0_90px_rgba(245,158,11,0.45),inset_0_0_30px_rgba(245,158,11,0.15)] flex flex-col overflow-hidden z-10 my-auto">
-            {/* Top Bar Header */}
-            <div className="flex shrink-0 items-center justify-between px-6 py-4 border-b border-amber-400/30 bg-slate-900/80 backdrop-blur-md">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 flex items-center justify-center text-slate-950 text-2xl font-black shadow-lg shadow-amber-500/50">
-                  ♠
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono font-bold tracking-widest text-amber-400 uppercase">
-                    ★ LAS VEGAS VIP HIGH-LOW CASINO CLUB ★
-                  </span>
-                  <h2 className="text-xl sm:text-2xl font-black tracking-wider bg-gradient-to-r from-yellow-100 via-amber-300 via-yellow-400 to-amber-200 bg-clip-text text-transparent mt-0.5 drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]">
-                    VIP CASINO LOUNGE
-                  </h2>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 border border-amber-400/40 font-mono text-xs shadow-[0_0_12px_rgba(245,158,11,0.2)]">
-                  <span className="text-amber-400 font-bold">MY ASSETS:</span>
-                  <span className="text-amber-300 font-black text-sm">
-                    ${assets.toLocaleString()}
-                  </span>
-                </div>
-
-                <button
-                  onClick={() => setShowCasinoModal(false)}
-                  className="px-4 py-2 rounded-xl border border-amber-400/60 bg-slate-900/90 text-xs font-bold text-amber-200 hover:text-white hover:border-amber-300 hover:shadow-[0_0_20px_rgba(245,158,11,0.6)] transition-all z-10"
-                >
-                  ✕ EXIT
-                </button>
-              </div>
-            </div>
-
-            {/* Dual Stage Content Area (Zero Scrollbar, Fully Expanded) */}
-            <div className="grid grid-cols-1 lg:grid-cols-[310px_1fr] gap-6 p-6 sm:p-7 overflow-hidden">
-              {/* LEFT STAGE: Live Dealer Showcase Window (40%) */}
-              {(() => {
-                const conf = highLowConfigs[hoveredCasinoRoomId]
-
-                return (
-                  <div className="flex flex-col justify-between p-5 rounded-2xl border border-amber-400/40 bg-slate-900/80 backdrop-blur-md relative overflow-hidden group shadow-xl">
-                    <div className="space-y-3.5">
-                      {/* Live Dealer Media Window */}
-                      <div className="relative w-full h-48 sm:h-52 rounded-xl overflow-hidden border-2 border-amber-400/50 bg-slate-950 shadow-inner group-hover:border-amber-300 transition-all duration-300">
-                        {conf.dealerMediaUrl ? (
-                          conf.dealerMediaType === 'video' ? (
-                            <video
-                              src={conf.dealerMediaUrl}
-                              autoPlay
-                              loop
-                              muted
-                              playsInline
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <img
-                              src={conf.dealerMediaUrl}
-                              alt={conf.dealerName}
-                              className="w-full h-full object-cover"
-                            />
-                          )
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 text-slate-400 font-mono">
-                            <div className="w-16 h-16 rounded-full border-2 border-amber-400/60 p-1 mb-1 bg-slate-900 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                              <span className="text-3xl">🎩</span>
-                            </div>
-                            <span className="text-sm font-black text-amber-300 uppercase tracking-widest">
-                              {conf.dealerName}
-                            </span>
-                            <span className="text-[10px] text-amber-400/80 font-bold mt-0.5">
-                              {conf.dealerTitle}
-                            </span>
-                          </div>
-                        )}
-
-                        <div className="absolute inset-x-0 bottom-0 p-2.5 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent flex items-center justify-between">
-                          <div>
-                            <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase text-slate-950 bg-amber-400">
-                              {conf.dealerTitle}
-                            </span>
-                            <h4 className="text-sm sm:text-base font-black text-slate-100 mt-0.5">
-                              {conf.dealerName}
-                            </h4>
-                          </div>
-                          <span className="text-xs font-mono font-bold text-amber-300 bg-slate-900/90 px-2.5 py-1 rounded-full border border-amber-400/50 shadow-[0_0_10px_rgba(245,158,11,0.3)]">
-                            ANTE ${conf.ante.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Dealer Greeting Box */}
-                      <div className="p-3.5 rounded-xl bg-slate-950/90 border border-amber-400/30 text-xs font-mono">
-                        <p className="text-slate-300 leading-relaxed italic">
-                          "{conf.name}에 오신 것을 환영합니다! 딜러 카드보다 높은(HIGH) 또는 낮은(LOW) 카드를 선택하세요."
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Room Chips Info (Connected to Main In-Game Assets) */}
-                    <div className="pt-3 mt-2 border-t border-amber-400/30 space-y-2.5 font-mono text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wider">STATION ASSETS BALANCE</span>
-                        <span className="text-base font-black text-amber-300">${assets.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })()}
-
-              {/* RIGHT STAGE: Tight Compact Cards (No Wide Spacing) */}
-              <div className="flex flex-col justify-start space-y-3 sm:space-y-3.5">
-                {(['local', 'star', 'legend'] as HighLowRoomId[]).map((roomId) => {
-                  const conf = highLowConfigs[roomId]
-                  const isHovered = hoveredCasinoRoomId === roomId
-
-                  const cardStyleMap = {
-                    local: {
-                      accent: 'border-cyan-500/50 hover:border-cyan-400 bg-gradient-to-r from-cyan-950/40 to-slate-900/80',
-                      badge: 'bg-cyan-600',
-                      anteColor: 'text-cyan-400',
-                      icon: '🎲',
-                    },
-                    star: {
-                      accent: 'border-purple-500/50 hover:border-purple-400 bg-gradient-to-r from-purple-950/40 to-slate-900/80',
-                      badge: 'bg-purple-600',
-                      anteColor: 'text-purple-400',
-                      icon: '⭐',
-                    },
-                    legend: {
-                      accent: 'border-amber-400/80 hover:border-yellow-300 bg-gradient-to-r from-amber-950/60 to-slate-900/90 shadow-[0_0_30px_rgba(245,158,11,0.35)]',
-                      badge: 'bg-amber-500 text-slate-950 font-black',
-                      anteColor: 'text-amber-300',
-                      icon: '👑',
-                    },
-                  }[roomId]
-
-                  return (
-                    <div
-                      key={roomId}
-                      onMouseEnter={() => setHoveredCasinoRoomId(roomId)}
-                      onClick={() => {
-                        setShowCasinoModal(false)
-                        setActiveCasinoRoomId(roomId)
-                        setCasinoTurnCount(0)
-                      }}
-                      className={`relative flex items-center justify-between p-4.5 sm:p-5 rounded-2xl border-2 ${cardStyleMap.accent} ${
-                        isHovered
-                          ? 'ring-2 ring-amber-400 border-amber-300 scale-[1.015] shadow-[0_0_35px_rgba(245,158,11,0.4)]'
-                          : 'opacity-90 hover:opacity-100'
-                      } transition-all duration-300 cursor-pointer group select-none`}
-                    >
-                      {/* Left: Icon & Room Info */}
-                      <div className="flex items-center gap-4 min-w-0 flex-1">
-                        <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-slate-950 border border-amber-400/40 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform shadow-md">
-                          {cardStyleMap.icon}
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase text-white ${cardStyleMap.badge}`}>
-                              {conf.dealerTitle}
-                            </span>
-                            <span className="text-xs font-mono text-slate-400 truncate">
-                              DEALER: <span className="text-amber-200 font-bold">{conf.dealerName}</span>
-                            </span>
-                          </div>
-
-                          <h3 className="text-base sm:text-lg font-black text-slate-100 group-hover:text-amber-300 transition-colors truncate">
-                            {conf.name}
-                          </h3>
-                          <p className="text-xs text-slate-400 truncate mt-0.5">{conf.subtitle}</p>
-                        </div>
-                      </div>
-
-                      {/* Right: Ante Bet Info & Luxury ENTER Badge (No Separate Button) */}
-                      <div className="flex items-center gap-5 shrink-0 pl-5 border-l border-amber-400/30">
-                        <div className="text-right font-mono">
-                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ANTE BET</p>
-                          <p className={`text-base sm:text-lg font-black ${cardStyleMap.anteColor}`}>
-                            ${conf.ante.toLocaleString()}
-                          </p>
-                        </div>
-
-                        <div className="px-4 py-2.5 rounded-xl bg-amber-400/20 group-hover:bg-amber-400 border border-amber-400/60 group-hover:border-amber-300 text-amber-300 group-hover:text-slate-950 transition-all font-black text-xs sm:text-sm tracking-wider flex items-center gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                          <span>입장</span>
-                          <span>➔</span>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
+          <div className="relative w-full max-w-5xl h-[92vh] max-h-[850px] rounded-3xl bg-slate-950/95 border-2 border-amber-400/80 shadow-[0_0_90px_rgba(245,158,11,0.45),inset_0_0_30px_rgba(245,158,11,0.15)] flex flex-col overflow-hidden z-10 my-auto">
+            <CasinoSlotMachine
+              stationGrade={stationGradeRef.current}
+              userAssets={assets}
+              onUpdateAssets={(newAssets) => {
+                assetsRef.current = newAssets
+                setAssets(newAssets)
+              }}
+              onClose={() => {
+                setShowCasinoModal(false)
+                setCasinoTurnCount(0)
+              }}
+            />
           </div>
         </div>
       )}
