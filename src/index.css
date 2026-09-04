@@ -4669,12 +4669,12 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 /* Keyframe Animations */
 @keyframes pachislot-reel-spin {
   0% { transform: translateY(0); }
-  100% { transform: translateY(-240px); }
+  100% { transform: translateY(-210px); }
 }
 
 @keyframes pachislot-reel-land {
   0% {
-    transform: translateY(calc(var(--reel-land, 0px) + 50px));
+    transform: translateY(calc(var(--reel-land, 0px) + 70px));
     filter: blur(1px);
   }
   100% {
