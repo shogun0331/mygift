@@ -6,6 +6,7 @@ import {
   getBetAmountByGrade,
   getRandomSlotSymbol,
   generateRandomSlotGrid,
+  generateSmartSlotGrid,
   evaluateSlotSpin,
   type SlotSymbolId,
   type SlotSpinResult,
@@ -128,7 +129,7 @@ export function CasinoSlotMachine({
     setTimeout(() => setIsLeverPulled(false), 500)
 
     // 최종 타겟 그리드 & 평가 생성
-    const targetGrid = generateRandomSlotGrid()
+    const targetGrid = generateSmartSlotGrid()
     const result = evaluateSlotSpin(targetGrid, baseReward)
 
     setLastResult(null)

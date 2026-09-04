@@ -21,7 +21,7 @@ export type SlotSymbolDef = {
   isWild?: boolean
 }
 
-export const SLOT_SYMBOLS: Record<SlotSymbolId, SlotSymbolDef> = {
+export const DEFAULT_SLOT_SYMBOLS: Record<SlotSymbolId, SlotSymbolDef> = {
   cherry: { id: 'cherry', name: '체리', icon: '🍒', multiplier: 2, weight: 28 },
   lemon: { id: 'lemon', name: '레몬', icon: '🍋', multiplier: 3, weight: 24 },
   grape: { id: 'grape', name: '포도', icon: '🍇', multiplier: 4, weight: 20 },
@@ -33,10 +33,11 @@ export const SLOT_SYMBOLS: Record<SlotSymbolId, SlotSymbolDef> = {
   wild: { id: 'wild', name: '와일드', icon: '🃏', multiplier: 15, weight: 3, isWild: true },
 }
 
-export const SLOT_SYMBOL_KEYS: SlotSymbolId[] = Object.keys(SLOT_SYMBOLS) as SlotSymbolId[]
+export const SLOT_SYMBOLS = DEFAULT_SLOT_SYMBOLS
+export const SLOT_SYMBOL_KEYS: SlotSymbolId[] = Object.keys(DEFAULT_SLOT_SYMBOLS) as SlotSymbolId[]
 
 /** 방송국 등급별 스핀당 베팅금액 매핑 */
-export const STATION_BET_AMOUNTS: Record<StationGrade, number> = {
+export const DEFAULT_STATION_BET_AMOUNTS: Record<StationGrade, number> = {
   black: 100,
   tiny: 500,
   sme: 2_000,
@@ -45,12 +46,71 @@ export const STATION_BET_AMOUNTS: Record<StationGrade, number> = {
   top: 200_000,
 }
 
-export function getBetAmountByGrade(grade?: StationGrade | null): number {
-  if (!grade || !(grade in STATION_BET_AMOUNTS)) return STATION_BET_AMOUNTS.sme
-  return STATION_BET_AMOUNTS[grade]
+export const STATION_BET_AMOUNTS = DEFAULT_STATION_BET_AMOUNTS
+
+export type SlotMachineConfig = {
+  winRate: number // 기본 당첨 확률 (%) - 기본 45% (기존엔 ~12%)
+  bigWinShare: number // 당첨 중 빅윈(3라인이상/고배율) 당첨 비중 (%)
+  scatterShare: number // 당첨 중 스캐터 3개(프리스핀) 당첨 비중 (%)
+  jackpotShare: number // 당첨 중 3x3 올잭팟 당첨 비중 (%)
+  symbols: Record<SlotSymbolId, SlotSymbolDef>
+  stationBetAmounts: Record<StationGrade, number>
 }
 
-/** 5개 페이라인 조합 (3x3 grid: [row][col]) */
+export const DEFAULT_SLOT_CONFIG: SlotMachineConfig = {
+  winRate: 45, // 기존 ~12%에서 45%로 당첨 확률 대폭 향상!
+  bigWinShare: 25,
+  scatterShare: 10,
+  jackpotShare: 5,
+  symbols: { ...DEFAULT_SLOT_SYMBOLS },
+  stationBetAmounts: { ...DEFAULT_STATION_BET_AMOUNTS },
+}
+
+const STORAGE_KEY = 'broadcast_slot_machine_config'
+
+export function loadSlotConfig(): SlotMachineConfig {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return DEFAULT_SLOT_CONFIG
+    const parsed = JSON.parse(raw) as Partial<SlotMachineConfig>
+    return {
+      winRate: typeof parsed.winRate === 'number' ? parsed.winRate : DEFAULT_SLOT_CONFIG.winRate,
+      bigWinShare: typeof parsed.bigWinShare === 'number' ? parsed.bigWinShare : DEFAULT_SLOT_CONFIG.bigWinShare,
+      scatterShare: typeof parsed.scatterShare === 'number' ? parsed.scatterShare : DEFAULT_SLOT_CONFIG.scatterShare,
+      jackpotShare: typeof parsed.jackpotShare === 'number' ? parsed.jackpotShare : DEFAULT_SLOT_CONFIG.jackpotShare,
+      symbols: { ...DEFAULT_SLOT_CONFIG.symbols, ...(parsed.symbols ?? {}) },
+      stationBetAmounts: { ...DEFAULT_SLOT_CONFIG.stationBetAmounts, ...(parsed.stationBetAmounts ?? {}) },
+    }
+  } catch (e) {
+    console.error('Failed to load slot config:', e)
+    return DEFAULT_SLOT_CONFIG
+  }
+}
+
+export function saveSlotConfig(config: SlotMachineConfig): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
+  } catch (e) {
+    console.error('Failed to save slot config:', e)
+  }
+}
+
+export function resetSlotConfig(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch (e) {
+    console.error('Failed to reset slot config:', e)
+  }
+}
+
+export function getBetAmountByGrade(grade?: StationGrade | null, config?: SlotMachineConfig): number {
+  const conf = config ?? loadSlotConfig()
+  const bets = conf.stationBetAmounts ?? DEFAULT_STATION_BET_AMOUNTS
+  if (!grade || !(grade in bets)) return bets.sme ?? 2_000
+  return bets[grade]
+}
+
+/** 8개 페이라인 조합 (3x3 grid: [row][col]) */
 export type PaylineDef = {
   id: number
   name: string
@@ -161,35 +221,114 @@ export type SlotSpinResult = {
 }
 
 /** 가중치 기반 무작위 심볼 뽑기 */
-export function getRandomSlotSymbol(): SlotSymbolId {
+export function getRandomSlotSymbol(config?: SlotMachineConfig): SlotSymbolId {
+  const conf = config ?? loadSlotConfig()
+  const symbols = conf.symbols ?? DEFAULT_SLOT_SYMBOLS
   const totalWeight = SLOT_SYMBOL_KEYS.reduce(
-    (sum, key) => sum + SLOT_SYMBOLS[key].weight,
+    (sum, key) => sum + (symbols[key]?.weight ?? 10),
     0,
   )
   let rand = Math.random() * totalWeight
   for (const key of SLOT_SYMBOL_KEYS) {
-    const sym = SLOT_SYMBOLS[key]
-    if (rand < sym.weight) return key
-    rand -= sym.weight
+    const w = symbols[key]?.weight ?? 10
+    if (rand < w) return key
+    rand -= w
   }
   return 'cherry'
 }
 
 /** 3x3 무작위 릴 그리드 생성 */
-export function generateRandomSlotGrid(): SlotSymbolId[][] {
+export function generateRandomSlotGrid(config?: SlotMachineConfig): SlotSymbolId[][] {
   return [
-    [getRandomSlotSymbol(), getRandomSlotSymbol(), getRandomSlotSymbol()],
-    [getRandomSlotSymbol(), getRandomSlotSymbol(), getRandomSlotSymbol()],
-    [getRandomSlotSymbol(), getRandomSlotSymbol(), getRandomSlotSymbol()],
+    [getRandomSlotSymbol(config), getRandomSlotSymbol(config), getRandomSlotSymbol(config)],
+    [getRandomSlotSymbol(config), getRandomSlotSymbol(config), getRandomSlotSymbol(config)],
+    [getRandomSlotSymbol(config), getRandomSlotSymbol(config), getRandomSlotSymbol(config)],
   ]
 }
 
+/** 확률 조작 반영 Smart Slot Grid 생성기 */
+export function generateSmartSlotGrid(config?: SlotMachineConfig): SlotSymbolId[][] {
+  const conf = config ?? loadSlotConfig()
+  const isWinRoll = Math.random() * 100 < conf.winRate
+
+  if (!isWinRoll) {
+    // 꽝 (Loss Roll): 당첨금이 0이 되는 그리드 생성
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      const grid = generateRandomSlotGrid(conf)
+      const res = evaluateSlotSpin(grid, 100, conf)
+      if (res.totalWinAmount === 0) return grid
+    }
+    const grid = generateRandomSlotGrid(conf)
+    grid[1][1] = grid[1][1] === 'cherry' ? 'lemon' : 'cherry'
+    return grid
+  }
+
+  // 당첨 (Win Roll): 세부 당첨 유형 선택 (Jackpot, Scatter, BigWin, NormalWin)
+  const rollWin = Math.random() * 100
+  const jShare = conf.jackpotShare
+  const sShare = conf.scatterShare
+  const bShare = conf.bigWinShare
+
+  if (rollWin < jShare) {
+    // 👑 잭팟 (3x3 올 세븐/와일드)
+    const jackSym: SlotSymbolId = Math.random() < 0.5 ? 'seven' : 'wild'
+    return [
+      [jackSym, jackSym, jackSym],
+      [jackSym, jackSym, jackSym],
+      [jackSym, jackSym, jackSym],
+    ]
+  }
+
+  if (rollWin < jShare + sShare) {
+    // 🎰 스캐터 프리스핀 (3개 🎰 스캐터 배치)
+    const grid = generateRandomSlotGrid(conf)
+    const allPositions: [number, number][] = [
+      [0, 0], [0, 1], [0, 2],
+      [1, 0], [1, 1], [1, 2],
+      [2, 0], [2, 1], [2, 2],
+    ]
+    const shuffled = [...allPositions].sort(() => Math.random() - 0.5)
+    for (let i = 0; i < 3; i += 1) {
+      const pos = shuffled[i]
+      if (pos) {
+        grid[pos[0]][pos[1]] = 'scatter'
+      }
+    }
+    return grid
+  }
+
+  if (rollWin < jShare + sShare + bShare) {
+    // ⭐ 빅 윈 (다중 라인/고배율)
+    const bigSymbols: SlotSymbolId[] = ['seven', 'diamond', 'star', 'wild']
+    const pickSym = bigSymbols[Math.floor(Math.random() * bigSymbols.length)] ?? 'seven'
+    const grid = generateRandomSlotGrid(conf)
+    grid[0] = [pickSym, pickSym, pickSym]
+    grid[1] = [pickSym, pickSym, pickSym]
+    return grid
+  }
+
+  // 🍒 일반 당첨 (1개 라인 3개 심볼 매칭)
+  const normalSymbols: SlotSymbolId[] = ['cherry', 'lemon', 'grape', 'bell', 'star', 'wild']
+  const pickSym = normalSymbols[Math.floor(Math.random() * normalSymbols.length)] ?? 'cherry'
+  const grid = generateRandomSlotGrid(conf)
+  const targetLineIdx = Math.floor(Math.random() * 3)
+  grid[targetLineIdx] = [pickSym, pickSym, pickSym]
+
+  return grid
+}
+
 /** 3x3 릴 그리드 당첨 판정 함수 */
-export function evaluateSlotSpin(grid: SlotSymbolId[][], betAmount: number): SlotSpinResult {
+export function evaluateSlotSpin(
+  grid: SlotSymbolId[][],
+  betAmount: number,
+  config?: SlotMachineConfig,
+): SlotSpinResult {
+  const conf = config ?? loadSlotConfig()
+  const symbols = conf.symbols ?? DEFAULT_SLOT_SYMBOLS
   const winningLines: WinningLine[] = []
   let totalWin = 0
 
-  // 1. 5개 페이라인 판정
+  // 1. 8개 페이라인 판정
   for (const line of PAYLINES) {
     const [c0, c1, c2] = line.coords
     const sym0 = grid[c0[0]][c0[1]]
@@ -199,23 +338,21 @@ export function evaluateSlotSpin(grid: SlotSymbolId[][], betAmount: number): Slo
     // 스캐터는 페이라인 계산에서 제외
     if (sym0 === 'scatter' || sym1 === 'scatter' || sym2 === 'scatter') continue
 
-    // 3개 심볼 매칭 여부 (Wild 조커 대체 포함)
-    const symbols = [sym0, sym1, sym2]
-    const nonWilds = symbols.filter((s) => s !== 'wild')
+    const syms = [sym0, sym1, sym2]
+    const nonWilds = syms.filter((s) => s !== 'wild')
 
     let matchedSymbolId: SlotSymbolId | null = null
-    let isWildInvolved = symbols.includes('wild')
+    let isWildInvolved = syms.includes('wild')
 
     if (nonWilds.length === 0) {
-      // 3개 모두 Wild
-      matchedSymbolId = 'seven' // 최고 배율 적용
+      matchedSymbolId = 'seven'
     } else if (nonWilds.every((s) => s === nonWilds[0])) {
       matchedSymbolId = nonWilds[0]
     }
 
     if (matchedSymbolId) {
-      const def = SLOT_SYMBOLS[matchedSymbolId]
-      const payout = Math.round(betAmount * def.multiplier)
+      const def = symbols[matchedSymbolId] ?? DEFAULT_SLOT_SYMBOLS[matchedSymbolId]
+      const payout = Math.round(betAmount * (def?.multiplier ?? 2))
       winningLines.push({
         payline: line,
         matchedSymbol: def,
@@ -234,8 +371,9 @@ export function evaluateSlotSpin(grid: SlotSymbolId[][], betAmount: number): Slo
     }
   }
 
+  const scatterDef = symbols.scatter ?? DEFAULT_SLOT_SYMBOLS.scatter
   const isScatterWon = scatterCount >= 3
-  const scatterPayout = isScatterWon ? Math.round(betAmount * SLOT_SYMBOLS.scatter.multiplier) : 0
+  const scatterPayout = isScatterWon ? Math.round(betAmount * (scatterDef.multiplier ?? 10)) : 0
   const freeSpinsAwarded = isScatterWon ? 3 : 0
   if (scatterPayout > 0) totalWin += scatterPayout
 

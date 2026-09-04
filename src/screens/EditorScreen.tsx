@@ -37,11 +37,23 @@ import { AuditEditorPanel } from './AuditEditorPanel'
 import { StaffEditorPanel } from './StaffEditorPanel'
 import { StationGradeEditorPanel } from './StationGradeEditorPanel'
 import { HighLowEditorPanel } from '../minigames/highlow/HighLowEditorPanel'
+import { SlotEditorPanel } from '../minigames/slot/SlotEditorPanel'
 import { BgmEditorPanel } from './BgmEditorPanel'
 import { useGameBgm, type BgmTrack, type GameBgmConfig } from '../game/bgm'
 import { setMosaicStrength, useMosaicStrength } from '../game/visualFx'
 
-type EditorTab = 'character' | 'notification' | 'event' | 'commonEvent' | 'stationGrade' | 'staff' | 'audit' | 'shortsVn' | 'highlow' | 'bgm'
+type EditorTab =
+  | 'character'
+  | 'notification'
+  | 'event'
+  | 'commonEvent'
+  | 'stationGrade'
+  | 'staff'
+  | 'audit'
+  | 'shortsVn'
+  | 'highlow'
+  | 'slot'
+  | 'bgm'
 type CharacterView = 'list' | 'add' | 'edit' | 'sns' | 'specialVacation'
 
 type EditorScreenProps = {
@@ -270,6 +282,15 @@ export function EditorScreen({
             }`}
           >
             ♠ VIP 하이-로우
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('slot')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'slot' ? 'is-active' : ''
+            }`}
+          >
+            🎰 카지노 슬롯
           </button>
           <MosaicStrengthSlider />
         </aside>
@@ -528,6 +549,8 @@ export function EditorScreen({
             />
           ) : tab === 'highlow' ? (
             <HighLowEditorPanel />
+          ) : tab === 'slot' ? (
+            <SlotEditorPanel />
           ) : tab === 'bgm' ? (
             <BgmEditorPanel
               config={bgmConfig}

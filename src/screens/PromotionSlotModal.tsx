@@ -6,6 +6,7 @@ import { formatMoneySigned } from '../game/money'
 import { playSfx, stopSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
 import { getPromotionDialogueText, getPromotionVoiceUrl } from '../game/promotionLines'
+import { getGradeBadgeStyle } from './DashboardPanel'
 
 const REEL_META: Record<CreatorStatType, { labelKey: string; tone: string }> = {
   sexy: { labelKey: 'creator.statSexy', tone: 'sexy' },
@@ -194,14 +195,22 @@ export function PromotionSlotModal({
                       </div>
                     </div>
 
-                    {/* Grade Badge Transformation (C급 ➔ B급) */}
-                    <div className="flex items-center gap-2 mt-2 font-mono">
-                      <span className="px-3 py-0.5 rounded-lg bg-slate-950 border border-slate-700 text-slate-400 font-extrabold text-xs">
-                        {result.fromGrade}급
+                    {/* Grade Badge Transformation (C ➔ B) */}
+                    <div className="flex items-center gap-3 mt-3 font-mono select-none">
+                      <span
+                        className={`rounded-md border px-2.5 py-0.5 text-xs sm:text-sm font-black italic tracking-widest ${getGradeBadgeStyle(
+                          result.fromGrade,
+                        )} opacity-80`}
+                      >
+                        {result.fromGrade}
                       </span>
-                      <span className="text-amber-400 font-black text-sm animate-pulse">➔</span>
-                      <span className="px-4 py-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-slate-950 font-black text-sm sm:text-base shadow-[0_0_20px_rgba(250,204,21,0.9)] animate-bounce">
-                        {result.toGrade}급
+                      <span className="text-amber-400 font-black text-sm sm:text-base animate-pulse">➔</span>
+                      <span
+                        className={`rounded-lg border px-3.5 py-1 text-sm sm:text-base font-black italic tracking-widest ${getGradeBadgeStyle(
+                          result.toGrade,
+                        )} shadow-[0_0_25px_rgba(250,204,21,0.9)] animate-bounce`}
+                      >
+                        {result.toGrade}
                       </span>
                     </div>
                   </div>

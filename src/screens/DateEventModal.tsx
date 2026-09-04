@@ -93,6 +93,11 @@ export function DateResultModal({
         <p className="mt-3 text-sm leading-relaxed text-slate-300">
           {t('date.resultBody').replace('{name}', pending.creatorName)}
         </p>
+        {pending.step === 'h' && (
+          <div className="mt-3 rounded-xl border border-emerald-400/30 bg-emerald-950/40 p-3 text-center">
+            <p className="text-xs font-bold text-emerald-300">💖 체력 & 컨디션 100% 풀 회복!</p>
+          </div>
+        )}
         <div className="mt-5 flex justify-center">
           <button
             type="button"

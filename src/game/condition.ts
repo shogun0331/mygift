@@ -512,6 +512,17 @@ export function applyVitalsDelta<T extends StaminaConditionState>(
   )
 }
 
+/** H 씬 보상 — 체력과 컨디션을 100(최대)으로 풀 회복 */
+export function applyFullVitalsRecovery<T extends StaminaConditionState>(creator: T): T {
+  const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
+  return withVitals(
+    creator,
+    100,
+    staminaMax,
+    0,
+  )
+}
+
 /** @deprecated applyVacationRecovery / applyConditionCare */
 export function applySpaRecovery<T extends StaminaConditionState>(creator: T): T {
   return applyVacationRecovery(creator)

@@ -35,6 +35,7 @@
       "h": "a3",
       "date1": "a",
       "date2": "a1",
+      "endingVn": null,
       "scoutAccept": null,
       "scoutFail": null
     },
@@ -44,7 +45,7 @@
     "characterIllustrationId": "1787982369291-euwbqyb",
     "profileImageId": "1787982369291-euwbqyb",
     "profileVideoId": null,
-    "mediaRevision": 1788436754113,
+    "mediaRevision": 1788499053556,
     "images": [
       {
         "id": "1787982369291-euwbqyb",
@@ -981,6 +982,7 @@
       "h": "56bf3ee3-f51b-4dc7-9dde-6c4ee5f76601",
       "date1": "527c3f8b-f496-4c25-9fd1-91096ec45330",
       "date2": "a234616f-b272-4c51-94ae-ff079b5e37c7",
+      "endingVn": null,
       "scoutAccept": null,
       "scoutFail": null
     },
@@ -1926,7 +1928,8 @@
       "vip": "97e7ca57-0eed-4003-885f-c42df134b577",
       "h": "ab9b304b-a998-47b0-95b3-99bed4369624",
       "date1": "ec8564e5-caab-4f3a-bd26-62ebe2e2df34",
-      "date2": "9e811e32-fbde-4478-a0de-4e6ac4e3f8fd"
+      "date2": "9e811e32-fbde-4478-a0de-4e6ac4e3f8fd",
+      "endingVn": null
     },
     "avatarTone": "from-rose-400 to-amber-300",
     "profileImageUrl": "media://characters/1786849140255-p0lxz2i/images/1787982469617-m9tq17b__asset.webp",
@@ -2805,7 +2808,8 @@
       "vip": "af889669-9929-4000-84fa-10ebd9ac3cf1",
       "h": "6e1395b9-83ad-452c-a4d6-3a78b9c95fab",
       "date1": "2f849f77-ce82-4aa3-889f-94d1b2fad381",
-      "date2": "e80cb0f4-8839-45a6-97ca-42f2ed18c988"
+      "date2": "e80cb0f4-8839-45a6-97ca-42f2ed18c988",
+      "endingVn": null
     },
     "avatarTone": "from-orange-300 to-rose-400",
     "profileImageUrl": "media://characters/1786850998437-g6olmc9/images/1787982488665-no2ynqd__asset.webp",
@@ -3693,7 +3697,8 @@
       "vip": "c8d535db-c786-48d0-8b9c-0a24ae64de40",
       "h": "c64be57a-0bee-4ab4-a2c6-49a46f72e231",
       "date1": "932322e9-444a-4498-a767-c26cab3ed63d",
-      "date2": "e1afa3bc-051c-49d7-890d-52556e97ef5e"
+      "date2": "e1afa3bc-051c-49d7-890d-52556e97ef5e",
+      "endingVn": null
     },
     "avatarTone": "from-emerald-300 to-cyan-400",
     "profileImageUrl": "media://characters/1786851057540-5sup19s/images/1787982515769-uje63zv__asset.webp",
@@ -4581,7 +4586,8 @@
       "vip": "db1eff8f-cb31-4d33-b438-464c29dc21fa",
       "h": "89ab7df5-6c22-43bb-83d3-0d4df5d67843",
       "date1": "d52a372b-52cc-445e-b192-ec7e38458ce5",
-      "date2": "55a714c6-13aa-41bf-a4f4-a511956c6079"
+      "date2": "55a714c6-13aa-41bf-a4f4-a511956c6079",
+      "endingVn": null
     },
     "avatarTone": "from-emerald-300 to-cyan-400",
     "profileImageUrl": "media://characters/1786851109772-o2n3dj3/images/1787982543675-lh3vdtj__asset.webp",
@@ -5397,7 +5403,8 @@
       "vip": "a8386efa-e345-49e7-a853-d90019a208d9",
       "h": "e3ee8c28-6440-4f9b-8ead-3a76db761d65",
       "date1": "66eace05-3678-4976-aebf-ee86b096de74",
-      "date2": "00848db6-5fb0-44ca-ab30-787e4f14c14d"
+      "date2": "00848db6-5fb0-44ca-ab30-787e4f14c14d",
+      "endingVn": null
     },
     "avatarTone": "from-violet-300 to-pink-400",
     "profileImageUrl": "media://characters/1786851153987-tb6qhg5/images/1787982563132-02ifwpr__asset.webp",
@@ -6294,7 +6301,8 @@
       "vip": "b55d4260-8b00-467e-a696-301888eeb32c",
       "h": "3f011019-f38b-4731-8cc2-4608bc293759",
       "date1": "d5b67b9f-773d-40d5-b020-de06ce45e6cb",
-      "date2": "8b86e5ed-00e4-44d9-b30f-beaca82e14f0"
+      "date2": "8b86e5ed-00e4-44d9-b30f-beaca82e14f0",
+      "endingVn": null
     },
     "avatarTone": "from-orange-300 to-rose-400",
     "profileImageUrl": "media://characters/1786851211019-59swl59/images/1787982585733-jxb2shc__asset.webp",
@@ -7110,7 +7118,8 @@
       "vip": "7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d",
       "h": "01ddccbe-96f1-4e86-8359-a19eeac314a9",
       "date1": "b3dd121c-2f6c-4a20-9245-01cfcf2ef89d",
-      "date2": "c169302b-ef86-4c50-9681-4c914194646d"
+      "date2": "c169302b-ef86-4c50-9681-4c914194646d",
+      "endingVn": null
     },
     "avatarTone": "from-fuchsia-300 to-violet-400",
     "profileImageUrl": "media://characters/1786851291899-dqn64g6/images/1787982616017-xwm18tz__asset.webp",

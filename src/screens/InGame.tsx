@@ -77,6 +77,7 @@ import {
 } from '../game/broadcast'
 import {
   applyConditionFullCare,
+  applyFullVitalsRecovery,
   applyVitalsDelta,
   applyToxicStaminaPenalty,
   applyWeeklyStaminaAndCondition,
@@ -210,7 +211,6 @@ import {
   advanceAndPickSocialEvent,
   createSocialSpawnState,
   dateArcAfter,
-  H_RETRY_BY_GRADE,
   rollRejectConditionLoss,
   type DatePending,
   type HRetryPending,
@@ -226,6 +226,7 @@ import { VipOfferModal } from './VipOfferModal'
 import { VipResultModal, type VipResult } from './VipResultModal'
 import { ShortsVnPlayer } from './ShortsVnPlayer'
 import { SpecialVacationPlayer } from './SpecialVacationPlayer'
+import { ProposalShortsPlayer } from './ProposalShortsPlayer'
 import { WeeklySettlementModal } from './WeeklySettlementModal'
 import { EventSimulator } from '../events/EventSimulator'
 import type { GameEvent } from '../events/types'
@@ -862,7 +863,7 @@ export function InGame({
     | {
         mode: 'hRetryShorts'
         pending: HRetryPending
-        event: GameEvent
+        event?: GameEvent | null
         staminaLoss: number
         beats: ShortsVnBeat[]
       }
@@ -875,6 +876,9 @@ export function InGame({
       }
   const [socialUi, setSocialUi] = useState<SocialUi | null>(null)
   const [showGameClear, setShowGameClear] = useState(false)
+  const [endingEventPlay, setEndingEventPlay] = useState<GameEvent | null>(null)
+  const [proposalPlayCreator, setProposalPlayCreator] = useState<OwnedCreator | null>(null)
+  const [proposalEndingVnEvent, setProposalEndingVnEvent] = useState<GameEvent | null>(null)
 
   // 스카웃 VN 이벤트 진행
   type ScoutEventState = {
@@ -2836,6 +2840,71 @@ export function InGame({
     return reward
   }
 
+  function checkProposalEvent(openScout: boolean): boolean {
+    if (leagueRef.current.currentRank !== 1) return false
+
+    const allEligible = ownedCreatorsRef.current.filter((c) => (c.dateArcStep ?? 0) >= 3)
+    if (allEligible.length === 0) return false
+
+    let pendingCreators = allEligible.filter((c) => !c.proposalState)
+
+    // 모두 거부(rejected)한 상태인 경우, 리셋하여 한 명씩 다시 고백할 수 있게 업데이트
+    if (pendingCreators.length === 0 && allEligible.every((c) => c.proposalState === 'rejected')) {
+      const resetOwned = ownedCreatorsRef.current.map((c) =>
+        (c.dateArcStep ?? 0) >= 3 ? { ...c, proposalState: null } : c,
+      )
+      ownedCreatorsRef.current = resetOwned
+      onOwnedCreatorsChangeRef.current(resetOwned)
+      pendingCreators = resetOwned.filter((c) => (c.dateArcStep ?? 0) >= 3 && !c.proposalState)
+    }
+
+    if (pendingCreators.length === 0) return false
+
+    const chosen = pendingCreators[Math.floor(Math.random() * pendingCreators.length)]
+    pendingScoutAfterRankRef.current = openScout
+    setStartBroadcastLocked(true)
+    // 고백 팝업 표시 직전 상태 저장 (로드 시 고백 직전 상황으로 복원)
+    flushAutoSave()
+    setProposalPlayCreator(chosen)
+    return true
+  }
+
+  function handleProposalAccept() {
+    if (!proposalPlayCreator) return
+    const creator = proposalPlayCreator
+    patchOwnedCreator(creator.id, (c) => ({
+      ...c,
+      proposalState: 'accepted',
+    }))
+    flushAutoSave()
+    setProposalPlayCreator(null)
+
+    const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
+    const endingVnId = charDef?.eventLinks?.endingVn
+    const endingEvent = endingVnId
+      ? eventsRef.current.find((e) => e.id === endingVnId) ?? null
+      : null
+
+    if (endingEvent) {
+      setProposalEndingVnEvent(endingEvent)
+    } else {
+      onBack?.()
+    }
+  }
+
+  function handleProposalReject() {
+    if (!proposalPlayCreator) return
+    const creator = proposalPlayCreator
+    patchOwnedCreator(creator.id, (c) => ({
+      ...c,
+      proposalState: 'rejected',
+    }))
+    flushAutoSave()
+    setProposalPlayCreator(null)
+    const openScout = pendingScoutAfterRankRef.current
+    continueAfterMonthModals(openScout)
+  }
+
   function continueAfterMonthModals(openScout: boolean) {
     const next = pendingSocialQueueRef.current.shift() ?? null
     if (next) {
@@ -2851,6 +2920,9 @@ export function InGame({
       setStartBroadcastLocked(true)
       return
     }
+    if (checkProposalEvent(openScout)) {
+      return
+    }
     releaseMonthEndLock(openScout)
   }
 
@@ -2863,10 +2935,16 @@ export function InGame({
   }
 
   const completeDateEvent = (pending: DatePending) => {
-    patchOwnedCreator(pending.creatorId, (creator) => ({
-      ...creator,
-      dateArcStep: dateArcAfter(pending.step),
-    }))
+    patchOwnedCreator(pending.creatorId, (creator) => {
+      let nextCreator = {
+        ...creator,
+        dateArcStep: dateArcAfter(pending.step),
+      }
+      if (pending.step === 'h') {
+        nextCreator = applyFullVitalsRecovery(nextCreator)
+      }
+      return nextCreator
+    })
     setSocialUi({ mode: 'dateResult', pending })
     scheduleAutoSave()
   }
@@ -2965,43 +3043,56 @@ export function InGame({
   function handleHRetryAccept() {
     if (socialUi?.mode !== 'hRetryOffer') return
     const pending = socialUi.pending
-    const spec = H_RETRY_BY_GRADE[pending.grade]
     const charDef = registeredCharactersRef.current.find((c) => c.id === pending.creatorId)
     const eventId = charDef?.eventLinks?.h
     const event = eventId ? eventsRef.current.find((e) => e.id === eventId) ?? null : null
-    if (event) {
-      const beats = resolveShortsBeats(pending.creatorId, 'h')
-      if (watchedEventIds.includes(event.id) && beats.length > 0) {
-        setSocialUi({
-          mode: 'hRetryShorts',
-          pending,
-          event,
-          staminaLoss: spec.staminaLoss,
-          beats,
-        })
-        return
+
+    let beats = resolveShortsBeats(pending.creatorId, 'h')
+    if (beats.length === 0 && event && event.media && event.media.length > 0) {
+      const mediaAssets = event.media.filter((m) => m.kind === 'image' || m.kind === 'video')
+      if (mediaAssets.length > 0) {
+        beats = mediaAssets.map((asset, idx) => ({
+          id: `fallback-beat-${idx}`,
+          mediaUrl: asset.url,
+          caption: '',
+          durationSec: asset.kind === 'video' ? 5 : 3,
+          blurRegions: [],
+        }))
       }
-      setSocialUi({
-        mode: 'hRetryVn',
-        pending,
-        event,
-        staminaLoss: spec.staminaLoss,
-      })
-      return
     }
-    applyHRetryAccept(pending, spec.staminaLoss)
-    scheduleAutoSave()
+    if (beats.length === 0) {
+      const profileUrl = findCharacterProfileUrl(
+        ownedCreatorsRef.current.find((c) => c.id === pending.creatorId) || charDef,
+      )
+      if (profileUrl) {
+        beats = [
+          {
+            id: 'fallback-beat-profile',
+            mediaUrl: profileUrl,
+            caption: '',
+            durationSec: 4,
+            blurRegions: [],
+          },
+        ]
+      }
+    }
+
+    setSocialUi({
+      mode: 'hRetryShorts',
+      pending,
+      event,
+      staminaLoss: 0,
+      beats,
+    })
   }
 
-  function applyHRetryAccept(pending: HRetryPending, staminaLoss: number) {
-    patchOwnedCreator(pending.creatorId, (creator) =>
-      applyVitalsDelta(creator, { stamina: -staminaLoss }),
-    )
+  function applyHRetryAccept(pending: HRetryPending) {
+    patchOwnedCreator(pending.creatorId, (creator) => applyFullVitalsRecovery(creator))
     setSocialUi({
       mode: 'hRetryResult',
       pending,
       accepted: true,
-      staminaLoss,
+      staminaLoss: 0,
       conditionLoss: 0,
     })
     scheduleAutoSave()
@@ -3220,7 +3311,10 @@ export function InGame({
     if (!target) return
     if (vacationPlay) return
     const month = broadcastMonthNumberRef.current
-    if (target.lastVacationMonth === month) return
+    const isAnyVacationUsedThisTurn = ownedCreatorsRef.current.some(
+      (c) => c.lastVacationMonth === month,
+    )
+    if (isAnyVacationUsedThisTurn) return
     const cost = calcVacationCost(target.salary, target.grade)
     if (!spendAssets(cost)) return
     let recovered: OwnedCreator | null = null
@@ -4363,8 +4457,39 @@ export function InGame({
           onConfirm={() => {
             const openScout = pendingScoutAfterRankRef.current
             setShowGameClear(false)
+            let endingEventToPlay: GameEvent | null = null
+            for (const creator of ownedCreatorsRef.current) {
+              const endingEventId = creator.eventLinks?.endingVn
+              if (endingEventId) {
+                const ev = events.find((e) => e.id === endingEventId)
+                if (ev) {
+                  endingEventToPlay = ev
+                  break
+                }
+              }
+            }
+            if (endingEventToPlay) {
+              setEndingEventPlay(endingEventToPlay)
+            } else {
+              continueAfterMonthModals(openScout)
+            }
+          }}
+        />
+      ) : null}
+
+      {endingEventPlay ? (
+        <EventSimulator
+          key={`ending-vn-${endingEventPlay.id}`}
+          event={endingEventPlay}
+          mode="game"
+          onClose={() => {
+            onEventWatched?.(endingEventPlay.id)
+            setEndingEventPlay(null)
+            const openScout = pendingScoutAfterRankRef.current
             continueAfterMonthModals(openScout)
           }}
+          registeredCharacters={registeredCharacters}
+          allowSkip={watchedEventIds.includes(endingEventPlay.id)}
         />
       ) : null}
 
@@ -4509,7 +4634,7 @@ export function InGame({
           onClose={() => {
             if (socialUi.mode !== 'hRetryVn') return
             onEventWatched?.(socialUi.event.id)
-            applyHRetryAccept(socialUi.pending, socialUi.staminaLoss)
+            applyHRetryAccept(socialUi.pending)
           }}
           registeredCharacters={registeredCharacters}
           allowSkip={watchedEventIds.includes(socialUi.event.id)}
@@ -4518,14 +4643,14 @@ export function InGame({
 
       {socialUi?.mode === 'hRetryShorts' ? (
         <ShortsVnPlayer
-          key={`hretry-shorts-${socialUi.pending.creatorId}-${socialUi.event.id}`}
+          key={`hretry-shorts-${socialUi.pending.creatorId}-${socialUi.event?.id ?? 'noevent'}`}
           beats={socialUi.beats}
           event={socialUi.event}
           title={t('shortsVn.playerHTitle').replace('{name}', socialUi.pending.creatorName)}
           onClose={() => {
             if (socialUi.mode !== 'hRetryShorts') return
-            onEventWatched?.(socialUi.event.id)
-            applyHRetryAccept(socialUi.pending, socialUi.staminaLoss)
+            if (socialUi.event?.id) onEventWatched?.(socialUi.event.id)
+            applyHRetryAccept(socialUi.pending)
           }}
         />
       ) : null}
@@ -4588,6 +4713,30 @@ export function InGame({
           requestedSalary={staffSalaryRaiseRequest.requestedSalary}
           onAccept={handleAcceptStaffSalaryRaise}
           onReject={handleRejectStaffSalaryRaise}
+        />
+      ) : null}
+
+      {proposalPlayCreator ? (
+        <ProposalShortsPlayer
+          creatorName={proposalPlayCreator.name}
+          profileImageUrl={findCharacterProfileUrl(proposalPlayCreator)}
+          onAccept={handleProposalAccept}
+          onReject={handleProposalReject}
+        />
+      ) : null}
+
+      {proposalEndingVnEvent ? (
+        <EventSimulator
+          key={`proposal-ending-vn-${proposalEndingVnEvent.id}`}
+          event={proposalEndingVnEvent}
+          mode="game"
+          onClose={() => {
+            onEventWatched?.(proposalEndingVnEvent.id)
+            setProposalEndingVnEvent(null)
+            onBack?.()
+          }}
+          registeredCharacters={registeredCharacters}
+          allowSkip={watchedEventIds.includes(proposalEndingVnEvent.id)}
         />
       ) : null}
     </main>

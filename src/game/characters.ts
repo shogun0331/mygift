@@ -370,6 +370,8 @@ export type OwnedCreator = RegisteredCharacter & {
   restStreak: number
   /** 특별휴가를 사용한 방송 턴(월) 번호 — 턴당 1회 */
   lastVacationMonth?: number | null
+  /** 프로포즈 상태: 'accepted' | 'rejected' | null */
+  proposalState?: 'accepted' | 'rejected' | null
   /** 데이트 아크: 0=데이트1 대기, 1=데이트2, 2=H, 3=H 완료 */
   dateArcStep?: 0 | 1 | 2 | 3
   snsPublishedIds?: string[]
@@ -446,7 +448,7 @@ export function normalizeRegisteredCharacter(
     statType: normalizeCreatorStatType(raw.statType),
     concept: named.concept,
     salary: Number(raw.salary ?? defaultSalary(grade)) || defaultSalary(grade),
-    eventLinks: raw.eventLinks ?? emptyCharacterEventLinks(),
+    eventLinks: { ...emptyCharacterEventLinks(), ...(raw.eventLinks ?? {}) },
     avatarTone: raw.avatarTone || visuals.avatarTone,
     profileImageUrl: raw.profileImageUrl ?? null,
     profileBlob: raw.profileBlob ?? null,
@@ -479,7 +481,7 @@ export function createRegisteredCharacter(draft: CharacterDraft): RegisteredChar
     job,
     jobs,
     statType: draft.statType,
-    eventLinks: draft.eventLinks ?? emptyCharacterEventLinks(),
+    eventLinks: { ...emptyCharacterEventLinks(), ...(draft.eventLinks ?? {}) },
     profileImageUrl: draft.profileImageUrl ?? null,
     profileBlob: draft.profileBlob || null,
     characterIconId: draft.characterIconId ?? null,
@@ -582,6 +584,12 @@ export function normalizeOwnedCreator(
     condition: conditionFromScore(conditionScore),
     restStreak: Math.max(0, Math.round(Number(raw.restStreak ?? 0) || 0)),
     lastVacationMonth: Number.isFinite(lastVacationMonthRaw) ? lastVacationMonthRaw : null,
+    proposalState:
+      raw.proposalState === 'accepted'
+        ? 'accepted'
+        : raw.proposalState === 'rejected'
+          ? 'rejected'
+          : null,
     snsPublishedIds: Array.isArray(raw.snsPublishedIds)
       ? raw.snsPublishedIds.map(String)
       : [],

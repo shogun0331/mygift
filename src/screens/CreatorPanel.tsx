@@ -94,8 +94,6 @@ type CreatorPanelProps = {
   onAssignStaffPlacement: (staffId: string) => void
 }
 
-const GRADE_FILTERS: Array<'ALL' | Grade> = ['ALL', 'S', 'A', 'B', 'C']
-
 const GRADE_STYLE: Record<Grade, string> = {
   S: 'border-amber-400 text-amber-200 bg-gradient-to-r from-amber-950 via-yellow-900 to-amber-950 shadow-[0_0_12px_rgba(251,191,36,0.85)] ring-1 ring-amber-400/50',
   A: 'border-purple-400 text-purple-200 bg-gradient-to-r from-purple-950 via-indigo-900 to-purple-950 shadow-[0_0_12px_rgba(168,85,247,0.85)] ring-1 ring-purple-400/50',
@@ -200,12 +198,18 @@ export function CreatorPanel({
     ? maxScoutCreatorsForGrade(stationGradeConfig, stationGrade)
     : 2
   const canScoutMore = ownedCreators.length < maxScout
-  const [query, setQuery] = useState('')
-  const [gradeFilter, setGradeFilter] = useState<'ALL' | Grade>('ALL')
+
+  type SortField = 'grade' | 'stamina' | 'salary' | 'revenue' | 'sns'
+  type SortOrder = 'asc' | 'desc'
+
+  const [sortField, setSortField] = useState<SortField>('salary')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
+
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [snsCreatorId, setSnsCreatorId] = useState<string | null>(null)
   const [bulkSnsOpen, setBulkSnsOpen] = useState(false)
   const [bulkRevealEntries, setBulkRevealEntries] = useState<BulkSnsRevealEntry[] | null>(null)
+
   const bulkSnsEligible = useMemo(
     () => previewBulkSnsCompose(ownedCreators).eligibleIds.length > 0,
     [ownedCreators],
@@ -217,7 +221,6 @@ export function CreatorPanel({
 
   useEffect(() => {
     if (!openScout) return
-    // 첫번째 영입 전(보유 0명)일 때만 자동 오픈, 1명 이상일 때는 메인 목록 유지
     if (ownedCreators.length > 0) return
     setSelectedId(null)
     setView('scout')
@@ -267,28 +270,45 @@ export function CreatorPanel({
     onScoutClosed?.()
   }
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    return ownedCreators.filter((creator) => {
-      const matchGrade = gradeFilter === 'ALL' || creator.grade === gradeFilter
-      const nameHay = [
-        creator.name,
-        ...Object.values(creator.names ?? {}),
-        creator.job,
-        creator.concept,
-        ...Object.values(creator.jobs ?? {}),
-      ]
-        .join(' ')
-        .toLowerCase()
-      const matchQuery = q.length === 0 || nameHay.includes(q)
-      return matchGrade && matchQuery
-    })
-  }, [ownedCreators, query, gradeFilter])
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))
+    } else {
+      setSortField(field)
+      setSortOrder('desc')
+    }
+  }
 
-  const sortedBySalary = useMemo(
-    () => [...filtered].sort((a, b) => b.salary - a.salary),
-    [filtered],
-  )
+  const sortedBySalary = useMemo(() => {
+    const list = [...ownedCreators]
+    const GRADE_WEIGHT: Record<string, number> = { S: 4, A: 3, B: 2, C: 1 }
+
+    list.sort((a, b) => {
+      let diff = 0
+      if (sortField === 'grade') {
+        diff = (GRADE_WEIGHT[a.grade] ?? 0) - (GRADE_WEIGHT[b.grade] ?? 0)
+      } else if (sortField === 'stamina') {
+        const aPct = a.stamina / Math.max(1, a.staminaMax)
+        const bPct = b.stamina / Math.max(1, b.staminaMax)
+        diff = aPct - bPct
+      } else if (sortField === 'salary') {
+        diff = a.salary - b.salary
+      } else if (sortField === 'revenue') {
+        const aRev = calcMonthRevenueWon(a, 0, 1, companyViewers)
+        const bRev = calcMonthRevenueWon(b, 0, 1, companyViewers)
+        diff = aRev - bRev
+      } else if (sortField === 'sns') {
+        diff = (a.snsSubscribers ?? 0) - (b.snsSubscribers ?? 0)
+      }
+
+      if (diff !== 0) {
+        return sortOrder === 'desc' ? -diff : diff
+      }
+      return b.salary - a.salary
+    })
+
+    return list
+  }, [ownedCreators, sortField, sortOrder, companyViewers])
 
   const selected = ownedCreators.find((creator) => creator.id === selectedId) ?? null
   const snsCreator = ownedCreators.find((creator) => creator.id === snsCreatorId) ?? null
@@ -344,6 +364,7 @@ export function CreatorPanel({
         creator={selected}
         assets={assets}
         broadcastMonthNumber={broadcastMonthNumber}
+        ownedCreators={ownedCreators}
         onBack={() => setSelectedId(null)}
         onConditionCare={onConditionCare}
         onVacation={onVacation}
@@ -354,49 +375,13 @@ export function CreatorPanel({
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
-      <div className="game-panel-strong flex shrink-0 flex-wrap items-center gap-3 rounded-2xl px-4 py-3">
-        <div className="mr-auto min-w-0">
+      <div className="game-panel-strong flex shrink-0 flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3">
+        <div className="min-w-0">
           <p className="game-kicker">CREATOR MANAGEMENT</p>
           <p className="mt-0.5 text-xs text-slate-500">
             {t('creator.manageSubtitle').replace('{count}', String(ownedCreators.length))}
           </p>
         </div>
-
-        <label className="relative min-w-[10rem] flex-1 sm:max-w-xs">
-          <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-500">
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.8" />
-              <path d="m16 16 3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-          </span>
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t('common.search')}
-            className="w-full rounded-xl border border-white/10 bg-black/25 py-2 pr-3 pl-9 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-indigo-400/40"
-          />
-        </label>
-
-        <label className="relative">
-          <span className="sr-only">{t('creator.gradeFilter')}</span>
-          <select
-            value={gradeFilter}
-            onChange={(e) => setGradeFilter(e.target.value as 'ALL' | Grade)}
-            className="appearance-none rounded-xl border border-white/10 bg-black/25 py-2 pr-9 pl-3 text-sm text-slate-200 outline-none transition focus:border-indigo-400/40"
-          >
-            {GRADE_FILTERS.map((grade) => (
-              <option key={grade} value={grade}>
-                {grade === 'ALL'
-                  ? t('creator.gradeFilter')
-                  : t('common.gradeFilterFormat').replace('{grade}', grade)}
-              </option>
-            ))}
-          </select>
-          <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500">
-            ▼
-          </span>
-        </label>
       </div>
 
       <section className="game-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl mb-4">
@@ -458,14 +443,79 @@ export function CreatorPanel({
           ) : (
             <table className="w-full min-w-[64rem] border-collapse text-left text-sm">
               <thead className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur-sm">
-                <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase">
+                <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase select-none">
                   <th className="px-3 py-2.5 font-semibold sm:px-4">{t('common.name')}</th>
-                  <th className="px-3 py-2.5 font-semibold">{t('common.grade')}</th>
-                  <th className="px-3 py-2.5 font-semibold">{t('creator.statStamina')}</th>
+                  <th className="px-3 py-2.5 font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => handleSort('grade')}
+                      className={`group inline-flex items-center gap-1 transition-colors cursor-pointer hover:text-amber-300 ${
+                        sortField === 'grade' ? 'text-amber-300 font-bold' : ''
+                      }`}
+                    >
+                      <span>{t('common.grade')}</span>
+                      <span className="text-[10px] text-amber-400 font-bold">
+                        {sortField === 'grade' ? (sortOrder === 'desc' ? '▼' : '▲') : '↕'}
+                      </span>
+                    </button>
+                  </th>
+                  <th className="px-3 py-2.5 font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => handleSort('stamina')}
+                      className={`group inline-flex items-center gap-1 transition-colors cursor-pointer hover:text-cyan-300 ${
+                        sortField === 'stamina' ? 'text-cyan-300 font-bold' : ''
+                      }`}
+                    >
+                      <span>{t('creator.statStamina')}</span>
+                      <span className="text-[10px] text-cyan-400 font-bold">
+                        {sortField === 'stamina' ? (sortOrder === 'desc' ? '▼' : '▲') : '↕'}
+                      </span>
+                    </button>
+                  </th>
                   <th className="px-3 py-2.5 font-semibold">{t('creator.statType')}</th>
-                  <th className="px-3 py-2.5 font-semibold">{t('creator.currentSalary')}</th>
-                  <th className="px-3 py-2.5 font-semibold text-emerald-400">{t('creator.expectedRevenue')}</th>
-                  <th className="px-3 py-2.5 font-semibold text-cyan-300">SNS 구독자</th>
+                  <th className="px-3 py-2.5 font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => handleSort('salary')}
+                      className={`group inline-flex items-center gap-1 transition-colors cursor-pointer hover:text-amber-300 ${
+                        sortField === 'salary' ? 'text-amber-300 font-bold' : ''
+                      }`}
+                    >
+                      <span>{t('creator.currentSalary')}</span>
+                      <span className="text-[10px] text-amber-400 font-bold">
+                        {sortField === 'salary' ? (sortOrder === 'desc' ? '▼' : '▲') : '↕'}
+                      </span>
+                    </button>
+                  </th>
+                  <th className="px-3 py-2.5 font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => handleSort('revenue')}
+                      className={`group inline-flex items-center gap-1 transition-colors cursor-pointer text-emerald-400 hover:text-emerald-200 ${
+                        sortField === 'revenue' ? 'text-emerald-300 font-bold' : ''
+                      }`}
+                    >
+                      <span>{t('creator.expectedRevenue')}</span>
+                      <span className="text-[10px] text-emerald-400 font-bold">
+                        {sortField === 'revenue' ? (sortOrder === 'desc' ? '▼' : '▲') : '↕'}
+                      </span>
+                    </button>
+                  </th>
+                  <th className="px-3 py-2.5 font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => handleSort('sns')}
+                      className={`group inline-flex items-center gap-1 transition-colors cursor-pointer text-cyan-300 hover:text-cyan-100 ${
+                        sortField === 'sns' ? 'text-cyan-200 font-bold' : ''
+                      }`}
+                    >
+                      <span>SNS 구독자</span>
+                      <span className="text-[10px] text-cyan-300 font-bold">
+                        {sortField === 'sns' ? (sortOrder === 'desc' ? '▼' : '▲') : '↕'}
+                      </span>
+                    </button>
+                  </th>
                   <th className="px-3 py-2.5 font-semibold sm:px-4">{t('common.action')}</th>
                 </tr>
               </thead>
@@ -973,6 +1023,7 @@ function CreatorDetailView({
   creator,
   assets,
   broadcastMonthNumber,
+  ownedCreators = [],
   onBack,
   onConditionCare,
   onVacation,
@@ -982,6 +1033,7 @@ function CreatorDetailView({
   creator: OwnedCreator
   assets: number
   broadcastMonthNumber: number
+  ownedCreators?: OwnedCreator[]
   onBack: () => void
   onConditionCare: (creatorId: string) => void
   onVacation: (creatorId: string) => void
@@ -994,7 +1046,9 @@ function CreatorDetailView({
   const conditionScore = scoreOf(creator)
   const condition = conditionFromScore(conditionScore)
   const vacationCost = calcVacationCost(creator.salary, creator.grade)
-  const vacationUsed = creator.lastVacationMonth === broadcastMonthNumber
+  const vacationUsed = Boolean(
+    ownedCreators?.some((c) => c.lastVacationMonth === broadcastMonthNumber),
+  )
   const canAffordVacation = assets >= vacationCost
   const canVacation = !vacationUsed && canAffordVacation
   const broadcastBlocked = !canBroadcastByStamina(creator.stamina)

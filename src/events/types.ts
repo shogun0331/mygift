@@ -8,6 +8,7 @@ export const CHARACTER_EVENT_SLOTS = [
   { key: 'h', label: 'H 이벤트' },
   { key: 'date1', label: '데이트 1 이벤트' },
   { key: 'date2', label: '데이트 2 이벤트' },
+  { key: 'endingVn', label: '엔딩 VN 이벤트' },
 ] as const
 
 export type CharacterEventSlotKey = (typeof CHARACTER_EVENT_SLOTS)[number]['key']
@@ -33,6 +34,7 @@ export function emptyCharacterEventLinks(): CharacterEventLinks {
     h: null,
     date1: null,
     date2: null,
+    endingVn: null,
   }
 }
 
