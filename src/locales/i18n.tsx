@@ -43,7 +43,7 @@ export function getCurrentLocale(): Locale {
 type I18nContextType = {
   locale: Locale
   setLocale: (locale: Locale) => void
-  t: (key: string) => string
+  t: (key: string, params?: Record<string, string | number>) => string
 }
 
 const I18nContext = createContext<I18nContextType | null>(null)
@@ -63,17 +63,24 @@ function applyLocaleToDocument(locale: Locale) {
   document.documentElement.dataset.locale = locale
 }
 
-export function translate(locale: Locale, key: string): string {
+export function translate(locale: Locale, key: string, params?: Record<string, string | number>): string {
   const currentPack = RESOURCES[locale]
   let val = getValueByPath(currentPack, key)
-  if (val != null && val.trim() !== '') return val
-
-  if (locale !== 'KO') {
-    val = getValueByPath(RESOURCES.KO, key)
-    if (val != null) return val
+  if (val == null || val.trim() === '') {
+    if (locale !== 'KO') {
+      val = getValueByPath(RESOURCES.KO, key)
+    }
   }
 
-  return key
+  if (val == null) return key
+
+  if (params) {
+    Object.entries(params).forEach(([k, v]) => {
+      val = val!.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v))
+    })
+  }
+
+  return val
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
@@ -109,7 +116,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const value: I18nContextType = {
     locale,
     setLocale,
-    t: (key) => translate(locale, key),
+    t: (key, params) => translate(locale, key, params),
   }
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
@@ -123,7 +130,7 @@ export function useTranslation() {
   return {
     locale: 'KO' as Locale,
     setLocale: () => {},
-    t: (key: string) => translate('KO', key),
+    t: (key: string, params?: Record<string, string | number>) => translate('KO', key, params),
   }
 }
 

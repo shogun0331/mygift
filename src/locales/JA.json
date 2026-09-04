@@ -21,7 +21,8 @@
     "continueHint": "(進行中のセッションへ戻る)",
     "ranking": "RANKING",
     "ariaMainMenu": "メインメニュー",
-    "ariaGameMenu": "ゲーム内メニュー"
+    "ariaGameMenu": "インゲームメニュー",
+    "casino": "カジノ"
   },
   "hud": {
     "dateTime": "年月日",
@@ -735,6 +736,111 @@
     "confirmClose": "確認して閉じる",
     "stop": "STOP",
     "scatterBonus": "10倍 + Free Spin",
-    "wildMultiplier": "15倍 (Wild)"
+    "wildMultiplier": "15倍 (Wild)",
+    "symbols": {
+      "cherry": "チェリー",
+      "lemon": "レモン",
+      "grape": "ブドウ",
+      "bell": "ベル",
+      "star": "スター",
+      "diamond": "ダイヤ",
+      "seven": "セブン",
+      "scatter": "スキャッター",
+      "wild": "ワイルド"
+    },
+    "paylines": {
+      "line1": "中央横ライン",
+      "line2": "上段横ライン",
+      "line3": "下段横ライン",
+      "line4": "斜め (左上→右下)",
+      "line5": "斜め (左下→右上)",
+      "line6": "左縦ライン",
+      "line7": "中央縦ライン",
+      "line8": "右縦ライン"
+    },
+    "jackpotTitle": "SUPER MEGA JACKPOT!!",
+    "jackpotDesc": "3x3 9マス全一致！基準額の100倍獲得！",
+    "claimJackpot": "ジャックポット賞金を受け取る",
+    "exitGame": "退出",
+    "turnBadge": "{count}ターン",
+    "highlow": {
+      "title": "VIPハイローデュエルステージ",
+      "specialStage": "★ {name} スペシャルデュエルステージ ★",
+      "duelTable": "VIPハイローデュエルテーブル",
+      "liveDealerProfile": "★ ライブディーラープロフィール ★",
+      "online": "ONLINE",
+      "thisRoundReward": "今ラウンドの報酬",
+      "dropRate": "ドロップ率",
+      "autoClaimHint": "✨ 勝利時にインベントリへ自動獲得",
+      "noRewardItem": "報酬アイテムなし",
+      "dealersCard": "ディーラーのカード",
+      "playersCard": "プレイヤーのカード",
+      "winner": "👑 勝者",
+      "draw": "🤝 引き分け",
+      "selectBet": "ベットを選択",
+      "boosterActive": "⚡ 2倍配当ブースター適用中！",
+      "shieldActive": "🛡️ 敗北ガードシールド作動中",
+      "low": "LOW",
+      "high": "HIGH",
+      "tie": "TIE",
+      "tieJackpot": "50倍ジャックポット",
+      "tieJackpotBooster": "100倍ジャックポット",
+      "victoryWin": "🎉 勝利！",
+      "betDefeat": "💀 敗北",
+      "winAmount": "+${amount} 獲得！",
+      "refundAmount": "ANTE ${amount} 全額返金！",
+      "lossAmount": "ANTE ${amount} 損失",
+      "nextRound": "次のラウンドへ（もう一回）",
+      "exitGameBtn": "ゲームから出る",
+      "dealersTurn": "🎲 ディーラーカード配布中...",
+      "playersTurn": "👉 プレイヤーカードをクリックしてめくってください！",
+      "flipCard": "カードをめくる！",
+      "tableStats": "テーブル統計",
+      "realMoney": "リアルマネー",
+      "currentAnte": "現在のANTE賭け金",
+      "comboBadge": "🔥 {combo} コンボ (x{mult})",
+      "myStationAssets": "放送局の資産",
+      "vault": "金庫",
+      "record": "戦績",
+      "winRate": "勝率",
+      "myInventory": "インベントリ ({count})",
+      "clickToUse": "クリックして使用",
+      "inUse": "適用中",
+      "insufficientChipsLog": "賭け金 ${bet}（コンボ {combo}x）不足のためゲームを進行できません。",
+      "enterLog": "=== [{name}] テーブルに入場しました。 ===",
+      "insufficientAnteAlert": "[{name}] 入場賭け金（${ante}）가 不足しています！",
+      "items": {
+        "peek_card": {
+          "name": "カード透視",
+          "description": "プレイヤーカードの数字を事前に透視します。"
+        },
+        "double_payout": {
+          "name": "配当2倍",
+          "description": "勝利時の獲得金額を2倍に増幅します。"
+        },
+        "loss_shield": {
+          "name": "敗北シールド",
+          "description": "敗北時の賭け金損失を100%ガードします。"
+        },
+        "staff_hire": {
+          "name": "スタッフスカウト",
+          "description": "放送局専用スタッフをスカウトします。"
+        }
+      },
+      "rooms": {
+        "local": {
+          "name": "ローカルルーム (Local Room)",
+          "subtitle": "初心者のためのライトデュエルテーブル"
+        },
+        "star": {
+          "name": "スタールーム (Star Room)",
+          "subtitle": "ハイローラー向けハイエンドベットテーブル"
+        },
+        "legend": {
+          "name": "レジェンドVIPルーム (Legend VIP Room)",
+          "subtitle": "最上位VIP専用ダークネオンデュエルテーブル"
+        }
+      }
+    }
   }
 }

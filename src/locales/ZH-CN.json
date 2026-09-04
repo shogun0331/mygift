@@ -21,7 +21,8 @@
     "continueHint": "（返回进行中的会话）",
     "ranking": "RANKING",
     "ariaMainMenu": "主菜单",
-    "ariaGameMenu": "游戏内菜单"
+    "ariaGameMenu": "游戏内菜单",
+    "casino": "赌场"
   },
   "hud": {
     "dateTime": "年月日",
@@ -780,6 +781,111 @@
     "confirmClose": "确认并关闭",
     "stop": "STOP",
     "scatterBonus": "10倍 + 免费旋转",
-    "wildMultiplier": "15倍 (Wild)"
+    "wildMultiplier": "15倍 (Wild)",
+    "symbols": {
+      "cherry": "樱桃",
+      "lemon": "柠檬",
+      "grape": "葡萄",
+      "bell": "铃铛",
+      "star": "星星",
+      "diamond": "钻石",
+      "seven": "七号",
+      "scatter": "Scatter",
+      "wild": "Wild"
+    },
+    "paylines": {
+      "line1": "中间横线",
+      "line2": "顶层横线",
+      "line3": "底层横线",
+      "line4": "对角线 (左上→右下)",
+      "line5": "对角线 (左下→右上)",
+      "line6": "左侧竖线",
+      "line7": "中间竖线",
+      "line8": "右侧竖线"
+    },
+    "jackpotTitle": "超级大奖!!",
+    "jackpotDesc": "3x3 9个格子全匹配！获得基础奖金100倍！",
+    "claimJackpot": "领取大奖奖金",
+    "exitGame": "退出",
+    "turnBadge": "{count}回合",
+    "highlow": {
+      "title": "VIP 高低牌对决舞台",
+      "specialStage": "★ {name} 特别对决舞台 ★",
+      "duelTable": "VIP 高低牌对决桌",
+      "liveDealerProfile": "★ 真人荷官档案 ★",
+      "online": "ONLINE",
+      "thisRoundReward": "本轮奖励",
+      "dropRate": "掉落率",
+      "autoClaimHint": "✨ 获胜时自动收入背包",
+      "noRewardItem": "未掉落奖励道具",
+      "dealersCard": "荷官手牌",
+      "playersCard": "玩家手牌",
+      "winner": "👑 胜者",
+      "draw": "🤝 平局",
+      "selectBet": "选择下注",
+      "boosterActive": "⚡ 2倍赔率强化生效中！",
+      "shieldActive": "🛡️ 失败护盾防护中",
+      "low": "LOW",
+      "high": "HIGH",
+      "tie": "TIE",
+      "tieJackpot": "50倍大奖",
+      "tieJackpotBooster": "100倍大奖",
+      "victoryWin": "🎉 胜利！",
+      "betDefeat": "💀 失败",
+      "winAmount": "+${amount} 获得！",
+      "refundAmount": "ANTE ${amount} 全额退还！",
+      "lossAmount": "ANTE ${amount} 损失",
+      "nextRound": "下一轮（再来一局）",
+      "exitGameBtn": "退出游戏",
+      "dealersTurn": "🎲 正在发荷官牌...",
+      "playersTurn": "👉 点击玩家牌翻牌！",
+      "flipCard": "翻牌！",
+      "tableStats": "牌桌统计",
+      "realMoney": "真实资产",
+      "currentAnte": "当前底注",
+      "comboBadge": "🔥 {combo} 连胜 (x{mult})",
+      "myStationAssets": "我的电视台资产",
+      "vault": "金库",
+      "record": "战绩",
+      "winRate": "胜率",
+      "myInventory": "我的背包 ({count})",
+      "clickToUse": "点击使用",
+      "inUse": "生效中",
+      "insufficientChipsLog": "底注 ${bet}（连胜 {combo}x）不足，无法进行游戏。",
+      "enterLog": "=== 已进入 [{name}] 牌桌。 ===",
+      "insufficientAnteAlert": "[{name}] 入场底注（${ante}）不足！",
+      "items": {
+        "peek_card": {
+          "name": "透视卡牌",
+          "description": "提前透视玩家卡牌点数。"
+        },
+        "double_payout": {
+          "name": "双倍赔率",
+          "description": "获胜时收益翻倍。"
+        },
+        "loss_shield": {
+          "name": "免败护盾",
+          "description": "失败时100%保护底注不受损失。"
+        },
+        "staff_hire": {
+          "name": "招募员工",
+          "description": "招募电视台专属员工。"
+        }
+      },
+      "rooms": {
+        "local": {
+          "name": "普通房 (Local Room)",
+          "subtitle": "适合新手的基础对决桌"
+        },
+        "star": {
+          "name": "明星房 (Star Room)",
+          "subtitle": "适合高额玩家的高端对决桌"
+        },
+        "legend": {
+          "name": "传奇VIP房 (Legend VIP Room)",
+          "subtitle": "顶尖VIP专属暗黑霓虹对决桌"
+        }
+      }
+    }
   }
 }

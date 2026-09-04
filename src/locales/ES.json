@@ -21,7 +21,8 @@
     "continueHint": "(volver a la sesión en curso)",
     "ranking": "RANKING",
     "ariaMainMenu": "Menú principal",
-    "ariaGameMenu": "Menú del juego"
+    "ariaGameMenu": "Menú del juego",
+    "casino": "CASINO"
   },
   "hud": {
     "dateTime": "년월일",
@@ -780,6 +781,111 @@
     "confirmClose": "Confirmar y Cerrar",
     "stop": "PARAR",
     "scatterBonus": "10x + Giros Gratis",
-    "wildMultiplier": "15x (Comodín)"
+    "wildMultiplier": "15x (Comodín)",
+    "symbols": {
+      "cherry": "Cereza",
+      "lemon": "Limón",
+      "grape": "Uva",
+      "bell": "Campana",
+      "star": "Estrella",
+      "diamond": "Diamante",
+      "seven": "Siete",
+      "scatter": "Scatter",
+      "wild": "Comodín"
+    },
+    "paylines": {
+      "line1": "Fila Central",
+      "line2": "Fila Superior",
+      "line3": "Fila Inferior",
+      "line4": "Diagonal (IA→DB)",
+      "line5": "Diagonal (IB→DA)",
+      "line6": "Columna Izq.",
+      "line7": "Columna Central",
+      "line8": "Columna Der."
+    },
+    "jackpotTitle": "¡¡SUPER MEGA JACKPOT!!",
+    "jackpotDesc": "¡9 casillas iguales! ¡100x recompensa base!",
+    "claimJackpot": "Reclamar Premio",
+    "exitGame": "Salir",
+    "turnBadge": "{count} T",
+    "highlow": {
+      "title": "Escenario VIP High-Low",
+      "specialStage": "★ {name} ESCENARIO ESPECIAL ★",
+      "duelTable": "MESA DE DUELO VIP HIGH-LOW",
+      "liveDealerProfile": "★ PERFIL DE CRUPIER ★",
+      "online": "ONLINE",
+      "thisRoundReward": "RECOMPENSA DE RONDA",
+      "dropRate": "PROB.",
+      "autoClaimHint": "✨ Recogida auto en inventario tras ganar",
+      "noRewardItem": "Sin objeto de recompensa",
+      "dealersCard": "CARTA DEL CRUPIER",
+      "playersCard": "CARTA DEL JUGADOR",
+      "winner": "👑 GANADOR",
+      "draw": "🤝 EMPATE",
+      "selectBet": "SELECCIONA TU APUESTA",
+      "boosterActive": "⚡ ¡POTENCIADOR 2X ACTIVO!",
+      "shieldActive": "🛡️ ESCUDO ACTIVO",
+      "low": "LOW",
+      "high": "HIGH",
+      "tie": "TIE",
+      "tieJackpot": "50x JACKPOT",
+      "tieJackpotBooster": "100x JACKPOT",
+      "victoryWin": "🎉 ¡VICTORIA!",
+      "betDefeat": "💀 DERROTA",
+      "winAmount": "¡+${amount} GANADOS!",
+      "refundAmount": "¡ANTE ${amount} REEMBOLSADO!",
+      "lossAmount": "ANTE ${amount} PERDIDO",
+      "nextRound": "SIGUIENTE RONDA (VOLVER A JUGAR)",
+      "exitGameBtn": "SALIR DEL JUEGO",
+      "dealersTurn": "🎲 Repartiendo carta del crupier...",
+      "playersTurn": "👉 ¡Haz clic en la carta del jugador!",
+      "flipCard": "¡VOLTEAR CARTA!",
+      "tableStats": "ESTADÍSTICAS DE MESA",
+      "realMoney": "FONDOS REALES",
+      "currentAnte": "ANTE ACTUAL",
+      "comboBadge": "🔥 {combo} COMBO (x{mult})",
+      "myStationAssets": "FONDOS DE LA CANAL",
+      "vault": "CAJA FUERTE",
+      "record": "REGISTRO",
+      "winRate": "PORCENTAJE",
+      "myInventory": "MI INVENTARIO ({count})",
+      "clickToUse": "Clic para usar",
+      "inUse": "EN USO",
+      "insufficientChipsLog": "Fondos insuficientes (${bet}, Combo {combo}x).",
+      "enterLog": "=== Entraste a la mesa [{name}] ===",
+      "insufficientAnteAlert": "¡Fondos insuficientes (${ante}) para entrar a [{name}]!",
+      "items": {
+        "peek_card": {
+          "name": "Espiar Carta",
+          "description": "Revela el valor de la carta por adelantado."
+        },
+        "double_payout": {
+          "name": "Pago Doble",
+          "description": "Duplica tus ganancias al triunfar."
+        },
+        "loss_shield": {
+          "name": "Escudo de Derrota",
+          "description": "100% protección de ante al perder."
+        },
+        "staff_hire": {
+          "name": "Contratar Personal",
+          "description": "Recluta personal exclusivo para la canal."
+        }
+      },
+      "rooms": {
+        "local": {
+          "name": "Sala Local (Local Room)",
+          "subtitle": "Mesa ligera para principiantes"
+        },
+        "star": {
+          "name": "Sala Estela (Star Room)",
+          "subtitle": "Mesa de apuestas altas para VIP"
+        },
+        "legend": {
+          "name": "Sala Leyenda VIP (Legend VIP Room)",
+          "subtitle": "Mesa neón oscura para los mejores VIP"
+        }
+      }
+    }
   }
 }

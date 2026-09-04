@@ -21,7 +21,8 @@
     "continueHint": "(zur laufenden Sitzung zurückkehren)",
     "ranking": "RANKING",
     "ariaMainMenu": "Hauptmenü",
-    "ariaGameMenu": "Spielmenü"
+    "ariaGameMenu": "In-Game-Menü",
+    "casino": "KASINO"
   },
   "hud": {
     "dateTime": "년월일",
@@ -780,6 +781,111 @@
     "confirmClose": "Schließen",
     "stop": "STOPP",
     "scatterBonus": "10x + Bonus-Spin",
-    "wildMultiplier": "15x (Wild)"
+    "wildMultiplier": "15x (Wild)",
+    "symbols": {
+      "cherry": "Kirsche",
+      "lemon": "Zitrone",
+      "grape": "Traube",
+      "bell": "Glocke",
+      "star": "Stern",
+      "diamond": "Diamant",
+      "seven": "Sieben",
+      "scatter": "Scatter",
+      "wild": "Wild"
+    },
+    "paylines": {
+      "line1": "Mittlere Reihe",
+      "line2": "Obere Reihe",
+      "line3": "Untere Reihe",
+      "line4": "Diagonale (OL→UR)",
+      "line5": "Diagonale (UL→OR)",
+      "line6": "Linke Spalte",
+      "line7": "Mittlere Spalte",
+      "line8": "Rechte Spalte"
+    },
+    "jackpotTitle": "SUPER-MEGA-JACKPOT!!",
+    "jackpotDesc": "Alle 9 Felder Treffer! 100x Basisgewinn!",
+    "claimJackpot": "Jackpot-Gewinn einfordern",
+    "exitGame": "Beenden",
+    "turnBadge": "{count} R",
+    "highlow": {
+      "title": "VIP High-Low Duell",
+      "specialStage": "★ {name} SPEZIAL-DUELL-BÜHNE ★",
+      "duelTable": "VIP HIGH-LOW DUELL-TISCH",
+      "liveDealerProfile": "★ LIVE-DEALER PROFIL ★",
+      "online": "ONLINE",
+      "thisRoundReward": "BELOHNUNG DIESER RUNDE",
+      "dropRate": "CHANCE",
+      "autoClaimHint": "✨ Bei Sieg automatisch ins Inventar",
+      "noRewardItem": "Kein Gegenstand gedroppt",
+      "dealersCard": "KARTE DES DEALERS",
+      "playersCard": "KARTE DES SPIELERS",
+      "winner": "👑 GEWINNER",
+      "draw": "🤝 UNENTSCHIEDEN",
+      "selectBet": "WÄHLE DEINEN EINSATZ",
+      "boosterActive": "⚡ 2X AUSZAHLUNGS-BOOSTER AKTIV!",
+      "shieldActive": "🛡️ NIEDERLAGE-SCHILD AKTIV",
+      "low": "LOW",
+      "high": "HIGH",
+      "tie": "TIE",
+      "tieJackpot": "50x JACKPOT",
+      "tieJackpotBooster": "100x JACKPOT",
+      "victoryWin": "🎉 SIEG!",
+      "betDefeat": "💀 NIEDERLAGE",
+      "winAmount": "+${amount} GEWONNEN!",
+      "refundAmount": "ANTE ${amount} RÜCKERSTATTET!",
+      "lossAmount": "ANTE ${amount} VERLOREN",
+      "nextRound": "NÄCHSTE RUNDE (NOCHMAL)",
+      "exitGameBtn": "SPIEL BEENDEN",
+      "dealersTurn": "🎲 Dealer-Karte wird ausgeteilt...",
+      "playersTurn": "👉 Klicke auf die Spielerkarte!",
+      "flipCard": "KARTE UMDREHEN!",
+      "tableStats": "TISCH-STATISTIK",
+      "realMoney": "ECHTES GUTHABEN",
+      "currentAnte": "AKTUELLER ANTE-EINSATZ",
+      "comboBadge": "🔥 {combo} COMBO (x{mult})",
+      "myStationAssets": "SENDER-GUTHABEN",
+      "vault": "TRESOR",
+      "record": "BILANZ",
+      "winRate": "SIEGQUOTE",
+      "myInventory": "MEIN INVENTAR ({count})",
+      "clickToUse": "Klick zum Nutzen",
+      "inUse": "IN VERWENDUNG",
+      "insufficientChipsLog": "Nicht genug Guthaben (${bet}, Combo {combo}x).",
+      "enterLog": "=== Tisch [{name}] betreten ===",
+      "insufficientAnteAlert": "Nicht genug Einsatz (${ante}) für Tisch [{name}]!",
+      "items": {
+        "peek_card": {
+          "name": "Karte durchleuchten",
+          "description": "Zeigt den Wert der Spielerkarte vorab."
+        },
+        "double_payout": {
+          "name": "Doppelte Auszahlung",
+          "description": "Verdoppelt den Gewinn bei Sieg."
+        },
+        "loss_shield": {
+          "name": "Niederlage-Schild",
+          "description": "100% Schutz des Ante bei Niederlage."
+        },
+        "staff_hire": {
+          "name": "Personal anwerben",
+          "description": "Wirbt exklusives Sender-Personal an."
+        }
+      },
+      "rooms": {
+        "local": {
+          "name": "Lokaler Raum (Local Room)",
+          "subtitle": "Leichter Duelltisch für Anfänger"
+        },
+        "star": {
+          "name": "Star-Raum (Star Room)",
+          "subtitle": "High-End Tisch für High-Roller"
+        },
+        "legend": {
+          "name": "Legenden VIP-Raum (Legend VIP Room)",
+          "subtitle": "Dunkler Neon-Tisch für Top-VIPs"
+        }
+      }
+    }
   }
 }

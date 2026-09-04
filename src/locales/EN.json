@@ -23,7 +23,8 @@
     "desc": "Management Sim Game",
     "savedData": "(SAVED DATA)",
     "ariaMainMenu": "Main menu",
-    "ariaGameMenu": "In-game menu"
+    "ariaGameMenu": "In-game menu",
+    "casino": "CASINO"
   },
   "hud": {
     "dateTime": "DATE",
@@ -789,6 +790,111 @@
     "confirmClose": "Confirm & Close",
     "stop": "STOP",
     "scatterBonus": "10x + Free Spin",
-    "wildMultiplier": "15x (Wild)"
+    "wildMultiplier": "15x (Wild)",
+    "symbols": {
+      "cherry": "Cherry",
+      "lemon": "Lemon",
+      "grape": "Grape",
+      "bell": "Bell",
+      "star": "Star",
+      "diamond": "Diamond",
+      "seven": "Seven",
+      "scatter": "Scatter",
+      "wild": "Wild"
+    },
+    "paylines": {
+      "line1": "Center Row",
+      "line2": "Top Row",
+      "line3": "Bottom Row",
+      "line4": "Diagonal (TL→BR)",
+      "line5": "Diagonal (BL→TR)",
+      "line6": "Left Column",
+      "line7": "Center Column",
+      "line8": "Right Column"
+    },
+    "jackpotTitle": "SUPER MEGA JACKPOT!!",
+    "jackpotDesc": "All 9 cells matched! Earned 100x base reward!",
+    "claimJackpot": "Claim Jackpot Reward",
+    "exitGame": "Exit",
+    "turnBadge": "{count}T",
+    "highlow": {
+      "title": "VIP High-Low Duel Stage",
+      "specialStage": "★ {name} SPECIAL DUEL STAGE ★",
+      "duelTable": "VIP HIGH-LOW DUEL TABLE",
+      "liveDealerProfile": "★ LIVE DEALER PROFILE ★",
+      "online": "ONLINE",
+      "thisRoundReward": "THIS ROUND REWARD",
+      "dropRate": "DROP",
+      "autoClaimHint": "✨ Auto-collected to inventory on victory",
+      "noRewardItem": "No reward item dropped",
+      "dealersCard": "DEALER'S CARD",
+      "playersCard": "PLAYER'S CARD",
+      "winner": "👑 WINNER",
+      "draw": "🤝 DRAW",
+      "selectBet": "SELECT YOUR BET",
+      "boosterActive": "⚡ 2X PAYOUT BOOSTER ACTIVE!",
+      "shieldActive": "🛡️ LOSS SHIELD ACTIVE (Protects ante on loss)",
+      "low": "LOW",
+      "high": "HIGH",
+      "tie": "TIE",
+      "tieJackpot": "50x JACKPOT",
+      "tieJackpotBooster": "100x JACKPOT",
+      "victoryWin": "🎉 VICTORY WIN!",
+      "betDefeat": "💀 BET DEFEAT",
+      "winAmount": "+${amount} EARNED!",
+      "refundAmount": "ANTE ${amount} FULL REFUND!",
+      "lossAmount": "ANTE ${amount} LOST",
+      "nextRound": "NEXT ROUND (PLAY AGAIN)",
+      "exitGameBtn": "EXIT CASINO GAME",
+      "dealersTurn": "🎲 Dealing dealer's card...",
+      "playersTurn": "👉 Click player's card to flip!",
+      "flipCard": "FLIP CARD!",
+      "tableStats": "TABLE STATS",
+      "realMoney": "REAL MONEY",
+      "currentAnte": "CURRENT ANTE BET",
+      "comboBadge": "🔥 {combo} COMBO (x{mult})",
+      "myStationAssets": "MY STATION ASSETS",
+      "vault": "VAULT",
+      "record": "RECORD",
+      "winRate": "WIN RATE",
+      "myInventory": "MY INVENTORY ({count})",
+      "clickToUse": "Click to use",
+      "inUse": "IN USE",
+      "insufficientChipsLog": "Cannot play due to insufficient ante funds (${bet}, Combo {combo}x).",
+      "enterLog": "=== Entered [{name}] Table ===",
+      "insufficientAnteAlert": "Insufficient entry bet (${ante}) for [{name}]!",
+      "items": {
+        "peek_card": {
+          "name": "Peek Card",
+          "description": "Reveals player card value in advance."
+        },
+        "double_payout": {
+          "name": "Double Payout",
+          "description": "Doubles earnings upon victory."
+        },
+        "loss_shield": {
+          "name": "Loss Shield",
+          "description": "100% loss protection upon defeat."
+        },
+        "staff_hire": {
+          "name": "Staff Hire",
+          "description": "Recruits station exclusive staff."
+        }
+      },
+      "rooms": {
+        "local": {
+          "name": "Local Room",
+          "subtitle": "Light duel table for beginners"
+        },
+        "star": {
+          "name": "Star Room",
+          "subtitle": "High-end betting table for high rollers"
+        },
+        "legend": {
+          "name": "Legend VIP Room",
+          "subtitle": "Dark neon duel table for top VIPs"
+        }
+      }
+    }
   }
 }

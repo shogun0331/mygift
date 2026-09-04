@@ -21,7 +21,8 @@
     "continueHint": "(вернуться к текущей сессии)",
     "ranking": "RANKING",
     "ariaMainMenu": "Главное меню",
-    "ariaGameMenu": "Игровое меню"
+    "ariaGameMenu": "Игровое меню",
+    "casino": "КАЗИНО"
   },
   "hud": {
     "dateTime": "년월일",
@@ -780,6 +781,111 @@
     "confirmClose": "Закрыть",
     "stop": "СТОП",
     "scatterBonus": "10x + Бонус-спин",
-    "wildMultiplier": "15x (Wild)"
+    "wildMultiplier": "15x (Wild)",
+    "symbols": {
+      "cherry": "Вишня",
+      "lemon": "Лимон",
+      "grape": "Виноград",
+      "bell": "Колокол",
+      "star": "Звезда",
+      "diamond": "Алмаз",
+      "seven": "Семёрка",
+      "scatter": "Скаттер",
+      "wild": "Вайлд"
+    },
+    "paylines": {
+      "line1": "Центр. строка",
+      "line2": "Верх. строка",
+      "line3": "Нижн. строка",
+      "line4": "Диагональ (ЛВ→ПН)",
+      "line5": "Диагональ (ЛН→ПВ)",
+      "line6": "Левый столбец",
+      "line7": "Центр. столбец",
+      "line8": "Правый столбец"
+    },
+    "jackpotTitle": "СУПЕР МЕГА ДЖЕКПОТ!!",
+    "jackpotDesc": "Совпадение всех 9 ячеек! 100x к награде!",
+    "claimJackpot": "Забрать джекпот",
+    "exitGame": "Выход",
+    "turnBadge": "{count} х",
+    "highlow": {
+      "title": "VIP High-Low Дуэль",
+      "specialStage": "★ {name} СПЕЦИАЛЬНАЯ АРЕНА ★",
+      "duelTable": "VIP HIGH-LOW СТОЛ",
+      "liveDealerProfile": "★ ПРОФИЛЬ ДИЛЕРА ★",
+      "online": "ONLINE",
+      "thisRoundReward": "НАГРАДА РАУНДА",
+      "dropRate": "ШАНС",
+      "autoClaimHint": "✨ Авто-получение при победе",
+      "noRewardItem": "Предмет не выпал",
+      "dealersCard": "КАРТА ДИЛЕРА",
+      "playersCard": "КАРТА ИГРОКА",
+      "winner": "👑 ПОБЕДИТЕЛЬ",
+      "draw": "🤝 НИЧЬЯ",
+      "selectBet": "ВЫБЕРИТЕ СТАВКУ",
+      "boosterActive": "⚡ УДВОЕНИЕ ВЫПЛАТЫ АКТИВНО!",
+      "shieldActive": "🛡️ ЩИТ ОТ ПРОИГРЫША",
+      "low": "LOW",
+      "high": "HIGH",
+      "tie": "TIE",
+      "tieJackpot": "50x ДЖЕКПОТ",
+      "tieJackpotBooster": "100x ДЖЕКПОТ",
+      "victoryWin": "🎉 ПОБЕДА!",
+      "betDefeat": "💀 ПОРАЖЕНИЕ",
+      "winAmount": "+${amount} ПОЛУЧЕНО!",
+      "refundAmount": "ANTE ${amount} ВОЗВРАЩЕНО!",
+      "lossAmount": "ANTE ${amount} ПОТЕРЯНО",
+      "nextRound": "СЛЕДУЮЩИЙ РАУНД",
+      "exitGameBtn": "ВЫЙТИ ИЗ ИГРЫ",
+      "dealersTurn": "🎲 Раздача карты дилеру...",
+      "playersTurn": "👉 Нажмите на карту игрока!",
+      "flipCard": "ОТКРЫТЬ КАРТУ!",
+      "tableStats": "СТАТИСТИКА СТОЛА",
+      "realMoney": "РЕАЛЬНЫЕ АКТИВЫ",
+      "currentAnte": "ТЕКУЩЕЕ АНТЕ",
+      "comboBadge": "🔥 {combo} КОМБО (x{mult})",
+      "myStationAssets": "АКТИВЫ СТАНЦИИ",
+      "vault": "СЕЙФ",
+      "record": "РЕКОРД",
+      "winRate": "ВИНРЕЙТ",
+      "myInventory": "ИНВЕНТАРЬ ({count})",
+      "clickToUse": "Клик для исп.",
+      "inUse": "АКТИВНО",
+      "insufficientChipsLog": "Недостаточно средств (${bet}, Комбо {combo}x).",
+      "enterLog": "=== Вход за стол [{name}] ===",
+      "insufficientAnteAlert": "Недостаточно средств (${ante}) для входа на стол [{name}]!",
+      "items": {
+        "peek_card": {
+          "name": "Рентген карты",
+          "description": "Заранее открывает карту игрока."
+        },
+        "double_payout": {
+          "name": "2x Выплата",
+          "description": "Удваивает выигрыш при победе."
+        },
+        "loss_shield": {
+          "name": "Щит поражения",
+          "description": "100% защита анте при проигрыше."
+        },
+        "staff_hire": {
+          "name": "Найм сотрудника",
+          "description": "Нанимает эксклюзивного сотрудника."
+        }
+      },
+      "rooms": {
+        "local": {
+          "name": "Локальный стол (Local Room)",
+          "subtitle": "Легкий стол для новичков"
+        },
+        "star": {
+          "name": "Звездный стол (Star Room)",
+          "subtitle": "Стол для хайроллеров"
+        },
+        "legend": {
+          "name": "VIP Легенда (Legend VIP Room)",
+          "subtitle": "Тёмный неон для лучших VIP"
+        }
+      }
+    }
   }
 }

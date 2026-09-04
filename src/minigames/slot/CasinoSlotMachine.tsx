@@ -661,7 +661,7 @@ export function CasinoSlotMachine({
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">{sym.icon}</span>
-                      <span className="font-bold text-slate-200">{sym.name}</span>
+                      <span className="font-bold text-slate-200">{t(`casino.symbols.${sym.id}`)}</span>
                     </div>
                     <span className="font-mono font-black text-amber-300">
                       {sym.isScatter
@@ -684,7 +684,7 @@ export function CasinoSlotMachine({
                 {PAYLINES.map((line) => (
                   <li key={line.id}>
                     <span style={{ color: line.color }} className="font-bold">
-                      {line.name} (L{line.id})
+                      {t(`casino.paylines.line${line.id}`)} (L{line.id})
                     </span>
                     : {t('casino.paylineDesc')}
                   </li>
@@ -707,10 +707,10 @@ export function CasinoSlotMachine({
         <div className="fixed inset-0 z-[100000] bg-slate-950/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 animate-fade-in text-center">
           <div className="text-8xl animate-bounce mb-4">🎰💥👑</div>
           <h1 className="text-4xl sm:text-6xl font-black bg-gradient-to-r from-yellow-300 via-amber-200 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_0_50px_rgba(250,204,21,1)]">
-            SUPER MEGA JACKPOT!!
+            {t('casino.jackpotTitle')}
           </h1>
           <p className="text-xl font-bold text-amber-300 mt-2 font-mono">
-            3x3 9개 칸 올 매칭! 당첨 기준금 100배 획득!
+            {t('casino.jackpotDesc')}
           </p>
           <div className="my-6 text-3xl sm:text-4xl font-black text-yellow-300 font-mono bg-amber-950/80 px-8 py-4 rounded-3xl border-2 border-yellow-400 shadow-[0_0_40px_rgba(250,204,21,0.6)]">
             +${(baseReward * 100).toLocaleString()}
@@ -719,7 +719,7 @@ export function CasinoSlotMachine({
             onClick={() => setJackpotBanner(false)}
             className="px-8 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-lg shadow-2xl transition-all cursor-pointer"
           >
-            잭팟 당첨금 수령하기
+            {t('casino.claimJackpot')}
           </button>
         </div>
       )}

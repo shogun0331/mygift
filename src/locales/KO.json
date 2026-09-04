@@ -23,7 +23,8 @@
     "desc": "경영 시뮬레이션 게임",
     "savedData": "(SAVED DATA)",
     "ariaMainMenu": "메인 메뉴",
-    "ariaGameMenu": "인게임 메뉴"
+    "ariaGameMenu": "인게임 메뉴",
+    "casino": "카지노"
   },
   "hud": {
     "dateTime": "년월일",
@@ -789,6 +790,111 @@
     "confirmClose": "확인 및 닫기",
     "stop": "STOP",
     "scatterBonus": "10배 + Free Spin",
-    "wildMultiplier": "15배 (Wild)"
+    "wildMultiplier": "15배 (Wild)",
+    "symbols": {
+      "cherry": "체리",
+      "lemon": "레몬",
+      "grape": "포도",
+      "bell": "벨",
+      "star": "별",
+      "diamond": "다이아",
+      "seven": "세븐",
+      "scatter": "스캐터",
+      "wild": "와일드"
+    },
+    "paylines": {
+      "line1": "중앙 가로줄",
+      "line2": "상단 가로줄",
+      "line3": "하단 가로줄",
+      "line4": "대각선 (좌상→우하)",
+      "line5": "대각선 (좌하→우상)",
+      "line6": "좌측 세로줄",
+      "line7": "중앙 세로줄",
+      "line8": "우측 세로줄"
+    },
+    "jackpotTitle": "SUPER MEGA JACKPOT!!",
+    "jackpotDesc": "3x3 9개 칸 올 매칭! 당첨 기준금 100배 획득!",
+    "claimJackpot": "잭팟 당첨금 수령하기",
+    "exitGame": "나가기",
+    "turnBadge": "{count}턴",
+    "highlow": {
+      "title": "VIP 하이로우 듀얼 스테이지",
+      "specialStage": "★ {name} 특별 듀얼 스테이지 ★",
+      "duelTable": "VIP 하이로우 듀얼 테이블",
+      "liveDealerProfile": "★ 라이브 딜러 프로필 ★",
+      "online": "ONLINE",
+      "thisRoundReward": "이번 라운드 보상",
+      "dropRate": "등장률",
+      "autoClaimHint": "✨ 승리 시 인벤토리에 자동 수령",
+      "noRewardItem": "보상 아이템 미등장",
+      "dealersCard": "딜러 카드",
+      "playersCard": "플레이어 카드",
+      "winner": "👑 승리자",
+      "draw": "🤝 무승부",
+      "selectBet": "베팅 선택",
+      "boosterActive": "⚡ 2배 배당 보스터 적용 중!",
+      "shieldActive": "🛡️ 패배 손실 방어 쉴드 작동 중",
+      "low": "LOW",
+      "high": "HIGH",
+      "tie": "TIE",
+      "tieJackpot": "50배 잭팟",
+      "tieJackpotBooster": "100배 잭팟",
+      "victoryWin": "🎉 승리!",
+      "betDefeat": "💀 패배",
+      "winAmount": "+${amount} 획득!",
+      "refundAmount": "ANTE ${amount} 전액 환불!",
+      "lossAmount": "ANTE ${amount} 소모",
+      "nextRound": "다음 라운드 진행 (한판더)",
+      "exitGameBtn": "게임에서 나가기",
+      "dealersTurn": "🎲 딜러 카드 배분 중...",
+      "playersTurn": "👉 플레이어 카드를 클릭하여 뒤집으세요!",
+      "flipCard": "카드 뒤집기!",
+      "tableStats": "테이블 통계",
+      "realMoney": "실제 자산",
+      "currentAnte": "현재 ANTE 판돈",
+      "comboBadge": "🔥 {combo} 콤보 (x{mult})",
+      "myStationAssets": "내 방송국 자산",
+      "vault": "금고",
+      "record": "전적",
+      "winRate": "승률",
+      "myInventory": "내 인벤토리 ({count})",
+      "clickToUse": "클릭 시 사용",
+      "inUse": "적용 중",
+      "insufficientChipsLog": "판돈 ${bet} (콤보 {combo}x) 부족으로 게임을 진행할 수 없습니다.",
+      "enterLog": "=== [{name}] 테이블에 입장하셨습니다. ===",
+      "insufficientAnteAlert": "[{name}] 입장 배팅금(${ante})이 부족합니다!",
+      "items": {
+        "peek_card": {
+          "name": "카드 엿보기",
+          "description": "플레이어 카드 숫자를 미리 투시합니다."
+        },
+        "double_payout": {
+          "name": "배당 2배",
+          "description": "승리 시 수령금을 2배로 증폭합니다."
+        },
+        "loss_shield": {
+          "name": "패배 쉴드",
+          "description": "패배 시 판돈 손실을 100% 방어합니다."
+        },
+        "staff_hire": {
+          "name": "스태프 영입",
+          "description": "방송국 전용 스태프를 영입합니다."
+        }
+      },
+      "rooms": {
+        "local": {
+          "name": "로컬 룸 (Local Room)",
+          "subtitle": "초보자를 위한 라이트 듀얼 테이블"
+        },
+        "star": {
+          "name": "스타 룸 (Star Room)",
+          "subtitle": "하이 롤러를 위한 하이엔드 베팅 테이블"
+        },
+        "legend": {
+          "name": "레전드 VIP 룸 (Legend VIP Room)",
+          "subtitle": "최상위 VIP 전용 다크 네온 듀얼 테이블"
+        }
+      }
+    }
   }
 }

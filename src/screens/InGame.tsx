@@ -4011,14 +4011,14 @@ export function InGame({
                 }`}
               >
                 {item.icon}
-                <span>{isCasino ? 'CASINO' : t(`menu.${item.id}`)}</span>
+                <span>{t(`menu.${item.id}`)}</span>
                 {isCasino && isCasinoAvailable ? (
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-pink-600 text-white rounded-full animate-bounce shadow">
                     OPEN
                   </span>
                 ) : isCasino && !isCasinoAvailable ? (
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-slate-900 border border-amber-400/60 text-amber-400 rounded-full shadow">
-                    {Math.max(0, 3 - casinoTurnCount)}턴
+                    {t('casino.turnBadge', { count: Math.max(0, 3 - casinoTurnCount) })}
                   </span>
                 ) : alert ? (
                   <RedDot label={alertLabel} />
