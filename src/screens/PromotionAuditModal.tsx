@@ -260,15 +260,22 @@ export function PromotionAuditModal({
         setTimeout(() => {
           setShowResultModal(true)
         }, 750)
-      } else if (displayCreators.length > 0) {
-        // 🎯 4인 덱 중 무작위 1명 크리에이터 픽업!
-        const randIdx = Math.floor(Math.random() * displayCreators.length)
-        const randomTarget = displayCreators[randIdx] || displayCreators[0]!
-        setTimeout(() => {
-          triggerJudgeCounterAttack(randomTarget.id)
-        }, 1000) // 1초 딜레이 쉼표!
       } else {
-        setIsActionLocked(false)
+        const curStaminaMap = creatorStaminaMapRef.current
+        const usableCreators = displayCreators.filter(
+          (c) => (curStaminaMap[c.id] ?? 100) >= 15,
+        )
+
+        if (usableCreators.length > 0) {
+          // 🎯 사용할 수 있는 크리에이터(스테미너 15 이상) 중 무작위 1명 피격 대상으로 픽업!
+          const randIdx = Math.floor(Math.random() * usableCreators.length)
+          const randomTarget = usableCreators[randIdx]!
+          setTimeout(() => {
+            triggerJudgeCounterAttack(randomTarget.id)
+          }, 1000) // 1초 딜레이 쉼표!
+        } else {
+          setIsActionLocked(false)
+        }
       }
     }, 650)
   }
@@ -321,6 +328,8 @@ export function PromotionAuditModal({
     })
     return map
   })
+  const creatorStaminaMapRef = useRef(creatorStaminaMap)
+  creatorStaminaMapRef.current = creatorStaminaMap
 
   // 🪫 제출 가능한 크리에이터 카드(스테미나 15 이상)가 0개인 경우 심사 실패 자동 종료
   useEffect(() => {
