@@ -13,7 +13,7 @@ import { blurRegionsForVnFile } from './CharacterAuditEditorModal'
 import { MosaicMediaFrame } from './MosaicMediaFrame'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { stationGradeLabel, type StationGrade } from '../game/station'
-import { getJudgeSatisfactionMediaUrl, type StationGradeConfig, type CreatorType } from '../game/stationGradeConfig'
+import { getJudgeSatisfactionMediaSlot, type StationGradeConfig, type CreatorType } from '../game/stationGradeConfig'
 import { useI18n } from '../locales/i18n'
 import {
   getJudgeReactionDialogue,
@@ -337,18 +337,30 @@ export function PromotionAuditModal({
 
   if (isCompletedNow && (session.isSuccess || currentSatisfactionPct >= 100) && session.judge.successMediaUrl) {
     judgeDisplayMediaUrl = session.judge.successMediaUrl
-    currentJudgeMediaSlot = session.judge.successMediaUrl
+    currentJudgeMediaSlot = {
+      url: session.judge.successMediaUrl,
+      blurRegions: session.judge.successBlurRegions || [],
+    }
   } else if (isCompletedNow && !session.isSuccess && session.judge.failMediaUrl) {
     judgeDisplayMediaUrl = session.judge.failMediaUrl
-    currentJudgeMediaSlot = session.judge.failMediaUrl
+    currentJudgeMediaSlot = {
+      url: session.judge.failMediaUrl,
+      blurRegions: session.judge.failBlurRegions || [],
+    }
   } else {
-    judgeDisplayMediaUrl = getJudgeSatisfactionMediaUrl(session.judge, currentSatisfactionPct)
-    const key = currentSatisfactionPct >= 80 ? 'A' : currentSatisfactionPct >= 30 ? 'B' : 'C'
-    currentJudgeMediaSlot = session.judge.auditMedia?.[key]
+    const satSlot = getJudgeSatisfactionMediaSlot(session.judge, currentSatisfactionPct)
+    judgeDisplayMediaUrl = satSlot.url || ''
+    currentJudgeMediaSlot = satSlot
   }
 
   if (!judgeDisplayMediaUrl) {
     judgeDisplayMediaUrl = session.judge.avatarUrl || ''
+    if (!currentJudgeMediaSlot || !(currentJudgeMediaSlot as Record<string, unknown>).url) {
+      currentJudgeMediaSlot = {
+        url: session.judge.avatarUrl || null,
+        blurRegions: session.judge.avatarBlurRegions || [],
+      }
+    }
   }
 
   const judgeBlurRegions = resolveCutsceneBlur(
@@ -1008,41 +1020,29 @@ export function PromotionAuditModal({
               {/* 승급 성공 / 실패 16:9 미디어 컷씬 비주얼 */}
               {session.isSuccess && session.judge.successMediaUrl ? (
                 <div className="relative z-10 mb-5 aspect-[16/9] w-full max-w-md overflow-hidden rounded-2xl border-2 border-amber-400/70 shadow-[0_0_50px_rgba(251,191,36,0.5)]">
-                  {isVideoMediaUrl(session.judge.successMediaUrl) ? (
-                    <video
-                      src={resolveMediaSrc(session.judge.successMediaUrl)}
-                      className="h-full w-full object-cover"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    />
-                  ) : (
-                    <img
-                      src={resolveMediaSrc(session.judge.successMediaUrl)}
-                      alt="승급 성공"
-                      className="h-full w-full object-cover"
-                    />
-                  )}
+                  <MosaicMediaFrame
+                    src={resolveMediaSrc(session.judge.successMediaUrl)}
+                    kind={isVideoMediaUrl(session.judge.successMediaUrl) ? 'video' : 'image'}
+                    regions={resolveCutsceneBlur(
+                      { url: session.judge.successMediaUrl, blurRegions: session.judge.successBlurRegions || [] },
+                      session.judge.successMediaUrl,
+                      events,
+                    )}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
               ) : !session.isSuccess && session.judge.failMediaUrl ? (
                 <div className="relative z-10 mb-5 aspect-[16/9] w-full max-w-md overflow-hidden rounded-2xl border-2 border-rose-500/70 shadow-[0_0_50px_rgba(244,63,94,0.5)]">
-                  {isVideoMediaUrl(session.judge.failMediaUrl) ? (
-                    <video
-                      src={resolveMediaSrc(session.judge.failMediaUrl)}
-                      className="h-full w-full object-cover"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    />
-                  ) : (
-                    <img
-                      src={resolveMediaSrc(session.judge.failMediaUrl)}
-                      alt="승급 실패"
-                      className="h-full w-full object-cover"
-                    />
-                  )}
+                  <MosaicMediaFrame
+                    src={resolveMediaSrc(session.judge.failMediaUrl)}
+                    kind={isVideoMediaUrl(session.judge.failMediaUrl) ? 'video' : 'image'}
+                    regions={resolveCutsceneBlur(
+                      { url: session.judge.failMediaUrl, blurRegions: session.judge.failBlurRegions || [] },
+                      session.judge.failMediaUrl,
+                      events,
+                    )}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
               ) : null}
 
