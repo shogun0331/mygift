@@ -194,19 +194,16 @@ export function CasinoSlotMachine({
       : ''
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-between p-2 sm:p-4 text-white select-none overflow-y-auto font-sans">
-      {/* TOP SYSTEM BAR */}
-      <div className="w-full flex items-center justify-between px-5 py-2 bg-slate-900/95 border-2 border-slate-600 rounded-2xl shadow-xl backdrop-blur-md z-20">
+    <div className="relative w-full h-full flex flex-col items-center justify-between p-2 text-white select-none overflow-hidden font-sans">
+      {/* CLEAN TOP SYSTEM BAR */}
+      <div className="w-full flex items-center justify-between px-5 py-2 bg-slate-900/95 border border-slate-700 rounded-2xl shadow-lg backdrop-blur-md z-20 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 flex items-center justify-center text-xl font-black text-slate-950 shadow-md">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 flex items-center justify-center text-xl font-black text-slate-950 shadow-md">
             🎰
           </div>
           <div>
-            <div className="text-[10px] font-mono font-bold tracking-widest text-amber-400 uppercase">
-              PACHISLOT 3x3 REAL CASINO CABINET
-            </div>
-            <h1 className="text-lg sm:text-xl font-black bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-400 bg-clip-text text-transparent">
-              GOLDEN BROADCAST SLOT (무료 3회 도전)
+            <h1 className="text-base sm:text-lg font-black bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-400 bg-clip-text text-transparent">
+              GOLDEN CASINO REEL (무료 3회 도전)
             </h1>
           </div>
         </div>
@@ -214,12 +211,12 @@ export function CasinoSlotMachine({
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowPaytable(true)}
-            className="px-3.5 py-1.5 rounded-xl border border-amber-400/50 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-bold transition-all"
+            className="px-3 py-1 rounded-xl border border-amber-400/50 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-bold transition-all"
           >
             📖 배당표 안내
           </button>
 
-          <div className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono">
+          <div className="flex items-center gap-2 px-3.5 py-1 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono">
             <span className="text-amber-400 font-bold">보유 자산:</span>
             <span className="text-amber-300 font-black text-sm">
               ${userAssets.toLocaleString()}
@@ -228,17 +225,17 @@ export function CasinoSlotMachine({
 
           <button
             onClick={() => setShowSummary(true)}
-            className="px-4 py-1.5 rounded-xl bg-red-600/90 hover:bg-red-500 border border-red-400 text-white font-bold text-xs shadow-md transition-all active:scale-95"
+            className="px-3.5 py-1 rounded-xl bg-red-600/90 hover:bg-red-500 border border-red-400 text-white font-bold text-xs shadow-md transition-all active:scale-95"
           >
             🚪 게임 종료
           </button>
         </div>
       </div>
 
-      {/* REAL AUTHENTIC HIGH-GLOSS 3D PACHISLOT CABINET CONTAINER */}
-      <div className="relative my-auto flex items-center justify-center w-full max-w-4xl py-2">
+      {/* REAL AUTHENTIC HIGH-GLOSS 3D PACHISLOT CABINET CONTAINER (NO SCROLLBAR) */}
+      <div className="relative my-auto flex items-center justify-center w-full max-w-3xl py-1">
         <div className={`pachislot-cabinet ${machineToneClass} flex flex-col relative`}>
-          {/* 1. TOP RED ACRYLIC MARQUEE HEADER WITH 3D 777 LOGO */}
+          {/* 1. CLEAN TOP RED ACRYLIC MARQUEE HEADER (REMOVED CLUTTERED SIDE TEXTS) */}
           <div className="pachislot-top-marquee">
             <div className="pachislot-marquee-lamps">
               {Array.from({ length: 16 }, (_, index) => (
@@ -246,36 +243,16 @@ export function CasinoSlotMachine({
               ))}
             </div>
 
-            <div className="px-6 py-3.5 flex items-center justify-between">
-              {/* Left Payout Mini Table */}
-              <div className="hidden sm:flex flex-col gap-1 text-[10px] font-mono font-bold text-amber-200 bg-slate-950/80 p-2.5 rounded-xl border border-amber-400/40 shadow-inner">
-                <div>7️⃣7️⃣7️⃣ : 20배 (세븐)</div>
-                <div>🎰🎰🎰 : 10배 + FREE</div>
-                <div>💎💎💎 : 12배 (다이아)</div>
-              </div>
-
-              {/* Center 3D 777 Header */}
+            <div className="px-6 py-2.5 flex items-center justify-center">
+              {/* Center Clean 3D 777 Marquee Badge */}
               <div className="flex flex-col items-center">
                 <div className="pachislot-777-box">
-                  <span className="text-3xl sm:text-4xl font-black font-mono tracking-widest text-yellow-300 drop-shadow-[0_2px_10px_rgba(250,204,21,0.9)] animate-pulse">
+                  <span className="text-2xl sm:text-3xl font-black font-mono tracking-widest text-yellow-300 drop-shadow-[0_2px_8px_rgba(250,204,21,0.9)] animate-pulse">
                     7️⃣ 7️⃣ 7️⃣
                   </span>
                 </div>
-                <div className="text-[10px] font-black font-mono tracking-widest text-amber-300 bg-amber-950/90 px-3.5 py-0.5 rounded-full border border-amber-400/60 mt-1.5 shadow-md uppercase">
-                  ★ PACHISLOT HIGH-GLOSS CHAMPION ★
-                </div>
-              </div>
-
-              {/* Right Status LED Counter */}
-              <div className="hidden sm:flex flex-col gap-1 text-[10px] font-mono text-right bg-slate-950/80 p-2.5 rounded-xl border border-amber-400/40 shadow-inner">
-                <div>
-                  <span className="text-amber-400 font-bold">당첨 기준금: </span>
-                  <span className="text-yellow-300 font-black">${baseReward.toLocaleString()}</span>
-                </div>
-                <div>
-                  <span className="text-slate-300">무료 기회: </span>
-                  <span className="text-amber-300 font-black">{spinsLeft}회</span>
-                  {freeSpinsLeft > 0 && <span className="text-yellow-400"> (+{freeSpinsLeft})</span>}
+                <div className="text-[9px] font-black font-mono tracking-widest text-amber-300 bg-amber-950/90 px-3 py-0.5 rounded-full border border-amber-400/60 mt-1 shadow-md uppercase">
+                  ★ PACHISLOT CHAMPION ★
                 </div>
               </div>
             </div>
@@ -283,18 +260,18 @@ export function CasinoSlotMachine({
 
           {/* 2. CENTRAL GLASS REEL SHOWCASE DECK WITH 3D CHROME BEVEL */}
           <div className="pachislot-reel-showcase">
-            <div className="p-3.5 sm:p-5 flex flex-col gap-3">
+            <div className="p-2.5 sm:p-3.5 flex flex-col gap-2.5">
               {/* REEL WINDOW & SIDE PAYLINE INDICATORS */}
-              <div className="relative flex items-center justify-between gap-2.5">
+              <div className="relative flex items-center justify-between gap-2">
                 {/* LEFT PAYLINE BADGES (L1, L2, L3) */}
-                <div className="flex flex-col gap-8 text-[10px] font-mono font-bold shrink-0">
+                <div className="flex flex-col gap-6 text-[10px] font-mono font-bold shrink-0">
                   {PAYLINES.slice(0, 3).map((line) => {
                     const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
                     return (
                       <div
                         key={line.id}
                         style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
-                        className={`px-2.5 py-1 rounded-lg border-2 ${
+                        className={`px-2 py-0.5 rounded-lg border-2 ${
                           isWon
                             ? 'bg-amber-400 animate-bounce shadow-[0_0_15px_currentColor]'
                             : 'bg-slate-950/90'
@@ -318,7 +295,7 @@ export function CasinoSlotMachine({
                           d={getLineSvgCoords(line.coords)}
                           fill="none"
                           stroke={isWon ? line.color : 'transparent'}
-                          strokeWidth={isWon ? 6 : 0}
+                          strokeWidth={isWon ? 5 : 0}
                           className={isWon ? 'animate-pulse filter drop-shadow-[0_0_15px_currentColor]' : ''}
                         />
                       )
@@ -328,7 +305,7 @@ export function CasinoSlotMachine({
                   {[0, 1, 2].map((colIdx) => {
                     const isColumnSpinning = stoppedCount <= colIdx
                     const stripSymbols = colStrips[colIdx] ?? []
-                    const landOffsetPx = 9 * 84 // 9 dummy items * 84px cell height = 756px offset
+                    const landOffsetPx = 9 * 70 // 9 dummy items * 70px cell height = 630px offset
 
                     return (
                       <div key={colIdx} className="pachislot-reel-column">
@@ -355,10 +332,10 @@ export function CasinoSlotMachine({
                                 key={`${symId}-${idx}`}
                                 className={`pachislot-reel-cell ${isWinningCell ? 'is-winner' : ''}`}
                               >
-                                <span className="text-4xl sm:text-5xl filter drop-shadow-md">
+                                <span className="text-3xl sm:text-4xl filter drop-shadow-md">
                                   {sym.icon}
                                 </span>
-                                <span className="text-[10px] font-bold text-slate-200 mt-0.5 font-mono">
+                                <span className="text-[9px] font-bold text-slate-200 mt-0.5 font-mono">
                                   {sym.name}
                                 </span>
                               </div>
@@ -371,14 +348,14 @@ export function CasinoSlotMachine({
                 </div>
 
                 {/* RIGHT PAYLINE BADGES (L4, L5) */}
-                <div className="flex flex-col gap-12 text-[10px] font-mono font-bold shrink-0">
+                <div className="flex flex-col gap-9 text-[10px] font-mono font-bold shrink-0">
                   {PAYLINES.slice(3, 5).map((line) => {
                     const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
                     return (
                       <div
                         key={line.id}
                         style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
-                        className={`px-2.5 py-1 rounded-lg border-2 ${
+                        className={`px-2 py-0.5 rounded-lg border-2 ${
                           isWon
                             ? 'bg-amber-400 animate-bounce shadow-[0_0_15px_currentColor]'
                             : 'bg-slate-950/90'
@@ -392,20 +369,20 @@ export function CasinoSlotMachine({
               </div>
 
               {/* SPIN DISPLAY RESULTS BANNER */}
-              <div className="min-h-[46px] flex items-center justify-center px-4 py-2 bg-slate-950/95 rounded-xl border border-amber-400/50 text-center font-mono shadow-inner">
+              <div className="min-h-[38px] flex items-center justify-center px-4 py-1 bg-slate-950/95 rounded-xl border border-amber-400/50 text-center font-mono shadow-inner">
                 {isSpinning ? (
-                  <span className="text-amber-400 font-bold animate-pulse text-xs sm:text-sm">
-                    🎰 릴 회전 중... (무료 스핀 대박 기원!)
+                  <span className="text-amber-400 font-bold animate-pulse text-xs">
+                    🎰 릴 스핀 중... (무료 스핀 대박 기원!)
                   </span>
                 ) : lastResult ? (
                   lastResult.totalWinAmount > 0 ? (
-                    <div className="flex items-center gap-2.5 text-yellow-300 font-black text-sm sm:text-base animate-bounce">
-                      <span>🎉 당첨 상금 획득!</span>
-                      <span className="text-amber-400 text-base sm:text-lg">
+                    <div className="flex items-center gap-2 text-yellow-300 font-black text-xs sm:text-sm animate-bounce">
+                      <span>🎉 당첨 상금!</span>
+                      <span className="text-amber-400 text-sm sm:text-base">
                         +${lastResult.totalWinAmount.toLocaleString()}
                       </span>
                       {lastResult.freeSpinsAwarded > 0 && (
-                        <span className="text-[11px] text-yellow-200 bg-yellow-600/90 px-2.5 py-0.5 rounded-full shadow">
+                        <span className="text-[10px] text-yellow-200 bg-yellow-600/90 px-2 py-0.5 rounded-full shadow">
                           🎁 BONUS FREE SPIN +3회!
                         </span>
                       )}
@@ -417,7 +394,7 @@ export function CasinoSlotMachine({
                   )
                 ) : (
                   <span className="text-amber-300/90 text-xs">
-                    무료 3회 스핀 기회가 제공됩니다! 하단 SPIN 버튼을 누르거나 레버를 당겨주세요.
+                    무료 3회 스핀 기회가 제공됩니다! 하단 SPIN 버튼을 누르거나 레버를 당기세요.
                   </span>
                 )}
               </div>
@@ -425,9 +402,9 @@ export function CasinoSlotMachine({
           </div>
 
           {/* 3. PHYSICAL SLANTED BUTTON DECK (STOP 1, STOP 2, STOP 3 & BIG SPIN BUTTON) */}
-          <div className="pachislot-button-deck flex items-center justify-between gap-4">
+          <div className="pachislot-button-deck flex items-center justify-between gap-3">
             {/* 3 HIGH-GLOSS PHYSICAL STOP BUTTONS */}
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3">
               {[0, 1, 2].map((idx) => {
                 const isStopped = stoppedCount > idx
                 return (
@@ -449,7 +426,7 @@ export function CasinoSlotMachine({
             <button
               disabled={isSpinning || (spinsLeft <= 0 && freeSpinsLeft <= 0)}
               onClick={handleSpin}
-              className={`pachislot-btn-spin text-base sm:text-lg ${
+              className={`pachislot-btn-spin text-sm sm:text-base ${
                 isSpinning || (spinsLeft <= 0 && freeSpinsLeft <= 0)
                   ? 'opacity-60 cursor-not-allowed'
                   : freeSpinsLeft > 0
@@ -457,10 +434,10 @@ export function CasinoSlotMachine({
                   : ''
               }`}
             >
-              <span className="text-2xl">🎰</span>
+              <span className="text-xl">🎰</span>
               <span>
                 {isSpinning
-                  ? '릴 회전 중...'
+                  ? '릴 스핀 중...'
                   : freeSpinsLeft > 0
                   ? `FREE SPIN (${freeSpinsLeft}회)`
                   : `SPIN! (${spinsLeft}/3회)`}
@@ -470,22 +447,22 @@ export function CasinoSlotMachine({
 
           {/* 4. BOTTOM GRAPHIC ARTWORK PANEL & 3D METALLIC COIN TRAY */}
           <div className="pachislot-bottom-deck">
-            <div className="px-5 py-2 flex items-center justify-between border-b border-slate-700/80 bg-slate-900/90">
-              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest">
-                ★ PACHISLOT 3D COIN PAYOUT TRAY ★
+            <div className="px-4 py-1 flex items-center justify-between border-b border-slate-700/80 bg-slate-900/90 text-xs font-mono">
+              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">
+                ★ PACHISLOT COIN TRAY ★
               </span>
-              <span className="text-xs font-mono font-black text-green-400">
+              <span className="text-xs font-black text-green-400">
                 획득 상금: +${sessionTotalWon.toLocaleString()}
               </span>
             </div>
 
             {/* METALLIC COIN OUTLET TRAY */}
             <div className="pachislot-coin-tray flex items-center justify-between">
-              <div className="flex items-center gap-2.5 text-xs font-mono text-slate-300">
-                <span className="text-3xl animate-bounce">🪙</span>
-                <span>코인 배출구 (누적 당첨 상금 수령 대기)</span>
+              <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
+                <span className="text-2xl animate-bounce">🪙</span>
+                <span className="text-xs">코인 배출구 (누적 당첨 상금)</span>
               </div>
-              <div className="text-base font-black font-mono text-yellow-300 bg-amber-950/90 px-4 py-1.5 rounded-xl border border-amber-400/50 shadow-md">
+              <div className="text-sm font-black font-mono text-yellow-300 bg-amber-950/90 px-3 py-1 rounded-lg border border-amber-400/50 shadow-md">
                 +${sessionTotalWon.toLocaleString()}
               </div>
             </div>
@@ -493,23 +470,23 @@ export function CasinoSlotMachine({
         </div>
 
         {/* 3D SIDE MECHANICAL PULL LEVER WITH SPHERE KNOB */}
-        <div className="hidden lg:flex flex-col items-center justify-center ml-5 relative select-none shrink-0">
-          <div className="w-7 h-44 bg-gradient-to-r from-slate-700 via-slate-400 to-slate-800 rounded-full border-2 border-slate-900 shadow-2xl relative flex flex-col items-center p-1">
+        <div className="hidden lg:flex flex-col items-center justify-center ml-4 relative select-none shrink-0">
+          <div className="w-6 h-36 bg-gradient-to-r from-slate-700 via-slate-400 to-slate-800 rounded-full border-2 border-slate-900 shadow-2xl relative flex flex-col items-center p-1">
             <div
-              className={`w-3.5 bg-gradient-to-b from-yellow-200 via-amber-400 to-amber-600 rounded-full transition-all duration-300 origin-bottom shadow-inner ${
-                isLeverPulled ? 'h-20 transform rotate-[45deg]' : 'h-36'
+              className={`w-3 bg-gradient-to-b from-yellow-200 via-amber-400 to-amber-600 rounded-full transition-all duration-300 origin-bottom shadow-inner ${
+                isLeverPulled ? 'h-16 transform rotate-[45deg]' : 'h-28'
               }`}
             >
               <button
                 type="button"
                 disabled={isSpinning || (spinsLeft <= 0 && freeSpinsLeft <= 0)}
                 onClick={handleSpin}
-                className="w-12 h-12 rounded-full bg-gradient-to-tr from-red-700 via-red-500 to-yellow-300 border-2 border-yellow-200 shadow-[0_0_25px_rgba(239,68,68,0.9)] -translate-x-4 -translate-y-5 hover:scale-110 active:scale-95 transition-transform"
+                className="w-10 h-10 rounded-full bg-gradient-to-tr from-red-700 via-red-500 to-yellow-300 border-2 border-yellow-200 shadow-[0_0_20px_rgba(239,68,68,0.9)] -translate-x-3.5 -translate-y-4 hover:scale-110 active:scale-95 transition-transform"
                 title="레버 당기기!"
               />
             </div>
           </div>
-          <span className="text-[10px] font-mono font-black text-amber-400 mt-2.5 uppercase tracking-widest drop-shadow">
+          <span className="text-[9px] font-mono font-black text-amber-400 mt-2 uppercase tracking-widest drop-shadow">
             PULL LEVER
           </span>
         </div>

@@ -4037,7 +4037,7 @@ export function InGame({
         <div className="fixed inset-0 z-[99990] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-2 sm:p-4 animate-fade-in select-none">
           <GoldenVegasLoungeBackground />
 
-          <div className="relative w-full max-w-5xl h-[92vh] max-h-[850px] rounded-3xl bg-slate-950/95 border-2 border-amber-400/80 shadow-[0_0_90px_rgba(245,158,11,0.45),inset_0_0_30px_rgba(245,158,11,0.15)] flex flex-col overflow-hidden z-10 my-auto">
+          <div className="relative w-full max-w-4xl h-auto max-h-[96vh] rounded-3xl bg-slate-950/95 border-2 border-amber-400/80 shadow-[0_0_90px_rgba(245,158,11,0.45),inset_0_0_30px_rgba(245,158,11,0.15)] flex flex-col overflow-hidden z-10 my-auto p-1 sm:p-2">
             <CasinoSlotMachine
               stationGrade={stationGradeRef.current}
               userAssets={assets}
