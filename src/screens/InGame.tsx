@@ -4011,7 +4011,7 @@ export function InGame({
                 }`}
               >
                 {item.icon}
-                <span>{t(`menu.${item.id}`)}</span>
+                <span>{isCasino ? 'CASINO' : t(`menu.${item.id}`)}</span>
                 {isCasino && isCasinoAvailable ? (
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-pink-600 text-white rounded-full animate-bounce shadow">
                     OPEN
