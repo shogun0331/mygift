@@ -1524,7 +1524,7 @@ export function InGame({
       if (slotId) {
         const care = staffBonusOf(managerStateRef.current, slotId, 'care')
         if (care.equipped) {
-          tryCareRestore(creator.id, slotId, true)
+          tryCareRestore(creator.id, slotId, false)
         }
       }
     }
