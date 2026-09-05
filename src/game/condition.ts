@@ -57,12 +57,12 @@ export const CONDITION_SPIKE_DROP = { min: 18, max: 22 } as const
 export const REST_RECOVERY = { min: 10, max: 15 } as const
 export const VACATION_CONDITION_GAIN = 20
 
-/** 진상 사태 발생 확률 (슬롯당 30% 고정) */
-export const CONDITION_CRASH_CHANCE_FIXED = 0.08
+/** 주 전환 시 컨디션 급락 확률 (25%) */
+export const CONDITION_CRASH_CHANCE_FIXED = 0.25
 /** @deprecated calcConditionCrashChance 사용 */
 export const CONDITION_CRASH_CHANCE = CONDITION_CRASH_CHANCE_FIXED
-/** 급락 시 추가 컨디션 하락량 */
-export const CONDITION_CRASH_DROP = { min: 28, max: 42 } as const
+/** 급락 시 추가 컨디션 하락량 (한번씩 훅 깎임) */
+export const CONDITION_CRASH_DROP = { min: 20, max: 35 } as const
 /** 진상 사태 시 추가 스테미나 하락량 (QTE 실패 시) */
 export const CONDITION_CRASH_STAMINA_DROP = { min: 10, max: 30 } as const
 /** 진상 두더지 QTE 제한 시간 (ms) */

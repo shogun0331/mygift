@@ -2282,16 +2282,38 @@ export function InGame({
       }
       if (care.equipped) careRecoverCreatorIds.add(creatorId)
     }
-    const { creators: nextOwned, cared } = applyWeeklyStaminaAndCondition(
+    const { creators: nextOwned, cared, crashes } = applyWeeklyStaminaAndCondition(
       ownedCreatorsRef.current,
       broadcastedIds,
       drainMultByCreatorId,
-      broadcastedIds,
+      new Set(),
       assignedSlotIds,
       careRecoverCreatorIds,
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    if (crashes.length > 0) {
+      setConditionCrashes((prev) => [
+        ...prev,
+        ...crashes.map((crash) => ({
+          id: `crash-fx-${crash.creatorId}-${Math.round(performance.now())}`,
+          creatorId: crash.creatorId,
+          drop: crash.drop,
+          staminaDrop: crash.staminaDrop,
+        })),
+      ])
+      const crashEvents: DayEvent[] = crashes.map((crash) => ({
+        id: `crash-evt-${crash.creatorId}-${Math.round(performance.now())}`,
+        creatorId: crash.creatorId,
+        creatorName: crash.creatorName,
+        type: 'toxic',
+        amount: crash.drop,
+        text: `${crash.creatorName} 방송 피로 급증! 컨디션 -${crash.drop} 급락!`,
+        atMs: 0,
+        tone: 'bg-rose-500',
+      }))
+      setLiveEvents((prev) => [...crashEvents, ...prev].slice(0, MAX_RECENT_EVENTS))
+    }
     for (const row of cared) {
       const slotId = findSlotIdForCreator(studioSlotsRef.current, row.creatorId)
       if (!slotId) continue
