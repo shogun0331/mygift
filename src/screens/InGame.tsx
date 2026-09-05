@@ -1563,7 +1563,7 @@ export function InGame({
         1,
         Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance, scoreOf(creator)) * combined),
       )
-      condDrainByCreatorId[creator.id] = calcWeeklyBroadcastConditionCost(creator, 1)
+      condDrainByCreatorId[creator.id] = care.equipped ? 0 : calcWeeklyBroadcastConditionCost(creator, 1)
     }
     liveStaminaDrainByCreatorIdRef.current = drainByCreatorId
     setLiveStaminaDrainByCreatorId(drainByCreatorId)

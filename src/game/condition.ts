@@ -478,12 +478,9 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
         })
       }
 
-      if (
-        careRecoverCreatorIds.has(creator.id) &&
-        scoreAfterDrain < CONDITION_SCORE_RANGE.best.min
-      ) {
+      if (careRecoverCreatorIds.has(creator.id)) {
         const scoreBeforeCare = clampConditionScore(scoreAfterDrain)
-        scoreAfterDrain = CONDITION_SCORE_RANGE.best.min
+        scoreAfterDrain = 100
         if (scoreBeforeCare < scoreAfterDrain) {
           cared.push({
             creatorId: creator.id,
