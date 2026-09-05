@@ -2177,21 +2177,21 @@ export function InGame({
       const picked = pool[Math.floor(Math.random() * pool.length)]
 
       const baseCostTable: Record<StationTierId, number> = {
-        black: 10_000,     // 일반사업자: $10,000 (1만)
-        tiny: 100_000,    // 영세기업: $100,000 (10만)
-        sme: 500_000,     // 중소기업: $500,000 (50만)
-        mid: 750_000,     // 중견기업: $750,000 (75만)
-        large: 1_000_000, // 대기업: $1,000,000 (100만)
-        top: 5_000_000,   // 일등기업: $5,000,000 (500만)
+        black: 5_000,     // 일반사업자: $5,000 (5천)
+        tiny: 50_000,     // 영세기업: $50,000 (5만)
+        sme: 250_000,     // 중소기업: $250,000 (25만)
+        mid: 375_000,     // 중견기업: $375,000 (37.5만)
+        large: 500_000,   // 대기업: $500,000 (50만)
+        top: 2_500_000,   // 일등기업: $2,500,000 (250만)
       }
 
       const baseSalaryTable: Record<StationTierId, number> = {
-        black: 24_000,
-        tiny: 40_000,
-        sme: 120_000,
-        mid: 180_000,
-        large: 240_000,
-        top: 600_000,
+        black: 12_000,    // 연봉 $12,000
+        tiny: 20_000,     // 연봉 $20,000
+        sme: 60_000,      // 연봉 $60,000
+        mid: 90_000,      // 연봉 $90,000
+        large: 120_000,   // 연봉 $120,000
+        top: 300_000,     // 연봉 $300,000
       }
 
       const currentTier = stationGradeRef.current ?? 'black'
