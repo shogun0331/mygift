@@ -48,12 +48,12 @@ export const STAMINA_BROADCAST_MIN = 1
 /** 소모 후 스테미나가 이 미만이면 컨디션 급속 소모 */
 export const STAMINA_LOW_THRESHOLD = 30
 
-export const CONDITION_BROADCAST_LIGHT = { min: 3, max: 6 } as const
-export const CONDITION_BROADCAST_FAST = { min: 12, max: 18 } as const
+export const CONDITION_BROADCAST_LIGHT = { min: 20, max: 25 } as const
+export const CONDITION_BROADCAST_FAST = { min: 30, max: 40 } as const
 /** 돌발 피로 스파이크 (한번씩 훅 깎임) 확률 및 차감량 */
 export const CONDITION_SPIKE_CHANCE_NORMAL = 0.2
 export const CONDITION_SPIKE_CHANCE_LOW_STAMINA = 0.5
-export const CONDITION_SPIKE_DROP = { min: 15, max: 25 } as const
+export const CONDITION_SPIKE_DROP = { min: 18, max: 22 } as const
 export const REST_RECOVERY = { min: 10, max: 15 } as const
 export const VACATION_CONDITION_GAIN = 20
 
