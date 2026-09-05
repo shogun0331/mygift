@@ -1,0 +1,723 @@
+{
+  "id": "a5",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "a5",
+  "title": "엔딩",
+  "startNode": "node_1786843238702_0_kbdm",
+  "nodes": [
+    {
+      "id": "node_1786843238702_0_kbdm",
+      "type": "graphic",
+      "image": "2026-08-28_00040_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786843238702_1_u9ni",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "식장 신부대기실. 미야자와 씨가 화이트 웨딩드레스를 입고 거울 앞에 서 있다. 나는 문을 열고 들어선다.",
+      "text_key": "node_1786843238702_1_u9ni"
+    },
+    {
+      "id": "node_1786843238702_2_2x02",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "…사장님.",
+      "text_key": "node_1786843238702_2_2x02"
+    },
+    {
+      "id": "node_1786843238702_3_84so",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "왔어요. …예쁘네요. 정말.",
+      "text_key": "node_1786843238702_3_84so"
+    },
+    {
+      "id": "graphic_a5_2",
+      "type": "graphic",
+      "image": "2026-08-28_00042_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786843238702_4_c5ev",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "감사합니다. 저, 떨려요.",
+      "text_key": "node_1786843238702_4_c5ev"
+    },
+    {
+      "id": "node_1786843238702_5_14od",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저도 떨려요. 오늘이 이렇게 올 줄은…",
+      "text_key": "node_1786843238702_5_14od"
+    },
+    {
+      "id": "node_1786843238702_6_m6dv",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "저, 사장님을 만나서 정말 다행이에요.",
+      "text_key": "node_1786843238702_6_m6dv"
+    },
+    {
+      "id": "node_1786843238702_7_kwr6",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그 말, 제가 해야죠.",
+      "text_key": "node_1786843238702_7_kwr6"
+    },
+    {
+      "id": "node_1786843238702_8_kqwo",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "처음 스카웃 받던 날, 사장님 얼굴 보고 이상하게 마음이 놓였어요.",
+      "text_key": "node_1786843238702_8_kqwo"
+    },
+    {
+      "id": "node_1786843238702_9_tmjc",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그때는 제가 승무원을 끌어들인다고 욕먹을 줄 알았는데.",
+      "text_key": "node_1786843238702_9_tmjc"
+    },
+    {
+      "id": "node_1786843238702_10_t36a",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "저는 한 번도 후회한 적 없어요.",
+      "text_key": "node_1786843238702_10_t36a"
+    },
+    {
+      "id": "node_1786843238702_11_fcow",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "화이트 웨딩드레스에 감싸인 그녀가, 이제 내 아내가 된다. 레이스 보디스가 가슴을 우아하게 받치고, A라인 스커트가 허리 아래로 퍼져 있다. 저 단정하던 승무원이, 지금은 내 앞에서 신부로 서 있다.",
+      "text_key": "node_1786843238702_11_fcow"
+    },
+    {
+      "id": "node_1786843238702_12_u8eq",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…저도요. 너를 스카웃한 게, 제 인생 최고의 선택이었어요.",
+      "text_key": "node_1786843238702_12_u8eq"
+    },
+    {
+      "id": "node_1786843238702_13_fdfw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "그럼, 오늘부터는 크리에이터가 아니라…",
+      "text_key": "node_1786843238702_13_fdfw"
+    },
+    {
+      "id": "node_1786843238702_14_iedy",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아내예요. 오늘부터 너는, 제 아내입니다.",
+      "text_key": "node_1786843238702_14_iedy"
+    },
+    {
+      "id": "node_1786843238702_15_mxhm",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "…네.",
+      "text_key": "node_1786843238702_15_mxhm"
+    },
+    {
+      "id": "node_1786843238702_16_ai1n",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사랑해요, 미야자와 씨.",
+      "text_key": "node_1786843238702_16_ai1n"
+    },
+    {
+      "id": "node_1786843238702_17_rtxf",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "저도 사랑해요, 사장님.",
+      "text_key": "node_1786843238702_17_rtxf"
+    },
+    {
+      "id": "node_1786843238702_18_5oi7",
+      "type": "graphic",
+      "image": "2026-08-28_00043_.webp",
+      "delay": 2,
+      "blurRegions": [
+        {
+          "id": "blur_1788407541478_95l1",
+          "x": 0.3333333333333333,
+          "y": 0.1880787037037037,
+          "w": 0.11458333333333337,
+          "h": 0.14351851851851852,
+          "blur": 2
+        }
+      ],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786843238702_19_oh0r",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "신부대기실. 예식 전, 미야자와 씨가 웨딩드레스를 입은 채 내 앞에 무릎을 꿇는다.",
+      "text_key": "node_1786843238702_19_oh0r"
+    },
+    {
+      "id": "node_1786843238702_20_prbg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "예식 전에, 신부가 신랑을 모셔야죠.",
+      "text_key": "node_1786843238702_20_prbg"
+    },
+    {
+      "id": "node_1786843238702_21_k966",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "이런 데서요…?",
+      "text_key": "node_1786843238702_21_k966"
+    },
+    {
+      "id": "node_1786843238702_22_nxjt",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "이런 데니까요. 오늘은, 전부 사장님 거예요.",
+      "text_key": "node_1786843238702_22_nxjt"
+    },
+    {
+      "id": "node_1786843238702_23_qai7",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 내 바지를 내리고, 발기한 자지를 두 손으로 감싼다.",
+      "text_key": "node_1786843238702_23_qai7"
+    },
+    {
+      "id": "node_1786843238702_24_au2z",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하……",
+      "text_key": "node_1786843238702_24_au2z"
+    },
+    {
+      "id": "node_1786843238702_25_nrio",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "맛있게 해드릴게요.",
+      "text_key": "node_1786843238702_25_nrio"
+    },
+    {
+      "id": "node_1786843238702_26_rhq0",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "입술이 귀두를 감싸고, 그녀가 천천히 머리를 움직인다.",
+      "text_key": "node_1786843238702_26_rhq0"
+    },
+    {
+      "id": "node_1786843238702_27_zfsa",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 미야자와 씨…",
+      "text_key": "node_1786843238702_27_zfsa"
+    },
+    {
+      "id": "node_1786843238702_28_98j3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "웨딩드레스를 입은 신부가, 내 앞에서 무릎 꿇고 봉사를 한다. 화이트 베일이 흔들리고, 레이스 보디스에 감싸인 가슴이 숨을 쉴 때마다 오르내린다. 이보다 음란한 신부는 없을 것이다.",
+      "text_key": "node_1786843238702_28_98j3"
+    },
+    {
+      "id": "node_1786843238702_29_z9fw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "사장님, 입에 그대로…",
+      "text_key": "node_1786843238702_29_z9fw"
+    },
+    {
+      "id": "node_1786843238702_30_qdy6",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "나… 곧…",
+      "text_key": "node_1786843238702_30_qdy6"
+    },
+    {
+      "id": "node_1786843238702_31_6azz",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아… 나온다…!",
+      "text_key": "node_1786843238702_31_6azz"
+    },
+    {
+      "id": "node_1786843238702_32_xe89",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀가 입으로 정액을 받아 삼킨다.",
+      "text_key": "node_1786843238702_32_xe89"
+    },
+    {
+      "id": "graphic_a5_4",
+      "type": "graphic",
+      "image": "2026-08-28_00044_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786843238702_33_v5sn",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "맛있었어요. …이제, 본론이에요.",
+      "text_key": "node_1786843238702_33_v5sn"
+    },
+    {
+      "id": "node_1786843238702_34_ilc3",
+      "type": "graphic",
+      "image": "2026-08-28_00045_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786843238702_35_bjip",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "신부대기실 소파에 미야자와 씨가 손을 짚고 서 있다. 웨딩드레스 치마를 걷어 올린 채다.",
+      "text_key": "node_1786843238702_35_bjip"
+    },
+    {
+      "id": "node_1786843238702_36_7nis",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "…사장님, 뒤에서 해주세요.",
+      "text_key": "node_1786843238702_36_7nis"
+    },
+    {
+      "id": "node_1786843238702_37_seco",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "미야자와 씨…",
+      "text_key": "node_1786843238702_37_seco"
+    },
+    {
+      "id": "node_1786843238702_38_b2z3",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "웨딩드레스 치마가 걷어 올려지고, 드러난 엉덩이와 젖은 그곳이 보인다. 신부의 몸을, 예식 직전에, 이렇게 가지다니… 나는 이제 돌이킬 수 없다.",
+      "text_key": "node_1786843238702_38_b2z3"
+    },
+    {
+      "id": "graphic_a5_6",
+      "type": "graphic",
+      "image": "2026-08-28_00046_.webp",
+      "delay": 2,
+      "blurRegions": [
+        {
+          "id": "blur_1788407556463_gkiv",
+          "x": 0.4609375,
+          "y": 0.8478009259259259,
+          "w": 0.10416666666666663,
+          "h": 0.15219907407407407,
+          "blur": 1.5
+        }
+      ],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786843238702_39_fsy7",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "으읏……",
+      "text_key": "node_1786843238702_39_fsy7"
+    },
+    {
+      "id": "node_1786843238702_40_2mp9",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "깊어요… 사장님, 제 안 깊은 곳까지…",
+      "text_key": "node_1786843238702_40_2mp9"
+    },
+    {
+      "id": "node_1786843238702_41_zqor",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 꽉 조여요…",
+      "text_key": "node_1786843238702_41_zqor"
+    },
+    {
+      "id": "node_1786843238702_42_ha4c",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "좋아요… 더 세게… 제 안, 사장님으로 가득 채워줘요…",
+      "text_key": "node_1786843238702_42_ha4c"
+    },
+    {
+      "id": "node_1786843238702_43_2lt7",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 안이 내 자지를 뜨겁게 조인다. 웨딩드레스가 출렁이고, 화이트 베일이 흔들린다. 이대로 안에 쏟아내면, 이 여자는 완전히 내 것이 된다.",
+      "text_key": "node_1786843238702_43_2lt7"
+    },
+    {
+      "id": "node_1786843238702_44_vutp",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "나… 이제… 안에…",
+      "text_key": "node_1786843238702_44_vutp"
+    },
+    {
+      "id": "node_1786843238702_45_hbx8",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "네… 안에, 전부 주세요…",
+      "text_key": "node_1786843238702_45_hbx8"
+    },
+    {
+      "id": "node_1786843238702_46_n6si",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아…… 나온다……!",
+      "text_key": "node_1786843238702_46_n6si"
+    },
+    {
+      "id": "node_1786843238702_47_rb4a",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "그녀의 안에 정액을 전부 쏟아내고, 천천히 자지를 뽑는다.",
+      "text_key": "node_1786843238702_47_rb4a"
+    },
+    {
+      "id": "graphic_a5_7",
+      "type": "graphic",
+      "image": "2026-08-28_00047_.webp",
+      "delay": 2,
+      "blurRegions": [
+        {
+          "id": "blur_1788407567413_gfvr",
+          "x": 0.4596354166666667,
+          "y": 0.8547453703703703,
+          "w": 0.09765624999999994,
+          "h": 0.14525462962962965,
+          "blur": 2.5
+        }
+      ],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786843238702_48_twlw",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "…사장님의 전부, 제 안에 있어요.",
+      "text_key": "node_1786843238702_48_twlw"
+    },
+    {
+      "id": "node_1786843238702_49_mn18",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하…… 하……",
+      "text_key": "node_1786843238702_49_mn18"
+    },
+    {
+      "id": "node_1786843238702_50_pvn0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "이제, 예식 시작해요. 신부가 되러 가요.",
+      "text_key": "node_1786843238702_50_pvn0"
+    },
+    {
+      "id": "node_1786843238702_51_2pbt",
+      "type": "graphic",
+      "image": "2026-08-28_00048_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786843238702_52_xgx5",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "예식장 버진로드. 미야자와 씨와 나, 두 사람이 하객 앞에 서 있다. 방금 전 일은 아무도 모른다.",
+      "text_key": "node_1786843238702_52_xgx5"
+    },
+    {
+      "id": "node_1786843238702_53_ukjc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "…사장님.",
+      "text_key": "node_1786843238702_53_ukjc"
+    },
+    {
+      "id": "node_1786843238702_54_v56s",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "네.",
+      "text_key": "node_1786843238702_54_v56s"
+    },
+    {
+      "id": "node_1786843238702_55_01u3",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "저, 오늘 정말 행복해요.",
+      "text_key": "node_1786843238702_55_01u3"
+    },
+    {
+      "id": "node_1786843238702_56_boii",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저도예요. 네가 있어서, 행복합니다.",
+      "text_key": "node_1786843238702_56_boii"
+    },
+    {
+      "id": "node_1786843238702_57_sbow",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "앞으로도, 계속 제 곁에 있어 주세요.",
+      "text_key": "node_1786843238702_57_sbow"
+    },
+    {
+      "id": "node_1786843238702_58_12zu",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "평생이요.",
+      "text_key": "node_1786843238702_58_12zu"
+    },
+    {
+      "id": "node_1786843238702_59_hzit",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "네.",
+      "text_key": "node_1786843238702_59_hzit"
+    },
+    {
+      "id": "node_1786843238702_60_zv18",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "주례의 말이 이어지고, 우리는 서약을 나눈다. 결혼식이 무사히 완료된다.",
+      "text_key": "node_1786843238702_60_zv18"
+    },
+    {
+      "id": "node_1786843238702_61_0nu9",
+      "type": "graphic",
+      "image": "2026-08-28_00049_.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_1786843238702_62_pejh",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "시간이 흘러, 어느 날. 미야자와 씨가 일반복을 입고, 배가 불러 있다.",
+      "text_key": "node_1786843238702_62_pejh"
+    },
+    {
+      "id": "node_1786843238702_63_bz4w",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "…사장님, 이제 곧이에요.",
+      "text_key": "node_1786843238702_63_bz4w"
+    },
+    {
+      "id": "node_1786843238702_64_06aa",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그러네요. 우리 아이가…",
+      "text_key": "node_1786843238702_64_06aa"
+    },
+    {
+      "id": "node_1786843238702_65_7yqf",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "사장님을 닮았으면 좋겠어요.",
+      "text_key": "node_1786843238702_65_7yqf"
+    },
+    {
+      "id": "node_1786843238702_66_7d4j",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "너를 닮아야죠. 예쁘게.",
+      "text_key": "node_1786843238702_66_7d4j"
+    },
+    {
+      "id": "node_1786843238702_67_yyis",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "저, 승무원이던 때도, 크리에이터였던 때도, 지금도… 사장님 곁이 제일 행복해요.",
+      "text_key": "node_1786843238702_67_yyis"
+    },
+    {
+      "id": "node_1786843238702_68_8ll9",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "웨딩드레스를 입고 서 있던 그 신부가, 이제는 내 아이를 품은 아내가 되었다. 모든 게, 저 공항 라운지에서 시작됐다. 이 여자와의 인생은, 아직 끝나지 않았다.",
+      "text_key": "node_1786843238702_68_8ll9"
+    },
+    {
+      "id": "node_1786843238702_69_29rh",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "…사랑해요, 미야자와 씨. 그리고, 고마워요.",
+      "text_key": "node_1786843238702_69_29rh"
+    },
+    {
+      "id": "node_1786843238702_70_g96t",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "미야자와",
+      "text": "저도요, 사장님.",
+      "text_key": "node_1786843238702_70_g96t"
+    }
+  ],
+  "defaultLanguage": "ko",
+  "characters": [
+    {
+      "id": "미야자와",
+      "name": "미야자와"
+    }
+  ],
+  "points": [],
+  "media": [
+    {
+      "fileName": "2026-08-28_00040_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00040_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-08-28_00040_.webp",
+      "size": 92186,
+      "id": "media_image_mtjbsmbd_osz9jov"
+    },
+    {
+      "fileName": "2026-08-28_00042_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00042_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-08-28_00042_.webp",
+      "size": 108376,
+      "id": "media_image_mtjbsmbd_s40f95j"
+    },
+    {
+      "fileName": "2026-08-28_00043_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00043_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-08-28_00043_.webp",
+      "size": 188478,
+      "id": "media_image_mtjbsmbd_bpd2com"
+    },
+    {
+      "fileName": "2026-08-28_00044_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00044_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-08-28_00044_.webp",
+      "size": 101296,
+      "id": "media_image_mtjbsmbd_wbw25sd"
+    },
+    {
+      "fileName": "2026-08-28_00045_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00045_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-08-28_00045_.webp",
+      "size": 97260,
+      "id": "media_image_mtjbsmbd_3scd5sr"
+    },
+    {
+      "fileName": "2026-08-28_00046_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00046_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-08-28_00046_.webp",
+      "size": 131654,
+      "id": "media_image_mtjbsmbd_m15vcp3"
+    },
+    {
+      "fileName": "2026-08-28_00047_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00047_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-08-28_00047_.webp",
+      "size": 133658,
+      "id": "media_image_mtjbsmbd_yco9uuf"
+    },
+    {
+      "fileName": "2026-08-28_00048_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00048_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-08-28_00048_.webp",
+      "size": 90238,
+      "id": "media_image_mtjbsmbd_57xgvwe"
+    },
+    {
+      "fileName": "2026-08-28_00049_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00049_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-08-28_00049_.webp",
+      "size": 86674,
+      "id": "media_image_mtjbsmbd_2ckcscz"
+    }
+  ],
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-08-16T01:20:26.789Z",
+  "ownerCharacterId": "1786792656193-i7isvfo"
+}

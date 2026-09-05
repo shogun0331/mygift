@@ -1,0 +1,110 @@
+[
+  {
+    "char": "미야자와리나",
+    "seed": 987654321,
+    "type": "icon",
+    "jobId": "55533cc6-e5f0-4136-a6e7-c0472a561a0d"
+  },
+  {
+    "char": "미야자와리나",
+    "seed": 987654321,
+    "type": "art",
+    "jobId": "7a137d6e-e00c-4949-bd1d-f1b13b1cc185"
+  },
+  {
+    "char": "타치바나미사키",
+    "seed": 987654321,
+    "type": "icon",
+    "jobId": "b6ee3575-5b5a-4112-86a2-246b7655ef0d"
+  },
+  {
+    "char": "타치바나미사키",
+    "seed": 987654321,
+    "type": "art",
+    "jobId": "d27b9373-1fa0-4756-a11d-4340a575070f"
+  },
+  {
+    "char": "아키야마미호",
+    "seed": 1623929430,
+    "type": "icon",
+    "jobId": "90fcd4c6-0808-45a5-9b52-93977adb9ee2"
+  },
+  {
+    "char": "아키야마미호",
+    "seed": 1623929430,
+    "type": "art",
+    "jobId": "69ffb9e9-a9a3-4fc7-a861-e5d412e820a4"
+  },
+  {
+    "char": "센노리나",
+    "seed": 2839475610,
+    "type": "icon",
+    "jobId": "533f99a7-68e0-452e-a6ea-6afa0fe7dbeb"
+  },
+  {
+    "char": "센노리나",
+    "seed": 2839475610,
+    "type": "art",
+    "jobId": "4ff4b911-d8f7-41f6-95d0-e4a5afe0ed17"
+  },
+  {
+    "char": "사쿠라기마이",
+    "seed": 3948577102,
+    "type": "icon",
+    "jobId": "9a6a45bc-0cb2-4140-812d-b03665a320fc"
+  },
+  {
+    "char": "사쿠라기마이",
+    "seed": 3948577102,
+    "type": "art",
+    "jobId": "8faca6ff-2dc7-4d8b-9062-85301d0d55f0"
+  },
+  {
+    "char": "루이자",
+    "seed": 5081727364,
+    "type": "icon",
+    "jobId": "9c9a58fa-66db-4feb-abbe-81ef7217ad4c"
+  },
+  {
+    "char": "루이자",
+    "seed": 5081727364,
+    "type": "art",
+    "jobId": "13e9cb35-a7d9-42b9-9950-7bdf486641b4"
+  },
+  {
+    "char": "리메이",
+    "seed": 6192837465,
+    "type": "icon",
+    "jobId": "b5319ea1-7e5b-4fac-887d-3394a007155f"
+  },
+  {
+    "char": "리메이",
+    "seed": 6192837465,
+    "type": "art",
+    "jobId": "bdd1afb1-7306-4f18-95c9-6681d839facc"
+  },
+  {
+    "char": "시라카와아야",
+    "seed": 7304959622,
+    "type": "icon",
+    "jobId": "9c891da5-e69d-48ec-8bcc-23abe5c01268"
+  },
+  {
+    "char": "시라카와아야",
+    "seed": 7304959622,
+    "type": "art",
+    "jobId": "1f1f5dcc-c3a7-4559-b87f-42839c7271d1"
+  },
+  {
+    "char": "사토메구미",
+    "seed": 8415069732,
+    "type": "icon",
+    "jobId": "e64192c2-e903-4e17-8cff-c3de85f97f3f"
+  },
+  {
+    "char": "사토메구미",
+    "seed": 8415069732,
+    "type": "art",
+    "jobId": "19021239-1e86-4bcf-863d-e189187923b1"
+  }
+]

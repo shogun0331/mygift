@@ -198,7 +198,7 @@ function buildFlavorEvents(
       creatorId,
       creatorName,
       type: 'viewers',
-      amount: 0,
+      amount: n,
       text: translate(getCurrentLocale(), 'feed.viewersGained')
         .replace('{count}', String(n))
         .replace('{name}', creatorName),

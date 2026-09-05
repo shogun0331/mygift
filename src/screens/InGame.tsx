@@ -1702,7 +1702,7 @@ export function InGame({
 
     const converted = isViewerCapped
       ? events.map((ev) =>
-          ev.type === 'viewers' && !ev.userId && ev.amount > 0
+          ev.type === 'viewers' && !ev.userId && Boolean(ev.creatorId)
             ? convertViewerEventToDonation(ev)
             : ev,
         )
@@ -1745,7 +1745,7 @@ export function InGame({
 
     for (const event of due) {
       const targetEvent =
-        isViewerCapped && event.type === 'viewers' && !event.userId && event.amount > 0
+        isViewerCapped && event.type === 'viewers' && !event.userId && Boolean(event.creatorId)
           ? convertViewerEventToDonation(event)
           : event
 
