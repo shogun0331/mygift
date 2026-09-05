@@ -2315,7 +2315,7 @@ export function InGame({
       }
       if (care.equipped) careRecoverCreatorIds.add(creatorId)
     }
-    const { creators: nextOwned, cared, crashes } = applyWeeklyStaminaAndCondition(
+    const { creators: nextOwned, cared: _cared, crashes } = applyWeeklyStaminaAndCondition(
       ownedCreatorsRef.current,
       broadcastedIds,
       drainMultByCreatorId,
@@ -2337,22 +2337,6 @@ export function InGame({
         tone: 'bg-rose-500',
       }))
       setLiveEvents((prev) => [...crashEvents, ...prev].slice(0, MAX_RECENT_EVENTS))
-    }
-    for (const row of cared) {
-      const slotId = findSlotIdForCreator(studioSlotsRef.current, row.creatorId)
-      if (!slotId) continue
-      const care = staffBonusOf(managerStateRef.current, slotId, 'care')
-      presentStaffAction(
-        slotId,
-        'care',
-        t('dashboard.staffCare'),
-        t('dashboard.staffCareSub'),
-        t('feed.care')
-          .replace('{name}', staffNameOf(care.staffId) || creatorNameOf(row.creatorId))
-          .replace('{creatorName}', creatorNameOf(row.creatorId)),
-        row.creatorId,
-        creatorNameOf(row.creatorId),
-      )
     }
     for (const creatorId of assignedSlotIds) {
       const slotId = findSlotIdForCreator(studioSlotsRef.current, creatorId)
