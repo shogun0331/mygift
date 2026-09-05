@@ -1664,7 +1664,7 @@ export function InGame({
 
   function convertViewerEventToDonation(event: DayEvent): DayEvent {
     const donationAmount = rollInt(1500, 4500)
-    const text = t('feed.donationReceived')
+    const text = t('feed.donation')
       .replace('{amount}', formatMoney(donationAmount))
       .replace('{name}', event.creatorName)
     return {
