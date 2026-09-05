@@ -202,18 +202,14 @@ export function meetsStationTierForEquip(current: StationGrade, required: Grade)
   return stationTierRank(current) >= EQUIP_REQ_RANK[required]
 }
 
-/** 현재 등급 시청자 상한(심사 목표) = 다음 등급 승급에 필요한 시청자 수 */
-export function tierViewerCap(config: StationGradeConfig, grade: StationGrade): number | null {
-  const next = nextStationTier(grade)
-  if (!next) return null
-  return config.promotions[next].requiredViewers
+/** 현재 등급 시청자 상한 (제한 제거 -> null) */
+export function tierViewerCap(_config: StationGradeConfig, _grade: StationGrade): number | null {
+  return null
 }
 
-/** 실제 보유 가능 상한 — 승급 필요 시청자 수의 110%까지 확보 허용 */
-export function tierViewerHoldCap(config: StationGradeConfig, grade: StationGrade): number | null {
-  const base = tierViewerCap(config, grade)
-  if (base == null) return null
-  return Math.round(base * 1.1)
+/** 실제 보유 가능 상한 (제한 제거 -> null) */
+export function tierViewerHoldCap(_config: StationGradeConfig, _grade: StationGrade): number | null {
+  return null
 }
 
 export function tierMaxRank(grade: StationGrade): number {

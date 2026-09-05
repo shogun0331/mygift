@@ -9,7 +9,6 @@ import {
   STATION_TIER_LABEL,
   STATION_TIER_ORDER,
   TIER_RANK_BANDS,
-  tierViewerHoldCap,
   type StationGradeConfig,
   type StationGrade,
   type StationReviewCheck,
@@ -92,15 +91,10 @@ export function gatedFloorOfStation(
 
 export function capStationViewers(
   raw: number,
-  grade: StationGrade,
-  config?: StationGradeConfig,
+  _grade: StationGrade,
+  _config?: StationGradeConfig,
 ): number {
-  const cfg = config ?? getActiveConfig()
-  const cappedFloor = Math.max(VIEWER_FLOOR, Math.round(raw))
-  // 실제 보유 상한 = 승급 필요 시청자 수의 110% (심사 목표는 tierViewerCap)
-  const holdCap = tierViewerHoldCap(cfg, grade)
-  if (holdCap == null) return cappedFloor
-  return Math.min(holdCap, cappedFloor)
+  return Math.max(VIEWER_FLOOR, Math.round(raw))
 }
 
 /**
