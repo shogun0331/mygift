@@ -1533,7 +1533,7 @@ export function InGame({
       const combined = Math.max(0.5, Math.min(1, staminaMult * careMult))
       drainByCreatorId[creator.id] = Math.max(
         1,
-        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * combined),
+        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance, scoreOf(creator)) * combined),
       )
       condDrainByCreatorId[creator.id] = calcWeeklyBroadcastConditionCost(creator, 1)
     }

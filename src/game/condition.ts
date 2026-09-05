@@ -307,9 +307,29 @@ export function calcBroadcastStaminaCost(elegance = 0): number {
   )
 }
 
-/** 주 종료 차감. 한 턴=4주이므로 월간 소모의 1/4 */
-export function calcWeeklyBroadcastStaminaCost(elegance = 0): number {
-  return Math.max(1, Math.round(calcBroadcastStaminaCost(elegance) / WEEKS_PER_MONTH))
+/** 컨디션 상태에 따른 스테미나 소모 배율 (컨디션 0/최악일수록 최대 3.5배 급증) */
+export function staminaDrainMultFromCondition(
+  conditionInput?: { conditionScore?: number; condition?: string } | number,
+): number {
+  if (conditionInput == null) return 1.0
+  const score = typeof conditionInput === 'number' ? conditionInput : scoreOf(conditionInput)
+  if (score >= 90) return 1.0
+  if (score >= 70) return 1.15
+  if (score >= 50) return 1.4
+  if (score >= 30) return 2.0
+  // 0~29 구간: 30(2.0배) ~ 0(3.5배) 선형 증가
+  const ratio = Math.max(0, Math.min(30, score)) / 30
+  return 3.5 - ratio * 1.5
+}
+
+/** 주 종료 차감. 한 턴=4주이므로 월간 소모의 1/4. 컨디션 저하 시 최대 3.5배 급증 */
+export function calcWeeklyBroadcastStaminaCost(
+  elegance = 0,
+  conditionInput?: { conditionScore?: number; condition?: string } | number,
+): number {
+  const baseCost = Math.max(1, Math.round(calcBroadcastStaminaCost(elegance) / WEEKS_PER_MONTH))
+  const mult = staminaDrainMultFromCondition(conditionInput)
+  return Math.max(1, Math.round(baseCost * mult))
 }
 
 export function calcVacationCost(annualSalary: number, grade: Grade) {
@@ -408,7 +428,7 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
       const conditionMult = Math.max(0.5, Math.min(1, drain?.conditionMult ?? 1))
       const staminaCost = Math.max(
         1,
-        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * staminaMult),
+        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance, currentScore) * staminaMult),
       )
       const staminaAfter = clampStamina(staminaNow - staminaCost, staminaMax)
       const isLowStamina = staminaAfter < STAMINA_LOW_THRESHOLD
