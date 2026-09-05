@@ -417,7 +417,7 @@ export function DashboardPanel({
       </section>
 
       <aside className="flex min-h-0 flex-col gap-2.5 lg:h-full lg:overflow-hidden">
-        <section className="game-panel flex min-h-0 max-h-48 flex-col rounded-2xl p-3 lg:max-h-none lg:flex-[0.85] overflow-hidden">
+        <section className="game-panel flex min-h-[16rem] sm:min-h-[20rem] flex-col rounded-2xl p-3 lg:min-h-0 lg:flex-[1.6] overflow-hidden">
           <div className="flex shrink-0 items-center justify-between gap-2 pb-1.5 border-b border-white/10">
             <h2 className="game-stat-label flex items-center gap-1.5 text-xs font-bold tracking-wider text-pink-400">
               <span className="relative flex h-2 w-2 shrink-0">
@@ -488,7 +488,7 @@ export function DashboardPanel({
           )}
         </section>
 
-        <section className={`game-panel live-rank-panel flex min-h-[24rem] flex-[1.35] flex-col rounded-2xl p-3 sm:min-h-[26rem] lg:min-h-0 ${isLive ? 'is-live' : ''}`}>
+        <section className={`game-panel live-rank-panel flex min-h-[12rem] sm:min-h-[14rem] lg:min-h-0 lg:flex-[0.8] flex-col rounded-2xl p-3 ${isLive ? 'is-live' : ''}`}>
           <div className="flex shrink-0 items-center justify-between gap-2">
             <h2 className="game-stat-label">{t('dashboard.liveRank')}</h2>
             {isLive && hasAssigned ? (
@@ -512,7 +512,7 @@ export function DashboardPanel({
               <p className="py-2 text-center text-xs text-slate-500">
                 {t('dashboard.noLiveBroadcast')}
               </p>
-              {Array.from({ length: 5 }, (_, i) => (
+              {Array.from({ length: 2 }, (_, i) => (
                 <div
                   key={`rank-empty-${i}`}
                   className="h-10 rounded-xl border border-dashed border-white/8 bg-black/10"
