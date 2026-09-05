@@ -48,8 +48,8 @@ export const STAMINA_BROADCAST_MIN = 1
 /** 소모 후 스테미나가 이 미만이면 컨디션 급속 소모 */
 export const STAMINA_LOW_THRESHOLD = 30
 
-export const CONDITION_BROADCAST_LIGHT = { min: 2, max: 4 } as const
-export const CONDITION_BROADCAST_FAST = { min: 8, max: 12 } as const
+export const CONDITION_BROADCAST_LIGHT = { min: 10, max: 15 } as const
+export const CONDITION_BROADCAST_FAST = { min: 25, max: 35 } as const
 export const REST_RECOVERY = { min: 10, max: 15 } as const
 export const VACATION_CONDITION_GAIN = 20
 
