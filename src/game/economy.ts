@@ -34,6 +34,8 @@ export type DayEvent = {
   tone: string
   userId?: string
   chatDonationText?: string
+  /** 월(4주)에 약 1회 등장하는 대형 후원 연출 플래그 */
+  superDonation?: boolean
 }
 
 export type CreatorDayPlan = {
@@ -288,6 +290,62 @@ export function buildStudioDayPlan(
   )
   const totalRevenueWon = plans.reduce((sum, plan) => sum + plan.weekRevenueWon, 0)
   return { dayKey, dayMs, plans, totalRevenueWon }
+}
+
+/**
+ * 월(4주=1턴)에 약 1회, 대형 후원을 주입한다.
+ * 남은 주 수에 따라 1/N 확률 → 기댓값 약 1회/월.
+ */
+export function maybeInjectMonthlySuperDonation(
+  plan: StudioDayPlan,
+  opts: { alreadyFired: boolean; weeksLeftInMonth: number },
+): { plan: StudioDayPlan; fired: boolean } {
+  if (opts.alreadyFired) return { plan, fired: false }
+  const weeksLeft = Math.max(1, Math.round(opts.weeksLeftInMonth))
+  if (Math.random() > 1 / weeksLeft) return { plan, fired: false }
+
+  const candidates: Array<{ planIndex: number; eventIndex: number }> = []
+  plan.plans.forEach((creatorPlan, planIndex) => {
+    creatorPlan.events.forEach((event, eventIndex) => {
+      if (event.type === 'donation' && event.amount > 0) {
+        candidates.push({ planIndex, eventIndex })
+      }
+    })
+  })
+  if (candidates.length === 0) return { plan, fired: false }
+
+  const pick = candidates[rollInt(0, candidates.length - 1)]!
+  const bonus = rollInt(5_000, 12_000)
+  const nextPlans = plan.plans.map((creatorPlan, planIndex) => {
+    if (planIndex !== pick.planIndex) return creatorPlan
+    const events = creatorPlan.events.map((event, eventIndex) => {
+      if (eventIndex !== pick.eventIndex) return event
+      const amount = roundMoney(event.amount + bonus)
+      return {
+        ...event,
+        amount,
+        superDonation: true,
+        tone: 'bg-fuchsia-400',
+        text: translate(getCurrentLocale(), 'feed.bigDonation')
+          .replace('{amount}', () => formatMoney(amount))
+          .replace('{name}', event.creatorName),
+      }
+    })
+    return {
+      ...creatorPlan,
+      weekRevenueWon: creatorPlan.weekRevenueWon + bonus,
+      events,
+    }
+  })
+
+  return {
+    plan: {
+      ...plan,
+      plans: nextPlans,
+      totalRevenueWon: plan.totalRevenueWon + bonus,
+    },
+    fired: true,
+  }
 }
 
 export function scaleDayPlanTimes(plan: StudioDayPlan, nextDayMs: number): StudioDayPlan {

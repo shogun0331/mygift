@@ -1,3 +1,4 @@
+import { useDateOfferSpeech } from './useDateOfferSpeech'
 import type { DatePending, DateStepKey } from '../game/social'
 import { useTranslation } from '../locales/i18n'
 
@@ -32,6 +33,10 @@ export function DateOfferModal({
   onStart: () => void
 }) {
   const { t } = useTranslation()
+  const speech = useDateOfferSpeech(pending.creatorName, pending.creatorId)
+  const line =
+    speech?.text || t('date.offerBody').replace('{name}', pending.creatorName)
+
   return (
     <div
       className="fixed inset-0 z-[87] flex items-center justify-center bg-black/75 p-4 backdrop-blur-[3px]"
@@ -44,9 +49,6 @@ export function DateOfferModal({
         <h2 id="date-offer-title" className="mt-1 text-xl font-black text-slate-100">
           {t(titleKey(pending.step))}
         </h2>
-        <p className="mt-3 text-sm leading-relaxed text-slate-300">
-          {t('date.offerBody').replace('{name}', pending.creatorName)}
-        </p>
         <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-black/30 px-3 py-3">
           <Face name={pending.creatorName} imageUrl={pending.profileImageUrl} />
           <div className="min-w-0">
@@ -56,6 +58,14 @@ export function DateOfferModal({
             </p>
           </div>
         </div>
+        <blockquote className="mt-4 rounded-xl border border-pink-400/25 bg-pink-950/25 px-3.5 py-3">
+          <p className="text-[13px] font-semibold leading-relaxed text-pink-50 whitespace-pre-wrap">
+            “{line}”
+          </p>
+        </blockquote>
+        <p className="mt-3 text-center text-[11px] font-bold text-slate-400">
+          {t('date.offerHint')}
+        </p>
         <div className="mt-5 flex justify-center">
           <button
             type="button"

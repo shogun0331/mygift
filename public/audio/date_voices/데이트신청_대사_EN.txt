@@ -1,0 +1,38 @@
+데이트 신청 대사 (9명, 각 3문장) - EN
+==========================================
+1. 미야자와 리나 (승무원)
+  1. Um... on your day off, if it's alright with you, would you like to spend some time together?
+  2. If you have the time, I'd like you to go on a date with me.
+  3. On your next day off, I wish I could spend it with you... that's what I was hoping.
+2. 타치바나 미사키 (요가강사)
+  1. Hey, boss, want to go hang out somewhere together next time?
+  2. Next day off, want to go somewhere just the two of us?
+  3. Won't you go on a date with me? I'm sure it'll be fun!
+3. 사토 메구미 (간호사)
+  1. Um... if it's alright with you, would you... go out with me...?
+  2. If it's alright... could you spare me some time...?
+  3. I want to go somewhere with you... that's how I feel...
+4. 아키야마 미호 (여경)
+  1. ...If you're free, how about we get together.
+  2. This weekend, let's go out just the two of us.
+  3. ...Sometimes, I want to go out with you.
+5. 센노 리나 (발레리나)
+  1. When you have the time, would you go out with me?
+  2. If it's alright with you, please give me your next day off.
+  3. I've been thinking that I'd like to go on a date with you.
+6. 사쿠라기 마이 (재즈싱어)
+  1. Hey, want to go out just the two of us sometimes?
+  2. Want to go grab a drink together? I'll pay.
+  3. I figured spending time with you wouldn't be so bad, you know.
+7. 루이자 (삼바댄서)
+  1. Boss, want to go hang out together?
+  2. Let's go on a date next time! When works for you?
+  3. I want to do something fun together, just us two~! What do you say?
+8. 리메이 (중식당 사장)
+  1. When you're free, how about we grab a meal sometime.
+  2. Next day off, won't you go out with me?
+  3. Sometimes, I want to take it slow with you.
+9. 시라카와 아야 (교수)
+  1. ...If it's alright, how about tea with me?
+  2. If it's not a bother, how about dinner together.
+  3. I'd like to spend a little time together with you, taking it slow.

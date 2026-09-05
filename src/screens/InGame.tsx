@@ -111,6 +111,7 @@ import {
   buildStudioDayPlan,
   scaleDayPlanTimes,
   applyBroadcastBlockToCreatorPlan,
+  maybeInjectMonthlySuperDonation,
   type DayEvent,
   type StudioDayPlan,
 } from '../game/economy'
@@ -144,7 +145,6 @@ import {
   applyAudiencePenalty,
   companyTierLabelKey,
   companyTierOf,
-  createInitialLeagueState,
   creatorViewerWeight,
   formatViewers,
   growLeagueBetweenRefresh,
@@ -201,6 +201,7 @@ import { GameClearModal } from './GameClearModal'
 import {
   applyStationReview,
   capStationViewers,
+  getStationReviewStatus,
   isAnnualReviewMonth,
   setStationGradeConfig,
   stationPromotionAssetReward,
@@ -210,6 +211,7 @@ import {
   type StationGradeConfig,
   type StationReviewStatus,
 } from '../game/station'
+import { pickRandomOwnedPromotionSpeaker } from '../game/promotionLines'
 import {
   maxScoutCreatorsForGrade,
   slotUnlockMinGradeOf,
@@ -233,12 +235,15 @@ import { RankChangeModal } from './RankChangeModal'
 import { RankingPanel } from './RankingPanel'
 import { StationReviewModal } from './StationReviewModal'
 import { StationPromotionFx } from './StationPromotionFx'
+import { PromotionCongratsDialogue } from './PromotionCongratsDialogue'
 import { DateOfferModal, DateResultModal } from './DateEventModal'
 import { HRetryOfferModal, HRetryResultModal } from './HRetryEventModal'
 import { VipOfferModal } from './VipOfferModal'
 import { VipResultModal, type VipResult } from './VipResultModal'
+import { VipDepartDialogue } from './VipDepartDialogue'
 import { ShortsVnPlayer } from './ShortsVnPlayer'
 import { SpecialVacationPlayer } from './SpecialVacationPlayer'
+import { DonationThanksDialogue, type DonationThanksPlay } from './DonationThanksDialogue'
 import { ProposalShortsPlayer } from './ProposalShortsPlayer'
 import { WeeklySettlementModal } from './WeeklySettlementModal'
 import { EventSimulator } from '../events/EventSimulator'
@@ -520,6 +525,45 @@ function IconHudAssets() {
   )
 }
 
+function IconHudNextGrade() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M4.5 18.5V8.2L12 4.5l7.5 3.7v10.3"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.2 18.5v-5.2h5.6v5.2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function IconHudNextGoal() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+    </svg>
+  )
+}
+
+function formatHudGoalCount(
+  current: number,
+  required: number,
+  t: (key: string) => string,
+): string {
+  return t('hud.nextGoalViewers')
+    .replace('{current}', formatViewers(current))
+    .replace('{required}', formatViewers(required))
+}
+
 function IconCasino() {
   return (
     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -647,6 +691,11 @@ type InGameProps = {
   companyMeta?: { id: string; name: string; createdAt: number } | null
   /** 로드/에디터 복귀 시 하이드레이션용 이전 세이브 */
   initialSave?: GameSave | null
+  /** App이 보유 — InGame 재마운트/HMR에도 유지 */
+  league: LeagueState
+  onLeagueChange: (next: LeagueState) => void
+  stationGrade: StationGrade
+  onStationGradeChange: (next: StationGrade) => void
 }
 
 export function InGame({
@@ -667,8 +716,21 @@ export function InGame({
   stationGradeConfig,
   companyMeta = null,
   initialSave = null,
+  league,
+  onLeagueChange,
+  stationGrade,
+  onStationGradeChange,
 }: InGameProps) {
   const { t, locale, setLocale } = useTranslation()
+
+  // 마운트 시 initialSave로 복원 (league/stationGrade는 App props)
+  const bootSaveRef = useRef<GameSave | null | undefined>(undefined)
+  if (bootSaveRef.current === undefined) {
+    bootSaveRef.current = initialSave
+  }
+  const boot = bootSaveRef.current
+  const setLeague = onLeagueChange
+  const setStationGrade = onStationGradeChange
 
   useEffect(() => {
     setStationGradeConfig(stationGradeConfig)
@@ -699,7 +761,7 @@ export function InGame({
     setTab('schedule')
   }
   const speed: SpeedOption = '1x'
-  const [gameMonth, setGameMonth] = useState(initialSave?.gameMonth ?? 0)
+  const [gameMonth, setGameMonth] = useState(boot?.gameMonth ?? 0)
   const [broadcastPhase, setBroadcastPhase] = useState<BroadcastPhase>('prep')
 
   function handleDevPrevMonth() {
@@ -713,8 +775,8 @@ export function InGame({
   }
   const [livePlayVideoByCreator, setLivePlayVideoByCreator] = useState<Record<string, string>>({})
   const livePlayVideoByCreatorRef = useRef(livePlayVideoByCreator)
-  const [monthWeekIndex, setMonthWeekIndex] = useState(initialSave?.monthWeekIndex ?? 0)
-  const [assets, setAssets] = useState(initialSave?.assets ?? INITIAL_ASSETS)
+  const [monthWeekIndex, setMonthWeekIndex] = useState(boot?.monthWeekIndex ?? 0)
+  const [assets, setAssets] = useState(boot?.assets ?? INITIAL_ASSETS)
   const assetsRef = useRef(assets)
   const [liveEvents, setLiveEvents] = useState<DayEvent[]>([])
   const [conditionCrashes, setConditionCrashes] = useState<ConditionCrashFxItem[]>([])
@@ -722,13 +784,13 @@ export function InGame({
   const [staffActions, setStaffActions] = useState<StaffActionFxItem[]>([])
   const [toxicQteQueue, setToxicQteQueue] = useState<ToxicWhackQteItem[]>([])
   const [liveRevenueByCreator, setLiveRevenueByCreator] = useState<Record<string, number>>(
-    () => initialSave?.liveRevenueByCreator ?? {},
+    () => boot?.liveRevenueByCreator ?? {},
   )
   const liveRevenueByCreatorRef = useRef(liveRevenueByCreator)
   liveRevenueByCreatorRef.current = liveRevenueByCreator
   const [liveWeekProgress, setLiveWeekProgress] = useState(0)
   const [weeklyTrendType, setWeeklyTrendType] = useState<CreatorStatType>(
-    () => initialSave?.weeklyTrendType ?? rollRandomWeeklyTrendType(),
+    () => boot?.weeklyTrendType ?? rollRandomWeeklyTrendType(),
   )
   const weeklyTrendTypeRef = useRef(weeklyTrendType)
   weeklyTrendTypeRef.current = weeklyTrendType
@@ -739,16 +801,13 @@ export function InGame({
     Record<string, number>
   >({})
   const [slotGearById, setSlotGearById] = useState<Record<string, SlotGear>>(() =>
-    initialSave?.slotGearById ?? createSlotGearMapFromSlots(studioSlots),
+    boot?.slotGearById ?? createSlotGearMapFromSlots(studioSlots),
   )
   const [weeklyStatement, setWeeklyStatement] = useState<WeeklyStatement | null>(null)
-  const [casinoTurnCount, setCasinoTurnCount] = useState(initialSave?.casinoTurnCount ?? 0) // 0..3 (3턴에 1번 활성화)
-  const [showCasinoModal, setShowCasinoModal] = useState(initialSave?.showCasinoModal ?? false)
+  const [casinoTurnCount, setCasinoTurnCount] = useState(boot?.casinoTurnCount ?? 0) // 0..3 (3턴에 1번 활성화)
+  const [showCasinoModal, setShowCasinoModal] = useState(boot?.showCasinoModal ?? false)
   const [activeCasinoRoomId, setActiveCasinoRoomId] = useState<HighLowRoomId | null>(null)
 
-  const [stationGrade, setStationGrade] = useState<StationGrade>(
-    initialSave?.stationGrade ?? 'black',
-  )
   const isCasinoGradeUnlocked = ['sme', 'mid', 'large', 'top'].includes(stationGrade)
   const isCasinoAvailable = isCasinoGradeUnlocked && casinoTurnCount >= 3
 
@@ -761,14 +820,11 @@ export function InGame({
   const [openCreatorScout, setOpenCreatorScout] = useState(false)
   const [openStaffScout, setOpenStaffScout] = useState(false)
   const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(
-    initialSave?.broadcastMonthNumber ?? 1,
-  )
-  const [league, setLeague] = useState<LeagueState>(
-    () => initialSave?.league ?? createInitialLeagueState([], 'black'),
+    boot?.broadcastMonthNumber ?? 1,
   )
   const [rankSettlement, setRankSettlement] = useState<RankSettlementResult | null>(null)
   const [rankRefreshTurnsLeft, setRankRefreshTurnsLeft] = useState(
-    initialSave?.rankRefreshTurnsLeft ?? RANK_REFRESH_TURNS,
+    boot?.rankRefreshTurnsLeft ?? RANK_REFRESH_TURNS,
   )
   const [rankBubblePlay, setRankBubblePlay] = useState<{
     fromRank: number
@@ -780,6 +836,9 @@ export function InGame({
     fromRank: number
     toRank: number
   } | null>(null)
+  const [promotionCongratsPlay, setPromotionCongratsPlay] = useState<OwnedCreator | null>(null)
+  const promotionFxDoneRef = useRef(false)
+  const promotionCongratsDoneRef = useRef(true)
   const [stationAuditTarget, setStationAuditTarget] = useState<{
     currentTier: StationGrade
     nextTier: Exclude<StationGrade, 'black' | 'tiny'>
@@ -788,20 +847,20 @@ export function InGame({
   const [auditDeckSelecting, setAuditDeckSelecting] = useState<boolean>(false)
   const [selectedAuditCreators, setSelectedAuditCreators] = useState<any[] | null>(null)
 
-  const staffScoutCooldownRef = useRef(initialSave?.scout?.staffScoutCooldown ?? 1)
+  const staffScoutCooldownRef = useRef(boot?.scout?.staffScoutCooldown ?? 1)
   const [staffScoutAvailable, setStaffScoutAvailable] = useState(
-    initialSave?.scout?.staffScoutAvailable ?? true,
+    boot?.scout?.staffScoutAvailable ?? true,
   )
   const staffScoutAvailableRef = useRef(staffScoutAvailable)
   staffScoutAvailableRef.current = staffScoutAvailable
   const [, setCreatorScoutCooldown] = useState(0)
   const [creatorScoutAvailable, setCreatorScoutAvailable] = useState(
-    initialSave?.scout?.creatorScoutAvailable ?? false,
+    boot?.scout?.creatorScoutAvailable ?? false,
   )
   const creatorScoutAvailableRef = useRef(creatorScoutAvailable)
   creatorScoutAvailableRef.current = creatorScoutAvailable
   const [creatorScoutFirstDone, setCreatorScoutFirstDone] = useState(
-    initialSave?.scout?.creatorScoutFirstDone ?? false,
+    boot?.scout?.creatorScoutFirstDone ?? false,
   )
   const creatorScoutFirstDoneRef = useRef(creatorScoutFirstDone)
   creatorScoutFirstDoneRef.current = creatorScoutFirstDone
@@ -810,7 +869,7 @@ export function InGame({
     staffId: string
     proposedHireCost: number
     proposedSalary: number
-  } | null>(initialSave?.scout?.scoutedStaffCandidate ?? null)
+  } | null>(boot?.scout?.scoutedStaffCandidate ?? null)
   const [scoutedStaffCandidate, setScoutedStaffCandidate] = useState<ScoutedStaffCandidate | null>(null)
   const scoutedStaffCandidateRef = useRef(scoutedStaffCandidate)
   scoutedStaffCandidateRef.current = scoutedStaffCandidate
@@ -829,17 +888,17 @@ export function InGame({
     })
   }, [registeredStaff])
   const [hiredStaffSalaries, setHiredStaffSalaries] = useState<Record<string, number>>(
-    initialSave?.hiredStaffSalaries ?? {},
+    boot?.hiredStaffSalaries ?? {},
   )
   const hiredStaffSalariesRef = useRef(hiredStaffSalaries)
   hiredStaffSalariesRef.current = hiredStaffSalaries
   const [hiredStaffStartMonths, setHiredStaffStartMonths] = useState<Record<string, number>>(
-    initialSave?.hiredStaffStartMonths ?? {},
+    boot?.hiredStaffStartMonths ?? {},
   )
   const hiredStaffStartMonthsRef = useRef(hiredStaffStartMonths)
   hiredStaffStartMonthsRef.current = hiredStaffStartMonths
   const [hiredStaffLastRaiseMonths, setHiredStaffLastRaiseMonths] = useState<Record<string, number>>(
-    initialSave?.hiredStaffLastRaiseMonths ?? {},
+    boot?.hiredStaffLastRaiseMonths ?? {},
   )
   const hiredStaffLastRaiseMonthsRef = useRef(hiredStaffLastRaiseMonths)
   hiredStaffLastRaiseMonthsRef.current = hiredStaffLastRaiseMonths
@@ -870,7 +929,18 @@ export function InGame({
     payout: number
     beats: ShortsVnBeat[]
   } | null>(null)
+  /** VIP 수락 직후 출발전 인사 → 끝나면 VN/숏으로 이어짐 */
+  const [vipDepartPlay, setVipDepartPlay] = useState<{
+    creator: OwnedCreator
+    offer: VipOffer
+    payout: number
+    next:
+      | { kind: 'vn'; event: GameEvent }
+      | { kind: 'shorts'; event: GameEvent; beats: ShortsVnBeat[] }
+      | { kind: 'rewards' }
+  } | null>(null)
   const [vacationPlay, setVacationPlay] = useState<OwnedCreator | null>(null)
+  const [donationThanksPlay, setDonationThanksPlay] = useState<DonationThanksPlay | null>(null)
   type SocialUi =
     | { mode: 'dateOffer'; pending: DatePending }
     | { mode: 'dateVn'; pending: DatePending; event: GameEvent }
@@ -926,15 +996,15 @@ export function InGame({
   const [scoutEventState, setScoutEventState] = useState<ScoutEventState | null>(null)
   const [restRequiredName, setRestRequiredName] = useState<string | null>(null)
   /** 세이브된 스카우트 상태 — 등록 캐릭터 로드 전에는 오퍼 템플릿 재구성을 보류 */
-  const scoutRawRef = useRef<SerializedScoutSystemState | null>(initialSave?.scoutSystem ?? null)
+  const scoutRawRef = useRef<SerializedScoutSystemState | null>(boot?.scoutSystem ?? null)
   const [scoutSystem, setScoutSystem] = useState<ScoutSystemState>(() => {
-    if (initialSave?.scoutSystem && registeredCharacters.length > 0) {
+    if (boot?.scoutSystem && registeredCharacters.length > 0) {
       scoutRawRef.current = null
-      return hydrateScoutSystem(initialSave.scoutSystem, registeredCharacters)
+      return hydrateScoutSystem(boot.scoutSystem, registeredCharacters)
     }
     // 구버전 세이브: 이미 영입을 한 상태라면 오프닝 스카우트 재등장 금지
-    if (initialSave && (initialSave.ownedCreators?.length ?? 0) > 0) {
-      return createInitialScoutState(initialSave.broadcastMonthNumber ?? 1, { openingDone: true })
+    if (boot && (boot.ownedCreators?.length ?? 0) > 0) {
+      return createInitialScoutState(boot.broadcastMonthNumber ?? 1, { openingDone: true })
     }
     return createInitialScoutState(1)
   })
@@ -1061,6 +1131,7 @@ export function InGame({
       stationReview ||
       vipOffer ||
       vipResult ||
+      vipDepartPlay ||
       vipEventPlay ||
       socialUi ||
       startBroadcastLocked ||
@@ -1083,6 +1154,7 @@ export function InGame({
     stationReview,
     vipOffer,
     vipResult,
+    vipDepartPlay,
     vipEventPlay,
     socialUi,
     startBroadcastLocked,
@@ -1098,6 +1170,7 @@ export function InGame({
     !stationReview &&
     !vipOffer &&
     !vipResult &&
+    !vipDepartPlay &&
     !vipEventPlay &&
     !socialUi &&
     !startBroadcastLocked &&
@@ -1189,6 +1262,7 @@ export function InGame({
       stationReview ||
       vipOffer ||
       vipResult ||
+      vipDepartPlay ||
       vipEventPlay ||
       socialUi ||
       scoutEventState ||
@@ -1208,6 +1282,7 @@ export function InGame({
     stationReview,
     vipOffer,
     vipResult,
+    vipDepartPlay,
     vipEventPlay,
     socialUi,
     scoutEventState,
@@ -1219,15 +1294,16 @@ export function InGame({
   const revealedIdsRef = useRef(new Set<string>())
   const donationBatchRef = useRef(new Map<string, DonationBatch>())
   const feedExtraQueueRef = useRef<DayEvent[]>([])
+  const superDonationFiredMonthRef = useRef<number | null>(null)
   const lastFeedEmitAtRef = useRef(0)
   const lastFeedTypeRef = useRef<'donation' | 'extra'>('extra')
   const lastDonationSfxAtRef = useRef(0)
   const lastViewerSfxAtRef = useRef(0)
   const settledDayKeyRef = useRef<string | null>(null)
   const weekAccumRef = useRef<WeekAccumulator>(
-    initialSave ? deserializeWeekAccum(initialSave.weekAccum) : createWeekAccumulator(1),
+    boot ? deserializeWeekAccum(boot.weekAccum) : createWeekAccumulator(1),
   )
-  const prevWeekRevenueRef = useRef<number | null>(initialSave?.prevWeekRevenue ?? null)
+  const prevWeekRevenueRef = useRef<number | null>(boot?.prevWeekRevenue ?? null)
   const weekFinishedRef = useRef(false)
   const toxicQteQueueRef = useRef<ToxicWhackQteItem[]>([])
   const weekInspectionsRef = useRef<WeekInspection[]>([])
@@ -1248,13 +1324,13 @@ export function InGame({
     newRank: number
   } | null>(null)
   const rankRefreshTurnsLeftRef = useRef(RANK_REFRESH_TURNS)
-  const pendingStationReviewRef = useRef(initialSave?.pendingStationReview ?? false)
+  const pendingStationReviewRef = useRef(boot?.pendingStationReview ?? false)
   const pendingGameClearRef = useRef(false)
   const pendingSocialQueueRef = useRef<SocialPending[]>([])
-  const socialSpawnRef = useRef(initialSave?.socialSpawn ?? createSocialSpawnState())
+  const socialSpawnRef = useRef(boot?.socialSpawn ?? createSocialSpawnState())
   const stationGradeRef = useRef(stationGrade)
   const annualRevenueByYearRef = useRef<Record<number, number>>(
-    initialSave?.annualRevenueByYear ?? {},
+    boot?.annualRevenueByYear ?? {},
   )
   const studioSlotsRef = useRef(studioSlots)
   const slotGearByIdRef = useRef(slotGearById)
@@ -1309,7 +1385,7 @@ export function InGame({
   }
 
   // ── 세이브/플레이타임 ──────────────────────────────────────────
-  const playtimeMsRef = useRef<number>(initialSave?.playtimeMs ?? 0)
+  const playtimeMsRef = useRef<number>(boot?.playtimeMs ?? 0)
   const lastPlaytimeMarkRef = useRef(Date.now())
 
   function markPlaytime() {
@@ -1551,7 +1627,17 @@ export function InGame({
       revenueMultByCreatorId,
       leagueRef.current.viewers,
     )
-    dayPlanRef.current = plan
+    const weeksLeft = Math.max(1, WEEKS_PER_MONTH - monthWeekIndexRef.current)
+    const alreadyFired =
+      superDonationFiredMonthRef.current === broadcastMonthNumberRef.current
+    const injected = maybeInjectMonthlySuperDonation(plan, {
+      alreadyFired,
+      weeksLeftInMonth: weeksLeft,
+    })
+    if (injected.fired) {
+      superDonationFiredMonthRef.current = broadcastMonthNumberRef.current
+    }
+    dayPlanRef.current = injected.plan
     dayStartedAtRef.current = performance.now()
     revealedIdsRef.current = new Set()
     settledDayKeyRef.current = null
@@ -1726,6 +1812,18 @@ export function InGame({
         lastDonationSfxAtRef.current = now
         playSfx('live-donation')
       }
+      // 대형 후원은 한 번 더 쳐서 존재감 강조 + VN 대사창
+      const superHit = visible.find((event) => event.superDonation && event.amount > 0)
+      if (superHit) {
+        window.setTimeout(() => playSfx('live-donation'), 90)
+        const creator = ownedCreatorsRef.current.find((c) => c.id === superHit.creatorId)
+        if (creator) {
+          setDonationThanksPlay({
+            creator,
+            amount: superHit.amount,
+          })
+        }
+      }
     }
     if (visible.some((event) => event.type === 'viewers')) {
       if (now - lastViewerSfxAtRef.current >= minSfxGap) {
@@ -1751,6 +1849,21 @@ export function InGame({
 
       if (targetEvent.type === 'donation' && targetEvent.amount > 0) {
         if (isCreatorDonationBlocked(targetEvent.creatorId, targetEvent.atMs)) continue
+        // 월간 대형 후원은 배치 합산하지 않고 즉시 노출 (이펙트·색상 유지)
+        if (targetEvent.superDonation) {
+          pushLiveFeed([
+            {
+              ...targetEvent,
+              userId: targetEvent.userId || getRandomUserId(),
+              chatDonationText:
+                targetEvent.chatDonationText ||
+                formatChatDonationText(targetEvent.creatorName, targetEvent.amount, locale),
+            },
+          ])
+          lastFeedTypeRef.current = 'donation'
+          lastFeedEmitAtRef.current = performance.now()
+          continue
+        }
         addDonationToBatch(donationBatchRef.current, targetEvent)
       } else {
         feedExtraQueueRef.current.push(targetEvent)
@@ -3211,25 +3324,67 @@ export function InGame({
     const offer = vipOffer
     setVipOffer(null)
     const payout = rollVipAcceptPayout(leagueRef.current.currentRank)
+    const creator = ownedCreatorsRef.current.find((c) => c.id === offer.creatorId)
     const charDef = registeredCharactersRef.current.find((c) => c.id === offer.creatorId)
     const vipEventId = charDef?.eventLinks?.vip
     const vipEvent = vipEventId
       ? eventsRef.current.find((e) => e.id === vipEventId) ?? null
       : null
+
+    let next:
+      | { kind: 'vn'; event: GameEvent }
+      | { kind: 'shorts'; event: GameEvent; beats: ShortsVnBeat[] }
+      | { kind: 'rewards' } = { kind: 'rewards' }
+
     if (vipEvent) {
       const beats = resolveShortsBeats(offer.creatorId, 'vip')
       if (watchedEventIds.includes(vipEvent.id) && beats.length > 0) {
-        setVipShortsPlay({ offer, event: vipEvent, payout, beats })
-        return
+        next = { kind: 'shorts', event: vipEvent, beats }
+      } else {
+        next = { kind: 'vn', event: vipEvent }
       }
-      setVipEventPlay({
-        offer,
-        event: vipEvent,
-        payout,
-      })
+    }
+
+    if (creator) {
+      setVipDepartPlay({ creator, offer, payout, next })
+      return
+    }
+
+    // 크리에이터를 못 찾으면 인사창 없이 바로 진행
+    if (next.kind === 'shorts') {
+      setVipShortsPlay({ offer, event: next.event, payout, beats: next.beats })
+      return
+    }
+    if (next.kind === 'vn') {
+      setVipEventPlay({ offer, event: next.event, payout })
       return
     }
     applyVipAcceptRewards(offer, payout)
+    scheduleAutoSave()
+  }
+
+  function finishVipDepartDialogue() {
+    const play = vipDepartPlay
+    if (!play) return
+    setVipDepartPlay(null)
+    if (play.next.kind === 'shorts') {
+      setVipShortsPlay({
+        offer: play.offer,
+        event: play.next.event,
+        payout: play.payout,
+        beats: play.next.beats,
+      })
+      return
+    }
+    if (play.next.kind === 'vn') {
+      setVipEventPlay({
+        offer: play.offer,
+        event: play.next.event,
+        payout: play.payout,
+      })
+      return
+    }
+    applyVipAcceptRewards(play.offer, play.payout)
     scheduleAutoSave()
   }
 
@@ -3565,6 +3720,7 @@ export function InGame({
       startBroadcastLocked ||
       vipOffer ||
       vipResult ||
+      vipDepartPlay ||
       vipEventPlay ||
       socialUi
     ) {
@@ -3667,6 +3823,7 @@ export function InGame({
   const toxicQteActive = toxicQteQueue.length > 0
   const vnOverlayActive = Boolean(
     scoutEventState ||
+      vipDepartPlay ||
       vipEventPlay ||
       vipShortsPlay ||
       vacationPlay ||
@@ -3858,6 +4015,7 @@ export function InGame({
         showGameClear ||
         vipOffer ||
         vipResult ||
+        vipDepartPlay ||
         vipEventPlay ||
         socialUi ||
         salaryEventPlay ||
@@ -3881,6 +4039,7 @@ export function InGame({
     showGameClear,
     vipOffer,
     vipResult,
+    vipDepartPlay,
     vipEventPlay,
     socialUi,
     salaryEventPlay,
@@ -3897,6 +4056,38 @@ export function InGame({
 
   // 현재 등급의 시청자 보유 상한 = 다음 등급 승급 필요 시청자 수 (최상위 등급은 null)
   const viewerCap = stationSpec(stationGrade).viewerCap
+  const stationReviewHud = useMemo(() => {
+    const totalSns = ownedCreators.reduce((sum, c) => sum + (c.snsSubscribers ?? 0), 0)
+    return getStationReviewStatus(
+      stationGrade,
+      league.viewers,
+      ownedCreators,
+      {
+        unlockedSlotCount,
+        assets,
+        snsSubscribers: totalSns,
+      },
+      stationGradeConfig,
+    )
+  }, [
+    stationGrade,
+    league.viewers,
+    ownedCreators,
+    unlockedSlotCount,
+    assets,
+    stationGradeConfig,
+  ])
+  const nextStationGradeLabel = stationReviewHud.next
+    ? t(companyTierLabelKey(stationReviewHud.next))
+    : t('hud.nextGradeMaxed')
+  const nextGoalRequired = Math.max(1, stationReviewHud.requiredViewers || 1)
+  const nextGoalPct = stationReviewHud.next
+    ? Math.min(100, Math.round((stationReviewHud.viewers / nextGoalRequired) * 100))
+    : 100
+  const nextGoalCountLabel = stationReviewHud.next
+    ? formatHudGoalCount(stationReviewHud.viewers, stationReviewHud.requiredViewers, t)
+    : t('hud.nextGoalMaxed')
+  const nextGoalMet = Boolean(stationReviewHud.next && stationReviewHud.viewersMet)
 
   return (
     <main
@@ -3941,40 +4132,69 @@ export function InGame({
           </div>
         </div>
 
-        {broadcastPhase === 'live' ? (
-          <div className="game-panel min-w-0 flex-1 max-w-md rounded-xl border border-pink-400/35 px-3 py-2 shadow-[0_0_18px_rgba(255,42,116,0.12)] sm:px-4">
-            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full border border-pink-400/40 bg-pink-500/15 px-2 py-0.5 text-[10px] font-black tracking-wider text-pink-300 neon-text-pink">
-                  <span className="game-live-dot h-1.5 w-1.5 rounded-full bg-pink-400" />
-                  {t('hud.onAir')}
-                </span>
-                <p className="text-sm font-black tabular-nums text-slate-100">
-                  <span className="text-slate-500">{t('hud.dayProgress')}</span>{' '}
-                  <span className="neon-text-cyan">{broadcastWeekCurrent}</span>
-                  <span className="text-slate-600">/</span>
-                  <span>{WEEKS_PER_MONTH}</span>
-                  <span className="ml-0.5 text-[11px] font-bold text-slate-500">
-                    {t('hud.weekUnit')}
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-2 lg:gap-3">
+          {broadcastPhase !== 'live' ? (
+            <div className="game-hud-strip game-hud-strip--goal shrink-0">
+              <div className="game-hud-cell game-hud-cell--next-grade">
+                <div className="game-hud-cell-head">
+                  <IconHudNextGrade />
+                  <p className="game-stat-label">{t('hud.nextStationGrade')}</p>
+                </div>
+                <p className="game-stat-value text-violet-100">{nextStationGradeLabel}</p>
+              </div>
+              <div className="game-hud-cell game-hud-cell--next-goal">
+                <div className="game-hud-cell-head">
+                  <IconHudNextGoal />
+                  <p className="game-stat-label">{t('hud.nextGoal')}</p>
+                </div>
+                <div
+                  className={`game-hud-goal-progress${nextGoalMet ? ' is-met' : ''}${
+                    !stationReviewHud.next ? ' is-maxed' : ''
+                  }`}
+                  title={nextGoalCountLabel}
+                >
+                  <div
+                    className="game-hud-goal-progress-fill"
+                    style={{ width: `${nextGoalPct}%` }}
+                  />
+                  <span className="game-hud-goal-progress-text">{nextGoalCountLabel}</span>
+                </div>
+              </div>
+            </div>
+          ) : null}
+          {broadcastPhase === 'live' ? (
+            <div className="game-panel min-w-0 max-w-md flex-1 rounded-xl border border-pink-400/35 px-3 py-2 shadow-[0_0_18px_rgba(255,42,116,0.12)] sm:px-4">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-pink-400/40 bg-pink-500/15 px-2 py-0.5 text-[10px] font-black tracking-wider text-pink-300 neon-text-pink">
+                    <span className="game-live-dot h-1.5 w-1.5 rounded-full bg-pink-400" />
+                    {t('hud.onAir')}
                   </span>
+                  <p className="text-sm font-black tabular-nums text-slate-100">
+                    <span className="text-slate-500">{t('hud.dayProgress')}</span>{' '}
+                    <span className="neon-text-cyan">{broadcastWeekCurrent}</span>
+                    <span className="text-slate-600">/</span>
+                    <span>{WEEKS_PER_MONTH}</span>
+                    <span className="ml-0.5 text-[11px] font-bold text-slate-500">
+                      {t('hud.weekUnit')}
+                    </span>
+                  </p>
+                </div>
+                <p className="text-xs font-bold tabular-nums text-slate-300">
+                  <span className="text-slate-500">{t('hud.daysLeft')}</span>{' '}
+                  <span className="text-amber-300">{broadcastWeeksLeft}</span>
+                  <span className="ml-0.5 text-[10px] text-slate-500">{t('hud.weekUnit')}</span>
                 </p>
               </div>
-              <p className="text-xs font-bold tabular-nums text-slate-300">
-                <span className="text-slate-500">{t('hud.daysLeft')}</span>{' '}
-                <span className="text-amber-300">{broadcastWeeksLeft}</span>
-                <span className="ml-0.5 text-[10px] text-slate-500">{t('hud.weekUnit')}</span>
-              </p>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-800/90">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-400 to-cyan-300 transition-[width] duration-500"
+                  style={{ width: `${broadcastMonthPct}%` }}
+                />
+              </div>
             </div>
-            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-800/90">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-400 to-cyan-300 transition-[width] duration-500"
-                style={{ width: `${broadcastMonthPct}%` }}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="hidden flex-1 md:block" />
-        )}
+          ) : null}
+        </div>
 
         <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
           <div className="game-hud-strip min-w-0">
@@ -4332,7 +4552,23 @@ export function InGame({
                 </span>
               </div>
 
-              <div className="border-t border-white/10 pt-6 mt-6 flex flex-col items-center gap-2">
+              <div className="border-t border-white/10 pt-6 mt-6 flex flex-col items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setTab('dashboard')}
+                  className="game-btn w-full py-3 px-6 rounded-xl font-bold text-sm border border-indigo-400/35 bg-slate-900/80 text-slate-100 hover:border-indigo-300/55 hover:bg-slate-800/90 transition-all flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden>
+                    <path
+                      d="M15 6l-6 6 6 6"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <span>{t('settings.back')}</span>
+                </button>
                 <button
                   type="button"
                   onClick={onBack}
@@ -4519,6 +4755,7 @@ export function InGame({
       !showGameClear &&
       !vipOffer &&
       !vipResult &&
+      !vipDepartPlay &&
       !vipEventPlay &&
       !socialUi &&
       !salaryEventPlay &&
@@ -4876,6 +5113,14 @@ export function InGame({
         />
       )}
 
+      {vipDepartPlay ? (
+        <VipDepartDialogue
+          key={`vip-depart-${vipDepartPlay.offer.creatorId}-${vipDepartPlay.payout}`}
+          play={{ creator: vipDepartPlay.creator }}
+          onClose={finishVipDepartDialogue}
+        />
+      ) : null}
+
       {vipEventPlay ? (
         <EventSimulator
           key={`vip-${vipEventPlay.offer.creatorId}-${vipEventPlay.event.id}`}
@@ -4915,6 +5160,14 @@ export function InGame({
           key={`vacation-${vacationPlay.id}-${vacationPlay.lastVacationMonth ?? 0}`}
           creator={vacationPlay}
           onClose={() => setVacationPlay(null)}
+        />
+      ) : null}
+
+      {donationThanksPlay ? (
+        <DonationThanksDialogue
+          key={`donation-thanks-${donationThanksPlay.creator.id}-${donationThanksPlay.amount}`}
+          play={donationThanksPlay}
+          onClose={() => setDonationThanksPlay(null)}
         />
       ) : null}
 

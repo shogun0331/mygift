@@ -22,7 +22,7 @@
   "promotions": {
     "tiny": {
       "to": "tiny",
-      "requiredViewers": 1000,
+      "requiredViewers": 2500,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 1
@@ -39,7 +39,7 @@
     },
     "sme": {
       "to": "sme",
-      "requiredViewers": 50000,
+      "requiredViewers": 90000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 1

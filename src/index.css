@@ -370,6 +370,16 @@ html.theme-on-air .game-kicker {
   box-shadow: 0 0 8px rgba(251, 191, 36, 0.55);
 }
 
+.game-hud-cell--next-grade::before {
+  background: #a78bfa;
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.5);
+}
+
+.game-hud-cell--next-goal::before {
+  background: #e879f9;
+  box-shadow: 0 0 8px rgba(232, 121, 249, 0.5);
+}
+
 .game-hud-cell-head {
   display: flex;
   align-items: center;
@@ -396,6 +406,14 @@ html.theme-on-air .game-kicker {
 
 .game-hud-cell--assets .game-hud-cell-head {
   color: #fbbf24;
+}
+
+.game-hud-cell--next-grade .game-hud-cell-head {
+  color: #c4b5fd;
+}
+
+.game-hud-cell--next-goal .game-hud-cell-head {
+  color: #f0abfc;
 }
 
 .game-hud-cell .game-stat-label {
@@ -429,6 +447,74 @@ html.theme-on-air .game-kicker {
 .game-hud-cell--assets .game-stat-value {
   color: #fbbf24;
   text-shadow: 0 0 10px rgba(251, 191, 36, 0.45);
+}
+
+.game-hud-cell--next-grade .game-stat-value {
+  font-size: 0.88rem;
+}
+
+.game-hud-cell--next-goal .game-stat-value {
+  font-size: 0.82rem;
+  max-width: 14rem;
+}
+
+.game-hud-goal-progress {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 11.5rem;
+  min-width: 10rem;
+  height: 1.35rem;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 121, 249, 0.35);
+  background: rgba(15, 23, 42, 0.85);
+}
+
+.game-hud-goal-progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #a855f7 0%, #e879f9 55%, #67e8f9 100%);
+  transition: width 0.45s ease;
+}
+
+.game-hud-goal-progress.is-met .game-hud-goal-progress-fill {
+  background: linear-gradient(90deg, #059669 0%, #34d399 55%, #6ee7b7 100%);
+}
+
+.game-hud-goal-progress.is-maxed .game-hud-goal-progress-fill {
+  background: linear-gradient(90deg, #64748b 0%, #94a3b8 100%);
+}
+
+.game-hud-goal-progress-text {
+  position: relative;
+  z-index: 1;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #f8fafc;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.game-hud-strip--goal {
+  border-color: rgba(167, 139, 250, 0.38);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.game-hud-cell--next-grade {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.game-hud-cell--next-goal {
+  padding-left: 0.75rem;
+  padding-right: 0.85rem;
+  min-width: 12.5rem;
 }
 
 .game-dock {
@@ -1654,6 +1740,114 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
   }
 }
 
+
+.live-chat-donation.is-super {
+  animation: live-chat-super-pulse 1.4s ease-out 1;
+}
+
+.live-chat-donation-burst {
+  pointer-events: none;
+  position: absolute;
+  inset: -4px;
+  overflow: hidden;
+}
+
+.live-chat-donation-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: radial-gradient(circle, #fce7f3 0%, #e879f9 45%, transparent 75%);
+  box-shadow: 0 0 8px rgba(232, 121, 249, 0.7);
+  --angle: calc(var(--i) * 36deg);
+  transform: rotate(var(--angle)) translateY(0) scale(0.4);
+  animation: live-chat-spark-burst 0.85s cubic-bezier(0.16, 0.84, 0.28, 1) forwards;
+  animation-delay: calc(var(--i) * 18ms);
+  opacity: 0;
+}
+
+@keyframes live-chat-spark-burst {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateY(0) scale(0.3);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateY(-28px) scale(1.1);
+  }
+}
+
+@keyframes live-chat-super-pulse {
+  0% {
+    filter: brightness(1.35);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+.donation-thanks-layer {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.donation-thanks-layer.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.donation-thanks-card {
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s cubic-bezier(0.16, 0.84, 0.28, 1),
+    box-shadow 0.22s ease;
+}
+
+.donation-thanks-card.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.donation-thanks-name {
+  border-left-color: #f0abfc !important;
+  font-size: 0.92rem;
+  letter-spacing: 0.08em;
+}
+
+.donation-thanks-line {
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000,
+    0 0 10px rgba(232, 121, 249, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-chat-donation.is-super,
+  .live-chat-donation-spark,
+  .donation-thanks-layer,
+  .donation-thanks-card {
+    animation: none;
+    transition: none;
+  }
+
+  .donation-thanks-layer,
+  .donation-thanks-card {
+    opacity: 1;
+    transform: none;
+  }
+}
 
 /* ── Revenue burst FX on stream cards ── */
 .revenue-fx-layer {

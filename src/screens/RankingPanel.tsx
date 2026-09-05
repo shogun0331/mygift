@@ -59,12 +59,21 @@ export function RankingPanel({
 }: RankingPanelProps) {
   const { t } = useTranslation()
   const review = useMemo(
-    () =>
-      getStationReviewStatus(stationGrade, league.viewers, creators, {
-        unlockedSlotCount,
-        assets,
-      }),
-    [stationGrade, league.viewers, creators, unlockedSlotCount, assets],
+    () => {
+      const totalSns = creators.reduce((sum, c) => sum + (c.snsSubscribers ?? 0), 0)
+      return getStationReviewStatus(
+        stationGrade,
+        league.viewers,
+        creators,
+        {
+          unlockedSlotCount,
+          assets,
+          snsSubscribers: totalSns,
+        },
+        stationGradeConfig,
+      )
+    },
+    [stationGrade, league.viewers, creators, unlockedSlotCount, assets, stationGradeConfig],
   )
   const [playProgress, setPlayProgress] = useState(1)
   const playDoneRef = useRef<string | null>(null)

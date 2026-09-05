@@ -7,9 +7,15 @@ const AUTO_SAVE_DELAY = 800
 /** 현재 게임(세션)의 스냅샷을 만드는 콜백 — InGame이 마운트 시 등록 */
 let captureRef: (() => GameSave | null) | null = null
 let autoSaveTimer = 0
+let savedListener: ((save: GameSave) => void) | null = null
 
 export function registerSaveCapture(fn: (() => GameSave | null) | null): void {
   captureRef = fn
+}
+
+/** 디스크 저장 직후 App initialSave 동기화용 */
+export function setOnGameSaved(fn: ((save: GameSave) => void) | null): void {
+  savedListener = fn
 }
 
 export function captureCurrentSave(): GameSave | null {
@@ -19,6 +25,7 @@ export function captureCurrentSave(): GameSave | null {
 export function saveGame(save: GameSave): void {
   try {
     localStorage.setItem(SAVE_PREFIX + save.id, JSON.stringify(save))
+    savedListener?.(save)
   } catch (err) {
     console.error('세이브 저장 실패:', err)
   }
@@ -67,7 +74,6 @@ export function deleteGame(id: string): void {
   }
 }
 
-/** 저장 포인트 발생 시 디바운스 오토세이브 — 연속 호출은 마지막 1번만 저장 */
 export function scheduleAutoSave(): void {
   if (autoSaveTimer) window.clearTimeout(autoSaveTimer)
   autoSaveTimer = window.setTimeout(() => {
@@ -77,7 +83,6 @@ export function scheduleAutoSave(): void {
   }, AUTO_SAVE_DELAY)
 }
 
-/** 보류 중인 오토세이브를 즉시 실행 (화면 전환/턴 종료 등) */
 export function flushAutoSave(): void {
   if (autoSaveTimer) {
     window.clearTimeout(autoSaveTimer)

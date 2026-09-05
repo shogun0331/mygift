@@ -1,0 +1,38 @@
+데이트 신청 대사 (9명, 각 3문장) - DE
+==========================================
+1. 미야자와 리나 (승무원)
+  1. Ähm… An deinem freien Tag, wenn es dir recht ist, würdest du nicht ein bisschen Zeit mit mir verbringen wollen?
+  2. Wenn du Zeit hast, würde ich mich freuen, wenn du mit mir auf ein Date gehen würdest.
+  3. Am nächsten freien Tag… wäre es schön, wenn ich die Zeit mit dir verbringen könnte, dachte ich mir.
+2. 타치바나 미사키 (요가강사)
+  1. Hey Chef, hast du nicht Lust, beim nächsten Mal zusammen etwas zu unternehmen?
+  2. Am nächsten freien Tag, lass uns doch zu zweit irgendwohin gehen, ja?
+  3. Gehst du nicht mit mir auf ein Date? Es wird bestimmt lustig!
+3. 사토 메구미 (간호사)
+  1. Ähm… wenn es dir recht ist, würdest du… mit mir ausgehen…?
+  2. Wenn du nichts dagegen hast… hättest du… ein bisschen Zeit für mich…?
+  3. Ich würde gern… irgendwohin mit dir gehen… dachte ich mir.
+4. 아키야마 미호 (여경)
+  1. …Wenn du Zeit hast, lass uns zusammen etwas unternehmen.
+  2. Am Wochenende, lass uns zu zweit rausgehen.
+  3. …Ab und zu möchte ich mit dir ausgehen.
+5. 센노 리나 (발레리나)
+  1. Wenn du Zeit hast, würdest du nicht mit mir ausgehen?
+  2. Wenn es dir nichts ausmacht, schenk mir deinen nächsten freien Tag.
+  3. Ich habe das Gefühl, ich würde gern mit dir auf ein Date gehen.
+6. 사쿠라기 마이 (재즈싱어)
+  1. Hey, lass uns nicht ab und zu auch mal zu zweit rausgehen?
+  2. Lass uns zusammen was trinken gehen? Ich lade dich ein.
+  3. Ich dachte mir, mit dir Zeit zu verbringen wäre gar nicht so übel.
+7. 루이자 (삼바댄서)
+  1. Chef, lass uns doch zusammen etwas unternehmen!
+  2. Lass uns bald auf ein Date gehen! Wann passt es dir?
+  3. Ich will mit dir zu zweit etwas Lustiges machen~! Wie wäre es?
+8. 리메이 (중식당 사장)
+  1. Wenn du Zeit hast, wie wäre es, zusammen etwas zu essen?
+  2. Am nächsten freien Tag, gehst du nicht mit mir aus?
+  3. Ab und zu möchte ich einfach in Ruhe mit dir zusammen sein.
+9. 시라카와 아야 (교수)
+  1. …Wenn es dir recht ist, wie wäre es mit einem Tee mit mir?
+  2. Wenn ich nicht störe, wie wäre es mit einem gemeinsamen Abendessen?
+  3. Ich möchte gern ein wenig ruhige Zeit mit dir verbringen.

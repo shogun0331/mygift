@@ -1,0 +1,38 @@
+데이트 신청 대사 (9명, 각 3문장) - ES
+==========================================
+1. 미야자와 리나 (승무원)
+  1. Oye… el día de descanso, si no te molesta, ¿no quieres pasar el rato conmigo?
+  2. Si tienes tiempo libre, me gustaría que salieras conmigo de cita.
+  3. El próximo día libre me gustaría… poder pasarlo contigo.
+2. 타치바나 미사키 (요가강사)
+  1. Oye, jefe, ¿no nos vamos a dar una vuelta la próxima vez?
+  2. El próximo día libre, ¿no nos vamos a algún lado tú y yo?
+  3. ¿No quieres tener una cita conmigo? ¡Seguro que va a estar buenísima!
+3. 사토 메구미 (간호사)
+  1. Oye… si no te molesta, ¿no querrías salir conmigo…?
+  2. Si no tienes problema… ¿podrías regalarme un rato de tu tiempo…?
+  3. Es que… me dan ganas de ir a algún lado contigo…
+4. 아키야마 미호 (여경)
+  1. …Si tienes tiempo, qué te parece que salgamos juntos.
+  2. El fin de semana, sal tú y yo.
+  3. …A veces, yo también quiero salir contigo.
+5. 센노 리나 (발레리나)
+  1. Cuando tengas tiempo, ¿no te gustaría salir conmigo?
+  2. Si no tienes problema, regálame tu próximo día libre.
+  3. Es que estoy pensando en que me gustaría tener una cita contigo.
+6. 사쿠라기 마이 (재즈싱어)
+  1. Oye, ¿no salimos tú y yo de vez en cuando?
+  2. ¿Quieres ir a tomarnos algo? Invito yo.
+  3. Es que pensé que pasarla contigo tampoco estaría nada mal.
+7. 루이자 (삼바댄서)
+  1. ¡Jefe, vamos a pasear!
+  2. ¡Tengamos una cita la próxima! ¿Cuándo te queda bien?
+  3. ¡Quiero hacer algo divertido tú y yo! ¿Qué te parece?
+8. 리메이 (중식당 사장)
+  1. Cuando tengas tiempo, qué tal si vamos a comer algo juntos.
+  2. El próximo día libre, ¿no sales conmigo?
+  3. A veces… también me dan ganas de estar tranquila contigo.
+9. 시라카와 아야 (교수)
+  1. …Si no te importa, ¿qué te parece un café conmigo?
+  2. Si no es molestia, qué tal si cenamos juntos.
+  3. Me gustaría pasar un momento tranquilo y sin prisa contigo.

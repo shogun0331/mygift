@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -211,6 +211,44 @@ function prefersReducedMotion() {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+/** 라이브챗 후원 금액 티어 → 색상 클래스 */
+function donationChatTone(amount: number, superDonation?: boolean) {
+  if (superDonation || amount >= 10_000) {
+    return {
+      tier: 'mega' as const,
+      card: 'live-chat-donation live-chat-donation--mega border-fuchsia-400/55 bg-gradient-to-r from-fuchsia-950/70 via-pink-950/45 to-violet-950/55 shadow-md shadow-fuchsia-500/25',
+      handle: 'text-fuchsia-200',
+      badge: 'bg-fuchsia-500/25 border-fuchsia-300/45 text-fuchsia-100',
+      body: 'text-fuchsia-100/95',
+    }
+  }
+  if (amount >= 1_000) {
+    return {
+      tier: 'big' as const,
+      card: 'live-chat-donation live-chat-donation--big border-amber-400/45 bg-gradient-to-r from-amber-950/55 via-amber-900/30 to-orange-950/40 shadow-md shadow-amber-500/15',
+      handle: 'text-amber-300',
+      badge: 'bg-amber-500/20 border-amber-400/35 text-amber-200',
+      body: 'text-amber-100/90',
+    }
+  }
+  if (amount >= 100) {
+    return {
+      tier: 'mid' as const,
+      card: 'live-chat-donation live-chat-donation--mid border-cyan-400/35 bg-gradient-to-r from-cyan-950/45 via-slate-900/35 to-sky-950/40 shadow-sm shadow-cyan-500/10',
+      handle: 'text-cyan-300',
+      badge: 'bg-cyan-500/20 border-cyan-400/30 text-cyan-200',
+      body: 'text-cyan-100/90',
+    }
+  }
+  return {
+    tier: 'small' as const,
+    card: 'live-chat-donation live-chat-donation--small border-rose-400/30 bg-gradient-to-r from-rose-950/40 via-slate-900/30 to-pink-950/35 shadow-sm shadow-rose-500/10',
+    handle: 'text-rose-300',
+    badge: 'bg-rose-500/15 border-rose-400/25 text-rose-200',
+    body: 'text-rose-100/85',
+  }
+}
+
 const TAG_STYLE = {
   amber: 'border-amber-400/30 bg-amber-400/15 text-amber-300',
   rose: 'border-rose-400/30 bg-rose-400/15 text-rose-300',
@@ -293,7 +331,7 @@ export function DashboardPanel({
           id: event.id,
           creatorId: event.creatorId,
           amount: event.amount,
-          tier: revenueBurstTier(event.amount),
+          tier: event.superDonation ? ('mega' as const) : revenueBurstTier(event.amount),
         })),
       ].slice(-3),
     )
@@ -439,23 +477,70 @@ export function DashboardPanel({
 
                   if (isDonation) {
                     const handle = event.userId || '@user_fan'
+                    const tone = donationChatTone(event.amount, event.superDonation)
+                    const isSuper = Boolean(event.superDonation) || tone.tier === 'mega'
                     return (
                       <motion.li
                         key={event.id}
                         layout
-                        initial={reducedMotion ? false : { opacity: 0, y: 12, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        initial={
+                          reducedMotion
+                            ? false
+                            : isSuper
+                              ? { opacity: 0, y: 18, scale: 0.72 }
+                              : { opacity: 0, y: 12, scale: 0.95 }
+                        }
+                        animate={
+                          isSuper
+                            ? {
+                                opacity: 1,
+                                y: 0,
+                                scale: [0.72, 1.08, 1],
+                                boxShadow: [
+                                  '0 0 0 rgba(232,121,249,0)',
+                                  '0 0 28px rgba(232,121,249,0.55)',
+                                  '0 0 12px rgba(232,121,249,0.2)',
+                                ],
+                              }
+                            : { opacity: 1, y: 0, scale: 1 }
+                        }
                         exit={reducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.2 }}
-                        className="rounded-xl border border-amber-400/40 bg-gradient-to-r from-amber-950/50 via-amber-900/30 to-pink-950/40 p-2 text-xs text-amber-100 shadow-md shadow-amber-500/10 shrink-0"
+                        transition={
+                          isSuper
+                            ? { duration: 0.55, ease: [0.16, 0.84, 0.28, 1] }
+                            : { duration: 0.2 }
+                        }
+                        className={`relative overflow-hidden rounded-xl border p-2 text-xs shrink-0 ${tone.card}${
+                          isSuper ? ' is-super' : ''
+                        }`}
                       >
-                        <div className="flex items-center justify-between gap-1 mb-0.5">
-                          <span className="font-semibold text-amber-300 text-[11px] truncate">{handle}</span>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-400/30 shrink-0">
+                        {isSuper ? (
+                          <span className="live-chat-donation-burst" aria-hidden>
+                            {Array.from({ length: 10 }, (_, i) => (
+                              <span
+                                key={i}
+                                className="live-chat-donation-spark"
+                                style={{ '--i': String(i) } as CSSProperties}
+                              />
+                            ))}
+                          </span>
+                        ) : null}
+                        <div className="relative z-[1] flex items-center justify-between gap-1 mb-0.5">
+                          <span className={`font-semibold text-[11px] truncate ${tone.handle}`}>
+                            {handle}
+                            {isSuper ? (
+                              <span className="ml-1 text-[9px] font-black tracking-wider text-fuchsia-300/90">
+                                SUPER
+                              </span>
+                            ) : null}
+                          </span>
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold border shrink-0 ${tone.badge}`}
+                          >
                             <span>💰</span> ${event.amount.toLocaleString()}
                           </span>
                         </div>
-                        <p className="text-[11px] font-medium text-amber-200/90 leading-tight">
+                        <p className={`relative z-[1] text-[11px] font-medium leading-tight ${tone.body}`}>
                           {event.chatDonationText || event.text}
                         </p>
                       </motion.li>

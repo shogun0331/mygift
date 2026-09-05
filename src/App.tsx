@@ -25,7 +25,7 @@ import {
   normalizeStationGradeConfig,
   type StationGradeConfig,
 } from './game/stationGradeConfig'
-import { setStationGradeConfig } from './game/station'
+import { setStationGradeConfig, normalizeStationGrade, type StationGrade } from './game/station'
 import { setViewerBalance } from './game/viewerBalance'
 import { normalizeOwnerCharacterId } from './events/types'
 import {
@@ -66,7 +66,12 @@ import {
   listSaves,
   loadGame,
   saveGame,
+  setOnGameSaved,
 } from './game/saveService'
+import {
+  createInitialLeagueState,
+  type LeagueState,
+} from './game/ranking'
 import { NewGameModal } from './screens/NewGameModal'
 import { LoadGameModal } from './screens/LoadGameModal'
 import {
@@ -703,6 +708,9 @@ export default function App() {
   const [ownedCreators, setOwnedCreators] = useState<OwnedCreator[]>([])
   /** 스튜디오 배치 — 메인/에디터를 오가도 유지 */
   const [studioSlots, setStudioSlots] = useState<StudioSlot[]>(() => createInitialStudioSlots())
+  /** 시청자/순위 — InGame 핫리로드에도 유지 (고정 설정이 아니라 진행 상태의 상위 보관) */
+  const [league, setLeague] = useState<LeagueState>(() => createInitialLeagueState([], 'black'))
+  const [stationGrade, setStationGrade] = useState<StationGrade>('black')
   const [registeredStaff, setRegisteredStaff] = useState<RegisteredStaff[]>([])
   const [isStaffLoaded, setIsStaffLoaded] = useState(false)
   const [managerState, setManagerState] = useState<SlotManagerState>(() => createEmptySlotManagerState())
@@ -734,12 +742,27 @@ export default function App() {
   const [showNewGame, setShowNewGame] = useState(false)
   const [showLoadGame, setShowLoadGame] = useState(false)
 
+  // HMR/재마운트 대비: 오토세이브될 때마다 initialSave·league를 최신으로 유지
+  useEffect(() => {
+    setOnGameSaved((save) => {
+      setInitialSave((prev) => {
+        if (prev && prev.id !== save.id) return prev
+        return save
+      })
+      if (save.league) setLeague(save.league)
+      if (save.stationGrade) setStationGrade(normalizeStationGrade(save.stationGrade))
+    })
+    return () => setOnGameSaved(null)
+  }, [])
+
   function openEditor(returnTo: 'main' | 'game' = 'main') {
     // 에디터 진입 전 현재 진행 상태를 저장 → 복귀 시 초기화 방지
     const latest = captureCurrentSave()
     if (latest) {
       saveGame(latest)
       setInitialSave(latest)
+      if (latest.league) setLeague(latest.league)
+      if (latest.stationGrade) setStationGrade(normalizeStationGrade(latest.stationGrade))
     } else {
       flushAutoSave()
     }
@@ -1309,6 +1332,8 @@ export default function App() {
     setInitialSave(null)
     setOwnedCreators([])
     setStudioSlots(createInitialStudioSlots())
+    setLeague(createInitialLeagueState([], 'black'))
+    setStationGrade('black')
     setManagerState(createEmptySlotManagerState())
     setWatchedEventIds([])
     setScreen('game')
@@ -1327,6 +1352,8 @@ export default function App() {
     setStudioSlots(
       syncStudioSlotsWithOwned(save.studioSlots ?? createInitialStudioSlots(), owned),
     )
+    setLeague(save.league ?? createInitialLeagueState([], save.stationGrade ?? 'black'))
+    setStationGrade(normalizeStationGrade(save.stationGrade))
     setManagerState(save.managerState ?? createEmptySlotManagerState())
     setWatchedEventIds(save.watchedEventIds ?? [])
     setScreen('game')
@@ -1421,6 +1448,7 @@ export default function App() {
 
   function handleCurrentViewersChange(nextViewers: number) {
     const val = Math.max(0, Math.round(nextViewers))
+    setLeague((prev) => ({ ...prev, viewers: val }))
     if (initialSave) {
       const updated: GameSave = {
         ...initialSave,
@@ -1458,9 +1486,7 @@ export default function App() {
         onStationGradeConfigChange={setStationGradeConfigState}
         onSaveStationGradeManual={handleSaveStationGradeManual}
         onReloadStationGradeFromFile={handleReloadStationGradeFromFile}
-        currentViewers={
-          initialSave?.league?.viewers ?? listSaves()[0]?.league?.viewers ?? 1500
-        }
+        currentViewers={league.viewers}
         onCurrentViewersChange={handleCurrentViewersChange}
         registeredStaff={registeredStaff}
         onRegisterStaff={handleRegisterStaff}
@@ -1498,6 +1524,10 @@ export default function App() {
         stationGradeConfig={stationGradeConfig}
         companyMeta={companyMeta}
         initialSave={initialSave}
+        league={league}
+        stationGrade={stationGrade}
+        onLeagueChange={setLeague}
+        onStationGradeChange={setStationGrade}
       />
     )
   }

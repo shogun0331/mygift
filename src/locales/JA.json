@@ -37,6 +37,12 @@
     "dayProgress": "進行",
     "daysLeft": "残り",
     "weekUnit": "週",
+    "nextStationGrade": "次の放送局等級",
+    "nextGoal": "目標視聴者",
+    "nextGradeMaxed": "最高等級",
+    "nextGoalMaxed": "達成済み",
+    "nextGoalReady": "審査条件達成",
+    "nextGoalViewers": "{current}人 / {required}人",
     "skip": "スキップ"
   },
   "dashboard": {
@@ -81,6 +87,10 @@
     "staffCareSub": "コンディションを最高に戻した",
     "staffProd": "プロダクションボーナス",
     "staffProdSub": "収益・視聴者ボーナス",
+    "donationThanksTitle": "{name}のドネ感謝",
+    "donationThanksAmount": "大型ドネ {amount}",
+    "donationThanksFallback": "ありがとう！",
+    "donationThanksTap": "クリックで閉じる",
     "actionAssign": "配置",
     "actionTrain": "トレーニング",
     "actionStats": "統計",
@@ -162,6 +172,7 @@
     "devMode": "開発者モード",
     "devModeDesc": "開発モード有効時、[EDIT]タブが常時有効になります。",
     "saveSuccess": "設定が正常に保存されました。",
+    "back": "戻る",
     "exitToMenu": "退出"
   },
   "studio": {
@@ -504,13 +515,18 @@
     "resultSp": "SP +{n} (獲得)",
     "resultStamina": "スタミナ最大値 -{n} (適用済み)",
     "resultViewers": "視聴者 -{n}人",
-    "confirm": "確認"
+    "confirm": "確認",
+    "departTitle": "{name} VIP出発",
+    "departSubtitle": "VIP面会へ出発します",
+    "departFallback": "行ってまいります。",
+    "departTap": "クリックして続ける"
   },
   "date": {
     "offerTitle1": "デート1イベント",
     "offerTitle2": "デート2イベント",
     "offerTitleH": "Hイベント",
     "offerBody": "{name}とのデートが始まります。拒否できません。",
+    "offerHint": "拒否できません。",
     "offerSp": "SP +{n}",
     "start": "開始",
     "resultTitle": "デート完了",

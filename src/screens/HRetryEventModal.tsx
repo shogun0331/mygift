@@ -1,3 +1,4 @@
+import { useDateOfferSpeech } from './useDateOfferSpeech'
 import { H_RETRY_BY_GRADE, type HRetryPending } from '../game/social'
 import { useTranslation } from '../locales/i18n'
 
@@ -29,6 +30,10 @@ export function HRetryOfferModal({
 }) {
   const { t } = useTranslation()
   const spec = H_RETRY_BY_GRADE[pending.grade]
+  const speech = useDateOfferSpeech(pending.creatorName, pending.creatorId)
+  const line =
+    speech?.text || t('hRetry.offerBody').replace('{name}', pending.creatorName)
+
   return (
     <div
       className="fixed inset-0 z-[87] flex items-center justify-center bg-black/75 p-4 backdrop-blur-[3px]"
@@ -41,9 +46,6 @@ export function HRetryOfferModal({
         <h2 id="hretry-offer-title" className="mt-1 text-xl font-black text-slate-100">
           {t('hRetry.offerTitle')}
         </h2>
-        <p className="mt-3 text-sm leading-relaxed text-slate-300">
-          {t('hRetry.offerBody').replace('{name}', pending.creatorName)}
-        </p>
         <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-black/30 px-3 py-3">
           <Face name={pending.creatorName} imageUrl={pending.profileImageUrl} />
           <div className="min-w-0">
@@ -53,6 +55,11 @@ export function HRetryOfferModal({
             </p>
           </div>
         </div>
+        <blockquote className="mt-4 rounded-xl border border-rose-400/25 bg-rose-950/30 px-3.5 py-3">
+          <p className="text-[13px] font-semibold leading-relaxed text-rose-50 whitespace-pre-wrap">
+            “{line}”
+          </p>
+        </blockquote>
         <section className="mt-4 rounded-xl border border-emerald-400/20 bg-emerald-950/30 px-3 py-3">
           <p className="text-[10px] font-black tracking-wide text-emerald-300/80">
             {t('hRetry.acceptHeader')}

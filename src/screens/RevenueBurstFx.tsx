@@ -11,7 +11,7 @@ export type RevenueBurst = {
 }
 
 export function revenueBurstTier(amount: number): RevenueBurstTier {
-  if (amount >= 10_000) return 'mega'
+  if (amount >= 8_000) return 'mega'
   if (amount >= 1_000) return 'big'
   if (amount >= 100) return 'mid'
   return 'small'
