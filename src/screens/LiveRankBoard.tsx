@@ -198,7 +198,7 @@ export function LiveRankBoard({
 
   return (
     <LayoutGroup>
-      <ul className="mt-2.5 grid min-h-0 flex-1 auto-rows-fr grid-rows-6 gap-1 overflow-hidden pr-0.5">
+      <ul className="mt-2 flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden pr-0.5">
         <AnimatePresence initial={false}>
           {ranking.map((creator) => {
             const delta = deltaById[creator.id]
@@ -221,9 +221,9 @@ export function LiveRankBoard({
                 layout
                 initial={false}
                 transition={{ layout: layoutTransition }}
-                className="h-full min-h-0"
+                className="shrink-0"
               >
-                <div className={innerClass}>
+                <div className={`${innerClass} py-1.5`}>
                   {isFirst ? <span className="live-rank-gold-ring" aria-hidden /> : null}
                   {jackpot ? <RankConfetti seed={jackpot.id} /> : null}
                   <span className="live-rank-badge relative flex h-6 w-6 shrink-0 items-center justify-center">
@@ -250,16 +250,9 @@ export function LiveRankBoard({
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="line-clamp-2 break-words text-xs font-semibold leading-tight text-slate-100">
+                    <p className="truncate text-xs font-semibold leading-tight text-slate-100">
                       {creator.name}
                       <span className="ml-1 font-medium text-amber-400/90">({creator.concept})</span>
-                    </p>
-                    <p className="mt-0.5 text-[9px] leading-none text-slate-500">
-                      {creator.blocked
-                        ? t('dashboard.broadcastBlockedBadge')
-                        : creator.placed
-                          ? t('dashboard.studioPlaced')
-                          : t('dashboard.yearRankHeld')}
                     </p>
                   </div>
                   {delta ? (
@@ -271,12 +264,9 @@ export function LiveRankBoard({
                     </span>
                   ) : null}
                   <div className="shrink-0 text-right">
-                    <p className="text-[10px] font-semibold tracking-wide text-slate-500">
-                      {t('dashboard.rankRevenue')}
-                    </p>
                     <RollingMoney
                       value={creator.revenue}
-                      className="text-[11px] font-bold tabular-nums text-amber-400"
+                      className="text-xs font-bold tabular-nums text-amber-400"
                     />
                   </div>
                 </div>
