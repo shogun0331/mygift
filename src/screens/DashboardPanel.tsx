@@ -1,6 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import {
   findCharacterIconUrl,
   findLevelIdleVideoUrl,
@@ -207,10 +206,6 @@ function toBroadcastSlot(
   }
 }
 
-function prefersReducedMotion() {
-  return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
-
 /** 라이브챗 후원 금액 티어 → 색상 클래스 */
 function donationChatTone(amount: number, superDonation?: boolean) {
   if (superDonation || amount >= 10_000) {
@@ -300,7 +295,6 @@ export function DashboardPanel({
   onRepairSlot,
 }: DashboardPanelProps) {
   const { t, locale } = useTranslation()
-  const reducedMotion = prefersReducedMotion()
   const ownedById: Record<string, OwnedCreator> = {}
   for (const creator of ownedCreators) {
     ownedById[creator.id] = creator
@@ -464,14 +458,13 @@ export function DashboardPanel({
               </span>
               {t('dashboard.recentEvents')}
             </h2>
-            <span className="text-[10px] font-mono text-slate-400">MAX 30</span>
+            <span className="text-[10px] font-mono text-slate-400">MAX 18</span>
           </div>
           {liveEvents.length === 0 ? (
             <p className="mt-4 text-center text-xs text-slate-500">{t('dashboard.noEvents')}</p>
           ) : (
             <ul className="mt-2 min-h-0 flex-1 space-y-1.5 overflow-hidden flex flex-col justify-end">
-              <AnimatePresence initial={false}>
-                {[...liveEvents.slice(0, 30)].reverse().map((event) => {
+              {[...liveEvents.slice(0, 18)].reverse().map((event) => {
                   const isDonation = event.type === 'donation' && event.amount > 0
                   const isUserChat = Boolean(event.userId)
 
@@ -480,43 +473,15 @@ export function DashboardPanel({
                     const tone = donationChatTone(event.amount, event.superDonation)
                     const isSuper = Boolean(event.superDonation) || tone.tier === 'mega'
                     return (
-                      <motion.li
+                      <li
                         key={event.id}
-                        layout
-                        initial={
-                          reducedMotion
-                            ? false
-                            : isSuper
-                              ? { opacity: 0, y: 18, scale: 0.72 }
-                              : { opacity: 0, y: 12, scale: 0.95 }
-                        }
-                        animate={
-                          isSuper
-                            ? {
-                                opacity: 1,
-                                y: 0,
-                                scale: [0.72, 1.08, 1],
-                                boxShadow: [
-                                  '0 0 0 rgba(232,121,249,0)',
-                                  '0 0 28px rgba(232,121,249,0.55)',
-                                  '0 0 12px rgba(232,121,249,0.2)',
-                                ],
-                              }
-                            : { opacity: 1, y: 0, scale: 1 }
-                        }
-                        exit={reducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
-                        transition={
-                          isSuper
-                            ? { duration: 0.55, ease: [0.16, 0.84, 0.28, 1] }
-                            : { duration: 0.2 }
-                        }
-                        className={`relative overflow-hidden rounded-xl border p-2 text-xs shrink-0 ${tone.card}${
+                        className={`live-chat-row relative overflow-hidden rounded-xl border p-2 text-xs shrink-0 ${tone.card}${
                           isSuper ? ' is-super' : ''
                         }`}
                       >
                         {isSuper ? (
                           <span className="live-chat-donation-burst" aria-hidden>
-                            {Array.from({ length: 10 }, (_, i) => (
+                            {Array.from({ length: 6 }, (_, i) => (
                               <span
                                 key={i}
                                 className="live-chat-donation-spark"
@@ -543,44 +508,32 @@ export function DashboardPanel({
                         <p className={`relative z-[1] text-[11px] font-medium leading-tight ${tone.body}`}>
                           {event.chatDonationText || event.text}
                         </p>
-                      </motion.li>
+                      </li>
                     )
                   }
 
                   if (isUserChat) {
                     return (
-                      <motion.li
+                      <li
                         key={event.id}
-                        layout
-                        initial={reducedMotion ? false : { opacity: 0, x: -16 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={reducedMotion ? undefined : { opacity: 0, x: -10 }}
-                        transition={{ duration: 0.18 }}
-                        className="flex items-start gap-1.5 rounded-lg bg-white/[0.04] px-2 py-1 text-xs text-slate-200 hover:bg-white/[0.07] shrink-0"
+                        className="live-chat-row flex items-start gap-1.5 rounded-lg bg-white/[0.04] px-2 py-1 text-xs text-slate-200 shrink-0"
                       >
                         <span className="font-semibold text-cyan-400 text-[11px] shrink-0">{event.userId}:</span>
                         <span className="text-[11px] text-slate-300 leading-tight break-all">{event.text}</span>
-                      </motion.li>
+                      </li>
                     )
                   }
 
-                  // 시스템 정보/시청자 증가/트렌드 안내 이벤트 (아이디 미표시 시스템 공지 스타일)
                   return (
-                    <motion.li
+                    <li
                       key={event.id}
-                      layout
-                      initial={reducedMotion ? false : { opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={reducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.18 }}
-                      className="flex items-center gap-1.5 rounded-lg border border-cyan-500/25 bg-cyan-950/30 px-2.5 py-1 text-xs text-cyan-200 shadow-sm shrink-0"
+                      className="live-chat-row flex items-center gap-1.5 rounded-lg border border-cyan-500/25 bg-cyan-950/30 px-2.5 py-1 text-xs text-cyan-200 shadow-sm shrink-0"
                     >
-                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400 animate-pulse" />
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
                       <span className="text-[11px] font-medium leading-tight text-cyan-200/90 break-all">{event.text}</span>
-                    </motion.li>
+                    </li>
                   )
                 })}
-              </AnimatePresence>
             </ul>
           )}
         </section>
@@ -854,7 +807,7 @@ function StreamCard({
             loop
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
           />
         ) : null}
 
@@ -888,26 +841,26 @@ function StreamCard({
               {t(badge.labelKey)}
             </span>
             <div className="flex items-center gap-1 rounded bg-black/50 border border-white/5 px-1.5 py-0.5">
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${
-                  feedOff ? (gearBroken ? 'bg-amber-400' : 'bg-rose-400') : 'bg-pink-500 animate-ping'
-                }`}
-              />
-              <span
-                className={`text-[8px] font-extrabold tracking-wider ${
-                  feedOff ? (gearBroken ? 'text-amber-300' : 'text-rose-300') : 'text-pink-400'
-                }`}
-              >
-                {feedOff ? t('dashboard.noSignal') : isLive ? t('dashboard.live') : t('dashboard.idle')}
-              </span>
-              {feedOff ? null : (
-                <div className="live-audio-wave ml-1">
-                  <span className="audio-bar" />
-                  <span className="audio-bar" />
-                  <span className="audio-bar" />
-                  <span className="audio-bar" />
-                </div>
-              )}
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      feedOff ? (gearBroken ? 'bg-amber-400' : 'bg-rose-400') : 'bg-pink-500 live-dot-static'
+                    }`}
+                  />
+                  <span
+                    className={`text-[8px] font-extrabold tracking-wider ${
+                      feedOff ? (gearBroken ? 'text-amber-300' : 'text-rose-300') : 'text-pink-400'
+                    }`}
+                  >
+                    {feedOff ? t('dashboard.noSignal') : isLive ? t('dashboard.live') : t('dashboard.idle')}
+                  </span>
+                  {feedOff ? null : (
+                    <div className="live-audio-wave ml-1" aria-hidden>
+                      <span className="audio-bar" />
+                      <span className="audio-bar" />
+                      <span className="audio-bar" />
+                      <span className="audio-bar" />
+                    </div>
+                  )}
             </div>
           </div>
         </div>

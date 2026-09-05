@@ -1291,6 +1291,9 @@ export function InGame({
   ])
   const dayPlanRef = useRef<StudioDayPlan | null>(null)
   const dayStartedAtRef = useRef<number | null>(null)
+  /** atMs 오름차순 플랫 이벤트 — 틱마다 flatMap/sort 하지 않음 */
+  const dayEventsFlatRef = useRef<DayEvent[]>([])
+  const dayEventCursorRef = useRef(0)
   const revealedIdsRef = useRef(new Set<string>())
   const donationBatchRef = useRef(new Map<string, DonationBatch>())
   const feedExtraQueueRef = useRef<DayEvent[]>([])
@@ -1638,6 +1641,10 @@ export function InGame({
       superDonationFiredMonthRef.current = broadcastMonthNumberRef.current
     }
     dayPlanRef.current = injected.plan
+    dayEventsFlatRef.current = injected.plan.plans
+      .flatMap((p) => p.events)
+      .sort((a, b) => a.atMs - b.atMs)
+    dayEventCursorRef.current = 0
     dayStartedAtRef.current = performance.now()
     revealedIdsRef.current = new Set()
     settledDayKeyRef.current = null
@@ -3815,8 +3822,19 @@ export function InGame({
     const elapsed = performance.now() - startedAt
     const scaled = scaleDayPlanTimes(plan, nextWeekMs)
     dayPlanRef.current = scaled
-    dayStartedAtRef.current =
-      performance.now() - Math.min(elapsed * (nextWeekMs / plan.dayMs), nextWeekMs - 1)
+    const scaledElapsed = Math.min(elapsed * (nextWeekMs / plan.dayMs), nextWeekMs - 1)
+    dayStartedAtRef.current = performance.now() - scaledElapsed
+    dayEventsFlatRef.current = scaled.plans
+      .flatMap((p) => p.events)
+      .sort((a, b) => a.atMs - b.atMs)
+    let cursor = 0
+    while (
+      cursor < dayEventsFlatRef.current.length &&
+      dayEventsFlatRef.current[cursor]!.atMs <= scaledElapsed
+    ) {
+      cursor += 1
+    }
+    dayEventCursorRef.current = cursor
   }, [speed, broadcastPhase])
 
   // 진상 QTE·VN 오버레이 중 방송 시계 일시정지
@@ -3880,7 +3898,7 @@ export function InGame({
       if (!plan || startedAt == null || plan.dayMs <= 0) return
       const elapsed = performance.now() - startedAt
       setLiveWeekProgress(Math.max(0, Math.min(1, elapsed / plan.dayMs)))
-    }, 80)
+    }, 250)
     return () => window.clearInterval(id)
   }, [broadcastPhase, liveClockPaused])
 
@@ -3895,24 +3913,29 @@ export function InGame({
       const elapsed = performance.now() - startedAt
       trackBroadcastBlocks(elapsed)
 
-      // 1. 예정된 기본 피드/이벤트
-      const due = takeRevealableEvents(
-        plan.plans
-          .flatMap((p) => p.events)
-          .filter((event) => event.atMs <= elapsed)
-          .sort((a, b) => a.atMs - b.atMs),
-      )
+      // 1. 예정된 기본 피드/이벤트 (커서 전진 — 매 틱 전체 스캔 없음)
+      const flat = dayEventsFlatRef.current
+      const dueRaw: DayEvent[] = []
+      while (
+        dayEventCursorRef.current < flat.length &&
+        flat[dayEventCursorRef.current]!.atMs <= elapsed
+      ) {
+        dueRaw.push(flat[dayEventCursorRef.current]!)
+        dayEventCursorRef.current += 1
+      }
+      const due = takeRevealableEvents(dueRaw)
 
-      // 2. 실시간 라이브 틱 후원 스폰 (버퍼 딜레이 없이 즉시 방출로 멈춤 현상 완벽 방지)
+      // 2. 실시간 라이브 틱 후원 스폰 (배치 인원에 따라 총량이 폭주하지 않게 보정)
       const realtimeDonations: DayEvent[] = []
       const assigned = assignedCreatorsFrom(ownedCreatorsRef.current)
+      const assignedCount = Math.max(1, assigned.length)
+      const perCreatorDonationChance = 0.055 / Math.sqrt(assignedCount)
       for (const creator of assigned) {
         if (isCreatorDonationBlocked(creator.id, elapsed)) continue
         const condMult = conditionRevenueMultOf(creator)
         if (condMult <= 0) continue
 
-        // 실시간 틱(매 120ms) 스폰 확률 (약 5.5% * 컨디션배율)
-        if (Math.random() < 0.055 * condMult) {
+        if (Math.random() < perCreatorDonationChance * condMult) {
           const displayName = characterDisplayName(creator, locale)
           const statBonus = statRevenueBonusOf(creator)
           const vBonus = viewerBonusOf(leagueRef.current.viewers)
@@ -3947,9 +3970,12 @@ export function InGame({
       )
       if (activeCreators.length > 0) {
         const currentViewers = Math.max(10, leagueRef.current.viewers)
-        // 시청자 수에 따른 틱당 채팅 생성 확률 (100명: ~15%, 1만명: ~50%, 5만명+: ~80%)
-        const chatChance = Math.min(0.85, 0.05 + Math.log10(currentViewers) * 0.15)
-        const chatBurst = currentViewers >= 30_000 ? (Math.random() < 0.5 ? 2 : 1) : 1
+        // 시청자 수 기반 채팅 확률 — 배치 수에 따라 총 스폰량 보정
+        const chatChance = Math.min(
+          0.55,
+          (0.05 + Math.log10(currentViewers) * 0.12) / Math.sqrt(assignedCount),
+        )
+        const chatBurst = 1
 
         if (Math.random() < chatChance) {
           for (let i = 0; i < chatBurst; i++) {
@@ -3976,7 +4002,7 @@ export function InGame({
         ingestLiveFeedEvents(combinedEvents, plan, false)
       }
       runDueInspections(elapsed)
-    }, 120)
+    }, 180)
     return () => window.clearInterval(id)
   }, [broadcastPhase, liveClockPaused, locale, t])
 

@@ -1742,7 +1742,53 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 
 
 .live-chat-donation.is-super {
-  animation: live-chat-super-pulse 1.4s ease-out 1;
+  animation: live-chat-super-pulse 1.1s ease-out 1;
+}
+
+.live-chat-row {
+  animation: live-chat-row-in 0.16s ease-out both;
+  will-change: transform, opacity;
+}
+
+@keyframes live-chat-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-chat-row,
+  .live-chat-donation.is-super {
+    animation: none !important;
+  }
+}
+
+/* 방송 중: CCTV 슬롯 무한 애니 절전 (3슬롯 GPU 부하) */
+html.theme-on-air .cctv-noise {
+  animation: none;
+  opacity: 0.03;
+}
+
+html.theme-on-air .cctv-scanline::before {
+  animation: none;
+}
+
+html.theme-on-air .audio-bar {
+  animation: none;
+  height: 55%;
+}
+
+html.theme-on-air .audio-bar:nth-child(2) { height: 75%; }
+html.theme-on-air .audio-bar:nth-child(3) { height: 40%; }
+html.theme-on-air .audio-bar:nth-child(4) { height: 65%; }
+
+.live-dot-static {
+  box-shadow: 0 0 6px rgba(236, 72, 153, 0.85);
 }
 
 .live-chat-donation-burst {
