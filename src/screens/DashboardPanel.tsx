@@ -207,41 +207,108 @@ function toBroadcastSlot(
   }
 }
 
-/** 라이브챗 후원 금액 티어 → 색상 클래스 */
+/** 유저 ID 기반 트위치/숲(아프리카TV) 스타일 닉네임 색상 생성 */
+function getChatUserColor(userId: string): string {
+  const colors = [
+    'text-cyan-400 font-bold',
+    'text-purple-400 font-bold',
+    'text-emerald-400 font-bold',
+    'text-pink-400 font-bold',
+    'text-amber-400 font-bold',
+    'text-sky-400 font-bold',
+    'text-violet-400 font-bold',
+    'text-rose-400 font-bold',
+    'text-lime-400 font-bold',
+    'text-fuchsia-400 font-bold',
+  ]
+  let hash = 0
+  for (let i = 0; i < userId.length; i++) {
+    hash = (hash * 31 + userId.charCodeAt(i)) >>> 0
+  }
+  return colors[hash % colors.length]!
+}
+
+/** 유저 ID 기반 배지 (구독자, VIP, 매니저, 팬클럽) 생성 */
+function getChatUserBadge(userId: string) {
+  let hash = 0
+  for (let i = 0; i < userId.length; i++) {
+    hash = (hash * 37 + userId.charCodeAt(i)) >>> 0
+  }
+  const type = hash % 5
+  if (type === 0) {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-0.5 rounded border border-purple-400/40 bg-purple-500/20 px-1 py-0.2 text-[9px] font-black text-purple-300 shadow-[0_0_6px_rgba(168,85,247,0.3)]">
+        👑 SUB
+      </span>
+    )
+  }
+  if (type === 1) {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-0.5 rounded border border-amber-400/40 bg-amber-500/20 px-1 py-0.2 text-[9px] font-black text-amber-300 shadow-[0_0_6px_rgba(251,191,36,0.3)]">
+        💎 VIP
+      </span>
+    )
+  }
+  if (type === 2) {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-0.5 rounded border border-cyan-400/40 bg-cyan-500/20 px-1 py-0.2 text-[9px] font-black text-cyan-300 shadow-[0_0_6px_rgba(6,182,212,0.25)]">
+        ⚡ FAN
+      </span>
+    )
+  }
+  if (type === 3) {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-0.5 rounded border border-emerald-400/40 bg-emerald-500/20 px-1 py-0.2 text-[9px] font-black text-emerald-300 shadow-[0_0_6px_rgba(52,211,153,0.25)]">
+        🛡️ MOD
+      </span>
+    )
+  }
+  return null
+}
+
+/** 라이브챗 후원 금액 티어 → 색상 클래스 (숲 / 트위치 / 치즈 후원 카드 스타일) */
 function donationChatTone(amount: number, superDonation?: boolean) {
   if (superDonation || amount >= 10_000) {
     return {
       tier: 'mega' as const,
-      card: 'live-chat-donation live-chat-donation--mega border-fuchsia-400/55 bg-gradient-to-r from-fuchsia-950/70 via-pink-950/45 to-violet-950/55 shadow-md shadow-fuchsia-500/25',
-      handle: 'text-fuchsia-200',
-      badge: 'bg-fuchsia-500/25 border-fuchsia-300/45 text-fuchsia-100',
-      body: 'text-fuchsia-100/95',
+      card: 'live-chat-donation live-chat-donation--mega border border-fuchsia-400/70 bg-slate-950/90 shadow-[0_0_16px_rgba(232,121,249,0.35)] ring-1 ring-fuchsia-400/30',
+      header: 'bg-gradient-to-r from-fuchsia-950/90 via-pink-950/80 to-purple-950/90 border-b border-fuchsia-400/40 px-2.5 py-1.5',
+      accentBar: 'bg-gradient-to-r from-fuchsia-400 via-pink-400 to-amber-300',
+      handle: 'text-fuchsia-200 font-extrabold',
+      badge: 'bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-black shadow-[0_0_8px_rgba(217,70,239,0.6)] border border-fuchsia-300/50',
+      body: 'text-fuchsia-100 bg-fuchsia-950/20 px-2.5 py-2 font-medium',
     }
   }
   if (amount >= 1_000) {
     return {
       tier: 'big' as const,
-      card: 'live-chat-donation live-chat-donation--big border-amber-400/45 bg-gradient-to-r from-amber-950/55 via-amber-900/30 to-orange-950/40 shadow-md shadow-amber-500/15',
-      handle: 'text-amber-300',
-      badge: 'bg-amber-500/20 border-amber-400/35 text-amber-200',
-      body: 'text-amber-100/90',
+      card: 'live-chat-donation live-chat-donation--big border border-amber-400/60 bg-slate-950/90 shadow-[0_0_12px_rgba(251,191,36,0.25)] ring-1 ring-amber-400/20',
+      header: 'bg-gradient-to-r from-amber-950/85 via-amber-900/60 to-orange-950/75 border-b border-amber-400/35 px-2.5 py-1.5',
+      accentBar: 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-300',
+      handle: 'text-amber-200 font-bold',
+      badge: 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black shadow-[0_0_8px_rgba(245,158,11,0.5)] border border-amber-300/60',
+      body: 'text-amber-100 bg-amber-950/20 px-2.5 py-1.5 font-medium',
     }
   }
   if (amount >= 100) {
     return {
       tier: 'mid' as const,
-      card: 'live-chat-donation live-chat-donation--mid border-cyan-400/35 bg-gradient-to-r from-cyan-950/45 via-slate-900/35 to-sky-950/40 shadow-sm shadow-cyan-500/10',
-      handle: 'text-cyan-300',
-      badge: 'bg-cyan-500/20 border-cyan-400/30 text-cyan-200',
-      body: 'text-cyan-100/90',
+      card: 'live-chat-donation live-chat-donation--mid border border-cyan-400/45 bg-slate-950/85 shadow-[0_0_8px_rgba(6,182,212,0.18)]',
+      header: 'bg-gradient-to-r from-cyan-950/80 via-slate-900/70 to-teal-950/75 border-b border-cyan-400/30 px-2.5 py-1.5',
+      accentBar: 'bg-gradient-to-r from-cyan-400 to-teal-300',
+      handle: 'text-cyan-200 font-bold',
+      badge: 'bg-cyan-500/30 text-cyan-100 font-bold border border-cyan-400/40',
+      body: 'text-cyan-100 bg-cyan-950/15 px-2.5 py-1.5 font-medium',
     }
   }
   return {
     tier: 'small' as const,
-    card: 'live-chat-donation live-chat-donation--small border-rose-400/30 bg-gradient-to-r from-rose-950/40 via-slate-900/30 to-pink-950/35 shadow-sm shadow-rose-500/10',
-    handle: 'text-rose-300',
-    badge: 'bg-rose-500/15 border-rose-400/25 text-rose-200',
-    body: 'text-rose-100/85',
+    card: 'live-chat-donation live-chat-donation--small border border-emerald-400/35 bg-slate-950/80 shadow-sm',
+    header: 'bg-gradient-to-r from-emerald-950/70 via-slate-900/60 to-teal-950/65 border-b border-emerald-400/25 px-2.5 py-1',
+    accentBar: 'bg-emerald-400',
+    handle: 'text-emerald-200 font-bold',
+    badge: 'bg-emerald-500/25 text-emerald-100 font-bold border border-emerald-400/30',
+    body: 'text-emerald-100/90 bg-emerald-950/10 px-2.5 py-1.5 font-medium',
   }
 }
 
@@ -302,7 +369,7 @@ function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
     <div
       ref={scrollerRef}
       onScroll={onScroll}
-      className="live-chat-scroller mt-2 min-h-0 flex-1 overflow-x-hidden overflow-y-auto"
+      className="live-chat-scroller mt-2 min-h-0 flex-1 overflow-x-hidden overflow-y-auto pr-0.5"
     >
       <ul className="live-chat-list flex min-h-full flex-col justify-end gap-1.5">
         <AnimatePresence initial={false}>
@@ -314,6 +381,8 @@ function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
               const handle = event.userId || '@user_fan'
               const tone = donationChatTone(event.amount, event.superDonation)
               const isSuper = Boolean(event.superDonation) || tone.tier === 'mega'
+              const userBadge = getChatUserBadge(handle)
+
               return (
                 <motion.li
                   key={event.id}
@@ -326,10 +395,12 @@ function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
                     opacity: { duration: 0.18 },
                     y: { duration: 0.18, ease: 'easeOut' },
                   }}
-                  className={`live-chat-row relative overflow-hidden rounded-xl border p-2 text-xs shrink-0 ${tone.card}${
+                  className={`live-chat-row relative overflow-hidden rounded-xl text-xs shrink-0 ${tone.card}${
                     isSuper ? ' is-super' : ''
                   }`}
                 >
+                  <div className={`h-0.5 w-full ${tone.accentBar}`} />
+
                   {isSuper ? (
                     <span className="live-chat-donation-burst" aria-hidden>
                       {Array.from({ length: 6 }, (_, i) => (
@@ -341,45 +412,58 @@ function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
                       ))}
                     </span>
                   ) : null}
-                  <div className="relative z-[1] mb-0.5 flex items-center justify-between gap-1">
-                    <span className={`truncate text-[11px] font-semibold ${tone.handle}`}>
-                      {handle}
+
+                  <div className={`relative z-[1] flex items-center justify-between gap-1.5 ${tone.header}`}>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {userBadge}
+                      <span className={`truncate text-[11px] ${tone.handle}`}>
+                        {handle}
+                      </span>
                       {isSuper ? (
-                        <span className="ml-1 text-[9px] font-black tracking-wider text-fuchsia-300/90">
-                          SUPER
+                        <span className="rounded bg-fuchsia-500/30 px-1 py-0.2 text-[8px] font-black tracking-wider text-fuchsia-200 border border-fuchsia-300/40">
+                          SUPER CHAT
                         </span>
                       ) : null}
-                    </span>
+                    </div>
                     <span
-                      className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${tone.badge}`}
+                      className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] ${tone.badge}`}
                     >
                       <span>💰</span> ${event.amount.toLocaleString()}
                     </span>
                   </div>
-                  <p className={`relative z-[1] text-[11px] font-medium leading-tight ${tone.body}`}>
-                    {event.chatDonationText || event.text}
-                  </p>
+
+                  <div className={`relative z-[1] ${tone.body}`}>
+                    <p className="text-[11px] leading-snug">
+                      {event.chatDonationText || event.text}
+                    </p>
+                  </div>
                 </motion.li>
               )
             }
 
             if (isUserChat) {
+              const userColorClass = getChatUserColor(event.userId || '')
+              const userBadge = getChatUserBadge(event.userId || '')
               return (
                 <motion.li
                   key={event.id}
                   layout="position"
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{
                     layout: { type: 'spring', stiffness: 450, damping: 32 },
-                    opacity: { duration: 0.15 },
-                    y: { duration: 0.15, ease: 'easeOut' },
+                    opacity: { duration: 0.12 },
+                    y: { duration: 0.12, ease: 'easeOut' },
                   }}
-                  className="live-chat-row flex shrink-0 items-start gap-1.5 rounded-lg bg-white/[0.04] px-2 py-1 text-xs text-slate-200"
+                  className="live-chat-row flex shrink-0 items-start gap-1.5 rounded px-2 py-0.5 text-xs transition-colors hover:bg-white/[0.04]"
                 >
-                  <span className="shrink-0 text-[11px] font-semibold text-cyan-400">{event.userId}:</span>
-                  <span className="break-all text-[11px] leading-tight text-slate-300">{event.text}</span>
+                  {userBadge}
+                  <span className={`shrink-0 text-[11px] ${userColorClass}`}>
+                    {event.userId}
+                    <span className="text-slate-500 font-normal ml-0.5">:</span>
+                  </span>
+                  <span className="break-all text-[11px] leading-relaxed text-slate-100">{event.text}</span>
                 </motion.li>
               )
             }
@@ -388,18 +472,20 @@ function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
               <motion.li
                 key={event.id}
                 layout="position"
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{
                   layout: { type: 'spring', stiffness: 450, damping: 32 },
-                  opacity: { duration: 0.15 },
-                  y: { duration: 0.15, ease: 'easeOut' },
+                  opacity: { duration: 0.12 },
+                  y: { duration: 0.12, ease: 'easeOut' },
                 }}
-                className="live-chat-row flex shrink-0 items-center gap-1.5 rounded-lg border border-cyan-500/25 bg-cyan-950/30 px-2.5 py-1 text-xs text-cyan-200 shadow-sm"
+                className="live-chat-row flex shrink-0 items-center gap-1.5 rounded-lg border border-cyan-500/20 bg-gradient-to-r from-slate-900/90 via-cyan-950/40 to-slate-900/90 px-2.5 py-1 text-xs text-cyan-200 shadow-sm"
               >
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
-                <span className="break-all text-[11px] font-medium leading-tight text-cyan-200/90">
+                <span className="rounded bg-cyan-500/20 px-1 py-0.2 text-[9px] font-extrabold text-cyan-300 border border-cyan-400/30">
+                  SYSTEM
+                </span>
+                <span className="break-all text-[11px] font-medium leading-tight text-slate-200">
                   {event.text}
                 </span>
               </motion.li>
