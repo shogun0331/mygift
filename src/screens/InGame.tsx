@@ -1786,9 +1786,12 @@ export function InGame({
       return
     }
 
+    const viewers = Math.max(1, leagueRef.current.viewers)
+    const viewerSpeedMult = viewers >= 50_000 ? 0.4 : viewers >= 10_000 ? 0.6 : viewers >= 2_000 ? 0.8 : 1.0
     const speedMult = speedMultiplierOf(speedRef.current)
-    const baseGapMs = donationBatchRef.current.size > 2 ? 300 : 450
-    const gapMs = baseGapMs / speedMult
+    const baseGapMs =
+      donationBatchRef.current.size > 2 || feedExtraQueueRef.current.length > 4 ? 220 : 400
+    const gapMs = (baseGapMs * viewerSpeedMult) / speedMult
     if (lastFeedEmitAtRef.current > 0 && now - lastFeedEmitAtRef.current < gapMs) return
 
     const hasDonation = donationBatchRef.current.size > 0
@@ -3763,21 +3766,30 @@ export function InGame({
         }
       }
 
-      if (assigned.length > 0 && Math.random() < 0.15) {
-        const creator = assigned[Math.floor(Math.random() * assigned.length)]!
-        const userId = getRandomUserId()
-        const chatLine = getRandomUserChatLine(locale)
-        realtimeDonations.push({
-          id: `chat-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-          creatorId: creator.id,
-          creatorName: characterDisplayName(creator, locale),
-          type: 'viewers',
-          amount: 0,
-          text: chatLine,
-          atMs: elapsed,
-          tone: 'bg-slate-400',
-          userId,
-        })
+      if (assigned.length > 0) {
+        const currentViewers = Math.max(10, leagueRef.current.viewers)
+        // 시청자 수에 따른 틱당 채팅 생성 확률 (100명: ~15%, 1만명: ~50%, 5만명+: ~80%)
+        const chatChance = Math.min(0.85, 0.05 + Math.log10(currentViewers) * 0.15)
+        const chatBurst = currentViewers >= 30_000 ? (Math.random() < 0.5 ? 2 : 1) : 1
+
+        if (Math.random() < chatChance) {
+          for (let i = 0; i < chatBurst; i++) {
+            const creator = assigned[Math.floor(Math.random() * assigned.length)]!
+            const userId = getRandomUserId()
+            const chatLine = getRandomUserChatLine(locale)
+            realtimeDonations.push({
+              id: `chat-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 6)}`,
+              creatorId: creator.id,
+              creatorName: characterDisplayName(creator, locale),
+              type: 'viewers',
+              amount: 0,
+              text: chatLine,
+              atMs: elapsed,
+              tone: 'bg-slate-400',
+              userId,
+            })
+          }
+        }
       }
 
       const combinedEvents = [...due, ...realtimeDonations]
