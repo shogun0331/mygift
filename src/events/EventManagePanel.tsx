@@ -1078,7 +1078,12 @@ function EventDetail({
         let speakerType: 'character' | 'player' | 'narrator' = 'character'
         let speaker = ''
 
-        if (speakerName === '플레이어' || speakerName.toLowerCase() === 'player') {
+        if (
+          speakerName === '플레이어' ||
+          speakerName.toLowerCase() === 'player' ||
+          speakerName === '사장' ||
+          speakerName === '사장님'
+        ) {
           speakerType = 'player'
           speaker = 'player'
         } else if (

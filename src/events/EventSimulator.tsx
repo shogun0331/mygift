@@ -125,18 +125,51 @@ function getCharacterName(
   registeredCharacters: RegisteredCharacter[] = [],
 ): string {
   const locale = normalizeEventLocale(lang)
+
+  if (node.speakerType === 'player') {
+    return 'Player'
+  }
+  if (node.speakerType === 'narrator') {
+    return ''
+  }
+
   const charId = node.character || node.character_id || node.speaker || node.char
   if (charId) {
-    if (charId === 'player') {
-      return locale === 'ko' ? '플레이어' : 'Player'
+    const rawIdStr = String(charId).trim()
+
+    // VIP 캐릭터인 경우 VIP 표기 유지 (VIP 제외 조건)
+    if (rawIdStr.toUpperCase().includes('VIP')) {
+      const charDef = event.characters?.find((c) => c.id === charId)
+      if (charDef) {
+        if (charDef.names?.[locale]) return charDef.names[locale]
+        if (charDef.names?.[lang]) return charDef.names[lang]
+        if (charDef.name) return charDef.name
+      }
+      return charId
     }
+
+    // '사장', '사장님', 'player', '플레이어' 등 플레이어 화자는 Player로 표기
+    if (
+      rawIdStr === 'player' ||
+      rawIdStr === '플레이어' ||
+      rawIdStr === '사장' ||
+      rawIdStr === '사장님' ||
+      rawIdStr === 'PRODUCER' ||
+      rawIdStr === 'producer' ||
+      rawIdStr === 'CEO'
+    ) {
+      return 'Player'
+    }
+
+    // 등록된 캐릭터(크리에이터)인 경우 해당 캐릭터의 이름 표기
     const registered =
       registeredCharacters.find((c) => c.id === charId) ||
       registeredCharacters.find((c) => c.name === charId)
     if (registered) {
       return characterDisplayName(registered, locale) || registered.name || charId
     }
-    const charDef = event.characters.find((c) => c.id === charId)
+
+    const charDef = event.characters?.find((c) => c.id === charId)
     if (charDef) {
       if (charDef.names?.[locale]) return charDef.names[locale]
       if (charDef.names?.[lang]) return charDef.names[lang]
@@ -144,16 +177,30 @@ function getCharacterName(
       const named = lookupLocalizedString(event.localization, locale, [charDef.nameKey, charId])
       if (named) return named
     }
+
     const fromLoc = lookupLocalizedString(event.localization, locale, [charId])
-    if (fromLoc) return fromLoc
+    if (fromLoc) {
+      if (fromLoc === '사장' || fromLoc === '사장님' || fromLoc === '플레이어') return 'Player'
+      return fromLoc
+    }
+
+    if (rawIdStr === '사장' || rawIdStr === '사장님' || rawIdStr === '플레이어') {
+      return 'Player'
+    }
     return charId
   }
 
   const nameKeys = [node.character_name, node.speaker_name, node.name, node.name_key]
   const mapped = lookupLocalizedString(event.localization, locale, nameKeys)
-  if (mapped) return mapped
+  if (mapped) {
+    if (mapped === '사장' || mapped === '사장님' || mapped === '플레이어') return 'Player'
+    return mapped
+  }
   for (const nk of nameKeys) {
-    if (typeof nk === 'string' && nk) return nk
+    if (typeof nk === 'string' && nk) {
+      if (nk === '사장' || nk === '사장님' || nk === '플레이어') return 'Player'
+      return nk
+    }
   }
 
   return ''
@@ -519,8 +566,8 @@ export function EventSimulator({
     let found = registeredCharacters.find((c) => c.id === currentNode.speaker)
     if (found) return found
 
-    // 2. characterName (이름)으로 탐색
-    if (characterName) {
+    // 2. characterName (이름)으로 탐색 (Player인 경우 크리에이터 매칭 방지)
+    if (characterName && characterName !== 'Player' && characterName !== '플레이어') {
       found = registeredCharacters.find(
         (c) => c.name === characterName || c.name.includes(characterName) || characterName.includes(c.name)
       )
