@@ -1816,13 +1816,28 @@ export function InGame({
         lastFeedTypeRef.current = 'extra'
       }
     } else if (hasDonation) {
-      const batch = takeLargestDonationBatch(donationBatchRef.current)
-      if (batch && !isCreatorDonationBlocked(batch.creatorId)) {
-        emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${Math.round(now)}`, t, locale))
+      let bestKey: string | null = null
+      let bestBatch: DonationBatch | null = null
+      for (const [creatorId, batch] of donationBatchRef.current.entries()) {
+        if (isCreatorDonationBlocked(creatorId)) {
+          donationBatchRef.current.delete(creatorId)
+          continue
+        }
+        if (!bestBatch || batch.amount > bestBatch.amount) {
+          bestBatch = batch
+          bestKey = creatorId
+        }
+      }
+      if (bestBatch && bestKey) {
+        donationBatchRef.current.delete(bestKey)
+        emit.push(donationEventFromBatch(bestBatch, `${plan.dayKey}-${Math.round(now)}`, t, locale))
         lastFeedTypeRef.current = 'donation'
-      } else if (batch) {
-        // blocked creator batch — drop and retry next tick
-        return
+      } else if (hasExtra) {
+        const extra = feedExtraQueueRef.current.shift()
+        if (extra) {
+          emit.push(extra)
+          lastFeedTypeRef.current = 'extra'
+        }
       }
     }
 
@@ -3770,7 +3785,10 @@ export function InGame({
         }
       }
 
-      if (assigned.length > 0) {
+      const activeCreators = assigned.filter(
+        (c) => !isCreatorDonationBlocked(c.id, elapsed),
+      )
+      if (activeCreators.length > 0) {
         const currentViewers = Math.max(10, leagueRef.current.viewers)
         // 시청자 수에 따른 틱당 채팅 생성 확률 (100명: ~15%, 1만명: ~50%, 5만명+: ~80%)
         const chatChance = Math.min(0.85, 0.05 + Math.log10(currentViewers) * 0.15)
@@ -3778,7 +3796,7 @@ export function InGame({
 
         if (Math.random() < chatChance) {
           for (let i = 0; i < chatBurst; i++) {
-            const creator = assigned[Math.floor(Math.random() * assigned.length)]!
+            const creator = activeCreators[Math.floor(Math.random() * activeCreators.length)]!
             const userId = getRandomUserId()
             const chatLine = getRandomUserChatLine(locale)
             realtimeDonations.push({
