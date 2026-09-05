@@ -454,9 +454,9 @@ export function creatorViewerWeight(creator: RankCreator): number {
   const commRatio = commScore / 100 // 0.0 ~ 1.0
   const commBase = commScore * getViewerBalance().viewerPerCommPoint
 
-  // SNS 구독자가 소통 능력치에 따라 방송 시청자로 유입되는 비율 (0.5% ~ 3.0% 현실적 유입율)
+  // SNS 구독자가 소통 능력치에 따라 방송 시청자로 유입되는 비율 (기존 0.5%~3.0% -> 0.1%~0.6%로 조정)
   const snsSubs = Math.max(0, Number(creator.snsSubscribers) || 0)
-  const snsViewerConvertRate = 0.005 + commRatio * 0.025
+  const snsViewerConvertRate = 0.001 + commRatio * 0.005
   const snsViewers = snsSubs * snsViewerConvertRate
 
   const snsRatio = Math.min(1.0, Math.max(0, Number(creator.snsRatio) || 0))
@@ -530,7 +530,7 @@ export function growLeagueBetweenRefresh(
   ownedCreators: RankCreator[] = broadcastedCreators,
   stationGrade: StationGrade = 'tiny',
 ): LeagueState {
-  const organicSubs = Math.round(state.viewers * 0.03)
+  const organicSubs = Math.round(state.viewers * 0.005)
   const subscribers = state.subscribers + organicSubs
   const didBroadcast = broadcastedCreators.length > 0
   const viewerRoster = didBroadcast ? broadcastedCreators : ownedCreators
