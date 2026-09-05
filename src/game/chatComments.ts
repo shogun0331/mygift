@@ -49,6 +49,19 @@ export function getRandomUserChatLine(locale?: string | null): string {
   return pool[Math.floor(Math.random() * pool.length)] ?? '❤️'
 }
 
+export function translateUserChatLine(text: string, locale?: string | null): string {
+  const lang = chatLangOf(locale)
+  const targetPool = CHAT_DICTIONARY[lang] ?? CHAT_DICTIONARY.en
+
+  for (const pool of Object.values(CHAT_DICTIONARY)) {
+    const idx = pool.indexOf(text)
+    if (idx >= 0) {
+      return targetPool[idx] ?? text
+    }
+  }
+  return text
+}
+
 export function formatChatDonationText(
   creatorName: string,
   amount: number,

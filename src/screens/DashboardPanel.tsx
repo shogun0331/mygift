@@ -26,6 +26,11 @@ import {
   characterDisplayJob,
   characterDisplayName,
 } from '../game/characterLocales'
+import {
+  chatLangOf,
+  formatChatDonationText,
+  translateUserChatLine,
+} from '../game/chatComments'
 import { creatorVisuals, type StudioSlot } from '../game/studioSlots'
 import type { RegisteredStaff } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
@@ -334,8 +339,87 @@ const STATUS_BADGE: Record<StudioSlot['status'], { labelKey: string; className: 
   },
 }
 
+function formatSystemFeedText(event: DayEvent, locale: Locale, t: (key: string) => string): string {
+  if (event.type === 'viewers' && event.amount > 0) {
+    const name = event.creatorName || ''
+    const tmpl = t('feed.viewersGained') || '📈 {count} viewers gained! ({name})'
+    return tmpl.replace('{count}', String(event.amount)).replace('{name}', name)
+  }
+
+  if (event.id.startsWith('trend-evt-') || event.text.includes('주간 대세 트렌드') || event.text.includes('trend')) {
+    let typeName = ''
+    if (event.text.includes('섹시') || event.id.includes('sexy')) typeName = t('creator.typeSexy') || 'Sexy'
+    else if (event.text.includes('기품') || event.id.includes('elegance')) typeName = t('creator.typeElegance') || 'Elegance'
+    else if (event.text.includes('소통') || event.id.includes('communication')) typeName = t('creator.typeCommunication') || 'Communication'
+    else if (event.text.includes('퍼포먼스') || event.id.includes('performance')) typeName = t('creator.typePerformance') || 'Performance'
+    else typeName = 'Popular'
+
+    const lang = chatLangOf(locale)
+    switch (lang) {
+      case 'ko':
+        return `🔥 주간 대세 트렌드가 [${typeName}] 타입으로 변경되었습니다! (+35% 수익 보너스)`
+      case 'ja':
+        return `🔥 今週のトレンドが [${typeName}] タイプに変更されました! (+35% 収益ボーナス)`
+      case 'zh':
+        return `🔥 本周热门趋势已更新为 [${typeName}] 类型！(+35% 收益加成)`
+      case 'es':
+        return `🔥 ¡La tendencia semanal cambió al tipo [${typeName}]! (+35% bonificación)`
+      case 'de':
+        return `🔥 Wöchentlicher Trend geändert auf [${typeName}]! (+35% Einnahmenbonus)`
+      case 'ru':
+        return `🔥 Тренды недели сменились на тип [${typeName}]! (+35% бонус доходности)`
+      case 'en':
+      default:
+        return `🔥 Weekly trend updated to [${typeName}] type! (+35% revenue bonus)`
+    }
+  }
+
+  if (event.type === 'toxic' || event.text.includes('방송 피로 급증') || event.text.includes('fatigue')) {
+    const name = event.creatorName || ''
+    const drop = event.amount > 0 ? event.amount : (event.text.match(/\d+/)?.[0] || '20')
+    const lang = chatLangOf(locale)
+    switch (lang) {
+      case 'ko':
+        return `${name} 방송 피로 급증! 컨디션 -${drop} 급락!`
+      case 'ja':
+        return `${name} 配信疲労急増！コンディション -${drop} 急降下!`
+      case 'zh':
+        return `${name} 直播疲劳暴增！状态 -${drop}！`
+      case 'es':
+        return `¡Fatiga de transmisión de ${name}! ¡Condición -${drop}! `
+      case 'de':
+        return `Streaming-Ermüdung bei ${name}! Kondition -${drop}!`
+      case 'ru':
+        return `Усталость стрима у ${name}! Состояние -${drop}!`
+      case 'en':
+      default:
+        return `${name} broadcast fatigue spike! Condition -${drop}!`
+    }
+  }
+
+  if (event.text.includes('프로덕션 보너스') || event.text.includes('보너스!')) {
+    const lang = chatLangOf(locale)
+    if (lang !== 'ko') {
+      return event.text
+        .replace('프로덕션 보너스!', 'Production Bonus!')
+        .replace('시청자', 'Viewers')
+        .replace('수익 증가', 'Revenue Boost')
+        .replace('보너스!', 'Bonus!')
+    }
+  }
+
+  return event.text
+}
+
 /** 스크롤로 전체 피드를 밀어 올림 — 캐릭터 늘어도 줄마다 layout thrash 없음 */
-function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
+function LiveChatFeed({
+  liveEvents,
+  ownedById = {},
+}: {
+  liveEvents: DayEvent[]
+  ownedById?: Record<string, OwnedCreator>
+}) {
+  const { t, locale } = useTranslation()
   const scrollerRef = useRef<HTMLDivElement>(null)
   const stickBottomRef = useRef(true)
   const prevNewestIdRef = useRef<string | null>(null)
@@ -382,6 +466,9 @@ function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
               const tone = donationChatTone(event.amount, event.superDonation)
               const isSuper = Boolean(event.superDonation) || tone.tier === 'mega'
               const userBadge = getChatUserBadge(handle)
+              const creator = event.creatorId ? ownedById[event.creatorId] : undefined
+              const creatorName = creator ? characterDisplayName(creator, locale) : (event.creatorName || 'Creator')
+              const donationText = formatChatDonationText(creatorName, event.amount, locale)
 
               return (
                 <motion.li
@@ -434,7 +521,7 @@ function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
 
                   <div className={`relative z-[1] ${tone.body}`}>
                     <p className="text-[11px] leading-snug">
-                      {event.chatDonationText || event.text}
+                      {donationText}
                     </p>
                   </div>
                 </motion.li>
@@ -444,6 +531,7 @@ function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
             if (isUserChat) {
               const userColorClass = getChatUserColor(event.userId || '')
               const userBadge = getChatUserBadge(event.userId || '')
+              const chatText = translateUserChatLine(event.text, locale)
               return (
                 <motion.li
                   key={event.id}
@@ -463,11 +551,12 @@ function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
                     {event.userId}
                     <span className="text-slate-500 font-normal ml-0.5">:</span>
                   </span>
-                  <span className="break-all text-[11px] leading-relaxed text-slate-100">{event.text}</span>
+                  <span className="break-all text-[11px] leading-relaxed text-slate-100">{chatText}</span>
                 </motion.li>
               )
             }
 
+            const systemText = formatSystemFeedText(event, locale, t)
             return (
               <motion.li
                 key={event.id}
@@ -486,7 +575,7 @@ function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
                   SYSTEM
                 </span>
                 <span className="break-all text-[11px] font-medium leading-tight text-slate-200">
-                  {event.text}
+                  {systemText}
                 </span>
               </motion.li>
             )
@@ -708,7 +797,7 @@ export function DashboardPanel({
           {liveEvents.length === 0 ? (
             <p className="mt-4 text-center text-xs text-slate-500">{t('dashboard.noEvents')}</p>
           ) : (
-            <LiveChatFeed liveEvents={liveEvents} />
+            <LiveChatFeed liveEvents={liveEvents} ownedById={ownedById} />
           )}
         </section>
 
