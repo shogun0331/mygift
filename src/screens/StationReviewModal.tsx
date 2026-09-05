@@ -6,14 +6,55 @@ import {
 } from '../game/station'
 import { useTranslation } from '../locales/i18n'
 
+import type { StationReviewCheck } from '../game/stationGradeConfig'
+
 type StationReviewModalProps = {
   promoted: boolean
   status: StationReviewStatus
   onConfirm: () => void
 }
 
+function formatCheckText(
+  check: StationReviewCheck,
+  t: (key: string, params?: Record<string, string | number>) => string,
+) {
+  let label = check.label
+  let detail = check.detail
+
+  if (check.id === 'viewers') {
+    label = t('station.needViewers')
+    if (check.currentValue != null && check.targetValue != null) {
+      const c = check.currentValue.toLocaleString()
+      const r = check.targetValue.toLocaleString()
+      const unit = t('ranking.viewersUnit') || ''
+      detail = `${c} / ${r}${unit}`
+    }
+  } else if (check.id === 'slots') {
+    label = t('ranking.cond.slots', { n: '' }).trim() || 'Open Slots'
+    if (check.currentValue != null && check.targetValue != null) {
+      detail = `${check.currentValue} / ${check.targetValue}`
+    }
+  } else if (check.id === 'assets') {
+    label = t('ranking.cond.assets', { n: '' }).trim() || 'Assets'
+    if (check.currentValue != null && check.targetValue != null) {
+      detail = `$${check.currentValue.toLocaleString()} / $${check.targetValue.toLocaleString()}`
+    }
+  } else if (check.id === 'snsSubscribers') {
+    label = t('sns.subscribers') || 'SNS Subscribers'
+    if (check.currentValue != null && check.targetValue != null) {
+      const countStr = `${check.currentValue.toLocaleString()} / ${check.targetValue.toLocaleString()}`
+      detail = t('sns.countUnit', { count: countStr })
+    }
+  } else if (check.grade && check.currentValue != null && check.targetValue != null) {
+    label = t('station.needCreators', { grade: check.grade, count: check.targetValue })
+    detail = t('sns.countUnit', { count: `${check.currentValue} / ${check.targetValue}` })
+  }
+
+  return { label, detail }
+}
+
 export function StationReviewModal({ promoted, status, onConfirm }: StationReviewModalProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const maxed = status.next == null
   const assetReward =
     promoted && status.next ? stationPromotionAssetReward(status.next) : 0
@@ -35,30 +76,33 @@ export function StationReviewModal({ promoted, status, onConfirm }: StationRevie
               : t('station.reviewFail')}
         </h2>
         <p className="mt-3 text-2xl font-black tabular-nums text-amber-200">
-          {stationGradeLabel(status.current)}
+          {stationGradeLabel(status.current, locale)}
           {promoted && status.next ? (
             <>
               <span className="mx-2 text-slate-500">→</span>
-              {stationGradeLabel(status.next)}
+              {stationGradeLabel(status.next, locale)}
             </>
           ) : null}
         </p>
 
         {!maxed ? (
           <ul className="mt-4 space-y-1.5">
-            {status.checks.map((check) => (
-              <li
-                key={check.id}
-                className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
-                  check.met
-                    ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
-                    : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
-                }`}
-              >
-                <span className="mr-1">{check.met ? '[v]' : '[x]'}</span>
-                {check.label} ({check.detail})
-              </li>
-            ))}
+            {status.checks.map((check) => {
+              const { label, detail } = formatCheckText(check, t)
+              return (
+                <li
+                  key={check.id}
+                  className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
+                    check.met
+                      ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
+                      : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
+                  }`}
+                >
+                  <span className="mr-1">{check.met ? '[v]' : '[x]'}</span>
+                  {label} ({detail})
+                </li>
+              )
+            })}
           </ul>
         ) : (
           <p className="mt-4 text-xs font-semibold leading-relaxed text-slate-300">

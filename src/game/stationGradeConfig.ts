@@ -842,6 +842,9 @@ export type StationReviewCheck = {
   label: string
   met: boolean
   detail: string
+  currentValue?: number
+  targetValue?: number
+  grade?: Grade
 }
 
 export type StationReviewContext = {
@@ -881,6 +884,8 @@ export function evaluateStationPromotion(
     label: '필요 시청자',
     met: viewersMet,
     detail: `${ctx.viewers.toLocaleString()} / ${rule.requiredViewers.toLocaleString()}명`,
+    currentValue: ctx.viewers,
+    targetValue: rule.requiredViewers,
   })
 
   if (rule.minUnlockedSlots.enabled) {
@@ -890,6 +895,8 @@ export function evaluateStationPromotion(
       label: '오픈 슬롯',
       met,
       detail: `${ctx.unlockedSlotCount} / ${rule.minUnlockedSlots.value}칸`,
+      currentValue: ctx.unlockedSlotCount,
+      targetValue: rule.minUnlockedSlots.value,
     })
   }
 
@@ -900,6 +907,8 @@ export function evaluateStationPromotion(
       label: '보유 자산',
       met,
       detail: `$${ctx.assets.toLocaleString()} / $${rule.minAssets.value.toLocaleString()}`,
+      currentValue: ctx.assets,
+      targetValue: rule.minAssets.value,
     })
   }
 
@@ -911,6 +920,8 @@ export function evaluateStationPromotion(
       label: '필요 SNS 구독자',
       met,
       detail: `${snsSubs.toLocaleString()} / ${rule.minSnsSubscribers.value.toLocaleString()}명`,
+      currentValue: snsSubs,
+      targetValue: rule.minSnsSubscribers.value,
     })
   }
 
@@ -922,6 +933,9 @@ export function evaluateStationPromotion(
       label: `${req.minGrade}랭크 이상`,
       met: currentCount >= req.count,
       detail: `${currentCount} / ${req.count}명`,
+      currentValue: currentCount,
+      targetValue: req.count,
+      grade: req.minGrade,
     })
   }
 

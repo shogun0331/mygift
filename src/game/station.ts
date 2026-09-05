@@ -253,8 +253,15 @@ export function nextJanuaryAfter(from: Date, epoch: Date): Date {
   return new Date(Math.max(firstReviewYear, from.getFullYear() + 1), 0, 1)
 }
 
-export function stationGradeLabel(grade: StationGrade): string {
-  return STATION_TIER_LABEL[grade]
+import { companyTierLabelKey } from './ranking'
+import { getCurrentLocale, translate, type Locale } from '../locales/i18n'
+
+export function stationGradeLabel(grade: StationGrade, locale?: Locale | string | null): string {
+  const lang = (locale || getCurrentLocale()) as Locale
+  const key = companyTierLabelKey(grade)
+  const val = translate(lang, key)
+  if (val && val !== key) return val
+  return STATION_TIER_LABEL[grade] ?? grade
 }
 
 /**
