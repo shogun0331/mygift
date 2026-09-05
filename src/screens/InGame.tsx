@@ -2296,15 +2296,6 @@ export function InGame({
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
     if (crashes.length > 0) {
-      setConditionCrashes((prev) => [
-        ...prev,
-        ...crashes.map((crash) => ({
-          id: `crash-fx-${crash.creatorId}-${Math.round(performance.now())}`,
-          creatorId: crash.creatorId,
-          drop: crash.drop,
-          staminaDrop: crash.staminaDrop,
-        })),
-      ])
       const crashEvents: DayEvent[] = crashes.map((crash) => ({
         id: `crash-evt-${crash.creatorId}-${Math.round(performance.now())}`,
         creatorId: crash.creatorId,
