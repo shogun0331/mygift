@@ -66,7 +66,7 @@ function applyLocaleToDocument(locale: Locale) {
 export function translate(locale: Locale, key: string, params?: Record<string, string | number>): string {
   const currentPack = RESOURCES[locale]
   let val = getValueByPath(currentPack, key)
-  if (val == null || val.trim() === '') {
+  if (val == null) {
     if (locale !== 'KO') {
       val = getValueByPath(RESOURCES.KO, key)
     }
