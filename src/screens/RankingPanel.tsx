@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import {
   COMPANY_TIERS,
   companyTierLabelKey,
@@ -12,9 +12,8 @@ import {
   type LeagueState,
   type MilestoneReward,
 } from '../game/ranking'
-import {
-  getStationReviewStatus,
-  type StationGrade,
+import type {
+  StationGrade,
 } from '../game/station'
 import type { StationGradeConfig, StationPromotionRule } from '../game/stationGradeConfig'
 import type { Grade } from '../game/characters'
@@ -37,7 +36,7 @@ type RankingPanelProps = {
   rankPlay?: RankBubblePlay | null
   onRankPlayDone?: () => void
   creators: Array<{ grade: Grade; snsSubscribers?: number }>
-  onOpenScout: () => void
+  onOpenScout?: () => void
 }
 
 const RANK_BUBBLE_MS = 1600
@@ -46,7 +45,7 @@ const TIER_COUNT = COMPANY_TIERS.length
 
 export function RankingPanel({
   league,
-  stationGrade,
+  stationGrade: _stationGrade,
   stationGradeConfig,
   unlockedSlotCount,
   assets,
@@ -55,26 +54,8 @@ export function RankingPanel({
   rankPlay = null,
   onRankPlayDone,
   creators,
-  onOpenScout,
 }: RankingPanelProps) {
   const { t } = useTranslation()
-  const review = useMemo(
-    () => {
-      const totalSns = creators.reduce((sum, c) => sum + (c.snsSubscribers ?? 0), 0)
-      return getStationReviewStatus(
-        stationGrade,
-        league.viewers,
-        creators,
-        {
-          unlockedSlotCount,
-          assets,
-          snsSubscribers: totalSns,
-        },
-        stationGradeConfig,
-      )
-    },
-    [stationGrade, league.viewers, creators, unlockedSlotCount, assets, stationGradeConfig],
-  )
   const [playProgress, setPlayProgress] = useState(1)
   const playDoneRef = useRef<string | null>(null)
   const onRankPlayDoneRef = useRef(onRankPlayDone)
@@ -216,11 +197,6 @@ export function RankingPanel({
             {' — '}
             <RewardSummary reward={reward} />
           </p>
-        ) : null}
-        {review.next && !review.creatorsMet ? (
-          <button type="button" onClick={onOpenScout} className="game-btn-pink rank-foot-scout">
-            {t('ranking.goScout')}
-          </button>
         ) : null}
       </footer>
     </div>
