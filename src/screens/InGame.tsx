@@ -2777,14 +2777,6 @@ export function InGame({
     if (snsResults.length > 0) {
       ownedCreatorsRef.current = afterSnsOwned
       onOwnedCreatorsChangeRef.current(afterSnsOwned)
-      if (extraViewers > 0) {
-        const nextViewers = capStationViewers(
-          leagueRef.current.viewers + extraViewers,
-          stationGradeRef.current,
-        )
-        leagueRef.current = { ...leagueRef.current, viewers: nextViewers }
-        setLeague(leagueRef.current)
-      }
       snsResultQueueRef.current = snsResults
       setSnsResultQueue(snsResults)
     }
@@ -4426,6 +4418,15 @@ export function InGame({
         <SnsResultModal
           result={snsResultQueue[0]}
           onConfirm={() => {
+            const current = snsResultQueue[0]
+            if (current && current.viewersGained > 0) {
+              const nextViewers = capStationViewers(
+                leagueRef.current.viewers + current.viewersGained,
+                stationGradeRef.current,
+              )
+              leagueRef.current = { ...leagueRef.current, viewers: nextViewers }
+              setLeague(leagueRef.current)
+            }
             const rest = snsResultQueueRef.current.slice(1)
             snsResultQueueRef.current = rest
             setSnsResultQueue(rest)
