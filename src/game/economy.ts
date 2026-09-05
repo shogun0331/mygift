@@ -169,17 +169,17 @@ export function splitDayRevenueAmounts(totalWon: number): number[] {
 
 function scheduleAtMs(count: number, dayMs: number): number[] {
   if (count <= 0) return []
-  const slot = dayMs / (count + 1)
-  const minGap = dayMs / (count * 2)
+  const availableSpan = dayMs * 0.92
+  const slot = availableSpan / count
   const times: number[] = []
   for (let i = 0; i < count; i += 1) {
-    const base = slot * (i + 1)
+    const base = slot * (i + 0.5)
     const jitter = (Math.random() - 0.5) * slot * 0.35
-    let t = Math.max(40, Math.min(dayMs - 40, base + jitter))
+    let t = Math.max(60, Math.min(dayMs - 50, base + jitter))
     if (times.length > 0) {
-      t = Math.max(t, times[times.length - 1]! + minGap * 0.5)
+      t = Math.max(t, times[times.length - 1]! + 40)
     }
-    times.push(Math.min(dayMs - 20, t))
+    times.push(Math.min(dayMs - 40, t))
   }
   return times
 }
