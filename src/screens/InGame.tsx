@@ -261,8 +261,6 @@ type SpeedOption = (typeof SPEED_OPTIONS)[number]
 
 const INITIAL_ASSETS = 200_000
 const MAX_RECENT_EVENTS = 40
-/** 이 인원 이상이면 후원을 모아 1명일 때와 비슷한 속도로 로그에 냄 */
-const FEED_BATCH_MIN_CREATORS = 2
 
 type WeekInspection = {
   creatorId: string
@@ -1218,6 +1216,8 @@ export function InGame({
   const feedExtraQueueRef = useRef<DayEvent[]>([])
   const lastFeedEmitAtRef = useRef(0)
   const lastFeedTypeRef = useRef<'donation' | 'extra'>('extra')
+  const lastDonationSfxAtRef = useRef(0)
+  const lastViewerSfxAtRef = useRef(0)
   const settledDayKeyRef = useRef<string | null>(null)
   const weekAccumRef = useRef<WeekAccumulator>(
     initialSave ? deserializeWeekAccum(initialSave.weekAccum) : createWeekAccumulator(1),
@@ -1707,11 +1707,22 @@ export function InGame({
     if (visible.length === 0) return
     creditLiveDonations(visible)
     setLiveEvents((prev) => [...visible.reverse(), ...prev].slice(0, MAX_RECENT_EVENTS))
+
+    const now = performance.now()
+    const speedMult = speedMultiplierOf(speedRef.current)
+    const minSfxGap = 220 / speedMult
+
     if (visible.some((event) => event.type === 'donation' && event.amount > 0)) {
-      playSfx('live-donation')
+      if (now - lastDonationSfxAtRef.current >= minSfxGap) {
+        lastDonationSfxAtRef.current = now
+        playSfx('live-donation')
+      }
     }
     if (visible.some((event) => event.type === 'viewers')) {
-      playSfx('live-viewers')
+      if (now - lastViewerSfxAtRef.current >= minSfxGap) {
+        lastViewerSfxAtRef.current = now
+        playSfx('live-viewers')
+      }
     }
   }
 
@@ -1722,11 +1733,6 @@ export function InGame({
 
     const cap = tierViewerCap(stationGradeConfig, stationGrade)
     const isViewerCapped = cap != null && leagueRef.current.viewers >= cap
-
-    if (plan.plans.length < FEED_BATCH_MIN_CREATORS) {
-      if (due.length > 0) pushLiveFeed(due)
-      return
-    }
 
     for (const event of due) {
       const targetEvent =
@@ -1775,7 +1781,9 @@ export function InGame({
       return
     }
 
-    const gapMs = 120
+    const speedMult = speedMultiplierOf(speedRef.current)
+    const baseGapMs = donationBatchRef.current.size > 2 ? 300 : 450
+    const gapMs = baseGapMs / speedMult
     if (lastFeedEmitAtRef.current > 0 && now - lastFeedEmitAtRef.current < gapMs) return
 
     const hasDonation = donationBatchRef.current.size > 0
@@ -3750,13 +3758,9 @@ export function InGame({
         }
       }
 
-      if (realtimeDonations.length > 0) {
-        creditLiveDonations(realtimeDonations)
-        pushLiveFeed(realtimeDonations)
-      }
-
-      if (due.length > 0) {
-        ingestLiveFeedEvents(due, plan, false)
+      const combinedEvents = [...due, ...realtimeDonations]
+      if (combinedEvents.length > 0) {
+        ingestLiveFeedEvents(combinedEvents, plan, false)
       }
       runDueInspections(elapsed)
     }, 120)
