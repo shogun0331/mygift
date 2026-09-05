@@ -1831,8 +1831,14 @@ export function InGame({
         lastDonationSfxAtRef.current = now
         playSfx('live-donation')
       }
-      // 대형 후원은 한 번 더 쳐서 존재감 강조 + VN 대사창
-      const superHit = visible.find((event) => event.superDonation && event.amount > 0)
+      // 대형 후원은 한 번 더 쳐서 존재감 강조 + VN 대사창 (이번 달에 이미 대사를 한 캐릭터는 중복 발동하지 않음)
+      const superHit = visible.find(
+        (event) =>
+          event.superDonation &&
+          event.amount > 0 &&
+          event.creatorId &&
+          !spokenCreatorsThisBroadcastRef.current.has(event.creatorId),
+      )
       if (superHit) {
         window.setTimeout(() => playSfx('live-donation'), 90)
         const creator = ownedCreatorsRef.current.find((c) => c.id === superHit.creatorId)
