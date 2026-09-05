@@ -309,6 +309,8 @@
   "sns": {
     "action": "SNS",
     "title": "SNS",
+    "subscribers": "SNS Subscribers",
+    "publishProgress": "SNS Post Progress",
     "empty": "No posts yet.",
     "compose": "Create a new post",
     "composeTitle": "Choose a concept",
@@ -646,6 +648,7 @@
       "slots": "Open Slots {n}",
       "assets": "Assets ${n}",
       "creators": "Rank {grade}+ ×{n}",
+      "snsSubscribers": "SNS Subscribers {n}",
       "none": "No conditions"
     }
   },

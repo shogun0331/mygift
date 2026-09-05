@@ -350,10 +350,11 @@ function promotionCondCells(
   if (rule.minSnsSubscribers?.enabled) {
     const totalSnsSubs = ctx.creators.reduce((sum, c) => sum + (c.snsSubscribers ?? 0), 0)
     const val = rule.minSnsSubscribers.value
-    const valLabel = val >= 10_000_000 ? '1,000만 명' : val >= 10_000 ? `${(val / 10_000).toLocaleString()}만 명` : `${val.toLocaleString()}명`
+    const valStr = val.toLocaleString()
+    const tmpl = t('ranking.cond.snsSubscribers') || 'SNS Subscribers {n}'
     cells.push({
       id: 'snsSubscribers',
-      label: `SNS 구독자 ${valLabel}`,
+      label: tmpl.replace('{n}', valStr),
       met: totalSnsSubs >= val,
     })
   }

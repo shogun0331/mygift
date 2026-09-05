@@ -510,7 +510,7 @@ export function CreatorPanel({
                         sortField === 'sns' ? 'text-cyan-200 font-bold' : ''
                       }`}
                     >
-                      <span>SNS 구독자</span>
+                      <span>{t('sns.subscribers')}</span>
                       <span className="text-[10px] text-cyan-300 font-bold">
                         {sortField === 'sns' ? (sortOrder === 'desc' ? '▼' : '▲') : '↕'}
                       </span>
@@ -619,7 +619,7 @@ export function CreatorPanel({
                         {formatMoney(expectedRev)}
                       </td>
                       <td className="px-3 py-2.5 font-bold tabular-nums text-cyan-300">
-                        📱 {snsSubs.toLocaleString()}명
+                        📱 {t('sns.countUnit', { count: snsSubs.toLocaleString() })}
                       </td>
                       <td className="px-3 py-2.5 sm:px-4">
                         <div className="flex flex-wrap gap-1.5">

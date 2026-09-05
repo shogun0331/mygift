@@ -309,6 +309,8 @@
   "sns": {
     "action": "SNS",
     "title": "SNS",
+    "subscribers": "SNS 구독자",
+    "publishProgress": "SNS 발행 진행률",
     "empty": "아직 올린 게시물이 없습니다.",
     "compose": "새 게시물 작성하기",
     "composeTitle": "콘셉트 선택",
@@ -646,6 +648,7 @@
       "slots": "오픈 슬롯 {n}칸",
       "assets": "자산 ${n}",
       "creators": "{grade}+랭크 {n}명",
+      "snsSubscribers": "SNS 구독자 {n}",
       "none": "조건 없음"
     }
   },

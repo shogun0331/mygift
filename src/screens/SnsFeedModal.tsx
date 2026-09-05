@@ -187,7 +187,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
                   <p className="pb-1 text-[11px] text-slate-400">
                     <span className="font-bold text-slate-100">{postCount}</span> {t('sns.posts')}
                     <span className="mx-1.5 text-slate-600">·</span>
-                    <span className="font-bold text-cyan-300">{snsSubscribers.toLocaleString()}</span> / {MAX_CREATOR_SNS_SUBSCRIBERS.toLocaleString()}명
+                    <span className="font-bold text-cyan-300">{snsSubscribers.toLocaleString()}</span> / {t('sns.countUnit', { count: MAX_CREATOR_SNS_SUBSCRIBERS.toLocaleString() })}
                   </p>
                 </div>
                 <h3 className="mt-2 text-lg font-extrabold text-slate-100">{displayName}</h3>
@@ -197,7 +197,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
                 {/* SNS 달성 비율 게이지 바 */}
                 <div className="mt-3 rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-2.5">
                   <div className="flex items-center justify-between text-[11px] font-bold text-cyan-200">
-                    <span>📱 SNS 발행 진행률</span>
+                    <span>📱 {t('sns.publishProgress')}</span>
                     <span>{ratioPercent}% ({publishedIds.length} / {posts.length}장)</span>
                   </div>
                   <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-black/40">
