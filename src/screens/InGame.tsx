@@ -86,7 +86,6 @@ import {
   calcConditionCrashChance,
   CONDITION_CRASH_DROP,
   CONDITION_CRASH_STAMINA_DROP,
-  clampConditionScore,
   calcConditionFullCareCost,
   calcVacationCost,
   calcWeeklyBroadcastStaminaCost,
@@ -94,7 +93,6 @@ import {
   canBroadcastByStamina,
   conditionRevenueMultOf,
   isCreatorBroadcastBlockedLive,
-  CONDITION_SCORE_RANGE,
   previewLiveConditionScore,
   scoreOf,
   type SlotDrainMults,
@@ -1519,6 +1517,17 @@ export function InGame({
   function beginDayPlan(dayKey: string, weekMs: number) {
     const revenueMult = 1
     const assigned = assignedCreatorsFrom(ownedCreatorsRef.current)
+
+    // 케어매니저 장착 시 항상 컨디션 최상(100점) 유지 및 매주 방어 FX 연출 표시
+    for (const creator of assigned) {
+      const slotId = findSlotIdForCreator(studioSlotsRef.current, creator.id)
+      if (slotId) {
+        const care = staffBonusOf(managerStateRef.current, slotId, 'care')
+        if (care.equipped) {
+          tryCareRestore(creator.id, slotId, true)
+        }
+      }
+    }
     const revenueMultByCreatorId: Record<string, number> = {}
     for (const creator of assigned) {
       const slotId = findSlotIdForCreator(studioSlotsRef.current, creator.id)
@@ -1923,33 +1932,34 @@ export function InGame({
     if (bonus > 0) playSfx('live-viewers')
   }
 
-  function tryCareRestore(creatorId: string, slotId: string) {
+  function tryCareRestore(creatorId: string, slotId: string, forcePresent = false) {
     const care = staffBonusOf(managerStateRef.current, slotId, 'care')
     if (!care.equipped) return false
     const creator = ownedCreatorsRef.current.find((row) => row.id === creatorId)
     if (!creator) return false
     const before = scoreOf(creator)
-    if (before >= CONDITION_SCORE_RANGE.best.min) return false
     const nextOwned = ownedCreatorsRef.current.map((row) =>
       row.id === creatorId
-        ? applyVitalsDelta(row, { condition: clampConditionScore(CONDITION_SCORE_RANGE.best.min - before) })
+        ? applyConditionFullCare(row)
         : row,
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
-    const name = staffNameOf(care.staffId)
-    presentStaffAction(
-      slotId,
-      'care',
-      t('dashboard.staffCare'),
-      t('dashboard.staffCareSub'),
-      t('feed.care')
-        .replace('{name}', name || creatorNameOf(creator.id))
-        .replace('{creatorName}', creatorNameOf(creator.id)),
-      creator.id,
-      creatorNameOf(creator.id),
-    )
-    playSfx('condition-recover')
+    if (before < 100 || forcePresent) {
+      const name = staffNameOf(care.staffId)
+      presentStaffAction(
+        slotId,
+        'care',
+        t('dashboard.staffCare'),
+        t('dashboard.staffCareSub'),
+        t('feed.care')
+          .replace('{name}', name || creatorNameOf(creator.id))
+          .replace('{creatorName}', creatorNameOf(creator.id)),
+        creator.id,
+        creatorNameOf(creator.id),
+      )
+      playSfx('condition-recover')
+    }
     return true
   }
 
