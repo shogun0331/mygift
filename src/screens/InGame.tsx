@@ -4620,7 +4620,7 @@ export function InGame({
                 </span>
               </div>
 
-              <div className="border-t border-white/10 pt-6 mt-6 flex flex-col items-center gap-2.5">
+              <div className="border-t border-white/10 pt-5 mt-6">
                 <button
                   type="button"
                   onClick={() => setTab('dashboard')}
@@ -4637,10 +4637,13 @@ export function InGame({
                   </svg>
                   <span>{t('settings.back')}</span>
                 </button>
+              </div>
+
+              <div className="border-t border-rose-500/25 pt-6 mt-10">
                 <button
                   type="button"
                   onClick={onBack}
-                  className="game-btn w-full py-3.5 px-6 rounded-xl font-black text-sm bg-gradient-to-r from-pink-600 via-fuchsia-600 to-pink-600 hover:from-pink-500 hover:to-fuchsia-500 border border-pink-400/60 text-white shadow-[0_0_25px_rgba(244,114,182,0.55)] hover:shadow-[0_0_40px_rgba(244,114,182,0.85)] transition-all flex items-center justify-center gap-2"
+                  className="game-btn w-full py-3.5 px-6 rounded-xl font-black text-sm bg-gradient-to-r from-rose-700 via-red-600 to-rose-700 hover:from-rose-600 hover:to-red-500 border border-rose-400/60 text-white shadow-[0_0_20px_rgba(244,63,94,0.45)] hover:shadow-[0_0_35px_rgba(244,63,94,0.75)] transition-all flex items-center justify-center gap-2"
                 >
                   <svg className="w-4.5 h-4.5 fill-current" viewBox="0 0 24 24">
                     <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 0 1 2 2v2h-2V4H5v16h9v-2h2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9z" />
