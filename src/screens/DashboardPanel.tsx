@@ -417,35 +417,72 @@ export function DashboardPanel({
       </section>
 
       <aside className="flex min-h-0 flex-col gap-2.5 lg:h-full lg:overflow-hidden">
-        <section className="game-panel flex min-h-0 max-h-40 flex-col rounded-2xl p-3 lg:max-h-none lg:flex-[0.85]">
-          <h2 className="game-stat-label shrink-0">{t('dashboard.recentEvents')}</h2>
+        <section className="game-panel flex min-h-0 max-h-48 flex-col rounded-2xl p-3 lg:max-h-none lg:flex-[0.85] overflow-hidden">
+          <div className="flex shrink-0 items-center justify-between gap-2 pb-1.5 border-b border-white/10">
+            <h2 className="game-stat-label flex items-center gap-1.5 text-xs font-bold tracking-wider text-pink-400">
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              {t('dashboard.recentEvents')}
+            </h2>
+            <span className="text-[10px] font-mono text-slate-400">MAX 30</span>
+          </div>
           {liveEvents.length === 0 ? (
             <p className="mt-4 text-center text-xs text-slate-500">{t('dashboard.noEvents')}</p>
           ) : (
-            <ul className="mt-2.5 min-h-0 flex-1 space-y-2 overflow-auto pr-1">
+            <ul className="mt-2 min-h-0 flex-1 space-y-1.5 overflow-hidden flex flex-col justify-end">
               <AnimatePresence initial={false}>
-                {liveEvents.map((event) => (
-                  <motion.li
-                    key={event.id}
-                    layout
-                    initial={reducedMotion ? false : { opacity: 0, x: -24 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={reducedMotion ? undefined : { opacity: 0, x: -12 }}
-                    transition={{
-                      layout: reducedMotion
-                        ? { duration: 0 }
-                        : { type: 'spring', stiffness: 380, damping: 30 },
-                      opacity: { duration: 0.22 },
-                      x: { type: 'spring', stiffness: 420, damping: 28 },
-                    }}
-                    className="flex items-start gap-2 rounded-xl border-0 bg-white/[0.06] px-2.5 py-2 text-xs text-slate-300"
-                  >
-                    <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${event.tone}`} />
-                    <div className="min-w-0">
-                      <span>{event.text}</span>
-                    </div>
-                  </motion.li>
-                ))}
+                {liveEvents.slice(0, 30).map((event) => {
+                  const handle =
+                    event.userId ||
+                    `@user_${Math.abs(
+                      Array.from(event.id).reduce(
+                        (acc, char) => (acc << 5) - acc + char.charCodeAt(0),
+                        0,
+                      ),
+                    ) % 899 + 100}`
+                  const isDonation = event.type === 'donation' && event.amount > 0
+
+                  if (isDonation) {
+                    return (
+                      <motion.li
+                        key={event.id}
+                        layout
+                        initial={reducedMotion ? false : { opacity: 0, y: 12, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={reducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.2 }}
+                        className="rounded-xl border border-amber-400/40 bg-gradient-to-r from-amber-950/50 via-amber-900/30 to-pink-950/40 p-2 text-xs text-amber-100 shadow-md shadow-amber-500/10 shrink-0"
+                      >
+                        <div className="flex items-center justify-between gap-1 mb-0.5">
+                          <span className="font-semibold text-amber-300 text-[11px] truncate">{handle}</span>
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-400/30 shrink-0">
+                            <span>💰</span> ${event.amount.toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-medium text-amber-200/90 leading-tight">
+                          {event.chatDonationText || event.text}
+                        </p>
+                      </motion.li>
+                    )
+                  }
+
+                  return (
+                    <motion.li
+                      key={event.id}
+                      layout
+                      initial={reducedMotion ? false : { opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={reducedMotion ? undefined : { opacity: 0, x: -10 }}
+                      transition={{ duration: 0.18 }}
+                      className="flex items-start gap-1.5 rounded-lg bg-white/[0.04] px-2 py-1 text-xs text-slate-200 hover:bg-white/[0.07] shrink-0"
+                    >
+                      <span className="font-semibold text-cyan-400 text-[11px] shrink-0">{handle}:</span>
+                      <span className="text-[11px] text-slate-300 leading-tight break-all">{event.text}</span>
+                    </motion.li>
+                  )
+                })}
               </AnimatePresence>
             </ul>
           )}

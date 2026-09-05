@@ -114,6 +114,7 @@ import {
   type DayEvent,
   type StudioDayPlan,
 } from '../game/economy'
+import { getRandomUserId, getRandomUserChatLine, formatChatDonationText } from '../game/chatComments'
 import { formatMoney, roundMoney } from '../game/money'
 import { rollNegotiatedSalary } from '../game/salary'
 import {
@@ -323,16 +324,20 @@ function takeLargestDonationBatch(map: Map<string, DonationBatch>): DonationBatc
   return best
 }
 
-function donationEventFromBatch(batch: DonationBatch, stamp: string, t: (key: string) => string): DayEvent {
+function donationEventFromBatch(batch: DonationBatch, stamp: string, _t: (key: string) => string, locale?: string): DayEvent {
+  const userId = getRandomUserId()
+  const chatDonationText = formatChatDonationText(batch.creatorName, batch.amount, locale)
   return {
     id: `donation-batch-${batch.creatorId}-${stamp}`,
     creatorId: batch.creatorId,
     creatorName: batch.creatorName,
     type: 'donation',
     amount: batch.amount,
-    text: t('feed.donation').replace('{amount}', () => formatMoney(batch.amount)).replace('{name}', batch.creatorName),
+    text: chatDonationText,
     atMs: 0,
     tone: batch.amount >= 1_000 ? 'bg-amber-400' : 'bg-pink-400',
+    userId,
+    chatDonationText,
   }
 }
 
@@ -1757,7 +1762,7 @@ export function InGame({
         const batch = takeLargestDonationBatch(donationBatchRef.current)
         if (!batch) break
         if (isCreatorDonationBlocked(batch.creatorId)) continue
-        remainingDonations.push(donationEventFromBatch(batch, `${plan.dayKey}-${stamp}`, t))
+        remainingDonations.push(donationEventFromBatch(batch, `${plan.dayKey}-${stamp}`, t, locale))
         stamp += 1
       }
       const extras = [...feedExtraQueueRef.current]
@@ -1806,7 +1811,7 @@ export function InGame({
     } else if (hasDonation) {
       const batch = takeLargestDonationBatch(donationBatchRef.current)
       if (batch && !isCreatorDonationBlocked(batch.creatorId)) {
-        emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${Math.round(now)}`, t))
+        emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${Math.round(now)}`, t, locale))
         lastFeedTypeRef.current = 'donation'
       } else if (batch) {
         // blocked creator batch — drop and retry next tick
@@ -3756,6 +3761,23 @@ export function InGame({
             atMs: elapsed,
           })
         }
+      }
+
+      if (assigned.length > 0 && Math.random() < 0.15) {
+        const creator = assigned[Math.floor(Math.random() * assigned.length)]!
+        const userId = getRandomUserId()
+        const chatLine = getRandomUserChatLine(locale)
+        realtimeDonations.push({
+          id: `chat-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          creatorId: creator.id,
+          creatorName: characterDisplayName(creator, locale),
+          type: 'viewers',
+          amount: 0,
+          text: chatLine,
+          atMs: elapsed,
+          tone: 'bg-slate-400',
+          userId,
+        })
       }
 
       const combinedEvents = [...due, ...realtimeDonations]

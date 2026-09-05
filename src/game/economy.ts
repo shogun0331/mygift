@@ -32,6 +32,8 @@ export type DayEvent = {
   text: string
   atMs: number
   tone: string
+  userId?: string
+  chatDonationText?: string
 }
 
 export type CreatorDayPlan = {

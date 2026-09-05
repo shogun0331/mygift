@@ -48,7 +48,7 @@
     "exitEventConfirm": "Leave"
   },
   "dashboard": {
-    "recentEvents": "Recent Events",
+    "recentEvents": "LIVE CHAT",
     "noEvents": "No events have occurred yet.",
     "liveRank": "Live Broadcast Rank",
     "noLiveBroadcast": "No broadcast assigned in studio.",
