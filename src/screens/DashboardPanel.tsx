@@ -434,17 +434,11 @@ export function DashboardPanel({
             <ul className="mt-2 min-h-0 flex-1 space-y-1.5 overflow-hidden flex flex-col justify-end">
               <AnimatePresence initial={false}>
                 {[...liveEvents.slice(0, 30)].reverse().map((event) => {
-                  const handle =
-                    event.userId ||
-                    `@user_${Math.abs(
-                      Array.from(event.id).reduce(
-                        (acc, char) => (acc << 5) - acc + char.charCodeAt(0),
-                        0,
-                      ),
-                    ) % 899 + 100}`
                   const isDonation = event.type === 'donation' && event.amount > 0
+                  const isUserChat = Boolean(event.userId)
 
                   if (isDonation) {
+                    const handle = event.userId || '@user_fan'
                     return (
                       <motion.li
                         key={event.id}
@@ -468,18 +462,36 @@ export function DashboardPanel({
                     )
                   }
 
+                  if (isUserChat) {
+                    return (
+                      <motion.li
+                        key={event.id}
+                        layout
+                        initial={reducedMotion ? false : { opacity: 0, x: -16 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={reducedMotion ? undefined : { opacity: 0, x: -10 }}
+                        transition={{ duration: 0.18 }}
+                        className="flex items-start gap-1.5 rounded-lg bg-white/[0.04] px-2 py-1 text-xs text-slate-200 hover:bg-white/[0.07] shrink-0"
+                      >
+                        <span className="font-semibold text-cyan-400 text-[11px] shrink-0">{event.userId}:</span>
+                        <span className="text-[11px] text-slate-300 leading-tight break-all">{event.text}</span>
+                      </motion.li>
+                    )
+                  }
+
+                  // 시스템 정보/시청자 증가/트렌드 안내 이벤트 (아이디 미표시 시스템 공지 스타일)
                   return (
                     <motion.li
                       key={event.id}
                       layout
-                      initial={reducedMotion ? false : { opacity: 0, x: -16 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={reducedMotion ? undefined : { opacity: 0, x: -10 }}
+                      initial={reducedMotion ? false : { opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={reducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.18 }}
-                      className="flex items-start gap-1.5 rounded-lg bg-white/[0.04] px-2 py-1 text-xs text-slate-200 hover:bg-white/[0.07] shrink-0"
+                      className="flex items-center gap-1.5 rounded-lg border border-cyan-500/25 bg-cyan-950/30 px-2.5 py-1 text-xs text-cyan-200 shadow-sm shrink-0"
                     >
-                      <span className="font-semibold text-cyan-400 text-[11px] shrink-0">{handle}:</span>
-                      <span className="text-[11px] text-slate-300 leading-tight break-all">{event.text}</span>
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400 animate-pulse" />
+                      <span className="text-[11px] font-medium leading-tight text-cyan-200/90 break-all">{event.text}</span>
                     </motion.li>
                   )
                 })}
