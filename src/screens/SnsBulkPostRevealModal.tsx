@@ -73,19 +73,24 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
   useEffect(() => {
     if (visibleCount <= 0) return
     const entry = entries[visibleCount - 1]
-    if (!entry || entry.heat !== 3) return
+    if (!entry || entry.heat !== 3) {
+      setHeat3Burst(null)
+      setHeat3CardKey(null)
+      return
+    }
     const key = `${entry.creatorId}-${entry.postId}`
     if (heat3SeenRef.current.has(key)) return
     heat3SeenRef.current.add(key)
     playSfx('sns-heat3')
     setHeat3CardKey(key)
     setHeat3Burst({ name: entry.displayName, key: Date.now() })
-    const clearBurst = window.setTimeout(() => setHeat3Burst(null), 1500)
-    const clearCard = window.setTimeout(() => setHeat3CardKey(null), 1800)
-    return () => {
-      window.clearTimeout(clearBurst)
-      window.clearTimeout(clearCard)
-    }
+
+    // 이펙트 오버레이와 카드의 이펙트 해제를 1600ms에 한 번에 정리하여 화면 떨림/리프레시 현상 방지
+    const clearTimer = window.setTimeout(() => {
+      setHeat3Burst(null)
+      setHeat3CardKey(null)
+    }, 1600)
+    return () => window.clearTimeout(clearTimer)
   }, [visibleCount, entries])
 
   useEffect(() => {
@@ -99,7 +104,7 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
       return
     }
     const last = entries[visibleCount - 1]
-    const wait = last?.heat === 3 ? Math.max(intervalMs + 1200, 1650) : intervalMs
+    const wait = last?.heat === 3 ? 1650 : intervalMs
     const timer = window.setTimeout(() => setVisibleCount((count) => count + 1), wait)
     return () => window.clearTimeout(timer)
   }, [visibleCount, entries, intervalMs, onDone])
@@ -107,7 +112,7 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
   useEffect(() => {
     const scroller = scrollRef.current
     if (!scroller) return
-    scroller.scrollTop = scroller.scrollHeight
+    scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' })
   }, [visibleCount])
 
   useEffect(() => {
