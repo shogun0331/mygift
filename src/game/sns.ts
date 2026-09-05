@@ -92,7 +92,9 @@ export function hasSnsComposeStock(
   return Boolean(nextSnsPost(posts, publishedIds, 2) || nextSnsPost(posts, publishedIds, 3))
 }
 
-/** 가벼운 어필이 기본. 파격 확률은 연속 어필(pity)마다 올라가고 파격 시 리셋. */
+/** 
+ * 일반 게시물(heat: 2)을 모두 게시해야 수위 게시물(heat: 3)이 등장함.
+ */
 export function rollSnsCompose(
   posts: SnsPostDef[],
   publishedIds: readonly string[],
@@ -101,16 +103,12 @@ export function rollSnsCompose(
   const light = nextSnsPost(posts, publishedIds, 2)
   const bold = nextSnsPost(posts, publishedIds, 3)
   if (!light && !bold) return null
-  if (!bold && light) {
+  // 일반 게시물(light)이 남아있으면 무조건 일반 게시물 우선 소진
+  if (light) {
     return { post: light, heat: 2, nextPity: normalizeSnsHeat3Pity(pity) + 1 }
   }
-  if (!light && bold) {
-    return { post: bold, heat: 3, nextPity: 0 }
-  }
-  if (Math.random() < snsHeat3Chance(pity)) {
-    return { post: bold!, heat: 3, nextPity: 0 }
-  }
-  return { post: light!, heat: 2, nextPity: normalizeSnsHeat3Pity(pity) + 1 }
+  // 일반 게시물이 모두 소진된 경우에만 수위 게시물(bold) 출현
+  return { post: bold!, heat: 3, nextPity: 0 }
 }
 
 /** 캐릭터당 최대 모을 수 있는 영구 SNS 구독자 캡 (10만 명) */
