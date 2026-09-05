@@ -4187,7 +4187,6 @@ export function InGame({
                 <IconEdit />
               </button>
             ) : null}
-            <FpsCounter />
           </div>
           <div className="min-w-0">
             <p className="game-kicker">STAR BROADCASTING CO.</p>
@@ -4663,8 +4662,12 @@ export function InGame({
         )}
       </section>
 
-      {broadcastPhase === 'live' ? null : (
-      <nav className="game-dock z-20 shrink-0 px-6 py-3" aria-label={t('menu.ariaGameMenu')}>
+      {broadcastPhase === 'live' ? (
+        <div className="fixed left-3 bottom-3 z-50 pointer-events-auto">
+          <FpsCounter />
+        </div>
+      ) : (
+      <nav className="game-dock relative z-20 shrink-0 px-6 py-3" aria-label={t('menu.ariaGameMenu')}>
         <div className="mx-auto flex w-full max-w-6xl gap-1.5 sm:gap-2">
           {TABS.filter((item) => item.id !== 'casino' || isCasinoGradeUnlocked).map((item) => {
             const isActive = tab === item.id
@@ -4736,6 +4739,9 @@ export function InGame({
               </button>
             )
           })}
+        </div>
+        <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-30 pointer-events-auto">
+          <FpsCounter />
         </div>
       </nav>
       )}
