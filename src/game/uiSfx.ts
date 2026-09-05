@@ -95,8 +95,14 @@ export function setSeVolumePercent(percent: number) {
   for (const audio of loops.values()) audio.volume = volume
 }
 
+const DEFAULT_SFX_GAIN: Partial<Record<SfxId, number>> = {
+  'live-donation': 0.4,
+  'live-viewers': 0.3,
+}
+
 export function playSfx(id: SfxId, options?: { loop?: boolean; gain?: number }) {
-  const gain = clamp01(options?.gain ?? 1)
+  const defaultGain = DEFAULT_SFX_GAIN[id] ?? 1
+  const gain = clamp01(options?.gain ?? defaultGain)
   const level = volume * gain
   if (level <= 0.001) return
   if (options?.loop) {
