@@ -94,6 +94,7 @@ import {
   canBroadcastByStamina,
   isCreatorBroadcastBlockedLive,
   CONDITION_SCORE_RANGE,
+  previewLiveConditionScore,
   scoreOf,
   type SlotDrainMults,
 } from '../game/condition'
@@ -1262,6 +1263,8 @@ export function InGame({
       return next
     })
   }, [studioSlots])
+  const liveWeekProgressRef = useRef(liveWeekProgress)
+  liveWeekProgressRef.current = liveWeekProgress
   assetsRef.current = assets
   livePlayVideoByCreatorRef.current = livePlayVideoByCreator
   speedRef.current = speed
@@ -3273,7 +3276,16 @@ export function InGame({
   function handleConditionCare(creatorId: string) {
     const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
     if (!target) return
-    if (scoreOf(target) >= 100) return
+    const liveDrain = liveConditionDrainByCreatorIdRef.current[creatorId] ?? 0
+    const currentEffectiveScore =
+      broadcastPhaseRef.current === 'live' && liveDrain > 0
+        ? previewLiveConditionScore(
+            scoreOf(target),
+            liveDrain,
+            liveWeekProgressRef.current,
+          )
+        : scoreOf(target)
+    if (currentEffectiveScore >= 100) return
     const cost = calcConditionFullCareCost(target.grade)
     if (!spendAssets(cost)) return
     weekAccumRef.current = recordCareExpense(weekAccumRef.current, {
@@ -3286,6 +3298,8 @@ export function InGame({
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    liveConditionDrainByCreatorIdRef.current[creatorId] = 0
+    setLiveConditionDrainByCreatorId((prev) => ({ ...prev, [creatorId]: 0 }))
     playSfx('condition-recover')
     scheduleAutoSave()
   }
