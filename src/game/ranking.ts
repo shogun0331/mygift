@@ -458,9 +458,8 @@ export function creatorViewerWeight(creator: RankCreator): number {
   const snsSubs = Math.max(0, Number(creator.snsSubscribers) || 0)
   const snsViewerConvertRate = 0.001 + commRatio * 0.005
   const snsViewers = snsSubs * snsViewerConvertRate
-
-  const snsRatio = Math.min(1.0, Math.max(0, Number(creator.snsRatio) || 0))
-  const ratioSynergy = 1 + snsRatio * 0.2 // 최대 +20% 시너지
+  // SNS 게시 비율 시너지 제거 (예측 가능한 시청자 유입 계산)
+  const ratioSynergy = 1.0
 
   return (commBase + snsViewers) * ratioSynergy * gradeViewerMult(creator.grade)
 }
