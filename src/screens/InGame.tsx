@@ -263,7 +263,6 @@ const INITIAL_ASSETS = 200_000
 const MAX_RECENT_EVENTS = 40
 /** 이 인원 이상이면 후원을 모아 1명일 때와 비슷한 속도로 로그에 냄 */
 const FEED_BATCH_MIN_CREATORS = 2
-const SOLO_FEED_EVENTS_PER_WEEK = 10
 
 type WeekInspection = {
   creatorId: string
@@ -1672,7 +1671,10 @@ export function InGame({
 
   function flushRemainingEvents(plan: StudioDayPlan) {
     const pending = takeRevealableEvents(plan.plans.flatMap((p) => p.events))
-    ingestLiveFeedEvents(pending, plan, true)
+    if (pending.length === 0) return
+    creditLiveDonations(pending)
+    const limited = pending.slice(0, 2)
+    pushLiveFeed(limited)
   }
 
   function convertViewerEventToDonation(event: DayEvent): DayEvent {
@@ -1773,7 +1775,7 @@ export function InGame({
       return
     }
 
-    const gapMs = Math.max(280, weekDurationMs() / SOLO_FEED_EVENTS_PER_WEEK)
+    const gapMs = 120
     if (lastFeedEmitAtRef.current > 0 && now - lastFeedEmitAtRef.current < gapMs) return
 
     const hasDonation = donationBatchRef.current.size > 0

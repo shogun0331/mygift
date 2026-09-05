@@ -286,15 +286,17 @@ export function DashboardPanel({
     )
     if (fresh.length === 0) return
     for (const event of fresh) seenEventIdsRef.current.add(event.id)
-    setRevenueBursts((prev) => [
-      ...prev,
-      ...fresh.map((event) => ({
-        id: event.id,
-        creatorId: event.creatorId,
-        amount: event.amount,
-        tier: revenueBurstTier(event.amount),
-      })),
-    ])
+    setRevenueBursts((prev) =>
+      [
+        ...prev,
+        ...fresh.map((event) => ({
+          id: event.id,
+          creatorId: event.creatorId,
+          amount: event.amount,
+          tier: revenueBurstTier(event.amount),
+        })),
+      ].slice(-3),
+    )
   }, [liveEvents, isLive])
 
   const dismissBurst = useCallback((id: string) => {
