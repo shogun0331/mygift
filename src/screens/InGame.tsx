@@ -1701,7 +1701,11 @@ export function InGame({
     const isViewerCapped = cap != null && leagueRef.current.viewers >= cap
 
     const converted = isViewerCapped
-      ? events.map((ev) => (ev.type === 'viewers' ? convertViewerEventToDonation(ev) : ev))
+      ? events.map((ev) =>
+          ev.type === 'viewers' && !ev.userId && ev.amount > 0
+            ? convertViewerEventToDonation(ev)
+            : ev,
+        )
       : events
 
     const visible = converted.filter(
@@ -1741,7 +1745,7 @@ export function InGame({
 
     for (const event of due) {
       const targetEvent =
-        isViewerCapped && event.type === 'viewers'
+        isViewerCapped && event.type === 'viewers' && !event.userId && event.amount > 0
           ? convertViewerEventToDonation(event)
           : event
 
