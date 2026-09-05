@@ -3,6 +3,7 @@ import { gradeViewerMult } from './stats'
 import {
   capStationViewers,
   gatedFloorOfStation,
+  stationGradeMinViewers,
   stationRankForGrade,
   VIEWER_FLOOR,
   type StationGrade,
@@ -535,12 +536,14 @@ export function growLeagueBetweenRefresh(
   const viewerRoster = didBroadcast ? broadcastedCreators : ownedCreators
   // 포텐셜 상한은 보유 로스터(팀 전체) 기준 — 부분 라인업 방송으로 상한이 내려가지 않음
   const potential = calcRosterViewers(ownedCreators, subscribers)
+  const minFloor = stationGradeMinViewers(stationGrade)
   const viewers = capStationViewers(
     growLeagueViewers(
       state.viewers,
       potential,
       didBroadcast,
       averageCommunication(viewerRoster),
+      minFloor,
     ),
     stationGrade,
   )
@@ -578,15 +581,16 @@ export function growLeagueViewers(
   potential: number,
   didBroadcast: boolean,
   communication = 0,
+  minViewerFloor = VIEWER_FLOOR,
 ): number {
-  const now = Math.max(VIEWER_FLOOR, Math.round(current))
-  const cap = Math.max(VIEWER_FLOOR, Math.round(potential))
+  const now = Math.max(minViewerFloor, Math.round(current))
+  const cap = Math.max(minViewerFloor, Math.round(potential))
   const retain = communicationRetainOf(communication)
 
-  // 무방송: 자연 이탈 (이탈율은 소통이 높을수록 감소)
+  // 무방송: 자연 이탈 (이탈율은 소통이 높을수록 감소, 현재 등급 최저 시청자 보장)
   if (!didBroadcast) {
     return Math.max(
-      VIEWER_FLOOR,
+      minViewerFloor,
       Math.round(now * (1 - getViewerBalance().idleViewerDecay * retain)),
     )
   }
@@ -921,12 +925,14 @@ export function settleLeagueRank(
   /** 승격 게이트: 스펙상 '보유' 크리에이터 */
   const gateRoster = ownedCreators.length > 0 ? ownedCreators : broadcastedCreators
   const potential = calcRosterViewers(ownedCreators, subscribers)
+  const minFloor = stationGradeMinViewers(stationGrade)
   let viewers = capStationViewers(
     growLeagueViewers(
       state.viewers,
       potential,
       didBroadcast,
       averageCommunication(viewerRoster),
+      minFloor,
     ),
     stationGrade,
   )

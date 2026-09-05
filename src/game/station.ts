@@ -97,6 +97,16 @@ export function capStationViewers(
   return Math.max(VIEWER_FLOOR, Math.round(raw))
 }
 
+/** 해당 방송국 등급(기업 규모)의 최저 시청자 보장 기준 */
+export function stationGradeMinViewers(
+  grade: StationGrade,
+  config?: StationGradeConfig,
+): number {
+  if (grade === 'black') return VIEWER_FLOOR
+  const cfg = config ?? getActiveConfig()
+  return cfg.promotions[grade]?.requiredViewers ?? VIEWER_FLOOR
+}
+
 /**
  * 현재 등급 순위 구간에서 시청자 진행도에 따른 결정적 순위.
  * 시청자 0% → 구간 최하위(black 300위), 필수 시청자 100% → 구간 최상위(black 151위).
