@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   findCharacterIconUrl,
@@ -440,10 +440,13 @@ export function DashboardPanel({
   onRepairSlot,
 }: DashboardPanelProps) {
   const { t, locale } = useTranslation()
-  const ownedById: Record<string, OwnedCreator> = {}
-  for (const creator of ownedCreators) {
-    ownedById[creator.id] = creator
-  }
+  const ownedById = useMemo(() => {
+    const map: Record<string, OwnedCreator> = {}
+    for (const creator of ownedCreators) {
+      map[creator.id] = creator
+    }
+    return map
+  }, [ownedCreators])
   const isLive = broadcastPhase === 'live'
   const canStartBroadcast = !isLive && !startBroadcastLocked
   const [revenueBursts, setRevenueBursts] = useState<RevenueBurst[]>([])
@@ -480,19 +483,30 @@ export function DashboardPanel({
     setRevenueBursts((prev) => prev.filter((burst) => burst.id !== id))
   }, [])
 
-  const slots = studioSlots.map((slot) => {
-    const creatorId = slot.assignment?.creatorId
-    return toBroadcastSlot(
-      slot,
-      creatorId ? ownedById[creatorId] : undefined,
-      broadcastPhase,
-      locale,
-      creatorId ? livePlayVideoByCreator[creatorId] : undefined,
-      liveWeekProgress,
-      creatorId ? liveStaminaDrainByCreatorId[creatorId] ?? 0 : 0,
-      creatorId ? liveConditionDrainByCreatorId[creatorId] ?? 0 : 0,
-    )
-  })
+  const slots = useMemo(() => {
+    return studioSlots.map((slot) => {
+      const creatorId = slot.assignment?.creatorId
+      return toBroadcastSlot(
+        slot,
+        creatorId ? ownedById[creatorId] : undefined,
+        broadcastPhase,
+        locale,
+        creatorId ? livePlayVideoByCreator[creatorId] : undefined,
+        liveWeekProgress,
+        creatorId ? liveStaminaDrainByCreatorId[creatorId] ?? 0 : 0,
+        creatorId ? liveConditionDrainByCreatorId[creatorId] ?? 0 : 0,
+      )
+    })
+  }, [
+    studioSlots,
+    ownedById,
+    broadcastPhase,
+    locale,
+    livePlayVideoByCreator,
+    liveWeekProgress,
+    liveStaminaDrainByCreatorId,
+    liveConditionDrainByCreatorId,
+  ])
   const assigned = studioSlots.filter(
     (slot) => slot.status === 'assigned' && Boolean(slot.assignment),
   )
@@ -667,7 +681,7 @@ export function DashboardPanel({
   )
 }
 
-function StreamCard({
+const StreamCard = memo(function StreamCard({
   slot,
   slotId,
   registeredStaff = [],
@@ -1164,7 +1178,7 @@ function StreamCard({
       </div>
     </article>
   )
-}
+})
 
 function staminaToneClass(pct: number, blocked: boolean) {
   if (blocked || pct <= 0) {

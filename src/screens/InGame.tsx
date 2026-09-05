@@ -3933,7 +3933,7 @@ export function InGame({
       if (!plan || startedAt == null || plan.dayMs <= 0) return
       const elapsed = performance.now() - startedAt
       setLiveWeekProgress(Math.max(0, Math.min(1, elapsed / plan.dayMs)))
-    }, 250)
+    }, 500)
     return () => window.clearInterval(id)
   }, [broadcastPhase, liveClockPaused])
 
