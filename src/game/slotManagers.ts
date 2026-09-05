@@ -32,7 +32,7 @@ export function productionViewerBonus(currentViewers: number) {
   )
 }
 
-export const STAFF_HIRE_COST = 5_000
+export const STAFF_HIRE_COST = 2_500
 
 export function createEmptySlotManagers(): SlotManagers {
   return {
