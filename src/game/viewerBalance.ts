@@ -21,7 +21,7 @@ export type ViewerBalance = {
 export const DEFAULT_VIEWER_BALANCE: ViewerBalance = {
   viewerPerCommPoint: 20,
   viewerGrowthRate: 0.18,
-  viewerOrganicGrowthRate: 0.1,
+  viewerOrganicGrowthRate: 0.01,
   idleViewerDecay: 0.04,
   subscriberViewerRate: 0.05,
 }

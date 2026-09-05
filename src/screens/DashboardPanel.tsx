@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   findCharacterIconUrl,
   findLevelIdleVideoUrl,
@@ -266,6 +267,150 @@ const STATUS_BADGE: Record<StudioSlot['status'], { labelKey: string; className: 
   },
 }
 
+/** 스크롤로 전체 피드를 밀어 올림 — 캐릭터 늘어도 줄마다 layout thrash 없음 */
+function LiveChatFeed({ liveEvents }: { liveEvents: DayEvent[] }) {
+  const scrollerRef = useRef<HTMLDivElement>(null)
+  const stickBottomRef = useRef(true)
+  const prevNewestIdRef = useRef<string | null>(null)
+  const visible = liveEvents.slice(0, 18)
+  const newestId = visible[0]?.id ?? null
+  const ordered = useMemo(
+    () => [...liveEvents.slice(0, 18)].reverse(),
+    [liveEvents],
+  )
+
+  const onScroll = () => {
+    const el = scrollerRef.current
+    if (!el) return
+    const dist = el.scrollHeight - el.scrollTop - el.clientHeight
+    stickBottomRef.current = dist < 48
+  }
+
+  useLayoutEffect(() => {
+    const el = scrollerRef.current
+    if (!el) return
+    const isNew = newestId != null && newestId !== prevNewestIdRef.current
+    prevNewestIdRef.current = newestId
+    if (!isNew || !stickBottomRef.current) return
+
+    el.scrollTop = el.scrollHeight
+  }, [newestId, ordered.length])
+
+  if (ordered.length === 0) return null
+
+  return (
+    <div
+      ref={scrollerRef}
+      onScroll={onScroll}
+      className="live-chat-scroller mt-2 min-h-0 flex-1 overflow-x-hidden overflow-y-auto"
+    >
+      <ul className="live-chat-list flex min-h-full flex-col justify-end gap-1.5">
+        <AnimatePresence initial={false}>
+          {ordered.map((event) => {
+            const isDonation = event.type === 'donation' && event.amount > 0
+            const isUserChat = Boolean(event.userId)
+
+            if (isDonation) {
+              const handle = event.userId || '@user_fan'
+              const tone = donationChatTone(event.amount, event.superDonation)
+              const isSuper = Boolean(event.superDonation) || tone.tier === 'mega'
+              return (
+                <motion.li
+                  key={event.id}
+                  layout="position"
+                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{
+                    layout: { type: 'spring', stiffness: 450, damping: 32 },
+                    opacity: { duration: 0.18 },
+                    y: { duration: 0.18, ease: 'easeOut' },
+                  }}
+                  className={`live-chat-row relative overflow-hidden rounded-xl border p-2 text-xs shrink-0 ${tone.card}${
+                    isSuper ? ' is-super' : ''
+                  }`}
+                >
+                  {isSuper ? (
+                    <span className="live-chat-donation-burst" aria-hidden>
+                      {Array.from({ length: 6 }, (_, i) => (
+                        <span
+                          key={i}
+                          className="live-chat-donation-spark"
+                          style={{ '--i': String(i) } as CSSProperties}
+                        />
+                      ))}
+                    </span>
+                  ) : null}
+                  <div className="relative z-[1] mb-0.5 flex items-center justify-between gap-1">
+                    <span className={`truncate text-[11px] font-semibold ${tone.handle}`}>
+                      {handle}
+                      {isSuper ? (
+                        <span className="ml-1 text-[9px] font-black tracking-wider text-fuchsia-300/90">
+                          SUPER
+                        </span>
+                      ) : null}
+                    </span>
+                    <span
+                      className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${tone.badge}`}
+                    >
+                      <span>💰</span> ${event.amount.toLocaleString()}
+                    </span>
+                  </div>
+                  <p className={`relative z-[1] text-[11px] font-medium leading-tight ${tone.body}`}>
+                    {event.chatDonationText || event.text}
+                  </p>
+                </motion.li>
+              )
+            }
+
+            if (isUserChat) {
+              return (
+                <motion.li
+                  key={event.id}
+                  layout="position"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{
+                    layout: { type: 'spring', stiffness: 450, damping: 32 },
+                    opacity: { duration: 0.15 },
+                    y: { duration: 0.15, ease: 'easeOut' },
+                  }}
+                  className="live-chat-row flex shrink-0 items-start gap-1.5 rounded-lg bg-white/[0.04] px-2 py-1 text-xs text-slate-200"
+                >
+                  <span className="shrink-0 text-[11px] font-semibold text-cyan-400">{event.userId}:</span>
+                  <span className="break-all text-[11px] leading-tight text-slate-300">{event.text}</span>
+                </motion.li>
+              )
+            }
+
+            return (
+              <motion.li
+                key={event.id}
+                layout="position"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  layout: { type: 'spring', stiffness: 450, damping: 32 },
+                  opacity: { duration: 0.15 },
+                  y: { duration: 0.15, ease: 'easeOut' },
+                }}
+                className="live-chat-row flex shrink-0 items-center gap-1.5 rounded-lg border border-cyan-500/25 bg-cyan-950/30 px-2.5 py-1 text-xs text-cyan-200 shadow-sm"
+              >
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
+                <span className="break-all text-[11px] font-medium leading-tight text-cyan-200/90">
+                  {event.text}
+                </span>
+              </motion.li>
+            )
+          })}
+        </AnimatePresence>
+      </ul>
+    </div>
+  )
+}
+
 export function DashboardPanel({
   slots: studioSlots,
   ownedCreators = [],
@@ -463,78 +608,7 @@ export function DashboardPanel({
           {liveEvents.length === 0 ? (
             <p className="mt-4 text-center text-xs text-slate-500">{t('dashboard.noEvents')}</p>
           ) : (
-            <ul className="mt-2 min-h-0 flex-1 space-y-1.5 overflow-hidden flex flex-col justify-end">
-              {[...liveEvents.slice(0, 18)].reverse().map((event) => {
-                  const isDonation = event.type === 'donation' && event.amount > 0
-                  const isUserChat = Boolean(event.userId)
-
-                  if (isDonation) {
-                    const handle = event.userId || '@user_fan'
-                    const tone = donationChatTone(event.amount, event.superDonation)
-                    const isSuper = Boolean(event.superDonation) || tone.tier === 'mega'
-                    return (
-                      <li
-                        key={event.id}
-                        className={`live-chat-row relative overflow-hidden rounded-xl border p-2 text-xs shrink-0 ${tone.card}${
-                          isSuper ? ' is-super' : ''
-                        }`}
-                      >
-                        {isSuper ? (
-                          <span className="live-chat-donation-burst" aria-hidden>
-                            {Array.from({ length: 6 }, (_, i) => (
-                              <span
-                                key={i}
-                                className="live-chat-donation-spark"
-                                style={{ '--i': String(i) } as CSSProperties}
-                              />
-                            ))}
-                          </span>
-                        ) : null}
-                        <div className="relative z-[1] flex items-center justify-between gap-1 mb-0.5">
-                          <span className={`font-semibold text-[11px] truncate ${tone.handle}`}>
-                            {handle}
-                            {isSuper ? (
-                              <span className="ml-1 text-[9px] font-black tracking-wider text-fuchsia-300/90">
-                                SUPER
-                              </span>
-                            ) : null}
-                          </span>
-                          <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold border shrink-0 ${tone.badge}`}
-                          >
-                            <span>💰</span> ${event.amount.toLocaleString()}
-                          </span>
-                        </div>
-                        <p className={`relative z-[1] text-[11px] font-medium leading-tight ${tone.body}`}>
-                          {event.chatDonationText || event.text}
-                        </p>
-                      </li>
-                    )
-                  }
-
-                  if (isUserChat) {
-                    return (
-                      <li
-                        key={event.id}
-                        className="live-chat-row flex items-start gap-1.5 rounded-lg bg-white/[0.04] px-2 py-1 text-xs text-slate-200 shrink-0"
-                      >
-                        <span className="font-semibold text-cyan-400 text-[11px] shrink-0">{event.userId}:</span>
-                        <span className="text-[11px] text-slate-300 leading-tight break-all">{event.text}</span>
-                      </li>
-                    )
-                  }
-
-                  return (
-                    <li
-                      key={event.id}
-                      className="live-chat-row flex items-center gap-1.5 rounded-lg border border-cyan-500/25 bg-cyan-950/30 px-2.5 py-1 text-xs text-cyan-200 shadow-sm shrink-0"
-                    >
-                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
-                      <span className="text-[11px] font-medium leading-tight text-cyan-200/90 break-all">{event.text}</span>
-                    </li>
-                  )
-                })}
-            </ul>
+            <LiveChatFeed liveEvents={liveEvents} />
           )}
         </section>
 

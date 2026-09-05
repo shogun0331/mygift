@@ -107,38 +107,7 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
   useEffect(() => {
     const scroller = scrollRef.current
     if (!scroller) return
-
-    const scrollToBottom = () => {
-      scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' })
-    }
-
-    scrollToBottom()
-    const rafId = requestAnimationFrame(scrollToBottom)
-    const t1 = window.setTimeout(scrollToBottom, 50)
-    const t2 = window.setTimeout(scrollToBottom, 150)
-    const t3 = window.setTimeout(scrollToBottom, 350)
-    const t4 = window.setTimeout(scrollToBottom, 700)
-
-    let observer: ResizeObserver | null = null
-    if (typeof ResizeObserver !== 'undefined') {
-      observer = new ResizeObserver(() => {
-        scrollToBottom()
-      })
-      if (scroller.firstElementChild) {
-        observer.observe(scroller.firstElementChild)
-      } else {
-        observer.observe(scroller)
-      }
-    }
-
-    return () => {
-      cancelAnimationFrame(rafId)
-      window.clearTimeout(t1)
-      window.clearTimeout(t2)
-      window.clearTimeout(t3)
-      window.clearTimeout(t4)
-      if (observer) observer.disconnect()
-    }
+    scroller.scrollTop = scroller.scrollHeight
   }, [visibleCount])
 
   useEffect(() => {

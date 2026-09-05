@@ -36,7 +36,7 @@ type RankingPanelProps = {
   turnsUntilRankRefresh: number
   rankPlay?: RankBubblePlay | null
   onRankPlayDone?: () => void
-  creators: Array<{ grade: Grade }>
+  creators: Array<{ grade: Grade; snsSubscribers?: number }>
   onOpenScout: () => void
 }
 

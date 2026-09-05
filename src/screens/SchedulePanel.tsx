@@ -674,37 +674,20 @@ export function SchedulePanel({
                                 </p>
                               ) : null}
                               {handForSlot ? (
-                                <div className="mt-1 w-full">
-                                  <div className="mb-0.5 flex items-center justify-between gap-1">
-                                    <span className="truncate text-[8px] font-semibold tracking-wide text-slate-300">
-                                      Stamina
-                                    </span>
-                                    <span className="shrink-0 text-[8px] font-bold tabular-nums text-slate-100">
-                                      {handForSlot.stamina}
-                                    </span>
-                                  </div>
-                                  <div className="h-1 overflow-hidden rounded-full bg-black/50">
-                                    <div
-                                      className={`h-full rounded-full ${
-                                        canBroadcastByStamina(handForSlot.stamina)
-                                          ? 'bg-cyan-400'
-                                          : 'bg-rose-400'
-                                      }`}
-                                      style={{
-                                        width: `${Math.max(
-                                          0,
-                                          Math.min(
-                                            100,
-                                            (handForSlot.stamina /
-                                              Math.max(1, handForSlot.staminaMax)) *
-                                              100,
-                                          ),
-                                        )}%`,
-                                      }}
-                                    />
-                                  </div>
-                                </div>
-                              ) : null}
+                                 <div className="mt-1 w-full px-0.5">
+                                   <HandStatRow
+                                     label="Stamina"
+                                     value={`${handForSlot.stamina}`}
+                                     percent={
+                                       (handForSlot.stamina /
+                                         Math.max(1, handForSlot.staminaMax)) *
+                                       100
+                                     }
+                                     blocked={!canBroadcastByStamina(handForSlot.stamina)}
+                                     size="md"
+                                   />
+                                 </div>
+                               ) : null}
                             </>
                           ) : (
                             <>
@@ -900,7 +883,7 @@ export function SchedulePanel({
                           label="Stamina"
                           value={`${card.stamina}`}
                           percent={staminaPct}
-                          barClass={blocked ? 'bg-rose-400' : 'bg-cyan-400'}
+                          blocked={blocked}
                         />
                       </div>
                     </div>
@@ -927,31 +910,73 @@ export function SchedulePanel({
   )
 }
 
+function staminaToneClass(pct: number, blocked: boolean) {
+  if (blocked || pct <= 0) {
+    return {
+      track: 'border-rose-500/80 shadow-[0_0_12px_rgba(244,63,94,0.6)] animate-pulse',
+      fill: 'bg-gradient-to-r from-rose-700 via-rose-500 to-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.8)]',
+      text: 'text-rose-50',
+    }
+  }
+  if (pct < 30) {
+    return {
+      track: 'border-rose-400/50',
+      fill: 'bg-gradient-to-r from-rose-600 to-orange-400 shadow-[0_0_10px_rgba(244,63,94,0.45)]',
+      text: 'text-rose-50',
+    }
+  }
+  if (pct < 60) {
+    return {
+      track: 'border-amber-400/40',
+      fill: 'bg-gradient-to-r from-amber-500 to-yellow-300 shadow-[0_0_10px_rgba(251,191,36,0.4)]',
+      text: 'text-amber-50',
+    }
+  }
+  return {
+    track: 'border-cyan-400/25',
+    fill: 'bg-gradient-to-r from-cyan-500 to-teal-300 shadow-[0_0_10px_rgba(34,211,238,0.45)]',
+    text: 'text-white',
+  }
+}
+
 function HandStatRow({
   label,
   icon,
   value,
   percent,
-  barClass,
+  blocked = false,
+  size = 'sm',
 }: {
   label: string
   icon?: string
   value: string
   percent: number
-  barClass: string
+  blocked?: boolean
+  size?: 'sm' | 'md'
 }) {
   const width = Math.max(0, Math.min(100, percent))
+  const staminaTone = staminaToneClass(width, blocked)
+  const isMd = size === 'md'
   return (
-    <div className="w-full">
-      <div className="mb-0.5 flex items-center justify-between gap-1">
-        <span className="truncate text-[8px] font-semibold tracking-wide text-slate-300">
+    <div
+      className={`relative w-full overflow-hidden rounded-md bg-slate-900 shadow-inner border transition-all duration-300 ${
+        isMd ? 'h-5' : 'h-4.5'
+      } ${staminaTone.track}`}
+    >
+      <div
+        className={`h-full rounded-sm transition-[width] duration-150 ease-linear ${staminaTone.fill}`}
+        style={{ width: `${width}%` }}
+      />
+      <div
+        className={`pointer-events-none absolute inset-0 flex items-center justify-between px-1.5 font-black tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.85)] ${
+          isMd ? 'text-[10px]' : 'text-[9px]'
+        } ${staminaTone.text}`}
+      >
+        <span>
           {icon ? <span className="mr-0.5">{icon}</span> : null}
           {label}
         </span>
-        <span className="shrink-0 text-[8px] font-bold tabular-nums text-slate-100">{value}</span>
-      </div>
-      <div className="h-1 overflow-hidden rounded-full bg-black/50">
-        <div className={`h-full rounded-full ${barClass}`} style={{ width: `${width}%` }} />
+        <span className="tabular-nums">{value}</span>
       </div>
     </div>
   )

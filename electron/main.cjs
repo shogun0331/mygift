@@ -80,6 +80,8 @@ app.commandLine.appendSwitch('disable-gpu-sandbox')
 app.commandLine.appendSwitch('enable-accelerated-video-decode')
 app.commandLine.appendSwitch('enable-gpu-rasterization')
 app.commandLine.appendSwitch('enable-zero-copy')
+app.commandLine.appendSwitch('limit-fps', '60')
+app.commandLine.appendSwitch('max-fps', '60')
 
 function splitPublicSegments(segments) {
   return segments.flatMap((seg) =>

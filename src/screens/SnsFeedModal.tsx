@@ -113,7 +113,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
     requestAnimationFrame(() => {
       const scroller = feedScrollRef.current
       if (!scroller) return
-      scroller.scrollTo({ top: 0, behavior: 'smooth' })
+      scroller.scrollTop = 0
     })
   }, [pending])
 

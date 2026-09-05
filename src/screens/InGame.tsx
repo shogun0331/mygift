@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
+import { FpsCounter } from '../components/FpsCounter'
 import { getBgmVolumePercent, setBgmVolumePercent, useGameBgm } from '../game/bgm'
 import { tierViewerCap, type StationTierId } from '../game/stationGradeConfig'
 import { getSeVolumePercent, playSfx, setSeVolumePercent } from '../game/uiSfx'
@@ -208,13 +209,12 @@ import {
   stationRankForGrade,
   stationSpec,
   type StationGrade,
-  type StationGradeConfig,
   type StationReviewStatus,
 } from '../game/station'
-import { pickRandomOwnedPromotionSpeaker } from '../game/promotionLines'
 import {
   maxScoutCreatorsForGrade,
   slotUnlockMinGradeOf,
+  type StationGradeConfig,
 } from '../game/stationGradeConfig'
 import {
   applyVipStaminaDrain,
@@ -235,7 +235,8 @@ import { RankChangeModal } from './RankChangeModal'
 import { RankingPanel } from './RankingPanel'
 import { StationReviewModal } from './StationReviewModal'
 import { StationPromotionFx } from './StationPromotionFx'
-import { PromotionCongratsDialogue } from './PromotionCongratsDialogue'
+import { PromotionCongratsDialogue, type PromotionCongratsPlay } from './PromotionCongratsDialogue'
+import { pickRandomOwnedPromotionSpeaker } from '../game/promotionLines'
 import { DateOfferModal, DateResultModal } from './DateEventModal'
 import { HRetryOfferModal, HRetryResultModal } from './HRetryEventModal'
 import { VipOfferModal } from './VipOfferModal'
@@ -836,9 +837,7 @@ export function InGame({
     fromRank: number
     toRank: number
   } | null>(null)
-  const [promotionCongratsPlay, setPromotionCongratsPlay] = useState<OwnedCreator | null>(null)
-  const promotionFxDoneRef = useRef(false)
-  const promotionCongratsDoneRef = useRef(true)
+  const [promotionCongratsPlay, setPromotionCongratsPlay] = useState<PromotionCongratsPlay | null>(null)
   const [stationAuditTarget, setStationAuditTarget] = useState<{
     currentTier: StationGrade
     nextTier: Exclude<StationGrade, 'black' | 'tiny'>
@@ -941,6 +940,10 @@ export function InGame({
   } | null>(null)
   const [vacationPlay, setVacationPlay] = useState<OwnedCreator | null>(null)
   const [donationThanksPlay, setDonationThanksPlay] = useState<DonationThanksPlay | null>(null)
+  const donationThanksPlayRef = useRef(donationThanksPlay)
+  donationThanksPlayRef.current = donationThanksPlay
+  const spokenCreatorsThisBroadcastRef = useRef<Set<string>>(new Set())
+  const scheduledSpeechCreatorsRef = useRef<Set<string>>(new Set())
   type SocialUi =
     | { mode: 'dateOffer'; pending: DatePending }
     | { mode: 'dateVn'; pending: DatePending; event: GameEvent }
@@ -1668,6 +1671,15 @@ export function InGame({
     setLiveConditionDrainByCreatorId(condDrainByCreatorId)
     broadcastBlockedSinceRef.current = {}
     setLiveWeekProgress(0)
+    if (monthWeekIndexRef.current === 0) {
+      spokenCreatorsThisBroadcastRef.current.clear()
+    }
+    scheduledSpeechCreatorsRef.current.clear()
+    for (const creator of assigned) {
+      if (!spokenCreatorsThisBroadcastRef.current.has(creator.id) && Math.random() < 0.10) {
+        scheduledSpeechCreatorsRef.current.add(creator.id)
+      }
+    }
     donationBatchRef.current = new Map()
     feedExtraQueueRef.current = []
     lastFeedEmitAtRef.current = 0
@@ -1825,10 +1837,33 @@ export function InGame({
         window.setTimeout(() => playSfx('live-donation'), 90)
         const creator = ownedCreatorsRef.current.find((c) => c.id === superHit.creatorId)
         if (creator) {
+          spokenCreatorsThisBroadcastRef.current.add(creator.id)
           setDonationThanksPlay({
             creator,
             amount: superHit.amount,
           })
+        }
+      } else if (!donationThanksPlayRef.current) {
+        // 주간 시작 시 10% 확률에 당첨된 크리에이터가 대사창이 닫혀있을 때 후원 수신 시 멘트 발동
+        for (const event of visible) {
+          if (event.type === 'donation' && event.amount > 0 && event.creatorId) {
+            if (
+              scheduledSpeechCreatorsRef.current.has(event.creatorId) &&
+              !spokenCreatorsThisBroadcastRef.current.has(event.creatorId) &&
+              !isCreatorDonationBlocked(event.creatorId)
+            ) {
+              const creator = ownedCreatorsRef.current.find((c) => c.id === event.creatorId)
+              if (creator) {
+                spokenCreatorsThisBroadcastRef.current.add(creator.id)
+                scheduledSpeechCreatorsRef.current.delete(creator.id)
+                setDonationThanksPlay({
+                  creator,
+                  amount: event.amount,
+                })
+                break
+              }
+            }
+          }
         }
       }
     }
@@ -4146,6 +4181,7 @@ export function InGame({
                 <IconEdit />
               </button>
             ) : null}
+            <FpsCounter />
           </div>
           <div className="min-w-0">
             <p className="game-kicker">STAR BROADCASTING CO.</p>
@@ -5028,9 +5064,24 @@ export function InGame({
           fromRank={promotionFx.fromRank}
           toRank={promotionFx.toRank}
           onDone={() => {
-            // 배너가 끝나면 승급 반영(이미 됐다면 무시) 후 월말 흐름 계속
+            // 배너가 끝나면 승급 반영 후 보유 캐릭터 축하 대사/보이스 재생
             applyPendingPromotion()
             setPromotionFx(null)
+            const speaker = pickRandomOwnedPromotionSpeaker(ownedCreatorsRef.current)
+            if (speaker) {
+              setPromotionCongratsPlay({ creator: speaker })
+            } else {
+              continueMonthEndFlow()
+            }
+          }}
+        />
+      ) : null}
+
+      {promotionCongratsPlay ? (
+        <PromotionCongratsDialogue
+          play={promotionCongratsPlay}
+          onClose={() => {
+            setPromotionCongratsPlay(null)
             continueMonthEndFlow()
           }}
         />

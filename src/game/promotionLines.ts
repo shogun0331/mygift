@@ -165,6 +165,21 @@ export function pickPromotionCongratsLine(
   }
 }
 
+export function getPromotionDialogueText(
+  nameOrId: string | null | undefined,
+  locale: Locale,
+): string | null {
+  return pickPromotionCongratsLine(nameOrId, locale)?.text ?? null
+}
+
+export function getPromotionVoiceUrl(
+  nameOrId: string | null | undefined,
+): string | null {
+  const data = findPromotionDataForCharacter(nameOrId)
+  if (!data) return null
+  return promotionVoiceUrlOf(data.voiceFileName)
+}
+
 /** 보유 캐릭터 중 승급 대사가 있는 1명을 랜덤 선택 */
 export function pickRandomOwnedPromotionSpeaker(
   owned: OwnedCreator[],

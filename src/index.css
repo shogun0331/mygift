@@ -1742,28 +1742,48 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 
 
 .live-chat-donation.is-super {
-  animation: live-chat-super-pulse 1.1s ease-out 1;
+  position: relative;
+}
+
+.live-chat-donation.is-super::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity;
+  animation: live-chat-super-flash 1.15s ease-out 1;
+}
+
+.live-chat-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+  overflow-anchor: none;
+}
+
+.live-chat-scroller::-webkit-scrollbar {
+  width: 4px;
+}
+
+.live-chat-scroller::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.35);
+}
+
+.live-chat-list {
+  contain: content;
 }
 
 .live-chat-row {
-  animation: live-chat-row-in 0.16s ease-out both;
+  transform: translateZ(0);
+  backface-visibility: hidden;
   will-change: transform, opacity;
 }
 
-@keyframes live-chat-row-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .live-chat-row,
-  .live-chat-donation.is-super {
+  .live-chat-donation.is-super::before {
     animation: none !important;
   }
 }
@@ -1809,6 +1829,7 @@ html.theme-on-air .audio-bar:nth-child(4) { height: 65%; }
   box-shadow: 0 0 8px rgba(232, 121, 249, 0.7);
   --angle: calc(var(--i) * 36deg);
   transform: rotate(var(--angle)) translateY(0) scale(0.4);
+  will-change: transform, opacity;
   animation: live-chat-spark-burst 0.85s cubic-bezier(0.16, 0.84, 0.28, 1) forwards;
   animation-delay: calc(var(--i) * 18ms);
   opacity: 0;
@@ -1817,7 +1838,6 @@ html.theme-on-air .audio-bar:nth-child(4) { height: 65%; }
 @keyframes live-chat-spark-burst {
   0% {
     opacity: 0;
-    transform: rotate(var(--angle)) translateY(0) scale(0.3);
   }
   35% {
     opacity: 1;
@@ -1828,12 +1848,12 @@ html.theme-on-air .audio-bar:nth-child(4) { height: 65%; }
   }
 }
 
-@keyframes live-chat-super-pulse {
+@keyframes live-chat-super-flash {
   0% {
-    filter: brightness(1.35);
+    opacity: 1;
   }
   100% {
-    filter: brightness(1);
+    opacity: 0;
   }
 }
 
@@ -4381,13 +4401,19 @@ html.theme-on-air .audio-bar:nth-child(4) { height: 65%; }
 }
 
 .sns-bulk-reveal-phone--heat3 {
-  animation: sns-bulk-heat3-shake 0.55s ease-out both;
+  animation: sns-bulk-heat3-glow 0.85s ease-out both;
 }
 
 .sns-bulk-reveal-card--heat3.is-heat3-hot {
   animation: sns-bulk-heat3-card 0.85s ease-out both;
   background: linear-gradient(90deg, rgba(232, 121, 249, 0.16), transparent 72%);
   box-shadow: inset 0 0 0 1px rgba(232, 121, 249, 0.28);
+}
+
+.sns-heat3-burst,
+.sns-heat3-burst-spark {
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 @keyframes sns-heat3-burst-in {
@@ -4464,37 +4490,27 @@ html.theme-on-air .audio-bar:nth-child(4) { height: 65%; }
   }
 }
 
-@keyframes sns-bulk-heat3-shake {
-  0%,
+@keyframes sns-bulk-heat3-glow {
+  0% {
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55), 0 0 36px rgba(232, 121, 249, 0.7);
+  }
   100% {
-    transform: translate3d(0, 0, 0);
-  }
-  18% {
-    transform: translate3d(-3px, 1px, 0) rotate(-0.4deg);
-  }
-  36% {
-    transform: translate3d(3px, -1px, 0) rotate(0.35deg);
-  }
-  54% {
-    transform: translate3d(-2px, 0, 0);
-  }
-  72% {
-    transform: translate3d(2px, 1px, 0);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55), 0 0 0 rgba(232, 121, 249, 0);
   }
 }
 
 @keyframes sns-bulk-heat3-card {
   0% {
-    transform: scale(0.96);
-    filter: brightness(1.35);
+    opacity: 0.7;
+    transform: scale(0.97);
   }
-  40% {
-    transform: scale(1.02);
-    filter: brightness(1.15);
+  50% {
+    opacity: 1;
+    transform: scale(1.01);
   }
   100% {
+    opacity: 1;
     transform: scale(1);
-    filter: brightness(1);
   }
 }
 
