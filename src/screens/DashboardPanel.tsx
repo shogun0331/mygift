@@ -339,9 +339,22 @@ const STATUS_BADGE: Record<StudioSlot['status'], { labelKey: string; className: 
   },
 }
 
-function formatSystemFeedText(event: DayEvent, locale: Locale, t: (key: string) => string): string {
+function formatSystemFeedText(
+  event: DayEvent,
+  locale: Locale,
+  t: (key: string) => string,
+  ownedById: Record<string, OwnedCreator> = {},
+): string {
+  const creator =
+    (event.creatorId ? ownedById[event.creatorId] : undefined) ||
+    Object.values(ownedById).find(
+      (c) =>
+        c.name === event.creatorName ||
+        (c.names && Object.values(c.names).includes(event.creatorName)),
+    )
+  const name = creator ? characterDisplayName(creator, locale) : event.creatorName || ''
+
   if (event.type === 'viewers' && event.amount > 0) {
-    const name = event.creatorName || ''
     const tmpl = t('feed.viewersGained') || '📈 {count} viewers gained! ({name})'
     return tmpl.replace('{count}', String(event.amount)).replace('{name}', name)
   }
@@ -374,9 +387,19 @@ function formatSystemFeedText(event: DayEvent, locale: Locale, t: (key: string) 
     }
   }
 
-  if (event.type === 'toxic' || event.text.includes('방송 피로 급증') || event.text.includes('fatigue')) {
-    const name = event.creatorName || ''
-    const drop = event.amount > 0 ? event.amount : (event.text.match(/\d+/)?.[0] || '20')
+  if (event.id.startsWith('toxic-block-') || event.text.includes('진상 차단') || event.text.includes('blocked the toxic')) {
+    const tmpl = t('feed.toxicBlocked') || '{name} blocked the toxic viewer! Stamina defended'
+    return tmpl.replace('{name}', name)
+  }
+
+  if (event.id.startsWith('toxic-miss-') || event.text.includes('진상 대응 실패') || event.text.includes('failed to respond')) {
+    const drop = event.amount > 0 ? String(event.amount) : event.text.match(/\d+/)?.[0] || '20'
+    const tmpl = t('feed.toxicFailed') || '{name} failed to respond! Stamina −{drop}'
+    return tmpl.replace('{name}', name).replace('{drop}', drop)
+  }
+
+  if (event.type === 'toxic' || event.text.includes('방송 피로 급증') || event.text.includes('fatigue') || event.text.includes('진상')) {
+    const drop = event.amount > 0 ? String(event.amount) : event.text.match(/\d+/)?.[0] || '20'
     const lang = chatLangOf(locale)
     switch (lang) {
       case 'ko':
@@ -397,18 +420,51 @@ function formatSystemFeedText(event: DayEvent, locale: Locale, t: (key: string) 
     }
   }
 
-  if (event.text.includes('프로덕션 보너스') || event.text.includes('보너스!')) {
-    const lang = chatLangOf(locale)
-    if (lang !== 'ko') {
-      return event.text
-        .replace('프로덕션 보너스!', 'Production Bonus!')
-        .replace('시청자', 'Viewers')
-        .replace('수익 증가', 'Revenue Boost')
-        .replace('보너스!', 'Bonus!')
+  if (event.type === 'gear' || event.id.startsWith('gear-fail-') || event.text.includes('장비 고장') || event.text.includes('equipment failure')) {
+    const tmpl = t('feed.gearFail') || '{name} equipment failure! Donations halted · click to repair'
+    return tmpl.replace('{name}', name)
+  }
+
+  if (event.text.includes('수리 점검') || event.text.includes('repair check')) {
+    const tmpl = t('feed.repairFix') || '{name} repair check! Fixed the breakdown'
+    return tmpl.replace('{name}', name)
+  }
+
+  if (event.text.includes('수리 방어') || event.text.includes('repair defense')) {
+    const tmpl = t('feed.repairDefense') || '{name} repair defense! Prevented equipment failure'
+    return tmpl.replace('{name}', name)
+  }
+
+  if (event.text.includes('보안 차단') || event.text.includes('security blocked')) {
+    const tmpl = t('feed.securityBlocked') || '{name} security blocked! Stopped the toxic incident'
+    return tmpl.replace('{name}', name)
+  }
+
+  if (event.text.includes('케어!') || event.text.includes('care!')) {
+    const tmpl = t('feed.care') || '{name} care! Restored {creatorName}\'s condition to max'
+    return tmpl.replace('{name}', name).replace('{creatorName}', name)
+  }
+
+  if (event.text.includes('프로덕션 보너스') || event.text.includes('production bonus') || event.text.includes('보너스!')) {
+    const bonus = event.amount > 0 ? String(event.amount) : event.text.match(/\d+/)?.[0] || '10'
+    const tmpl = t('feed.productionBonus') || '{name} production bonus! Viewers +{bonus} · revenue up'
+    return tmpl.replace('{name}', name).replace('{bonus}', bonus)
+  }
+
+  if (event.type === 'tax' || event.id.startsWith('tax-')) {
+    const tmpl = t('feed.taxUpcoming')
+    if (tmpl && tmpl !== 'feed.taxUpcoming') {
+      const yearMatch = event.text.match(/\d{4}/)?.[0] || '2026'
+      const amountMatch = event.text.match(/\$[\d,]+/)?.[0] || '$0'
+      return tmpl.replace('{year}', yearMatch).replace('{amount}', amountMatch)
     }
   }
 
-  return event.text
+  let text = event.text
+  if (event.creatorName && name && text.includes(event.creatorName)) {
+    text = text.replace(new RegExp(event.creatorName, 'g'), name)
+  }
+  return text
 }
 
 /** 스크롤로 전체 피드를 밀어 올림 — 캐릭터 늘어도 줄마다 layout thrash 없음 */
@@ -466,7 +522,13 @@ function LiveChatFeed({
               const tone = donationChatTone(event.amount, event.superDonation)
               const isSuper = Boolean(event.superDonation) || tone.tier === 'mega'
               const userBadge = getChatUserBadge(handle)
-              const creator = event.creatorId ? ownedById[event.creatorId] : undefined
+              const creator =
+                (event.creatorId ? ownedById[event.creatorId] : undefined) ||
+                Object.values(ownedById).find(
+                  (c) =>
+                    c.name === event.creatorName ||
+                    (c.names && Object.values(c.names).includes(event.creatorName)),
+                )
               const creatorName = creator ? characterDisplayName(creator, locale) : (event.creatorName || 'Creator')
               const donationText = formatChatDonationText(creatorName, event.amount, locale)
 
@@ -556,7 +618,7 @@ function LiveChatFeed({
               )
             }
 
-            const systemText = formatSystemFeedText(event, locale, t)
+            const systemText = formatSystemFeedText(event, locale, t, ownedById)
             return (
               <motion.li
                 key={event.id}

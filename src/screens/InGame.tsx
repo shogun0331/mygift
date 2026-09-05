@@ -2530,7 +2530,9 @@ export function InGame({
         creatorName: crash.creatorName,
         type: 'toxic',
         amount: crash.drop,
-        text: `${crash.creatorName} 방송 피로 급증! 컨디션 -${crash.drop} 급락!`,
+        text: t('feed.toxicAppear')
+          .replace('{name}', creatorNameOf(crash.creatorId, crash.creatorName))
+          .replace('{drop}', String(crash.drop)),
         atMs: 0,
         tone: 'bg-rose-500',
       }))
