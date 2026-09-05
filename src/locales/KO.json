@@ -251,6 +251,8 @@
     "trainingNeedAssets": "자산 부족",
     "trainingAvailable": "트레이닝 가능",
     "trainingMaxed": "트레이닝 완료",
+    "staminaDepleted": "Stamina (고갈)",
+    "recoveryNeeded": "회복 케어가 필요합니다!",
     "trainingExamAction": "승급 심사",
     "examTitle": "{name} {from} → {to} 승급 심사",
     "examSpinning": "슬롯이 돌아가고 있습니다…",
@@ -372,6 +374,7 @@
     "countUnit": "{count}명"
   },
   "studio": {
+    "slotUnlockAvailable": "슬롯 개방 가능!",
     "placementTitle": "배치할 크리에이터",
     "placementDesc": "카드를 선택해 해금된 슬롯에 배치",
     "placementLockedHint": "방송 중 — 배치 변경 불가",
@@ -553,6 +556,7 @@
     "resultTitle": "데이트 완료",
     "resultBody": "{name}과의 이벤트가 끝났습니다.",
     "resultSp": "SP +{n} (획득)",
+    "fullRecovery": "💖 체력 & 컨디션 100% 풀 회복!",
     "confirm": "확인"
   },
   "hRetry": {
@@ -672,7 +676,8 @@
     "scoutLimitReached": "현재 방송국 등급에서 더 이상 스카우트할 수 없습니다.",
     "noScoutCandidate": "스카우트 가능한 후보가 없습니다.",
     "noStaffToRecruit": "더 이상 영입 가능한 스탭이 없습니다.",
-    "staffQuit": "{name} 스탭이 퇴사하였습니다."
+    "staffQuit": "{name} 스탭이 퇴사하였습니다.",
+    "casinoGradeRequired": "카지노는 중소기업 등급 이상부터 해금됩니다."
   },
   "feed": {
     "donation": "💰 {amount} 후원! ({name})",
@@ -915,5 +920,36 @@
         }
       }
     }
+  },
+  "audit": {
+    "deckModalTitle": "승급심사 덱 세팅",
+    "deckModalSubtitle": "출전 캐릭터 덱(Deck) 4칸 구성",
+    "deckModalSelectAlert": "최소 1명 이상의 출전 캐릭터를 선택해 주세요.",
+    "deckModalSlotsHeader": "4인 출전 덱 슬롯 ({count} / 4)",
+    "deckModalSlotHint": "(카드를 클릭하면 덱 해제 / 원하는 슬롯으로 카드를 끌어다 드래그 배치)",
+    "slotFormat": "슬롯 {slot}",
+    "emptySlot": "비어있음",
+    "unplacedCreators": "미배치 보유 캐릭터 ({count}명)",
+    "unplacedHint": "클릭 또는 슬롯으로 드래그하여 배치",
+    "staminaDepleted": "스테미나 부족",
+    "lowStaminaHint": "(30 이하 참여 불가)",
+    "allCreatorsPlaced": "모든 캐릭터가 4칸 덱에 배치되었습니다!",
+    "startPromotionExamBtn": "승급심사 시작 ({count} / 4)",
+    "judgeHeader": "승급 심사관",
+    "preferred": "선호",
+    "mediaNotRegistered": "1280 × 720 (16:9) 미디어 미등록",
+    "satisfactionLabel": "심사관 만족도",
+    "selectCardBelow": "아래 카드 중 하나를 선택하세요!",
+    "inspectorCounterProgress": "심사관 반격 진행 중...",
+    "multiplierFormat": "1.5배!",
+    "cannotPresent": "제시 불가",
+    "promotedGradeHeader": "승급 등급",
+    "assignedInspectorHeader": "전담 심사관",
+    "finalSatisfactionHeader": "최종 달성 만족도",
+    "passSuccessDesc": "축하합니다! {judgeName} 심사관의 자격 심사를 통과하고 {tier} 등급으로 정식 승급하였습니다!",
+    "failNoCardsDesc": "제출 가능한 크리에이터 카드가 소진되었습니다. 스테미나를 회복한 후 재도전해 주세요.",
+    "failDefaultDesc": "목표 만족도 달성에 실패하였습니다. 덱을 보강한 후 재도전해 주세요.",
+    "passConfirmBtn": "🎉 승급 확정 및 계속하기",
+    "failRetryBtn": "확인 및 재도전"
   }
 }

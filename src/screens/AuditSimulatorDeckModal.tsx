@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '../locales/i18n'
 import type { RegisteredCharacter } from '../game/characters'
 import { normalizeCreatorStatType } from '../game/characters'
 import { STATION_TIER_LABEL, type StationTierId } from '../game/stationGradeConfig'
@@ -35,6 +36,7 @@ export function AuditSimulatorDeckModal({
   isSimulator = false,
   onStartSimulation,
 }: Props) {
+  const { t } = useTranslation()
   // 시뮬레이터일 때만 S등급 보정, 인게임 정식 심사 덱 배치 시에는 보유 캐릭터의 실제 능력치 유지
   const boostedCharacters: any[] = registeredCharacters.map((c) => ({
     ...c,
@@ -108,7 +110,7 @@ export function AuditSimulatorDeckModal({
   const handleStart = () => {
     const selected = boostedCharacters.filter((c) => activeSelectedIds.includes(c.id))
     if (selected.length === 0) {
-      alert('최소 1명 이상의 출전 캐릭터를 선택해 주세요.')
+      alert(t('audit.deckModalSelectAlert'))
       return
     }
     onStartSimulation(selected)
@@ -131,10 +133,10 @@ export function AuditSimulatorDeckModal({
         <div className="flex shrink-0 items-center justify-between border-b border-cyan-500/20 pb-3">
           <div className="flex items-center gap-3">
             <span className="rounded-xl border border-cyan-400/40 bg-cyan-950/80 px-3 py-1 text-xs font-black text-cyan-200 uppercase tracking-wider">
-              🎮 {STATION_TIER_LABEL[tierKey]} 승급심사 덱 세팅
+              🎮 {STATION_TIER_LABEL[tierKey]} {t('audit.deckModalTitle')}
             </span>
             <h3 className="text-base sm:text-xl font-black text-slate-100">
-              출전 캐릭터 덱(Deck) 4칸 구성
+              {t('audit.deckModalSubtitle')}
             </h3>
           </div>
         </div>
@@ -145,10 +147,10 @@ export function AuditSimulatorDeckModal({
           <div className="shrink-0 rounded-2xl border border-cyan-500/40 bg-gradient-to-b from-cyan-950/40 to-slate-950/60 p-4 backdrop-blur-md shadow-lg">
             <div className="mb-2.5 flex items-center justify-between">
               <span className="text-xs sm:text-sm font-black text-cyan-300">
-                📥 4인 출전 덱 슬롯 ({activeSelectedIds.length} / 4)
+                📥 {t('audit.deckModalSlotsHeader', { count: activeSelectedIds.length })}
               </span>
               <span className="text-[11px] sm:text-xs text-slate-400">
-                (카드를 클릭하면 덱 해제 / 원하는 슬롯으로 카드를 끌어다 드래그 배치)
+                {t('audit.deckModalSlotHint')}
               </span>
             </div>
 
@@ -238,8 +240,8 @@ export function AuditSimulatorDeckModal({
                       /* 대형 빈 슬롯 뷰어 */
                       <div className="flex h-full w-full flex-col items-center justify-center text-slate-500 p-2 text-center">
                         <span className="text-3xl sm:text-4xl font-light text-cyan-400/70">+</span>
-                        <span className="mt-1.5 text-xs font-black text-cyan-200">슬롯 {slotIdx + 1}</span>
-                        <span className="text-[10px] text-slate-400 mt-0.5">비어있음</span>
+                        <span className="mt-1.5 text-xs font-black text-cyan-200">{t('audit.slotFormat', { slot: slotIdx + 1 })}</span>
+                        <span className="text-[10px] text-slate-400 mt-0.5">{t('audit.emptySlot')}</span>
                       </div>
                     )}
                   </div>
@@ -258,10 +260,10 @@ export function AuditSimulatorDeckModal({
                 <>
                   <div className="mb-2 flex items-center justify-between shrink-0">
                     <span className="text-xs sm:text-sm font-bold text-slate-300">
-                      🎴 미배치 보유 캐릭터 ({availableCharacters.length}명)
+                      🎴 {t('audit.unplacedCreators', { count: availableCharacters.length })}
                     </span>
                     <span className="text-[11px] sm:text-xs text-slate-400">
-                      클릭 또는 슬롯으로 드래그하여 배치
+                      {t('audit.unplacedHint')}
                     </span>
                   </div>
 
@@ -306,10 +308,10 @@ export function AuditSimulatorDeckModal({
                                 <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-rose-950/85 p-1 text-center backdrop-blur-xs">
                                   <span className="text-xl sm:text-2xl drop-shadow">🪫</span>
                                   <span className="mt-1 text-[9.5px] font-black text-rose-300 leading-tight drop-shadow">
-                                    스테미나 부족
+                                    {t('audit.staminaDepleted')}
                                   </span>
                                   <span className="text-[8px] font-bold text-rose-200/80">
-                                    (30 이하 참여 불가)
+                                    {t('audit.lowStaminaHint')}
                                   </span>
                                 </div>
                               ) : null}
@@ -361,7 +363,7 @@ export function AuditSimulatorDeckModal({
                       </div>
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-xs text-slate-500 p-6">
-                        🎉 모든 캐릭터가 4칸 덱에 배치되었습니다!
+                        🎉 {t('audit.allCreatorsPlaced')}
                       </div>
                     )}
                   </div>
@@ -378,7 +380,7 @@ export function AuditSimulatorDeckModal({
             onClick={handleStart}
             className="w-full sm:w-auto rounded-xl border border-cyan-400/50 bg-gradient-to-r from-cyan-600 to-teal-500 px-8 py-3 text-sm font-black text-white shadow-[0_0_25px_rgba(6,182,212,0.45)] hover:brightness-110"
           >
-            🚀 승급심사 시작 ({activeSelectedIds.length} / 4)
+            🚀 {t('audit.startPromotionExamBtn', { count: activeSelectedIds.length })}
           </button>
         </div>
       </div>

@@ -1386,7 +1386,7 @@ const StreamCard = memo(function StreamCard({
                   staminaTone.text
                 }`}
               >
-                <span>{blocked ? '🚨 Stamina (고갈)' : 'Stamina'}</span>
+                <span>{blocked ? `🚨 ${t('creator.staminaDepleted')}` : 'Stamina'}</span>
                 <span className="tabular-nums">
                   {creator ? `${Math.round(creator.stamina)}/${creator.staminaMax}` : '—'}
                 </span>
@@ -1408,7 +1408,7 @@ const StreamCard = memo(function StreamCard({
           {blocked ? (
             <div className="mt-1 flex items-center gap-1.5 rounded-md border border-rose-500/70 bg-rose-950/90 px-2 py-0.5 text-[10px] font-black text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.4)] animate-pulse">
               <span className="text-xs shrink-0">🚨</span>
-              <span className="truncate">{t('dashboard.broadcastBlocked')} — 회복 케어가 필요합니다!</span>
+              <span className="truncate">{t('dashboard.broadcastBlocked')} — {t('creator.recoveryNeeded')}</span>
             </div>
           ) : null}
         </div>

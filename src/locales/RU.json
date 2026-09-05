@@ -226,7 +226,8 @@
     },
     "staffBayTitle": "Слоты персонала",
     "dragHint": "Перетащите слот · синхронизировано с дашбордом",
-    "gradeRequired": "Нужен ранг"
+    "gradeRequired": "Нужен ранг",
+    "slotUnlockAvailable": "Доступна разблокировка слота!"
   },
   "staff": {
     "kindSecurity": "Охрана",
@@ -368,7 +369,9 @@
     "staffHire": "Нанять",
     "noRegistered": "Нет зарегистрированных персонажей.",
     "noRegisteredDesc": "Добавьте персонажей в редакторе, чтобы они стали кандидатами.",
-    "staffPass": "Отказаться (ждать нового)"
+    "staffPass": "Отказаться (ждать нового)",
+    "staminaDepleted": "Выносливость (Истощена)",
+    "recoveryNeeded": "Требуется уход для восстановления!"
   },
   "sns": {
     "action": "SNS",
@@ -542,7 +545,8 @@
     "resultTitle": "Свидание окончено",
     "resultBody": "Событие с {name} завершено.",
     "resultSp": "SP +{n} (получено)",
-    "confirm": "OK"
+    "confirm": "OK",
+    "fullRecovery": "💖 Выносливость и состояние полностью восстановлены на 100%!"
   },
   "hRetry": {
     "offerTitle": "Повторная просьба H",
@@ -660,7 +664,8 @@
     "scoutLimitReached": "При текущем классе станции больше нельзя скаутить.",
     "noScoutCandidate": "Нет доступных кандидатов.",
     "noStaffToRecruit": "Больше нет персонала для найма.",
-    "staffQuit": "{name} покинул(а) компанию."
+    "staffQuit": "{name} покинул(а) компанию.",
+    "casinoGradeRequired": "Казино разблокируется со среднего ранга станции и выше."
   },
   "feed": {
     "donation": "💰 {amount} донат! ({name})",
@@ -903,5 +908,36 @@
         }
       }
     }
+  },
+  "audit": {
+    "deckModalTitle": "Настройка колоды экз. на повышение",
+    "deckModalSubtitle": "Соберите колоду из 4 карт персонажей",
+    "deckModalSelectAlert": "Пожалуйста, выберите хотя бы 1 персонажа.",
+    "deckModalSlotsHeader": "Слоты колоды из 4 участников ({count} / 4)",
+    "deckModalSlotHint": "(Кликните по карте для снятия / перетащите в слот)",
+    "slotFormat": "Слот {slot}",
+    "emptySlot": "Пусто",
+    "unplacedCreators": "Неразмещенные персонажи ({count})",
+    "unplacedHint": "Нажмите или перетащите в слот для размещения",
+    "staminaDepleted": "Мало выносливости",
+    "lowStaminaHint": "(Нельзя участвовать при 30 и менее)",
+    "allCreatorsPlaced": "Все персонажи размещены в 4 слотах колоды!",
+    "startPromotionExamBtn": "Начать экзамен ({count} / 4)",
+    "judgeHeader": "Экзаменатор",
+    "preferred": "Предпочтение",
+    "mediaNotRegistered": "Медиа 1280 × 720 (16:9) не зарегистрировано",
+    "satisfactionLabel": "Удовлетворенность экзаменатора",
+    "selectCardBelow": "Выберите одну из карт ниже!",
+    "inspectorCounterProgress": "Контратака экзаменатора...",
+    "multiplierFormat": "1.5x!",
+    "cannotPresent": "Недоступно",
+    "promotedGradeHeader": "Полученный ранг",
+    "assignedInspectorHeader": "Назначенный экзаменатор",
+    "finalSatisfactionHeader": "Итоговая удовлетворенность",
+    "passSuccessDesc": "Поздравляем! Вы успешно прошли оценку экзаменатора {judgeName} и повысили ранг до {tier}!",
+    "failNoCardsDesc": "Закончились доступные карты. Восстановите выносливость и попробуйте снова.",
+    "failDefaultDesc": "Не удалось достичь целевой удовлетворенности. Усильте колоду и попробуйте снова.",
+    "passConfirmBtn": "🎉 Подтвердить повышение и продолжить",
+    "failRetryBtn": "Подтвердить и повторить"
   }
 }

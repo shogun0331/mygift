@@ -15,6 +15,18 @@ export const CREATOR_TYPE_LABEL: Record<CreatorType, { label: string; icon: stri
   sexy: { label: '섹시', icon: '🔥', tone: 'text-rose-400 border-rose-500/40 bg-rose-950/60' },
 }
 
+export function getCreatorTypeDisplayName(type: CreatorType, t?: (key: string, params?: Record<string, string | number>) => string): string {
+  if (t) {
+    switch (type) {
+      case 'sexy': return t('creator.statSexy')
+      case 'elegance': return t('creator.statElegance')
+      case 'communication': return t('creator.statCommunication')
+      case 'performance': return t('creator.statPerformance')
+    }
+  }
+  return CREATOR_TYPE_LABEL[type]?.label || type
+}
+
 export const ALL_CREATOR_TYPES: CreatorType[] = ['elegance', 'performance', 'communication', 'sexy']
 
 export type TurnActionResult = {

@@ -633,7 +633,7 @@ export function SchedulePanel({
                                       {formatMoney(resolvedUnlockPrice ?? 0)}
                                     </p>
                                     <span className="rounded bg-emerald-500/90 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-black text-white shadow-md animate-bounce">
-                                      ✨ 슬롯 개방 가능!
+                                      ✨ {t('studio.slotUnlockAvailable')}
                                     </span>
                                   </>
                                 ) : gradeBlocked ? (

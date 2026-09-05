@@ -226,7 +226,8 @@
     },
     "staffBayTitle": "Ranuras de personal",
     "dragHint": "Arrastra para mover · sincronizado con el panel",
-    "gradeRequired": "Se requiere grado"
+    "gradeRequired": "Se requiere grado",
+    "slotUnlockAvailable": "¡Desbloqueo de casilla disponible!"
   },
   "staff": {
     "kindSecurity": "Seguridad",
@@ -368,7 +369,9 @@
     "staffHire": "Contratar",
     "noRegistered": "No hay personajes registrados.",
     "noRegisteredDesc": "Añade personajes en el editor para que aparezcan como candidatos.",
-    "staffPass": "Rechazar (esperar siguiente)"
+    "staffPass": "Rechazar (esperar siguiente)",
+    "staminaDepleted": "Estamina (Agotada)",
+    "recoveryNeeded": "¡Se requiere cuidado de recuperación!"
   },
   "sns": {
     "action": "SNS",
@@ -542,7 +545,8 @@
     "resultTitle": "Cita completada",
     "resultBody": "El evento con {name} ha terminado.",
     "resultSp": "SP +{n} (obtenido)",
-    "confirm": "Aceptar"
+    "confirm": "Aceptar",
+    "fullRecovery": "💖 ¡Estamina y condición recuperadas al 100%!"
   },
   "hRetry": {
     "offerTitle": "Reintento H",
@@ -660,7 +664,8 @@
     "scoutLimitReached": "No puedes reclutar más creadores con tu grado de emisora actual.",
     "noScoutCandidate": "No hay candidatos disponibles.",
     "noStaffToRecruit": "No queda personal para reclutar.",
-    "staffQuit": "{name} ha dejado la empresa."
+    "staffQuit": "{name} ha dejado la empresa.",
+    "casinoGradeRequired": "El casino se desbloquea a partir de la categoría Mediana o superior."
   },
   "feed": {
     "donation": "💰 ¡{amount} donación! ({name})",
@@ -903,5 +908,36 @@
         }
       }
     }
+  },
+  "audit": {
+    "deckModalTitle": "Configuración de Mazo de Examen de Ascenso",
+    "deckModalSubtitle": "Configuración de Mazo de 4 Casillas para Personajes Participantes",
+    "deckModalSelectAlert": "Por favor, selecciona al menos 1 personaje participante.",
+    "deckModalSlotsHeader": "Casillas de Mazo de 4 Participantes ({count} / 4)",
+    "deckModalSlotHint": "(Haz clic en la carta para quitar / Arrastra a la casilla deseada)",
+    "slotFormat": "Casilla {slot}",
+    "emptySlot": "Vacío",
+    "unplacedCreators": "Personajes Sin Colocar ({count})",
+    "unplacedHint": "Haz clic o arrastra a una casilla para colocar",
+    "staminaDepleted": "Estamina Baja",
+    "lowStaminaHint": "(No se puede participar con 30 o menos)",
+    "allCreatorsPlaced": "¡Todos los personajes se han colocado en las 4 casillas!",
+    "startPromotionExamBtn": "Iniciar Examen de Ascenso ({count} / 4)",
+    "judgeHeader": "Juez de Ascenso",
+    "preferred": "Preferido",
+    "mediaNotRegistered": "Medio 1280 × 720 (16:9) No Registrado",
+    "satisfactionLabel": "Satisfacción del Juez",
+    "selectCardBelow": "¡Selecciona una de las cartas de abajo!",
+    "inspectorCounterProgress": "Contraataque del Juez en Progreso...",
+    "multiplierFormat": "¡1.5x!",
+    "cannotPresent": "No disponible",
+    "promotedGradeHeader": "Rango Promovido",
+    "assignedInspectorHeader": "Juez Asignado",
+    "finalSatisfactionHeader": "Satisfacción Final Alcanzada",
+    "passSuccessDesc": "¡Felicidades! ¡Has pasado la evaluación del Juez {judgeName} y ascendido oficialmente al rango {tier}!",
+    "failNoCardsDesc": "Se han agotado las cartas jugables. Recupera estamina e inténtalo de nuevo.",
+    "failDefaultDesc": "No se alcanzó la satisfacción objetivo. Refuerza tu mazo e inténtalo de nuevo.",
+    "passConfirmBtn": "🎉 Confirmar Ascenso y Continuar",
+    "failRetryBtn": "Confirmar Reintento"
   }
 }

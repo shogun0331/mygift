@@ -220,7 +220,8 @@
     },
     "staffBayTitle": "スタッフ枠",
     "dragHint": "ドラッグでスロット移動 · ダッシュボード連動",
-    "gradeRequired": "ランク必要"
+    "gradeRequired": "ランク必要",
+    "slotUnlockAvailable": "スロット開放可能！"
   },
   "staff": {
     "kindSecurity": "警備",
@@ -361,7 +362,9 @@
     "staffHire": "雇用する",
     "noRegistered": "登録されたキャラクターがいません。",
     "noRegisteredDesc": "エディターでキャラクターを追加するとスカウト候補に登場します。",
-    "staffPass": "辞退（次の候補を待つ）"
+    "staffPass": "辞退（次の候補を待つ）",
+    "staminaDepleted": "スタミナ (枯渇)",
+    "recoveryNeeded": "回復ケアが必要です！"
   },
   "sns": {
     "action": "SNS",
@@ -532,7 +535,8 @@
     "resultTitle": "デート完了",
     "resultBody": "{name}とのイベントが終わりました。",
     "resultSp": "SP +{n} (獲得)",
-    "confirm": "確認"
+    "confirm": "確認",
+    "fullRecovery": "💖 体力＆コンディション100%全回復！"
   },
   "hRetry": {
     "offerTitle": "H再リクエスト",
@@ -650,7 +654,8 @@
     "scoutLimitReached": "現在の放送局等級ではこれ以上スカウトできません。",
     "noScoutCandidate": "スカウトできる候補がいません。",
     "noStaffToRecruit": "これ以上スカウトできるスタッフがいません。",
-    "staffQuit": "{name}スタッフが退社しました。"
+    "staffQuit": "{name}スタッフが退社しました。",
+    "casinoGradeRequired": "カジノは中堅局以上のランクで解禁されます。"
   },
   "feed": {
     "donation": "💰 {amount}投げ銭！ ({name})",
@@ -858,5 +863,36 @@
         }
       }
     }
+  },
+  "audit": {
+    "deckModalTitle": "昇格審査デッキ設定",
+    "deckModalSubtitle": "出場キャラクター4枠デッキ構成",
+    "deckModalSelectAlert": "最低1名以上の出場キャラクターを選択してください。",
+    "deckModalSlotsHeader": "4人出場デッキスロット ({count} / 4)",
+    "deckModalSlotHint": "(カードクリックで解除 / 希望のスロットへドラッグ配置)",
+    "slotFormat": "スロット {slot}",
+    "emptySlot": "空き",
+    "unplacedCreators": "未配置の所有キャラクター ({count}名)",
+    "unplacedHint": "クリックまたはスロットにドラッグして配置",
+    "staminaDepleted": "スタミナ不足",
+    "lowStaminaHint": "(30以下は参加不可)",
+    "allCreatorsPlaced": "すべてのキャラクターがデッキに配置されました！",
+    "startPromotionExamBtn": "昇格審査開始 ({count} / 4)",
+    "judgeHeader": "昇格審査員",
+    "preferred": "好み",
+    "mediaNotRegistered": "1280 × 720 (16:9) メディア未登録",
+    "satisfactionLabel": "審査員満足度",
+    "selectCardBelow": "下のカードのいずれかを選択してください！",
+    "inspectorCounterProgress": "審査員の反撃進行中...",
+    "multiplierFormat": "1.5倍！",
+    "cannotPresent": "提示不可",
+    "promotedGradeHeader": "昇格ランク",
+    "assignedInspectorHeader": "担当審査員",
+    "finalSatisfactionHeader": "最終達成満足度",
+    "passSuccessDesc": "おめでとうございます！{judgeName}審査員の資格審査に合格し、{tier}ランクに昇格しました！",
+    "failNoCardsDesc": "出札可能なクリエイターカードがなくなりました。スタミナを回復して再挑戦してください。",
+    "failDefaultDesc": "目標満足度の達成に失敗しました。デッキを強化して再挑戦してください。",
+    "passConfirmBtn": "🎉 昇格確定＆つづける",
+    "failRetryBtn": "確認＆再挑戦"
   }
 }

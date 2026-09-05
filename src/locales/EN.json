@@ -304,7 +304,9 @@
     "staffHire": "Recruit",
     "noRegistered": "No registered characters.",
     "noRegisteredDesc": "Add characters in the editor to have them appear as scout candidates.",
-    "staffPass": "Decline (wait for next)"
+    "staffPass": "Decline (wait for next)",
+    "staminaDepleted": "Stamina (Depleted)",
+    "recoveryNeeded": "Recovery care required!"
   },
   "sns": {
     "action": "SNS",
@@ -416,7 +418,8 @@
       "production": "+25% donations · extra viewers"
     },
     "dragHint": "Drag to move slots · synced with dashboard",
-    "gradeRequired": "Grade required"
+    "gradeRequired": "Grade required",
+    "slotUnlockAvailable": "Slot Unlock Available!"
   },
   "staff": {
     "kindSecurity": "Security",
@@ -553,7 +556,8 @@
     "resultTitle": "Date Complete",
     "resultBody": "The event with {name} has ended.",
     "resultSp": "SP +{n} gained",
-    "confirm": "OK"
+    "confirm": "OK",
+    "fullRecovery": "💖 Stamina & Condition 100% Fully Recovered!"
   },
   "hRetry": {
     "offerTitle": "H Request",
@@ -672,7 +676,8 @@
     "scoutLimitReached": "You can't scout more creators at your current station grade.",
     "noScoutCandidate": "No scout candidates available.",
     "noStaffToRecruit": "No more staff available to recruit.",
-    "staffQuit": "{name} has left the company."
+    "staffQuit": "{name} has left the company.",
+    "casinoGradeRequired": "Casino is unlocked from Mid-size Station tier or higher."
   },
   "feed": {
     "donation": "💰 {amount} donation! ({name})",
@@ -915,5 +920,36 @@
         }
       }
     }
+  },
+  "audit": {
+    "deckModalTitle": "Promotion Exam Deck Setting",
+    "deckModalSubtitle": "Set 4 Cards for Participating Characters",
+    "deckModalSelectAlert": "Please select at least 1 participating character.",
+    "deckModalSlotsHeader": "4-Member Deck Slots ({count} / 4)",
+    "deckModalSlotHint": "(Click card to unequip / Drag to desired slot to place)",
+    "slotFormat": "Slot {slot}",
+    "emptySlot": "Empty",
+    "unplacedCreators": "Unplaced Characters ({count})",
+    "unplacedHint": "Click or drag to slot to place",
+    "staminaDepleted": "Low Stamina",
+    "lowStaminaHint": "(Cannot participate with 30 or less)",
+    "allCreatorsPlaced": "All characters have been placed into 4 deck slots!",
+    "startPromotionExamBtn": "Start Promotion Exam ({count} / 4)",
+    "judgeHeader": "Promotion Judge",
+    "preferred": "Preferred",
+    "mediaNotRegistered": "1280 × 720 (16:9) Media Not Registered",
+    "satisfactionLabel": "Judge Satisfaction",
+    "selectCardBelow": "Select one of the cards below!",
+    "inspectorCounterProgress": "Judge Counterattack in Progress...",
+    "multiplierFormat": "1.5x!",
+    "cannotPresent": "Unavailable",
+    "promotedGradeHeader": "Promoted Grade",
+    "assignedInspectorHeader": "Assigned Judge",
+    "finalSatisfactionHeader": "Final Satisfaction Achieved",
+    "passSuccessDesc": "Congratulations! You passed Judge {judgeName}'s evaluation and have officially promoted to {tier} Rank!",
+    "failNoCardsDesc": "Playable creator cards have run out. Please recover stamina and try again.",
+    "failDefaultDesc": "Failed to achieve target satisfaction. Strengthen your deck and try again.",
+    "passConfirmBtn": "🎉 Confirm Promotion & Continue",
+    "failRetryBtn": "Confirm & Retry"
   }
 }

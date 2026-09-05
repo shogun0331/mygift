@@ -226,7 +226,8 @@
     },
     "staffBayTitle": "Personal-Plätze",
     "dragHint": "Ziehen zum Verschieben · mit Dashboard verknüpft",
-    "gradeRequired": "Rang erforderlich"
+    "gradeRequired": "Rang erforderlich",
+    "slotUnlockAvailable": "Slot-Freischaltung verfügbar!"
   },
   "staff": {
     "kindSecurity": "Sicherheit",
@@ -368,7 +369,9 @@
     "staffHire": "Einstellen",
     "noRegistered": "Keine registrierten Charaktere.",
     "noRegisteredDesc": "Füge Charaktere im Editor hinzu, damit sie als Kandidaten erscheinen.",
-    "staffPass": "Ablehnen (auf nächsten warten)"
+    "staffPass": "Ablehnen (auf nächsten warten)",
+    "staminaDepleted": "Ausdauer (Erschöpft)",
+    "recoveryNeeded": "Erholungspflege erforderlich!"
   },
   "sns": {
     "action": "SNS",
@@ -542,7 +545,8 @@
     "resultTitle": "Date abgeschlossen",
     "resultBody": "Das Ereignis mit {name} ist beendet.",
     "resultSp": "SP +{n} (erhalten)",
-    "confirm": "OK"
+    "confirm": "OK",
+    "fullRecovery": "💖 Ausdauer & Kondition 100% vollständig erholt!"
   },
   "hRetry": {
     "offerTitle": "H-erneut angefragt",
@@ -660,7 +664,8 @@
     "scoutLimitReached": "Mit deiner aktuellen Senderklasse kannst du nicht mehr scouten.",
     "noScoutCandidate": "Keine Kandidaten verfügbar.",
     "noStaffToRecruit": "Kein Personal mehr zum Rekrutieren.",
-    "staffQuit": "{name} hat das Unternehmen verlassen."
+    "staffQuit": "{name} hat das Unternehmen verlassen.",
+    "casinoGradeRequired": "Das Casino wird ab dem mittleren Sender-Rang freigeschaltet."
   },
   "feed": {
     "donation": "💰 {amount} Spende! ({name})",
@@ -903,5 +908,36 @@
         }
       }
     }
+  },
+  "audit": {
+    "deckModalTitle": "Aufstiegsprüfung Deck-Einstellung",
+    "deckModalSubtitle": "Setze 4 Karten für teilnehmende Charaktere",
+    "deckModalSelectAlert": "Bitte wähle mindestens 1 teilnehmenden Charakter aus.",
+    "deckModalSlotsHeader": "4-Spieler-Deck-Slots ({count} / 4)",
+    "deckModalSlotHint": "(Klicke zum Entfernen / Ziehe zum gewünschten Slot)",
+    "slotFormat": "Slot {slot}",
+    "emptySlot": "Leer",
+    "unplacedCreators": "Nicht platzierte Charaktere ({count})",
+    "unplacedHint": "Klicken oder zum Platzieren in den Slot ziehen",
+    "staminaDepleted": "Wenig Ausdauer",
+    "lowStaminaHint": "(Teilnahme ab 30 oder weniger nicht möglich)",
+    "allCreatorsPlaced": "Alle Charaktere wurden in den 4 Deck-Slots platziert!",
+    "startPromotionExamBtn": "Aufstiegsprüfung starten ({count} / 4)",
+    "judgeHeader": "Aufstiegsprüfer",
+    "preferred": "Bevorzugt",
+    "mediaNotRegistered": "1280 × 720 (16:9) Medien nicht registriert",
+    "satisfactionLabel": "Prüferzufriedenheit",
+    "selectCardBelow": "Wähle eine der folgenden Karten aus!",
+    "inspectorCounterProgress": "Gegenangriff des Prüfers läuft...",
+    "multiplierFormat": "1.5x!",
+    "cannotPresent": "Nicht verfügbar",
+    "promotedGradeHeader": "Beförderter Rang",
+    "assignedInspectorHeader": "Zugewiesener Prüfer",
+    "finalSatisfactionHeader": "Erzielte Endzufriedenheit",
+    "passSuccessDesc": "Herzlichen Glückwunsch! Du hast die Prüfung von Prüfer {judgeName} bestanden und bist offiziell zum Rang {tier} aufgestiegen!",
+    "failNoCardsDesc": "Keine ausspielbaren Karten mehr. Bitte erhole Ausdauer und versuche es erneut.",
+    "failDefaultDesc": "Zielzufriedenheit nicht erreicht. Verstärke dein Deck und versuche es erneut.",
+    "passConfirmBtn": "🎉 Aufstieg bestätigen & Weiter",
+    "failRetryBtn": "Bestätigen & Wiederholen"
   }
 }

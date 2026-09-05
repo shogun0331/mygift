@@ -128,7 +128,7 @@ export function DateResultModal({
           </p>
           {pending.step === 'h' && (
             <div className="mt-5 rounded-2xl border border-emerald-400/40 bg-emerald-950/50 p-4 shadow-[0_0_25px_rgba(52,211,153,0.25)]">
-              <p className="text-sm font-black text-emerald-300">💖 체력 & 컨디션 100% 풀 회복!</p>
+              <p className="text-sm font-black text-emerald-300">{t('date.fullRecovery')}</p>
             </div>
           )}
           <div className="mt-7 flex justify-center">

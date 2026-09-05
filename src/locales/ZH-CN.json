@@ -226,7 +226,8 @@
     },
     "staffBayTitle": "职员位",
     "dragHint": "拖拽移动格位 · 与仪表盘联动",
-    "gradeRequired": "需要等级"
+    "gradeRequired": "需要等级",
+    "slotUnlockAvailable": "可解锁栏位！"
   },
   "staff": {
     "kindSecurity": "安保",
@@ -368,7 +369,9 @@
     "staffHire": "雇佣",
     "noRegistered": "没有注册的角色。",
     "noRegisteredDesc": "在编辑器中添加角色后，他们将成为挖角候选人。",
-    "staffPass": "拒绝（等待下一位）"
+    "staffPass": "拒绝（等待下一位）",
+    "staminaDepleted": "体力 (耗尽)",
+    "recoveryNeeded": "需要恢复护理！"
   },
   "sns": {
     "action": "SNS",
@@ -542,7 +545,8 @@
     "resultTitle": "约会完成",
     "resultBody": "与{name}的事件已结束。",
     "resultSp": "SP +{n}（获得）",
-    "confirm": "确认"
+    "confirm": "确认",
+    "fullRecovery": "💖 体力与状态100%全满恢复！"
   },
   "hRetry": {
     "offerTitle": "H再次请求",
@@ -660,7 +664,8 @@
     "scoutLimitReached": "以当前广播站等级无法继续挖角。",
     "noScoutCandidate": "没有可挖角的候选人。",
     "noStaffToRecruit": "没有更多可挖角的职员了。",
-    "staffQuit": "{name}职员已离职。"
+    "staffQuit": "{name}职员已离职。",
+    "casinoGradeRequired": "赌场需达到中型电视台或更高等级方可解锁。"
   },
   "feed": {
     "donation": "💰 {amount}打赏！（{name}）",
@@ -903,5 +908,36 @@
         }
       }
     }
+  },
+  "audit": {
+    "deckModalTitle": "晋升审查卡组设置",
+    "deckModalSubtitle": "出场角色4栏卡组配置",
+    "deckModalSelectAlert": "请至少选择1名出场角色。",
+    "deckModalSlotsHeader": "4人出场卡组栏位 ({count} / 4)",
+    "deckModalSlotHint": "(点击卡片取消卸下 / 拖拽至对应栏位放置)",
+    "slotFormat": "栏位 {slot}",
+    "emptySlot": "空置",
+    "unplacedCreators": "未配置的已有角色 ({count}名)",
+    "unplacedHint": "点击或拖拽至栏位放置",
+    "staminaDepleted": "体力不足",
+    "lowStaminaHint": "(30以下无法参赛)",
+    "allCreatorsPlaced": "所有角色均已配置至4栏卡组！",
+    "startPromotionExamBtn": "开始晋升审查 ({count} / 4)",
+    "judgeHeader": "晋升审查官",
+    "preferred": "偏好",
+    "mediaNotRegistered": "1280 × 720 (16:9) 媒体未注册",
+    "satisfactionLabel": "审查官满意度",
+    "selectCardBelow": "请选择下方卡片之一！",
+    "inspectorCounterProgress": "审查官反击进行中……",
+    "multiplierFormat": "1.5倍！",
+    "cannotPresent": "无法出牌",
+    "promotedGradeHeader": "晋升等级",
+    "assignedInspectorHeader": "专属审查官",
+    "finalSatisfactionHeader": "最终达成满意度",
+    "passSuccessDesc": "恭喜！您已通过{judgeName}审查官的资格审查，正式晋升为{tier}等级！",
+    "failNoCardsDesc": "可出牌的创作者卡片已耗尽。请恢复体力后重试。",
+    "failDefaultDesc": "未能达到目标满意度。请强化卡组后重试。",
+    "passConfirmBtn": "🎉 确认晋升并继续",
+    "failRetryBtn": "确认并重试"
   }
 }

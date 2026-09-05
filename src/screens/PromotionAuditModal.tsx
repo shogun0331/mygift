@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from '../locales/i18n'
 import {
   CREATOR_TYPE_LABEL,
+  getCreatorTypeDisplayName,
   createAuditSession,
   submitTurnPerformance,
   type AuditSession,
@@ -87,6 +89,7 @@ export function PromotionAuditModal({
   onClose,
 }: PromotionAuditModalProps) {
   const { locale } = useI18n()
+  const { t } = useTranslation()
   const [session, setSession] = useState<AuditSession>(() => createAuditSession(tier, config))
   const sessionRef = useRef(session)
   sessionRef.current = session
@@ -645,7 +648,7 @@ export function PromotionAuditModal({
         <div className="flex shrink-0 items-center justify-between border-b border-purple-500/20 bg-purple-950/40 px-5 py-3">
           <div className="flex items-center gap-3">
             <span className="rounded-xl border border-purple-400/40 bg-purple-900/60 px-3 py-1 text-xs font-black tracking-widest text-purple-200 uppercase">
-              {stationGradeLabel(tier)} 승급 심사관
+              {stationGradeLabel(tier)} {t('audit.judgeHeader')}
             </span>
             <h2 className="text-base font-black text-slate-100">{judgeName}</h2>
           </div>
@@ -662,7 +665,7 @@ export function PromotionAuditModal({
                 onClick={onClose}
                 className="text-xs font-bold text-slate-400 hover:text-white"
               >
-                닫기 ✕
+                {t('hud.back')} ✕
               </button>
             ) : null}
           </div>
@@ -685,12 +688,12 @@ export function PromotionAuditModal({
                 <span className="rounded-full border border-amber-400 bg-amber-500/20 px-2.5 py-0.5 text-xs font-black text-amber-200 shadow-[0_0_12px_rgba(251,191,36,0.5)] animate-pulse">
                   {getSatisfyJudgeTitle(locale)}
                 </span>
-                <span className="hidden sm:inline text-xs font-bold text-slate-300">| 선호:</span>
+                <span className="hidden sm:inline text-xs font-bold text-slate-300">| {t('audit.preferred')}:</span>
                 <span
                   className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-black ${currentDemandInfo.tone}`}
                 >
                   <span>{currentDemandInfo.icon}</span>
-                  <span>{currentDemandInfo.label}</span>
+                  <span>{getCreatorTypeDisplayName(currentDemand, t)}</span>
                 </span>
               </div>
 
@@ -756,7 +759,7 @@ export function PromotionAuditModal({
               ) : (
                 <div className="flex h-full w-full aspect-[16/9] flex-col items-center justify-center bg-gradient-to-br from-purple-950 via-slate-950 to-indigo-950 text-5xl">
                   <span>⚖️</span>
-                  <span className="mt-2 text-xs font-bold text-purple-200">1280 × 720 (16:9) 미디어 미등록</span>
+                  <span className="mt-2 text-xs font-bold text-purple-200">{t('audit.mediaNotRegistered')}</span>
                 </div>
               )}
 
@@ -850,7 +853,7 @@ export function PromotionAuditModal({
               <div className="absolute bottom-3 left-3 right-3 z-20 rounded-xl border border-purple-500/40 bg-black/85 p-2.5 backdrop-blur-md shadow-2xl">
                 <div className="mb-1 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-200">⚖️ 심사관 만족도</span>
+                    <span className="font-bold text-slate-200">⚖️ {t('audit.satisfactionLabel')}</span>
                   </div>
                   <span className="font-black tabular-nums text-amber-300">
                     {session.currentSatisfaction} / {session.targetSatisfaction} 점 (
@@ -894,7 +897,7 @@ export function PromotionAuditModal({
                 {/* 카드를 클릭하라는 탭 안내 뱃지 */}
                 <div className="mb-1 flex items-center gap-1.5 rounded-full border-2 border-amber-300 bg-slate-950/95 px-4 py-1.5 shadow-[0_0_30px_rgba(251,191,36,0.95)] backdrop-blur-md">
                   <span className="text-xs sm:text-sm font-black text-amber-200 uppercase tracking-wider animate-pulse">
-                    👇 아래 카드 중 하나를 선택하세요!
+                    👇 {t('audit.selectCardBelow')}
                   </span>
                 </div>
 
@@ -916,7 +919,7 @@ export function PromotionAuditModal({
               </span>
             ) : isJudgeTurn ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/60 bg-rose-950/80 px-4 py-1 text-xs sm:text-sm font-black text-rose-200 shadow-[0_0_15px_rgba(244,63,94,0.35)] animate-bounce">
-                ⚔️ 심사관 반격 진행 중...
+                ⚔️ {t('audit.inspectorCounterProgress')}
               </span>
             ) : null}
           </div>
@@ -1015,7 +1018,7 @@ export function PromotionAuditModal({
                     </span>
                     {isTypeMatched ? (
                       <span className="rounded bg-emerald-500/90 px-1.5 py-0.3 text-[9px] font-black text-white shadow-md animate-pulse">
-                        🔥 1.5배!
+                        🔥 {t('audit.multiplierFormat')}
                       </span>
                     ) : null}
                   </div>
@@ -1025,9 +1028,9 @@ export function PromotionAuditModal({
                     <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/90 p-1 text-center backdrop-blur-xs">
                       <span className="text-base">🪫</span>
                       <span className="mt-0.5 text-[9px] font-black text-rose-400 leading-tight">
-                        스테미나 부족
+                        {t('audit.staminaDepleted')}
                       </span>
-                      <span className="text-[8px] text-slate-400">제시 불가</span>
+                      <span className="text-[8px] text-slate-400">{t('audit.cannotPresent')}</span>
                     </div>
                   ) : null}
 
@@ -1037,7 +1040,7 @@ export function PromotionAuditModal({
                       <h4 className="truncate text-xs font-black text-white drop-shadow-md">{creator.name}</h4>
                       <span
                         className={`flex items-center justify-center rounded border px-1.5 py-0.5 text-xs font-black shadow-md ${typeInfo.tone}`}
-                        title={typeInfo.label}
+                        title={getCreatorTypeDisplayName(cType, t)}
                       >
                         <span>{typeInfo.icon}</span>
                       </span>
@@ -1141,17 +1144,17 @@ export function PromotionAuditModal({
                 {/* 게임 스탯 카드 (Result Card) */}
                 <div className="mt-4 w-full max-w-md rounded-2xl border border-white/15 bg-black/60 p-3.5 backdrop-blur-md shadow-xl text-left space-y-2">
                   <div className="flex items-center justify-between text-xs border-b border-white/10 pb-2">
-                    <span className="text-slate-400 font-bold">🏆 승급 등급</span>
+                    <span className="text-slate-400 font-bold">🏆 {t('audit.promotedGradeHeader')}</span>
                     <span className="font-black text-amber-300">
-                      {stationGradeLabel(session.tier)} 등급
+                      {stationGradeLabel(session.tier)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs border-b border-white/10 pb-2">
-                    <span className="text-slate-400 font-bold">⚖️ 전담 심사관</span>
+                    <span className="text-slate-400 font-bold">⚖️ {t('audit.assignedInspectorHeader')}</span>
                     <span className="font-bold text-slate-200">{judgeName}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-400 font-bold">🔥 최종 달성 만족도</span>
+                    <span className="text-slate-400 font-bold">🔥 {t('audit.finalSatisfactionHeader')}</span>
                     <span className="font-black tabular-nums text-emerald-400">
                       {session.currentSatisfaction} / {session.targetSatisfaction} 점 (
                       {Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100)}%)
@@ -1161,12 +1164,10 @@ export function PromotionAuditModal({
 
                 <p className="mt-4 max-w-md text-xs sm:text-sm font-bold text-slate-300 leading-relaxed drop-shadow">
                   {session.isSuccess
-                    ? `축하합니다! ${judgeName} 심사관의 자격 심사를 통과하고 ${stationGradeLabel(
-                        session.tier,
-                      )} 등급으로 정식 승급하였습니다!`
+                    ? t('audit.passSuccessDesc', { judgeName, tier: stationGradeLabel(session.tier) })
                     : session.failReason === 'no_cards'
-                    ? `제출 가능한 크리에이터 카드가 소진되었습니다. 스테미나를 회복한 후 재도전해 주세요.`
-                    : `목표 만족도 달성에 실패하였습니다. 덱을 보강한 후 재도전해 주세요.`}
+                    ? t('audit.failNoCardsDesc')
+                    : t('audit.failDefaultDesc')}
                 </p>
               </div>
 
@@ -1181,7 +1182,7 @@ export function PromotionAuditModal({
                       : 'bg-gradient-to-r from-rose-600 via-red-500 to-rose-600 text-white border-2 border-rose-400 shadow-[0_0_40px_rgba(244,63,94,0.85)] hover:scale-105 hover:shadow-[0_0_65px_rgba(244,63,94,1)]'
                   }`}
                 >
-                  {session.isSuccess ? '🎉 승급 확정 및 계속하기' : '확인 및 재도전'}
+                  {session.isSuccess ? t('audit.passConfirmBtn') : t('audit.failRetryBtn')}
                 </button>
               </div>
             </div>

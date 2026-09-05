@@ -4705,7 +4705,7 @@ export function InGame({
                 onClick={() => {
                   if (isCasino) {
                     if (!isCasinoGradeUnlocked) {
-                      window.alert('카지노는 중소기업 등급 이상부터 해금됩니다.')
+                      window.alert(t('alert.casinoGradeRequired'))
                       return
                     }
                     if (isCasinoAvailable) {
