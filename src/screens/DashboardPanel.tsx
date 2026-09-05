@@ -433,7 +433,7 @@ export function DashboardPanel({
           ) : (
             <ul className="mt-2 min-h-0 flex-1 space-y-1.5 overflow-hidden flex flex-col justify-end">
               <AnimatePresence initial={false}>
-                {liveEvents.slice(0, 30).map((event) => {
+                {[...liveEvents.slice(0, 30)].reverse().map((event) => {
                   const handle =
                     event.userId ||
                     `@user_${Math.abs(
