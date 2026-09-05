@@ -1,4 +1,5 @@
 import { normalizeCreatorStatType, type CreatorStatType, type Grade } from './characters'
+export type { CreatorStatType } from './characters'
 
 export type CharacterStats = {
   heat: number
@@ -214,11 +215,7 @@ export function clampStats(stats: CharacterStats, grade: Grade): CharacterStats 
   const trust = clamp(Math.round(stats.trust), 0, TRUST_MAX)
   const staminaMax = clamp(Math.round(stats.staminaMax), 1, 100)
   const stamina = clamp(Math.round(stats.stamina), 0, staminaMax)
-  const personality = (value: number | undefined) => {
-    const n = Number(value)
-    if (Number.isFinite(n)) return clamp(Math.round(n), 0, 100)
-    return PERSONALITY_FALLBACK
-  }
+  const personality = (val?: number) => clamp(Math.round(val ?? PERSONALITY_FALLBACK), 0, 100)
   return {
     heat,
     trust,
@@ -231,3 +228,45 @@ export function clampStats(stats: CharacterStats, grade: Grade): CharacterStats 
     statPerformance: personality(stats.statPerformance),
   }
 }
+
+export const CREATOR_STAT_TYPES: CreatorStatType[] = [
+  'sexy',
+  'elegance',
+  'communication',
+  'performance',
+]
+
+/** 주간 대세 타입 랜덤 추첨 */
+export function rollRandomWeeklyTrendType(): CreatorStatType {
+  const idx = Math.floor(Math.random() * CREATOR_STAT_TYPES.length)
+  return CREATOR_STAT_TYPES[idx]
+}
+
+/** 크리에이터의 주력(최고) 타입 판별 */
+export function getCreatorPrimaryStatType(creator: {
+  statType?: string
+  statSexy?: number
+  statElegance?: number
+  statCommunication?: number
+  statPerformance?: number
+}): CreatorStatType {
+  if (
+    creator.statType === 'sexy' ||
+    creator.statType === 'elegance' ||
+    creator.statType === 'communication' ||
+    creator.statType === 'performance'
+  ) {
+    return creator.statType as CreatorStatType
+  }
+  const stats = [
+    { type: 'sexy' as const, val: Number(creator.statSexy) || 0 },
+    { type: 'elegance' as const, val: Number(creator.statElegance) || 0 },
+    { type: 'communication' as const, val: Number(creator.statCommunication) || 0 },
+    { type: 'performance' as const, val: Number(creator.statPerformance) || 0 },
+  ]
+  stats.sort((a, b) => b.val - a.val)
+  return stats[0].type
+}
+
+/** 대세 타입 맞춤 시 주어지는 방송 수익 보너스 배율 (+35%) */
+export const WEEKLY_TREND_REVENUE_MULT = 1.35

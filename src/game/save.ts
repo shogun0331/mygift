@@ -11,6 +11,8 @@ import type { StationGrade } from './station'
 import { resolveMediaSrc } from './mediaUrl'
 import { GAME_EPOCH, monthToCalendarDate } from './broadcast'
 
+import type { CreatorStatType } from './stats'
+
 /** WeekAccumulator.byCreator(Map) → 직렬화 가능 배열 */
 export type SerializedWeekAccum = Omit<WeekAccumulator, 'byCreator'> & {
   byCreator: Array<[string, WeeklyCreatorAccum]>
@@ -50,6 +52,7 @@ export type GameSave = {
   weekAccum: SerializedWeekAccum
   prevWeekRevenue: number | null
   socialSpawn: SocialSpawnState
+  weeklyTrendType?: CreatorStatType
   annualRevenueByYear: Record<number, number>
   watchedEventIds: string[]
   scout: {

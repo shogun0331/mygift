@@ -98,7 +98,13 @@ import {
   scoreOf,
   type SlotDrainMults,
 } from '../game/condition'
-import { rollInt } from '../game/stats'
+import {
+  rollInt,
+  rollRandomWeeklyTrendType,
+  getCreatorPrimaryStatType,
+  WEEKLY_TREND_REVENUE_MULT,
+  type CreatorStatType,
+} from '../game/stats'
 import {
   buildStudioDayPlan,
   scaleDayPlanTimes,
@@ -717,6 +723,11 @@ export function InGame({
   const liveRevenueByCreatorRef = useRef(liveRevenueByCreator)
   liveRevenueByCreatorRef.current = liveRevenueByCreator
   const [liveWeekProgress, setLiveWeekProgress] = useState(0)
+  const [weeklyTrendType, setWeeklyTrendType] = useState<CreatorStatType>(
+    () => initialSave?.weeklyTrendType ?? rollRandomWeeklyTrendType(),
+  )
+  const weeklyTrendTypeRef = useRef(weeklyTrendType)
+  weeklyTrendTypeRef.current = weeklyTrendType
   const [liveStaminaDrainByCreatorId, setLiveStaminaDrainByCreatorId] = useState<
     Record<string, number>
   >({})
@@ -1328,6 +1339,7 @@ export function InGame({
       weekAccum: serializeWeekAccum(weekAccumRef.current),
       prevWeekRevenue: prevWeekRevenueRef.current,
       socialSpawn: socialSpawnRef.current,
+      weeklyTrendType: weeklyTrendTypeRef.current,
       annualRevenueByYear: annualRevenueByYearRef.current,
       watchedEventIds,
       scout: {
@@ -1509,7 +1521,10 @@ export function InGame({
       const production = slotId
         ? staffBonusOf(managerStateRef.current, slotId, 'production')
         : { mul: 1 }
-      revenueMultByCreatorId[creator.id] = revenueMult * production.mul
+      const primaryType = getCreatorPrimaryStatType(creator)
+      const isTrendMatching = primaryType === weeklyTrendTypeRef.current
+      const trendMult = isTrendMatching ? WEEKLY_TREND_REVENUE_MULT : 1.0
+      revenueMultByCreatorId[creator.id] = revenueMult * production.mul * trendMult
     }
     const plan = buildStudioDayPlan(
       assigned,
@@ -2440,6 +2455,28 @@ export function InGame({
 
   function advanceBroadcastWeek() {
     const nextMonthWeek = monthWeekIndexRef.current + 1
+
+    const nextTrend = rollRandomWeeklyTrendType()
+    setWeeklyTrendType(nextTrend)
+    weeklyTrendTypeRef.current = nextTrend
+
+    const trendNameMap: Record<CreatorStatType, string> = {
+      sexy: '섹시',
+      elegance: '기품',
+      communication: '소통',
+      performance: '퍼포먼스',
+    }
+    const trendEvent: DayEvent = {
+      id: `trend-evt-${nextTrend}-${Math.round(performance.now())}`,
+      creatorId: '',
+      creatorName: '',
+      type: 'viewers',
+      amount: 0,
+      text: `🔥 주간 대세 트렌드가 [${trendNameMap[nextTrend]}] 타입으로 변경되었습니다! (+35% 수익 보너스)`,
+      atMs: 0,
+      tone: 'bg-pink-500',
+    }
+    setLiveEvents((prev) => [trendEvent, ...prev].slice(0, MAX_RECENT_EVENTS))
 
     if (nextMonthWeek >= WEEKS_PER_MONTH) {
       monthWeekIndexRef.current = 0
@@ -3951,6 +3988,7 @@ export function InGame({
             liveWeekProgress={liveWeekProgress}
             liveStaminaDrainByCreatorId={liveStaminaDrainByCreatorId}
             liveConditionDrainByCreatorId={liveConditionDrainByCreatorId}
+            weeklyTrendType={weeklyTrendType}
             conditionCrashes={conditionCrashes}
             gearFailBursts={gearFailBursts}
             staffActions={staffActions}

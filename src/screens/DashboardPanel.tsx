@@ -39,6 +39,17 @@ import {
   type RevenueBurst,
 } from './RevenueBurstFx'
 import {
+  getCreatorPrimaryStatType,
+  type CreatorStatType,
+} from '../game/stats'
+
+const TREND_TYPE_INFO: Record<CreatorStatType, { label: string; icon: string }> = {
+  sexy: { label: '섹시', icon: '🔥' },
+  elegance: { label: '기품', icon: '👑' },
+  communication: { label: '소통', icon: '💬' },
+  performance: { label: '퍼포먼스', icon: '⚡' },
+}
+import {
   ConditionCrashFx,
   type ConditionCrashFxItem,
 } from './ConditionCrashFx'
@@ -85,6 +96,8 @@ type DashboardPanelProps = {
   staffActions?: StaffActionFxItem[]
   toxicQtes?: ToxicWhackQteItem[]
   slotGearById?: Record<string, SlotGear>
+  /** 주간 대세 트렌드 타입 */
+  weeklyTrendType?: CreatorStatType
   /** 명세서 대기/표시 중 — 방송 시작 비활성 */
   startBroadcastLocked?: boolean
   onStartBroadcast: () => void
@@ -115,6 +128,7 @@ type StreamCreatorView = {
   live: boolean
   preview: string
   tag?: { text: string; tone: 'amber' | 'rose' | 'cyan' | 'violet' }
+  isTrendMatching?: boolean
 }
 
 type BroadcastSlotView = {
@@ -133,6 +147,7 @@ function toBroadcastSlot(
   weekProgress = 0,
   weeklyDrain = 0,
   weeklyConditionDrain = 0,
+  weeklyTrendType?: CreatorStatType,
 ): BroadcastSlotView {
   const streamLabel = `STREAM ${String(slot.index).padStart(2, '0')}`
   if (slot.status !== 'assigned' || !slot.assignment) {
@@ -175,6 +190,8 @@ function toBroadcastSlot(
       ? previewLiveConditionScore(baseCondScore, weeklyConditionDrain, weekProgress)
       : baseCondScore
   const condition = owned ? conditionFromScore(conditionScore) : 'normal'
+  const isTrendMatching =
+    owned && weeklyTrendType ? getCreatorPrimaryStatType(owned) === weeklyTrendType : false
 
   return {
     id: slot.id,
@@ -198,6 +215,7 @@ function toBroadcastSlot(
       })(),
       conditionScore,
       condition,
+      isTrendMatching,
       viewers: '—',
       live: broadcastPhase === 'live',
       preview: visuals.preview,
@@ -249,6 +267,7 @@ export function DashboardPanel({
   staffActions = [],
   toxicQtes = [],
   slotGearById = {},
+  weeklyTrendType,
   startBroadcastLocked = false,
   onStartBroadcast,
   onConditionCare,
@@ -309,6 +328,7 @@ export function DashboardPanel({
       liveWeekProgress,
       creatorId ? liveStaminaDrainByCreatorId[creatorId] ?? 0 : 0,
       creatorId ? liveConditionDrainByCreatorId[creatorId] ?? 0 : 0,
+      weeklyTrendType,
     )
   })
   const assigned = studioSlots.filter(
@@ -373,6 +393,29 @@ export function DashboardPanel({
   return (
     <div className="grid h-full min-h-0 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,22%)] xl:grid-cols-[minmax(0,1fr)_minmax(15rem,20%)] 2xl:grid-cols-[minmax(0,1fr)_minmax(16rem,18%)]">
       <section className="grid min-h-0 content-start grid-cols-1 gap-2.5 overflow-auto sm:grid-cols-2 lg:grid-cols-3">
+        {weeklyTrendType ? (
+          <div className="sm:col-span-2 lg:col-span-3 flex items-center justify-between gap-2.5 rounded-xl border border-pink-500/40 bg-gradient-to-r from-pink-950/70 via-purple-950/60 to-slate-950/80 px-4 py-2 shadow-[0_0_15px_rgba(236,72,153,0.25)]">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-pink-400/40 bg-pink-500/20 text-base shadow-[0_0_10px_rgba(236,72,153,0.4)]">
+                {TREND_TYPE_INFO[weeklyTrendType]?.icon ?? '🔥'}
+              </span>
+              <div>
+                <p className="text-[9px] font-bold text-pink-300/80 uppercase tracking-widest">주간 방송 대세 트렌드</p>
+                <p className="text-xs sm:text-sm font-black text-white">
+                  이번 주 대세:{' '}
+                  <span className="text-pink-300 underline underline-offset-4 decoration-pink-400 font-extrabold">
+                    [{TREND_TYPE_INFO[weeklyTrendType]?.label ?? weeklyTrendType}]
+                  </span>{' '}
+                  타입 크리에이터
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-lg border border-amber-400/50 bg-amber-500/20 px-2.5 py-1 text-xs font-black text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.35)]">
+              <span>💰 방송 수익</span>
+              <span className="text-sm font-black text-amber-200">+35%</span>
+            </div>
+          </div>
+        ) : null}
         {slots.map((slot) => (
           <StreamCard
             key={slot.id}
@@ -879,6 +922,11 @@ function StreamCard({
                     className={`rounded-md border px-1.5 py-0.5 text-[9px] font-semibold ${TAG_STYLE[creator.tag.tone]}`}
                   >
                     {creator.tag.text}
+                  </span>
+                ) : null}
+                {creator?.isTrendMatching ? (
+                  <span className="rounded-md border border-amber-400/50 bg-gradient-to-r from-amber-500/20 to-pink-500/20 px-1.5 py-0.5 text-[9px] font-black text-amber-300 shadow-[0_0_8px_rgba(251,191,36,0.35)] animate-pulse">
+                    ✨ 대세 타입 +35%
                   </span>
                 ) : null}
               </div>
