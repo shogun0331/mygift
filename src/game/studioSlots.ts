@@ -3,6 +3,7 @@ export type StudioSlotStatus = 'empty' | 'locked' | 'assigned'
 export type StudioSlotAssignment = {
   creatorId: string
   creatorName: string
+  names?: Partial<Record<string, string>> | null
   grade: string
   statType?: string
   profileImageUrl?: string | null
@@ -23,6 +24,7 @@ export type StudioSlot = {
 export type StudioHandCard = {
   id: string
   name: string
+  names?: Partial<Record<string, string>> | null
   grade: string
   stamina: number
   staminaMax: number
@@ -122,6 +124,7 @@ export function assignCreatorToSlot(
       assignment: {
         creatorId: card.id,
         creatorName: card.name,
+        names: card.names,
         grade: card.grade,
         statType: card.statType,
         profileImageUrl: card.profileImageUrl || null,

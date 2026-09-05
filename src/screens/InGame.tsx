@@ -4442,6 +4442,7 @@ export function InGame({
           <SchedulePanel
             slots={studioSlots}
             handCards={handCards}
+            ownedCreators={ownedCreators}
             onSlotsChange={onStudioSlotsChange}
             pendingHandCreatorId={recruitFlyCard?.id ?? null}
             spotlightCreatorId={spotlightCreatorId}

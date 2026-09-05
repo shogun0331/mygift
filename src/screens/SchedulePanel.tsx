@@ -3,7 +3,9 @@ import { useTranslation, type Locale } from '../locales/i18n'
 import {
   normalizeCreatorStatType,
   type CreatorStatType,
+  type OwnedCreator,
 } from '../game/characters'
+import { characterDisplayName } from '../game/characterLocales'
 import {
   canBroadcastByStamina,
 } from '../game/condition'
@@ -110,6 +112,7 @@ function parseSlotDragPayload(raw: string) {
 interface SchedulePanelProps {
   slots: StudioSlot[]
   handCards: StudioHandCard[]
+  ownedCreators?: OwnedCreator[]
   onSlotsChange: (slots: StudioSlot[]) => void
   /** 영입 연출 중 — 해당 핸드 카드는 도착 전까지 숨김 */
   pendingHandCreatorId?: string | null
@@ -140,6 +143,7 @@ interface SchedulePanelProps {
 export function SchedulePanel({
   slots,
   handCards,
+  ownedCreators = [],
   onSlotsChange,
   pendingHandCreatorId = null,
   spotlightCreatorId = null,
@@ -657,38 +661,49 @@ export function SchedulePanel({
                               </div>
                             </>
                           ) : filled && slot.assignment ? (
-                            <>
-                              {!slot.assignment.profileImageUrl && (
-                                <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full border border-indigo-300/25 bg-indigo-500/10 text-[11px] font-bold text-indigo-50 sm:h-9 sm:w-9 sm:text-sm">
-                                  {slot.assignment.creatorName.slice(0, 1)}
-                                </div>
-                              )}
-                              <p className="w-full truncate text-center text-[10px] font-semibold text-slate-100 sm:text-[11px]">
-                                {slot.assignment.creatorName}
-                              </p>
-                              {typeStyle ? (
-                                <p
-                                  className={`mt-0.5 w-full truncate text-center text-[8px] font-bold tracking-wide sm:text-[9px] ${typeStyle.text}`}
-                                >
-                                  {t(typeStyle.labelKey)}
-                                </p>
-                              ) : null}
-                              {handForSlot ? (
-                                 <div className="mt-1 w-full px-0.5">
-                                   <HandStatRow
-                                     label="Stamina"
-                                     value={`${handForSlot.stamina}`}
-                                     percent={
-                                       (handForSlot.stamina /
-                                         Math.max(1, handForSlot.staminaMax)) *
-                                       100
-                                     }
-                                     blocked={!canBroadcastByStamina(handForSlot.stamina)}
-                                     size="md"
-                                   />
-                                 </div>
-                               ) : null}
-                            </>
+                            (() => {
+                              const creatorForSlot = ownedCreators.find((c) => c.id === slot.assignment!.creatorId)
+                              const slotCreatorName = creatorForSlot
+                                ? characterDisplayName(creatorForSlot, locale)
+                                : characterDisplayName(
+                                    { names: slot.assignment.names, name: slot.assignment.creatorName },
+                                    locale,
+                                  ) || slot.assignment.creatorName
+                              return (
+                                <>
+                                  {!slot.assignment.profileImageUrl && (
+                                    <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full border border-indigo-300/25 bg-indigo-500/10 text-[11px] font-bold text-indigo-50 sm:h-9 sm:w-9 sm:text-sm">
+                                      {slotCreatorName.slice(0, 1)}
+                                    </div>
+                                  )}
+                                  <p className="w-full truncate text-center text-[10px] font-semibold text-slate-100 sm:text-[11px]">
+                                    {slotCreatorName}
+                                  </p>
+                                  {typeStyle ? (
+                                    <p
+                                      className={`mt-0.5 w-full truncate text-center text-[8px] font-bold tracking-wide sm:text-[9px] ${typeStyle.text}`}
+                                    >
+                                      {t(typeStyle.labelKey)}
+                                    </p>
+                                  ) : null}
+                                  {handForSlot ? (
+                                    <div className="mt-1 w-full px-0.5">
+                                      <HandStatRow
+                                        label="Stamina"
+                                        value={`${handForSlot.stamina}`}
+                                        percent={
+                                          (handForSlot.stamina /
+                                            Math.max(1, handForSlot.staminaMax)) *
+                                          100
+                                        }
+                                        blocked={!canBroadcastByStamina(handForSlot.stamina)}
+                                        size="md"
+                                      />
+                                    </div>
+                                  ) : null}
+                                </>
+                              )
+                            })()
                           ) : (
                             <>
                               <div
@@ -793,6 +808,13 @@ export function SchedulePanel({
                 const isSpotlight = spotlightCreatorId === card.id
                 const blocked = !canBroadcastByStamina(card.stamina)
                 const typeStyle = typeStyleOf(card.statType)
+                const creatorForHand = ownedCreators.find((c) => c.id === card.id)
+                const handCardName = creatorForHand
+                  ? characterDisplayName(creatorForHand, locale)
+                  : characterDisplayName(
+                      { names: card.names, name: card.name },
+                      locale,
+                    ) || card.name
                 const staminaPct = Math.max(
                   0,
                   Math.min(100, (card.stamina / Math.max(1, card.staminaMax)) * 100),
@@ -866,7 +888,7 @@ export function SchedulePanel({
                       >
                         {!card.profileImageUrl && (
                           <div className="mb-auto flex h-8 w-8 items-center justify-center self-center rounded-full border border-indigo-300/25 bg-indigo-500/10 text-xs font-bold text-indigo-50">
-                            {card.name.slice(0, 1)}
+                            {handCardName.slice(0, 1)}
                           </div>
                         )}
                         {blocked ? (
@@ -874,6 +896,9 @@ export function SchedulePanel({
                             {t('dashboard.broadcastBlocked')}
                           </p>
                         ) : null}
+                        <p className="w-full truncate text-center text-[9px] font-semibold text-slate-100">
+                          {handCardName}
+                        </p>
                         <p
                           className={`truncate text-center text-[8px] font-bold tracking-wide ${typeStyle.text}`}
                         >

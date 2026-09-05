@@ -710,6 +710,7 @@ export function toStudioHandCard(creator: OwnedCreator) {
   return {
     id: creator.id,
     name: creator.name,
+    names: creator.names,
     grade: creator.grade,
     stamina: creator.stamina,
     staminaMax: creator.staminaMax,
