@@ -261,9 +261,9 @@ export function previewLiveConditionScore(
   return clampConditionScore(next)
 }
 
-/** 주간 방송 시 소모될 컨디션량 계산 */
+/** 주간 방송 시 소모될 컨디션량 계산 (기품 수치로 감소) */
 export function calcWeeklyBroadcastConditionCost(
-  creator: { stamina?: number; staminaMax?: number },
+  creator: { stamina?: number; staminaMax?: number; statElegance?: number },
   conditionMult = 1,
 ): number {
   const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
@@ -280,7 +280,11 @@ export function calcWeeklyBroadcastConditionCost(
     baseCondLoss += rollInt(CONDITION_SPIKE_DROP.min, CONDITION_SPIKE_DROP.max)
   }
 
-  return Math.max(1, Math.round(baseCondLoss * conditionMult))
+  // 기품(statElegance) 수치가 높을수록 컨디션 소모 감쇄 (기품 100당 50% 소모 감쇄, 최대 60% 감쇄)
+  const elegance = Math.max(0, Math.min(150, Number(creator.statElegance) || 0))
+  const eleganceMult = Math.max(0.4, 1 - elegance * 0.005)
+
+  return Math.max(1, Math.round(baseCondLoss * conditionMult * eleganceMult))
 }
 
 export function isCreatorBroadcastBlockedLive(
@@ -422,6 +426,9 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
         if (Math.random() < spikeChance) {
           baseCondLoss += rollInt(CONDITION_SPIKE_DROP.min, CONDITION_SPIKE_DROP.max)
         }
+        const elegance = Math.max(0, Math.min(150, Number((creator as any).statElegance) || 0))
+        const eleganceMult = Math.max(0.4, 1 - elegance * 0.005)
+        baseCondLoss = Math.round(baseCondLoss * eleganceMult)
       }
 
       const rawCond = -baseCondLoss
