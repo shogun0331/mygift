@@ -3725,7 +3725,7 @@ export function InGame({
           .sort((a, b) => a.atMs - b.atMs),
       )
 
-      // 2. 실시간 라이브 틱 후원 스폰 (주간 고정 계산 완화 -> 실시간 후원 팡팡)
+      // 2. 실시간 라이브 틱 후원 스폰 (버퍼 딜레이 없이 즉시 방출로 멈춤 현상 완벽 방지)
       const realtimeDonations: DayEvent[] = []
       const assigned = assignedCreatorsFrom(ownedCreatorsRef.current)
       for (const creator of assigned) {
@@ -3733,8 +3733,8 @@ export function InGame({
         const condMult = conditionRevenueMultOf(creator)
         if (condMult <= 0) continue
 
-        // 실시간 틱(매 120ms) 스폰 확률 (약 3.5% * 컨디션배율)
-        if (Math.random() < 0.035 * condMult) {
+        // 실시간 틱(매 120ms) 스폰 확률 (약 5.5% * 컨디션배율)
+        if (Math.random() < 0.055 * condMult) {
           const displayName = characterDisplayName(creator, locale)
           const statBonus = statRevenueBonusOf(creator)
           const vBonus = viewerBonusOf(leagueRef.current.viewers)
@@ -3764,7 +3764,14 @@ export function InGame({
         }
       }
 
-      ingestLiveFeedEvents([...due, ...realtimeDonations], plan, false)
+      if (realtimeDonations.length > 0) {
+        creditLiveDonations(realtimeDonations)
+        pushLiveFeed(realtimeDonations)
+      }
+
+      if (due.length > 0) {
+        ingestLiveFeedEvents(due, plan, false)
+      }
       runDueInspections(elapsed)
     }, 120)
     return () => window.clearInterval(id)
