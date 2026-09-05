@@ -2218,10 +2218,11 @@ export function InGame({
     }
   }
 
-  /** 스탭 후보 거절 — 후보 정리 후 2~4턴 뒤 등장 */
+  /** 스탭 후보 거절 — 후보 정리 후 다음 턴에 바로 등장 */
   function handleStaffScoutPass() {
     setScoutedStaffCandidate(null)
-    staffScoutCooldownRef.current = rollInt(2, 4)
+    setStaffScoutAvailable(false)
+    staffScoutCooldownRef.current = 1
     scheduleAutoSave()
   }
 
