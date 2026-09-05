@@ -92,6 +92,7 @@ import {
   calcWeeklyBroadcastStaminaCost,
   calcWeeklyBroadcastConditionCost,
   canBroadcastByStamina,
+  conditionRevenueMultOf,
   isCreatorBroadcastBlockedLive,
   CONDITION_SCORE_RANGE,
   previewLiveConditionScore,
@@ -102,6 +103,9 @@ import {
   rollInt,
   rollRandomWeeklyTrendType,
   getCreatorPrimaryStatType,
+  gradeRevenueMult,
+  statRevenueBonusOf,
+  viewerBonusOf,
   WEEKLY_TREND_REVENUE_MULT,
   type CreatorStatType,
 } from '../game/stats'
@@ -112,7 +116,7 @@ import {
   type DayEvent,
   type StudioDayPlan,
 } from '../game/economy'
-import { formatMoney } from '../game/money'
+import { formatMoney, roundMoney } from '../game/money'
 import { rollNegotiatedSalary } from '../game/salary'
 import {
   applyPromotionExamResult,
@@ -3692,7 +3696,7 @@ export function InGame({
     return () => window.clearInterval(id)
   }, [broadcastPhase, liveClockPaused])
 
-  // 주 진행: 이벤트 공개
+  // 주 진행: 실시간 후원 스폰 및 피드 이벤트 동적 공개
   useEffect(() => {
     if (broadcastPhase !== 'live') return
     if (liveClockPaused) return
@@ -3702,17 +3706,59 @@ export function InGame({
       if (!plan || startedAt == null) return
       const elapsed = performance.now() - startedAt
       trackBroadcastBlocks(elapsed)
+
+      // 1. 예정된 기본 피드/이벤트
       const due = takeRevealableEvents(
         plan.plans
           .flatMap((p) => p.events)
           .filter((event) => event.atMs <= elapsed)
           .sort((a, b) => a.atMs - b.atMs),
       )
-      ingestLiveFeedEvents(due, plan, false)
+
+      // 2. 실시간 라이브 틱 후원 스폰 (주간 고정 계산 완화 -> 실시간 후원 팡팡)
+      const realtimeDonations: DayEvent[] = []
+      const assigned = assignedCreatorsFrom(ownedCreatorsRef.current)
+      for (const creator of assigned) {
+        if (isCreatorDonationBlocked(creator.id, elapsed)) continue
+        const condMult = conditionRevenueMultOf(creator)
+        if (condMult <= 0) continue
+
+        // 실시간 틱(매 120ms) 스폰 확률 (약 3.5% * 컨디션배율)
+        if (Math.random() < 0.035 * condMult) {
+          const displayName = characterDisplayName(creator, locale)
+          const statBonus = statRevenueBonusOf(creator)
+          const vBonus = viewerBonusOf(leagueRef.current.viewers)
+          const gradeMult = gradeRevenueMult(creator.grade)
+          const slotId = findSlotIdForCreator(studioSlotsRef.current, creator.id)
+          const production = slotId
+            ? staffBonusOf(managerStateRef.current, slotId, 'production')
+            : { mul: 1 }
+          const isTrendMatching = getCreatorPrimaryStatType(creator) === weeklyTrendTypeRef.current
+          const trendMult = isTrendMatching ? WEEKLY_TREND_REVENUE_MULT : 1.0
+
+          const baseAmount = rollInt(150, 750) * statBonus * vBonus * gradeMult * production.mul * trendMult
+          const amount = roundMoney(Math.max(50, baseAmount))
+
+          realtimeDonations.push({
+            id: `rt-don-${creator.id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            creatorId: creator.id,
+            creatorName: displayName,
+            type: 'donation',
+            amount,
+            text: t('feed.donation')
+              .replace('{amount}', formatMoney(amount))
+              .replace('{name}', displayName),
+            tone: amount >= 1_000 ? 'bg-amber-400' : 'bg-pink-400',
+            atMs: elapsed,
+          })
+        }
+      }
+
+      ingestLiveFeedEvents([...due, ...realtimeDonations], plan, false)
       runDueInspections(elapsed)
-    }, 50)
+    }, 120)
     return () => window.clearInterval(id)
-  }, [broadcastPhase, liveClockPaused])
+  }, [broadcastPhase, liveClockPaused, locale, t])
 
   // 주 틱: 결산 → 월 내 주차 진행 → 턴 종료 시 다음 달 (진상 QTE·VN 중 일시정지)
   useEffect(() => {
