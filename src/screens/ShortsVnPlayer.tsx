@@ -163,6 +163,14 @@ export function ShortsVnPlayer({
       aria-modal="true"
       aria-label={title || t('shortsVn.playerTitle')}
     >
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute top-5 right-5 z-[210] flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-black/80 px-4 py-2 text-xs font-bold text-amber-200 shadow-lg backdrop-blur transition hover:border-amber-400 hover:bg-amber-500/20 active:scale-95"
+      >
+        <span>SKIP ⏩</span>
+      </button>
+
       {frame}
     </div>,
     document.body,

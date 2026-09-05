@@ -1,5 +1,6 @@
 import type { Grade } from '../game/characters'
 import { formatMoney } from '../game/money'
+import { NumericInput, type QuickPreset } from '../components/NumericInput'
 import {
   DEFAULT_SLOT_UNLOCK_MIN_GRADES,
   DEFAULT_SLOT_UNLOCK_PRICES,
@@ -22,6 +23,8 @@ type StationGradeEditorPanelProps = {
   onConfigChange: (config: StationGradeConfig) => void
   onSaveManual?: () => void
   onReloadFromFile?: () => void | Promise<void>
+  currentViewers?: number
+  onCurrentViewersChange?: (nextViewers: number) => void
 }
 
 const fieldClassName =
@@ -62,6 +65,8 @@ export function StationGradeEditorPanel({
   onConfigChange,
   onSaveManual,
   onReloadFromFile,
+  currentViewers,
+  onCurrentViewersChange,
 }: StationGradeEditorPanelProps) {
   function setTierField(
     tier: StationTierId,
@@ -143,6 +148,35 @@ export function StationGradeEditorPanel({
         </div>
       </div>
 
+      {/* 현재 시청자 수 조절 (방송국 등급 최상단) */}
+      <section className="mt-5 rounded-xl border border-indigo-500/40 bg-gradient-to-r from-indigo-950/40 via-purple-950/25 to-slate-900/60 p-4 shadow-[0_0_16px_rgba(99,102,241,0.15)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-base">📺</span>
+              <h3 className="text-sm font-bold text-indigo-200">현재 시청자 수 조절 (실시간 반영)</h3>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-400">
+              현재 인게임 플레이어의 시청자 수입니다. 조절 시 승급 심사 조건 판단 및 게임 데이터에 즉시 반영됩니다.
+            </p>
+          </div>
+        </div>
+        <div className="mt-3">
+          <NumericInput
+            value={currentViewers ?? 1500}
+            min={0}
+            quickPresets={[
+              { label: '+$1천', amount: 1000 },
+              { label: '+$1만', amount: 10000 },
+              { label: '+$10만', amount: 100000 },
+              { label: '+$100만', amount: 1000000 },
+              { label: '초기화', amount: 'reset' },
+            ]}
+            onChange={(val) => onCurrentViewersChange?.(val)}
+          />
+        </div>
+      </section>
+
       <section className="mt-6 rounded-xl border border-white/10 bg-black/20 p-4">
         <h3 className="text-sm font-bold text-cyan-200">슬롯 해금 조건 (공통)</h3>
         <p className="mt-1 text-[11px] text-slate-500">
@@ -164,15 +198,18 @@ export function StationGradeEditorPanel({
                 <p className="text-xs font-bold text-slate-200">{slotNumber}칸 해금</p>
                 <label className="mt-2 block text-[10px] font-semibold text-slate-500">
                   가격 ($)
-                  <input
-                    type="number"
-                    min={0}
-                    className={fieldClassName}
-                    value={price}
-                    onChange={(event) =>
-                      setSlotUnlockPrice(index, Number(event.target.value) || 0)
-                    }
-                  />
+                  <div className="mt-1">
+                    <NumericInput
+                      value={price}
+                      min={0}
+                      quickPresets={[
+                        { label: '+$1천', amount: 1000 },
+                        { label: '+$1만', amount: 10000 },
+                        { label: '초기화', amount: 'reset' },
+                      ]}
+                      onChange={(val) => setSlotUnlockPrice(index, val)}
+                    />
+                  </div>
                   <span className="mt-1 block text-[10px] font-normal text-slate-500">
                     {formatMoney(price)}
                   </span>
@@ -215,21 +252,24 @@ export function StationGradeEditorPanel({
               <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="block text-xs font-semibold text-slate-400">
                   스카우트 인원 상한
-                  <input
-                    type="number"
-                    min={1}
-                    max={12}
-                    className={fieldClassName}
-                    value={config.tiers[tier].maxScoutCreators}
-                    onChange={(event) =>
-                      setTierField(tier, {
-                        maxScoutCreators: Math.max(
-                          1,
-                          Math.min(12, Math.round(Number(event.target.value) || 1)),
-                        ),
-                      })
-                    }
-                  />
+                  <div className="mt-1.5">
+                    <NumericInput
+                      value={config.tiers[tier].maxScoutCreators}
+                      min={1}
+                      max={12}
+                      unitLabel="명"
+                      quickPresets={[
+                        { label: '+1명', amount: 1 },
+                        { label: '+3명', amount: 3 },
+                        { label: '최대(12)', amount: 12 },
+                      ]}
+                      onChange={(nextVal) =>
+                        setTierField(tier, {
+                          maxScoutCreators: nextVal,
+                        })
+                      }
+                    />
+                  </div>
                 </label>
                 <div className="block text-xs font-semibold text-slate-500">
                   시청자 상한 (자동)
@@ -266,17 +306,25 @@ export function StationGradeEditorPanel({
                   <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
                     <label className="block text-xs font-semibold text-slate-400">
                       필수 시청자 수
-                      <input
-                        type="number"
-                        min={0}
-                        className={fieldClassName}
-                        value={promotion.requiredViewers}
-                        onChange={(event) =>
-                          setPromotion(promotion.to, {
-                            requiredViewers: Math.max(0, Math.round(Number(event.target.value) || 0)),
-                          })
-                        }
-                      />
+                      <div className="mt-1.5">
+                        <NumericInput
+                          value={promotion.requiredViewers}
+                          min={0}
+                          unitLabel="명"
+                          quickPresets={[
+                            { label: '+1천', amount: 1000 },
+                            { label: '+5천', amount: 5000 },
+                            { label: '+1만', amount: 10000 },
+                            { label: '+5만', amount: 50000 },
+                            { label: '초기화', amount: 'reset' },
+                          ]}
+                          onChange={(nextVal) =>
+                            setPromotion(promotion.to, {
+                              requiredViewers: nextVal,
+                            })
+                          }
+                        />
+                      </div>
                       <span className="mt-1 block text-[10px] font-normal text-slate-500">
                         이 값이 {STATION_TIER_LABEL[tier]} 등급의 시청자 상한이 됩니다
                       </span>
@@ -404,21 +452,25 @@ export function StationGradeEditorPanel({
                   <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
                     <label className="block text-xs font-semibold text-slate-400">
                       1위 달성 필수 시청자 수
-                      <input
-                        type="number"
-                        min={0}
-                        className={fieldClassName}
-                        value={config.topClearViewers ?? 750_000}
-                        onChange={(event) =>
-                          onConfigChange({
-                            ...config,
-                            topClearViewers: Math.max(
-                              0,
-                              Math.round(Number(event.target.value) || 0),
-                            ),
-                          })
-                        }
-                      />
+                      <div className="mt-1.5">
+                        <NumericInput
+                          value={config.topClearViewers ?? 750_000}
+                          min={0}
+                          unitLabel="명"
+                          quickPresets={[
+                            { label: '+1만', amount: 10000 },
+                            { label: '+10만', amount: 100000 },
+                            { label: '+50만', amount: 500000 },
+                            { label: '초기화', amount: 'reset' },
+                          ]}
+                          onChange={(nextVal) =>
+                            onConfigChange({
+                              ...config,
+                              topClearViewers: nextVal,
+                            })
+                          }
+                        />
+                      </div>
                       <span className="mt-1 block text-[10px] font-normal text-slate-500">
                         일등기업 등급에서 랭킹 1위(1등)를 달성하고 엔딩 클리어가 되는 시청자 목표치입니다
                       </span>
@@ -746,6 +798,20 @@ type OptionalNumberFieldProps = {
 }
 
 function OptionalNumberField({ label, value, onChange }: OptionalNumberFieldProps) {
+  const isAsset = label.includes('자산')
+  const presets: QuickPreset[] = isAsset
+    ? [
+        { label: '+$1만', amount: 10000 },
+        { label: '+$10만', amount: 100000 },
+        { label: '+$100만', amount: 1000000 },
+        { label: '초기화', amount: 'reset' },
+      ]
+    : [
+        { label: '+1개', amount: 1 },
+        { label: '+5개', amount: 5 },
+        { label: '초기화', amount: 'reset' },
+      ]
+
   return (
     <div className="rounded-lg border border-white/10 bg-black/25 p-3">
       <label className="flex items-center gap-2 text-xs font-semibold text-slate-300">
@@ -757,15 +823,14 @@ function OptionalNumberField({ label, value, onChange }: OptionalNumberFieldProp
         {label} 조건 사용
       </label>
       {value.enabled ? (
-        <input
-          type="number"
-          min={0}
-          className={fieldClassName}
-          value={value.value}
-          onChange={(event) =>
-            onChange({ ...value, value: Math.max(0, Math.round(Number(event.target.value) || 0)) })
-          }
-        />
+        <div className="mt-2">
+          <NumericInput
+            value={value.value}
+            min={0}
+            quickPresets={presets}
+            onChange={(next) => onChange({ ...value, value: next })}
+          />
+        </div>
       ) : null}
     </div>
   )

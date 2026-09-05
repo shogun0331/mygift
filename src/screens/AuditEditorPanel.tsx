@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { NumericInput } from '../components/NumericInput'
 import type { Grade } from '../game/characters'
 import {
   CHARACTER_LOCALE_LABELS,
@@ -227,18 +228,25 @@ export function AuditEditorPanel({
         <div className="mt-3 rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4">
           <label className="block text-xs font-semibold text-slate-300">
             1위 달성 필수 시청자 수
-            <input
-              type="number"
-              min={0}
-              className={fieldClassName}
-              value={config.topClearViewers ?? 750_000}
-              onChange={(e) =>
-                onConfigChange({
-                  ...config,
-                  topClearViewers: Math.max(0, Math.round(Number(e.target.value) || 0)),
-                })
-              }
-            />
+            <div className="mt-1.5">
+              <NumericInput
+                value={config.topClearViewers ?? 750_000}
+                min={0}
+                unitLabel="명"
+                quickPresets={[
+                  { label: '+1만', amount: 10000 },
+                  { label: '+10만', amount: 100000 },
+                  { label: '+50만', amount: 500000 },
+                  { label: '초기화', amount: 'reset' },
+                ]}
+                onChange={(nextVal) =>
+                  onConfigChange({
+                    ...config,
+                    topClearViewers: nextVal,
+                  })
+                }
+              />
+            </div>
             <span className="mt-1 block text-[11px] font-normal text-slate-400">
               일등기업 등급에서 랭킹 1위(1등)를 달성하고 엔딩 클리어가 되는 시청자 목표치입니다. (기본값: 750,000)
             </span>

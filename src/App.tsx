@@ -63,6 +63,7 @@ import { hydrateOwnedCreator, type GameSave } from './game/save'
 import {
   captureCurrentSave,
   flushAutoSave,
+  listSaves,
   loadGame,
   saveGame,
 } from './game/saveService'
@@ -1418,6 +1419,28 @@ export default function App() {
     setBgmConfig(next)
   }
 
+  function handleCurrentViewersChange(nextViewers: number) {
+    const val = Math.max(0, Math.round(nextViewers))
+    if (initialSave) {
+      const updated: GameSave = {
+        ...initialSave,
+        league: { ...initialSave.league, viewers: val },
+      }
+      setInitialSave(updated)
+      saveGame(updated)
+    } else {
+      const saves = listSaves()
+      if (saves.length > 0) {
+        const latest: GameSave = {
+          ...saves[0],
+          league: { ...saves[0].league, viewers: val },
+        }
+        setInitialSave(latest)
+        saveGame(latest)
+      }
+    }
+  }
+
   if (screen === 'editor') {
     return (
       <EditorScreen
@@ -1435,6 +1458,10 @@ export default function App() {
         onStationGradeConfigChange={setStationGradeConfigState}
         onSaveStationGradeManual={handleSaveStationGradeManual}
         onReloadStationGradeFromFile={handleReloadStationGradeFromFile}
+        currentViewers={
+          initialSave?.league?.viewers ?? listSaves()[0]?.league?.viewers ?? 1500
+        }
+        onCurrentViewersChange={handleCurrentViewersChange}
         registeredStaff={registeredStaff}
         onRegisterStaff={handleRegisterStaff}
         onUpdateStaff={handleUpdateStaff}

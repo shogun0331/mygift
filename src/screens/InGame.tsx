@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
 import { getBgmVolumePercent, setBgmVolumePercent, useGameBgm } from '../game/bgm'
+import { tierViewerCap, type StationTierId } from '../game/stationGradeConfig'
 import { getSeVolumePercent, playSfx, setSeVolumePercent } from '../game/uiSfx'
 import {
   deserializeWeekAccum,
@@ -720,11 +721,15 @@ export function InGame({
     initialSave?.slotGearById ?? createSlotGearMapFromSlots(studioSlots),
   )
   const [weeklyStatement, setWeeklyStatement] = useState<WeeklyStatement | null>(null)
-  const [casinoTurnCount, setCasinoTurnCount] = useState(3) // 0..3 (3턴에 1번 활성화)
-  const [showCasinoModal, setShowCasinoModal] = useState(false)
+  const [casinoTurnCount, setCasinoTurnCount] = useState(initialSave?.casinoTurnCount ?? 0) // 0..3 (3턴에 1번 활성화)
+  const [showCasinoModal, setShowCasinoModal] = useState(initialSave?.showCasinoModal ?? false)
   const [activeCasinoRoomId, setActiveCasinoRoomId] = useState<HighLowRoomId | null>(null)
 
-  const isCasinoAvailable = casinoTurnCount >= 3
+  const [stationGrade, setStationGrade] = useState<StationGrade>(
+    initialSave?.stationGrade ?? 'black',
+  )
+  const isCasinoGradeUnlocked = ['sme', 'mid', 'large', 'top'].includes(stationGrade)
+  const isCasinoAvailable = isCasinoGradeUnlocked && casinoTurnCount >= 3
 
   const highLowConfigs = useMemo(() => loadHighLowConfig(), [])
   const [settlementAssetsAfter, setSettlementAssetsAfter] = useState(0)
@@ -754,9 +759,6 @@ export function InGame({
     fromRank: number
     toRank: number
   } | null>(null)
-  const [stationGrade, setStationGrade] = useState<StationGrade>(
-    initialSave?.stationGrade ?? 'black',
-  )
   const [stationAuditTarget, setStationAuditTarget] = useState<{
     currentTier: StationGrade
     nextTier: Exclude<StationGrade, 'black' | 'tiny'>
@@ -765,9 +767,9 @@ export function InGame({
   const [auditDeckSelecting, setAuditDeckSelecting] = useState<boolean>(false)
   const [selectedAuditCreators, setSelectedAuditCreators] = useState<any[] | null>(null)
 
-  const staffScoutCooldownRef = useRef(initialSave?.scout?.staffScoutCooldown ?? rollInt(3, 5))
+  const staffScoutCooldownRef = useRef(initialSave?.scout?.staffScoutCooldown ?? 1)
   const [staffScoutAvailable, setStaffScoutAvailable] = useState(
-    initialSave?.scout?.staffScoutAvailable ?? false,
+    initialSave?.scout?.staffScoutAvailable ?? true,
   )
   const staffScoutAvailableRef = useRef(staffScoutAvailable)
   staffScoutAvailableRef.current = staffScoutAvailable
@@ -815,6 +817,11 @@ export function InGame({
   )
   const hiredStaffStartMonthsRef = useRef(hiredStaffStartMonths)
   hiredStaffStartMonthsRef.current = hiredStaffStartMonths
+  const [hiredStaffLastRaiseMonths, setHiredStaffLastRaiseMonths] = useState<Record<string, number>>(
+    initialSave?.hiredStaffLastRaiseMonths ?? {},
+  )
+  const hiredStaffLastRaiseMonthsRef = useRef(hiredStaffLastRaiseMonths)
+  hiredStaffLastRaiseMonthsRef.current = hiredStaffLastRaiseMonths
   const [staffSalaryRaiseRequest, setStaffSalaryRaiseRequest] = useState<{
     staffId: string
     staffName: string
@@ -1192,6 +1199,7 @@ export function InGame({
   const donationBatchRef = useRef(new Map<string, DonationBatch>())
   const feedExtraQueueRef = useRef<DayEvent[]>([])
   const lastFeedEmitAtRef = useRef(0)
+  const lastFeedTypeRef = useRef<'donation' | 'extra'>('extra')
   const settledDayKeyRef = useRef<string | null>(null)
   const weekAccumRef = useRef<WeekAccumulator>(
     initialSave ? deserializeWeekAccum(initialSave.weekAccum) : createWeekAccumulator(1),
@@ -1258,6 +1266,10 @@ export function InGame({
   broadcastMonthNumberRef.current = broadcastMonthNumber
   leagueRef.current = league
   stationGradeRef.current = stationGrade
+  const casinoTurnCountRef = useRef(casinoTurnCount)
+  casinoTurnCountRef.current = casinoTurnCount
+  const showCasinoModalRef = useRef(showCasinoModal)
+  showCasinoModalRef.current = showCasinoModal
 
   function spendAssets(amount: number): boolean {
     const cost = Math.max(0, Math.round(amount))
@@ -1303,6 +1315,7 @@ export function InGame({
       slotGearById: slotGearByIdRef.current,
       hiredStaffSalaries: hiredStaffSalariesRef.current,
       hiredStaffStartMonths: hiredStaffStartMonthsRef.current,
+      hiredStaffLastRaiseMonths: hiredStaffLastRaiseMonthsRef.current,
       weekAccum: serializeWeekAccum(weekAccumRef.current),
       prevWeekRevenue: prevWeekRevenueRef.current,
       socialSpawn: socialSpawnRef.current,
@@ -1324,6 +1337,8 @@ export function InGame({
       scoutSystem: serializeScoutSystem(scoutSystemRef.current),
       pendingStationReview: pendingStationReviewRef.current,
       liveRevenueByCreator: liveRevenueByCreatorRef.current,
+      casinoTurnCount: casinoTurnCountRef.current,
+      showCasinoModal: showCasinoModalRef.current,
     }
   }
 
@@ -1619,8 +1634,29 @@ export function InGame({
     ingestLiveFeedEvents(pending, plan, true)
   }
 
+  function convertViewerEventToDonation(event: DayEvent): DayEvent {
+    const donationAmount = rollInt(1500, 4500)
+    const text = t('feed.donationReceived')
+      .replace('{amount}', formatMoney(donationAmount))
+      .replace('{name}', event.creatorName)
+    return {
+      ...event,
+      type: 'donation',
+      amount: donationAmount,
+      text,
+      tone: 'bg-amber-400',
+    }
+  }
+
   function pushLiveFeed(events: DayEvent[]) {
-    const visible = events.filter(
+    const cap = tierViewerCap(stationGradeConfig, stationGrade)
+    const isViewerCapped = cap != null && leagueRef.current.viewers >= cap
+
+    const converted = isViewerCapped
+      ? events.map((ev) => (ev.type === 'viewers' ? convertViewerEventToDonation(ev) : ev))
+      : events
+
+    const visible = converted.filter(
       (event) =>
         event.type !== 'donation' ||
         !isCreatorDonationBlocked(event.creatorId, event.atMs),
@@ -1641,33 +1677,56 @@ export function InGame({
       donationBatchRef.current.size > 0 || feedExtraQueueRef.current.length > 0
     if (due.length === 0 && !hasBuffered) return
 
+    const cap = tierViewerCap(stationGradeConfig, stationGrade)
+    const isViewerCapped = cap != null && leagueRef.current.viewers >= cap
+
     if (plan.plans.length < FEED_BATCH_MIN_CREATORS) {
       if (due.length > 0) pushLiveFeed(due)
       return
     }
 
     for (const event of due) {
-      if (event.type === 'donation' && event.amount > 0) {
-        if (isCreatorDonationBlocked(event.creatorId, event.atMs)) continue
-        addDonationToBatch(donationBatchRef.current, event)
+      const targetEvent =
+        isViewerCapped && event.type === 'viewers'
+          ? convertViewerEventToDonation(event)
+          : event
+
+      if (targetEvent.type === 'donation' && targetEvent.amount > 0) {
+        if (isCreatorDonationBlocked(targetEvent.creatorId, targetEvent.atMs)) continue
+        addDonationToBatch(donationBatchRef.current, targetEvent)
       } else {
-        feedExtraQueueRef.current.push(event)
+        feedExtraQueueRef.current.push(targetEvent)
       }
     }
 
     const now = performance.now()
     const emit: DayEvent[] = []
     if (force) {
+      const remainingDonations: DayEvent[] = []
       let stamp = 0
       while (donationBatchRef.current.size > 0) {
         const batch = takeLargestDonationBatch(donationBatchRef.current)
         if (!batch) break
         if (isCreatorDonationBlocked(batch.creatorId)) continue
-        emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${stamp}`, t))
+        remainingDonations.push(donationEventFromBatch(batch, `${plan.dayKey}-${stamp}`, t))
         stamp += 1
       }
-      emit.push(...feedExtraQueueRef.current)
+      const extras = [...feedExtraQueueRef.current]
       feedExtraQueueRef.current = []
+
+      // 남은 후원과 시청자 수 증가 이벤트를 1:1로 교차 병합하여 방출
+      let dIdx = 0
+      let eIdx = 0
+      while (dIdx < remainingDonations.length || eIdx < extras.length) {
+        if (dIdx < remainingDonations.length) {
+          emit.push(remainingDonations[dIdx]!)
+          dIdx += 1
+        }
+        if (eIdx < extras.length) {
+          emit.push(extras[eIdx]!)
+          eIdx += 1
+        }
+      }
       lastFeedEmitAtRef.current = now
       pushLiveFeed(emit)
       return
@@ -1676,16 +1735,34 @@ export function InGame({
     const gapMs = Math.max(280, weekDurationMs() / SOLO_FEED_EVENTS_PER_WEEK)
     if (lastFeedEmitAtRef.current > 0 && now - lastFeedEmitAtRef.current < gapMs) return
 
-    const batch = takeLargestDonationBatch(donationBatchRef.current)
-    if (batch && !isCreatorDonationBlocked(batch.creatorId)) {
-      emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${Math.round(now)}`, t))
-    } else if (batch) {
-      // blocked creator batch — drop and retry next tick
-      return
-    } else {
-      const extra = feedExtraQueueRef.current.shift()
-      if (extra) emit.push(extra)
+    const hasDonation = donationBatchRef.current.size > 0
+    const hasExtra = feedExtraQueueRef.current.length > 0
+
+    let shouldEmitExtra = false
+    if (hasDonation && hasExtra) {
+      // 후원과 시청자 수 증가 이벤트가 모두 있을 때 1:1로 번갈아가며 방출
+      shouldEmitExtra = lastFeedTypeRef.current === 'donation'
+    } else if (hasExtra) {
+      shouldEmitExtra = true
     }
+
+    if (shouldEmitExtra && hasExtra) {
+      const extra = feedExtraQueueRef.current.shift()
+      if (extra) {
+        emit.push(extra)
+        lastFeedTypeRef.current = 'extra'
+      }
+    } else if (hasDonation) {
+      const batch = takeLargestDonationBatch(donationBatchRef.current)
+      if (batch && !isCreatorDonationBlocked(batch.creatorId)) {
+        emit.push(donationEventFromBatch(batch, `${plan.dayKey}-${Math.round(now)}`, t))
+        lastFeedTypeRef.current = 'donation'
+      } else if (batch) {
+        // blocked creator batch — drop and retry next tick
+        return
+      }
+    }
+
     if (emit.length === 0) return
     lastFeedEmitAtRef.current = now
     pushLiveFeed(emit)
@@ -2070,9 +2147,35 @@ export function InGame({
     const pool = registeredStaff.filter((s) => !hiredIds.includes(s.id))
     if (pool.length > 0) {
       const picked = pool[Math.floor(Math.random() * pool.length)]
-      const hiredCount = hiredIds.length
-      const proposedHireCost = Math.round(5000 * Math.pow(1.25, hiredCount))
-      const proposedSalary = Math.round(3600 * Math.pow(1.1, hiredCount))
+
+      const baseCostTable: Record<StationTierId, number> = {
+        black: 10_000,     // 일반사업자: $10,000 (1만)
+        tiny: 100_000,    // 영세기업: $100,000 (10만)
+        sme: 500_000,     // 중소기업: $500,000 (50만)
+        mid: 750_000,     // 중견기업: $750,000 (75만)
+        large: 1_000_000, // 대기업: $1,000,000 (100만)
+        top: 5_000_000,   // 일등기업: $5,000,000 (500만)
+      }
+
+      const baseSalaryTable: Record<StationTierId, number> = {
+        black: 24_000,
+        tiny: 40_000,
+        sme: 120_000,
+        mid: 180_000,
+        large: 240_000,
+        top: 600_000,
+      }
+
+      const currentTier = stationGradeRef.current ?? 'black'
+      const baseCost = baseCostTable[currentTier] ?? 10_000
+      const baseSalary = baseSalaryTable[currentTier] ?? 24_000
+
+      const costVariation = Math.random() * 0.1 - 0.05 // -5% ~ +5% 미세 랜덤 변동
+      const salaryVariation = Math.random() * 0.1 - 0.05
+
+      const proposedHireCost = Math.max(1000, Math.round((baseCost * (1 + costVariation)) / 100) * 100)
+      const proposedSalary = Math.max(1000, Math.round((baseSalary * (1 + salaryVariation)) / 100) * 100)
+
       setScoutedStaffCandidate({
         ...picked,
         proposedHireCost,
@@ -2080,17 +2183,17 @@ export function InGame({
       })
 
       setStaffScoutAvailable(false)
-      staffScoutCooldownRef.current = rollInt(3, 5)
+      staffScoutCooldownRef.current = rollInt(2, 4)
     } else {
       setScoutedStaffCandidate(null)
       alert(t('alert.noStaffToRecruit'))
     }
   }
 
-  /** 스탭 후보 거절 — 후보 정리 후 3~5턴 뒤 확정 등장 */
+  /** 스탭 후보 거절 — 후보 정리 후 2~4턴 뒤 등장 */
   function handleStaffScoutPass() {
     setScoutedStaffCandidate(null)
-    staffScoutCooldownRef.current = rollInt(3, 5)
+    staffScoutCooldownRef.current = rollInt(2, 4)
     scheduleAutoSave()
   }
 
@@ -2109,7 +2212,7 @@ export function InGame({
     managerStateRef.current = next
     onManagerStateChangeRef.current(next)
     setScoutedStaffCandidate(null)
-    staffScoutCooldownRef.current = rollInt(3, 5)
+    staffScoutCooldownRef.current = rollInt(2, 4)
 
     const staff = registeredStaff.find((s) => s.id === staffId)
     if (staff) {
@@ -2384,9 +2487,9 @@ export function InGame({
       .map((id) => {
         const staff = registeredStaff.find((s) => s.id === id)
         if (!staff) return null
-        const rawAnnual = hiredStaffSalariesRef.current[id] ?? 3600
-        // 스태프 연봉 부담 완화: 최대 연 $6,000 (월 $500) 상한 적용
-        const annual = Math.min(rawAnnual, 6000)
+        const rawAnnual = hiredStaffSalariesRef.current[id] ?? 24000
+        // 스태프 연봉: 최대 연 $1,000,000 (월 $83,333) 상한 적용
+        const annual = Math.min(rawAnnual, 1000000)
         const salaryWon = Math.max(0, Math.round(Number(annual) / 12) || 0)
         if (salaryWon <= 0) return null
 
@@ -2432,7 +2535,7 @@ export function InGame({
       })
       .filter((row): row is NonNullable<typeof row> => row != null)
 
-    // 스탭 스카우트 — 3~5턴 주기 100% 확정 등장 (피로도 방지 및 3~5턴 확정 수급)
+    // 스탭 스카우트 — 2~4턴 주기 확정 등장
     if (!staffScoutAvailableRef.current && !scoutedStaffCandidate) {
       const nextStaffCooldown = Math.max(0, staffScoutCooldownRef.current - 1)
       if (nextStaffCooldown === 0) {
@@ -2441,9 +2544,9 @@ export function InGame({
         )
         if (pool.length > 0) {
           setStaffScoutAvailable(true)
-          staffScoutCooldownRef.current = rollInt(3, 5)
+          staffScoutCooldownRef.current = rollInt(2, 4)
         } else {
-          staffScoutCooldownRef.current = rollInt(3, 5)
+          staffScoutCooldownRef.current = rollInt(2, 4)
         }
       } else {
         staffScoutCooldownRef.current = nextStaffCooldown
@@ -2728,38 +2831,52 @@ export function InGame({
 
   function checkStaffSalaryRaise() {
     const hiredStaffIds = managerStateRef.current.hiredStaffIds
-    if (hiredStaffIds.length >= 2) {
-      const salaries = hiredStaffIds.map((id) => hiredStaffSalariesRef.current[id] ?? 0)
-      const maxSalary = Math.max(...salaries)
-      const minSalary = Math.min(...salaries)
-      if (maxSalary - minSalary >= 15000) {
-        const underpaidStaffIds = hiredStaffIds.filter((id) => {
-          const salary = hiredStaffSalariesRef.current[id] ?? 0
-          if (salary !== minSalary) return false
+    if (hiredStaffIds.length === 0) return false
 
-          const startMonth = hiredStaffStartMonthsRef.current[id] ?? 0
-          const elapsed = gameMonth - startMonth
-          return elapsed > 0 && elapsed % 12 === 0
-        })
-        const targetStaffId = underpaidStaffIds[Math.floor(Math.random() * underpaidStaffIds.length)]
-        const targetStaff = registeredStaff.find((s) => s.id === targetStaffId)
-        if (targetStaff) {
-          const requestedSalary = Math.round(maxSalary * 0.9)
-          setStaffSalaryRaiseRequest({
-            staffId: targetStaffId,
-            staffName: staffDisplayName(targetStaff, locale),
-            staffKind: targetStaff.kind,
-            iconUrl: staffIconUrl(targetStaff) || null,
-            mediaRevision: targetStaff.mediaRevision,
-            currentSalary: minSalary,
-            requestedSalary: requestedSalary,
-          })
-          setStartBroadcastLocked(true)
-          return true
-        }
-      }
-    }
-    return false
+    const salaries = hiredStaffIds.map((id) => hiredStaffSalariesRef.current[id] ?? 0)
+    const maxSalary = Math.max(...salaries, 24000)
+
+    // 협상 조건:
+    // 1) 최고 연봉에 비해 $10,000 이상 적거나 최고 연봉의 70% 미만인 경우 (또는 기본 연봉 $24,000 미만)
+    // 2) 입사년월로부터 12달 이상 경과 및 마지막 연봉 협상으로부터 12달 이상 경과한 스탭
+    const eligibleStaffIds = hiredStaffIds.filter((id) => {
+      const currentSalary = hiredStaffSalariesRef.current[id] ?? 0
+      const isUnderpaid =
+        currentSalary < Math.min(maxSalary * 0.75, maxSalary - 10000) || currentSalary < 24000
+
+      if (!isUnderpaid) return false
+
+      const startMonth = hiredStaffStartMonthsRef.current[id] ?? gameMonthRef.current
+      const lastRaiseMonth = hiredStaffLastRaiseMonthsRef.current[id] ?? startMonth
+
+      const elapsedFromStart = gameMonthRef.current - startMonth
+      const elapsedFromLastRaise = gameMonthRef.current - lastRaiseMonth
+
+      return elapsedFromStart >= 12 && elapsedFromLastRaise >= 12
+    })
+
+    if (eligibleStaffIds.length === 0) return false
+
+    // 대상 중 한 명 선택
+    const targetStaffId = eligibleStaffIds[Math.floor(Math.random() * eligibleStaffIds.length)]
+    const targetStaff = registeredStaff.find((s) => s.id === targetStaffId)
+    if (!targetStaff) return false
+
+    const currentSalary = hiredStaffSalariesRef.current[targetStaffId] ?? 0
+    // 인상 요구 연봉: 최고 연봉의 85% 수준 (최소 $24,000 이상)
+    const requestedSalary = Math.max(24000, Math.round(maxSalary * 0.85))
+
+    setStaffSalaryRaiseRequest({
+      staffId: targetStaffId,
+      staffName: staffDisplayName(targetStaff, locale),
+      staffKind: targetStaff.kind,
+      iconUrl: staffIconUrl(targetStaff) || null,
+      mediaRevision: targetStaff.mediaRevision,
+      currentSalary,
+      requestedSalary,
+    })
+    setStartBroadcastLocked(true)
+    return true
   }
 
   function handleAcceptStaffSalaryRaise() {
@@ -2768,6 +2885,10 @@ export function InGame({
     setHiredStaffSalaries((prev) => ({
       ...prev,
       [staffId]: requestedSalary,
+    }))
+    setHiredStaffLastRaiseMonths((prev) => ({
+      ...prev,
+      [staffId]: gameMonthRef.current,
     }))
     setStaffSalaryRaiseRequest(null)
     setStartBroadcastLocked(false)
@@ -4064,7 +4185,7 @@ export function InGame({
       {broadcastPhase === 'live' ? null : (
       <nav className="game-dock z-20 shrink-0 px-6 py-3" aria-label={t('menu.ariaGameMenu')}>
         <div className="mx-auto flex w-full max-w-6xl gap-1.5 sm:gap-2">
-          {TABS.map((item) => {
+          {TABS.filter((item) => item.id !== 'casino' || isCasinoGradeUnlocked).map((item) => {
             const isActive = tab === item.id
             const isCasino = item.id === 'casino'
             const isDisabledCasino = isCasino && !isCasinoAvailable
@@ -4094,8 +4215,13 @@ export function InGame({
                 disabled={isDisabledCasino}
                 onClick={() => {
                   if (isCasino) {
+                    if (!isCasinoGradeUnlocked) {
+                      window.alert('카지노는 중소기업 등급 이상부터 해금됩니다.')
+                      return
+                    }
                     if (isCasinoAvailable) {
                       setShowCasinoModal(true)
+                      scheduleAutoSave()
                     }
                     return
                   }
@@ -4111,7 +4237,11 @@ export function InGame({
               >
                 {item.icon}
                 <span>{isCasino ? 'CASINO' : t(`menu.${item.id}`)}</span>
-                {isCasino && isCasinoAvailable ? (
+                {isCasino && !isCasinoGradeUnlocked ? (
+                  <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-slate-900 border border-slate-700 text-slate-400 rounded-full shadow">
+                    중소기업 필요
+                  </span>
+                ) : isCasino && isCasinoAvailable ? (
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-pink-600 text-white rounded-full animate-bounce shadow">
                     OPEN
                   </span>
@@ -4143,10 +4273,12 @@ export function InGame({
               onUpdateAssets={(newAssets) => {
                 assetsRef.current = newAssets
                 setAssets(newAssets)
+                scheduleAutoSave()
               }}
               onClose={() => {
                 setShowCasinoModal(false)
                 setCasinoTurnCount(0)
+                scheduleAutoSave()
               }}
             />
           </div>
@@ -4178,13 +4310,13 @@ export function InGame({
                 const available = registeredStaff.filter((s) => !hired.includes(s.id))
                 if (available.length > 0) {
                   const target = available[0]
-                  handleHireStaff(target.id, 0, 3600)
+                  handleHireStaff(target.id, 0, 24000)
                 } else {
                   const casinoId = `staff_vip_${Date.now()}`
                   const next = hireStaff(managerStateRef.current, casinoId)
                   managerStateRef.current = next
                   onManagerStateChangeRef.current(next)
-                  setHiredStaffSalaries((prev) => ({ ...prev, [casinoId]: 3600 }))
+                  setHiredStaffSalaries((prev) => ({ ...prev, [casinoId]: 24000 }))
                   setHiredStaffStartMonths((prev) => ({ ...prev, [casinoId]: gameMonth }))
                   scheduleAutoSave()
                 }
@@ -4493,7 +4625,7 @@ export function InGame({
             continueAfterMonthModals(openScout)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={watchedEventIds.includes(endingEventPlay.id)}
+          allowSkip={true}
         />
       ) : null}
 
@@ -4555,7 +4687,7 @@ export function InGame({
           mode="game"
           onClose={handleScoutEventFinished}
           registeredCharacters={registeredCharacters}
-          allowSkip={watchedEventIds.includes(scoutEventState.currentEvent.id)}
+          allowSkip={true}
         />
       )}
 
@@ -4571,7 +4703,7 @@ export function InGame({
             applyVipAcceptRewards(play.offer, play.payout)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={watchedEventIds.includes(vipEventPlay.event.id)}
+          allowSkip={true}
         />
       ) : null}
 
@@ -4612,7 +4744,7 @@ export function InGame({
             completeDateEvent(socialUi.pending)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={watchedEventIds.includes(socialUi.event.id)}
+          allowSkip={true}
         />
       ) : null}
 
@@ -4641,7 +4773,7 @@ export function InGame({
             applyHRetryAccept(socialUi.pending)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={watchedEventIds.includes(socialUi.event.id)}
+          allowSkip={true}
         />
       ) : null}
 
@@ -4669,7 +4801,7 @@ export function InGame({
             applyPromotedSalary(salaryEventPlay)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={watchedEventIds.includes(salaryEventPlay.salaryEvent.id)}
+          allowSkip={true}
         />
       ) : null}
 
@@ -4740,7 +4872,7 @@ export function InGame({
             onBack?.()
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={watchedEventIds.includes(proposalEndingVnEvent.id)}
+          allowSkip={true}
         />
       ) : null}
     </main>

@@ -235,12 +235,21 @@ export function buildCreatorDayPlan(
     tone: amount >= 1_000 ? 'bg-amber-400' : 'bg-pink-400',
   }))
   const flavor = buildFlavorEvents(displayName, creator.id, flavorCount)
-  const merged = [...donationEvents, ...flavor]
-  // 시간 배치를 위해 섞기
-  for (let i = merged.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[merged[i], merged[j]] = [merged[j]!, merged[i]!]
+  // 후원 이벤트와 시청자 증가 이벤트를 타임라인에 1:1로 교차 병합 (Interleave)
+  const merged: Array<Omit<DayEvent, 'atMs' | 'id'>> = []
+  let dIdx = 0
+  let fIdx = 0
+  while (dIdx < donationEvents.length || fIdx < flavor.length) {
+    if (dIdx < donationEvents.length) {
+      merged.push(donationEvents[dIdx]!)
+      dIdx += 1
+    }
+    if (fIdx < flavor.length) {
+      merged.push(flavor[fIdx]!)
+      fIdx += 1
+    }
   }
+
   const times = scheduleAtMs(merged.length, dayMs)
   const events: DayEvent[] = merged.map((event, index) => ({
     ...event,

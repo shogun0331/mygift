@@ -58,7 +58,7 @@ export function getGradeBadgeStyle(grade: string = 'B') {
       return 'border-cyan-400 text-cyan-200 bg-gradient-to-r from-cyan-950 via-slate-900 to-cyan-950 shadow-[0_0_12px_rgba(6,182,212,0.8)] ring-1 ring-cyan-400/50'
     case 'C':
     default:
-      return 'border-slate-400 text-slate-200 bg-slate-900 shadow-[0_0_8px_rgba(148,163,184,0.5)]'
+      return 'border-emerald-400 text-emerald-200 bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 shadow-[0_0_10px_rgba(52,211,153,0.7)] ring-1 ring-emerald-400/50'
   }
 }
 

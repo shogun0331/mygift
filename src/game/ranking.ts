@@ -448,12 +448,21 @@ function communicationRetainOf(communication = 0): number {
   return 1 - clampCommunication(communication) / 200
 }
 
-/** 로스터 잠재력·배분 가중치 = (소통×단가 + SNS구독자×0.25) × (1 + SNS진행비율×0.5) × 등급배율 */
+/** 로스터 잠재력·배분 가중치 = (소통기본 + SNS구독자×소통비례전환율) × SNS시너지 × 등급배율 */
 export function creatorViewerWeight(creator: RankCreator): number {
-  const commBase = clampCommunication(creator.statCommunication) * getViewerBalance().viewerPerCommPoint
-  const snsSubBase = Math.max(0, Number(creator.snsSubscribers) || 0) * 0.25
-  const ratioSynergy = 1 + Math.min(1.0, Math.max(0, Number(creator.snsRatio) || 0)) * 0.5
-  return (commBase + snsSubBase) * ratioSynergy * gradeViewerMult(creator.grade)
+  const commScore = clampCommunication(creator.statCommunication)
+  const commRatio = commScore / 100 // 0.0 ~ 1.0
+  const commBase = commScore * getViewerBalance().viewerPerCommPoint
+
+  // SNS 구독자가 소통 능력치에 따라 방송 시청자로 유입되는 비율 (0.5% ~ 3.0% 현실적 유입율)
+  const snsSubs = Math.max(0, Number(creator.snsSubscribers) || 0)
+  const snsViewerConvertRate = 0.005 + commRatio * 0.025
+  const snsViewers = snsSubs * snsViewerConvertRate
+
+  const snsRatio = Math.min(1.0, Math.max(0, Number(creator.snsRatio) || 0))
+  const ratioSynergy = 1 + snsRatio * 0.2 // 최대 +20% 시너지
+
+  return (commBase + snsViewers) * ratioSynergy * gradeViewerMult(creator.grade)
 }
 
 /** 회사 획득 시청자를 가중치 비율로 나눠 합이 gained와 같게 맞춤 */

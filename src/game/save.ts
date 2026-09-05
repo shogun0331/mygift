@@ -46,6 +46,7 @@ export type GameSave = {
   slotGearById: Record<string, SlotGear>
   hiredStaffSalaries: Record<string, number>
   hiredStaffStartMonths: Record<string, number>
+  hiredStaffLastRaiseMonths?: Record<string, number>
   weekAccum: SerializedWeekAccum
   prevWeekRevenue: number | null
   socialSpawn: SocialSpawnState
@@ -69,6 +70,9 @@ export type GameSave = {
   pendingStationReview?: boolean
   /** 방송 랭킹 수익 데이터 (세이브-로드 유실 방지) */
   liveRevenueByCreator?: Record<string, number>
+  /** 카지노 쿨다운 턴 카운트 (0~3) 및 모달 상태 */
+  casinoTurnCount?: number
+  showCasinoModal?: boolean
 }
 
 export type TopCharacterMeta = {

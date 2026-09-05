@@ -13,12 +13,12 @@ export type SocialSpawnSpec = {
   chance: number
 }
 
-/** 데이트 1→2차. 대기 후 확률 실패 시 다시 min~max 대기 */
-export const DATE_SPAWN: SocialSpawnSpec = { minWait: 1, maxWait: 2, chance: 0.85 }
-/** 보유 크리에이터 대상 */
-export const VIP_SPAWN: SocialSpawnSpec = { minWait: 2, maxWait: 4, chance: 0.6 }
-/** 데이트 1·2차 완료 후 H(첫 회) 및 이후 H 재요청 */
-export const H_SPAWN: SocialSpawnSpec = { minWait: 1, maxWait: 2, chance: 0.9 }
+/** 데이트 1→2차 대기 턴수 (3~5턴 마다 등장) */
+export const DATE_SPAWN: SocialSpawnSpec = { minWait: 3, maxWait: 5, chance: 0.65 }
+/** 보유 크리에이터 대상 VIP 제안 (5~8턴 마다 등장) */
+export const VIP_SPAWN: SocialSpawnSpec = { minWait: 5, maxWait: 8, chance: 0.3 }
+/** 데이트 1·2차 완료 후 H 및 이후 H 재요청 (5~7턴 마다 등장) */
+export const H_SPAWN: SocialSpawnSpec = { minWait: 5, maxWait: 7, chance: 0.35 }
 
 export const DATE_SP_BY_STEP: Record<DateStepKey, Record<Grade, number>> = {
   date1: { C: 1, B: 2, A: 3, S: 5 },

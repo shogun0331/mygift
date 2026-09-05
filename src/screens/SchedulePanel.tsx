@@ -20,6 +20,7 @@ import {
 import { playSfx } from '../game/uiSfx'
 import { UnlockSlotModal } from './UnlockSlotModal'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import { getGradeBadgeStyle } from './DashboardPanel'
 import {
   STAFF_GENDER_LABEL_KEY,
   STAFF_KIND_LABEL_KEY,
@@ -47,12 +48,6 @@ import {
 const SLOT_DRAG_MIME = 'application/x-studio-slot'
 const STAFF_DRAG_MIME = 'application/x-studio-staff'
 
-const GRADE_BADGE: Record<string, string> = {
-  S: 'border-amber-400/55 bg-gradient-to-br from-amber-400/35 to-amber-600/20 text-amber-100 shadow-[0_0_12px_rgba(251,191,36,0.35)]',
-  A: 'border-indigo-400/50 bg-gradient-to-br from-indigo-400/30 to-indigo-700/20 text-indigo-100 shadow-[0_0_12px_rgba(99,102,241,0.3)]',
-  B: 'border-slate-400/45 bg-gradient-to-br from-slate-400/25 to-slate-700/30 text-slate-100',
-  C: 'border-slate-500/40 bg-gradient-to-br from-slate-600/30 to-slate-900/40 text-slate-200',
-}
 
 const STAT_TYPE_STYLE: Record<
   CreatorStatType,
@@ -93,14 +88,14 @@ function typeStyleOf(raw?: string) {
 }
 
 function GradeCornerBadge({ grade, size = 'md' }: { grade: string; size?: 'sm' | 'md' }) {
-  const style = GRADE_BADGE[grade] ?? GRADE_BADGE.C
+  const style = getGradeBadgeStyle(grade)
   const sizeClass =
     size === 'sm'
-      ? 'h-5 min-w-5 px-1 text-[9px]'
-      : 'h-6 min-w-6 px-1.5 text-[10px] sm:h-7 sm:min-w-7 sm:text-[11px]'
+      ? 'h-5 min-w-5 px-1.5 text-[10px] font-black italic tracking-wider'
+      : 'h-6 min-w-6 px-2 text-xs font-black italic tracking-widest sm:h-7 sm:min-w-7 sm:text-sm'
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-md border font-black tracking-wide backdrop-blur-sm ${sizeClass} ${style}`}
+      className={`inline-flex items-center justify-center rounded-md border backdrop-blur-md ${sizeClass} ${style}`}
     >
       {grade}
     </span>

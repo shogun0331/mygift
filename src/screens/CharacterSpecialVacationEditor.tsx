@@ -13,7 +13,7 @@ import {
   CHARACTER_LOCALES,
   type CharacterLocale,
 } from '../game/characterLocales'
-import { resolveMediaSrc } from '../game/mediaUrl'
+import { characterSoundUrl, resolveMediaSrc } from '../game/mediaUrl'
 import { pickSpecialVacationCaption } from '../game/specialVacationLines'
 import { useTranslation } from '../locales/i18n'
 import type { AddCharacterPayload } from './EditorScreen'
@@ -190,7 +190,13 @@ export function CharacterSpecialVacationEditor({ character, onCancel, onSave }: 
   }
 
   const playVoice = () => {
-    const src = draft.voice?.url ? resolveMediaSrc(draft.voice.url) : ''
+    const voice = draft.voice
+    if (!voice) return
+    const src = voice.url
+      ? resolveMediaSrc(voice.url, voice.fileSize)
+      : voice.fileName
+        ? characterSoundUrl(character.id, voice.fileName)
+        : ''
     if (!src) return
     if (audioRef.current) {
       audioRef.current.pause()

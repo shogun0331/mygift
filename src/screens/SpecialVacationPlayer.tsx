@@ -5,8 +5,9 @@ import {
   normalizeSpecialVacation,
   type OwnedCreator,
 } from '../game/characters'
-import { resolveMediaSrc } from '../game/mediaUrl'
+import { characterSoundUrl, resolveMediaSrc } from '../game/mediaUrl'
 import { pickSpecialVacationCaption } from '../game/specialVacationLines'
+import { getPromotionVoiceUrl } from '../game/promotionLines'
 import { getSeVolumePercent } from '../game/uiSfx'
 import { useBgmSilence } from '../game/bgm'
 import { characterDisplayName } from '../game/characterLocales'
@@ -48,9 +49,21 @@ export function SpecialVacationPlayer({ creator, onClose }: Props) {
     locale,
     creator.name,
   )
-  const voiceSrc = creator.specialVacation?.voice?.url
-    ? resolveMediaSrc(creator.specialVacation.voice.url)
-    : ''
+
+  const voiceSrc = useMemo(() => {
+    const voice = creator.specialVacation?.voice
+    if (voice?.url) {
+      const resolved = resolveMediaSrc(voice.url, voice.fileSize)
+      if (resolved) return resolved
+    }
+    if (voice?.fileName) {
+      const soundUrl = characterSoundUrl(creator.id, voice.fileName)
+      if (soundUrl) return soundUrl
+    }
+    const promoVoice = getPromotionVoiceUrl(creator.name) || getPromotionVoiceUrl(creator.id)
+    if (promoVoice) return promoVoice
+    return ''
+  }, [creator])
   const name = characterDisplayName(creator, locale)
 
   const imageSrc = useMemo(() => {
@@ -91,17 +104,34 @@ export function SpecialVacationPlayer({ creator, onClose }: Props) {
     }
     stop()
     if (!voiceSrc) return
-    const audio = new Audio(voiceSrc)
-    audio.volume = Math.max(0, Math.min(1, getSeVolumePercent() / 100))
+
+    let currentSrc = voiceSrc
+    const audio = new Audio(currentSrc)
+    audio.volume = Math.max(0.2, Math.min(1, (getSeVolumePercent() || 80) / 100))
     voiceRef.current = audio
+
+    const fallbackSrc = getPromotionVoiceUrl(creator.name) || getPromotionVoiceUrl(creator.id)
+
+    audio.onerror = () => {
+      if (fallbackSrc && currentSrc !== fallbackSrc) {
+        currentSrc = fallbackSrc
+        audio.src = fallbackSrc
+        audio.load()
+        void audio.play().catch(() => {})
+      }
+    }
+
     const playTimer = window.setTimeout(() => {
-      void audio.play().catch(() => {})
-    }, 180)
+      void audio.play().catch((err) => {
+        console.warn('SpecialVacation voice play error:', err)
+      })
+    }, 150)
+
     return () => {
       window.clearTimeout(playTimer)
       stop()
     }
-  }, [voiceSrc])
+  }, [voiceSrc, creator])
 
   const requestClose = () => {
     if (closingRef.current || phase === 'enter') return

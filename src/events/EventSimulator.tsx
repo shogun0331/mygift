@@ -301,7 +301,7 @@ export function EventSimulator({
   returnLabel,
   onClose,
   registeredCharacters = [],
-  allowSkip = false,
+  allowSkip = true,
 }: EventSimulatorProps) {
   const { t, locale } = useTranslation()
   // 모든 노드 추출 및 평탄화
@@ -984,7 +984,7 @@ export function EventSimulator({
                         requestExit()
                       }}
                     >
-                      {t('hud.skip')}
+                      {t('hud.skip')} ⏩
                     </button>
                   ) : null}
                   {langVolumeControls}

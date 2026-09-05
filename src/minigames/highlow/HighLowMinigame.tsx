@@ -884,7 +884,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                   data.managerState.hiredStaffIds = [...hired, casinoStaffId]
                   if (!data.hiredStaffSalaries) data.hiredStaffSalaries = {}
                   if (!data.hiredStaffStartMonths) data.hiredStaffStartMonths = {}
-                  data.hiredStaffSalaries[casinoStaffId] = 3600
+                  data.hiredStaffSalaries[casinoStaffId] = 24000
                   data.hiredStaffStartMonths[casinoStaffId] = 1
                   localStorage.setItem(saveKey, JSON.stringify(data))
                 }
