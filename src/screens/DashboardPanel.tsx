@@ -15,6 +15,7 @@ import {
   CONDITION_ROW_CLASS,
   conditionFromScore,
   previewLiveStamina,
+  previewLiveConditionScore,
   scoreOf,
   type CreatorCondition,
 } from '../game/condition'
@@ -76,6 +77,8 @@ type DashboardPanelProps = {
   liveWeekProgress?: number
   /** 이번 주 종료 시 깎일 스테미나 (크리에이터 id) */
   liveStaminaDrainByCreatorId?: Record<string, number>
+  /** 이번 주 종료 시 깎일 컨디션 (크리에이터 id) */
+  liveConditionDrainByCreatorId?: Record<string, number>
   assets?: number
   conditionCrashes?: ConditionCrashFxItem[]
   gearFailBursts?: GearFailBurstItem[]
@@ -129,6 +132,7 @@ function toBroadcastSlot(
   livePlayUrl?: string | null,
   weekProgress = 0,
   weeklyDrain = 0,
+  weeklyConditionDrain = 0,
 ): BroadcastSlotView {
   const streamLabel = `STREAM ${String(slot.index).padStart(2, '0')}`
   if (slot.status !== 'assigned' || !slot.assignment) {
@@ -165,6 +169,13 @@ function toBroadcastSlot(
   const iconUrl =
     findCharacterIconUrl(owned) || slot.assignment.profileImageUrl || null
 
+  const baseCondScore = owned ? scoreOf(owned) : 60
+  const conditionScore =
+    broadcastPhase === 'live' && weeklyConditionDrain > 0
+      ? previewLiveConditionScore(baseCondScore, weeklyConditionDrain, weekProgress)
+      : baseCondScore
+  const condition = owned ? conditionFromScore(conditionScore) : 'normal'
+
   return {
     id: slot.id,
     label: streamLabel,
@@ -185,8 +196,8 @@ function toBroadcastSlot(
         const g = owned?.grade ?? slot.assignment.grade
         return g === 'S' || g === 'A' || g === 'B' || g === 'C' ? g : 'C'
       })(),
-      conditionScore: owned ? scoreOf(owned) : 60,
-      condition: owned ? conditionFromScore(scoreOf(owned)) : 'normal',
+      conditionScore,
+      condition,
       viewers: '—',
       live: broadcastPhase === 'live',
       preview: visuals.preview,
@@ -231,6 +242,7 @@ export function DashboardPanel({
   liveRevenueByCreator = {},
   liveWeekProgress = 0,
   liveStaminaDrainByCreatorId = {},
+  liveConditionDrainByCreatorId = {},
   assets = 0,
   conditionCrashes = [],
   gearFailBursts = [],
@@ -296,6 +308,7 @@ export function DashboardPanel({
       creatorId ? livePlayVideoByCreator[creatorId] : undefined,
       liveWeekProgress,
       creatorId ? liveStaminaDrainByCreatorId[creatorId] ?? 0 : 0,
+      creatorId ? liveConditionDrainByCreatorId[creatorId] ?? 0 : 0,
     )
   })
   const assigned = studioSlots.filter(

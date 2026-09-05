@@ -250,6 +250,39 @@ export function previewLiveStamina(
   return Math.max(0, Math.min(staminaMax, next))
 }
 
+/** CCTV 주간 진행률에 따른 컨디션 점수 미리보기 */
+export function previewLiveConditionScore(
+  conditionScore: number,
+  weeklyDrain: number,
+  progress: number,
+) {
+  const p = Math.max(0, Math.min(1, progress))
+  const next = conditionScore - Math.max(0, weeklyDrain) * p
+  return clampConditionScore(next)
+}
+
+/** 주간 방송 시 소모될 컨디션량 계산 */
+export function calcWeeklyBroadcastConditionCost(
+  creator: { stamina?: number; staminaMax?: number },
+  conditionMult = 1,
+): number {
+  const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
+  const staminaNow = clampStamina(creator.stamina ?? staminaMax, staminaMax)
+  const isLowStamina = staminaNow < STAMINA_LOW_THRESHOLD
+  let baseCondLoss = isLowStamina
+    ? rollInt(CONDITION_BROADCAST_FAST.min, CONDITION_BROADCAST_FAST.max)
+    : rollInt(CONDITION_BROADCAST_LIGHT.min, CONDITION_BROADCAST_LIGHT.max)
+
+  const spikeChance = isLowStamina
+    ? CONDITION_SPIKE_CHANCE_LOW_STAMINA
+    : CONDITION_SPIKE_CHANCE_NORMAL
+  if (Math.random() < spikeChance) {
+    baseCondLoss += rollInt(CONDITION_SPIKE_DROP.min, CONDITION_SPIKE_DROP.max)
+  }
+
+  return Math.max(1, Math.round(baseCondLoss * conditionMult))
+}
+
 export function isCreatorBroadcastBlockedLive(
   creator: { stamina: number; staminaMax?: number },
   weeklyDrain: number,
@@ -339,6 +372,7 @@ export type ConditionCrashResult<T extends StaminaConditionState> = {
 export type SlotDrainMults = {
   staminaMult: number
   conditionMult: number
+  fixedConditionDrain?: number
 }
 
 /**
@@ -374,15 +408,20 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
       )
       const staminaAfter = clampStamina(staminaNow - staminaCost, staminaMax)
       const isLowStamina = staminaAfter < STAMINA_LOW_THRESHOLD
-      let baseCondLoss = isLowStamina
-        ? rollInt(CONDITION_BROADCAST_FAST.min, CONDITION_BROADCAST_FAST.max)
-        : rollInt(CONDITION_BROADCAST_LIGHT.min, CONDITION_BROADCAST_LIGHT.max)
+      let baseCondLoss =
+        drain?.fixedConditionDrain != null
+          ? drain.fixedConditionDrain
+          : isLowStamina
+            ? rollInt(CONDITION_BROADCAST_FAST.min, CONDITION_BROADCAST_FAST.max)
+            : rollInt(CONDITION_BROADCAST_LIGHT.min, CONDITION_BROADCAST_LIGHT.max)
       
-      const spikeChance = isLowStamina
-        ? CONDITION_SPIKE_CHANCE_LOW_STAMINA
-        : CONDITION_SPIKE_CHANCE_NORMAL
-      if (Math.random() < spikeChance) {
-        baseCondLoss += rollInt(CONDITION_SPIKE_DROP.min, CONDITION_SPIKE_DROP.max)
+      if (drain?.fixedConditionDrain == null) {
+        const spikeChance = isLowStamina
+          ? CONDITION_SPIKE_CHANCE_LOW_STAMINA
+          : CONDITION_SPIKE_CHANCE_NORMAL
+        if (Math.random() < spikeChance) {
+          baseCondLoss += rollInt(CONDITION_SPIKE_DROP.min, CONDITION_SPIKE_DROP.max)
+        }
       }
 
       const rawCond = -baseCondLoss

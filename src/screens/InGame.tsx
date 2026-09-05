@@ -90,10 +90,12 @@ import {
   calcConditionFullCareCost,
   calcVacationCost,
   calcWeeklyBroadcastStaminaCost,
+  calcWeeklyBroadcastConditionCost,
   canBroadcastByStamina,
   isCreatorBroadcastBlockedLive,
   CONDITION_SCORE_RANGE,
   scoreOf,
+  type SlotDrainMults,
 } from '../game/condition'
 import { rollInt } from '../game/stats'
 import {
@@ -717,6 +719,9 @@ export function InGame({
   const [liveStaminaDrainByCreatorId, setLiveStaminaDrainByCreatorId] = useState<
     Record<string, number>
   >({})
+  const [liveConditionDrainByCreatorId, setLiveConditionDrainByCreatorId] = useState<
+    Record<string, number>
+  >({})
   const [slotGearById, setSlotGearById] = useState<Record<string, SlotGear>>(() =>
     initialSave?.slotGearById ?? createSlotGearMapFromSlots(studioSlots),
   )
@@ -1211,6 +1216,7 @@ export function InGame({
   const productionBonusShownRef = useRef(new Set<string>())
   const broadcastBlockedSinceRef = useRef<Record<string, number>>({})
   const liveStaminaDrainByCreatorIdRef = useRef<Record<string, number>>({})
+  const liveConditionDrainByCreatorIdRef = useRef<Record<string, number>>({})
   const pendingWeekAdvanceAfterToxicRef = useRef(false)
   const statementDelayTimerRef = useRef<number | null>(null)
   const leagueRef = useRef(league)
@@ -1516,6 +1522,7 @@ export function InGame({
     settledDayKeyRef.current = null
     const staminaMult = 1
     const drainByCreatorId: Record<string, number> = {}
+    const condDrainByCreatorId: Record<string, number> = {}
     for (const creator of slottedCreatorsFrom(ownedCreatorsRef.current)) {
       const slotId = findSlotIdForCreator(studioSlotsRef.current, creator.id)
       const care = slotId ? staffBonusOf(managerStateRef.current, slotId, 'care') : { equipped: false }
@@ -1525,9 +1532,12 @@ export function InGame({
         1,
         Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * combined),
       )
+      condDrainByCreatorId[creator.id] = calcWeeklyBroadcastConditionCost(creator, 1)
     }
     liveStaminaDrainByCreatorIdRef.current = drainByCreatorId
     setLiveStaminaDrainByCreatorId(drainByCreatorId)
+    liveConditionDrainByCreatorIdRef.current = condDrainByCreatorId
+    setLiveConditionDrainByCreatorId(condDrainByCreatorId)
     broadcastBlockedSinceRef.current = {}
     setLiveWeekProgress(0)
     donationBatchRef.current = new Map()
@@ -2254,10 +2264,7 @@ export function InGame({
     // 주 종료: 스테미나/컨디션·내구 소모만. 진상·고장은 주중 랜덤 검사에서 처리
     const staminaMult = 1
     const conditionMult = 1
-    const drainMultByCreatorId: Record<
-      string,
-      { staminaMult: number; conditionMult: number }
-    > = {}
+    const drainMultByCreatorId: Record<string, SlotDrainMults> = {}
     const assignedSlotIds = new Set(
       studioSlotsRef.current
         .filter((slot) => slot.status === 'assigned' && slot.assignment)
@@ -2271,6 +2278,7 @@ export function InGame({
       drainMultByCreatorId[creatorId] = {
         staminaMult: Math.max(0.5, Math.min(1, staminaMult * careMult)),
         conditionMult,
+        fixedConditionDrain: liveConditionDrainByCreatorIdRef.current[creatorId],
       }
       if (care.equipped) careRecoverCreatorIds.add(creatorId)
     }
@@ -3915,6 +3923,7 @@ export function InGame({
             liveRevenueByCreator={liveRevenueByCreator}
             liveWeekProgress={liveWeekProgress}
             liveStaminaDrainByCreatorId={liveStaminaDrainByCreatorId}
+            liveConditionDrainByCreatorId={liveConditionDrainByCreatorId}
             conditionCrashes={conditionCrashes}
             gearFailBursts={gearFailBursts}
             staffActions={staffActions}
