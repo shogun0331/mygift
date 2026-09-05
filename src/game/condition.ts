@@ -48,8 +48,12 @@ export const STAMINA_BROADCAST_MIN = 1
 /** 소모 후 스테미나가 이 미만이면 컨디션 급속 소모 */
 export const STAMINA_LOW_THRESHOLD = 30
 
-export const CONDITION_BROADCAST_LIGHT = { min: 10, max: 15 } as const
-export const CONDITION_BROADCAST_FAST = { min: 25, max: 35 } as const
+export const CONDITION_BROADCAST_LIGHT = { min: 3, max: 6 } as const
+export const CONDITION_BROADCAST_FAST = { min: 12, max: 18 } as const
+/** 돌발 피로 스파이크 (한번씩 훅 깎임) 확률 및 차감량 */
+export const CONDITION_SPIKE_CHANCE_NORMAL = 0.2
+export const CONDITION_SPIKE_CHANCE_LOW_STAMINA = 0.5
+export const CONDITION_SPIKE_DROP = { min: 15, max: 25 } as const
 export const REST_RECOVERY = { min: 10, max: 15 } as const
 export const VACATION_CONDITION_GAIN = 20
 
@@ -369,10 +373,19 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
         Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * staminaMult),
       )
       const staminaAfter = clampStamina(staminaNow - staminaCost, staminaMax)
-      const rawCond =
-        staminaAfter < STAMINA_LOW_THRESHOLD
-          ? -rollInt(CONDITION_BROADCAST_FAST.min, CONDITION_BROADCAST_FAST.max)
-          : -rollInt(CONDITION_BROADCAST_LIGHT.min, CONDITION_BROADCAST_LIGHT.max)
+      const isLowStamina = staminaAfter < STAMINA_LOW_THRESHOLD
+      let baseCondLoss = isLowStamina
+        ? rollInt(CONDITION_BROADCAST_FAST.min, CONDITION_BROADCAST_FAST.max)
+        : rollInt(CONDITION_BROADCAST_LIGHT.min, CONDITION_BROADCAST_LIGHT.max)
+      
+      const spikeChance = isLowStamina
+        ? CONDITION_SPIKE_CHANCE_LOW_STAMINA
+        : CONDITION_SPIKE_CHANCE_NORMAL
+      if (Math.random() < spikeChance) {
+        baseCondLoss += rollInt(CONDITION_SPIKE_DROP.min, CONDITION_SPIKE_DROP.max)
+      }
+
+      const rawCond = -baseCondLoss
       let condDelta = Math.min(-1, Math.round(rawCond * conditionMult))
 
       let scoreAfterDrain = currentScore + condDelta
