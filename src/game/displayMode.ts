@@ -23,18 +23,28 @@ export async function setDisplayMode(mode: DisplayMode) {
     console.warn('[DisplayMode] LocalStorage write error:', e)
   }
 
-  try {
-    if (mode === 'fullscreen') {
-      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-        await document.documentElement.requestFullscreen()
-      }
-    } else {
-      if (document.fullscreenElement && document.exitFullscreen) {
-        await document.exitFullscreen()
-      }
+  // 1. Electron IPC Call
+  if (typeof window !== 'undefined' && (window as any).electronAPI?.setDisplayMode) {
+    try {
+      await (window as any).electronAPI.setDisplayMode(mode)
+    } catch (err) {
+      console.warn('[DisplayMode] Electron setDisplayMode error:', err)
     }
-  } catch (err) {
-    console.warn('[DisplayMode] Fullscreen toggle error:', err)
+  } else {
+    // 2. Web Browser Fallback
+    try {
+      if (mode === 'fullscreen') {
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen()
+        }
+      } else {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          await document.exitFullscreen()
+        }
+      }
+    } catch (err) {
+      console.warn('[DisplayMode] Fullscreen toggle error:', err)
+    }
   }
 
   notifyListeners()
@@ -57,21 +67,24 @@ export function initDisplayMode() {
   if (initialized) return
   initialized = true
 
-  const handleFirstInteraction = () => {
-    if (currentMode === 'fullscreen' && !document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.().catch(() => {})
+  // Apply display mode to Electron if available
+  if (typeof window !== 'undefined' && (window as any).electronAPI?.setDisplayMode) {
+    ;(window as any).electronAPI.setDisplayMode(currentMode).catch(() => {})
+  } else {
+    const handleFirstInteraction = () => {
+      if (currentMode === 'fullscreen' && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.().catch(() => {})
+      }
+      window.removeEventListener('click', handleFirstInteraction)
+      window.removeEventListener('keydown', handleFirstInteraction)
     }
-    window.removeEventListener('click', handleFirstInteraction)
-    window.removeEventListener('keydown', handleFirstInteraction)
-  }
 
-  // Attempt initial fullscreen if mode is fullscreen
-  if (currentMode === 'fullscreen' && !document.fullscreenElement) {
-    document.documentElement.requestFullscreen?.().catch(() => {
-      // Browser blocked fullscreen without gesture; attach listener for user click/key
-      window.addEventListener('click', handleFirstInteraction, { once: true })
-      window.addEventListener('keydown', handleFirstInteraction, { once: true })
-    })
+    if (currentMode === 'fullscreen' && !document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.().catch(() => {
+        window.addEventListener('click', handleFirstInteraction, { once: true })
+        window.addEventListener('keydown', handleFirstInteraction, { once: true })
+      })
+    }
   }
 
   document.addEventListener('fullscreenchange', () => {

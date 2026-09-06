@@ -4,6 +4,7 @@ const { ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI', {
   platform: process.platform,
+  setDisplayMode: (mode) => ipcRenderer.invoke('set-display-mode', { mode }),
   saveEventAssets: (eventId, assets) => ipcRenderer.invoke('save-event-assets', { eventId, assets }),
   saveCharacterAssets: (characterId, assets) => ipcRenderer.invoke('save-character-assets', { characterId, assets }),
   saveCharactersJson: (characters) => ipcRenderer.invoke('save-characters-json', { characters }),

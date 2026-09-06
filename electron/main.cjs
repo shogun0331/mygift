@@ -238,6 +238,7 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
+    resizable: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
@@ -294,6 +295,24 @@ app.whenReady().then(() => {
       createWindow()
     }
   })
+})
+
+ipcMain.handle('set-display-mode', async (event, { mode }) => {
+  try {
+    const win = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0]
+    if (!win) return { success: false }
+    win.setResizable(false)
+    if (mode === 'fullscreen') {
+      win.setFullScreen(true)
+    } else {
+      win.setFullScreen(false)
+      win.maximize()
+    }
+    return { success: true }
+  } catch (err) {
+    console.error('set-display-mode error:', err)
+    return { success: false, error: err.message }
+  }
 })
 
 ipcMain.handle('save-event-assets', async (event, { eventId, assets }) => {
