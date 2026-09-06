@@ -101,11 +101,6 @@ export function HighLowEditorPanel({
     saveUserChips(roomId, newChips)
   }
 
-  const handleAddChips = (roomId: HighLowRoomId, amount: number) => {
-    const current = userChipsMap[roomId] ?? configs[roomId].startChips
-    handleUpdateChips(roomId, current + amount)
-  }
-
   const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -704,12 +699,6 @@ export function HighLowEditorPanel({
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => handleAddChips(activeRoomId, 100000)}
-                    className="px-3 py-1.5 rounded-lg bg-cyan-950 border border-cyan-500/50 text-cyan-300 hover:bg-cyan-900 transition-all text-xs font-bold"
-                  >
-                    + $100,000 칩 충전
-                  </button>
                   <button
                     onClick={() => setShowModalSimulator(false)}
                     className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white transition-all text-xs font-bold shadow-md shadow-rose-600/30"

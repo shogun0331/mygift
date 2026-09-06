@@ -696,20 +696,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   // 통계
   const [_stats, setStats] = useState({ wins: 0, losses: 0, draws: 0 })
   const [consecutiveWins, setConsecutiveWins] = useState(0)
-  const [cctvTime, setCctvTime] = useState('')
-
-  useEffect(() => {
-    const updateTime = () => {
-      const d = new Date()
-      const pad = (n: number) => String(n).padStart(2, '0')
-      setCctvTime(
-        `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
-      )
-    }
-    updateTime()
-    const timer = setInterval(updateTime, 1000)
-    return () => clearInterval(timer)
-  }, [])
 
   const activeDealerMedia = getActiveDealerMedia(currentConfig, consecutiveWins)
 
@@ -1232,14 +1218,11 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                   </div>
                 </div>
 
-                {/* Top HUD: Blinking Red REC Badge & Live CCTV Timestamp */}
-                <div className="pointer-events-none absolute top-2 inset-x-2 z-20 flex items-center justify-between font-mono">
+                {/* Top HUD: Blinking Red REC Badge */}
+                <div className="pointer-events-none absolute top-2 left-2 z-20 flex items-center font-mono">
                   <div className="flex items-center gap-1 bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded border border-rose-500/60 shadow">
                     <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
                     <span className="text-[9px] font-black text-rose-400 tracking-wider">REC</span>
-                  </div>
-                  <div className="bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded border border-emerald-500/50 text-[9px] font-bold text-emerald-300 shadow tracking-wider">
-                    {cctvTime}
                   </div>
                 </div>
 
@@ -1276,26 +1259,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     </span>
                   </div>
                 )}
-
-                {/* Stage / Consecutive Wins Badge Overlay */}
-                <div className="pointer-events-none absolute bottom-12 left-2.5 flex items-center gap-1 z-20 font-mono">
-                  <span className="text-[9px] font-bold text-amber-300 bg-black/85 backdrop-blur-sm px-2 py-0.5 rounded border border-amber-400/50 shadow">
-                    🔥 {consecutiveWins}{t('casino.highlow.streakCount', { defaultValue: '연승' })}
-                  </span>
-                  {consecutiveWins >= 6 ? (
-                    <span className="text-[9px] font-bold text-rose-300 bg-rose-950/90 backdrop-blur-sm px-2 py-0.5 rounded border border-rose-500/60 shadow">
-                      {t('casino.highlow.stage3', { defaultValue: '수위 3' })}
-                    </span>
-                  ) : consecutiveWins >= 3 ? (
-                    <span className="text-[9px] font-bold text-purple-300 bg-purple-950/90 backdrop-blur-sm px-2 py-0.5 rounded border border-purple-500/60 shadow">
-                      {t('casino.highlow.stage2', { defaultValue: '수위 2' })}
-                    </span>
-                  ) : (
-                    <span className="text-[9px] font-bold text-emerald-300 bg-emerald-950/90 backdrop-blur-sm px-2 py-0.5 rounded border border-emerald-500/60 shadow">
-                      {t('casino.highlow.stage1', { defaultValue: '수위 1' })}
-                    </span>
-                  )}
-                </div>
 
                 {/* CCTV Bottom Info & Signal Bar */}
                 <div className="absolute inset-x-0 bottom-0 p-2.5 bg-slate-950/95 backdrop-blur-md border-t border-emerald-500/40 flex items-center justify-between font-mono z-20">
