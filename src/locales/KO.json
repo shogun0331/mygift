@@ -10,12 +10,12 @@
     "credits": "제작진",
     "exit": "종료",
     "edit": "에디터",
-    "dashboard": "대시보드",
-    "creator": "크리에이터",
-    "studio": "스튜디오",
-    "schedule": "스케줄",
-    "ranking": "랭킹",
-    "equipment": "장비",
+    "dashboard": "DASHBOARD",
+    "creator": "CREATOR",
+    "studio": "STUDIO",
+    "schedule": "SCHEDULE",
+    "ranking": "RANKING",
+    "equipment": "EQUIPMENT",
     "confirmExit": "게임을 종료할까요?",
     "devOnly": "개발자 전용",
     "finalVer": "FINAL VER.",
@@ -24,7 +24,7 @@
     "savedData": "저장된 데이터",
     "ariaMainMenu": "메인 메뉴",
     "ariaGameMenu": "인게임 메뉴",
-    "casino": "카지노"
+    "casino": "CASINO"
   },
   "hud": {
     "dateTime": "년월일",

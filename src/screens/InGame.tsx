@@ -668,7 +668,7 @@ function GoldenVegasLoungeBackground() {
 const TABS: { id: GameTab; label: string; icon: ReactNode }[] = [
   { id: 'dashboard', label: 'DASHBOARD', icon: <IconDashboard /> },
   { id: 'creator', label: 'CREATOR', icon: <IconCreator /> },
-  { id: 'schedule', label: 'STUDIO', icon: <IconSchedule /> },
+  { id: 'schedule', label: 'SCHEDULE', icon: <IconSchedule /> },
   { id: 'ranking', label: 'RANKING', icon: <IconRanking /> },
   { id: 'casino', label: 'CASINO', icon: <IconCasino /> },
 ]
@@ -4974,7 +4974,7 @@ export function InGame({
                 }`}
               >
                 {item.icon}
-                <span>{isCasino ? 'CASINO' : t(`menu.${item.id}`)}</span>
+                <span>{item.label}</span>
                 {isCasino && !isCasinoGradeUnlocked ? (
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-slate-900 border border-slate-700 text-slate-400 rounded-full shadow">
                     중소기업 필요
