@@ -701,8 +701,37 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
   const activeDealerMedia = getActiveDealerMedia(currentConfig, consecutiveWins)
 
-  // 게임 로그 및 직전 대사 중복 방지 ref
-  const lastDialogueRef = useRef<{ tier: number; index: number; isLoss?: boolean } | null>(null)
+  // 딜러 대사 비중복 셔플 덱(Bag System) 관리 ref
+  const dialoguePoolsRef = useRef<Record<string, number[]>>({
+    tier1: [],
+    tier2: [],
+    tier3: [],
+    loss: [],
+  })
+  const lastPlayedIndexRef = useRef<{ key: string; index: number } | null>(null)
+
+  const getNextDialogueIndex = (poolKey: 'tier1' | 'tier2' | 'tier3' | 'loss'): number => {
+    let pool = dialoguePoolsRef.current[poolKey]
+    if (!pool || pool.length === 0) {
+      // 5개 대사 인덱스(0..4) 미복원 랜덤 셔플
+      const newPool = [0, 1, 2, 3, 4]
+      for (let i = newPool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[newPool[i], newPool[j]] = [newPool[j], newPool[i]]
+      }
+      // 직전 재생 대사와의 연속 중복 방지
+      const lastPlayed = lastPlayedIndexRef.current
+      if (lastPlayed && lastPlayed.key === poolKey && newPool[0] === lastPlayed.index) {
+        ;[newPool[0], newPool[newPool.length - 1]] = [newPool[newPool.length - 1], newPool[0]]
+      }
+      pool = newPool
+    }
+    const nextIdx = pool.shift()!
+    dialoguePoolsRef.current[poolKey] = pool
+    lastPlayedIndexRef.current = { key: poolKey, index: nextIdx }
+    return nextIdx
+  }
+
   const [logs, setLogs] = useState<LogEntry[]>([])
   const logEndRef = useRef<HTMLDivElement | null>(null)
 
@@ -979,7 +1008,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           }
           playHighLowWinSound(nextWins >= 3)
 
-          // 딜러 승리 수위별 랜덤 대사 & 음성 재생 트리거 (연속 중복 방지)
+          // 딜러 승리 수위별 비중복 셔플 대사 & 음성 재생 트리거
           let tier: 1 | 2 | 3 = 1
           if (nextWins >= 6) {
             tier = 3
@@ -988,13 +1017,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           } else {
             tier = 1
           }
-          let randIdx = Math.floor(Math.random() * 5)
-          const last = lastDialogueRef.current
-          if (last && last.tier === tier && last.index === randIdx) {
-            const available = [0, 1, 2, 3, 4].filter((i) => i !== last.index)
-            randIdx = available[Math.floor(Math.random() * available.length)]
-          }
-          lastDialogueRef.current = { tier, index: randIdx }
+          const poolKey = `tier${tier}` as 'tier1' | 'tier2' | 'tier3'
+          const randIdx = getNextDialogueIndex(poolKey)
 
           const activeMedia = getActiveDealerMedia(currentConfig, nextWins)
           setDealerDialoguePlay({
@@ -1053,14 +1077,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           )
           setTotalWinnings(0)
 
-          // 딜러 패배 대사 & 음성 재생 트리거 (연속 중복 방지)
-          let randIdx = Math.floor(Math.random() * 5)
-          const last = lastDialogueRef.current
-          if (last && last.isLoss && last.index === randIdx) {
-            const available = [0, 1, 2, 3, 4].filter((i) => i !== last.index)
-            randIdx = available[Math.floor(Math.random() * available.length)]
-          }
-          lastDialogueRef.current = { tier: 1, index: randIdx, isLoss: true }
+          // 딜러 패배 비중복 셔플 대사 & 음성 재생 트리거
+          const randIdx = getNextDialogueIndex('loss')
 
           const activeMedia = getActiveDealerMedia(currentConfig, 0)
           setDealerDialoguePlay({
