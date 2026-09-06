@@ -3,7 +3,7 @@ import { useTranslation } from '../locales/i18n'
 import { FpsCounter } from '../components/FpsCounter'
 import { getBgmVolumePercent, setBgmVolumePercent, useGameBgm } from '../game/bgm'
 import { getDisplayMode, setDisplayMode, subscribeDisplayMode, type DisplayMode } from '../game/displayMode'
-import { tierViewerCap, type StationTierId } from '../game/stationGradeConfig'
+import { tierViewerCap, type StationTierId, stationTierRank } from '../game/stationGradeConfig'
 import { getSeVolumePercent, playSfx, setSeVolumePercent } from '../game/uiSfx'
 import {
   deserializeWeekAccum,
@@ -268,7 +268,7 @@ const SPEED_OPTIONS = ['1x', '2x', '3x'] as const
 type SpeedOption = (typeof SPEED_OPTIONS)[number]
 
 const INITIAL_ASSETS = 200_000
-const MAX_RECENT_EVENTS = 40
+const MAX_RECENT_EVENTS = 24
 
 type WeekInspection = {
   creatorId: string
@@ -815,7 +815,9 @@ export function InGame({
   const [showCasinoModal, setShowCasinoModal] = useState(boot?.showCasinoModal ?? false)
   const [activeCasinoRoomId, setActiveCasinoRoomId] = useState<HighLowRoomId | null>(null)
 
-  const isCasinoGradeUnlocked = true
+  const isCasinoGradeUnlocked = useMemo(() => {
+    return stationTierRank(stationGrade) >= stationTierRank('sme')
+  }, [stationGrade])
   const isCasinoAvailable = isCasinoGradeUnlocked && casinoTurnCount >= 3
 
   const highLowConfigs = useMemo(() => loadHighLowConfig(), [])
@@ -865,6 +867,11 @@ export function InGame({
     Boolean(boot?.stationAuditTarget),
   )
   const [selectedAuditCreators, setSelectedAuditCreators] = useState<any[] | null>(null)
+  const [stationAuditCooldown, setStationAuditCooldown] = useState<number>(
+    boot?.stationAuditCooldown ?? 0,
+  )
+  const stationAuditCooldownRef = useRef(stationAuditCooldown)
+  stationAuditCooldownRef.current = stationAuditCooldown
 
   const staffScoutCooldownRef = useRef(boot?.scout?.staffScoutCooldown ?? 1)
   const [staffScoutAvailable, setStaffScoutAvailable] = useState(
@@ -1210,10 +1217,9 @@ export function InGame({
     if (!freeHire && !spendAssets(offer.salary)) return
     setOpenCreatorScout(false)
     setScoutSystem((prev) => clearScoutOfferAfterHire(prev))
-    const maxScout = maxScoutCreatorsForGrade(stationGradeConfig, stationGradeRef.current)
-    if (ownedCreatorsRef.current.length + 1 >= maxScout) {
-      setCreatorScoutAvailable(false)
-    }
+    setCreatorScoutAvailable(false)
+    creatorScoutAvailableRef.current = false
+    setCreatorScoutCooldown(rollInt(2, 4))
     beginScoutVisualNovel(creator)
   }
 
@@ -1259,6 +1265,76 @@ export function InGame({
     const meetsRank = meetsSlotUnlockByRank(stationGradeConfig, league.currentRank, unlockedSlotCount)
     return meetsGrade || meetsRank
   }, [studioSlots, unlockedSlotCount, stationGradeConfig, assets, stationGrade, league.currentRank])
+
+  const isStationPromotionEligible = useMemo(() => {
+    if (broadcastPhase === 'live') return false
+    const review = applyStationReview(
+      stationGrade,
+      league.viewers,
+      ownedCreators,
+      {
+        unlockedSlotCount,
+        assets,
+      },
+      stationGradeConfig,
+    )
+    // 영세기업(tiny) 승급은 자동 진행되므로, 중소기업(sme) 이상 승급일 때만 심사 버튼 활성화
+    return Boolean(
+      review.promoted &&
+        review.status.next &&
+        review.status.eligible &&
+        review.status.next !== 'tiny',
+    )
+  }, [
+    broadcastPhase,
+    stationGrade,
+    league.viewers,
+    ownedCreators,
+    unlockedSlotCount,
+    assets,
+    stationGradeConfig,
+  ])
+
+  // 일반사업자(black) -> 영세기업(tiny) 자동 승급 (심사 버튼 없이 조건 달성 시 즉시 자동 승급)
+  useEffect(() => {
+    if (stationGrade !== 'black' || broadcastPhase === 'live') return
+    const review = applyStationReview(
+      'black',
+      league.viewers,
+      ownedCreators,
+      {
+        unlockedSlotCount,
+        assets,
+      },
+      stationGradeConfig,
+    )
+    if (review.promoted && review.status.next === 'tiny') {
+      const nextGrade = 'tiny'
+      const oldRank = leagueRef.current.currentRank
+      const newRank = stationRankForGrade(nextGrade, leagueRef.current.viewers)
+      stationGradeRef.current = nextGrade
+      setStationGrade(nextGrade)
+      grantStationPromotionAssets(nextGrade)
+      pendingPromotionRef.current = { nextGrade, oldRank, newRank }
+      setTab('ranking')
+      setPromotionFx({
+        fromGrade: 'black',
+        toGrade: nextGrade,
+        fromRank: oldRank,
+        toRank: newRank,
+      })
+      setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
+      scheduleAutoSave()
+    }
+  }, [
+    stationGrade,
+    broadcastPhase,
+    league.viewers,
+    ownedCreators,
+    unlockedSlotCount,
+    assets,
+    stationGradeConfig,
+  ])
 
   // 보유 로스터 승격 게이트 즉시 반영 (정산 시 방송 인원만 보고 막힌 순위 보정)
   const rosterGateKey = ownedCreators
@@ -1469,6 +1545,7 @@ export function InGame({
       liveRevenueByCreator: liveRevenueByCreatorRef.current,
       casinoTurnCount: casinoTurnCountRef.current,
       showCasinoModal: showCasinoModalRef.current,
+      stationAuditCooldown: stationAuditCooldownRef.current,
     }
   }
 
@@ -1973,11 +2050,12 @@ export function InGame({
     }
 
     const viewers = Math.max(1, leagueRef.current.viewers)
-    const viewerSpeedMult = viewers >= 50_000 ? 0.4 : viewers >= 10_000 ? 0.6 : viewers >= 2_000 ? 0.8 : 1.0
+    const viewerSpeedMult = viewers >= 50_000 ? 0.7 : viewers >= 10_000 ? 0.8 : viewers >= 2_000 ? 0.9 : 1.0
     const speedMult = speedMultiplierOf(speedRef.current)
     const baseGapMs =
-      donationBatchRef.current.size > 2 || feedExtraQueueRef.current.length > 4 ? 220 : 400
-    const gapMs = (baseGapMs * viewerSpeedMult) / speedMult
+      donationBatchRef.current.size > 2 || feedExtraQueueRef.current.length > 4 ? 360 : 520
+    // 60FPS 유지를 위한 최대 채팅 속도 상한선 (최소 160ms 이상 간격 유지)
+    const gapMs = Math.max(160, (baseGapMs * viewerSpeedMult) / speedMult)
     if (lastFeedEmitAtRef.current > 0 && now - lastFeedEmitAtRef.current < gapMs) return
 
     const hasDonation = donationBatchRef.current.size > 0
@@ -2444,7 +2522,9 @@ export function InGame({
       })
 
       setStaffScoutAvailable(false)
-      staffScoutCooldownRef.current = rollInt(2, 4)
+      const currentTierGrade = stationGradeRef.current ?? 'black'
+      const isStaffEveryTurn = stationTierRank(currentTierGrade) >= stationTierRank('mid')
+      staffScoutCooldownRef.current = isStaffEveryTurn ? 1 : rollInt(2, 4)
     } else {
       setScoutedStaffCandidate(null)
       alert(t('alert.noStaffToRecruit'))
@@ -2474,7 +2554,9 @@ export function InGame({
     managerStateRef.current = next
     onManagerStateChangeRef.current(next)
     setScoutedStaffCandidate(null)
-    staffScoutCooldownRef.current = rollInt(2, 4)
+    const currentTierGrade = stationGradeRef.current ?? 'black'
+    const isStaffEveryTurn = stationTierRank(currentTierGrade) >= stationTierRank('mid')
+    staffScoutCooldownRef.current = isStaffEveryTurn ? 1 : rollInt(2, 4)
 
     const staff = registeredStaff.find((s) => s.id === staffId)
     if (staff) {
@@ -2816,18 +2898,20 @@ export function InGame({
       })
       .filter((row): row is NonNullable<typeof row> => row != null)
 
-    // 스탭 스카우트 — 2~4턴 주기 확정 등장
+    // 스탭 스카우트 — 중견기업('mid') 이상은 매 턴(1턴 주기) 등장, 그 외 2~4턴 주기 확정 등장
+    const currentGradeForStaff = stationGradeRef.current ?? 'black'
+    const isStaffEveryTurn = stationTierRank(currentGradeForStaff) >= stationTierRank('mid')
     if (!staffScoutAvailableRef.current && !scoutedStaffCandidate) {
-      const nextStaffCooldown = Math.max(0, staffScoutCooldownRef.current - 1)
+      const nextStaffCooldown = isStaffEveryTurn ? 0 : Math.max(0, staffScoutCooldownRef.current - 1)
       if (nextStaffCooldown === 0) {
         const pool = registeredStaff.filter(
           (s) => !managerStateRef.current.hiredStaffIds.includes(s.id),
         )
         if (pool.length > 0) {
           setStaffScoutAvailable(true)
-          staffScoutCooldownRef.current = rollInt(2, 4)
+          staffScoutCooldownRef.current = isStaffEveryTurn ? 1 : rollInt(2, 4)
         } else {
-          staffScoutCooldownRef.current = rollInt(2, 4)
+          staffScoutCooldownRef.current = isStaffEveryTurn ? 1 : rollInt(2, 4)
         }
       } else {
         staffScoutCooldownRef.current = nextStaffCooldown
@@ -3053,6 +3137,11 @@ export function InGame({
     broadcastMonthNumberRef.current = nextMonthNumber
     setBroadcastMonthNumber(nextMonthNumber)
     setCasinoTurnCount((c) => Math.min(3, c + 1))
+    if (stationAuditCooldownRef.current > 0) {
+      const nextCooldown = Math.max(0, stationAuditCooldownRef.current - 1)
+      stationAuditCooldownRef.current = nextCooldown
+      setStationAuditCooldown(nextCooldown)
+    }
     weekAccumRef.current = createWeekAccumulator(nextMonthNumber)
     setBroadcastPhase('prep')
     setLivePlayVideoByCreator({})
@@ -3082,25 +3171,7 @@ export function InGame({
     const openScout =
       ownedCreatorsRef.current.length === 0 &&
       Boolean(scoutSystemRef.current.activeOffer)
-    // 매 턴 목표 시청자 수 및 조건 달성 시 즉시 승급 심사 서류 모달 발동
-    if (pendingStationReviewRef.current) {
-      pendingStationReviewRef.current = false
-      pendingScoutAfterRankRef.current = openScout
-      const review = applyStationReview(
-        stationGradeRef.current,
-        leagueRef.current.viewers,
-        ownedCreatorsRef.current,
-        {
-          unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
-          assets: assetsRef.current,
-        },
-      )
-      // 실패 안내 팝업 없이, 승급 조건이 충족(review.promoted === true)될 때만 서류 통과 팝업 출력
-      if (review.promoted) {
-        setStationReview({ promoted: review.promoted, status: review.status })
-        return
-      }
-    }
+    pendingStationReviewRef.current = false
     const pendingRank = pendingRankResultRef.current
     pendingRankResultRef.current = null
     if (pendingRank) {
@@ -3233,13 +3304,52 @@ export function InGame({
     flushAutoSave()
   }
 
-  /** 방송국 등급 승급 확정 시 자산 보상 지급 */
+  /** 방송국 등급 승급 확정 시 스카우트에 무조건 1명 등장 */
+  function triggerPromotionScoutOffer(nextGrade: StationGrade) {
+    const ownedIds = new Set(ownedCreatorsRef.current.map((c) => c.id))
+    const availablePool = registeredCharactersRef.current.filter((c) => !ownedIds.has(c.id))
+    if (availablePool.length === 0) return
+
+    let offerGrade: Grade = 'C'
+    if (nextGrade === 'top' || nextGrade === 'large') {
+      offerGrade = 'A'
+    } else if (nextGrade === 'mid' || nextGrade === 'sme') {
+      offerGrade = 'B'
+    } else {
+      offerGrade = 'C'
+    }
+
+    const offer = createRandomScoutOffer(
+      registeredCharactersRef.current,
+      ownedIds,
+      offerGrade,
+    )
+    if (!offer) return
+
+    const turn = broadcastMonthNumberRef.current
+    setScoutSystem((prev) => ({
+      ...prev,
+      activeOffer: offer,
+      offerAppearedTurn: turn,
+      lastAppearTurn: turn,
+      hasUnread: true,
+      openingScoutPending: false,
+      appearCount: prev.appearCount + 1,
+    }))
+    setCreatorScoutAvailable(false)
+    creatorScoutAvailableRef.current = false
+    setCreatorScoutCooldown(rollInt(2, 4))
+  }
+
+  /** 방송국 등급 승급 확정 시 자산 보상 지급 및 스카우트 확정 등장 */
   function grantStationPromotionAssets(nextGrade: StationGrade) {
     const reward = stationPromotionAssetReward(nextGrade)
-    if (reward <= 0) return 0
-    const nextAssets = assetsRef.current + reward
-    assetsRef.current = nextAssets
-    setAssets(nextAssets)
+    if (reward > 0) {
+      const nextAssets = assetsRef.current + reward
+      assetsRef.current = nextAssets
+      setAssets(nextAssets)
+    }
+    triggerPromotionScoutOffer(nextGrade)
     return reward
   }
 
@@ -3312,29 +3422,7 @@ export function InGame({
     continueAfterMonthModals(openScout)
   }
 
-  function checkStationReviewImmediate(openScout = false): boolean {
-    if (stationReview || stationAuditTarget) return false
-    const review = applyStationReview(
-      stationGradeRef.current,
-      leagueRef.current.viewers,
-      ownedCreatorsRef.current,
-      {
-        unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
-        assets: assetsRef.current,
-      },
-    )
-    if (review.promoted) {
-      pendingScoutAfterRankRef.current = openScout
-      setStationReview({ promoted: review.promoted, status: review.status })
-      return true
-    }
-    return false
-  }
-
   function continueAfterMonthModals(openScout: boolean) {
-    if (checkStationReviewImmediate(openScout)) {
-      return
-    }
     if (checkProposalEvent(openScout)) {
       return
     }
@@ -3791,15 +3879,17 @@ export function InGame({
   function handleVacation(creatorId: string) {
     const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
     if (!target) return
-    if ((target.stamina ?? 0) <= 0) return
     if (vacationPlay) return
     const month = broadcastMonthNumberRef.current
     const isAnyVacationUsedThisTurn = ownedCreatorsRef.current.some(
       (c) => c.lastVacationMonth === month,
     )
     if (isAnyVacationUsedThisTurn) return
-    const cost = calcVacationCost(target.salary, target.grade)
-    if (!spendAssets(cost)) return
+    const isAllBroadcastBlocked =
+      ownedCreatorsRef.current.length > 0 &&
+      ownedCreatorsRef.current.every((c) => !canBroadcastByStamina(c.stamina))
+    const cost = isAllBroadcastBlocked ? 0 : calcVacationCost(target.salary, target.grade)
+    if (cost > 0 && !spendAssets(cost)) return
     let recovered: OwnedCreator | null = null
     const nextOwned = ownedCreatorsRef.current.map((creator) => {
       if (creator.id !== creatorId) return creator
@@ -3816,6 +3906,47 @@ export function InGame({
     if (recovered) setVacationPlay(recovered)
   }
 
+  function handleStartPromotionAudit() {
+    if (broadcastPhase === 'live' || startBroadcastLocked) return
+    const review = applyStationReview(
+      stationGradeRef.current,
+      leagueRef.current.viewers,
+      ownedCreatorsRef.current,
+      {
+        unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
+        assets: assetsRef.current,
+      },
+      stationGradeConfig,
+    )
+    if (review.promoted && review.status.next) {
+      if (review.status.next !== 'tiny') {
+        setStationAuditTarget({
+          currentTier: review.status.current,
+          nextTier: review.status.next as Exclude<StationGrade, 'black' | 'tiny'>,
+        })
+        setAuditDocPassNoticeOpen(false)
+        setAuditDeckSelecting(true)
+      } else {
+        const nextGrade = review.status.next
+        const oldRank = leagueRef.current.currentRank
+        const newRank = stationRankForGrade(nextGrade, leagueRef.current.viewers)
+        stationGradeRef.current = nextGrade
+        setStationGrade(nextGrade)
+        grantStationPromotionAssets(nextGrade)
+        pendingPromotionRef.current = { nextGrade, oldRank, newRank }
+        setTab('ranking')
+        setPromotionFx({
+          fromGrade: review.status.current,
+          toGrade: nextGrade,
+          fromRank: oldRank,
+          toRank: newRank,
+        })
+        setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
+        scheduleAutoSave()
+      }
+    }
+  }
+
   function handleStartBroadcast() {
     if (broadcastPhase === 'live') return
     if (
@@ -3827,6 +3958,13 @@ export function InGame({
       vipEventPlay ||
       socialUi
     ) {
+      return
+    }
+
+    const assignedSlots = studioSlotsRef.current.filter(
+      (slot) => slot.status === 'assigned' && slot.assignment?.creatorId,
+    )
+    if (assignedSlots.length === 0) {
       return
     }
 
@@ -4440,6 +4578,8 @@ export function InGame({
             slotGearById={slotGearById}
             assets={assets}
             startBroadcastLocked={startBroadcastLocked}
+            isPromotionReady={isStationPromotionEligible}
+            onStartPromotionAudit={handleStartPromotionAudit}
             onStartBroadcast={handleStartBroadcast}
             onConditionCare={handleConditionCare}
             onRepairSlot={repairBrokenSlot}
@@ -4471,7 +4611,12 @@ export function InGame({
             openStaffScout={openStaffScout}
             onStaffScoutClosed={() => setOpenStaffScout(false)}
             onScoutViewed={() => setScoutSystem((prev) => markScoutViewed(prev))}
-            onScoutPass={() => setScoutSystem((prev) => passScoutOffer(prev))}
+            onScoutPass={() => {
+              setScoutSystem((prev) => passScoutOffer(prev))
+              setCreatorScoutAvailable(false)
+              creatorScoutAvailableRef.current = false
+              setCreatorScoutCooldown(rollInt(2, 4))
+            }}
             onScoutHire={handleCreatorScoutHire}
             onConditionCare={handleConditionCare}
             onVacation={handleVacation}
@@ -4878,6 +5023,7 @@ export function InGame({
             <HighLowMinigame
               configs={highLowConfigs}
               customAnte={getHighLowAnteForGrade(stationGradeConfig, stationGradeRef.current)}
+              hasAvailableStaff={registeredStaff.some((s) => !managerStateRef.current.hiredStaffIds.includes(s.id))}
               userChipsMap={{
                 local: assets,
                 star: assets,
@@ -4894,14 +5040,6 @@ export function InGame({
                 if (available.length > 0) {
                   const target = available[0]
                   handleHireStaff(target.id, 0, 24000)
-                } else {
-                  const casinoId = `staff_vip_${Date.now()}`
-                  const next = hireStaff(managerStateRef.current, casinoId)
-                  managerStateRef.current = next
-                  onManagerStateChangeRef.current(next)
-                  setHiredStaffSalaries((prev) => ({ ...prev, [casinoId]: 24000 }))
-                  setHiredStaffStartMonths((prev) => ({ ...prev, [casinoId]: gameMonth }))
-                  scheduleAutoSave()
                 }
               }}
               onClose={() => {
@@ -4975,22 +5113,7 @@ export function InGame({
             const cleared = rankSettlement.gameCleared
             const openScout = pendingScoutAfterRankRef.current
             setRankSettlement(null)
-            if (pendingStationReviewRef.current) {
-              pendingStationReviewRef.current = false
-              pendingScoutAfterRankRef.current = openScout
-              pendingGameClearRef.current = cleared
-              const review = applyStationReview(
-                stationGradeRef.current,
-                leagueRef.current.viewers,
-                ownedCreatorsRef.current,
-                {
-                  unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
-                  assets: assetsRef.current,
-                },
-              )
-              setStationReview({ promoted: review.promoted, status: review.status })
-              return
-            }
+            pendingStationReviewRef.current = false
             if (cleared) {
               pendingScoutAfterRankRef.current = openScout
               setShowGameClear(true)
@@ -5005,6 +5128,12 @@ export function InGame({
         <StationReviewModal
           promoted={stationReview.promoted}
           status={stationReview.status}
+          onClose={() => setStationReview(null)}
+          onDecline={() => {
+            setStationReview(null)
+            stationAuditCooldownRef.current = 2
+            setStationAuditCooldown(2)
+          }}
           onConfirm={() => {
             const review = stationReview
             setStationReview(null)
@@ -5089,6 +5218,10 @@ export function InGame({
           tierKey={stationAuditTarget.nextTier}
           registeredCharacters={ownedCreators}
           isSimulator={false}
+          onClose={() => {
+            setStationAuditTarget(null)
+            setAuditDeckSelecting(false)
+          }}
           onStartSimulation={(selectedDeck) => {
             setSelectedAuditCreators(selectedDeck)
             setAuditDeckSelecting(false)
@@ -5143,6 +5276,9 @@ export function InGame({
               setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
               return
             }
+            // 방송국 승급 실패 시: 2턴의 여유(쿨다운)를 부여하여 크리에이터 체력 회복 및 재정비 기회 제공
+            stationAuditCooldownRef.current = 2
+            setStationAuditCooldown(2)
             continueMonthEndFlow()
           }}
           onClose={() => {

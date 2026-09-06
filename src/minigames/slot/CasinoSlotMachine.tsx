@@ -173,7 +173,6 @@ export function CasinoSlotMachine({
       if (spinsLeft <= 0) return
       turnForThisSpin = Math.min(3, 4 - spinsLeft)
       nextSpinsLeft = spinsLeft - 1
-      setCurrentTurn(turnForThisSpin)
       setSpinsLeft(nextSpinsLeft)
     } else {
       nextFreeSpinsLeft = freeSpinsLeft - 1
@@ -336,6 +335,11 @@ export function CasinoSlotMachine({
       if (result.freeSpinsAwarded > 0) {
         nextFreeSpinsLeft += result.freeSpinsAwarded
         setFreeSpinsLeft((prev) => prev + result.freeSpinsAwarded)
+      }
+
+      // 회전 완료 및 대사 출력 후 즉시 다음 단계 수위로 전환 (1턴 회전 완료 -> 2단계 수위 영상, 2턴 회전 완료 -> 3단계 수위 영상)
+      if (!isFreeSpin && nextSpinsLeft > 0) {
+        setCurrentTurn(Math.min(3, turnForThisSpin + 1))
       }
 
       // 추가 기회(3회 도전 + 프리스핀)가 모두 소진되면 딜러 패배 대사 & 음성만 즉시 재생.
@@ -513,20 +517,6 @@ export function CasinoSlotMachine({
                     </span>
                   </div>
                 )}
-
-                {/* CCTV Bottom Info & Signal Bar */}
-                <div className="absolute inset-x-0 bottom-0 p-2.5 bg-slate-950/95 backdrop-blur-md border-t border-amber-400/40 flex items-center justify-between font-mono z-20">
-                  <div>
-                    <h5 className="text-[11px] font-black text-slate-100 flex items-center gap-1">
-                      <span className="text-amber-400">DEALER:</span> {dealerConfig.dealerName}
-                    </h5>
-                    <span className="text-[9px] text-amber-400 font-bold">수위 {Math.min(3, currentTurn)}단계 적용</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[9px] text-amber-400 block font-bold">SIGNAL 100%</span>
-                    <span className="text-[8px] text-slate-400 block">30 FPS · HD</span>
-                  </div>
-                </div>
               </div>
 
               {/* SPIN TURN PROGRESS BADGE */}

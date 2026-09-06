@@ -38,12 +38,12 @@ export const SLOT_SYMBOL_KEYS: SlotSymbolId[] = Object.keys(DEFAULT_SLOT_SYMBOLS
 
 /** 방송국 등급별 스핀당 베팅금액 매핑 */
 export const DEFAULT_STATION_BET_AMOUNTS: Record<StationGrade, number> = {
-  black: 100,
-  tiny: 500,
-  sme: 2_000,
-  mid: 10_000,
-  large: 50_000,
-  top: 200_000,
+  black: 1_000,
+  tiny: 5_000,
+  sme: 15_000,
+  mid: 50_000,
+  large: 150_000,
+  top: 400_000,
 }
 
 export const STATION_BET_AMOUNTS = DEFAULT_STATION_BET_AMOUNTS

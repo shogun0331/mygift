@@ -59,6 +59,7 @@
     "liveRank": "Live Broadcast Rank",
     "noLiveBroadcast": "스튜디오에서 배정된 방송이 없습니다.",
     "startBroadcast": "▶ 방송시작",
+    "promotionAudit": "🏆 승급 심사",
     "broadcasting": "● 방송 중",
     "broadcastEnded": "방송 종료",
     "live": "LIVE",
@@ -236,6 +237,7 @@
     "vacationTitle": "특별 휴가 보내기",
     "vacationDesc": "스테미나 풀 충전 / 컨디션 +20 (턴당 1회 · 등급별 고비용)",
     "vacationUsed": "이번 턴 휴가를 이미 사용했습니다",
+    "vacationFreeEmergency": "전원 활동 불가 긴급 지원 (무료)",
     "vacationStaminaZero": "스태미나가 0인 캐릭터는 특별 휴가를 사용할 수 없습니다 (한 달 휴식 필요)",
     "vacationPlayerTitle": "{name}의 특별 휴가",
     "vacationTapNext": "클릭해서 다음",
@@ -523,6 +525,9 @@
       "large": "A랭크 스카웃 연구 강화",
       "top": "S랭크 스카웃 연구 해금"
     },
+    "challengePrompt": "승급 심사에 도전하시겠습니까?",
+    "challengeAccept": "도전",
+    "challengeDecline": "거부 (2턴 유예)",
     "confirm": "확인"
   },
   "vip": {
@@ -880,7 +885,8 @@
       "flipCard": "카드 뒤집기!",
       "tableStats": "테이블 통계",
       "realMoney": "실제 자산",
-      "currentAnte": "기본 판돈 (무료)",
+      "currentAnte": "기본 판돈 (ANTE)",
+      "currentRoundBet": "현재 배팅금",
       "comboBadge": "🔥 {combo} 콤보 (x{mult})",
       "myStationAssets": "누적 당첨 금액",
       "vault": "총 당첨금",
@@ -897,9 +903,10 @@
       "antePreserved": "판돈 보존",
       "noAssetDeduction": "자산 차감 없음",
       "cashoutBtn": "100% 수령 & 나가기",
-      "nextRoundBtn": "다음 라운드 도전",
-      "lossGuaranteedLabel": "패배 시 10% 보장",
-      "lossPenaltyNotice": "💀 패배! 10%만 보장",
+      "nextRoundBtn": "다음 라운드",
+      "nextBetNotice": "다음 배팅금 (패배 시 전액 소멸)",
+      "lossPenaltyNotice": "💀 패배! 누적 당첨금이 모두 소멸되었습니다. ($0)",
+      "lossShieldNotice": "🛡️ 패배 방어 성공! ${amount} 획득",
       "items": {
         "peek_card": {
           "name": "카드 엿보기",

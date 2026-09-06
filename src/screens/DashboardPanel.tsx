@@ -94,6 +94,9 @@ type DashboardPanelProps = {
   weeklyTrendType?: string
   /** 명세서 대기/표시 중 — 방송 시작 비활성 */
   startBroadcastLocked?: boolean
+  /** 승급 조건 충족 시 방송시작 버튼 위에 승급심사 버튼 노출 */
+  isPromotionReady?: boolean
+  onStartPromotionAudit?: () => void
   onStartBroadcast: () => void
   onConditionCare?: (creatorId: string) => void
   onConditionCrashDone?: (id: string) => void
@@ -479,10 +482,10 @@ function LiveChatFeed({
   const scrollerRef = useRef<HTMLDivElement>(null)
   const stickBottomRef = useRef(true)
   const prevNewestIdRef = useRef<string | null>(null)
-  const visible = liveEvents.slice(0, 18)
+  const visible = liveEvents.slice(0, 12)
   const newestId = visible[0]?.id ?? null
   const ordered = useMemo(
-    () => [...liveEvents.slice(0, 18)].reverse(),
+    () => [...liveEvents.slice(0, 12)].reverse(),
     [liveEvents],
   )
 
@@ -536,13 +539,13 @@ function LiveChatFeed({
                 <motion.li
                   key={event.id}
                   layout="position"
-                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                  initial={{ opacity: 0, y: 12, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{
-                    layout: { type: 'spring', stiffness: 450, damping: 32 },
-                    opacity: { duration: 0.18 },
-                    y: { duration: 0.18, ease: 'easeOut' },
+                    layout: { type: 'spring', stiffness: 480, damping: 32 },
+                    opacity: { duration: 0.16 },
+                    y: { duration: 0.16, ease: 'easeOut' },
                   }}
                   className={`live-chat-row relative overflow-hidden rounded-xl text-xs shrink-0 ${tone.card}${
                     isSuper ? ' is-super' : ''
@@ -598,11 +601,11 @@ function LiveChatFeed({
                 <motion.li
                   key={event.id}
                   layout="position"
-                  initial={{ opacity: 0, y: 6 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{
-                    layout: { type: 'spring', stiffness: 450, damping: 32 },
+                    layout: { type: 'spring', stiffness: 480, damping: 32 },
                     opacity: { duration: 0.12 },
                     y: { duration: 0.12, ease: 'easeOut' },
                   }}
@@ -623,11 +626,11 @@ function LiveChatFeed({
               <motion.li
                 key={event.id}
                 layout="position"
-                initial={{ opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{
-                  layout: { type: 'spring', stiffness: 450, damping: 32 },
+                  layout: { type: 'spring', stiffness: 480, damping: 32 },
                   opacity: { duration: 0.12 },
                   y: { duration: 0.12, ease: 'easeOut' },
                 }}
@@ -668,6 +671,8 @@ export function DashboardPanel({
   slotGearById = {},
   weeklyTrendType: _weeklyTrendType,
   startBroadcastLocked = false,
+  isPromotionReady = false,
+  onStartPromotionAudit,
   onStartBroadcast,
   onConditionCare,
   onConditionCrashDone,
@@ -685,7 +690,10 @@ export function DashboardPanel({
     return map
   }, [ownedCreators])
   const isLive = broadcastPhase === 'live'
-  const canStartBroadcast = !isLive && !startBroadcastLocked
+  const hasAssignedCreator = studioSlots.some(
+    (s) => s.status === 'assigned' && Boolean(s.assignment?.creatorId),
+  )
+  const canStartBroadcast = !isLive && !startBroadcastLocked && hasAssignedCreator
   const [revenueBursts, setRevenueBursts] = useState<RevenueBurst[]>([])
   const seenEventIdsRef = useRef(new Set<string>())
 
@@ -905,11 +913,22 @@ export function DashboardPanel({
           )}
         </section>
 
+        {!isLive && isPromotionReady && onStartPromotionAudit ? (
+          <button
+            type="button"
+            onClick={onStartPromotionAudit}
+            disabled={startBroadcastLocked}
+            className="w-full shrink-0 rounded-2xl py-3 px-4 text-sm font-black tracking-wide border-2 border-yellow-200 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.65)] hover:scale-[1.02] active:scale-95 hover:brightness-110 animate-pulse transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {t('dashboard.promotionAudit')}
+          </button>
+        ) : null}
+
         <button
           type="button"
           onClick={onStartBroadcast}
           disabled={!canStartBroadcast}
-          className="game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px]"
+          className="game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
         >
           {isLive ? t('dashboard.broadcasting') : t('dashboard.startBroadcast')}
         </button>

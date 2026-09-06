@@ -35,6 +35,7 @@ export function AuditSimulatorDeckModal({
   registeredCharacters,
   isSimulator = false,
   onStartSimulation,
+  onClose,
 }: Props) {
   const { t } = useTranslation()
   // 시뮬레이터일 때만 S등급 보정, 인게임 정식 심사 덱 배치 시에는 보유 캐릭터의 실제 능력치 유지
@@ -143,6 +144,16 @@ export function AuditSimulatorDeckModal({
               {t('audit.deckModalSubtitle')}
             </h3>
           </div>
+          {onClose ? (
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 text-slate-400 transition hover:border-slate-500 hover:bg-slate-700 hover:text-white active:scale-95"
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+          ) : null}
         </div>
 
         {/* 메인 덱 구성 컨텐츠 영역 */}

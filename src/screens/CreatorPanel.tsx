@@ -1045,13 +1045,15 @@ function CreatorDetailView({
   const staminaPct = Math.round((creator.stamina / Math.max(1, creator.staminaMax)) * 100)
   const conditionScore = scoreOf(creator)
   const condition = conditionFromScore(conditionScore)
-  const vacationCost = calcVacationCost(creator.salary, creator.grade)
+  const isAllBroadcastBlocked =
+    (ownedCreators?.length ?? 0) > 0 &&
+    Boolean(ownedCreators?.every((c) => !canBroadcastByStamina(c.stamina)))
+  const vacationCost = isAllBroadcastBlocked ? 0 : calcVacationCost(creator.salary, creator.grade)
   const vacationUsed = Boolean(
     ownedCreators?.some((c) => c.lastVacationMonth === broadcastMonthNumber),
   )
   const canAffordVacation = assets >= vacationCost
-  const isStaminaZero = (creator.stamina ?? 0) <= 0
-  const canVacation = !vacationUsed && canAffordVacation && !isStaminaZero
+  const canVacation = !vacationUsed && canAffordVacation
   const broadcastBlocked = !canBroadcastByStamina(creator.stamina)
   const careCost = calcConditionFullCareCost(creator.grade)
   const conditionFull = conditionScore >= 100
@@ -1245,9 +1247,9 @@ function CreatorDetailView({
                       <span className="mt-1 block text-[10px] font-semibold text-amber-300/80">
                         {t('creator.vacationUsed')}
                       </span>
-                    ) : isStaminaZero ? (
-                      <span className="mt-1 block text-[10px] font-semibold text-rose-400">
-                        {t('creator.vacationStaminaZero')}
+                    ) : isAllBroadcastBlocked ? (
+                      <span className="mt-1 block text-[10px] font-semibold text-emerald-400">
+                        {t('creator.vacationFreeEmergency')}
                       </span>
                     ) : !canAffordVacation ? (
                       <span className="mt-1 block text-[10px] font-semibold text-rose-300/80">
@@ -1255,8 +1257,8 @@ function CreatorDetailView({
                       </span>
                     ) : null}
                   </span>
-                  <span className="shrink-0 text-sm font-black tabular-nums text-amber-300">
-                    {formatMoneySigned(-vacationCost)}
+                  <span className={`shrink-0 text-sm font-black tabular-nums ${isAllBroadcastBlocked ? 'text-emerald-400' : 'text-amber-300'}`}>
+                    {vacationCost === 0 ? '$0 (FREE)' : formatMoneySigned(-vacationCost)}
                   </span>
                 </button>
               </div>

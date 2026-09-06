@@ -35,12 +35,12 @@ export type StationTierSpec = {
 }
 
 export const DEFAULT_HIGH_LOW_ANTE: Record<StationTierId, number> = {
-  black: 500,
-  tiny: 1_000,
-  sme: 2_500,
-  mid: 5_000,
-  large: 10_000,
-  top: 25_000,
+  black: 1_000,
+  tiny: 5_000,
+  sme: 15_000,
+  mid: 50_000,
+  large: 150_000,
+  top: 400_000,
 }
 
 export function getHighLowAnteForGrade(
@@ -356,12 +356,12 @@ function defaultCreatorReq(
 export function defaultStationGradeConfig(): StationGradeConfig {
   return {
     tiers: {
-      black: { maxScoutCreators: 2, highLowAnte: 500 },
-      tiny: { maxScoutCreators: 3, highLowAnte: 1000 },
-      sme: { maxScoutCreators: 4, highLowAnte: 2500 },
-      mid: { maxScoutCreators: 5, highLowAnte: 5000 },
-      large: { maxScoutCreators: 6, highLowAnte: 10000 },
-      top: { maxScoutCreators: 8, highLowAnte: 25000 },
+      black: { maxScoutCreators: 2, highLowAnte: 1000 },
+      tiny: { maxScoutCreators: 3, highLowAnte: 5000 },
+      sme: { maxScoutCreators: 4, highLowAnte: 15000 },
+      mid: { maxScoutCreators: 5, highLowAnte: 50000 },
+      large: { maxScoutCreators: 6, highLowAnte: 150000 },
+      top: { maxScoutCreators: 8, highLowAnte: 400000 },
     },
     promotions: {
       tiny: {
@@ -374,7 +374,7 @@ export function defaultStationGradeConfig(): StationGradeConfig {
       },
       sme: {
         to: 'sme',
-        requiredViewers: 10_000,
+        requiredViewers: 5_000,
         minUnlockedSlots: { enabled: false, value: 1 },
         minAssets: { enabled: false, value: 0 },
         minSnsSubscribers: { enabled: false, value: 0 },
@@ -382,7 +382,7 @@ export function defaultStationGradeConfig(): StationGradeConfig {
       },
       mid: {
         to: 'mid',
-        requiredViewers: 40_000,
+        requiredViewers: 100_000,
         minUnlockedSlots: { enabled: false, value: 2 },
         minAssets: { enabled: false, value: 0 },
         minSnsSubscribers: { enabled: false, value: 0 },
@@ -390,7 +390,7 @@ export function defaultStationGradeConfig(): StationGradeConfig {
       },
       large: {
         to: 'large',
-        requiredViewers: 160_000,
+        requiredViewers: 400_000,
         minUnlockedSlots: { enabled: false, value: 3 },
         minAssets: { enabled: false, value: 0 },
         minSnsSubscribers: { enabled: false, value: 0 },
@@ -398,7 +398,7 @@ export function defaultStationGradeConfig(): StationGradeConfig {
       },
       top: {
         to: 'top',
-        requiredViewers: 500_000,
+        requiredViewers: 550_000,
         minUnlockedSlots: { enabled: false, value: 4 },
         minAssets: { enabled: false, value: 0 },
         minSnsSubscribers: { enabled: false, value: 0 },
@@ -510,7 +510,7 @@ export function defaultAuditConfig(): PromotionAuditConfig {
         targetTier: 'sme',
         successMediaUrl: '',
         failMediaUrl: '',
-        attackPower: 8,
+        attackPower: 6,
         satisfactionMod: 1.0,
         description: FIXED_JUDGES_LOCALES[0].descriptions.ko,
         descriptions: FIXED_JUDGES_LOCALES[0].descriptions,
@@ -523,8 +523,8 @@ export function defaultAuditConfig(): PromotionAuditConfig {
         targetTier: 'mid',
         successMediaUrl: '',
         failMediaUrl: '',
-        attackPower: 12,
-        satisfactionMod: 1.1,
+        attackPower: 10,
+        satisfactionMod: 0.98,
         description: FIXED_JUDGES_LOCALES[1].descriptions.ko,
         descriptions: FIXED_JUDGES_LOCALES[1].descriptions,
       },
@@ -536,8 +536,8 @@ export function defaultAuditConfig(): PromotionAuditConfig {
         targetTier: 'large',
         successMediaUrl: '',
         failMediaUrl: '',
-        attackPower: 6,
-        satisfactionMod: 0.9,
+        attackPower: 12,
+        satisfactionMod: 0.95,
         description: FIXED_JUDGES_LOCALES[2].descriptions.ko,
         descriptions: FIXED_JUDGES_LOCALES[2].descriptions,
       },
@@ -550,16 +550,16 @@ export function defaultAuditConfig(): PromotionAuditConfig {
         successMediaUrl: '',
         failMediaUrl: '',
         attackPower: 15,
-        satisfactionMod: 1.2,
+        satisfactionMod: 0.92,
         description: FIXED_JUDGES_LOCALES[3].descriptions.ko,
         descriptions: FIXED_JUDGES_LOCALES[3].descriptions,
       },
     ],
     stageSettings: {
-      sme: { targetSatisfaction: 60, recommendedGrade: 'B', staminaCost: 15, judgeAttackMod: 1.0 },
-      mid: { targetSatisfaction: 80, recommendedGrade: 'A', staminaCost: 20, judgeAttackMod: 1.2 },
-      large: { targetSatisfaction: 100, recommendedGrade: 'S', staminaCost: 25, judgeAttackMod: 1.5 },
-      top: { targetSatisfaction: 120, recommendedGrade: 'S', staminaCost: 30, judgeAttackMod: 2.0 },
+      sme: { targetSatisfaction: 45, recommendedGrade: 'B', staminaCost: 15, judgeAttackMod: 1.0 },
+      mid: { targetSatisfaction: 110, recommendedGrade: 'A', staminaCost: 20, judgeAttackMod: 1.15 },
+      large: { targetSatisfaction: 160, recommendedGrade: 'A', staminaCost: 25, judgeAttackMod: 1.3 },
+      top: { targetSatisfaction: 220, recommendedGrade: 'S', staminaCost: 30, judgeAttackMod: 1.5 },
     },
   }
 }
@@ -626,11 +626,17 @@ function normalizePromotionRule(
 function normalizeTierSpec(raw: unknown, fallback: StationTierSpec): StationTierSpec {
   if (!raw || typeof raw !== 'object') return { ...fallback }
   const row = raw as Record<string, unknown>
+  const maxScoutCreators = Math.max(
+    1,
+    Math.min(12, Math.round(Number(row.maxScoutCreators) ?? fallback.maxScoutCreators)),
+  )
+  const highLowAnte =
+    row.highLowAnte != null && Number.isFinite(Number(row.highLowAnte)) && Number(row.highLowAnte) >= 0
+      ? Math.round(Number(row.highLowAnte))
+      : fallback.highLowAnte
   return {
-    maxScoutCreators: Math.max(
-      1,
-      Math.min(12, Math.round(Number(row.maxScoutCreators) ?? fallback.maxScoutCreators)),
-    ),
+    maxScoutCreators,
+    ...(highLowAnte !== undefined ? { highLowAnte } : {}),
   }
 }
 

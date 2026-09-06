@@ -12,6 +12,8 @@ type StationReviewModalProps = {
   promoted: boolean
   status: StationReviewStatus
   onConfirm: () => void
+  onDecline?: () => void
+  onClose?: () => void
 }
 
 function formatCheckText(
@@ -53,7 +55,7 @@ function formatCheckText(
   return { label, detail }
 }
 
-export function StationReviewModal({ promoted, status, onConfirm }: StationReviewModalProps) {
+export function StationReviewModal({ promoted, status, onConfirm, onDecline, onClose }: StationReviewModalProps) {
   const { t, locale } = useTranslation()
   const maxed = status.next == null
   const assetReward =
@@ -89,12 +91,24 @@ export function StationReviewModal({ promoted, status, onConfirm }: StationRevie
             <span>{t('station.reviewKicker')}</span>
           </div>
 
-          {promoted && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-300 animate-pulse">
-              <span>✨</span>
-              <span>SUCCESS</span>
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {promoted && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-300 animate-pulse">
+                <span>✨</span>
+                <span>SUCCESS</span>
+              </span>
+            )}
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg p-1 text-slate-400 hover:text-slate-100 hover:bg-white/10 transition-colors"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
         {/* 타이틀 */}
@@ -222,20 +236,43 @@ export function StationReviewModal({ promoted, status, onConfirm }: StationRevie
           </p>
         ) : null}
 
-        {/* 확인 버튼 */}
-        <div className="mt-6 flex justify-center">
-          <button
-            type="button"
-            onClick={onConfirm}
-            className={`w-full max-w-[200px] cursor-pointer rounded-xl px-5 py-3 text-sm font-black shadow-lg transition-all hover:scale-105 active:scale-95 ${
-              promoted
-                ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 shadow-amber-500/30 hover:brightness-110'
-                : 'bg-slate-800 text-slate-200 border border-slate-600 hover:bg-slate-700'
-            }`}
-          >
-            {t('station.confirm')}
-          </button>
-        </div>
+        {/* 승급 심사 도전 확인 멘트 및 버튼 영역 */}
+        {promoted && status.next ? (
+          <div className="mt-6 space-y-3">
+            <p className="text-center text-sm font-bold text-amber-300 drop-shadow">
+              {t('station.challengePrompt')}
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              {onDecline && (
+                <button
+                  type="button"
+                  onClick={onDecline}
+                  className="flex-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-800/90 py-3 px-4 text-xs sm:text-sm font-bold text-slate-300 shadow-md hover:bg-slate-700 hover:text-white transition-all active:scale-95"
+                >
+                  {t('station.challengeDecline')}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={onConfirm}
+                className="flex-1 cursor-pointer rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 py-3 px-4 text-xs sm:text-sm font-black text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-all hover:scale-105 active:scale-95 hover:brightness-110"
+              >
+                {t('station.challengeAccept')}
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* 기본 확인 버튼 (미승급 또는 최고 등급일 때) */
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={onConfirm}
+              className="w-full max-w-[200px] cursor-pointer rounded-xl px-5 py-3 text-sm font-black shadow-lg transition-all hover:scale-105 active:scale-95 bg-slate-800 text-slate-200 border border-slate-600 hover:bg-slate-700"
+            >
+              {t('station.confirm')}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

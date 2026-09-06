@@ -1762,7 +1762,8 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 .live-chat-scroller {
   scrollbar-width: thin;
   scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
-  overflow-anchor: none;
+  overflow-anchor: auto;
+  contain: layout;
 }
 
 .live-chat-scroller::-webkit-scrollbar {
@@ -1775,11 +1776,11 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 }
 
 .live-chat-list {
-  contain: content;
+  contain: layout style;
 }
 
 .live-chat-row {
-  transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   will-change: transform, opacity;
 }

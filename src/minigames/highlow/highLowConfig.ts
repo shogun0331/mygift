@@ -184,7 +184,11 @@ export const DEFAULT_HIGH_LOW_CONFIG: HighLowConfigMap = {
 /**
  * 룸의 4가지 아이템 개별 등장 확률(%)을 바탕으로 매 라운드 보상 아이템 롤링
  */
-export function rollRewardItem(config: HighLowRoomConfig): CasinoItem | null {
+export function rollRewardItem(
+  config: HighLowRoomConfig,
+  options?: { allowStaff?: boolean },
+): CasinoItem | null {
+  const allowStaff = options?.allowStaff ?? true
   const rates = config.itemDropRates || {
     peek_card: config.itemDropRate || 20,
     double_payout: config.itemDropRate || 15,
@@ -196,8 +200,10 @@ export function rollRewardItem(config: HighLowRoomConfig): CasinoItem | null {
     { type: 'peek_card', rate: rates.peek_card ?? 20 },
     { type: 'double_payout', rate: rates.double_payout ?? 15 },
     { type: 'loss_shield', rate: rates.loss_shield ?? 10 },
-    { type: 'staff_hire', rate: rates.staff_hire ?? 5 },
   ]
+  if (allowStaff) {
+    candidates.push({ type: 'staff_hire', rate: rates.staff_hire ?? 5 })
+  }
 
   const passedItems = candidates.filter((item) => {
     const rnd = Math.random() * 100

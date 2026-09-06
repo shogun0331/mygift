@@ -176,9 +176,18 @@ export function HighLowEditorPanel({
                 🏢 방송국 등급별 하이-로우 무료 배팅금 (Ante $) 설정
               </h3>
             </div>
-            <p className="text-xs text-slate-400 font-mono">
-              인게임 플레이 시 방송국 등급별로 자동 적용되는 무료 판돈(Ante) 금액입니다.
-            </p>
+            <div className="flex items-center gap-3">
+              <p className="text-xs text-slate-400 font-mono hidden sm:block">
+                인게임 플레이 시 방송국 등급별로 자동 적용되는 무료 판돈(Ante) 금액입니다.
+              </p>
+              <button
+                type="button"
+                onClick={handleSaveConfigs}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 shadow-md shadow-amber-500/20 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+              >
+                💾 배팅금 설정 저장
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">

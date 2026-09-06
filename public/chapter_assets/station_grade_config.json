@@ -1,28 +1,34 @@
 {
   "tiers": {
     "black": {
-      "maxScoutCreators": 2
+      "maxScoutCreators": 2,
+      "highLowAnte": 1000
     },
     "tiny": {
-      "maxScoutCreators": 3
+      "maxScoutCreators": 3,
+      "highLowAnte": 5000
     },
     "sme": {
-      "maxScoutCreators": 5
+      "maxScoutCreators": 5,
+      "highLowAnte": 15000
     },
     "mid": {
-      "maxScoutCreators": 7
+      "maxScoutCreators": 7,
+      "highLowAnte": 100000
     },
     "large": {
-      "maxScoutCreators": 9
+      "maxScoutCreators": 9,
+      "highLowAnte": 500000
     },
     "top": {
-      "maxScoutCreators": 9
+      "maxScoutCreators": 9,
+      "highLowAnte": 1000000
     }
   },
   "promotions": {
     "tiny": {
       "to": "tiny",
-      "requiredViewers": 1000,
+      "requiredViewers": 2000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 1
@@ -39,7 +45,7 @@
     },
     "sme": {
       "to": "sme",
-      "requiredViewers": 5000,
+      "requiredViewers": 10000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 1
@@ -63,7 +69,7 @@
     },
     "mid": {
       "to": "mid",
-      "requiredViewers": 100000,
+      "requiredViewers": 30000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 2
@@ -81,13 +87,13 @@
           "id": "a2",
           "minGrade": "B",
           "count": 2,
-          "enabled": true
+          "enabled": false
         }
       ]
     },
     "large": {
       "to": "large",
-      "requiredViewers": 4000000,
+      "requiredViewers": 150000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 3
@@ -105,13 +111,13 @@
           "id": "a3",
           "minGrade": "A",
           "count": 2,
-          "enabled": true
+          "enabled": false
         }
       ]
     },
     "top": {
       "to": "top",
-      "requiredViewers": 90000000,
+      "requiredViewers": 1000000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 4
@@ -129,7 +135,7 @@
           "id": "s2",
           "minGrade": "S",
           "count": 1,
-          "enabled": true
+          "enabled": false
         }
       ]
     }
@@ -196,7 +202,7 @@
             "blurRegions": []
           }
         },
-        "attackPower": 8,
+        "attackPower": 6,
         "satisfactionMod": 1,
         "description": "전통과 기품, 격식을 엄격하게 심사하는 수석 심사관.",
         "descriptions": {
@@ -269,8 +275,8 @@
             "blurRegions": []
           }
         },
-        "attackPower": 12,
-        "satisfactionMod": 1.1,
+        "attackPower": 10,
+        "satisfactionMod": 0.98,
         "description": "압도적인 스킬과 화려한 무대 퍼포먼스를 중시하는 심사관.",
         "descriptions": {
           "ko": "압도적인 스킬과 화려한 무대 퍼포먼스를 중시하는 심사관.",
@@ -342,8 +348,8 @@
             "blurRegions": []
           }
         },
-        "attackPower": 6,
-        "satisfactionMod": 0.9,
+        "attackPower": 12,
+        "satisfactionMod": 0.95,
         "description": "시청자와의 진정성 있는 소통과 공감을 최우선으로 보는 심사관.",
         "descriptions": {
           "ko": "시청자와의 진정성 있는 소통과 공감을 최우선으로 보는 심사관.",
@@ -416,7 +422,7 @@
           }
         },
         "attackPower": 15,
-        "satisfactionMod": 1.2,
+        "satisfactionMod": 0.92,
         "description": "독보적인 아우라와 치명적인 카리스마 매력을 평가하는 심사관.",
         "descriptions": {
           "ko": "독보적인 아우라와 치명적인 카리스마 매력을 평가하는 심사관.",
@@ -431,32 +437,32 @@
     ],
     "stageSettings": {
       "sme": {
-        "targetSatisfaction": 30,
+        "targetSatisfaction": 45,
         "recommendedGrade": "B",
-        "staminaCost": 15,
+        "staminaCost": 5,
         "judgeAttackMod": 1
       },
       "mid": {
-        "targetSatisfaction": 80,
+        "targetSatisfaction": 110,
         "recommendedGrade": "A",
         "staminaCost": 20,
-        "judgeAttackMod": 1.2
+        "judgeAttackMod": 1.15
       },
       "large": {
-        "targetSatisfaction": 100,
-        "recommendedGrade": "S",
+        "targetSatisfaction": 160,
+        "recommendedGrade": "A",
         "staminaCost": 25,
-        "judgeAttackMod": 1.5
+        "judgeAttackMod": 1.3
       },
       "top": {
-        "targetSatisfaction": 120,
+        "targetSatisfaction": 220,
         "recommendedGrade": "S",
         "staminaCost": 30,
-        "judgeAttackMod": 2
+        "judgeAttackMod": 1.5
       }
     }
   },
-  "topClearViewers": 750000,
+  "topClearViewers": 10000000,
   "slotUnlockPrices": [
     3000,
     3000,

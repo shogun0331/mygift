@@ -81,6 +81,8 @@ export type GameSave = {
   /** 카지노 쿨다운 턴 카운트 (0~3) 및 모달 상태 */
   casinoTurnCount?: number
   showCasinoModal?: boolean
+  /** 방송국 승급 심사 실패 후 재도전 쿨다운 (턴 단위) */
+  stationAuditCooldown?: number
 }
 
 export type TopCharacterMeta = {
