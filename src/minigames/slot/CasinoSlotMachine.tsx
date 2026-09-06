@@ -165,17 +165,20 @@ export function CasinoSlotMachine({
 
   // 레버 당기기 & 스핀 동작 (무료 3회 도전)
   const handleSpin = () => {
-    if (isSpinning) return
     const isFreeSpin = freeSpinsLeft > 0
+    let nextSpinsLeft = spinsLeft
+    let nextFreeSpinsLeft = freeSpinsLeft
 
     let turnForThisSpin = currentTurn
     if (!isFreeSpin) {
       if (spinsLeft <= 0) return
       turnForThisSpin = Math.min(3, 4 - spinsLeft)
+      nextSpinsLeft = spinsLeft - 1
       setCurrentTurn(turnForThisSpin)
-      setSpinsLeft((prev) => prev - 1)
+      setSpinsLeft(nextSpinsLeft)
     } else {
-      setFreeSpinsLeft((prev) => prev - 1)
+      nextFreeSpinsLeft = freeSpinsLeft - 1
+      setFreeSpinsLeft(nextFreeSpinsLeft)
     }
 
     // 회전 시작 시 기존 대사 창 닫기
@@ -332,29 +335,27 @@ export function CasinoSlotMachine({
       }
 
       if (result.freeSpinsAwarded > 0) {
+        nextFreeSpinsLeft += result.freeSpinsAwarded
         setFreeSpinsLeft((prev) => prev + result.freeSpinsAwarded)
       }
 
-      // 마지막 3번째 슬롯 회전 완료 후 당첨이 0원이면 패배 팝업 출력 (누적 참여 10% 보상 지급)
-      const remainingSpins = isFreeSpin ? spinsLeft : spinsLeft - 1
-      if (remainingSpins <= 0 && result.freeSpinsAwarded === 0 && freeSpinsLeft <= 0) {
-        if (updatedTotalWon === 0) {
-          const defeatBonus = Math.max(10, Math.round(baseReward * 0.1))
-          onUpdateAssets(userAssetsRef.current + defeatBonus)
-          setTimeout(() => {
-            setShowDefeatModal(true)
-            const defeatIdx = getNextDialogueIndex('loss')
-            const defeatDealerMedia = getActiveDealerMedia(dealerConfig, (turnForThisSpin - 1) * 3)
-            setDealerDialoguePlay({
-              tier: 1,
-              index: defeatIdx,
-              dealerName: dealerConfig.dealerName || '전설의 딜러',
-              dealerMediaUrl: defeatDealerMedia?.url || dealerConfig.dealerMediaUrl,
-              dealerMediaType: defeatDealerMedia?.type || dealerConfig.dealerMediaType,
-              isLoss: true,
-            })
-          }, 400)
-        }
+      // 마지막 3회 기회가 모두 끝나고 세션 총 당첨금이 0원이면 패배 팝업 및 패배 대본/음성 바로 재생
+      const isGameOver = nextSpinsLeft <= 0 && nextFreeSpinsLeft <= 0
+      if (isGameOver && updatedTotalWon === 0) {
+        const defeatBonus = Math.max(10, Math.round(baseReward * 0.1))
+        onUpdateAssets(userAssetsRef.current + defeatBonus)
+
+        setShowDefeatModal(true)
+        const defeatIdx = getNextDialogueIndex('loss')
+        const defeatDealerMedia = getActiveDealerMedia(dealerConfig, (turnForThisSpin - 1) * 3)
+        setDealerDialoguePlay({
+          tier: 1,
+          index: defeatIdx,
+          dealerName: dealerConfig.dealerName || '전설의 딜러',
+          dealerMediaUrl: defeatDealerMedia?.url || dealerConfig.dealerMediaUrl,
+          dealerMediaType: defeatDealerMedia?.type || dealerConfig.dealerMediaType,
+          isLoss: true,
+        })
       }
     }, 1900)
   }
