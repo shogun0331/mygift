@@ -15,6 +15,7 @@ import {
   getActiveDealerMedia,
 } from './highLowConfig'
 import { useTranslation } from '../../locales/i18n'
+import { HighLowDealerDialogue, type DealerDialoguePlay } from './HighLowDealerDialogue'
 import { resolveMediaSrc } from '../../game/mediaUrl'
 import {
   playCardFlipSound,
@@ -641,7 +642,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   initialRoomId = 'legend',
   customAnte,
 }) => {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
+  const [dealerDialoguePlay, setDealerDialoguePlay] = useState<DealerDialoguePlay | null>(null)
   const roomConfigs = configs
   const [selectedRoomId, setSelectedRoomId] = useState<HighLowRoomId>(initialRoomId)
   const [phase, setPhase] = useState<GamePhase>('DEALING_DEALER')
@@ -975,6 +977,25 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
             addLog(`🔥 6연승 달성! 딜러 수위 3 미디어가 해금됩니다!`, 'win')
           }
           playHighLowWinSound(nextWins >= 3)
+
+          // 딜러 승리 수위별 랜덤 대사 & 음성 재생 트리거
+          let tier: 1 | 2 | 3 = 1
+          if (nextWins >= 6) {
+            tier = 3
+          } else if (nextWins >= 3) {
+            tier = 2
+          } else {
+            tier = 1
+          }
+          const randIdx = Math.floor(Math.random() * 5)
+          const activeMedia = getActiveDealerMedia(currentConfig, nextWins)
+          setDealerDialoguePlay({
+            tier,
+            index: randIdx,
+            dealerName: currentConfig.name || '딜러',
+            dealerMediaUrl: activeMedia?.url,
+          })
+
           return nextWins
         })
 
@@ -1761,6 +1782,13 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         <span>HIGH-LOW DUEL</span>
       </div>
 
+      {dealerDialoguePlay && (
+        <HighLowDealerDialogue
+          play={dealerDialoguePlay}
+          locale={locale}
+          onClose={() => setDealerDialoguePlay(null)}
+        />
+      )}
     </div>
   )
 }
