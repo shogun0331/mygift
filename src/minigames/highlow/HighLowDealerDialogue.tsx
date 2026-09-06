@@ -10,7 +10,13 @@ const dialogueModules = import.meta.glob<string[]>('./dialogues/*.json', {
   import: 'default',
 })
 
-function getDialogueText(tier: 1 | 2 | 3, locale: string, index: number): string {
+function getDialogueText(tier: 1 | 2 | 3, locale: string, index: number, isLoss?: boolean): string {
+  if (isLoss) {
+    const key = `./dialogues/casino_lose_${locale}.json`
+    const fallbackKey = `./dialogues/casino_lose_KO.json`
+    const lines = dialogueModules[key] || dialogueModules[fallbackKey] || []
+    return lines[index] || lines[0] || '...'
+  }
   const key = `./dialogues/casino_dealer_tier${tier}_${locale}.json`
   const fallbackKey = `./dialogues/casino_dealer_tier${tier}_KO.json`
   const lines = dialogueModules[key] || dialogueModules[fallbackKey] || []
@@ -23,6 +29,7 @@ export type DealerDialoguePlay = {
   dealerName: string
   dealerMediaUrl?: string
   dealerMediaType?: 'image' | 'video'
+  isLoss?: boolean
 }
 
 type Props = {
@@ -32,7 +39,7 @@ type Props = {
 }
 
 export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
-  const { tier, index, dealerName, dealerMediaUrl, dealerMediaType } = play
+  const { tier, index, dealerName, dealerMediaUrl, dealerMediaType, isLoss } = play
   const displayDealerName =
     dealerName && !dealerName.includes('룸') && !dealerName.includes('Room')
       ? dealerName
@@ -42,11 +49,11 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
   const closingRef = useRef(false)
 
   // Synchronous text retrieval - guaranteed non-empty on first render frame
-  const text = getDialogueText(tier, locale, index)
+  const text = getDialogueText(tier, locale, index, isLoss)
 
-  const voiceNum = (tier - 1) * 5 + index + 1
-  const voiceFileName = String(voiceNum).padStart(2, '0') + '.wav'
-  const voiceUrl = `/casino/voice/${voiceFileName}`
+  const voiceUrl = isLoss
+    ? `/casino/voice/L0${index + 1}.wav`
+    : `/casino/voice/${String((tier - 1) * 5 + index + 1).padStart(2, '0')}.wav`
 
   const isVideo =
     dealerMediaType === 'video' ||
@@ -96,7 +103,7 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
       window.cancelAnimationFrame(raf)
       stopAudio()
     }
-  }, [tier, index, locale, voiceUrl])
+  }, [tier, index, locale, voiceUrl, isLoss])
 
   const requestClose = () => {
     if (closingRef.current) return
@@ -107,6 +114,14 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
 
   if (typeof document === 'undefined') return null
 
+  const borderClass = isLoss ? 'border-2 border-rose-500/80' : 'border-2 border-amber-400/80'
+  const shadowClass = isLoss
+    ? 'shadow-[0_0_50px_rgba(244,63,94,0.6)]'
+    : 'shadow-[0_0_50px_rgba(245,158,11,0.6)]'
+  const nameColorClass = isLoss ? 'text-rose-300' : 'text-amber-300'
+  const voiceColorClass = isLoss ? 'text-rose-400' : 'text-amber-400'
+  const badgeBgClass = isLoss ? 'bg-rose-500 text-white' : 'bg-amber-400 text-slate-950'
+
   return createPortal(
     <div
       className={`pointer-events-none fixed inset-x-0 bottom-6 sm:bottom-10 z-[99999] flex justify-center px-4 transition-all duration-300 select-none ${
@@ -115,7 +130,7 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
     >
       <div
         onClick={requestClose}
-        className="pointer-events-auto flex w-full max-w-xl items-start gap-3.5 sm:gap-4 rounded-2xl border-2 border-amber-400/80 bg-slate-950/95 p-4 sm:p-5 text-left shadow-[0_0_50px_rgba(245,158,11,0.6)] backdrop-blur-2xl cursor-pointer hover:border-amber-300 transition-all group"
+        className={`pointer-events-auto flex w-full max-w-xl items-start gap-3.5 sm:gap-4 rounded-2xl ${borderClass} bg-slate-950/95 p-4 sm:p-5 text-left ${shadowClass} backdrop-blur-2xl cursor-pointer hover:brightness-110 transition-all group`}
       >
         <div className="relative shrink-0">
           {dealerMediaUrl ? (
@@ -140,22 +155,22 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
               🎩
             </div>
           )}
-          <span className="absolute -right-1 -top-1 rounded-full border border-amber-300/80 bg-amber-400 px-2 py-0.5 text-[9px] font-black tracking-wider text-slate-950 shadow-md">
+          <span className={`absolute -right-1 -top-1 rounded-full border border-amber-300/80 ${badgeBgClass} px-2 py-0.5 text-[9px] font-black tracking-wider shadow-md`}>
             DEALER
           </span>
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between border-b border-amber-400/40 pb-1.5">
-            <span className="text-xs sm:text-sm font-black text-amber-300 uppercase tracking-wider font-mono">
+            <span className={`text-xs sm:text-sm font-black ${nameColorClass} uppercase tracking-wider font-mono`}>
               {displayDealerName}
             </span>
-            <span className="text-[10px] sm:text-xs font-bold text-amber-400 animate-pulse flex items-center gap-1">
+            <span className={`text-[10px] sm:text-xs font-bold ${voiceColorClass} animate-pulse flex items-center gap-1`}>
               <span>🔊</span> <span>VOICE PLAYING</span>
             </span>
           </div>
 
-          <p className="mt-2 text-sm sm:text-base font-bold leading-snug text-amber-50 font-sans tracking-tight drop-shadow">
+          <p className="mt-2 text-sm sm:text-base font-bold leading-snug text-slate-100 font-sans tracking-tight drop-shadow">
             "{text}"
           </p>
 

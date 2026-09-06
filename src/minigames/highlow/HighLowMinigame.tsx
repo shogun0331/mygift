@@ -702,7 +702,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   const activeDealerMedia = getActiveDealerMedia(currentConfig, consecutiveWins)
 
   // 게임 로그 및 직전 대사 중복 방지 ref
-  const lastDialogueRef = useRef<{ tier: number; index: number } | null>(null)
+  const lastDialogueRef = useRef<{ tier: number; index: number; isLoss?: boolean } | null>(null)
   const [logs, setLogs] = useState<LogEntry[]>([])
   const logEndRef = useRef<HTMLDivElement | null>(null)
 
@@ -1052,6 +1052,25 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
             'loss'
           )
           setTotalWinnings(0)
+
+          // 딜러 패배 대사 & 음성 재생 트리거 (연속 중복 방지)
+          let randIdx = Math.floor(Math.random() * 5)
+          const last = lastDialogueRef.current
+          if (last && last.isLoss && last.index === randIdx) {
+            const available = [0, 1, 2, 3, 4].filter((i) => i !== last.index)
+            randIdx = available[Math.floor(Math.random() * available.length)]
+          }
+          lastDialogueRef.current = { tier: 1, index: randIdx, isLoss: true }
+
+          const activeMedia = getActiveDealerMedia(currentConfig, 0)
+          setDealerDialoguePlay({
+            tier: 1,
+            index: randIdx,
+            dealerName: currentConfig.dealerName || currentConfig.name || '딜러',
+            dealerMediaUrl: activeMedia?.url || currentConfig.dealerMediaUrl,
+            dealerMediaType: activeMedia?.type || currentConfig.dealerMediaType,
+            isLoss: true,
+          })
         }
       }
 
