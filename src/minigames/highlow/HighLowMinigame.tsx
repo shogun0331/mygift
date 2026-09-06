@@ -701,7 +701,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
   const activeDealerMedia = getActiveDealerMedia(currentConfig, consecutiveWins)
 
-  // 게임 로그
+  // 게임 로그 및 직전 대사 중복 방지 ref
+  const lastDialogueRef = useRef<{ tier: number; index: number } | null>(null)
   const [logs, setLogs] = useState<LogEntry[]>([])
   const logEndRef = useRef<HTMLDivElement | null>(null)
 
@@ -978,7 +979,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           }
           playHighLowWinSound(nextWins >= 3)
 
-          // 딜러 승리 수위별 랜덤 대사 & 음성 재생 트리거
+          // 딜러 승리 수위별 랜덤 대사 & 음성 재생 트리거 (연속 중복 방지)
           let tier: 1 | 2 | 3 = 1
           if (nextWins >= 6) {
             tier = 3
@@ -987,7 +988,14 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           } else {
             tier = 1
           }
-          const randIdx = Math.floor(Math.random() * 5)
+          let randIdx = Math.floor(Math.random() * 5)
+          const last = lastDialogueRef.current
+          if (last && last.tier === tier && last.index === randIdx) {
+            const available = [0, 1, 2, 3, 4].filter((i) => i !== last.index)
+            randIdx = available[Math.floor(Math.random() * available.length)]
+          }
+          lastDialogueRef.current = { tier, index: randIdx }
+
           const activeMedia = getActiveDealerMedia(currentConfig, nextWins)
           setDealerDialoguePlay({
             tier,
