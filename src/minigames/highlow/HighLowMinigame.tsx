@@ -1157,11 +1157,11 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
             ♠
           </div>
           <div>
-            <span className="text-[9px] sm:text-[10px] font-mono font-bold tracking-widest text-amber-400 uppercase">
-              {t('casino.highlow.specialStage', { name: t(`casino.highlow.rooms.${selectedRoomId}.name`, { defaultValue: currentConfig.name }) })}
+            <span className="text-[10px] font-mono font-bold tracking-widest text-amber-400 uppercase">
+              {currentConfig.name}
             </span>
             <h2 className="text-lg sm:text-2xl font-black tracking-wider bg-gradient-to-r from-yellow-100 via-amber-300 to-amber-200 bg-clip-text text-transparent drop-shadow">
-              {t('casino.highlow.duelTable')}
+              하이로우 듀얼
             </h2>
           </div>
         </div>
@@ -1176,8 +1176,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           <div className="hidden lg:flex flex-col justify-between p-2 sm:p-3 font-mono text-xs overflow-hidden bg-transparent border-none shadow-none">
             <div className="space-y-2.5 flex-1 flex flex-col min-h-0">
               <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest border-b border-emerald-400/40 pb-1.5 flex items-center justify-between shrink-0">
-                <span>{t('casino.highlow.liveDealerProfile')}</span>
-                <span className="text-[10px] text-emerald-300 font-bold bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-400/40">{t('casino.highlow.online')}</span>
+                <span>딜러 프로필</span>
               </h4>
 
               {/* Live Dealer CCTV Media Box (세로 3:4 럭셔리 대형 스탠딩 카지노 카드 프레임!) */}
@@ -1240,9 +1239,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     <h5 className="text-[11px] font-black text-slate-100">{currentConfig.dealerName}</h5>
                     <span className="text-[9px] text-amber-400 font-bold">{currentConfig.dealerTitle}</span>
                   </div>
-                  <span className="text-[9px] font-bold text-amber-300 bg-emerald-900/80 px-2 py-0.5 rounded-full border border-amber-400/40">
-                    ANTE ${currentConfig.ante.toLocaleString()}
-                  </span>
                 </div>
               </div>
 
@@ -1276,11 +1272,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                   </div>
                 )}
               </div>
-            </div>
-
-            <div className="pt-3 border-t border-emerald-400/30 text-[10px] text-emerald-300/80 font-bold uppercase tracking-wider flex items-center justify-between">
-              <span>HIGH-LOW DUEL SALON</span>
-              <span className="text-amber-400 font-black">VIP STAGE</span>
             </div>
           </div>
 
@@ -1518,22 +1509,15 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         <div className="hidden lg:flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl border-2 border-amber-400/60 bg-gradient-to-b from-slate-900/90 via-slate-950/95 to-slate-950 backdrop-blur-md font-mono text-xs shadow-[0_0_35px_rgba(245,158,11,0.25)] relative overflow-hidden h-full min-h-0">
           <div className="space-y-2.5 flex-1 flex flex-col min-h-0 overflow-hidden">
             {/* Header Title */}
-            <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest border-b border-amber-400/40 pb-2.5 flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <span className="text-amber-300">★</span>
-                <span>{t('casino.highlow.tableStats')}</span>
-                <span className="text-amber-300">★</span>
-              </span>
-              <span className="text-[10px] text-amber-300 font-bold bg-slate-950/90 px-2.5 py-0.5 rounded-full border border-amber-400/40 shadow-sm">
-                {t('casino.highlow.realMoney')}
-              </span>
+            <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest border-b border-amber-400/40 pb-2 flex items-center justify-between">
+              <span>테이블 통계</span>
             </h4>
 
             <div className="space-y-3.5">
               {/* CURRENT ANTE BET Card */}
               <div className="relative p-3 rounded-xl bg-gradient-to-br from-slate-950 via-slate-900/80 to-slate-950 border border-amber-400/40 shadow-inner group">
                 <div className="flex items-center justify-between">
-                  <p className="text-[10px] text-amber-400/80 font-bold uppercase tracking-wider">무료 판돈 (ANTE)</p>
+                  <p className="text-[10px] text-amber-400/80 font-bold uppercase tracking-wider">기본 판돈 (무료)</p>
                 </div>
                 <p className="text-xl font-black bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-400 bg-clip-text text-transparent mt-1">
                   ${effectiveBet.toLocaleString()}
@@ -1565,9 +1549,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                 <div className="flex items-center justify-between">
                   <p className="text-[10px] text-amber-300 font-black uppercase tracking-widest flex items-center gap-1">
                     <span>🏆</span>
-                    <span>{t('casino.highlow.myStationAssets')}</span>
+                    <span>누적 당첨 금액</span>
                   </p>
-                  <span className="text-xs text-amber-400 font-bold">{t('casino.highlow.vault')}</span>
                 </div>
 
                 <div className="text-2xl font-black text-amber-300 mt-1 drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]">
@@ -1576,7 +1559,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
               </div>
               <div className="p-3 rounded-xl bg-slate-950/90 border border-amber-400/40 space-y-2 shadow-inner">
                 <div className="flex justify-between items-center border-b border-slate-800 pb-1.5">
-                  <span className="text-slate-400 text-[10px] font-bold tracking-wider uppercase">{t('casino.highlow.record')}</span>
+                  <span className="text-slate-400 text-[10px] font-bold tracking-wider uppercase">전적</span>
                   <span className="text-slate-100 font-black text-xs tracking-wider">
                     <span className="text-amber-300">{stats.wins}W</span> / <span className="text-rose-400">{stats.losses}L</span> / <span className="text-cyan-300">{stats.draws}D</span>
                   </span>
@@ -1584,7 +1567,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
                 <div className="space-y-1 pt-0.5">
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-400 text-[10px] font-bold tracking-wider uppercase">{t('casino.highlow.winRate')}</span>
+                    <span className="text-slate-400 text-[10px] font-bold tracking-wider uppercase">승률</span>
                     <span className="text-amber-300 font-black text-xs">{winRate}%</span>
                   </div>
 
@@ -1602,10 +1585,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                 <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 shrink-0">
                   <span className="text-xs font-black text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
                     <span>🎒</span>
-                    <span>{t('casino.highlow.myInventory', { count: inventory.length })}</span>
-                  </span>
-                  <span className="text-[10px] text-amber-400/80 font-bold bg-slate-900 px-2 py-0.5 rounded-full border border-amber-400/30">
-                    {t('casino.highlow.clickToUse')}
+                    <span>내 인벤토리 ({inventory.length})</span>
                   </span>
                 </div>
 
@@ -1664,14 +1644,14 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                         <div className="flex items-center gap-2.5 min-w-0 flex-1">
                           <span className="text-xl sm:text-2xl shrink-0 group-hover:scale-110 transition-transform">{info.icon}</span>
                           <span className="text-xs sm:text-sm font-black text-amber-200 group-hover:text-amber-300 tracking-wide">
-                            {t(`casino.highlow.items.${type}.name`, { defaultValue: info.name })}
+                            {info.name}
                           </span>
                         </div>
 
                         <div className="flex items-center gap-2 shrink-0">
                           {isAlreadyActive ? (
                             <span className="text-[10px] font-black text-slate-950 bg-cyan-400 px-2.5 py-0.5 rounded-full uppercase shadow animate-pulse">
-                              {t('casino.highlow.inUse')}
+                              사용중
                             </span>
                           ) : (
                             <span
@@ -1698,8 +1678,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
       {/* Footer Info */}
       <div className="relative z-10 flex shrink-0 items-center justify-between text-xs font-mono text-amber-400/80 border-t border-amber-400/30 pt-3">
-        <span>🎰 SALON: {t(`casino.highlow.rooms.${selectedRoomId}.name`, { defaultValue: currentConfig.name })}</span>
-        <span>LAS VEGAS VIP HIGH-LOW CASINO CLUB</span>
+        <span>{currentConfig.name}</span>
+        <span>HIGH-LOW DUEL</span>
       </div>
 
     </div>
