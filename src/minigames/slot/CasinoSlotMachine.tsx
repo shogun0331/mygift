@@ -178,19 +178,8 @@ export function CasinoSlotMachine({
       setFreeSpinsLeft((prev) => prev - 1)
     }
 
-    // 턴할 때마다 딜러 미디어 수위 변경 및 대사/보이스 연동
-    const turnTier = Math.min(3, Math.max(1, turnForThisSpin)) as 1 | 2 | 3
-    const turnConsecutive = (turnTier - 1) * 3
-    const spinDealerMedia = getActiveDealerMedia(dealerConfig, turnConsecutive)
-    const dialogueIdx = getNextDialogueIndex(`tier${turnTier}` as any)
-
-    setDealerDialoguePlay({
-      tier: turnTier,
-      index: dialogueIdx,
-      dealerName: dealerConfig.dealerName || '전설의 딜러',
-      dealerMediaUrl: spinDealerMedia?.url || dealerConfig.dealerMediaUrl,
-      dealerMediaType: spinDealerMedia?.type || dealerConfig.dealerMediaType,
-    })
+    // 회전 시작 시 기존 대사 창 닫기
+    setDealerDialoguePlay(null)
 
     // 초기화
     setWinTier(null)
@@ -245,6 +234,20 @@ export function CasinoSlotMachine({
         onUpdateAssets(userAssetsRef.current + result.totalWinAmount)
         updatedTotalWon = sessionTotalWon + result.totalWinAmount
         setSessionTotalWon(updatedTotalWon)
+
+        // 릴이 완전히 멈추고 당첨이 확정되었을 때 딜러 승리 대사/보이스 재생
+        const turnTier = Math.min(3, Math.max(1, turnForThisSpin)) as 1 | 2 | 3
+        const turnConsecutive = (turnTier - 1) * 3
+        const spinDealerMedia = getActiveDealerMedia(dealerConfig, turnConsecutive)
+        const dialogueIdx = getNextDialogueIndex(`tier${turnTier}` as any)
+
+        setDealerDialoguePlay({
+          tier: turnTier,
+          index: dialogueIdx,
+          dealerName: dealerConfig.dealerName || '전설의 딜러',
+          dealerMediaUrl: spinDealerMedia?.url || dealerConfig.dealerMediaUrl,
+          dealerMediaType: spinDealerMedia?.type || dealerConfig.dealerMediaType,
+        })
 
         // 당첨 등급(Tier) 판정
         let currentTier: 'small' | 'medium' | 'big' | 'jackpot' = 'small'
@@ -341,12 +344,13 @@ export function CasinoSlotMachine({
           setTimeout(() => {
             setShowDefeatModal(true)
             const defeatIdx = getNextDialogueIndex('loss')
+            const defeatDealerMedia = getActiveDealerMedia(dealerConfig, (turnForThisSpin - 1) * 3)
             setDealerDialoguePlay({
               tier: 1,
               index: defeatIdx,
               dealerName: dealerConfig.dealerName || '전설의 딜러',
-              dealerMediaUrl: spinDealerMedia?.url || dealerConfig.dealerMediaUrl,
-              dealerMediaType: spinDealerMedia?.type || dealerConfig.dealerMediaType,
+              dealerMediaUrl: defeatDealerMedia?.url || dealerConfig.dealerMediaUrl,
+              dealerMediaType: defeatDealerMedia?.type || dealerConfig.dealerMediaType,
               isLoss: true,
             })
           }, 400)
