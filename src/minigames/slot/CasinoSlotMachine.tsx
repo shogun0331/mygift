@@ -22,7 +22,8 @@ import {
 } from '../../game/uiSfx'
 import { useTranslation } from '../../locales/i18n'
 import { resolveMediaSrc } from '../../game/mediaUrl'
-import { DEFAULT_HIGH_LOW_CONFIG, getActiveDealerMedia } from '../highlow/highLowConfig'
+import { DEFAULT_HIGH_LOW_CONFIG, getActiveDealerMedia, type HighLowRoomId } from '../highlow/highLowConfig'
+import { loadHighLowConfig } from '../highlow/highLowStore'
 import { HighLowDealerDialogue, type DealerDialoguePlay } from '../highlow/HighLowDealerDialogue'
 
 export type CasinoSlotMachineProps = {
@@ -67,8 +68,15 @@ export function CasinoSlotMachine({
   // 등급별 기본 보상 기준금 (3회 무료 도전)
   const baseReward = getBetAmountByGrade(stationGrade)
 
-  // 딜러 설정 (하이로우 VIP 전설 딜러 자산 활용)
-  const dealerConfig = DEFAULT_HIGH_LOW_CONFIG.legend
+  // 하이로우 미디어 등록 딜러 설정 로드
+  const [highLowConfigMap] = useState(() => loadHighLowConfig())
+  const [selectedRoomId, setSelectedRoomId] = useState<HighLowRoomId>('legend')
+
+  // 선택된 하이로우 딜러 설정 (자산 및 미디어)
+  const dealerConfig =
+    highLowConfigMap[selectedRoomId] ||
+    DEFAULT_HIGH_LOW_CONFIG[selectedRoomId] ||
+    DEFAULT_HIGH_LOW_CONFIG.legend
 
   const [spinsLeft, setSpinsLeft] = useState(3)
   const [freeSpinsLeft, setFreeSpinsLeft] = useState(0)
@@ -318,10 +326,12 @@ export function CasinoSlotMachine({
         setFreeSpinsLeft((prev) => prev + result.freeSpinsAwarded)
       }
 
-      // 마지막 3번째 슬롯 회전 완료 후 당첨이 0원이면 패배 팝업 출력!
+      // 마지막 3번째 슬롯 회전 완료 후 당첨이 0원이면 패배 팝업 출력 (누적 참여 10% 보상 지급)
       const remainingSpins = isFreeSpin ? spinsLeft : spinsLeft - 1
       if (remainingSpins <= 0 && result.freeSpinsAwarded === 0 && freeSpinsLeft <= 0) {
         if (updatedTotalWon === 0) {
+          const defeatBonus = Math.max(10, Math.round(baseReward * 0.1))
+          onUpdateAssets(userAssetsRef.current + defeatBonus)
           setTimeout(() => {
             setShowDefeatModal(true)
             const defeatIdx = getNextDialogueIndex('loss')
@@ -402,6 +412,22 @@ export function CasinoSlotMachine({
         </div>
 
         <div className="flex items-center gap-3">
+          {/* 하이로우 등록 딜러 셀렉터 */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-400/50 bg-slate-900/90 text-amber-300 font-bold text-xs shadow-inner">
+            <span className="text-[11px] text-amber-400 font-mono hidden md:inline">🎩 딜러:</span>
+            <select
+              value={selectedRoomId}
+              onChange={(e) => setSelectedRoomId(e.target.value as HighLowRoomId)}
+              className="bg-transparent text-yellow-200 font-black text-xs focus:outline-none cursor-pointer"
+            >
+              {Object.values(highLowConfigMap).map((cfg) => (
+                <option key={cfg.id} value={cfg.id} className="bg-slate-950 text-slate-100 font-bold">
+                  {cfg.dealerName} ({cfg.dealerTitle})
+                </option>
+              ))}
+            </select>
+          </div>
+
           <button
             onClick={() => setShowPaytable(true)}
             className="px-3.5 py-1.5 rounded-xl border border-amber-300/80 bg-gradient-to-b from-amber-400/25 via-yellow-500/15 to-amber-600/30 text-amber-300 hover:text-yellow-200 hover:border-yellow-200 hover:bg-amber-400/40 text-xs font-black shadow-[0_0_12px_rgba(245,158,11,0.35)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
@@ -832,12 +858,12 @@ export function CasinoSlotMachine({
               </span>
 
               <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.8)] mt-1">
-                +$0
+                +${Math.max(10, Math.round(baseReward * 0.1)).toLocaleString()}
               </div>
             </div>
 
             <div className="w-full p-3.5 rounded-2xl bg-rose-950/70 border border-rose-500/50 text-xs text-rose-200 text-center font-medium leading-relaxed">
-              💀 패배! 3회 슬롯 도전 중 당첨 라인이 발생하지 않았습니다.
+              💀 패배! 3회 슬롯 도전 중 당첨 라인이 발생하지 않았습니다. (누적 참여 10% 위로금 지급)
             </div>
 
             <div className="flex items-center gap-2.5 w-full pt-1">
