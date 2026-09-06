@@ -1,4 +1,4 @@
-import { useState, useRef, type DragEvent, type ChangeEvent } from 'react'
+import { useState, useEffect, useRef, type DragEvent, type ChangeEvent } from 'react'
 import { saveHighLowMediaFile, resolveHighLowMediaUrl } from './highLowAssetService'
 
 interface HighLowDealerSlotProps {
@@ -24,7 +24,13 @@ export function HighLowDealerSlot({
 }: HighLowDealerSlotProps) {
   const [isDragOver, setIsDragOver] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  // Clear local blob preview when mediaUrl prop changes externally
+  useEffect(() => {
+    setLocalPreviewUrl(null)
+  }, [mediaUrl])
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     if (!editable) return
@@ -51,8 +57,14 @@ export function HighLowDealerSlot({
   const processFile = async (file: File) => {
     try {
       setIsProcessing(true)
+      // 1. Instant preview URL
+      const tempUrl = URL.createObjectURL(file)
+      setLocalPreviewUrl(tempUrl)
+
+      // 2. Persistent copy to project assets folder
+      const isVideo = file.type.startsWith('video/')
       const saved = await saveHighLowMediaFile(file, stagePrefix)
-      onMediaChange?.(saved.url, saved.type)
+      onMediaChange?.(saved.url, isVideo ? 'video' : 'image')
     } catch (err) {
       console.error('[HighLowDealerSlot] Failed to process file:', err)
     } finally {
@@ -79,10 +91,20 @@ export function HighLowDealerSlot({
     }
   }
 
-  const resolvedSrc = resolveHighLowMediaUrl(mediaUrl)
+  const activeSrc = localPreviewUrl || resolveHighLowMediaUrl(mediaUrl)
 
   return (
-    <div className="relative flex flex-col items-center justify-center">
+    <div
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`relative flex flex-col items-center justify-center w-full p-3 rounded-2xl border-2 transition-all duration-300 ${
+        isDragOver
+          ? 'border-pink-400 bg-pink-950/40 ring-4 ring-pink-500/50 scale-[1.02]'
+          : 'border-transparent bg-transparent'
+      }`}
+    >
       {/* 숨겨진 파일 선택 Input */}
       {editable && (
         <input
@@ -97,27 +119,18 @@ export function HighLowDealerSlot({
       {/* 딜러 아바타 미디어 박스 */}
       <div
         onClick={() => editable && !isProcessing && fileInputRef.current?.click()}
-        onDragEnter={handleDragEnter}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
         className={`relative flex items-center justify-center w-28 h-28 sm:w-32 sm:h-32 rounded-full border-2 transition-all duration-300 overflow-hidden shadow-[0_0_25px_rgba(236,72,153,0.35)] ${
           editable ? 'cursor-pointer group' : ''
         } ${
           isDragOver
-            ? 'border-pink-400 scale-105 bg-pink-950/40 ring-4 ring-pink-500/50'
+            ? 'border-pink-300 scale-105 shadow-[0_0_35px_rgba(244,114,182,0.8)]'
             : 'border-pink-500/60 bg-slate-900/90 hover:border-pink-400'
         }`}
       >
-        {isProcessing ? (
-          <div className="flex flex-col items-center justify-center text-pink-300 gap-1 p-2">
-            <span className="animate-spin text-xl">⏳</span>
-            <span className="text-[10px] font-mono font-bold">복사 중...</span>
-          </div>
-        ) : resolvedSrc ? (
+        {activeSrc ? (
           mediaType === 'video' ? (
             <video
-              src={resolvedSrc}
+              src={activeSrc}
               autoPlay
               loop
               muted
@@ -126,7 +139,7 @@ export function HighLowDealerSlot({
             />
           ) : (
             <img
-              src={resolvedSrc}
+              src={activeSrc}
               alt={dealerName}
               className="w-full h-full object-cover rounded-full"
             />
@@ -162,7 +175,7 @@ export function HighLowDealerSlot({
       </div>
 
       {/* 딜러 이름 & 타이틀 */}
-      <div className="mt-2 text-center">
+      <div className="mt-2 text-center pointer-events-none">
         <span className="inline-block px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-widest text-pink-400 bg-pink-950/60 border border-pink-500/30 rounded-full mb-0.5">
           {dealerTitle}
         </span>
@@ -173,7 +186,7 @@ export function HighLowDealerSlot({
 
       {/* 딜러 대사/상태 박스 */}
       {statusMessage && (
-        <div className="mt-1.5 px-3 py-1 bg-slate-900/90 border border-pink-500/20 rounded-md shadow-lg text-[11px] font-mono text-cyan-300 animate-pulse">
+        <div className="mt-1.5 px-3 py-1 bg-slate-900/90 border border-pink-500/20 rounded-md shadow-lg text-[11px] font-mono text-cyan-300 animate-pulse pointer-events-none">
           💬 {statusMessage}
         </div>
       )}
