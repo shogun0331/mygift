@@ -1236,19 +1236,19 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                 {/* Stage / Consecutive Wins Badge */}
                 <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
                   <span className="text-[9px] font-mono font-bold text-amber-300 bg-slate-950/80 px-2 py-0.5 rounded-full border border-amber-400/50 shadow">
-                    🔥 {consecutiveWins}연승
+                    🔥 {consecutiveWins}{t('casino.highlow.streakCount', { defaultValue: '연승' })}
                   </span>
                   {consecutiveWins >= 6 ? (
                     <span className="text-[9px] font-mono font-bold text-rose-300 bg-rose-950/90 px-2 py-0.5 rounded-full border border-rose-500/60 shadow">
-                      수위 3
+                      {t('casino.highlow.stage3', { defaultValue: '수위 3' })}
                     </span>
                   ) : consecutiveWins >= 3 ? (
                     <span className="text-[9px] font-mono font-bold text-purple-300 bg-purple-950/90 px-2 py-0.5 rounded-full border border-purple-500/60 shadow">
-                      수위 2
+                      {t('casino.highlow.stage2', { defaultValue: '수위 2' })}
                     </span>
                   ) : (
                     <span className="text-[9px] font-mono font-bold text-emerald-300 bg-emerald-950/90 px-2 py-0.5 rounded-full border border-emerald-500/60 shadow">
-                      수위 1
+                      {t('casino.highlow.stage1', { defaultValue: '수위 1' })}
                     </span>
                   )}
                 </div>
@@ -1437,7 +1437,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     }`}
                   >
                     <span>{gameResult === 'WIN' ? '🎉' : gameResult === 'DRAW' ? '🤝' : '💀'}</span>
-                    <span>{gameResult === 'WIN' ? '승리' : gameResult === 'DRAW' ? '무승부' : '패배'}</span>
+                    <span>{gameResult === 'WIN' ? t('casino.highlow.victoryWin', { defaultValue: '승리' }) : gameResult === 'DRAW' ? t('casino.highlow.draw', { defaultValue: '무승부' }) : t('casino.highlow.betDefeat', { defaultValue: '패배' })}</span>
                   </span>
 
                   <span
@@ -1450,10 +1450,10 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     }`}
                   >
                     {gameResult === 'WIN'
-                      ? `+$${rewardAmount.toLocaleString()} 획득!`
+                      ? `+$${rewardAmount.toLocaleString()} ${t('casino.highlow.earned', { defaultValue: '획득!' })}`
                       : gameResult === 'DRAW'
-                      ? '판돈 보존'
-                      : '자산 차감 없음'}
+                      ? t('casino.highlow.antePreserved', { defaultValue: '판돈 보존' })
+                      : t('casino.highlow.noAssetDeduction', { defaultValue: '자산 차감 없음' })}
                   </span>
                 </div>
 

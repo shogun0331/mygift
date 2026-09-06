@@ -785,10 +785,10 @@
     "exitGame": "退出",
     "turnBadge": "{count}ターン",
     "highlow": {
-      "title": "VIPハイローデュエルステージ",
-      "specialStage": "★ {name} スペシャルデュエルステージ ★",
-      "duelTable": "VIPハイローデュエルテーブル",
-      "liveDealerProfile": "★ ライブディーラープロフィール ★",
+      "title": "ハイローデュエル",
+      "specialStage": "{name}",
+      "duelTable": "ハイローデュエル",
+      "liveDealerProfile": "ディーラープロフィール",
       "online": "ONLINE",
       "thisRoundReward": "今ラウンドの報酬",
       "dropRate": "ドロップ率",
@@ -796,8 +796,8 @@
       "noRewardItem": "報酬アイテムなし",
       "dealersCard": "ディーラーのカード",
       "playersCard": "プレイヤーのカード",
-      "winner": "👑 勝者",
-      "draw": "🤝 引き分け",
+      "winner": "勝者",
+      "draw": "引き分け",
       "selectBet": "ベットを選択",
       "boosterActive": "⚡ 2倍配当ブースター適用中！",
       "shieldActive": "🛡️ 敗北ガードシールド作動中",
@@ -806,46 +806,50 @@
       "tie": "TIE",
       "tieJackpot": "50倍ジャックポット",
       "tieJackpotBooster": "100倍ジャックポット",
-      "victoryWin": "🎉 勝利！",
-      "betDefeat": "💀 敗北",
+      "victoryWin": "勝利",
+      "betDefeat": "敗北",
       "winAmount": "+${amount} 獲得！",
       "refundAmount": "ANTE ${amount} 全額返金！",
       "lossAmount": "ANTE ${amount} 損失",
-      "nextRound": "次のラウンドへ（もう一回）",
-      "exitGameBtn": "ゲームから出る",
+      "nextRound": "次のラウンド",
+      "exitGameBtn": "退出",
       "dealersTurn": "🎲 ディーラーカード配布中...",
       "playersTurn": "👉 プレイヤーカードをクリックしてめくってください！",
       "flipCard": "カードをめくる！",
       "tableStats": "テーブル統計",
       "realMoney": "リアルマネー",
-      "currentAnte": "現在のANTE賭け金",
+      "currentAnte": "基本ベット (無料)",
       "comboBadge": "🔥 {combo} コンボ (x{mult})",
-      "myStationAssets": "放送局の資産",
-      "vault": "金庫",
+      "myStationAssets": "累計獲得賞金",
+      "vault": "総獲得賞金",
       "record": "戦績",
       "winRate": "勝率",
-      "myInventory": "インベントリ ({count})",
-      "clickToUse": "クリックして使用",
-      "inUse": "適用中",
-      "insufficientChipsLog": "賭け金 ${bet}（コンボ {combo}x）不足のためゲームを進行できません。",
-      "enterLog": "=== [{name}] テーブルに入場しました。 ===",
-      "insufficientAnteAlert": "[{name}] 入場賭け金（${ante}）가 不足しています！",
+      "myInventory": "所持インベントリ ({count})",
+      "clickToUse": "クリックで使用",
+      "inUse": "使用中",
+      "streakCount": "連勝",
+      "stage1": "レベル 1",
+      "stage2": "レベル 2",
+      "stage3": "レベル 3",
+      "earned": "獲得！",
+      "antePreserved": "ベット温存",
+      "noAssetDeduction": "資産減少なし",
       "items": {
         "peek_card": {
-          "name": "カード透視",
-          "description": "プレイヤーカードの数字を事前に透視します。"
+          "name": "カードを覗く",
+          "description": "プレイヤーカードの数字を予め透視します。"
         },
         "double_payout": {
           "name": "配当2倍",
-          "description": "勝利時の獲得金額を2倍に増幅します。"
+          "description": "勝利時の獲得賞金を2倍に増やします。"
         },
         "loss_shield": {
           "name": "敗北シールド",
-          "description": "敗北時の賭け金損失を100%ガードします。"
+          "description": "敗北時のベット損失を100%防ぎます。"
         },
         "staff_hire": {
-          "name": "スタッフスカウト",
-          "description": "放送局専用スタッフをスカウトします。"
+          "name": "スタッフ雇用",
+          "description": "局専用の専属スタッフを雇用します。"
         }
       },
       "rooms": {
@@ -855,11 +859,11 @@
         },
         "star": {
           "name": "スタールーム (Star Room)",
-          "subtitle": "ハイローラー向けハイエンドベットテーブル"
+          "subtitle": "ハイローラーのためのハイエンドテーブル"
         },
         "legend": {
           "name": "レジェンドVIPルーム (Legend VIP Room)",
-          "subtitle": "最上位VIP専用ダークネオンデュエルテーブル"
+          "subtitle": "最上位VIP専用ダークネオンテーブル"
         }
       }
     }

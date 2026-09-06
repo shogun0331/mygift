@@ -830,10 +830,10 @@
     "exitGame": "Выход",
     "turnBadge": "{count} х",
     "highlow": {
-      "title": "VIP High-Low Дуэль",
-      "specialStage": "★ {name} СПЕЦИАЛЬНАЯ АРЕНА ★",
-      "duelTable": "VIP HIGH-LOW СТОЛ",
-      "liveDealerProfile": "★ ПРОФИЛЬ ДИЛЕРА ★",
+      "title": "High-Low Дуэль",
+      "specialStage": "{name}",
+      "duelTable": "HIGH-LOW ДУЭЛЬ",
+      "liveDealerProfile": "ПРОФИЛЬ ДИЛЕРА",
       "online": "ONLINE",
       "thisRoundReward": "НАГРАДА РАУНДА",
       "dropRate": "ШАНС",
@@ -841,8 +841,8 @@
       "noRewardItem": "Предмет не выпал",
       "dealersCard": "КАРТА ДИЛЕРА",
       "playersCard": "КАРТА ИГРОКА",
-      "winner": "👑 ПОБЕДИТЕЛЬ",
-      "draw": "🤝 НИЧЬЯ",
+      "winner": "ПОБЕДИТЕЛЬ",
+      "draw": "НИЧЬЯ",
       "selectBet": "ВЫБЕРИТЕ СТАВКУ",
       "boosterActive": "⚡ УДВОЕНИЕ ВЫПЛАТЫ АКТИВНО!",
       "shieldActive": "🛡️ ЩИТ ОТ ПРОИГРЫША",
@@ -851,60 +851,64 @@
       "tie": "TIE",
       "tieJackpot": "50x ДЖЕКПОТ",
       "tieJackpotBooster": "100x ДЖЕКПОТ",
-      "victoryWin": "🎉 ПОБЕДА!",
-      "betDefeat": "💀 ПОРАЖЕНИЕ",
+      "victoryWin": "ПОБЕДА",
+      "betDefeat": "ПОРАЖЕНИЕ",
       "winAmount": "+${amount} ПОЛУЧЕНО!",
       "refundAmount": "ANTE ${amount} ВОЗВРАЩЕНО!",
       "lossAmount": "ANTE ${amount} ПОТЕРЯНО",
       "nextRound": "СЛЕДУЮЩИЙ РАУНД",
-      "exitGameBtn": "ВЫЙТИ ИЗ ИГРЫ",
-      "dealersTurn": "🎲 Раздача карты дилеру...",
-      "playersTurn": "👉 Нажмите на карту игрока!",
+      "exitGameBtn": "ВЫЙТИ",
+      "dealersTurn": "🎲 Выдача карты дилера...",
+      "playersTurn": "👉 Нажмите, чтобы открыть карту!",
       "flipCard": "ОТКРЫТЬ КАРТУ!",
-      "tableStats": "СТАТИСТИКА СТОЛА",
+      "tableStats": "СТАТИСТИКА",
       "realMoney": "РЕАЛЬНЫЕ АКТИВЫ",
-      "currentAnte": "ТЕКУЩЕЕ АНТЕ",
-      "comboBadge": "🔥 {combo} КОМБО (x{mult})",
-      "myStationAssets": "АКТИВЫ СТАНЦИИ",
-      "vault": "СЕЙФ",
+      "currentAnte": "БАЗОВАЯ СТАВКА (БЕСПЛАТНО)",
+      "comboBadge": "🔥 {combo} СЕРИЯ (x{mult})",
+      "myStationAssets": "НАКОПЛЕННЫЙ ВЫИГРЫШ",
+      "vault": "ОБЩИЙ ВЫИГРЫШ",
       "record": "РЕКОРД",
-      "winRate": "ВИНРЕЙТ",
-      "myInventory": "ИНВЕНТАРЬ ({count})",
-      "clickToUse": "Клик для исп.",
-      "inUse": "АКТИВНО",
-      "insufficientChipsLog": "Недостаточно средств (${bet}, Комбо {combo}x).",
-      "enterLog": "=== Вход за стол [{name}] ===",
-      "insufficientAnteAlert": "Недостаточно средств (${ante}) для входа на стол [{name}]!",
+      "winRate": "% ПОБЕД",
+      "myInventory": "МОЙ ИНВЕНТАРЬ ({count})",
+      "clickToUse": "Нажмите для исп.",
+      "inUse": "ИСПОЛЬЗУЕТСЯ",
+      "streakCount": "Побед подряд",
+      "stage1": "Уровень 1",
+      "stage2": "Уровень 2",
+      "stage3": "Уровень 3",
+      "earned": "Получено!",
+      "antePreserved": "Ставка сохранена",
+      "noAssetDeduction": "Без списания",
       "items": {
         "peek_card": {
-          "name": "Рентген карты",
-          "description": "Заранее открывает карту игрока."
+          "name": "Просмотр карты",
+          "description": "Раскрывает значение карты игрока заранее."
         },
         "double_payout": {
-          "name": "2x Выплата",
+          "name": "Удвоение выплаты",
           "description": "Удваивает выигрыш при победе."
         },
         "loss_shield": {
-          "name": "Щит поражения",
-          "description": "100% защита анте при проигрыше."
+          "name": "Щит от поражения",
+          "description": "100% защита от потери ставки при поражении."
         },
         "staff_hire": {
-          "name": "Найм сотрудника",
-          "description": "Нанимает эксклюзивного сотрудника."
+          "name": "Найм персонала",
+          "description": "Нанимает эксклюзивный персонал."
         }
       },
       "rooms": {
         "local": {
-          "name": "Локальный стол (Local Room)",
+          "name": "Локальная комната (Local Room)",
           "subtitle": "Легкий стол для новичков"
         },
         "star": {
-          "name": "Звездный стол (Star Room)",
+          "name": "Звездная комната (Star Room)",
           "subtitle": "Стол для хайроллеров"
         },
         "legend": {
-          "name": "VIP Легенда (Legend VIP Room)",
-          "subtitle": "Тёмный неон для лучших VIP"
+          "name": "Легендарная VIP комната (Legend VIP Room)",
+          "subtitle": "Темный неоновый стол для VIP"
         }
       }
     }
