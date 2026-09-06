@@ -22,7 +22,7 @@ import {
 } from '../../game/uiSfx'
 import { useTranslation } from '../../locales/i18n'
 import { resolveMediaSrc } from '../../game/mediaUrl'
-import { DEFAULT_HIGH_LOW_CONFIG, getActiveDealerMedia, type HighLowRoomId } from '../highlow/highLowConfig'
+import { DEFAULT_HIGH_LOW_CONFIG, getActiveDealerMedia } from '../highlow/highLowConfig'
 import { loadHighLowConfig } from '../highlow/highLowStore'
 import { HighLowDealerDialogue, type DealerDialoguePlay } from '../highlow/HighLowDealerDialogue'
 
@@ -68,15 +68,21 @@ export function CasinoSlotMachine({
   // 등급별 기본 보상 기준금 (3회 무료 도전)
   const baseReward = getBetAmountByGrade(stationGrade)
 
-  // 하이로우 미디어 등록 딜러 설정 로드
-  const [highLowConfigMap] = useState(() => loadHighLowConfig())
-  const [selectedRoomId, setSelectedRoomId] = useState<HighLowRoomId>('legend')
-
-  // 선택된 하이로우 딜러 설정 (자산 및 미디어)
-  const dealerConfig =
-    highLowConfigMap[selectedRoomId] ||
-    DEFAULT_HIGH_LOW_CONFIG[selectedRoomId] ||
-    DEFAULT_HIGH_LOW_CONFIG.legend
+  // 하이로우 미디어 등록 단일 딜러 설정 로드 (선택 드롭다운 제거)
+  const [dealerConfig] = useState(() => {
+    const map = loadHighLowConfig()
+    for (const key of ['legend', 'local', 'star'] as const) {
+      const cfg = map[key]
+      if (
+        cfg?.dealerMediaStages?.tier1?.url ||
+        cfg?.dealerMediaStages?.tier2?.url ||
+        cfg?.dealerMediaStages?.tier3?.url
+      ) {
+        return cfg
+      }
+    }
+    return map.legend || map.local || DEFAULT_HIGH_LOW_CONFIG.legend
+  })
 
   const [spinsLeft, setSpinsLeft] = useState(3)
   const [freeSpinsLeft, setFreeSpinsLeft] = useState(0)
@@ -412,22 +418,6 @@ export function CasinoSlotMachine({
         </div>
 
         <div className="flex items-center gap-3">
-          {/* 하이로우 등록 딜러 셀렉터 */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-400/50 bg-slate-900/90 text-amber-300 font-bold text-xs shadow-inner">
-            <span className="text-[11px] text-amber-400 font-mono hidden md:inline">🎩 딜러:</span>
-            <select
-              value={selectedRoomId}
-              onChange={(e) => setSelectedRoomId(e.target.value as HighLowRoomId)}
-              className="bg-transparent text-yellow-200 font-black text-xs focus:outline-none cursor-pointer"
-            >
-              {Object.values(highLowConfigMap).map((cfg) => (
-                <option key={cfg.id} value={cfg.id} className="bg-slate-950 text-slate-100 font-bold">
-                  {cfg.dealerName} ({cfg.dealerTitle})
-                </option>
-              ))}
-            </select>
-          </div>
-
           <button
             onClick={() => setShowPaytable(true)}
             className="px-3.5 py-1.5 rounded-xl border border-amber-300/80 bg-gradient-to-b from-amber-400/25 via-yellow-500/15 to-amber-600/30 text-amber-300 hover:text-yellow-200 hover:border-yellow-200 hover:bg-amber-400/40 text-xs font-black shadow-[0_0_12px_rgba(245,158,11,0.35)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
