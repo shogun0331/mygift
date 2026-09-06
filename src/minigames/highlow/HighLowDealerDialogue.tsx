@@ -33,6 +33,10 @@ type Props = {
 
 export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
   const { tier, index, dealerName, dealerMediaUrl, dealerMediaType } = play
+  const displayDealerName =
+    dealerName && !dealerName.includes('룸') && !dealerName.includes('Room')
+      ? dealerName
+      : '딜러'
   const [visible, setVisible] = useState(false)
   const voiceRef = useRef<HTMLAudioElement | null>(null)
   const closingRef = useRef(false)
@@ -127,7 +131,7 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
             ) : (
               <img
                 src={resolveMediaSrc(dealerMediaUrl)}
-                alt={dealerName}
+                alt={displayDealerName}
                 className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl border border-amber-400/80 object-cover shadow-lg group-hover:scale-105 transition-transform"
               />
             )
@@ -144,7 +148,7 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between border-b border-amber-400/40 pb-1.5">
             <span className="text-xs sm:text-sm font-black text-amber-300 uppercase tracking-wider font-mono">
-              {dealerName}
+              {displayDealerName}
             </span>
             <span className="text-[10px] sm:text-xs font-bold text-amber-400 animate-pulse flex items-center gap-1">
               <span>🔊</span> <span>VOICE PLAYING</span>
