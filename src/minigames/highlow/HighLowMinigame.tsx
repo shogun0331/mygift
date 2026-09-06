@@ -1129,7 +1129,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                   }}
                   className="mt-5 w-full py-2.5 rounded-xl font-bold text-sm tracking-wider uppercase transition-all duration-200 shadow-lg bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white shadow-pink-600/30 hover:shadow-pink-500/50 active:scale-[0.98]"
                 >
-                  [ 참여하기 ]
+                  입장하기
                 </button>
               </div>
             )
@@ -1415,7 +1415,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                 </div>
               </div>
             ) : phase === 'SHOWDOWN_RESULT' && gameResult ? (
-              /* NON-BLOCKING OPEN RESULT PANEL (No Popup Overlay! Cards Stay Fully Visible!) */
+              /* MODERN ELEGANT RESULT PANEL */
               <div
                 className={`p-4 sm:p-5 rounded-2xl bg-slate-950/95 border-2 ${
                   gameResult === 'WIN'
@@ -1423,11 +1423,12 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     : gameResult === 'DRAW'
                     ? 'border-cyan-400/90 shadow-[0_0_50px_rgba(6,182,212,0.7)]'
                     : 'border-rose-600/90 shadow-[0_0_50px_rgba(225,29,72,0.7)]'
-                } flex flex-col items-center space-y-3 animate-pop-in font-mono`}
+                } flex flex-col items-center space-y-3.5 animate-pop-in font-mono`}
               >
+                {/* Result Title & Amount Pill */}
                 <div className="flex items-center gap-3">
                   <span
-                    className={`px-3.5 py-1 rounded-full text-xs font-black uppercase shadow-md ${
+                    className={`px-3.5 py-1 rounded-full text-xs font-black uppercase shadow-md flex items-center gap-1.5 ${
                       gameResult === 'WIN'
                         ? 'bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 shadow-amber-500/50'
                         : gameResult === 'DRAW'
@@ -1435,52 +1436,48 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                         : 'bg-rose-950 border border-rose-500 text-rose-300 shadow-rose-950/80'
                     }`}
                   >
-                    {gameResult === 'WIN'
-                      ? t('casino.highlow.victoryWin')
-                      : gameResult === 'DRAW'
-                      ? t('casino.highlow.draw')
-                      : t('casino.highlow.betDefeat')}
+                    <span>{gameResult === 'WIN' ? '🎉' : gameResult === 'DRAW' ? '🤝' : '💀'}</span>
+                    <span>{gameResult === 'WIN' ? '승리' : gameResult === 'DRAW' ? '무승부' : '패배'}</span>
                   </span>
 
                   <span
-                    className={`text-sm font-black ${
+                    className={`text-base font-black ${
                       gameResult === 'WIN'
-                        ? 'text-amber-200'
+                        ? 'text-amber-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.8)]'
                         : gameResult === 'DRAW'
                         ? 'text-cyan-300'
-                        : 'text-rose-300'
+                        : 'text-rose-400'
                     }`}
                   >
                     {gameResult === 'WIN'
-                      ? t('casino.highlow.winAmount', { amount: rewardAmount.toLocaleString() })
+                      ? `+$${rewardAmount.toLocaleString()} 획득!`
                       : gameResult === 'DRAW'
-                      ? t('casino.highlow.refundAmount', { amount: currentConfig.ante.toLocaleString() })
-                      : t('casino.highlow.lossAmount', { amount: currentConfig.ante.toLocaleString() })}
+                      ? '판돈 보존'
+                      : '자산 차감 없음'}
                   </span>
                 </div>
 
                 {/* Action Buttons: Next Round & Exit Game */}
-                <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full">
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
                   {gameResult !== 'LOSS' && (
                     <button
                       onClick={() => startNewGameLoop()}
-                      className="w-full sm:flex-1 py-3 px-3 rounded-xl font-black text-xs sm:text-sm tracking-wider uppercase bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full sm:flex-1 py-3 px-5 rounded-xl font-black text-sm tracking-wider bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.6)] border border-yellow-200/60 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <span>♠</span>
-                      <span>{t('casino.highlow.nextRound')}</span>
-                      <span>♣</span>
+                      <span>▶</span>
+                      <span>다음 라운드</span>
                     </button>
                   )}
 
                   {onClose && (
                     <button
                       onClick={onClose}
-                      className={`py-3 px-4 rounded-xl font-black text-xs sm:text-sm tracking-wider border-2 border-red-400/90 bg-gradient-to-b from-red-500 via-red-600 to-red-800 text-white shadow-[0_4px_12px_rgba(239,68,68,0.5),inset_0_1px_2px_rgba(255,255,255,0.6)] hover:brightness-110 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                        gameResult === 'LOSS' ? 'w-full text-base py-4 font-black' : 'w-full sm:w-auto shrink-0'
+                      className={`py-3 px-5 rounded-xl font-black text-sm tracking-wider border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer ${
+                        gameResult === 'LOSS' ? 'w-full py-3.5 text-base' : 'w-full sm:w-auto shrink-0'
                       }`}
                     >
-                      <span>🚪</span>
-                      <span>{gameResult === 'LOSS' ? '패배 - 나가기' : t('casino.exit')}</span>
+                      <span>✕</span>
+                      <span>나가기</span>
                     </button>
                   )}
                 </div>
