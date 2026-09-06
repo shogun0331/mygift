@@ -694,7 +694,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   const [totalWinnings, setTotalWinnings] = useState(0)
 
   // 통계
-  const [stats, setStats] = useState({ wins: 0, losses: 0, draws: 0 })
+  const [_stats, setStats] = useState({ wins: 0, losses: 0, draws: 0 })
   const [consecutiveWins, setConsecutiveWins] = useState(0)
   const [cctvTime, setCctvTime] = useState('')
 
@@ -1053,9 +1053,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   const lowWinVal = Math.floor(effectiveBet * lowPayout)
   const highWinVal = Math.floor(effectiveBet * highPayout)
   const tieWinVal = Math.floor(effectiveBet * tiePayout)
-
-  const totalDecided = stats.wins + stats.losses
-  const winRate = totalDecided > 0 ? ((stats.wins / totalDecided) * 100).toFixed(1) : '0.0'
 
   /* -------------------------------------------------------------------------- */
   /*  RENDER: 1. LOBBY SCREEN                                                   */
@@ -1625,28 +1622,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
                 <div className="text-2xl font-black text-amber-300 mt-1 drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]">
                   <AnimatedMoneyCounter value={totalWinnings} />
-                </div>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-950/90 border border-amber-400/40 space-y-2 shadow-inner">
-                <div className="flex justify-between items-center border-b border-slate-800 pb-1.5">
-                  <span className="text-slate-400 text-[10px] font-bold tracking-wider uppercase">전적</span>
-                  <span className="text-slate-100 font-black text-xs tracking-wider">
-                    <span className="text-amber-300">{stats.wins}W</span> / <span className="text-rose-400">{stats.losses}L</span> / <span className="text-cyan-300">{stats.draws}D</span>
-                  </span>
-                </div>
-
-                <div className="space-y-1 pt-0.5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-400 text-[10px] font-bold tracking-wider uppercase">승률</span>
-                    <span className="text-amber-300 font-black text-xs">{winRate}%</span>
-                  </div>
-
-                  <div className="w-full h-1.5 rounded-full bg-slate-900 border border-amber-400/30 overflow-hidden p-0.5 shadow-inner">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.8)] transition-all duration-500"
-                      style={{ width: `${Math.min(100, Math.max(0, parseFloat(winRate)))}%` }}
-                    />
-                  </div>
                 </div>
               </div>
 
