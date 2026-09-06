@@ -22,6 +22,7 @@ export type DealerDialoguePlay = {
   index: number // 0 ~ 4
   dealerName: string
   dealerMediaUrl?: string
+  dealerMediaType?: 'image' | 'video'
 }
 
 type Props = {
@@ -31,7 +32,7 @@ type Props = {
 }
 
 export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
-  const { tier, index, dealerName, dealerMediaUrl } = play
+  const { tier, index, dealerName, dealerMediaUrl, dealerMediaType } = play
   const [visible, setVisible] = useState(false)
   const voiceRef = useRef<HTMLAudioElement | null>(null)
   const closingRef = useRef(false)
@@ -42,6 +43,10 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
   const voiceNum = (tier - 1) * 5 + index + 1
   const voiceFileName = String(voiceNum).padStart(2, '0') + '.wav'
   const voiceUrl = `/casino/voice/${voiceFileName}`
+
+  const isVideo =
+    dealerMediaType === 'video' ||
+    (dealerMediaUrl ? /\.(mp4|webm|ogv)(\?.*)?$/i.test(dealerMediaUrl) : false)
 
   useEffect(() => {
     const raf = window.requestAnimationFrame(() => setVisible(true))
@@ -110,11 +115,22 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
       >
         <div className="relative shrink-0">
           {dealerMediaUrl ? (
-            <img
-              src={resolveMediaSrc(dealerMediaUrl)}
-              alt={dealerName}
-              className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl border border-amber-400/80 object-cover shadow-lg group-hover:scale-105 transition-transform"
-            />
+            isVideo ? (
+              <video
+                src={resolveMediaSrc(dealerMediaUrl)}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl border border-amber-400/80 object-cover shadow-lg group-hover:scale-105 transition-transform pointer-events-none"
+              />
+            ) : (
+              <img
+                src={resolveMediaSrc(dealerMediaUrl)}
+                alt={dealerName}
+                className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl border border-amber-400/80 object-cover shadow-lg group-hover:scale-105 transition-transform"
+              />
+            )
           ) : (
             <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-xl border border-amber-400/60 bg-amber-950/80 text-2xl font-black text-amber-300">
               🎩

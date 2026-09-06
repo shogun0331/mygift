@@ -992,8 +992,9 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           setDealerDialoguePlay({
             tier,
             index: randIdx,
-            dealerName: currentConfig.name || '딜러',
-            dealerMediaUrl: activeMedia?.url,
+            dealerName: currentConfig.dealerName || currentConfig.name || '딜러',
+            dealerMediaUrl: activeMedia?.url || currentConfig.dealerMediaUrl,
+            dealerMediaType: activeMedia?.type || currentConfig.dealerMediaType,
           })
 
           return nextWins
