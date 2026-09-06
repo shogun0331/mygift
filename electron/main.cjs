@@ -562,6 +562,26 @@ ipcMain.handle('load-common-sounds-json', async (event) => {
   }
 })
 
+ipcMain.handle('save-highlow-assets', async (event, { assets }) => {
+  try {
+    const targetDir = publicWritePath('chapter_assets', 'highlow')
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true })
+    }
+    for (const asset of assets || []) {
+      const safeName = path.basename(String(asset?.fileName || ''))
+      if (!safeName || !asset.buffer) continue
+      const filePath = path.join(targetDir, safeName)
+      const rawBuffer = Buffer.isBuffer(asset.buffer) ? asset.buffer : Buffer.from(asset.buffer)
+      fs.writeFileSync(filePath, rawBuffer)
+    }
+    return { success: true, path: targetDir }
+  } catch (err) {
+    console.error('save-highlow-assets error:', err)
+    return { success: false, error: err.message }
+  }
+})
+
 ipcMain.handle('save-bgm-assets', async (event, { assets }) => {
   try {
     const targetDir = publicWritePath('chapter_assets', 'bgm')

@@ -15,6 +15,7 @@ import {
   getActiveDealerMedia,
 } from './highLowConfig'
 import { useTranslation } from '../../locales/i18n'
+import { resolveMediaSrc } from '../../game/mediaUrl'
 import {
   playCardFlipSound,
   playBetClickSound,
@@ -1204,7 +1205,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                   activeDealerMedia.type === 'video' ? (
                     <video
                       key={activeDealerMedia.url}
-                      src={activeDealerMedia.url}
+                      src={resolveMediaSrc(activeDealerMedia.url)}
                       autoPlay
                       loop
                       muted
@@ -1214,7 +1215,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                   ) : (
                     <img
                       key={activeDealerMedia.url}
-                      src={activeDealerMedia.url}
+                      src={resolveMediaSrc(activeDealerMedia.url)}
                       alt={currentConfig.dealerName}
                       className="w-full h-full object-cover"
                     />

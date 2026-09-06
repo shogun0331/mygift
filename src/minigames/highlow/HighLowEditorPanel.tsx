@@ -14,6 +14,7 @@ import {
   resetHighLowData,
 } from './highLowStore'
 import { HighLowDealerSlot } from './HighLowDealerSlot'
+import { saveHighLowMediaFile } from './highLowAssetService'
 import { HighLowMinigame } from './HighLowMinigame'
 import { NumericInput } from '../../components/NumericInput'
 import {
@@ -105,14 +106,13 @@ export function HighLowEditorPanel({
     handleUpdateChips(roomId, current + amount)
   }
 
-  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const isVideo = file.type.startsWith('video/')
-    const url = URL.createObjectURL(file)
-    handleUpdateConfigField(activeRoomId, 'dealerMediaUrl', url)
-    handleUpdateConfigField(activeRoomId, 'dealerMediaType', isVideo ? 'video' : 'image')
+    const saved = await saveHighLowMediaFile(file, 'dealer')
+    handleUpdateConfigField(activeRoomId, 'dealerMediaUrl', saved.url)
+    handleUpdateConfigField(activeRoomId, 'dealerMediaType', saved.type)
   }
 
   const currentRoomConfig = configs[activeRoomId]
@@ -300,6 +300,7 @@ export function HighLowEditorPanel({
                       mediaUrl={mediaSlot.url}
                       mediaType={mediaSlot.type}
                       editable={true}
+                      stagePrefix="tier1"
                       onMediaChange={handleUpdateStage}
                       statusMessage="수위 1 미디어 등록"
                     />
@@ -311,12 +312,11 @@ export function HighLowEditorPanel({
                           const input = document.createElement('input')
                           input.type = 'file'
                           input.accept = 'image/*,video/*'
-                          input.onchange = (e: any) => {
+                          input.onchange = async (e: any) => {
                             const file = e.target.files?.[0]
                             if (file) {
-                              const isVideo = file.type.startsWith('video/')
-                              const url = URL.createObjectURL(file)
-                              handleUpdateStage(url, isVideo ? 'video' : 'image')
+                              const saved = await saveHighLowMediaFile(file, 'tier1')
+                              handleUpdateStage(saved.url, saved.type)
                             }
                           }
                           input.click()
@@ -368,6 +368,7 @@ export function HighLowEditorPanel({
                       mediaUrl={mediaSlot.url}
                       mediaType={mediaSlot.type}
                       editable={true}
+                      stagePrefix="tier2"
                       onMediaChange={handleUpdateStage}
                       statusMessage="수위 2 미디어 등록"
                     />
@@ -379,12 +380,11 @@ export function HighLowEditorPanel({
                           const input = document.createElement('input')
                           input.type = 'file'
                           input.accept = 'image/*,video/*'
-                          input.onchange = (e: any) => {
+                          input.onchange = async (e: any) => {
                             const file = e.target.files?.[0]
                             if (file) {
-                              const isVideo = file.type.startsWith('video/')
-                              const url = URL.createObjectURL(file)
-                              handleUpdateStage(url, isVideo ? 'video' : 'image')
+                              const saved = await saveHighLowMediaFile(file, 'tier2')
+                              handleUpdateStage(saved.url, saved.type)
                             }
                           }
                           input.click()
@@ -436,6 +436,7 @@ export function HighLowEditorPanel({
                       mediaUrl={mediaSlot.url}
                       mediaType={mediaSlot.type}
                       editable={true}
+                      stagePrefix="tier3"
                       onMediaChange={handleUpdateStage}
                       statusMessage="수위 3 미디어 등록"
                     />
@@ -447,12 +448,11 @@ export function HighLowEditorPanel({
                           const input = document.createElement('input')
                           input.type = 'file'
                           input.accept = 'image/*,video/*'
-                          input.onchange = (e: any) => {
+                          input.onchange = async (e: any) => {
                             const file = e.target.files?.[0]
                             if (file) {
-                              const isVideo = file.type.startsWith('video/')
-                              const url = URL.createObjectURL(file)
-                              handleUpdateStage(url, isVideo ? 'video' : 'image')
+                              const saved = await saveHighLowMediaFile(file, 'tier3')
+                              handleUpdateStage(saved.url, saved.type)
                             }
                           }
                           input.click()

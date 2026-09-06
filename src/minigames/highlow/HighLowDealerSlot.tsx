@@ -1,4 +1,5 @@
 import { useState, useRef, type DragEvent, type ChangeEvent } from 'react'
+import { saveHighLowMediaFile, resolveHighLowMediaUrl } from './highLowAssetService'
 
 interface HighLowDealerSlotProps {
   dealerName: string
@@ -6,6 +7,7 @@ interface HighLowDealerSlotProps {
   mediaUrl?: string
   mediaType?: 'image' | 'video'
   editable?: boolean
+  stagePrefix?: string
   onMediaChange?: (url: string, type: 'image' | 'video') => void
   statusMessage?: string
 }
@@ -16,47 +18,68 @@ export function HighLowDealerSlot({
   mediaUrl,
   mediaType = 'image',
   editable = false,
+  stagePrefix = 'dealer',
   onMediaChange,
   statusMessage,
 }: HighLowDealerSlotProps) {
   const [isDragOver, setIsDragOver] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
+    if (!editable) return
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(true)
+  }
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     if (!editable) return
     e.preventDefault()
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = 'copy'
     setIsDragOver(true)
   }
 
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
     if (!editable) return
     e.preventDefault()
+    e.stopPropagation()
     setIsDragOver(false)
   }
 
-  const processFile = (file: File) => {
-    const isVideo = file.type.startsWith('video/')
-    const url = URL.createObjectURL(file)
-    onMediaChange?.(url, isVideo ? 'video' : 'image')
+  const processFile = async (file: File) => {
+    try {
+      setIsProcessing(true)
+      const saved = await saveHighLowMediaFile(file, stagePrefix)
+      onMediaChange?.(saved.url, saved.type)
+    } catch (err) {
+      console.error('[HighLowDealerSlot] Failed to process file:', err)
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
     if (!editable) return
     e.preventDefault()
+    e.stopPropagation()
     setIsDragOver(false)
 
     const file = e.dataTransfer.files?.[0]
     if (file) {
-      processFile(file)
+      await processFile(file)
     }
   }
 
-  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      processFile(file)
+      await processFile(file)
     }
   }
+
+  const resolvedSrc = resolveHighLowMediaUrl(mediaUrl)
 
   return (
     <div className="relative flex flex-col items-center justify-center">
@@ -73,7 +96,8 @@ export function HighLowDealerSlot({
 
       {/* 딜러 아바타 미디어 박스 */}
       <div
-        onClick={() => editable && fileInputRef.current?.click()}
+        onClick={() => editable && !isProcessing && fileInputRef.current?.click()}
+        onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -85,10 +109,15 @@ export function HighLowDealerSlot({
             : 'border-pink-500/60 bg-slate-900/90 hover:border-pink-400'
         }`}
       >
-        {mediaUrl ? (
+        {isProcessing ? (
+          <div className="flex flex-col items-center justify-center text-pink-300 gap-1 p-2">
+            <span className="animate-spin text-xl">⏳</span>
+            <span className="text-[10px] font-mono font-bold">복사 중...</span>
+          </div>
+        ) : resolvedSrc ? (
           mediaType === 'video' ? (
             <video
-              src={mediaUrl}
+              src={resolvedSrc}
               autoPlay
               loop
               muted
@@ -97,7 +126,7 @@ export function HighLowDealerSlot({
             />
           ) : (
             <img
-              src={mediaUrl}
+              src={resolvedSrc}
               alt={dealerName}
               className="w-full h-full object-cover rounded-full"
             />
@@ -123,7 +152,7 @@ export function HighLowDealerSlot({
         )}
 
         {/* 편집 가능 시 오버레이 가이드 */}
-        {editable && (
+        {editable && !isProcessing && (
           <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-center p-2 text-xs font-semibold text-pink-200">
             <span className="text-base">📁</span>
             <span>클릭 또는 드롭</span>
