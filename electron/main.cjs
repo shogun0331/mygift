@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol, Menu, shell, ipcMain } = require('electron')
+const { app, BrowserWindow, protocol, Menu, shell, ipcMain, screen } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const { Readable } = require('stream')
@@ -235,10 +235,12 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 function createWindow() {
+  const primaryDisplay = screen.getPrimaryDisplay()
+  const displayWorkArea = primaryDisplay ? primaryDisplay.workAreaSize : { width: 1280, height: 800 }
+
   const mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    resizable: false,
+    width: displayWorkArea.width,
+    height: displayWorkArea.height,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
@@ -246,6 +248,9 @@ function createWindow() {
       sandbox: false,
     },
   })
+
+  mainWindow.maximize()
+  mainWindow.setResizable(false)
 
   if (isDev) {
     // Pipe renderer console messages to main process terminal for easier debugging
@@ -301,13 +306,19 @@ ipcMain.handle('set-display-mode', async (event, { mode }) => {
   try {
     const win = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0]
     if (!win) return { success: false }
-    win.setResizable(false)
+    win.setResizable(true)
     if (mode === 'fullscreen') {
       win.setFullScreen(true)
     } else {
       win.setFullScreen(false)
       win.maximize()
+      const primaryDisplay = screen.getPrimaryDisplay()
+      if (primaryDisplay && primaryDisplay.workArea) {
+        const { x, y, width, height } = primaryDisplay.workArea
+        win.setBounds({ x, y, width, height })
+      }
     }
+    win.setResizable(false)
     return { success: true }
   } catch (err) {
     console.error('set-display-mode error:', err)
