@@ -838,6 +838,15 @@
       "earned": "獲得！",
       "antePreserved": "ベット温存",
       "noAssetDeduction": "資産減少なし",
+      "cashoutBtn": "💰 100%獲得して退出",
+      "nextRoundBtn": "▶ 次のラウンドに挑戦",
+      "exitCashoutNotice": "今[退出]すると累積賞金の100%（${amount}）を獲得！",
+      "nextRoundRiskNotice": "次ラウンド敗北時は10%（${amount}）のみ保障（90%損失リスク）",
+      "cashoutOptionTitle": "🚪 安全確定 [退出]",
+      "nextRoundOptionTitle": "⚔️ リスク挑戦 [次ラウンド]",
+      "cashoutOptionDesc": "累積賞金100%（${amount}）を即時獲得",
+      "nextRoundOptionDesc": "勝利で高倍率 / 敗北で10%（${amount}）のみ受領",
+      "lossPenaltyNotice": "💀 敗北！累積賞金の90%が失われました。(10%受領: +${amount})",
       "items": {
         "peek_card": {
           "name": "カードを覗く",

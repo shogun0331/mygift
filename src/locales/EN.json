@@ -896,6 +896,15 @@
       "earned": "Earned!",
       "antePreserved": "Ante Preserved",
       "noAssetDeduction": "No Asset Lost",
+      "cashoutBtn": "💰 Claim 100% & Exit",
+      "nextRoundBtn": "▶ Next Round Challenge",
+      "exitCashoutNotice": "Cash out now to take 100% (${amount}) of accumulated winnings!",
+      "nextRoundRiskNotice": "If you lose next round, you only keep 10% (${amount}) (90% loss risk)",
+      "cashoutOptionTitle": "🚪 Safe Cash Out [Exit]",
+      "nextRoundOptionTitle": "⚔️ Risk Challenge [Next Round]",
+      "cashoutOptionDesc": "Claim 100% (${amount}) immediately",
+      "nextRoundOptionDesc": "Win for high payout / Lose to keep only 10% (${amount})",
+      "lossPenaltyNotice": "💀 Defeat! 90% of accumulated winnings lost. (10% kept: +${amount})",
       "items": {
         "peek_card": {
           "name": "Peek Card",

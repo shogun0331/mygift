@@ -883,6 +883,15 @@
       "earned": "¡Ganado!",
       "antePreserved": "Apuesta conservada",
       "noAssetDeduction": "Sin pérdida",
+      "cashoutBtn": "💰 Cobrar 100% y Salir",
+      "nextRoundBtn": "▶ Siguiente Ronda",
+      "exitCashoutNotice": "¡Retírate ahora para llevarte el 100% (${amount}) del premio acumulado!",
+      "nextRoundRiskNotice": "Si pierdes la siguiente ronda, solo conservas el 10% (${amount}) (Riesgo del 90%)",
+      "cashoutOptionTitle": "🚪 Retiro Seguro [Salir]",
+      "nextRoundOptionTitle": "⚔️ Desafío de Riesgo [Siguiente]",
+      "cashoutOptionDesc": "Obtén el 100% (${amount}) inmediatamente",
+      "nextRoundOptionDesc": "Gana para gran pago / Pierde y conserva solo el 10% (${amount})",
+      "lossPenaltyNotice": "💀 ¡Derrota! Se perdió el 90% del acumulado. (Conservado 10%: +${amount})",
       "items": {
         "peek_card": {
           "name": "Echar un vistazo",

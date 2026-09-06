@@ -883,6 +883,15 @@
       "earned": "获得！",
       "antePreserved": "底注保留",
       "noAssetDeduction": "资产未扣除",
+      "cashoutBtn": "💰 领取100%并退出",
+      "nextRoundBtn": "▶ 挑战下一轮",
+      "exitCashoutNotice": "现在选择[退出]可获得100%（${amount}）累计奖金！",
+      "nextRoundRiskNotice": "下轮若失败仅保留10%（${amount}）（90%损失风险）",
+      "cashoutOptionTitle": "🚪 安全落袋 [退出]",
+      "nextRoundOptionTitle": "⚔️ 冒险挑战 [下一轮]",
+      "cashoutOptionDesc": "立即获得100%（${amount}）累计奖金",
+      "nextRoundOptionDesc": "获胜得高倍率 / 失败仅获得10%（${amount}）",
+      "lossPenaltyNotice": "💀 失败！失去了90%的累计奖金。(保留10%: +${amount})",
       "items": {
         "peek_card": {
           "name": "偷看手牌",

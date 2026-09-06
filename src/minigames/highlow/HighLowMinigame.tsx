@@ -716,6 +716,17 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
     ])
   }
 
+  const handleExitGame = () => {
+    if (totalWinnings > 0) {
+      addLog(`💰 누적 당첨금 100%($${totalWinnings.toLocaleString()}) 수령 완료!`, 'win')
+      setTotalWinnings(0)
+      setConsecutiveWins(0)
+    }
+    if (onClose) {
+      onClose()
+    }
+  }
+
   // 바로 카지노 게임 테이블 시작
   const hasAutoStartedRef = useRef(false)
   useEffect(() => {
@@ -990,14 +1001,27 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           setRewardAmount(0)
           setStats((s) => ({ ...s, draws: s.draws + 1 }))
           playHighLowDrawSound()
-          addLog(`🛡️ 패배 무효화 쉴드 발동! 판돈 손실 방어`, 'win')
+          addLog(`🛡️ 패배 무효화 쉴드 발동! 누적 당첨금 보존`, 'win')
         } else {
           setGameResult('LOSS')
-          setRewardAmount(0)
           setStats((s) => ({ ...s, losses: s.losses + 1 }))
           setConsecutiveWins(0)
           playHighLowLossSound()
-          addLog(`💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 자산 차감 없음`, 'loss')
+
+          // 패배 시 누적 당첨금의 90% 차감, 10%만 환급 보장
+          const currentAccumulated = totalWinnings
+          const lossAmount = Math.floor(currentAccumulated * 0.9)
+          const retainedAmount = currentAccumulated - lossAmount
+          if (lossAmount > 0) {
+            const updatedChips = Math.max(0, currentChips - lossAmount)
+            onUpdateChips(selectedRoomId, updatedChips)
+          }
+          setRewardAmount(retainedAmount)
+          addLog(
+            `💀 패배! 누적 당첨금($${currentAccumulated.toLocaleString()})의 90%(-$${lossAmount.toLocaleString()})가 차감되고 10%($${retainedAmount.toLocaleString()})만 보장되었습니다.`,
+            'loss'
+          )
+          setTotalWinnings(0)
         }
       }
 
@@ -1429,7 +1453,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                 </div>
               </div>
             ) : phase === 'SHOWDOWN_RESULT' && gameResult ? (
-              /* MODERN ELEGANT RESULT PANEL */
+              /* MODERN ELEGANT RESULT PANEL WITH RISK/REWARD EXPLANATION & TRANSLATION */
               <div
                 className={`p-4 sm:p-5 rounded-2xl bg-slate-950/95 border-2 ${
                   gameResult === 'WIN'
@@ -1437,12 +1461,12 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     : gameResult === 'DRAW'
                     ? 'border-cyan-400/90 shadow-[0_0_50px_rgba(6,182,212,0.7)]'
                     : 'border-rose-600/90 shadow-[0_0_50px_rgba(225,29,72,0.7)]'
-                } flex flex-col items-center space-y-3.5 animate-pop-in font-mono`}
+                } flex flex-col items-center space-y-3.5 animate-pop-in font-mono w-full max-w-lg mx-auto`}
               >
                 {/* Result Title & Amount Pill */}
                 <div className="flex items-center gap-3">
                   <span
-                    className={`px-3.5 py-1 rounded-full text-xs font-black uppercase shadow-md flex items-center gap-1.5 ${
+                    className={`px-3.5 py-1 rounded-full text-xs sm:text-sm font-black uppercase shadow-md flex items-center gap-1.5 ${
                       gameResult === 'WIN'
                         ? 'bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 shadow-amber-500/50'
                         : gameResult === 'DRAW'
@@ -1451,11 +1475,17 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     }`}
                   >
                     <span>{gameResult === 'WIN' ? '🎉' : gameResult === 'DRAW' ? '🤝' : '💀'}</span>
-                    <span>{gameResult === 'WIN' ? t('casino.highlow.victoryWin', { defaultValue: '승리' }) : gameResult === 'DRAW' ? t('casino.highlow.draw', { defaultValue: '무승부' }) : t('casino.highlow.betDefeat', { defaultValue: '패배' })}</span>
+                    <span>
+                      {gameResult === 'WIN'
+                        ? t('casino.highlow.victoryWin', { defaultValue: '승리' })
+                        : gameResult === 'DRAW'
+                        ? t('casino.highlow.draw', { defaultValue: '무승부' })
+                        : t('casino.highlow.betDefeat', { defaultValue: '패배' })}
+                    </span>
                   </span>
 
                   <span
-                    className={`text-base font-black ${
+                    className={`text-base sm:text-lg font-black ${
                       gameResult === 'WIN'
                         ? 'text-amber-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.8)]'
                         : gameResult === 'DRAW'
@@ -1467,31 +1497,91 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                       ? `+$${rewardAmount.toLocaleString()} ${t('casino.highlow.earned', { defaultValue: '획득!' })}`
                       : gameResult === 'DRAW'
                       ? t('casino.highlow.antePreserved', { defaultValue: '판돈 보존' })
-                      : t('casino.highlow.noAssetDeduction', { defaultValue: '자산 차감 없음' })}
+                      : `-${(rewardAmount * 9).toLocaleString()} (90% ${t('casino.highlow.betDefeat', { defaultValue: '손실' })})`}
                   </span>
                 </div>
 
+                {/* WIN EXPLANATION BOX (Risk & Reward breakdown) */}
+                {gameResult === 'WIN' && (
+                  <div className="w-full space-y-2 p-3 sm:p-3.5 rounded-xl bg-slate-900/90 border border-amber-400/40 text-xs">
+                    <div className="flex items-center justify-between border-b border-amber-400/20 pb-1.5">
+                      <span className="text-[11px] font-bold text-amber-300/90">
+                        🏆 {t('casino.highlow.myStationAssets', { defaultValue: '누적 당첨 금액' })}
+                      </span>
+                      <span className="text-sm font-black text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]">
+                        ${totalWinnings.toLocaleString()}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+                      {/* Cashout Option Card */}
+                      <div className="p-2.5 rounded-lg bg-emerald-950/60 border border-emerald-500/50 text-emerald-200">
+                        <div className="font-black text-emerald-300 mb-0.5">
+                          {t('casino.highlow.cashoutOptionTitle', { defaultValue: '🚪 안전 수령 [나가기]' })}
+                        </div>
+                        <div className="text-[10px] text-emerald-200/90 leading-tight">
+                          {t('casino.highlow.cashoutOptionDesc', {
+                            amount: `$${totalWinnings.toLocaleString()}`,
+                            defaultValue: `누적 당첨금 100% ($${totalWinnings.toLocaleString()}) 전액 획득`,
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Risk Challenge Card */}
+                      <div className="p-2.5 rounded-lg bg-rose-950/60 border border-rose-500/50 text-rose-200">
+                        <div className="font-black text-amber-300 mb-0.5">
+                          {t('casino.highlow.nextRoundOptionTitle', { defaultValue: '⚔️ 위험 도전 [다음 라운드]' })}
+                        </div>
+                        <div className="text-[10px] text-rose-200/90 leading-tight">
+                          {t('casino.highlow.nextRoundOptionDesc', {
+                            amount: `$${Math.floor(totalWinnings * 0.1).toLocaleString()}`,
+                            defaultValue: `승리 시 고배율 / 패배 시 10% ($${Math.floor(totalWinnings * 0.1).toLocaleString()})만 보장`,
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* LOSS EXPLANATION BOX */}
+                {gameResult === 'LOSS' && (
+                  <div className="w-full p-3 rounded-xl bg-rose-950/80 border border-rose-500/60 text-xs text-rose-200 text-center">
+                    <p className="font-bold">
+                      {t('casino.highlow.lossPenaltyNotice', {
+                        amount: rewardAmount.toLocaleString(),
+                        defaultValue: `💀 패배! 누적 당첨금의 90%가 차감되었습니다. (10% 보장: +$${rewardAmount.toLocaleString()})`,
+                      })}
+                    </p>
+                  </div>
+                )}
+
                 {/* Action Buttons: Next Round & Exit Game */}
-                <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full pt-1">
                   {gameResult !== 'LOSS' && (
                     <button
                       onClick={() => startNewGameLoop()}
-                      className="w-full sm:flex-1 py-3 px-5 rounded-xl font-black text-sm tracking-wider bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.6)] border border-yellow-200/60 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full sm:flex-1 py-3 px-4 rounded-xl font-black text-xs sm:text-sm tracking-wider bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.6)] border border-yellow-200/60 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span>▶</span>
-                      <span>다음 라운드</span>
+                      <span>{t('casino.highlow.nextRoundBtn', { defaultValue: '다음 라운드 도전' })}</span>
                     </button>
                   )}
 
                   {onClose && (
                     <button
-                      onClick={onClose}
-                      className={`py-3 px-5 rounded-xl font-black text-sm tracking-wider border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer ${
-                        gameResult === 'LOSS' ? 'w-full py-3.5 text-base' : 'w-full sm:w-auto shrink-0'
+                      onClick={handleExitGame}
+                      className={`py-3 px-4 rounded-xl font-black text-xs sm:text-sm tracking-wider border transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer ${
+                        gameResult === 'WIN'
+                          ? 'w-full sm:flex-1 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white border-emerald-400/80 shadow-[0_0_20px_rgba(16,185,129,0.5)]'
+                          : 'w-full py-3.5 text-base border-rose-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.5)]'
                       }`}
                     >
-                      <span>✕</span>
-                      <span>나가기</span>
+                      <span>{gameResult === 'WIN' ? '💰' : '✕'}</span>
+                      <span>
+                        {gameResult === 'WIN'
+                          ? t('casino.highlow.cashoutBtn', { defaultValue: '100% 수령 & 나가기' })
+                          : t('casino.highlow.exitGameBtn', { defaultValue: '나가기' })}
+                      </span>
                     </button>
                   )}
                 </div>

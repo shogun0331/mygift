@@ -883,6 +883,15 @@
       "earned": "Gewonnen!",
       "antePreserved": "Einsatz behalten",
       "noAssetDeduction": "Kein Verlust",
+      "cashoutBtn": "💰 100% sichern & Beenden",
+      "nextRoundBtn": "▶ Nächste Runde",
+      "exitCashoutNotice": "Jetzt [Beenden] wählen und 100% (${amount}) des Gewinnpools sichern!",
+      "nextRoundRiskNotice": "Bei Niederlage in der nächsten Runde behältst du nur 10% (${amount}) (90% Risiko)",
+      "cashoutOptionTitle": "🚪 Sichere Auszahlung [Beenden]",
+      "nextRoundOptionTitle": "⚔️ Risiko-Herausforderung [Weiter]",
+      "cashoutOptionDesc": "100% (${amount}) sofort erhalten",
+      "nextRoundOptionDesc": "Sieg bringt hohe Auszahlung / Niederlage behält nur 10% (${amount})",
+      "lossPenaltyNotice": "💀 Niederlage! 90% des akkumulierten Gewinns verloren. (10% behalten: +${amount})",
       "items": {
         "peek_card": {
           "name": "Vorausblick",
