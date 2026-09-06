@@ -681,6 +681,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   // 승패 및 정산 결과 (WIN / LOSS / DRAW)
   const [gameResult, setGameResult] = useState<'WIN' | 'LOSS' | 'DRAW' | null>(null)
   const [rewardAmount, setRewardAmount] = useState(0)
+  const [totalWinnings, setTotalWinnings] = useState(0)
 
   // 통계
   const [stats, setStats] = useState({ wins: 0, losses: 0, draws: 0 })
@@ -930,6 +931,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
       if (outcome === 'WIN') {
         const reward = Math.floor(currentBet * rawPayout)
         setRewardAmount(reward)
+        setTotalWinnings((prev) => prev + reward)
         const updatedChips = currentChips + reward
         onUpdateChips(selectedRoomId, updatedChips)
         setStats((s) => ({ ...s, wins: s.wins + 1 }))
@@ -1532,7 +1534,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                 </div>
 
                 <div className="text-2xl font-black text-amber-300 mt-1 drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]">
-                  <AnimatedMoneyCounter value={currentChips} />
+                  <AnimatedMoneyCounter value={totalWinnings} />
                 </div>
               </div>
               <div className="p-3 rounded-xl bg-slate-950/90 border border-amber-400/40 space-y-2 shadow-inner">

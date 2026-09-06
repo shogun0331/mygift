@@ -36,7 +36,7 @@ export function HighLowEditorPanel({
   onSaveStationGradeManual,
 }: HighLowEditorPanelProps = {}) {
   const [configs, setConfigs] = useState<HighLowConfigMap>(loadHighLowConfig())
-  const [activeRoomId, setActiveRoomId] = useState<HighLowRoomId>('legend')
+  const activeRoomId: HighLowRoomId = 'local'
   const [selectedSimGrade, setSelectedSimGrade] = useState<StationTierId>('sme')
   const [userChipsMap, setUserChipsMap] = useState<Record<HighLowRoomId, number>>({
     local: 50000,
@@ -247,71 +247,8 @@ export function HighLowEditorPanel({
         </div>
       )}
 
-      {/* Main Grid: Room & Dealer Settings */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Side: Room Tier Selectors */}
-        <div className="space-y-4">
-          <h3 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
-            티어 룸 선택
-          </h3>
-
-          {(['local', 'star', 'legend'] as HighLowRoomId[]).map((rId) => {
-            const conf = configs[rId]
-            const isSelected = activeRoomId === rId
-
-            return (
-              <div
-                key={rId}
-                onClick={() => setActiveRoomId(rId)}
-                className={`p-4.5 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
-                  isSelected
-                    ? 'border-pink-500 bg-slate-900/90 shadow-[0_0_25px_rgba(236,72,153,0.25)] scale-[1.02]'
-                    : 'border-slate-800 bg-slate-900/40 hover:border-slate-700'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-base text-slate-100">{conf.name}</span>
-                  <span
-                    className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase text-white shadow"
-                    style={{ backgroundColor: conf.badgeColor }}
-                  >
-                    {rId}
-                  </span>
-                </div>
-                <div className="mt-2.5 text-xs font-mono text-slate-400 space-y-1">
-                  <div>Ante (기본 배팅): <span className="text-pink-400 font-bold">${conf.ante.toLocaleString()}</span></div>
-                  <div>Start Chips (초기 칩): <span className="text-cyan-400 font-bold">${conf.startChips.toLocaleString()}</span></div>
-                  <div>Dealer: <span className="text-slate-200">{conf.dealerName}</span></div>
-                </div>
-              </div>
-            )
-          })}
-
-          <div className="pt-4 space-y-2 border-t border-slate-800">
-            <button
-              onClick={handleSaveConfigs}
-              className="w-full py-3 rounded-xl font-bold text-sm bg-pink-600 hover:bg-pink-500 text-white shadow-lg shadow-pink-600/30 transition-all flex items-center justify-center gap-2"
-            >
-              💾 밸런스 & 미디어 설정 저장
-            </button>
-
-            {saveSuccessMsg && (
-              <p className="text-center text-xs text-cyan-300 font-mono animate-pulse">
-                ✓ 설정이 저장되었습니다!
-              </p>
-            )}
-
-            <button
-              onClick={handleResetDefaults}
-              className="w-full py-2.5 rounded-xl font-semibold text-xs border border-slate-700 bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
-            >
-              🔄 기본 설정으로 초기화
-            </button>
-          </div>
-        </div>
-
-        {/* Right Side: Dealer Media Upload & Room Balance Detail */}
-        <div className="lg:col-span-2 space-y-6">
+      {/* Dealer Media & Round Balance Settings */}
+      <div className="space-y-6">
           {/* SECTION 1: 딜러 미디어 슬롯 */}
           <div className="p-6 rounded-3xl bg-slate-900/80 border-2 border-pink-500/30 shadow-xl space-y-4">
             <div className="flex items-center justify-between border-b border-pink-500/20 pb-3">
@@ -554,8 +491,30 @@ export function HighLowEditorPanel({
               </div>
             </div>
           </div>
+
+          {/* Action Buttons: Save & Reset */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <button
+              onClick={handleSaveConfigs}
+              className="px-6 py-3.5 rounded-2xl font-bold text-sm bg-pink-600 hover:bg-pink-500 text-white shadow-lg shadow-pink-600/30 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              💾 밸런스 & 미디어 설정 저장
+            </button>
+
+            {saveSuccessMsg && (
+              <span className="text-xs text-cyan-300 font-mono animate-pulse">
+                ✓ 설정이 저장되었습니다!
+              </span>
+            )}
+
+            <button
+              onClick={handleResetDefaults}
+              className="px-4 py-3 rounded-2xl font-semibold text-xs border border-slate-700 bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer ml-auto"
+            >
+              🔄 기본 설정으로 초기화
+            </button>
+          </div>
         </div>
-      </div>
 
       {/* FULLSCREEN POPUP SIMULATOR MODAL (createPortal via document.body) */}
       {showModalSimulator &&
