@@ -1704,18 +1704,14 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
                 <div
                   className={`text-2xl sm:text-3xl font-black font-mono tracking-tight ${
-                    gameResult === 'WIN'
+                    gameResult === 'WIN' || gameResult === 'LOSS'
                       ? 'text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]'
-                      : gameResult === 'DRAW'
-                      ? 'text-cyan-300'
-                      : 'text-rose-400'
+                      : 'text-cyan-300'
                   }`}
                 >
-                  {gameResult === 'WIN'
+                  {gameResult === 'WIN' || gameResult === 'LOSS'
                     ? `+$${rewardAmount.toLocaleString()}`
-                    : gameResult === 'DRAW'
-                    ? t('casino.highlow.antePreserved', { defaultValue: '판돈 보존' })
-                    : `-$${(rewardAmount * 9).toLocaleString()}`}
+                    : t('casino.highlow.antePreserved', { defaultValue: '판돈 보존' })}
                 </div>
               </div>
 
@@ -1741,10 +1737,10 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
               )}
 
               {gameResult === 'LOSS' && (
-                <div className="w-full p-3 rounded-2xl bg-rose-950/70 border border-rose-500/50 text-xs text-rose-200 text-center font-medium">
+                <div className="w-full p-3 rounded-2xl bg-amber-950/70 border border-amber-500/50 text-xs text-amber-200 text-center font-medium">
                   {t('casino.highlow.lossPenaltyNotice', {
                     amount: rewardAmount.toLocaleString(),
-                    defaultValue: `💀 패배! 10% 보장 (+${rewardAmount.toLocaleString()})`,
+                    defaultValue: `💀 패배! 누적 당첨금 10% 보장 수령 (+${rewardAmount.toLocaleString()})`,
                   })}
                 </div>
               )}
