@@ -20,8 +20,10 @@ import {
   playSlotWinBigSound,
   playCoinCountUpTickSound,
 } from '../../game/uiSfx'
-
 import { useTranslation } from '../../locales/i18n'
+import { resolveMediaSrc } from '../../game/mediaUrl'
+import { DEFAULT_HIGH_LOW_CONFIG, getActiveDealerMedia } from '../highlow/highLowConfig'
+import { HighLowDealerDialogue, type DealerDialoguePlay } from '../highlow/HighLowDealerDialogue'
 
 export type CasinoSlotMachineProps = {
   stationGrade?: StationGrade | null
@@ -60,14 +62,51 @@ export function CasinoSlotMachine({
   onUpdateAssets,
   onClose,
 }: CasinoSlotMachineProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   // 등급별 기본 보상 기준금 (3회 무료 도전)
   const baseReward = getBetAmountByGrade(stationGrade)
 
+  // 딜러 설정 (하이로우 VIP 전설 딜러 자산 활용)
+  const dealerConfig = DEFAULT_HIGH_LOW_CONFIG.legend
+
   const [spinsLeft, setSpinsLeft] = useState(3)
   const [freeSpinsLeft, setFreeSpinsLeft] = useState(0)
   const [sessionTotalWon, setSessionTotalWon] = useState(0)
+  const [currentTurn, setCurrentTurn] = useState(1) // 1, 2, 3턴
+
+  // 딜러 대사 & 음성 재생 상태
+  const [dealerDialoguePlay, setDealerDialoguePlay] = useState<DealerDialoguePlay | null>(null)
+  const [showDefeatModal, setShowDefeatModal] = useState(false)
+
+  // 딜러 대사 비중복 셔플 덱(Bag System) 관리 ref
+  const dialoguePoolsRef = useRef<Record<string, number[]>>({
+    tier1: [],
+    tier2: [],
+    tier3: [],
+    loss: [],
+  })
+  const lastPlayedIndexRef = useRef<{ key: string; index: number } | null>(null)
+
+  const getNextDialogueIndex = (poolKey: 'tier1' | 'tier2' | 'tier3' | 'loss'): number => {
+    let pool = dialoguePoolsRef.current[poolKey]
+    if (!pool || pool.length === 0) {
+      const newPool = [0, 1, 2, 3, 4]
+      for (let i = newPool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[newPool[i], newPool[j]] = [newPool[j], newPool[i]]
+      }
+      const lastPlayed = lastPlayedIndexRef.current
+      if (lastPlayed && lastPlayed.key === poolKey && newPool[0] === lastPlayed.index) {
+        ;[newPool[0], newPool[newPool.length - 1]] = [newPool[newPool.length - 1], newPool[0]]
+      }
+      pool = newPool
+    }
+    const nextIdx = pool.shift()!
+    dialoguePoolsRef.current[poolKey] = pool
+    lastPlayedIndexRef.current = { key: poolKey, index: nextIdx }
+    return nextIdx
+  }
 
   // 릴 회전 멈춤 스태거 상태 (0: 3개 모두 회전, 1: 1번릴 멈춤, 2: 2번릴 멈춤, 3: 3개 모두 멈춤)
   const [stoppedCount, setStoppedCount] = useState(3)
@@ -106,17 +145,38 @@ export function CasinoSlotMachine({
     }
   }, [])
 
+  // 현재 턴 수에 맞는 딜러 미디어 추출 (턴 1 -> 수위 1, 턴 2 -> 수위 2, 턴 3 -> 수위 3)
+  const activeConsecutiveWins = (currentTurn - 1) * 3 // 턴 1: 0(수위1), 턴 2: 3(수위2), 턴 3: 6(수위3)
+  const activeDealerMedia = getActiveDealerMedia(dealerConfig, activeConsecutiveWins)
+
   // 레버 당기기 & 스핀 동작 (무료 3회 도전)
   const handleSpin = () => {
     if (isSpinning) return
     const isFreeSpin = freeSpinsLeft > 0
 
+    let turnForThisSpin = currentTurn
     if (!isFreeSpin) {
-      if (spinsLeft <= 0) return // 기회 소진 시 더이상 회전하지 않음 (팝업 없음)
+      if (spinsLeft <= 0) return
+      turnForThisSpin = Math.min(3, 4 - spinsLeft)
+      setCurrentTurn(turnForThisSpin)
       setSpinsLeft((prev) => prev - 1)
     } else {
       setFreeSpinsLeft((prev) => prev - 1)
     }
+
+    // 턴할 때마다 딜러 미디어 수위 변경 및 대사/보이스 연동
+    const turnTier = Math.min(3, Math.max(1, turnForThisSpin)) as 1 | 2 | 3
+    const turnConsecutive = (turnTier - 1) * 3
+    const spinDealerMedia = getActiveDealerMedia(dealerConfig, turnConsecutive)
+    const dialogueIdx = getNextDialogueIndex(`tier${turnTier}` as any)
+
+    setDealerDialoguePlay({
+      tier: turnTier,
+      index: dialogueIdx,
+      dealerName: dealerConfig.dealerName || '전설의 딜러',
+      dealerMediaUrl: spinDealerMedia?.url || dealerConfig.dealerMediaUrl,
+      dealerMediaType: spinDealerMedia?.type || dealerConfig.dealerMediaType,
+    })
 
     // 초기화
     setWinTier(null)
@@ -166,10 +226,11 @@ export function CasinoSlotMachine({
       setCurrentGrid(targetGrid)
       setLastResult(result)
 
-      // 당첨 시 연출 & 사운드 다변화 및 돈 올라가는 애니메이션 실행
+      let updatedTotalWon = sessionTotalWon
       if (result.totalWinAmount > 0) {
         onUpdateAssets(userAssetsRef.current + result.totalWinAmount)
-        setSessionTotalWon((prev) => prev + result.totalWinAmount)
+        updatedTotalWon = sessionTotalWon + result.totalWinAmount
+        setSessionTotalWon(updatedTotalWon)
 
         // 당첨 등급(Tier) 판정
         let currentTier: 'small' | 'medium' | 'big' | 'jackpot' = 'small'
@@ -196,12 +257,12 @@ export function CasinoSlotMachine({
           playSlotWinSmallSound()
         }
 
-        // 2. 파티클 이펙트 생성 (황금 코인 폭포수 & 컨페티)
+        // 2. 파티클 이펙트 생성
         const coinIcons = ['🪙', '💰', '✨', '⭐', '💎']
         const coinCount = currentTier === 'big' || currentTier === 'jackpot' ? 30 : currentTier === 'medium' ? 18 : 10
         const coins: CoinParticle[] = Array.from({ length: coinCount }, (_, i) => ({
           id: i,
-          x: Math.random() * 90 + 5, // 5% ~ 95%
+          x: Math.random() * 90 + 5,
           icon: coinIcons[Math.floor(Math.random() * coinIcons.length)],
           delay: Math.random() * 0.4,
         }))
@@ -218,7 +279,7 @@ export function CasinoSlotMachine({
           setConfettiParticles(confettis)
         }
 
-        // 3. 돈 올라가는(Count-up) 실시간 롤업 애니메이션 (Direct DOM update - zero re-render frame drops)
+        // 3. 돈 올라가는 Count-up 애니메이션
         const targetVal = result.totalWinAmount
         const duration = currentTier === 'big' ? 1200 : currentTier === 'medium' ? 900 : 600
         const startTimestamp = performance.now()
@@ -228,7 +289,6 @@ export function CasinoSlotMachine({
         const stepCountUp = (now: number) => {
           const elapsed = now - startTimestamp
           const progress = Math.min(1, elapsed / duration)
-          // Ease-out cubic for realistic casino countup
           const easeOut = 1 - Math.pow(1 - progress, 3)
           const currentAmount = Math.round(targetVal * easeOut)
 
@@ -257,7 +317,37 @@ export function CasinoSlotMachine({
       if (result.freeSpinsAwarded > 0) {
         setFreeSpinsLeft((prev) => prev + result.freeSpinsAwarded)
       }
+
+      // 마지막 3번째 슬롯 회전 완료 후 당첨이 0원이면 패배 팝업 출력!
+      const remainingSpins = isFreeSpin ? spinsLeft : spinsLeft - 1
+      if (remainingSpins <= 0 && result.freeSpinsAwarded === 0 && freeSpinsLeft <= 0) {
+        if (updatedTotalWon === 0) {
+          setTimeout(() => {
+            setShowDefeatModal(true)
+            const defeatIdx = getNextDialogueIndex('loss')
+            setDealerDialoguePlay({
+              tier: 1,
+              index: defeatIdx,
+              dealerName: dealerConfig.dealerName || '전설의 딜러',
+              dealerMediaUrl: spinDealerMedia?.url || dealerConfig.dealerMediaUrl,
+              dealerMediaType: spinDealerMedia?.type || dealerConfig.dealerMediaType,
+              isLoss: true,
+            })
+          }, 400)
+        }
+      }
     }, 1900)
+  }
+
+  // 게임 재도전 (스핀 및 세션 당첨금 리셋)
+  const handleResetGame = () => {
+    setSpinsLeft(3)
+    setFreeSpinsLeft(0)
+    setSessionTotalWon(0)
+    setCurrentTurn(1)
+    setShowDefeatModal(false)
+    setDealerDialoguePlay(null)
+    setLastResult(null)
   }
 
   // 수동 스톱 버튼 액션
@@ -294,16 +384,19 @@ export function CasinoSlotMachine({
       : ''
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-between p-2 text-white select-none overflow-hidden font-sans">
-      {/* CLEAN TOP SYSTEM BAR */}
-      <div className="w-full flex items-center justify-between px-5 py-2 bg-slate-900/95 border border-slate-700 rounded-2xl shadow-lg backdrop-blur-md z-20 shrink-0">
+    <div className="relative w-full h-full min-h-0 flex-1 bg-slate-950 text-slate-100 flex flex-col justify-between p-3 sm:p-4 rounded-2xl border border-amber-400/30 shadow-2xl overflow-hidden font-sans select-none">
+      {/* 1. TOP HEADER BAR */}
+      <div className="relative z-10 flex shrink-0 items-center justify-between border-b border-amber-400/30 pb-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 flex items-center justify-center text-xl font-black text-slate-950 shadow-md">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 flex items-center justify-center text-slate-950 text-xl font-black shadow-lg shadow-amber-500/50">
             🎰
           </div>
           <div>
-            <h1 className="text-base sm:text-lg font-black bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-400 bg-clip-text text-transparent">
-              {t('casino.title')}
+            <span className="text-[10px] font-mono font-bold tracking-widest text-amber-400 uppercase">
+              VIP CYBER CASINO
+            </span>
+            <h1 className="text-lg sm:text-2xl font-black tracking-wider bg-gradient-to-r from-yellow-100 via-amber-300 to-amber-200 bg-clip-text text-transparent drop-shadow">
+              골든 슬롯머신
             </h1>
           </div>
         </div>
@@ -316,7 +409,7 @@ export function CasinoSlotMachine({
             📖 {t('casino.paytable')}
           </button>
 
-          {/* 눈에 띄는 럭셔리 보유 자산 표시 패널 */}
+          {/* 럭셔리 보유 자산 표시 패널 */}
           <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-2xl border-2 border-amber-400/70 bg-gradient-to-r from-amber-500/25 via-yellow-400/15 to-amber-600/30 text-xs font-mono shadow-[0_0_20px_rgba(245,158,11,0.4)] backdrop-blur-md">
             <span className="text-lg drop-shadow">💰</span>
             <span className="text-xs sm:text-sm font-black text-amber-300 tracking-wide uppercase">{t('casino.userAssets')}</span>
@@ -334,306 +427,480 @@ export function CasinoSlotMachine({
         </div>
       </div>
 
-      {/* REAL AUTHENTIC HIGH-GLOSS 3D PACHISLOT CABINET CONTAINER (NO SCROLLBAR) */}
-      <div className="relative my-auto flex items-center justify-center w-full max-w-3xl py-1">
-        <div className={`pachislot-cabinet ${machineToneClass} flex flex-col relative`}>
-          {/* FLOATING COIN PARTICLES OVERLAY */}
-          {coinParticles.length > 0 && (
-            <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
-              {coinParticles.map((p) => (
-                <div
-                  key={p.id}
-                  style={{
-                    left: `${p.x}%`,
-                    bottom: '15%',
-                    animationDelay: `${p.delay}s`,
-                  }}
-                  className="absolute text-2xl sm:text-3xl animate-coin-float filter drop-shadow-[0_0_10px_rgba(250,204,21,0.9)]"
-                >
-                  {p.icon}
+      {/* 2. FULL-WIDTH INTEGRATED EMERALD FELT CASINO STAGE (3-COLUMN RESPONSIVE LAYOUT) */}
+      <div className="relative z-10 flex-1 p-3 sm:p-4 rounded-2xl border-2 border-amber-400/40 bg-gradient-to-b from-slate-950 via-slate-900/90 to-slate-950 backdrop-blur-md shadow-[inset_0_0_90px_rgba(245,158,11,0.2),0_0_50px_rgba(245,158,11,0.15)] my-auto py-2 flex flex-col min-h-0 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr_360px] gap-3 sm:gap-5 items-stretch flex-1 min-h-0 overflow-hidden">
+          
+          {/* LEFT COLUMN: Live Dealer Showcase (High-Tech CCTV Surveillance Feed) */}
+          <div className="hidden lg:flex flex-col justify-between p-2 sm:p-3 font-mono text-xs overflow-hidden bg-transparent border-none shadow-none">
+            <div className="space-y-2.5 flex-1 flex flex-col min-h-0">
+              <h4 className="text-xs font-black text-amber-300 uppercase tracking-widest border-b border-amber-400/30 pb-1.5 flex items-center justify-between shrink-0 font-mono">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping inline-block" />
+                  <span>📡 LIVE CCTV FEED [CAM-01]</span>
+                </span>
+                <span className="text-[10px] text-amber-400 font-bold">TURN {currentTurn}/3</span>
+              </h4>
+
+              {/* Live Dealer CCTV Media Box */}
+              <div className="relative w-full aspect-[3/4] flex-1 min-h-[220px] max-h-[360px] rounded-2xl overflow-hidden border-2 border-amber-400/80 bg-slate-950 shadow-[0_0_35px_rgba(245,158,11,0.3)] group">
+                <div className="cctv-scanline" />
+                <div className="cctv-noise" />
+
+                {/* Viewfinder Reticle Corners */}
+                <div className="pointer-events-none absolute inset-0 z-10 p-2.5 flex flex-col justify-between">
+                  <div className="flex justify-between">
+                    <span className="border-t-2 border-l-2 border-amber-400/80 w-3.5 h-3.5 block" />
+                    <span className="border-t-2 border-r-2 border-amber-400/80 w-3.5 h-3.5 block" />
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="border-b-2 border-l-2 border-amber-400/80 w-3.5 h-3.5 block" />
+                    <span className="border-b-2 border-r-2 border-amber-400/80 w-3.5 h-3.5 block" />
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
 
-          {/* CONFETTI PARTICLES OVERLAY */}
-          {confettiParticles.length > 0 && (
-            <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
-              {confettiParticles.map((p) => (
-                <div
-                  key={p.id}
-                  style={{
-                    left: `${p.x}%`,
-                    top: '0%',
-                    backgroundColor: p.color,
-                    animationDelay: `${p.delay}s`,
-                  }}
-                  className="absolute w-2.5 h-2.5 rounded-sm animate-confetti-fall shadow-md"
-                />
-              ))}
-            </div>
-          )}
+                {/* Top HUD: Blinking Red REC Badge */}
+                <div className="pointer-events-none absolute top-2 left-2 z-20 flex items-center font-mono">
+                  <div className="flex items-center gap-1 bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded border border-rose-500/60 shadow">
+                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                    <span className="text-[9px] font-black text-rose-400 tracking-wider">REC</span>
+                  </div>
+                </div>
 
-          {/* 1. CLEAN TOP RED ACRYLIC MARQUEE HEADER */}
-          <div className="pachislot-top-marquee">
-            <div className="pachislot-marquee-lamps">
-              {Array.from({ length: 16 }, (_, index) => (
-                <span key={index} style={{ animationDelay: `${index * 60}ms` }} />
-              ))}
-            </div>
-
-            <div className="px-6 py-2.5 flex items-center justify-center">
-              <div className="flex flex-col items-center">
-                <div className="pachislot-777-box">
-                  <div className="flex items-center gap-1 px-3.5 py-1 rounded-xl border-2 border-yellow-300 bg-gradient-to-r from-red-700 via-amber-500 to-red-700 shadow-[0_0_20px_rgba(250,204,21,0.95)]">
-                    <span className="text-2xl sm:text-3xl font-black font-mono tracking-widest text-yellow-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] animate-pulse">
-                      7️⃣ 7️⃣ 7️⃣
+                {/* Dealer Media Video/Image Feed */}
+                {activeDealerMedia?.url ? (
+                  activeDealerMedia.type === 'video' ? (
+                    <video
+                      key={activeDealerMedia.url}
+                      src={resolveMediaSrc(activeDealerMedia.url)}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover filter contrast-[1.05] brightness-95 saturate-[0.95]"
+                    />
+                  ) : (
+                    <img
+                      key={activeDealerMedia.url}
+                      src={resolveMediaSrc(activeDealerMedia.url)}
+                      alt={dealerConfig.dealerName}
+                      className="w-full h-full object-cover filter contrast-[1.05] brightness-95 saturate-[0.95]"
+                    />
+                  )
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-950 via-amber-950/70 to-slate-950 text-amber-200">
+                    <div className="w-16 h-16 rounded-full border-2 border-amber-400/70 p-1 mb-1 bg-black flex items-center justify-center shadow-lg shadow-amber-500/30">
+                      <span className="text-3xl">🎩</span>
+                    </div>
+                    <span className="text-xs font-black text-amber-300 uppercase tracking-widest font-mono">
+                      {dealerConfig.dealerName}
                     </span>
+                    <span className="text-[9px] text-amber-400/90 font-bold font-mono">
+                      {dealerConfig.dealerTitle}
+                    </span>
+                  </div>
+                )}
+
+                {/* CCTV Bottom Info & Signal Bar */}
+                <div className="absolute inset-x-0 bottom-0 p-2.5 bg-slate-950/95 backdrop-blur-md border-t border-amber-400/40 flex items-center justify-between font-mono z-20">
+                  <div>
+                    <h5 className="text-[11px] font-black text-slate-100 flex items-center gap-1">
+                      <span className="text-amber-400">DEALER:</span> {dealerConfig.dealerName}
+                    </h5>
+                    <span className="text-[9px] text-amber-400 font-bold">수위 {Math.min(3, currentTurn)}단계 적용</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[9px] text-amber-400 block font-bold">SIGNAL 100%</span>
+                    <span className="text-[8px] text-slate-400 block">30 FPS · HD</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* SPIN TURN PROGRESS BADGE */}
+              <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-400/30 backdrop-blur-sm space-y-1.5 text-center">
+                <span className="text-xs font-black text-amber-300 uppercase tracking-wider block">
+                  🎰 슬롯 도전 진행 상황
+                </span>
+                <div className="flex items-center justify-center gap-2 font-mono text-sm font-black text-yellow-200">
+                  <span>턴 {currentTurn} / 3</span>
+                  <span className="text-xs text-amber-400 font-bold">(남은 회전: {spinsLeft}회)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* MIDDLE COLUMN: Authentic Pachislot Cabinet & Reels */}
+          <div className="relative flex flex-col items-center justify-center w-full min-h-0 overflow-y-auto">
+            <div className={`pachislot-cabinet ${machineToneClass} flex flex-col relative w-full`}>
+              {/* COIN PARTICLES OVERLAY */}
+              {coinParticles.length > 0 && (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
+                  {coinParticles.map((p) => (
+                    <div
+                      key={p.id}
+                      style={{
+                        left: `${p.x}%`,
+                        bottom: '15%',
+                        animationDelay: `${p.delay}s`,
+                      }}
+                      className="absolute text-2xl sm:text-3xl animate-coin-float filter drop-shadow-[0_0_10px_rgba(250,204,21,0.9)]"
+                    >
+                      {p.icon}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* CONFETTI PARTICLES OVERLAY */}
+              {confettiParticles.length > 0 && (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
+                  {confettiParticles.map((p) => (
+                    <div
+                      key={p.id}
+                      style={{
+                        left: `${p.x}%`,
+                        top: '0%',
+                        backgroundColor: p.color,
+                        animationDelay: `${p.delay}s`,
+                      }}
+                      className="absolute w-2.5 h-2.5 rounded-sm animate-confetti-fall shadow-md"
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* TOP MARQUEE HEADER */}
+              <div className="pachislot-top-marquee">
+                <div className="pachislot-marquee-lamps">
+                  {Array.from({ length: 16 }, (_, index) => (
+                    <span key={index} style={{ animationDelay: `${index * 60}ms` }} />
+                  ))}
+                </div>
+
+                <div className="px-6 py-2.5 flex items-center justify-center">
+                  <div className="flex flex-col items-center">
+                    <div className="pachislot-777-box">
+                      <div className="flex items-center gap-1 px-3.5 py-1 rounded-xl border-2 border-yellow-300 bg-gradient-to-r from-red-700 via-amber-500 to-red-700 shadow-[0_0_20px_rgba(250,204,21,0.95)]">
+                        <span className="text-2xl sm:text-3xl font-black font-mono tracking-widest text-yellow-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] animate-pulse">
+                          7️⃣ 7️⃣ 7️⃣
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* REEL SHOWCASE DECK */}
+              <div className="pachislot-reel-showcase">
+                <div className="p-2.5 sm:p-3.5 flex flex-col gap-2.5">
+                  <div className="relative flex items-center justify-between gap-2">
+                    {/* LEFT PAYLINE BADGES */}
+                    <div className="flex flex-col gap-3 text-[10px] font-mono font-bold shrink-0">
+                      {PAYLINES.slice(0, 4).map((line) => {
+                        const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
+                        return (
+                          <div
+                            key={line.id}
+                            style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
+                            className={`px-2 py-0.5 rounded-lg border-2 ${
+                              isWon
+                                ? 'bg-amber-400 animate-bounce shadow-[0_0_15px_currentColor]'
+                                : 'bg-slate-950/90'
+                            } transition-all`}
+                          >
+                            L{line.id}
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* 3 REEL COLUMNS CONTAINER */}
+                    <div className="pachislot-reel-window flex-1">
+                      <svg className="absolute inset-3 w-[calc(100%-24px)] h-[calc(100%-24px)] pointer-events-none z-30">
+                        {PAYLINES.map((line) => {
+                          const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
+                          return (
+                            <path
+                              key={line.id}
+                              d={getLineSvgCoords(line.coords)}
+                              fill="none"
+                              stroke={isWon ? line.color : 'transparent'}
+                              strokeWidth={isWon ? 5 : 0}
+                              className={isWon ? 'animate-pulse filter drop-shadow-[0_0_15px_currentColor]' : ''}
+                            />
+                          )
+                        })}
+                      </svg>
+
+                      {[0, 1, 2].map((colIdx) => {
+                        const isColumnSpinning = stoppedCount <= colIdx
+                        const stripSymbols = colStrips[colIdx] ?? []
+                        const landOffsetPx = 9 * 70
+
+                        return (
+                          <div key={colIdx} className="pachislot-reel-column">
+                            <div
+                              className={`pachislot-reel-strip ${
+                                isColumnSpinning ? 'is-spinning' : 'is-stopped'
+                              }`}
+                              style={{
+                                ['--reel-land' as string]: `-${landOffsetPx}px`,
+                              }}
+                            >
+                              {stripSymbols.map((symId, idx) => {
+                                const sym = SLOT_SYMBOLS[symId] ?? SLOT_SYMBOLS.cherry
+                                const rowIdx = idx - 9
+                                const isTargetCell = !isColumnSpinning && rowIdx >= 0 && rowIdx < 3
+                                const isWinningCell =
+                                  isTargetCell &&
+                                  lastResult?.winningLines.some((w) =>
+                                    w.payline.coords.some(([r, c]) => r === rowIdx && c === colIdx),
+                                  )
+
+                                return (
+                                  <div
+                                    key={`${symId}-${idx}`}
+                                    className={`pachislot-reel-cell ${isWinningCell ? 'is-winner' : ''}`}
+                                  >
+                                    {symId === 'seven' ? (
+                                      <div className="relative flex items-center justify-center px-2.5 py-1 rounded-xl border-2 border-yellow-300 bg-gradient-to-b from-red-600 via-amber-500 to-red-800 shadow-[0_0_14px_rgba(250,204,21,0.95)] animate-pulse scale-105">
+                                        <span className="text-2xl sm:text-3xl font-black font-mono tracking-wider text-yellow-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                                          7️⃣
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <span className="text-3xl sm:text-4xl filter drop-shadow-md">
+                                        {sym.icon}
+                                      </span>
+                                    )}
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* RIGHT PAYLINE BADGES */}
+                    <div className="flex flex-col gap-3 text-[10px] font-mono font-bold shrink-0">
+                      {PAYLINES.slice(4, 8).map((line) => {
+                        const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
+                        return (
+                          <div
+                            key={line.id}
+                            style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
+                            className={`px-2 py-0.5 rounded-lg border-2 ${
+                              isWon
+                                ? 'bg-amber-400 animate-bounce shadow-[0_0_15px_currentColor]'
+                                : 'bg-slate-950/90'
+                            } transition-all`}
+                          >
+                            L{line.id}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* SPIN DISPLAY RESULTS BANNER */}
+                  <div className="min-h-[38px] flex items-center justify-center px-4 py-1 bg-slate-950/95 rounded-xl border border-amber-400/50 text-center font-mono shadow-inner relative overflow-hidden">
+                    {isSpinning ? (
+                      <span className="text-amber-400 font-bold animate-pulse text-xs">
+                        🎰 {t('casino.spinning')}
+                      </span>
+                    ) : lastResult ? (
+                      lastResult.totalWinAmount > 0 ? (
+                        <div className="flex items-center gap-2 text-yellow-300 font-black text-xs sm:text-sm">
+                          <span className="text-xs bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-400/40 text-amber-300 animate-pulse">
+                            {winTier === 'big' || winTier === 'jackpot'
+                              ? t('casino.megaWin')
+                              : winTier === 'medium'
+                              ? t('casino.bigWin')
+                              : t('casino.win')}
+                          </span>
+                          <span
+                            ref={winAmountTextRef}
+                            className={`text-amber-400 text-sm sm:text-base font-extrabold ${
+                              isCountingUp ? 'animate-money-pulse text-yellow-200 scale-110' : ''
+                            }`}
+                          >
+                            +${(isCountingUp ? animWinAmount : lastResult.totalWinAmount).toLocaleString()}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 text-xs">
+                          {isOutOfSpins ? t('casino.outOfSpinsMsg') : t('casino.tryNext')}
+                        </span>
+                      )
+                    ) : (
+                      <span className="text-amber-300/90 text-xs">
+                        {t('casino.startPrompt')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* PHYSICAL BUTTON DECK & LEVER */}
+              <div className="pachislot-button-deck flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  {[0, 1, 2].map((idx) => {
+                    const isStopped = stoppedCount > idx
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        disabled={isStopped || !isSpinning}
+                        onClick={() => handleStopColumn(idx)}
+                        className={`pachislot-btn-stop ${isStopped ? 'is-pressed opacity-50' : ''}`}
+                      >
+                        <span>{t('casino.stop')}</span>
+                        <span className="text-[9px] font-bold text-amber-400">{idx + 1}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                <button
+                  disabled={isSpinning || isOutOfSpins}
+                  onClick={handleSpin}
+                  className={`pachislot-btn-spin text-sm sm:text-base ${
+                    isSpinning || isOutOfSpins
+                      ? 'opacity-60 cursor-not-allowed'
+                      : freeSpinsLeft > 0
+                      ? 'animate-pulse'
+                      : ''
+                  }`}
+                >
+                  <span className="text-xl">🎰</span>
+                  <span>
+                    {isSpinning
+                      ? t('casino.spinning')
+                      : isOutOfSpins
+                      ? t('casino.spinsExhausted')
+                      : freeSpinsLeft > 0
+                      ? t('casino.bonusSpin').replace('{spins}', String(freeSpinsLeft))
+                      : t('casino.spin').replace('{spins}', String(spinsLeft))}
+                  </span>
+                </button>
+              </div>
+
+              {/* BOTTOM COIN TRAY */}
+              <div className="pachislot-bottom-deck">
+                <div className="pachislot-coin-tray flex items-center justify-between px-4 py-2 border-2 border-amber-400/50 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-2xl shadow-[0_0_25px_rgba(245,158,11,0.25)]">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl sm:text-3xl animate-bounce drop-shadow-[0_0_12px_rgba(250,204,21,0.9)]">🪙</span>
+                    <span className="text-xs sm:text-sm font-black tracking-wide text-amber-300 uppercase">{t('casino.accumulatedWin')}</span>
+                  </div>
+                  <div className="text-base sm:text-xl font-black font-mono text-yellow-200 bg-gradient-to-r from-amber-950 via-yellow-900/90 to-amber-950 px-4 py-1.5 rounded-xl border-2 border-yellow-400/80 shadow-[0_0_20px_rgba(250,204,21,0.5)]">
+                    +${sessionTotalWon.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+
+              {/* 3D SIDE MECHANICAL PULL LEVER WITH SPHERE KNOB */}
+              <div className="hidden xl:flex flex-col items-center justify-center absolute -right-12 top-1/2 -translate-y-1/2 select-none z-30">
+                <div className="w-5 h-36 bg-gradient-to-r from-slate-700 via-slate-400 to-slate-800 rounded-full border-2 border-slate-900 shadow-2xl relative flex flex-col items-center p-1">
+                  <div
+                    className={`w-2.5 bg-gradient-to-b from-yellow-200 via-amber-400 to-amber-600 rounded-full transition-all duration-300 origin-bottom shadow-inner ${
+                      isLeverPulled ? 'h-16 transform rotate-[45deg]' : 'h-28'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      disabled={isSpinning || isOutOfSpins}
+                      onClick={handleSpin}
+                      className="w-9 h-9 rounded-full bg-gradient-to-tr from-red-700 via-red-500 to-yellow-300 border-2 border-yellow-200 shadow-[0_0_20px_rgba(239,68,68,0.9)] -translate-x-3 -translate-y-4 hover:scale-110 active:scale-95 transition-transform cursor-pointer"
+                      title={t('casino.spin').replace('{spins}', String(spinsLeft))}
+                    />
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 2. CENTRAL GLASS REEL SHOWCASE DECK WITH 8 PAYLINE SIDE BADGES */}
-          <div className="pachislot-reel-showcase">
-            <div className="p-2.5 sm:p-3.5 flex flex-col gap-2.5">
-              {/* REEL WINDOW & SIDE PAYLINE INDICATORS */}
-              <div className="relative flex items-center justify-between gap-2">
-                {/* LEFT PAYLINE BADGES (L1, L2, L3, L6) */}
-                <div className="flex flex-col gap-3 text-[10px] font-mono font-bold shrink-0">
-                  {PAYLINES.slice(0, 4).map((line) => {
-                    const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
-                    return (
-                      <div
-                        key={line.id}
-                        style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
-                        className={`px-2 py-0.5 rounded-lg border-2 ${
-                          isWon
-                            ? 'bg-amber-400 animate-bounce shadow-[0_0_15px_currentColor]'
-                            : 'bg-slate-950/90'
-                        } transition-all`}
-                      >
-                        L{line.id}
-                      </div>
-                    )
-                  })}
-                </div>
-
-                {/* 3 REEL COLUMNS CONTAINER */}
-                <div className="pachislot-reel-window flex-1">
-                  {/* PAYLINES SVG NEON LASERS OVERLAY (8 LINES) */}
-                  <svg className="absolute inset-3 w-[calc(100%-24px)] h-[calc(100%-24px)] pointer-events-none z-30">
-                    {PAYLINES.map((line) => {
-                      const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
-                      return (
-                        <path
-                          key={line.id}
-                          d={getLineSvgCoords(line.coords)}
-                          fill="none"
-                          stroke={isWon ? line.color : 'transparent'}
-                          strokeWidth={isWon ? 5 : 0}
-                          className={isWon ? 'animate-pulse filter drop-shadow-[0_0_15px_currentColor]' : ''}
-                        />
-                      )
-                    })}
-                  </svg>
-
-                  {[0, 1, 2].map((colIdx) => {
-                    const isColumnSpinning = stoppedCount <= colIdx
-                    const stripSymbols = colStrips[colIdx] ?? []
-                    const landOffsetPx = 9 * 70 // 9 dummy items * 70px cell height = 630px offset
-
-                    return (
-                      <div key={colIdx} className="pachislot-reel-column">
-                        <div
-                          className={`pachislot-reel-strip ${
-                            isColumnSpinning ? 'is-spinning' : 'is-stopped'
-                          }`}
-                          style={{
-                            ['--reel-land' as string]: `-${landOffsetPx}px`,
-                          }}
-                        >
-                          {stripSymbols.map((symId, idx) => {
-                            const sym = SLOT_SYMBOLS[symId] ?? SLOT_SYMBOLS.cherry
-                            const rowIdx = idx - 9
-                            const isTargetCell = !isColumnSpinning && rowIdx >= 0 && rowIdx < 3
-                            const isWinningCell =
-                              isTargetCell &&
-                              lastResult?.winningLines.some((w) =>
-                                w.payline.coords.some(([r, c]) => r === rowIdx && c === colIdx),
-                              )
-
-                            return (
-                              <div
-                                key={`${symId}-${idx}`}
-                                className={`pachislot-reel-cell ${isWinningCell ? 'is-winner' : ''}`}
-                              >
-                                {symId === 'seven' ? (
-                                  <div className="relative flex items-center justify-center px-2.5 py-1 rounded-xl border-2 border-yellow-300 bg-gradient-to-b from-red-600 via-amber-500 to-red-800 shadow-[0_0_14px_rgba(250,204,21,0.95)] animate-pulse scale-105">
-                                    <span className="text-2xl sm:text-3xl font-black font-mono tracking-wider text-yellow-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-                                      7️⃣
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <span className="text-3xl sm:text-4xl filter drop-shadow-md">
-                                    {sym.icon}
-                                  </span>
-                                )}
-                              </div>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-
-                {/* RIGHT PAYLINE BADGES (L4, L5, L7, L8) */}
-                <div className="flex flex-col gap-3 text-[10px] font-mono font-bold shrink-0">
-                  {PAYLINES.slice(4, 8).map((line) => {
-                    const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
-                    return (
-                      <div
-                        key={line.id}
-                        style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
-                        className={`px-2 py-0.5 rounded-lg border-2 ${
-                          isWon
-                            ? 'bg-amber-400 animate-bounce shadow-[0_0_15px_currentColor]'
-                            : 'bg-slate-950/90'
-                        } transition-all`}
-                      >
-                        L{line.id}
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* SPIN DISPLAY RESULTS BANNER WITH COUNTUP ANIMATION */}
-              <div className="min-h-[38px] flex items-center justify-center px-4 py-1 bg-slate-950/95 rounded-xl border border-amber-400/50 text-center font-mono shadow-inner relative overflow-hidden">
-                {isSpinning ? (
-                  <span className="text-amber-400 font-bold animate-pulse text-xs">
-                    🎰 {t('casino.spinning')}
-                  </span>
-                ) : lastResult ? (
-                  lastResult.totalWinAmount > 0 ? (
-                    <div className="flex items-center gap-2 text-yellow-300 font-black text-xs sm:text-sm">
-                      <span className="text-xs bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-400/40 text-amber-300 animate-pulse">
-                        {winTier === 'big' || winTier === 'jackpot'
-                          ? t('casino.megaWin')
-                          : winTier === 'medium'
-                          ? t('casino.bigWin')
-                          : t('casino.win')}
-                      </span>
-                      <span
-                        ref={winAmountTextRef}
-                        className={`text-amber-400 text-sm sm:text-base font-extrabold ${
-                          isCountingUp ? 'animate-money-pulse text-yellow-200 scale-110' : ''
-                        }`}
-                      >
-                        +${(isCountingUp ? animWinAmount : lastResult.totalWinAmount).toLocaleString()}
-                      </span>
-                      {lastResult.freeSpinsAwarded > 0 && (
-                        <span className="text-[10px] text-yellow-200 bg-yellow-600/90 px-2 py-0.5 rounded-full shadow">
-                          {t('casino.bonusSpinAwarded')}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-slate-400 text-xs">
-                      {isOutOfSpins ? t('casino.outOfSpinsMsg') : t('casino.tryNext')}
-                    </span>
-                  )
-                ) : (
-                  <span className="text-amber-300/90 text-xs">
-                    {t('casino.startPrompt')}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* 3. PHYSICAL SLANTED BUTTON DECK (STOP 1, STOP 2, STOP 3 & BIG SPIN BUTTON) */}
-          <div className="pachislot-button-deck flex items-center justify-between gap-3">
-            {/* 3 HIGH-GLOSS PHYSICAL STOP BUTTONS */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {[0, 1, 2].map((idx) => {
-                const isStopped = stoppedCount > idx
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    disabled={isStopped || !isSpinning}
-                    onClick={() => handleStopColumn(idx)}
-                    className={`pachislot-btn-stop ${isStopped ? 'is-pressed opacity-50' : ''}`}
+          {/* RIGHT COLUMN: Paytable & Stats Log */}
+          <div className="hidden lg:flex flex-col justify-between p-3 rounded-2xl bg-amber-950/30 border border-amber-400/30 backdrop-blur-md space-y-3 font-mono text-xs overflow-hidden">
+            <div className="space-y-2 border-b border-amber-400/30 pb-2">
+              <h4 className="text-xs font-black text-amber-300 uppercase tracking-widest flex items-center gap-1.5">
+                <span>📖</span>
+                <span>심볼 배율 정보</span>
+              </h4>
+              <div className="grid grid-cols-2 gap-1.5 text-[11px]">
+                {Object.values(SLOT_SYMBOLS).slice(0, 6).map((sym) => (
+                  <div
+                    key={sym.id}
+                    className="flex items-center justify-between px-2 py-1 rounded-lg bg-slate-950/80 border border-amber-400/20"
                   >
-                    <span>{t('casino.stop')}</span>
-                    <span className="text-[9px] font-bold text-amber-400">{idx + 1}</span>
-                  </button>
-                )
-              })}
+                    <span className="text-base">{sym.icon}</span>
+                    <span className="font-bold text-amber-300">{sym.multiplier}x</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* HIGH-GLOSS 3D GOLDEN ARCADE SPIN BUTTON */}
-            <button
-              disabled={isSpinning || isOutOfSpins}
-              onClick={handleSpin}
-              className={`pachislot-btn-spin text-sm sm:text-base ${
-                isSpinning || isOutOfSpins
-                  ? 'opacity-60 cursor-not-allowed'
-                  : freeSpinsLeft > 0
-                  ? 'animate-pulse'
-                  : ''
-              }`}
-            >
-              <span className="text-xl">🎰</span>
-              <span>
-                {isSpinning
-                  ? t('casino.spinning')
-                  : isOutOfSpins
-                  ? t('casino.spinsExhausted')
-                  : freeSpinsLeft > 0
-                  ? t('casino.bonusSpin').replace('{spins}', String(freeSpinsLeft))
-                  : t('casino.spin').replace('{spins}', String(spinsLeft))}
+            <div className="flex-1 space-y-2 overflow-y-auto">
+              <h4 className="text-xs font-black text-amber-300 uppercase tracking-widest">
+                🏆 슬롯 세션 총획득
+              </h4>
+              <div className="p-3 rounded-xl bg-slate-950/80 border border-amber-400/30 text-center space-y-1">
+                <span className="text-[10px] text-slate-400 block font-bold">SESSION TOTAL WIN</span>
+                <span className="text-xl font-black text-yellow-300 font-mono">
+                  +${sessionTotalWon.toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-amber-400/30 text-center">
+              <span className="text-[10px] font-bold text-amber-400/80">
+                VIP CYBER SLOT MACHINE
               </span>
-            </button>
-          </div>
-
-          {/* 4. BOTTOM GRAPHIC ARTWORK PANEL & 3D METALLIC COIN TRAY */}
-          <div className="pachislot-bottom-deck">
-            {/* METALLIC COIN OUTLET TRAY - 대형 럭셔리 네온 상금 패널 */}
-            <div className="pachislot-coin-tray flex items-center justify-between px-4 py-2 border-2 border-amber-400/50 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-2xl shadow-[0_0_25px_rgba(245,158,11,0.25)]">
-              <div className="flex items-center gap-2.5">
-                <span className="text-2xl sm:text-3xl animate-bounce drop-shadow-[0_0_12px_rgba(250,204,21,0.9)]">🪙</span>
-                <span className="text-xs sm:text-sm font-black tracking-wide text-amber-300 uppercase">{t('casino.accumulatedWin')}</span>
-              </div>
-              <div className="text-base sm:text-xl font-black font-mono text-yellow-200 bg-gradient-to-r from-amber-950 via-yellow-900/90 to-amber-950 px-4 py-1.5 rounded-xl border-2 border-yellow-400/80 shadow-[0_0_20px_rgba(250,204,21,0.5)]">
-                +${sessionTotalWon.toLocaleString()}
-              </div>
             </div>
           </div>
-        </div>
 
-        {/* 3D SIDE MECHANICAL PULL LEVER WITH SPHERE KNOB */}
-        <div className="hidden lg:flex flex-col items-center justify-center ml-4 relative select-none shrink-0">
-          <div className="w-6 h-36 bg-gradient-to-r from-slate-700 via-slate-400 to-slate-800 rounded-full border-2 border-slate-900 shadow-2xl relative flex flex-col items-center p-1">
-            <div
-              className={`w-3 bg-gradient-to-b from-yellow-200 via-amber-400 to-amber-600 rounded-full transition-all duration-300 origin-bottom shadow-inner ${
-                isLeverPulled ? 'h-16 transform rotate-[45deg]' : 'h-28'
-              }`}
-            >
-              <button
-                type="button"
-                disabled={isSpinning || isOutOfSpins}
-                onClick={handleSpin}
-                className="w-10 h-10 rounded-full bg-gradient-to-tr from-red-700 via-red-500 to-yellow-300 border-2 border-yellow-200 shadow-[0_0_20px_rgba(239,68,68,0.9)] -translate-x-3.5 -translate-y-4 hover:scale-110 active:scale-95 transition-transform cursor-pointer"
-                title={t('casino.spin').replace('{spins}', String(spinsLeft))}
-              />
-            </div>
-          </div>
         </div>
       </div>
+
+      {/* FLOATING OVERLAY MODAL FOR DEFEAT (마지막 슬롯 3회 도전 시 당첨금 0원이면 패배 팝업 출력) */}
+      {showDefeatModal && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-pop-in select-none">
+          <div className="w-full max-w-sm p-6 rounded-3xl bg-slate-950/95 border-2 border-rose-600 shadow-[0_0_60px_rgba(225,29,72,0.6)] flex flex-col items-center space-y-4 font-sans text-center shadow-2xl relative overflow-hidden">
+            <div className="flex flex-col items-center gap-1.5">
+              <span className="px-4 py-1 rounded-full text-xs font-black uppercase shadow-lg flex items-center gap-1.5 bg-rose-950 border border-rose-500 text-rose-300 shadow-rose-950/80">
+                <span>💀</span>
+                <span>패배</span>
+              </span>
+
+              <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.8)] mt-1">
+                +$0
+              </div>
+            </div>
+
+            <div className="w-full p-3.5 rounded-2xl bg-rose-950/70 border border-rose-500/50 text-xs text-rose-200 text-center font-medium leading-relaxed">
+              💀 패배! 3회 슬롯 도전 중 당첨 라인이 발생하지 않았습니다.
+            </div>
+
+            <div className="flex items-center gap-2.5 w-full pt-1">
+              <button
+                onClick={handleResetGame}
+                className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:brightness-110 shadow-[0_0_20px_rgba(245,158,11,0.5)] border border-yellow-200/60 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+              >
+                <span>🔄</span>
+                <span>다시 도전</span>
+              </button>
+
+              <button
+                onClick={onClose}
+                className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:brightness-110 border border-rose-500/80 shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+              >
+                <span>✕</span>
+                <span>나가기</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* PAYTABLE MODAL */}
       {showPaytable && (
@@ -651,7 +918,6 @@ export function CasinoSlotMachine({
               </button>
             </div>
 
-            {/* SYMBOLS MULTIPLIER TABLE */}
             <div className="space-y-2">
               <h3 className="text-xs font-bold text-amber-400 uppercase tracking-widest">
                 {t('casino.symbolMultiplierTitle')}
@@ -676,23 +942,6 @@ export function CasinoSlotMachine({
                   </div>
                 ))}
               </div>
-            </div>
-
-            {/* PAYLINES GUIDE (8 PAYLINES) */}
-            <div className="space-y-2 border-t border-amber-400/20 pt-3">
-              <h3 className="text-xs font-bold text-amber-400 uppercase tracking-widest">
-                {t('casino.paylinesTitle')}
-              </h3>
-              <ul className="text-xs text-slate-300 space-y-1 list-disc list-inside font-mono">
-                {PAYLINES.map((line) => (
-                  <li key={line.id}>
-                    <span style={{ color: line.color }} className="font-bold">
-                      {t(`casino.paylines.line${line.id}`)} (L{line.id})
-                    </span>
-                    : {t('casino.paylineDesc')}
-                  </li>
-                ))}
-              </ul>
             </div>
 
             <button
@@ -725,6 +974,15 @@ export function CasinoSlotMachine({
             {t('casino.claimJackpot')}
           </button>
         </div>
+      )}
+
+      {/* DEALER DIALOGUE OVERLAY PORTAL */}
+      {dealerDialoguePlay && (
+        <HighLowDealerDialogue
+          play={dealerDialoguePlay}
+          locale={locale}
+          onClose={() => setDealerDialoguePlay(null)}
+        />
       )}
     </div>
   )
