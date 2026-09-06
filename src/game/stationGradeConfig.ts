@@ -26,10 +26,33 @@ export type CreatorCountRequirement = {
   enabled: boolean
 }
 
-/** 해당 등급에 머무를 때의 스카우트 인원 상한 */
+/** 해당 등급에 머무를 때의 스카우트 인원 상한 및 미니게임 설정 */
 export type StationTierSpec = {
   /** 이 등급에서 보유·스카우트 가능한 최대 크리에이터 수 */
   maxScoutCreators: number
+  /** 이 등급에서의 하이로우 무료 판돈 (Free Ante) */
+  highLowAnte?: number
+}
+
+export const DEFAULT_HIGH_LOW_ANTE: Record<StationTierId, number> = {
+  black: 500,
+  tiny: 1_000,
+  sme: 2_500,
+  mid: 5_000,
+  large: 10_000,
+  top: 25_000,
+}
+
+export function getHighLowAnteForGrade(
+  config: StationGradeConfig | undefined | null,
+  grade: StationTierId,
+): number {
+  if (!config?.tiers?.[grade]) return DEFAULT_HIGH_LOW_ANTE[grade] ?? 2_500
+  const val = config.tiers[grade].highLowAnte
+  if (val != null && Number.isFinite(val) && val >= 0) {
+    return Math.round(val)
+  }
+  return DEFAULT_HIGH_LOW_ANTE[grade] ?? 2_500
 }
 
 /** 다음 등급으로 올라가기 위한 연간 심사 조건 */
@@ -333,12 +356,12 @@ function defaultCreatorReq(
 export function defaultStationGradeConfig(): StationGradeConfig {
   return {
     tiers: {
-      black: { maxScoutCreators: 2 },
-      tiny: { maxScoutCreators: 3 },
-      sme: { maxScoutCreators: 4 },
-      mid: { maxScoutCreators: 5 },
-      large: { maxScoutCreators: 6 },
-      top: { maxScoutCreators: 8 },
+      black: { maxScoutCreators: 2, highLowAnte: 500 },
+      tiny: { maxScoutCreators: 3, highLowAnte: 1000 },
+      sme: { maxScoutCreators: 4, highLowAnte: 2500 },
+      mid: { maxScoutCreators: 5, highLowAnte: 5000 },
+      large: { maxScoutCreators: 6, highLowAnte: 10000 },
+      top: { maxScoutCreators: 8, highLowAnte: 25000 },
     },
     promotions: {
       tiny: {

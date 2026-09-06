@@ -61,10 +61,11 @@ export const SNS_HEAT3_PITY_BASE = 0.1
 export const SNS_HEAT3_PITY_STEP = 0.06
 export const SNS_HEAT3_PITY_CAP = 0.34
 
-/** 콘셉트와 무관한 단일 촬영비 (에셋 장수에 연동) */
-export function calcSnsPostCost(totalAssetCount: number): number {
+/** 콘셉트와 수위에 따른 촬영비 (파격적 화보(heat 3)는 고급 화보 제작비 5배 적용) */
+export function calcSnsPostCost(totalAssetCount: number, heat: SnsHeat = 2): number {
   const count = Math.max(1, Math.round(totalAssetCount))
-  return 8_000 + count * 800
+  const baseCost = 12_000 + count * 1_200
+  return heat === 3 ? baseCost * 5 : baseCost
 }
 
 export function normalizeSnsHeat3Pity(raw: unknown): number {
@@ -280,8 +281,10 @@ export function canComposeSnsCreator(
 ): boolean {
   if (creator.snsPending) return false
   const posts = creator.snsPosts ?? []
-  if (!hasSnsComposeStock(posts, creator.snsPublishedIds ?? [])) return false
-  return assets >= calcSnsPostCost(posts.length)
+  const published = creator.snsPublishedIds ?? []
+  const rolled = rollSnsCompose(posts, published, creator.snsHeat3Pity ?? 0)
+  if (!rolled) return false
+  return assets >= calcSnsPostCost(posts.length, rolled.heat)
 }
 
 /** 일괄 SNS: 대상이 있고 총 촬영비를 감당할 수 있는지 */
@@ -294,7 +297,12 @@ export function canAffordBulkSnsCompose(
   const byId = new Map(creators.map((creator) => [creator.id, creator]))
   let totalCost = 0
   for (const id of eligibleIds) {
-    totalCost += calcSnsPostCost((byId.get(id)?.snsPosts ?? []).length)
+    const creator = byId.get(id)
+    if (!creator) continue
+    const posts = creator.snsPosts ?? []
+    const rolled = rollSnsCompose(posts, creator.snsPublishedIds ?? [], creator.snsHeat3Pity ?? 0)
+    const heat = rolled?.heat ?? 2
+    totalCost += calcSnsPostCost(posts.length, heat)
   }
   return assets >= totalCost
 }

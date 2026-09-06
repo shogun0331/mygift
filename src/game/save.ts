@@ -71,6 +71,11 @@ export type GameSave = {
   scoutSystem: SerializedScoutSystemState
   /** 월말 연간 심사/승급이 진행 중인지 (세이브-로드 유실 방지) */
   pendingStationReview?: boolean
+  /** 진행 중인 승급심사 목표 정보 (세이브-로드 시 덱 세팅 복원) */
+  stationAuditTarget?: {
+    currentTier: StationGrade
+    nextTier: Exclude<StationGrade, 'black' | 'tiny'>
+  } | null
   /** 방송 랭킹 수익 데이터 (세이브-로드 유실 방지) */
   liveRevenueByCreator?: Record<string, number>
   /** 카지노 쿨다운 턴 카운트 (0~3) 및 모달 상태 */

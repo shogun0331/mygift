@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import type { OwnedCreator } from '../game/characters'
 import { formatMoney } from '../game/money'
-import { calcSnsPostCost, previewBulkSnsCompose, type BulkSnsRevealEntry } from '../game/sns'
+import { calcSnsPostCost, previewBulkSnsCompose, rollSnsCompose, type BulkSnsRevealEntry } from '../game/sns'
 import { useTranslation } from '../locales/i18n'
 
 type SnsBulkComposeModalProps = {
@@ -25,8 +25,11 @@ export function SnsBulkComposeModal({
   const totalCost = useMemo(() => {
     return preview.eligibleIds.reduce((sum, id) => {
       const creator = creators.find((c) => c.id === id)
-      const postCount = (creator?.snsPosts ?? []).length
-      return sum + calcSnsPostCost(postCount)
+      if (!creator) return sum
+      const posts = creator.snsPosts ?? []
+      const rolled = rollSnsCompose(posts, creator.snsPublishedIds ?? [], creator.snsHeat3Pity ?? 0)
+      const heat = rolled?.heat ?? 2
+      return sum + calcSnsPostCost(posts.length, heat)
     }, 0)
   }, [creators, preview.eligibleIds])
 

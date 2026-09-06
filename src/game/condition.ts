@@ -36,10 +36,10 @@ export const CONDITION_SCORE_RANGE: Record<
 export const STAMINA_MAX = 100
 /** 방송 턴(월) 기본 스테미나 소모. 기품으로 감소. 주 정산 때는 1/4만 깎음 */
 export const STAMINA_BROADCAST_COST = 40
-/** 기품 감쇠 후에도 이 값 미만으로 내려가지 않음 (월간) */
-export const STAMINA_BROADCAST_COST_MIN = 8
-/** 기품 1당 방송 스테미나 소모 감소. 0.2는 C급 구간이 주당 반올림에 묻힘 */
-export const ELEGANCE_STAMINA_REDUCTION = 0.5
+/** 기품 감쇠 후에도 이 값 미만으로 내려가지 않음 (월간 최소 16 소모) */
+export const STAMINA_BROADCAST_COST_MIN = 16
+/** 기품 1당 방송 스테미나 소모 감소. (기품 100시 24 감소하여 월간 16 소모) */
+export const ELEGANCE_STAMINA_REDUCTION = 0.24
 export const STAMINA_REST_GAIN = 20
 /** @deprecated 특별휴가는 스테미나 풀 충전 */
 export const STAMINA_VACATION_GAIN = 30

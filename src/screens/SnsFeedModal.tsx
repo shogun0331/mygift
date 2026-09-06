@@ -9,6 +9,7 @@ import {
   calcSnsPostCost,
   hasSnsComposeStock,
   MAX_CREATOR_SNS_SUBSCRIBERS,
+  rollSnsCompose,
   snsCaptionOf,
   snsPostMedia,
   type SnsHeat,
@@ -128,7 +129,9 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
     return () => window.removeEventListener('keydown', onKey)
   }, [lightbox, onClose])
 
-  const postCost = calcSnsPostCost(posts.length)
+  const nextRolled = rollSnsCompose(posts, publishedIds, creator.snsHeat3Pity ?? 0)
+  const nextHeat = nextRolled?.heat ?? 2
+  const postCost = calcSnsPostCost(posts.length, nextHeat)
   const canCompose =
     !pending && hasSnsComposeStock(posts, publishedIds) && assets >= postCost
 

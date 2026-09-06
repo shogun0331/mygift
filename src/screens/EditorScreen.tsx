@@ -554,7 +554,11 @@ export function EditorScreen({
               onUpdateCharacter={onUpdateCharacter}
             />
           ) : tab === 'highlow' ? (
-            <HighLowEditorPanel />
+            <HighLowEditorPanel
+              stationGradeConfig={stationGradeConfig}
+              onStationGradeConfigChange={onStationGradeConfigChange}
+              onSaveStationGradeManual={onSaveStationGradeManual}
+            />
           ) : tab === 'slot' ? (
             <SlotEditorPanel />
           ) : tab === 'bgm' ? (

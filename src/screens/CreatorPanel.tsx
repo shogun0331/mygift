@@ -1050,7 +1050,8 @@ function CreatorDetailView({
     ownedCreators?.some((c) => c.lastVacationMonth === broadcastMonthNumber),
   )
   const canAffordVacation = assets >= vacationCost
-  const canVacation = !vacationUsed && canAffordVacation
+  const isStaminaZero = (creator.stamina ?? 0) <= 0
+  const canVacation = !vacationUsed && canAffordVacation && !isStaminaZero
   const broadcastBlocked = !canBroadcastByStamina(creator.stamina)
   const careCost = calcConditionFullCareCost(creator.grade)
   const conditionFull = conditionScore >= 100
@@ -1243,6 +1244,10 @@ function CreatorDetailView({
                     {vacationUsed ? (
                       <span className="mt-1 block text-[10px] font-semibold text-amber-300/80">
                         {t('creator.vacationUsed')}
+                      </span>
+                    ) : isStaminaZero ? (
+                      <span className="mt-1 block text-[10px] font-semibold text-rose-400">
+                        {t('creator.vacationStaminaZero')}
                       </span>
                     ) : !canAffordVacation ? (
                       <span className="mt-1 block text-[10px] font-semibold text-rose-300/80">

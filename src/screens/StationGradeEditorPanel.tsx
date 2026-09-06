@@ -7,6 +7,7 @@ import {
   STATION_TIER_LABEL,
   STATION_TIER_ORDER,
   defaultAuditConfig,
+  getHighLowAnteForGrade,
   normalizeJudgeMediaSlot,
   tierMaxRank,
   tierViewerCap,
@@ -249,7 +250,7 @@ export function StationGradeEditorPanel({
             <section key={tier} className="rounded-xl border border-white/10 bg-black/20 p-4">
               <h3 className="text-sm font-bold text-amber-200">{STATION_TIER_LABEL[tier]}</h3>
 
-              <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <label className="block text-xs font-semibold text-slate-400">
                   스카우트 인원 상한
                   <div className="mt-1.5">
@@ -266,6 +267,28 @@ export function StationGradeEditorPanel({
                       onChange={(nextVal) =>
                         setTierField(tier, {
                           maxScoutCreators: nextVal,
+                        })
+                      }
+                    />
+                  </div>
+                </label>
+                <label className="block text-xs font-semibold text-amber-300">
+                  하이로우 무료 판돈 ($)
+                  <div className="mt-1.5">
+                    <NumericInput
+                      value={getHighLowAnteForGrade(config, tier)}
+                      min={0}
+                      unitLabel="$"
+                      quickPresets={[
+                        { label: '+$500', amount: 500 },
+                        { label: '+$1천', amount: 1000 },
+                        { label: '+$5천', amount: 5000 },
+                        { label: '+$1만', amount: 10000 },
+                        { label: '초기화', amount: 'reset' },
+                      ]}
+                      onChange={(nextVal) =>
+                        setTierField(tier, {
+                          highLowAnte: nextVal,
                         })
                       }
                     />

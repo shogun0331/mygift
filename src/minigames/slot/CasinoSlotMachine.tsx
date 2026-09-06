@@ -316,9 +316,11 @@ export function CasinoSlotMachine({
             📖 {t('casino.paytable')}
           </button>
 
-          <div className="flex items-center gap-2 px-3.5 py-1 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono">
-            <span className="text-amber-400 font-bold">{t('casino.userAssets')}:</span>
-            <span className="text-amber-300 font-black text-sm">
+          {/* 눈에 띄는 럭셔리 보유 자산 표시 패널 */}
+          <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-2xl border-2 border-amber-400/70 bg-gradient-to-r from-amber-500/25 via-yellow-400/15 to-amber-600/30 text-xs font-mono shadow-[0_0_20px_rgba(245,158,11,0.4)] backdrop-blur-md">
+            <span className="text-lg drop-shadow">💰</span>
+            <span className="text-xs sm:text-sm font-black text-amber-300 tracking-wide uppercase">{t('casino.userAssets')}</span>
+            <span className="text-base sm:text-xl font-black font-mono text-yellow-200 tracking-tight drop-shadow-[0_0_12px_rgba(250,204,21,0.8)]">
               ${userAssets.toLocaleString()}
             </span>
           </div>
@@ -600,13 +602,13 @@ export function CasinoSlotMachine({
 
           {/* 4. BOTTOM GRAPHIC ARTWORK PANEL & 3D METALLIC COIN TRAY */}
           <div className="pachislot-bottom-deck">
-            {/* METALLIC COIN OUTLET TRAY */}
-            <div className="pachislot-coin-tray flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
-                <span className="text-2xl animate-bounce">🪙</span>
-                <span className="text-xs">{t('casino.accumulatedWin')}</span>
+            {/* METALLIC COIN OUTLET TRAY - 대형 럭셔리 네온 상금 패널 */}
+            <div className="pachislot-coin-tray flex items-center justify-between px-4 py-2 border-2 border-amber-400/50 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-2xl shadow-[0_0_25px_rgba(245,158,11,0.25)]">
+              <div className="flex items-center gap-2.5">
+                <span className="text-2xl sm:text-3xl animate-bounce drop-shadow-[0_0_12px_rgba(250,204,21,0.9)]">🪙</span>
+                <span className="text-xs sm:text-sm font-black tracking-wide text-amber-300 uppercase">{t('casino.accumulatedWin')}</span>
               </div>
-              <div className="text-sm font-black font-mono text-yellow-300 bg-amber-950/90 px-3 py-1 rounded-lg border border-amber-400/50 shadow-md">
+              <div className="text-base sm:text-xl font-black font-mono text-yellow-200 bg-gradient-to-r from-amber-950 via-yellow-900/90 to-amber-950 px-4 py-1.5 rounded-xl border-2 border-yellow-400/80 shadow-[0_0_20px_rgba(250,204,21,0.5)]">
                 +${sessionTotalWon.toLocaleString()}
               </div>
             </div>

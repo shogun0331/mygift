@@ -10,14 +10,14 @@ import { CREATOR_STAT_TYPE_FIELD, GRADE_CAPS, rollInt } from './stats'
 export const TRAINING_MAIN_GAIN = { min: 2, max: 3 } as const
 export const TRAINING_OFF_GAIN = { min: 1, max: 1 } as const
 
-/** 해당 구간 주간 매출의 0.4~1.2배. C~$12K / B~$34K / A~$95K / S~$245K */
-const TRAINING_COST_BASE = 1_400
-const TRAINING_COST_GROWTH = 1.046
+/** 훈련 비용 — 트레이닝 가격 전반 상향 조정 */
+const TRAINING_COST_BASE = 3_500
+const TRAINING_COST_GROWTH = 1.048
 const TRAINING_GRADE_MULT: Record<Grade, number> = {
-  C: 1,
-  B: 1.7,
-  A: 2.8,
-  S: 4.5,
+  C: 1.5,
+  B: 2.8,
+  A: 5.0,
+  S: 9.0,
 }
 
 /** 훈련 비용 활성화 — 트레이닝은 자산 소비의 핵심 (레벨디자인 2단계 적용) */
@@ -34,18 +34,18 @@ export function calcTrainingCost(
   return roundMoney(raw, unit)
 }
 
-/** 승급 심사비. 해당 구간 주간 매출의 4~8배. 실패 환급 10%라 재도전 부담이 큼 */
+/** 승급 심사비. S 등급 심사(A->S)를 100만 달러대($1,650,000)로 상향 */
 const EXAM_COST_BASE: Record<Grade, number> = {
-  C: 52_000,
-  B: 210_000,
-  A: 780_000,
-  S: 780_000,
+  C: 85_000,
+  B: 380_000,
+  A: 1_650_000,
+  S: 2_500_000,
 }
 const EXAM_COST_OVER_NEED: Record<Grade, number> = {
-  C: 1_200,
-  B: 4_000,
-  A: 12_000,
-  S: 12_000,
+  C: 2_000,
+  B: 8_000,
+  A: 25_000,
+  S: 35_000,
 }
 
 export function calcPromotionExamCost(

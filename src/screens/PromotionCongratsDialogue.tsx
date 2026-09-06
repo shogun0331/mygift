@@ -20,7 +20,7 @@ type Props = {
   onClose: () => void
 }
 
-const AUTO_CLOSE_FALLBACK_MS = 4200
+const AUTO_CLOSE_FALLBACK_MS = 2400
 
 /** 방송국 승급 → 랭킹 연출 중, 보유 캐릭터 1명의 축하 대사(방송 중 대사창 형식) */
 export function PromotionCongratsDialogue({ play, onClose }: Props) {

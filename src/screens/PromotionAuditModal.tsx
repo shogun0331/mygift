@@ -86,7 +86,7 @@ export function PromotionAuditModal({
   events,
   config,
   onComplete,
-  onClose,
+  onClose: _onClose,
 }: PromotionAuditModalProps) {
   const { locale } = useI18n()
   const { t } = useTranslation()
@@ -659,15 +659,7 @@ export function PromotionAuditModal({
                 {session.currentTurn}
               </span>
             </div>
-            {onClose && !session.isCompleted ? (
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-xs font-bold text-slate-400 hover:text-white"
-              >
-                {t('hud.back')} ✕
-              </button>
-            ) : null}
+
           </div>
         </div>
 

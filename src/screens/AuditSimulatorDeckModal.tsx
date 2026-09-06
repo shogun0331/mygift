@@ -124,18 +124,22 @@ export function AuditSimulatorDeckModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-2 sm:p-4 backdrop-blur-lg"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/85 p-2 sm:p-4 backdrop-blur-md transition-all animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
     >
-      <div className="game-panel relative flex flex-col w-[98vw] max-w-7xl max-h-[96vh] h-[93vh] overflow-hidden rounded-3xl border border-cyan-500/50 bg-slate-950/95 p-4 sm:p-6 shadow-[0_0_100px_rgba(6,182,212,0.45)]">
+      <div className="game-panel relative flex flex-col w-[98vw] max-w-7xl max-h-[96vh] h-[93vh] overflow-hidden rounded-3xl border border-cyan-500/40 bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-900/95 p-4 sm:p-6 shadow-[0_0_80px_rgba(6,182,212,0.3)]">
+        {/* 상단 포인트 조명 네온 바 */}
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-500 via-teal-300 to-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+
         {/* 헤더 */}
-        <div className="flex shrink-0 items-center justify-between border-b border-cyan-500/20 pb-3">
+        <div className="flex shrink-0 items-center justify-between border-b border-cyan-500/20 pb-3 pt-1">
           <div className="flex items-center gap-3">
-            <span className="rounded-xl border border-cyan-400/40 bg-cyan-950/80 px-3 py-1 text-xs font-black text-cyan-200 uppercase tracking-wider">
-              🎮 {STATION_TIER_LABEL[tierKey]} {t('audit.deckModalTitle')}
-            </span>
-            <h3 className="text-base sm:text-xl font-black text-slate-100">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-950/80 px-3.5 py-1 text-xs font-black text-cyan-300 uppercase tracking-wider shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping" />
+              <span>{STATION_TIER_LABEL[tierKey]} {t('audit.deckModalTitle')}</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-extrabold text-slate-200">
               {t('audit.deckModalSubtitle')}
             </h3>
           </div>
@@ -143,13 +147,13 @@ export function AuditSimulatorDeckModal({
 
         {/* 메인 덱 구성 컨텐츠 영역 */}
         <div className="flex flex-1 flex-col overflow-hidden space-y-4 my-3 min-h-0">
-          {/* 1. 상단 덱 빈 공간 4칸 슬롯 (대형 3:4 프리미엄 트레이딩 카드 스타일 - 하단 카드보다 훨씬 거대함) */}
-          <div className="shrink-0 rounded-2xl border border-cyan-500/40 bg-gradient-to-b from-cyan-950/40 to-slate-950/60 p-4 backdrop-blur-md shadow-lg">
-            <div className="mb-2.5 flex items-center justify-between">
-              <span className="text-xs sm:text-sm font-black text-cyan-300">
-                📥 {t('audit.deckModalSlotsHeader', { count: activeSelectedIds.length })}
+          {/* 1. 상단 덱 빈 공간 4칸 슬롯 */}
+          <div className="shrink-0 rounded-2xl border border-cyan-500/30 bg-gradient-to-b from-cyan-950/30 to-slate-950/50 p-4 backdrop-blur-md shadow-lg">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-xs sm:text-sm font-black tracking-wide text-cyan-300">
+                {t('audit.deckModalSlotsHeader', { count: activeSelectedIds.length })}
               </span>
-              <span className="text-[11px] sm:text-xs text-slate-400">
+              <span className="text-[11px] sm:text-xs font-medium text-slate-400">
                 {t('audit.deckModalSlotHint')}
               </span>
             </div>
@@ -162,19 +166,19 @@ export function AuditSimulatorDeckModal({
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={() => {
                       if (draggedId) {
-                        assignToSlot(slotIdx, draggedId) // 지정한 슬롯 위치에 정확히 장착!
+                        assignToSlot(slotIdx, draggedId)
                         setDraggedId(null)
                       }
                     }}
                     onClick={() => {
                       if (char) {
-                        clearSlot(slotIdx) // 해당 슬롯 클릭 시 즉시 비우기!
+                        clearSlot(slotIdx)
                       }
                     }}
                     className={`relative aspect-[3/4] h-[210px] sm:h-[250px] flex flex-col justify-between overflow-hidden rounded-2xl border transition-all ${
                       char
-                        ? 'cursor-pointer border-cyan-300 ring-4 ring-cyan-400/40 shadow-[0_0_35px_rgba(6,182,212,0.45)] bg-slate-900 hover:scale-[1.03] hover:border-rose-400'
-                        : 'border-2 border-dashed border-cyan-500/40 bg-cyan-950/20 hover:border-cyan-300/70 hover:bg-cyan-950/40'
+                        ? 'cursor-pointer border-cyan-300 ring-4 ring-cyan-400/30 shadow-[0_0_35px_rgba(6,182,212,0.4)] bg-slate-900 hover:scale-[1.02] hover:border-rose-400'
+                        : 'border-2 border-dashed border-cyan-500/30 bg-cyan-950/10 hover:border-cyan-400/60 hover:bg-cyan-950/30'
                     }`}
                   >
                     {char ? (
@@ -187,13 +191,12 @@ export function AuditSimulatorDeckModal({
                             className="absolute inset-0 h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950 via-slate-900 to-indigo-950 text-2xl font-bold text-cyan-300">
-                            <span>👤</span>
-                            <span className="text-xs mt-1">{char.name.slice(0, 2)}</span>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950 via-slate-900 to-indigo-950 text-xs font-bold text-cyan-300">
+                            <span>NO IMAGE</span>
                           </div>
                         )}
 
-                        {/* 상단 뱃지 (S, A, B, C 단 한글자 프리미엄 네온 뱃지 연출) */}
+                        {/* 상단 뱃지 */}
                         <div className="relative z-10 flex items-center justify-between p-2 bg-gradient-to-b from-black/85 to-transparent">
                           <span className={`rounded-lg border px-2.5 py-0.5 text-xs sm:text-sm font-black italic tracking-widest ${getGradeBadgeStyle(char.grade || 'S')}`}>
                             {char.grade || 'S'}
@@ -214,14 +217,14 @@ export function AuditSimulatorDeckModal({
                                     {char.name}
                                   </span>
                                   <span className={`rounded-md border px-2 py-0.5 text-xs font-black ${typeInfo.tone}`}>
-                                    {typeInfo.icon}
+                                    {typeInfo.label || cType.toUpperCase()}
                                   </span>
                                 </div>
 
                                 {/* 스테미나 게이지 바 */}
                                 <div className="flex flex-col space-y-0.5 border-t border-white/15 pt-1">
                                   <div className="flex items-center justify-between text-[9px] font-black text-amber-300">
-                                    <span>⚡ STAMINA</span>
+                                    <span>STAMINA</span>
                                     <span className="tabular-nums font-bold text-slate-100">{stamina}</span>
                                   </div>
                                   <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-900 border border-white/20">
@@ -239,9 +242,9 @@ export function AuditSimulatorDeckModal({
                     ) : (
                       /* 대형 빈 슬롯 뷰어 */
                       <div className="flex h-full w-full flex-col items-center justify-center text-slate-500 p-2 text-center">
-                        <span className="text-3xl sm:text-4xl font-light text-cyan-400/70">+</span>
+                        <span className="text-3xl sm:text-4xl font-extralight text-cyan-400/60">+</span>
                         <span className="mt-1.5 text-xs font-black text-cyan-200">{t('audit.slotFormat', { slot: slotIdx + 1 })}</span>
-                        <span className="text-[10px] text-slate-400 mt-0.5">{t('audit.emptySlot')}</span>
+                        <span className="text-[10px] font-medium text-slate-400 mt-0.5">{t('audit.emptySlot')}</span>
                       </div>
                     )}
                   </div>
@@ -250,7 +253,7 @@ export function AuditSimulatorDeckModal({
             </div>
           </div>
 
-          {/* 2. 하단 미배치 보유 캐릭터 카드 나열 덱 풀 리스트 (flex-1 2줄 뷰어) */}
+          {/* 2. 하단 미배치 보유 캐릭터 카드 나열 덱 풀 리스트 */}
           <div className="flex-1 min-h-0 shrink-0 flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50 p-3.5">
             {(() => {
               const availableCharacters = boostedCharacters.filter(
@@ -260,9 +263,9 @@ export function AuditSimulatorDeckModal({
                 <>
                   <div className="mb-2 flex items-center justify-between shrink-0">
                     <span className="text-xs sm:text-sm font-bold text-slate-300">
-                      🎴 {t('audit.unplacedCreators', { count: availableCharacters.length })}
+                      {t('audit.unplacedCreators', { count: availableCharacters.length })}
                     </span>
-                    <span className="text-[11px] sm:text-xs text-slate-400">
+                    <span className="text-[11px] sm:text-xs font-medium text-slate-400">
                       {t('audit.unplacedHint')}
                     </span>
                   </div>
@@ -303,14 +306,13 @@ export function AuditSimulatorDeckModal({
                                     : 'border-purple-500/40 bg-slate-950 hover:border-cyan-400 hover:scale-[1.04] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer'
                               }`}
                             >
-                              {/* 🪫 스테미나 30 이하 참여 불가 오버레이 */}
+                              {/* 스테미나 30 이하 참여 불가 오버레이 */}
                               {isLowStamina ? (
-                                <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-rose-950/85 p-1 text-center backdrop-blur-xs">
-                                  <span className="text-xl sm:text-2xl drop-shadow">🪫</span>
-                                  <span className="mt-1 text-[9.5px] font-black text-rose-300 leading-tight drop-shadow">
+                                <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/90 p-1 text-center backdrop-blur-xs">
+                                  <span className="text-[10px] font-black text-rose-300 leading-tight uppercase tracking-wider">
                                     {t('audit.staminaDepleted')}
                                   </span>
-                                  <span className="text-[8px] font-bold text-rose-200/80">
+                                  <span className="mt-0.5 text-[8.5px] font-semibold text-rose-200/80">
                                     {t('audit.lowStaminaHint')}
                                   </span>
                                 </div>
@@ -323,19 +325,18 @@ export function AuditSimulatorDeckModal({
                                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
                               ) : (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 text-lg font-bold text-purple-300">
-                                  <span>👤</span>
-                                  <span className="text-[9px]">{character.name.slice(0, 2)}</span>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 text-xs font-bold text-purple-300">
+                                  <span>NO IMAGE</span>
                                 </div>
                               )}
 
-                              {/* 상단 오버레이 (등급 단 1글자 프리미엄 네온 & 타입) */}
+                              {/* 상단 오버레이 */}
                               <div className="relative z-10 flex items-center justify-between p-1 bg-gradient-to-b from-black/80 to-transparent">
                                 <span className={`rounded-md border px-1.5 py-0.2 text-[10px] sm:text-xs font-black italic tracking-wider ${getGradeBadgeStyle(character.grade || 'S')}`}>
                                   {character.grade || 'S'}
                                 </span>
                                 <span className={`rounded border px-1 py-0.2 text-[10px] font-black ${typeInfo.tone}`}>
-                                  {typeInfo.icon}
+                                  {typeInfo.label || cType.toUpperCase()}
                                 </span>
                               </div>
 
@@ -346,7 +347,7 @@ export function AuditSimulatorDeckModal({
                                 </h5>
                                 <div className="flex flex-col space-y-0.5 border-t border-white/10 pt-0.5">
                                   <div className="flex items-center justify-between text-[7.5px] font-black text-amber-300 px-0.5">
-                                    <span>⚡ STAMINA</span>
+                                    <span>STAMINA</span>
                                     <span className="tabular-nums font-bold text-slate-200">{stamina}</span>
                                   </div>
                                   <div className="h-1 w-full overflow-hidden rounded-full bg-slate-900 border border-white/15">
@@ -362,8 +363,8 @@ export function AuditSimulatorDeckModal({
                         })}
                       </div>
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xs text-slate-500 p-6">
-                        🎉 {t('audit.allCreatorsPlaced')}
+                      <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-slate-400 p-6 bg-slate-900/30 rounded-xl border border-slate-800/40">
+                        {t('audit.allCreatorsPlaced')}
                       </div>
                     )}
                   </div>
@@ -373,14 +374,15 @@ export function AuditSimulatorDeckModal({
           </div>
         </div>
 
-        {/* 푸터 버튼 (취소/닫기 제거 및 승급심사 시작 텍스트 적용) */}
+        {/* 푸터 버튼 */}
         <div className="shrink-0 flex items-center justify-end border-t border-cyan-500/20 pt-3">
           <button
             type="button"
             onClick={handleStart}
-            className="w-full sm:w-auto rounded-xl border border-cyan-400/50 bg-gradient-to-r from-cyan-600 to-teal-500 px-8 py-3 text-sm font-black text-white shadow-[0_0_25px_rgba(6,182,212,0.45)] hover:brightness-110"
+            className="w-full sm:w-auto cursor-pointer rounded-xl border border-cyan-400/50 bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-500 px-8 py-3 text-sm font-black text-slate-950 shadow-[0_0_25px_rgba(6,182,212,0.4)] transition-all hover:scale-105 hover:brightness-110 active:scale-95 flex items-center justify-center gap-2"
           >
-            🚀 {t('audit.startPromotionExamBtn', { count: activeSelectedIds.length })}
+            <span>{t('audit.startPromotionExamBtn', { count: activeSelectedIds.length })}</span>
+            <span className="text-xs font-bold">➔</span>
           </button>
         </div>
       </div>

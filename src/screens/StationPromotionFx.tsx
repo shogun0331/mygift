@@ -9,7 +9,7 @@ type StationPromotionFxProps = {
   onDone: () => void
 }
 
-const FX_MS = 2600
+const FX_MS = 1200
 const SPARK_COLORS = ['#fbbf24', '#fde68a', '#fb923c', '#f472b6', '#a5f3fc', '#6ee7b7']
 
 function sparkStyle(index: number): CSSProperties {
@@ -38,7 +38,12 @@ export function StationPromotionFx({
   }, [onDone])
 
   return (
-    <div className="station-promotion-fx" role="status" aria-live="assertive">
+    <div
+      className="station-promotion-fx cursor-pointer"
+      role="status"
+      aria-live="assertive"
+      onClick={onDone}
+    >
       <div className="station-promotion-sparks" aria-hidden>
         {Array.from({ length: 18 }, (_, i) => (
           <span key={i} style={sparkStyle(i)} />

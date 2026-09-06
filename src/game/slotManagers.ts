@@ -16,7 +16,7 @@ export type SlotManagerState = {
 
 export const STAFF_SLOT_KINDS: StaffKind[] = ['security', 'repair', 'care', 'production']
 
-export const CARE_STAMINA_MULT = 0.5
+export const CARE_STAMINA_MULT = 0.85
 /** 좋음(90 미만)까지 떨어지면 이 점수로 회복 — 최고 하한 */
 export const CARE_CONDITION_FLOOR = 90
 export const SECURITY_CHANCE_MUL = 0

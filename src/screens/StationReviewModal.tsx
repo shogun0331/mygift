@@ -61,84 +61,177 @@ export function StationReviewModal({ promoted, status, onConfirm }: StationRevie
 
   return (
     <div
-      className="fixed inset-0 z-[86] flex items-center justify-center bg-black/75 p-4 backdrop-blur-[3px]"
+      className="fixed inset-0 z-[86] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md transition-all animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="station-review-title"
     >
-      <div className="game-panel w-full max-w-md rounded-2xl border border-amber-400/25 px-5 py-6 shadow-[0_0_40px_rgba(245,158,11,0.18)]">
-        <p className="game-stat-label">{t('station.reviewKicker')}</p>
-        <h2 id="station-review-title" className="mt-1 text-xl font-black text-slate-100">
-          {maxed
-            ? t('station.reviewMax')
-            : promoted
-              ? t('station.reviewPass')
-              : t('station.reviewFail')}
-        </h2>
-        <p className="mt-3 text-2xl font-black tabular-nums text-amber-200">
-          {stationGradeLabel(status.current, locale)}
-          {promoted && status.next ? (
-            <>
-              <span className="mx-2 text-slate-500">→</span>
-              {stationGradeLabel(status.next, locale)}
-            </>
-          ) : null}
-        </p>
+      <div
+        className={`relative w-full max-w-md overflow-hidden rounded-2xl border bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-900/95 p-6 shadow-2xl transition-all ${
+          promoted
+            ? 'border-amber-400/40 shadow-[0_0_50px_rgba(245,158,11,0.22)]'
+            : 'border-indigo-500/30 shadow-[0_0_40px_rgba(99,102,241,0.18)]'
+        }`}
+      >
+        {/* 상단 포인트 조명 네온 바 */}
+        <div
+          className={`absolute inset-x-0 top-0 h-1.5 ${
+            promoted
+              ? 'bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]'
+              : 'bg-gradient-to-r from-indigo-500 via-sky-400 to-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.6)]'
+          }`}
+        />
 
+        {/* 상단 뱃지 & 헤더 */}
+        <div className="flex items-center justify-between">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-amber-300 shadow-sm">
+            <span className="text-xs">📊</span>
+            <span>{t('station.reviewKicker')}</span>
+          </div>
+
+          {promoted && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-300 animate-pulse">
+              <span>✨</span>
+              <span>SUCCESS</span>
+            </span>
+          )}
+        </div>
+
+        {/* 타이틀 */}
+        <h2 id="station-review-title" className="mt-3 flex items-center gap-2 text-2xl font-black tracking-tight">
+          {maxed ? (
+            <span className="bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
+              👑 {t('station.reviewMax')}
+            </span>
+          ) : promoted ? (
+            <span className="bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow">
+              🏆 {t('station.reviewPass')}
+            </span>
+          ) : (
+            <span className="text-slate-100">
+              ⚓ {t('station.reviewFail')}
+            </span>
+          )}
+        </h2>
+
+        {/* 등급 변환 (Transition UI) */}
+        <div className="mt-4 rounded-xl border border-white/5 bg-slate-900/60 p-3.5 shadow-inner">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex-1 rounded-lg border border-slate-700/60 bg-slate-800/80 px-3 py-2 text-center shadow-sm">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">이전 등급</p>
+              <p className="mt-0.5 text-sm font-extrabold text-slate-200">
+                {stationGradeLabel(status.current, locale)}
+              </p>
+            </div>
+
+            {promoted && status.next ? (
+              <>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-400/40 bg-amber-500/20 text-sm font-black text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)] animate-pulse">
+                  ➔
+                </div>
+                <div className="flex-1 rounded-lg border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 px-3 py-2 text-center shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+                  <p className="text-[10px] font-bold text-amber-300/80 uppercase tracking-wider">승급 등급</p>
+                  <p className="mt-0.5 text-sm font-black text-amber-200">
+                    {stationGradeLabel(status.next, locale)}
+                  </p>
+                </div>
+              </>
+            ) : null}
+          </div>
+        </div>
+
+        {/* 심사 조건 항목 리스트 */}
         {!maxed ? (
-          <ul className="mt-4 space-y-1.5">
-            {status.checks.map((check) => {
-              const { label, detail } = formatCheckText(check, t)
-              return (
-                <li
-                  key={check.id}
-                  className={`rounded-lg border px-2.5 py-2 text-[11px] font-semibold ${
-                    check.met
-                      ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
-                      : 'border-rose-400/30 bg-rose-500/10 text-rose-200'
-                  }`}
-                >
-                  <span className="mr-1">{check.met ? '[v]' : '[x]'}</span>
-                  {label} ({detail})
-                </li>
-              )
-            })}
-          </ul>
+          <div className="mt-4">
+            <p className="mb-2 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+              {t('station.reviewChecks')}
+            </p>
+            <ul className="space-y-2">
+              {status.checks.map((check) => {
+                const { label, detail } = formatCheckText(check, t)
+                return (
+                  <li
+                    key={check.id}
+                    className={`flex items-center justify-between rounded-xl border px-3.5 py-2.5 text-xs font-semibold transition-all ${
+                      check.met
+                        ? 'border-emerald-500/35 bg-gradient-to-r from-emerald-950/50 to-slate-900/60 text-emerald-100 shadow-[0_0_15px_rgba(16,185,129,0.06)]'
+                        : 'border-rose-500/35 bg-gradient-to-r from-rose-950/50 to-slate-900/60 text-rose-100 shadow-[0_0_15px_rgba(244,63,94,0.06)]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                      <span
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black border ${
+                          check.met
+                            ? 'border-emerald-400/50 bg-emerald-500/20 text-emerald-300'
+                            : 'border-rose-400/50 bg-rose-500/20 text-rose-300'
+                        }`}
+                      >
+                        {check.met ? '✓' : '✕'}
+                      </span>
+                      <span className="truncate text-slate-200 font-bold">{label}</span>
+                    </div>
+
+                    <span
+                      className={`shrink-0 rounded-md px-2 py-0.5 text-[11px] font-bold font-mono border ${
+                        check.met
+                          ? 'border-emerald-500/30 bg-emerald-900/40 text-emerald-300'
+                          : 'border-rose-500/30 bg-rose-900/40 text-rose-300'
+                      }`}
+                    >
+                      {detail}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         ) : (
-          <p className="mt-4 text-xs font-semibold leading-relaxed text-slate-300">
+          <p className="mt-4 rounded-xl border border-amber-400/20 bg-amber-500/10 p-3.5 text-xs font-medium leading-relaxed text-amber-200">
             {t('station.reviewMaxBody')}
           </p>
         )}
 
+        {/* 승급 보상 정보 */}
         {promoted && status.next ? (
-          <div className="mt-4 rounded-xl border border-white/10 bg-black/25 px-3 py-3">
-            <p className="text-[10px] font-bold tracking-wide text-slate-500">
-              {t('station.rewardTitle')}
+          <div className="mt-4 rounded-xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 via-slate-900/80 to-amber-950/20 p-3.5 shadow-inner">
+            <p className="flex items-center gap-1.5 text-xs font-black tracking-wider text-amber-300 uppercase">
+              <span>🎁</span>
+              <span>{t('station.rewardTitle')}</span>
             </p>
-            {assetReward > 0 ? (
-              <p className="mt-1 text-[12px] font-semibold text-amber-200">
-                - {t('station.rewardAssets').replace('{amount}', formatMoney(assetReward))}
-              </p>
-            ) : null}
-            {status.next !== 'tiny' ? (
-              <p className="mt-1 text-[11px] font-semibold text-slate-200">
-                - {t(`station.rewardScout.${status.next}` as 'station.rewardScout.sme')}
-              </p>
-            ) : null}
+            <div className="mt-2.5 space-y-1.5">
+              {assetReward > 0 ? (
+                <div className="flex items-center gap-2 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-200">
+                  <span className="text-sm">💰</span>
+                  <span>{t('station.rewardAssets').replace('{amount}', formatMoney(assetReward))}</span>
+                </div>
+              ) : null}
+              {status.next !== 'tiny' ? (
+                <div className="flex items-center gap-2 rounded-lg border border-sky-500/25 bg-sky-500/10 px-3 py-2 text-xs font-bold text-sky-200">
+                  <span className="text-sm">🔬</span>
+                  <span>{t(`station.rewardScout.${status.next}` as 'station.rewardScout.sme')}</span>
+                </div>
+              ) : null}
+            </div>
           </div>
         ) : null}
 
+        {/* 미승급 시 안대 가이드 */}
         {!promoted && !maxed ? (
-          <p className="mt-4 text-xs font-semibold leading-relaxed text-slate-400">
+          <p className="mt-4 rounded-xl border border-slate-700/50 bg-slate-900/50 p-3 text-xs font-medium leading-relaxed text-slate-400">
             {t('station.reviewFailBody')}
           </p>
         ) : null}
 
-        <div className="mt-5 flex justify-center">
+        {/* 확인 버튼 */}
+        <div className="mt-6 flex justify-center">
           <button
             type="button"
             onClick={onConfirm}
-            className="game-btn game-btn-primary min-w-[132px] px-4 py-2.5 text-sm"
+            className={`w-full max-w-[200px] cursor-pointer rounded-xl px-5 py-3 text-sm font-black shadow-lg transition-all hover:scale-105 active:scale-95 ${
+              promoted
+                ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 shadow-amber-500/30 hover:brightness-110'
+                : 'bg-slate-800 text-slate-200 border border-slate-600 hover:bg-slate-700'
+            }`}
           >
             {t('station.confirm')}
           </button>

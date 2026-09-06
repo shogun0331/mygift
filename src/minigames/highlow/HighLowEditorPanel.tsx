@@ -15,10 +15,29 @@ import {
 } from './highLowStore'
 import { HighLowDealerSlot } from './HighLowDealerSlot'
 import { HighLowMinigame } from './HighLowMinigame'
+import { NumericInput } from '../../components/NumericInput'
+import {
+  STATION_TIER_LABEL,
+  STATION_TIER_ORDER,
+  getHighLowAnteForGrade,
+  type StationGradeConfig,
+  type StationTierId,
+} from '../../game/stationGradeConfig'
 
-export function HighLowEditorPanel() {
+export interface HighLowEditorPanelProps {
+  stationGradeConfig?: StationGradeConfig
+  onStationGradeConfigChange?: (config: StationGradeConfig) => void
+  onSaveStationGradeManual?: () => void
+}
+
+export function HighLowEditorPanel({
+  stationGradeConfig,
+  onStationGradeConfigChange,
+  onSaveStationGradeManual,
+}: HighLowEditorPanelProps = {}) {
   const [configs, setConfigs] = useState<HighLowConfigMap>(loadHighLowConfig())
   const [activeRoomId, setActiveRoomId] = useState<HighLowRoomId>('legend')
+  const [selectedSimGrade, setSelectedSimGrade] = useState<StationTierId>('sme')
   const [userChipsMap, setUserChipsMap] = useState<Record<HighLowRoomId, number>>({
     local: 50000,
     star: 250000,
@@ -55,6 +74,7 @@ export function HighLowEditorPanel() {
 
   const handleSaveConfigs = () => {
     saveHighLowConfig(configs)
+    onSaveStationGradeManual?.()
     setSaveSuccessMsg(true)
     setTimeout(() => setSaveSuccessMsg(false), 2000)
   }
@@ -122,15 +142,110 @@ export function HighLowEditorPanel() {
           </p>
         </div>
 
-        {/* POPUP SIMULATOR BUTTON */}
-        <button
-          onClick={() => setShowModalSimulator(true)}
-          className="group relative px-6 py-4 rounded-2xl font-black text-sm tracking-wider uppercase bg-gradient-to-r from-pink-600 via-rose-600 to-pink-500 hover:from-pink-500 hover:to-rose-500 text-white shadow-xl shadow-pink-600/40 transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center gap-3"
-        >
-          <span className="text-xl animate-bounce">🎮</span>
-          <span>[ 🎮 하이-로우 시뮬레이터 팝업 실행 ]</span>
-        </button>
+        {/* POPUP SIMULATOR CONTROLS */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 bg-slate-950/80 px-3.5 py-2.5 rounded-2xl border border-amber-400/40">
+            <span className="text-xs font-bold text-amber-300">입장 등급:</span>
+            <select
+              value={selectedSimGrade}
+              onChange={(e) => setSelectedSimGrade(e.target.value as StationTierId)}
+              className="bg-slate-900 border border-slate-700 text-xs font-bold text-slate-100 rounded-xl px-2.5 py-1.5 outline-none focus:border-amber-400 cursor-pointer"
+            >
+              {STATION_TIER_ORDER.map((tier) => (
+                <option key={tier} value={tier}>
+                  {STATION_TIER_LABEL[tier]} (${getHighLowAnteForGrade(stationGradeConfig, tier).toLocaleString()})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            onClick={() => setShowModalSimulator(true)}
+            className="group relative px-5 py-3.5 rounded-2xl font-black text-sm tracking-wider uppercase bg-gradient-to-r from-pink-600 via-rose-600 to-pink-500 hover:from-pink-500 hover:to-rose-500 text-white shadow-xl shadow-pink-600/40 transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center gap-2.5 cursor-pointer"
+          >
+            <span className="text-lg animate-bounce">🎮</span>
+            <span>[{STATION_TIER_LABEL[selectedSimGrade]} 등급으로 시뮬레이터 실행]</span>
+          </button>
+        </div>
       </div>
+
+      {/* 방송국 등급별 하이로우 무료 배팅금 (Ante $) 설정 카드 */}
+      {stationGradeConfig && onStationGradeConfigChange && (
+        <div className="p-6 rounded-3xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 border-2 border-amber-400/40 shadow-[0_0_30px_rgba(245,158,11,0.15)] mb-8 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-400/30 pb-3">
+            <div>
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-widest text-amber-300 bg-amber-950 border border-amber-400/40 uppercase">
+                STATION GRADE ANTE CONFIG
+              </span>
+              <h3 className="text-lg font-black text-amber-200 mt-1 flex items-center gap-2">
+                🏢 방송국 등급별 하이-로우 무료 배팅금 (Ante $) 설정
+              </h3>
+            </div>
+            <p className="text-xs text-slate-400 font-mono">
+              인게임 플레이 시 방송국 등급별로 자동 적용되는 무료 판돈(Ante) 금액입니다.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+            {STATION_TIER_ORDER.map((tier) => {
+              const currentAnte = getHighLowAnteForGrade(stationGradeConfig, tier)
+              return (
+                <div
+                  key={tier}
+                  className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-400/30 flex flex-col justify-between space-y-2 shadow-inner"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-amber-300">
+                      {STATION_TIER_LABEL[tier]}
+                    </span>
+                    <span className="text-[9px] font-mono font-bold text-amber-400/80 uppercase">
+                      {tier}
+                    </span>
+                  </div>
+
+                  <div className="mt-1">
+                    <NumericInput
+                      value={currentAnte}
+                      min={0}
+                      unitLabel="$"
+                      quickPresets={[
+                        { label: '+$500', amount: 500 },
+                        { label: '+$1천', amount: 1000 },
+                        { label: '+$5천', amount: 5000 },
+                        { label: '+$1만', amount: 10000 },
+                        { label: '초기화', amount: 'reset' },
+                      ]}
+                      onChange={(nextVal) => {
+                        onStationGradeConfigChange({
+                          ...stationGradeConfig,
+                          tiers: {
+                            ...stationGradeConfig.tiers,
+                            [tier]: {
+                              ...stationGradeConfig.tiers[tier],
+                              highLowAnte: nextVal,
+                            },
+                          },
+                        })
+                      }}
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSimGrade(tier)
+                      setShowModalSimulator(true)
+                    }}
+                    className="mt-2 w-full py-1.5 rounded-xl text-[11px] font-bold bg-amber-500/20 border border-amber-400/40 text-amber-200 hover:bg-amber-500/40 transition-all cursor-pointer"
+                  >
+                    🎮 이 등급으로 입장
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Main Grid: Room & Dealer Settings */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -445,14 +560,17 @@ export function HighLowEditorPanel() {
       {/* FULLSCREEN POPUP SIMULATOR MODAL (createPortal via document.body) */}
       {showModalSimulator &&
         createPortal(
-          <div className="fixed inset-0 z-[99999] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in select-none">
-            <div className="w-full max-w-5xl h-[92vh] max-h-[92vh] rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(236,72,153,0.4)] border-2 border-pink-500/60 bg-slate-950 relative flex flex-col">
+          <div className="fixed inset-0 z-[99999] bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-3 animate-fade-in select-none">
+            <div className="w-full max-w-[96vw] h-[95vh] max-h-[95vh] rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(236,72,153,0.4)] border-2 border-pink-500/60 bg-slate-950 relative flex flex-col">
               {/* Modal Quick Debug Top Header */}
               <div className="flex shrink-0 items-center justify-between px-5 py-3 bg-slate-900 border-b border-pink-500/30 text-xs font-mono">
                 <div className="flex items-center gap-2">
                   <span className="text-base animate-pulse">🎮</span>
                   <span className="text-pink-400 font-bold tracking-wide">
                     HIGH-LOW DUEL POPUP SIMULATOR
+                  </span>
+                  <span className="text-amber-300 font-bold bg-amber-950 px-2.5 py-0.5 rounded-full border border-amber-400/40">
+                    {STATION_TIER_LABEL[selectedSimGrade]} (${getHighLowAnteForGrade(stationGradeConfig, selectedSimGrade).toLocaleString()})
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -475,6 +593,7 @@ export function HighLowEditorPanel() {
               <div className="flex-1 min-h-0 overflow-hidden p-1">
                 <HighLowMinigame
                   configs={configs}
+                  customAnte={getHighLowAnteForGrade(stationGradeConfig, selectedSimGrade)}
                   userChipsMap={userChipsMap}
                   onUpdateChips={handleUpdateChips}
                   onClose={() => setShowModalSimulator(false)}

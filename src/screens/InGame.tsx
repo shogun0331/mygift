@@ -203,7 +203,6 @@ import {
   applyStationReview,
   capStationViewers,
   getStationReviewStatus,
-  isAnnualReviewMonth,
   setStationGradeConfig,
   stationPromotionAssetReward,
   stationRankForGrade,
@@ -212,6 +211,7 @@ import {
   type StationReviewStatus,
 } from '../game/station'
 import {
+  getHighLowAnteForGrade,
   maxScoutCreatorsForGrade,
   slotUnlockMinGradeOf,
   type StationGradeConfig,
@@ -809,7 +809,7 @@ export function InGame({
   const [showCasinoModal, setShowCasinoModal] = useState(boot?.showCasinoModal ?? false)
   const [activeCasinoRoomId, setActiveCasinoRoomId] = useState<HighLowRoomId | null>(null)
 
-  const isCasinoGradeUnlocked = ['sme', 'mid', 'large', 'top'].includes(stationGrade)
+  const isCasinoGradeUnlocked = true
   const isCasinoAvailable = isCasinoGradeUnlocked && casinoTurnCount >= 3
 
   const highLowConfigs = useMemo(() => loadHighLowConfig(), [])
@@ -838,12 +838,26 @@ export function InGame({
     toRank: number
   } | null>(null)
   const [promotionCongratsPlay, setPromotionCongratsPlay] = useState<PromotionCongratsPlay | null>(null)
-  const [stationAuditTarget, setStationAuditTarget] = useState<{
+  const [stationAuditTarget, setStationAuditTargetState] = useState<{
     currentTier: StationGrade
     nextTier: Exclude<StationGrade, 'black' | 'tiny'>
-  } | null>(null)
+  } | null>(boot?.stationAuditTarget ?? null)
+  const stationAuditTargetRef = useRef(stationAuditTarget)
+
+  const setStationAuditTarget = (
+    target: {
+      currentTier: StationGrade
+      nextTier: Exclude<StationGrade, 'black' | 'tiny'>
+    } | null,
+  ) => {
+    stationAuditTargetRef.current = target
+    setStationAuditTargetState(target)
+  }
+
   const [auditDocPassNoticeOpen, setAuditDocPassNoticeOpen] = useState<boolean>(false)
-  const [auditDeckSelecting, setAuditDeckSelecting] = useState<boolean>(false)
+  const [auditDeckSelecting, setAuditDeckSelecting] = useState<boolean>(
+    Boolean(boot?.stationAuditTarget),
+  )
   const [selectedAuditCreators, setSelectedAuditCreators] = useState<any[] | null>(null)
 
   const staffScoutCooldownRef = useRef(boot?.scout?.staffScoutCooldown ?? 1)
@@ -1445,6 +1459,7 @@ export function InGame({
       },
       scoutSystem: serializeScoutSystem(scoutSystemRef.current),
       pendingStationReview: pendingStationReviewRef.current,
+      stationAuditTarget: stationAuditTargetRef.current,
       liveRevenueByCreator: liveRevenueByCreatorRef.current,
       casinoTurnCount: casinoTurnCountRef.current,
       showCasinoModal: showCasinoModalRef.current,
@@ -2831,12 +2846,12 @@ export function InGame({
 
       const nextCooldown = Math.max(0, prev - 1)
       if (nextCooldown > 0) return nextCooldown
-      // 레벨디자인: 영입 주기 6~10턴·성공 40% — 인원 급증을 방지하고 신중한 성장 유도
-      if (Math.random() < 0.4) {
+      // 스카우트 영입 주기 3달 / 등장 확률 80%
+      if (Math.random() < 0.8) {
         setCreatorScoutAvailable(true)
         return 0
       }
-      return rollInt(6, 10)
+      return 3
     })
 
 
@@ -2875,8 +2890,8 @@ export function InGame({
       setLeague(grown)
       pendingRankResultRef.current = null
     }
-    // 승급은 연 1회(1월 연간 심사) — 일등기업까지 최소 5년 보장
-    pendingStationReviewRef.current = isAnnualReviewMonth(nextDate, GAME_EPOCH)
+    // 1월 1일 연간 심사 기준 제거: 매 턴 목표 시청자 및 조건 달성 시 즉시 승급 심사 진행
+    pendingStationReviewRef.current = true
 
     const rankAfter = leagueRef.current.currentRank
     const rankChange = rankBefore - rankAfter
@@ -2977,6 +2992,20 @@ export function InGame({
       onOwnedCreatorsChangeRef.current(afterSnsOwned)
       snsResultQueueRef.current = snsResults
       setSnsResultQueue(snsResults)
+
+      if (extraViewers > 0) {
+        const nextViewers = capStationViewers(
+          leagueRef.current.viewers + extraViewers,
+          stationGradeRef.current,
+        )
+        const updatedLeague = reapplyLeagueGate(
+          { ...leagueRef.current, viewers: nextViewers },
+          toRankCreators(afterSnsOwned),
+          stationGradeRef.current,
+        )
+        leagueRef.current = updatedLeague
+        setLeague(updatedLeague)
+      }
     }
 
     const viewersGained = leagueRef.current.viewers - viewersBefore
@@ -3004,8 +3033,7 @@ export function InGame({
       viewersGained,
     }
 
-    const socialBlocked =
-      pendingStationReviewRef.current || Boolean(pendingRankResultRef.current?.gameCleared)
+    const socialBlocked = Boolean(pendingRankResultRef.current?.gameCleared)
     const socialRoll = advanceAndPickSocialEvent(
       socialSpawnRef.current,
       ownedCreatorsRef.current,
@@ -3048,7 +3076,7 @@ export function InGame({
     const openScout =
       ownedCreatorsRef.current.length === 0 &&
       Boolean(scoutSystemRef.current.activeOffer)
-    // 승급 심사는 순위 정산과 무관하게 항상 먼저 처리 (연간 1월 + 월중 조건 충족)
+    // 매 턴 목표 시청자 수 및 조건 달성 시 즉시 승급 심사 서류 모달 발동
     if (pendingStationReviewRef.current) {
       pendingStationReviewRef.current = false
       pendingScoutAfterRankRef.current = openScout
@@ -3061,12 +3089,8 @@ export function InGame({
           assets: assetsRef.current,
         },
       )
-      // 실패 안내는 연간(1월) 심사에서만, 월중 미충족은 조용히 통과
-      const annual = isAnnualReviewMonth(
-        monthToCalendarDate(GAME_EPOCH, gameMonthRef.current),
-        GAME_EPOCH,
-      )
-      if (review.promoted || annual) {
+      // 실패 안내 팝업 없이, 승급 조건이 충족(review.promoted === true)될 때만 서류 통과 팝업 출력
+      if (review.promoted) {
         setStationReview({ promoted: review.promoted, status: review.status })
         return
       }
@@ -3282,7 +3306,29 @@ export function InGame({
     continueAfterMonthModals(openScout)
   }
 
+  function checkStationReviewImmediate(openScout = false): boolean {
+    if (stationReview || stationAuditTarget) return false
+    const review = applyStationReview(
+      stationGradeRef.current,
+      leagueRef.current.viewers,
+      ownedCreatorsRef.current,
+      {
+        unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
+        assets: assetsRef.current,
+      },
+    )
+    if (review.promoted) {
+      pendingScoutAfterRankRef.current = openScout
+      setStationReview({ promoted: review.promoted, status: review.status })
+      return true
+    }
+    return false
+  }
+
   function continueAfterMonthModals(openScout: boolean) {
+    if (checkStationReviewImmediate(openScout)) {
+      return
+    }
     if (checkProposalEvent(openScout)) {
       return
     }
@@ -3739,6 +3785,7 @@ export function InGame({
   function handleVacation(creatorId: string) {
     const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
     if (!target) return
+    if ((target.stamina ?? 0) <= 0) return
     if (vacationPlay) return
     const month = broadcastMonthNumberRef.current
     const isAnyVacationUsedThisTurn = ownedCreatorsRef.current.some(
@@ -4709,7 +4756,11 @@ export function InGame({
                       return
                     }
                     if (isCasinoAvailable) {
-                      setShowCasinoModal(true)
+                      if (Math.random() < 0.5) {
+                        setActiveCasinoRoomId('local')
+                      } else {
+                        setShowCasinoModal(true)
+                      }
                       scheduleAutoSave()
                     }
                     return
@@ -4781,12 +4832,13 @@ export function InGame({
       {/* HIGH-LOW MINIGAME FULLSCREEN GAMING STAGE 7.0 (CONNECTED TO ASSETS)  */}
       {/* -------------------------------------------------------------------- */}
       {activeCasinoRoomId && (
-        <div className="fixed inset-0 z-[99999] bg-slate-950 flex flex-col p-3 sm:p-5 select-none overflow-hidden animate-fade-in">
+        <div className="fixed inset-0 z-[99999] bg-slate-950 flex flex-col p-2 sm:p-3 select-none overflow-hidden animate-fade-in">
           <GoldenVegasLoungeBackground />
 
           <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(245,158,11,0.5),inset_0_0_40px_rgba(245,158,11,0.2)] border-2 border-amber-400/80 bg-slate-950 flex flex-col z-10 my-auto">
             <HighLowMinigame
               configs={highLowConfigs}
+              customAnte={getHighLowAnteForGrade(stationGradeConfig, stationGradeRef.current)}
               userChipsMap={{
                 local: assets,
                 star: assets,
@@ -4813,7 +4865,11 @@ export function InGame({
                   scheduleAutoSave()
                 }
               }}
-              onClose={() => setActiveCasinoRoomId(null)}
+              onClose={() => {
+                setActiveCasinoRoomId(null)
+                setCasinoTurnCount(0)
+                scheduleAutoSave()
+              }}
               initialRoomId={activeCasinoRoomId}
             />
           </div>
@@ -4947,58 +5003,41 @@ export function InGame({
       {stationAuditTarget && auditDocPassNoticeOpen ? (() => {
         const tierName = t(companyTierLabelKey(stationAuditTarget.nextTier))
         const notice = getAuditDocPassNotice(locale, tierName)
-        const bodyParts = notice.body.split('\n\n')
-        const congratsText = bodyParts[0] || notice.body
-        const missionText = bodyParts.slice(1).join('\n\n')
 
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border-2 border-amber-400/90 bg-gradient-to-b from-slate-950 via-purple-950/80 to-slate-950 p-6 sm:p-8 text-center shadow-[0_0_90px_rgba(251,191,36,0.45)] ring-1 ring-amber-400/50 animate-in zoom-in-95 duration-200">
-              {/* 회전하는 황금 빛 광채 후광 효과 */}
-              <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-72 rounded-full bg-amber-400/20 blur-3xl opacity-70 animate-pulse" />
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-amber-400/40 bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-900/95 p-6 sm:p-7 text-center shadow-[0_0_50px_rgba(245,158,11,0.22)] ring-1 ring-amber-400/20 animate-in zoom-in-95 duration-200">
+              {/* 상단 포인트 조명 네온 바 */}
+              <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]" />
 
-              {/* 상단 아케이드 헤더 뱃지 */}
-              <div className="relative z-10 mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-amber-400/60 bg-black/80 px-4 py-1 text-xs font-black tracking-widest text-amber-300 uppercase shadow-[0_0_20px_rgba(251,191,36,0.5)]">
-                <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
-                <span>✦ STAGE 1: DOCUMENT REVIEW PASSED ✦</span>
-              </div>
-
-              {/* 황금 서류 통과 아이콘 뱃지 */}
-              <div className="relative z-10 mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-amber-400/90 bg-gradient-to-br from-amber-950 via-yellow-900/60 to-amber-950 text-4xl shadow-[0_0_35px_rgba(251,191,36,0.6)] ring-1 ring-amber-400/40">
-                <span>📜</span>
+              {/* 상단 헤더 뱃지 */}
+              <div className="mx-auto mb-3 inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 px-3.5 py-1 text-[11px] font-black tracking-widest text-amber-300 uppercase shadow-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping" />
+                <span>STAGE 1 ・ DOCUMENT PASSED</span>
               </div>
 
               {/* 타이틀 */}
-              <h3 className="relative z-10 text-xl sm:text-2xl font-black bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-200 bg-clip-text text-transparent tracking-tight drop-shadow">
+              <h3 className="mt-1 text-xl sm:text-2xl font-black bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent tracking-tight drop-shadow">
                 {notice.title}
               </h3>
 
-              {/* 1차 축하 안내 카드 */}
-              <div className="relative z-10 mt-4 rounded-2xl border border-amber-400/30 bg-amber-500/10 p-3.5 text-xs sm:text-sm font-semibold leading-relaxed text-amber-100/90 shadow-inner">
-                <span>🎉 {congratsText}</span>
+              {/* 깔끔한 단일 안내 카드 */}
+              <div className="mt-4 rounded-xl border border-amber-400/20 bg-amber-500/5 p-4 text-xs sm:text-sm font-medium leading-relaxed text-slate-200 shadow-inner">
+                <p className="whitespace-pre-line text-slate-300">{notice.body}</p>
               </div>
 
-              {/* 미션 안내 카드 */}
-              {missionText ? (
-                <div className="relative z-10 mt-3 rounded-2xl border border-purple-400/30 bg-purple-950/60 p-3.5 text-xs sm:text-sm font-bold leading-relaxed text-purple-200 shadow-inner flex items-center gap-3 text-left">
-                  <span className="text-2xl shrink-0">🎯</span>
-                  <span>{missionText}</span>
-                </div>
-              ) : null}
-
-              {/* 3D 황금 고광택 도전 버튼 */}
-              <div className="relative z-10 mt-6 flex justify-center">
+              {/* 도전 버튼 */}
+              <div className="mt-6 flex justify-center">
                 <button
                   type="button"
                   onClick={() => {
                     setAuditDocPassNoticeOpen(false)
                     setAuditDeckSelecting(true)
                   }}
-                  className="group relative w-full overflow-hidden rounded-2xl border-2 border-amber-300/80 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3.5 px-6 font-black text-slate-950 shadow-[0_0_35px_rgba(245,158,11,0.6)] transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_rgba(245,158,11,0.85)] active:scale-95 flex items-center justify-center gap-2 text-sm sm:text-base"
+                  className="w-full cursor-pointer rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 py-3.5 px-6 font-black text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.35)] transition-all hover:scale-[1.02] hover:brightness-110 active:scale-95 flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
-                  <span>⚔️</span>
                   <span>{notice.button}</span>
-                  <span>🚀</span>
+                  <span className="text-xs font-bold">➔</span>
                 </button>
               </div>
             </div>
@@ -5069,8 +5108,7 @@ export function InGame({
           }}
           onClose={() => {
             setSelectedAuditCreators(null)
-            setStationAuditTarget(null)
-            continueMonthEndFlow()
+            setAuditDeckSelecting(true)
           }}
         />
       ) : null}

@@ -13,7 +13,6 @@ import {
   createDeck,
   rollRewardItem,
 } from './highLowConfig'
-import { loadUserInventory, saveUserInventory } from './highLowStore'
 import { useTranslation } from '../../locales/i18n'
 
 export type GamePhase =
@@ -30,6 +29,7 @@ export interface HighLowMinigameProps {
   onHireStaff?: () => void
   onClose?: () => void
   initialRoomId?: HighLowRoomId
+  customAnte?: number
 }
 
 interface LogEntry {
@@ -629,34 +629,27 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   onHireStaff,
   onClose,
   initialRoomId = 'legend',
+  customAnte,
 }) => {
   const { t } = useTranslation()
   const roomConfigs = configs
   const [selectedRoomId, setSelectedRoomId] = useState<HighLowRoomId>(initialRoomId)
-  const [phase, setPhase] = useState<GamePhase>('LOBBY')
+  const [phase, setPhase] = useState<GamePhase>('DEALING_DEALER')
 
   const currentConfig = roomConfigs[selectedRoomId]
   const currentChips = userChipsMap[selectedRoomId] ?? currentConfig.startChips
+  const effectiveAnte = customAnte ?? currentConfig.ante
 
-  // 콤보 시스템 (연속 승리 시 콤보 판돈 2^comboCount배 증가!)
-  const [comboCount, setComboCount] = useState(0)
+  // 콤보 시스템 제거 (항상 0)
+  const comboCount = 0
 
-  // 라운드 보상 아이템 & 보유 인벤토리 & 버프 상태
+  // 라운드 보상 아이템 & 보유 인벤토리 (입장 시 0개 시작)
   const [currentRewardItem, setCurrentRewardItem] = useState<CasinoItem | null>(null)
-  const [inventory, setInventory] = useState<CasinoItem[]>(() => loadUserInventory(initialRoomId))
+  const [inventory, setInventory] = useState<CasinoItem[]>([])
 
-  // 룸 변경 시 해당 룸 보유 인벤토리 로컬스토리지 자동 로드
-  useEffect(() => {
-    setInventory(loadUserInventory(selectedRoomId))
-  }, [selectedRoomId])
-
-  // 인벤토리 영구 저장 동기화 헬퍼
+  // 인벤토리 변경 헬퍼
   const updateInventory = (updater: CasinoItem[] | ((prev: CasinoItem[]) => CasinoItem[])) => {
-    setInventory((prev) => {
-      const next = typeof updater === 'function' ? updater(prev) : updater
-      saveUserInventory(selectedRoomId, next)
-      return next
-    })
+    setInventory((prev) => (typeof updater === 'function' ? updater(prev) : updater))
   }
 
   const [activeBuffs, setActiveBuffs] = useState<{
@@ -709,12 +702,13 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
     ])
   }
 
-  // initialRoomId가 주어지면 중복 룸 선택 로비를 건너뛰고 바로 실제 하이로우 카드 게임 테이블로 직행!
+  // 바로 카지노 게임 테이블 시작
   const hasAutoStartedRef = useRef(false)
   useEffect(() => {
-    if (!hasAutoStartedRef.current && initialRoomId) {
+    if (!hasAutoStartedRef.current) {
       hasAutoStartedRef.current = true
-      handleEnterRoom(initialRoomId)
+      addLog(`=== [하이로우 카지노] 테이블에 입장하셨습니다 (무료 판돈: $${effectiveAnte.toLocaleString()}). ===`, 'info')
+      startNewGameLoop(initialRoomId)
     }
   }, [initialRoomId])
 
@@ -725,38 +719,15 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   // 1. 룸 선택 및 입장
   const handleEnterRoom = (roomId: HighLowRoomId) => {
     setSelectedRoomId(roomId)
-    const conf = configs[roomId]
-    const chips = userChipsMap[roomId] ?? conf.startChips
-
-    if (chips < conf.ante) {
-      alert(`[${conf.name}] 입장 배팅금($${conf.ante.toLocaleString()})이 부족합니다!`)
-      return
-    }
-
-    addLog(`=== [${conf.name}] 테이블에 입장하셨습니다. ===`, 'info')
     startNewGameLoop(roomId)
   }
 
-  // 2. 새로운 판 시작 (DEALING_DEALER)
+  // 2. 새로운 판 시작 (DEALING_DEALER) - 판돈 무료 (자산 차감 없음)
   const startNewGameLoop = (roomId: HighLowRoomId = selectedRoomId) => {
     const conf = roomConfigs[roomId]
-    const chips = userChipsMap[roomId] ?? conf.startChips
+    const currentBet = customAnte ?? conf.ante
 
-    // 콤보 계산: 판돈 = ANTE * 2^comboCount
-    const comboMultiplier = Math.pow(2, Math.min(comboCount, conf.maxComboLimit ?? 5))
-    const currentBet = conf.ante * comboMultiplier
-
-    if (chips < currentBet) {
-      addLog(`판돈 $${currentBet.toLocaleString()} (콤보 ${comboCount}x) 부족으로 게임을 진행할 수 없습니다.`, 'loss')
-      setComboCount(0)
-      setPhase('LOBBY')
-      return
-    }
-
-    // 판돈 차감
-    const nextChips = chips - currentBet
-    onUpdateChips(roomId, nextChips)
-    addLog(`Ante $${currentBet.toLocaleString()} ${comboCount > 0 ? `(🔥 콤보 ${comboMultiplier}배 판돈)` : ''} 차감. 게임이 시작됩니다.`, 'info')
+    addLog(`무료 판돈 $${currentBet.toLocaleString()} (자산 차감 없음). 라운드가 시작됩니다.`, 'info')
 
     // 라운드 보상 아이템 가챠 세팅 (개별 아이템 등장 확률 적용)
     const rewardItem = rollRewardItem(conf)
@@ -954,8 +925,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
       setGameResult(outcome)
 
-      const comboMultiplier = Math.pow(2, Math.min(comboCount, currentConfig.maxComboLimit ?? 5))
-      const currentBet = currentConfig.ante * comboMultiplier
+      const currentBet = customAnte ?? currentConfig.ante
 
       if (outcome === 'WIN') {
         const reward = Math.floor(currentBet * rawPayout)
@@ -963,9 +933,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         const updatedChips = currentChips + reward
         onUpdateChips(selectedRoomId, updatedChips)
         setStats((s) => ({ ...s, wins: s.wins + 1 }))
-
-        const nextCombo = comboCount + 1
-        setComboCount(nextCombo)
 
         if (currentRewardItem) {
           updateInventory((inv) => {
@@ -978,29 +945,22 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           })
         }
 
-        addLog(`🎉 승리! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> +$${reward.toLocaleString()} 획득! (🔥 ${nextCombo}연속 콤보 달성!)`, 'win')
+        addLog(`🎉 승리! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> +$${reward.toLocaleString()} 획득!`, 'win')
       } else if (outcome === 'DRAW') {
-        setRewardAmount(currentBet)
-        const refundedChips = currentChips + currentBet
-        onUpdateChips(selectedRoomId, refundedChips)
+        setRewardAmount(0)
         setStats((s) => ({ ...s, draws: s.draws + 1 }))
-        // DRAW (무승부) 발생 시 콤보 수치(comboCount) 100% 온전히 유지!
-        addLog(`🤝 무승부(DRAW)! 딜러와 동일한 카드 [${getCardDisplayValue(pVal)}] -> Ante $${currentBet.toLocaleString()} 전액 환불 & 🔥 ${comboCount}연속 콤보 완벽 유지!`, 'draw')
+        addLog(`🤝 무승부(DRAW)! 딜러와 동일한 카드 [${getCardDisplayValue(pVal)}] -> 자산 변동 없음`, 'draw')
       } else {
         if (activeBuffs.lossShield) {
-          // 🛡️ 패배 무효화 쉴드 완벽 발동: 판돈 100% 원상 복구 & 연속 콤보 수치 유지!
           setGameResult('DRAW')
-          setRewardAmount(currentBet)
-          const refundedChips = currentChips + currentBet
-          onUpdateChips(selectedRoomId, refundedChips)
+          setRewardAmount(0)
           setStats((s) => ({ ...s, draws: s.draws + 1 }))
-          addLog(`🛡️ 패배 무효화 쉴드 완벽 발동! 판돈 $${currentBet.toLocaleString()} 손실 100% 방어 & 🔥 ${comboCount}연속 콤보 완벽 유지!`, 'win')
+          addLog(`🛡️ 패배 무효화 쉴드 발동! 판돈 손실 방어`, 'win')
         } else {
           setGameResult('LOSS')
-          setComboCount(0)
           setRewardAmount(0)
           setStats((s) => ({ ...s, losses: s.losses + 1 }))
-          addLog(`💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}]`, 'loss')
+          addLog(`💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 자산 차감 없음`, 'loss')
         }
       }
 
@@ -1029,8 +989,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   }
 
   const mult = activeBuffs.doublePayout ? 2 : 1
-  const comboMultiplier = Math.pow(2, Math.min(comboCount, currentConfig.maxComboLimit ?? 5))
-  const effectiveBet = currentConfig.ante * comboMultiplier
+  const effectiveBet = customAnte ?? currentConfig.ante
 
   const rawLowPayout = dealerCard ? calculatePayout(dealerCard.value, 'LOW', currentConfig.houseEdge) : 1.95
   const rawHighPayout = dealerCard ? calculatePayout(dealerCard.value, 'HIGH', currentConfig.houseEdge) : 1.95
@@ -1194,8 +1153,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
       </div>
 
       {/* Full-Width Integrated Emerald Felt Casino Stage (화면 전체 100% 꽉 채우는 초록색 카지노 테이블 패널!) */}
-      <div className="relative z-10 flex-1 p-4 sm:p-5 rounded-2xl border-2 border-emerald-500/80 bg-gradient-to-b from-emerald-950 via-emerald-900/90 to-emerald-950 backdrop-blur-md shadow-[inset_0_0_90px_rgba(16,185,129,0.4),0_0_50px_rgba(16,185,129,0.3)] my-auto py-1 flex flex-col min-h-0 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-3 sm:gap-4 items-stretch flex-1 min-h-0 overflow-hidden">
+      <div className="relative z-10 flex-1 p-3 sm:p-4 rounded-2xl border-2 border-emerald-500/80 bg-gradient-to-b from-emerald-950 via-emerald-900/90 to-emerald-950 backdrop-blur-md shadow-[inset_0_0_90px_rgba(16,185,129,0.4),0_0_50px_rgba(16,185,129,0.3)] my-auto py-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr_360px] gap-3 sm:gap-5 items-stretch flex-1 min-h-0 overflow-hidden">
           {/* 1. LEFT COLUMN: Live Dealer Showcase & Round Item Drop Reward (까만 배경 완전 제거 & 펠트 카지노 테이블 투과!) */}
           <div className="hidden lg:flex flex-col justify-between p-2 sm:p-3 font-mono text-xs overflow-hidden bg-transparent border-none shadow-none">
             <div className="space-y-2.5 flex-1 flex flex-col min-h-0">
@@ -1453,22 +1412,26 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
                 {/* Action Buttons: Next Round & Exit Game */}
                 <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full">
-                  <button
-                    onClick={() => startNewGameLoop()}
-                    className="w-full sm:flex-1 py-3 px-3 rounded-xl font-black text-xs sm:text-sm tracking-wider uppercase bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <span>♠</span>
-                    <span>{t('casino.highlow.nextRound')}</span>
-                    <span>♣</span>
-                  </button>
+                  {gameResult !== 'LOSS' && (
+                    <button
+                      onClick={() => startNewGameLoop()}
+                      className="w-full sm:flex-1 py-3 px-3 rounded-xl font-black text-xs sm:text-sm tracking-wider uppercase bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <span>♠</span>
+                      <span>{t('casino.highlow.nextRound')}</span>
+                      <span>♣</span>
+                    </button>
+                  )}
 
                   {onClose && (
                     <button
                       onClick={onClose}
-                      className="w-full sm:w-auto py-3 px-4 rounded-xl font-black text-xs sm:text-sm tracking-wider border-2 border-red-400/90 bg-gradient-to-b from-red-500 via-red-600 to-red-800 text-white shadow-[0_4px_12px_rgba(239,68,68,0.5),inset_0_1px_2px_rgba(255,255,255,0.6)] hover:brightness-110 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
+                      className={`py-3 px-4 rounded-xl font-black text-xs sm:text-sm tracking-wider border-2 border-red-400/90 bg-gradient-to-b from-red-500 via-red-600 to-red-800 text-white shadow-[0_4px_12px_rgba(239,68,68,0.5),inset_0_1px_2px_rgba(255,255,255,0.6)] hover:brightness-110 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        gameResult === 'LOSS' ? 'w-full text-base py-4 font-black' : 'w-full sm:w-auto shrink-0'
+                      }`}
                     >
                       <span>🚪</span>
-                      <span>{t('casino.exit')}</span>
+                      <span>{gameResult === 'LOSS' ? '패배 - 나가기' : t('casino.exit')}</span>
                     </button>
                   )}
                 </div>
@@ -1528,18 +1491,13 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
             </h4>
 
             <div className="space-y-3.5">
-              {/* CURRENT ANTE BET Card + COMBO MULTIPLIER BADGE */}
+              {/* CURRENT ANTE BET Card */}
               <div className="relative p-3 rounded-xl bg-gradient-to-br from-slate-950 via-slate-900/80 to-slate-950 border border-amber-400/40 shadow-inner group">
                 <div className="flex items-center justify-between">
-                  <p className="text-[10px] text-amber-400/80 font-bold uppercase tracking-wider">{t('casino.highlow.currentAnte')}</p>
-                  {comboCount > 0 && (
-                    <span className="text-[10px] font-black text-slate-950 bg-gradient-to-r from-amber-400 to-yellow-300 px-2 py-0.5 rounded-full shadow animate-pulse">
-                      {t('casino.highlow.comboBadge', { combo: comboCount, mult: Math.pow(2, Math.min(comboCount, currentConfig.maxComboLimit ?? 5)) })}
-                    </span>
-                  )}
+                  <p className="text-[10px] text-amber-400/80 font-bold uppercase tracking-wider">무료 판돈 (ANTE)</p>
                 </div>
                 <p className="text-xl font-black bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-400 bg-clip-text text-transparent mt-1">
-                  ${(currentConfig.ante * Math.pow(2, Math.min(comboCount, currentConfig.maxComboLimit ?? 5))).toLocaleString()}
+                  ${effectiveBet.toLocaleString()}
                 </p>
               </div>
 
@@ -1566,8 +1524,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                 )}
 
                 <div className="flex items-center justify-between">
-                  <p className="text-[10px] text-slate-300 font-black uppercase tracking-widest flex items-center gap-1">
-                    <span>🏛️</span>
+                  <p className="text-[10px] text-amber-300 font-black uppercase tracking-widest flex items-center gap-1">
+                    <span>🏆</span>
                     <span>{t('casino.highlow.myStationAssets')}</span>
                   </p>
                   <span className="text-xs text-amber-400 font-bold">{t('casino.highlow.vault')}</span>

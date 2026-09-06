@@ -13,12 +13,12 @@ export type SocialSpawnSpec = {
   chance: number
 }
 
-/** 데이트 1→2차 대기 턴수 (3~5턴 마다 등장) */
-export const DATE_SPAWN: SocialSpawnSpec = { minWait: 3, maxWait: 5, chance: 0.65 }
-/** 보유 크리에이터 대상 VIP 제안 (5~8턴 마다 등장) */
-export const VIP_SPAWN: SocialSpawnSpec = { minWait: 5, maxWait: 8, chance: 0.3 }
-/** 데이트 1·2차 완료 후 H 및 이후 H 재요청 (5~7턴 마다 등장) */
-export const H_SPAWN: SocialSpawnSpec = { minWait: 5, maxWait: 7, chance: 0.35 }
+/** 데이트 1→2차 대기 턴수 (3달 고정, 등장 확률 85%) */
+export const DATE_SPAWN: SocialSpawnSpec = { minWait: 3, maxWait: 3, chance: 0.85 }
+/** 보유 크리에이터 대상 VIP 제안 (3달 고정, 등장 확률 75%) */
+export const VIP_SPAWN: SocialSpawnSpec = { minWait: 3, maxWait: 3, chance: 0.75 }
+/** 데이트 1·2차 완료 후 H 및 이후 H 재요청 (3달 고정, 등장 확률 80%) */
+export const H_SPAWN: SocialSpawnSpec = { minWait: 3, maxWait: 3, chance: 0.80 }
 
 export const DATE_SP_BY_STEP: Record<DateStepKey, Record<Grade, number>> = {
   date1: { C: 1, B: 2, A: 3, S: 5 },
@@ -178,32 +178,16 @@ export type SocialSpawnState = {
   h: SpawnChannel
 }
 
-function rollWait(spec: SocialSpawnSpec): number {
-  return rollInt(spec.minWait, spec.maxWait)
-}
-
-function freshChannel(spec: SocialSpawnSpec): SpawnChannel {
-  return { wait: rollWait(spec), ready: false }
-}
-
 export function createSocialSpawnState(): SocialSpawnState {
   return {
-    date: freshChannel(DATE_SPAWN),
-    vip: freshChannel(VIP_SPAWN),
-    h: freshChannel(H_SPAWN),
+    date: { wait: 3, ready: false },
+    vip: { wait: 3, ready: false },
+    h: { wait: 3, ready: false },
   }
 }
 
-function tickChannel(channel: SpawnChannel, spec: SocialSpawnSpec): SpawnChannel {
-  if (channel.ready) return channel
-  const wait = channel.wait - 1
-  if (wait > 0) return { wait, ready: false }
-  if (rollChance(spec.chance)) return { wait: 0, ready: true }
-  return { wait: rollWait(spec), ready: false }
-}
-
-function consumeChannel(spec: SocialSpawnSpec): SpawnChannel {
-  return { wait: rollWait(spec), ready: false }
+function consumeChannel(): SpawnChannel {
+  return { wait: 3, ready: false }
 }
 
 function buildHPending(roster: OwnedCreator[]): SocialPending | null {
@@ -213,22 +197,9 @@ function buildHPending(roster: OwnedCreator[]): SocialPending | null {
   return retry ? buildHRetryPending(retry) : null
 }
 
-function channelOf(event: SocialPending): keyof SocialSpawnState {
-  if (event.kind === 'vip') return 'vip'
-  if (event.kind === 'hRetry' || (event.kind === 'date' && event.step === 'h')) return 'h'
-  return 'date'
-}
-
-const SPAWN_SPEC: Record<keyof SocialSpawnState, SocialSpawnSpec> = {
-  date: DATE_SPAWN,
-  vip: VIP_SPAWN,
-  h: H_SPAWN,
-}
-
 /**
  * 월 종료 시 호출.
- * blocked(등급평가·클리어 등)이면 이벤트 없음. 당첨된 ready는 다음 달로 이월.
- * 한 턴에는 후보 중 무작위로 1개만 반환. 선택된 채널만 새 랜덤 대기로 리셋.
+ * 정확히 3달(3턴) 마다 한 번씩만 소셜 이벤트(데이트/H/VIP)가 발동하도록 보장합니다.
  */
 import type { StationGrade } from './stationGradeConfig'
 
@@ -238,53 +209,65 @@ export function advanceAndPickSocialEvent(
   blocked: boolean,
   stationGrade?: StationGrade,
 ): { state: SocialSpawnState; event: SocialPending | null } {
-  const next: SocialSpawnState = {
-    date: tickChannel(state.date, DATE_SPAWN),
-    vip: tickChannel(state.vip, VIP_SPAWN),
-    h: tickChannel(state.h, H_SPAWN),
+  const currentWait = state.date?.wait ?? 3
+  const nextWait = currentWait - 1
+
+  const nextState: SocialSpawnState = {
+    date: { wait: nextWait, ready: nextWait <= 0 },
+    vip: { wait: nextWait, ready: nextWait <= 0 },
+    h: { wait: nextWait, ready: nextWait <= 0 },
   }
 
-  if (blocked) {
-    return { state: next, event: null }
+  // 아직 3달(3턴)이 되지 않았거나 블락된 경우 이벤트 없음
+  if (nextWait > 0 || blocked) {
+    return { state: nextState, event: null }
   }
 
-  // 데이트 2차 완료 후 H씬 해금 대기 중인 캐릭터가 있으면 최우선 스폰
-  const hUnlockTarget = pickHUnlockTarget(roster)
-  if (hUnlockTarget) {
-    const hPending = buildDatePending(hUnlockTarget)
-    if (hPending) {
-      return {
-        state: { ...next, h: consumeChannel(H_SPAWN) },
-        event: hPending,
+  // 3달째(3턴 후) 도달: 데이트 및 H 이벤트 대상 검색 (우선순위: 데이트/H > VIP)
+  const dateTarget = pickDateTarget(roster)
+  const datePending = dateTarget ? buildDatePending(dateTarget) : null
+  const hPending = buildHPending(roster)
+
+  let event: SocialPending | null = null
+
+  // 1. 데이트 및 H 이벤트가 있으면 최우선 발행
+  if (datePending) {
+    event = datePending
+  } else if (hPending) {
+    event = hPending
+  }
+
+  // 2. 데이트/H 이벤트 대상이 없으면 VIP 이벤트 체크
+  if (!event) {
+    const isVipAllowed = !stationGrade || (stationGrade !== 'black' && stationGrade !== 'tiny')
+    if (isVipAllowed) {
+      const vipTarget = pickVipTarget(roster)
+      if (vipTarget) {
+        event = { kind: 'vip', offer: toVipOffer(vipTarget) }
       }
     }
   }
 
-  const candidates: SocialPending[] = []
-  if (next.date.ready) {
-    const target = pickDateTarget(roster)
-    const pending = target ? buildDatePending(target) : null
-    if (pending) candidates.push(pending)
-  }
-  if (next.vip.ready) {
-    // VIP 스폰서 이벤트는 중소기업(sme) 이상 등급부터 발동
-    const isVipAllowed = !stationGrade || (stationGrade !== 'black' && stationGrade !== 'tiny')
-    if (isVipAllowed) {
-      const vipTarget = pickVipTarget(roster)
-      if (vipTarget) candidates.push({ kind: 'vip', offer: toVipOffer(vipTarget) })
+  // 소셜 이벤트가 발행된 경우 쿨다운을 3달(3턴)로 리셋
+  if (event) {
+    const resetChannel = consumeChannel()
+    return {
+      state: {
+        date: resetChannel,
+        vip: resetChannel,
+        h: resetChannel,
+      },
+      event,
     }
   }
-  if (next.h.ready) {
-    const hPending = buildHPending(roster)
-    if (hPending) candidates.push(hPending)
-  }
 
-  const event = pickOne(candidates)
-  if (!event) return { state: next, event: null }
-
-  const key = channelOf(event)
+  // 대상이 없어 이번 달에 발행하지 못한 경우, 다음 달에도 즉시 발행 시도할 수 있도록 wait: 0 유지
   return {
-    state: { ...next, [key]: consumeChannel(SPAWN_SPEC[key]) },
-    event,
+    state: {
+      date: { wait: 0, ready: true },
+      vip: { wait: 0, ready: true },
+      h: { wait: 0, ready: true },
+    },
+    event: null,
   }
 }

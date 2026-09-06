@@ -597,10 +597,13 @@ export function growLeagueViewers(
 
   // 방송 중: 절대 감소 없음 — 미달이면 상한까지 성장, 도달/초과면 소폭 유기적 성장
   if (now >= cap) {
-    // 유기적 성장: 활동 보상 (로스터 상한이 현재보다 낮아도 감소하지 않음)
+    // 유기적 성장: 활동 보상 (시청자 수가 늘어날수록 유기적 성장 비율이 로그 비율로 감쇠)
+    const baseRate = getViewerBalance().viewerOrganicGrowthRate
+    const scale = 10000
+    const effectiveRate = baseRate / (1 + Math.log10(Math.max(1, now / scale)))
     const gain = Math.max(
       1,
-      Math.round(now * getViewerBalance().viewerOrganicGrowthRate * rollViewerGrowthFactor()),
+      Math.round(now * effectiveRate * rollViewerGrowthFactor()),
     )
     return now + gain
   }
