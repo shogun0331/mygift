@@ -696,6 +696,20 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   // 통계
   const [stats, setStats] = useState({ wins: 0, losses: 0, draws: 0 })
   const [consecutiveWins, setConsecutiveWins] = useState(0)
+  const [cctvTime, setCctvTime] = useState('')
+
+  useEffect(() => {
+    const updateTime = () => {
+      const d = new Date()
+      const pad = (n: number) => String(n).padStart(2, '0')
+      setCctvTime(
+        `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+      )
+    }
+    updateTime()
+    const timer = setInterval(updateTime, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   const activeDealerMedia = getActiveDealerMedia(currentConfig, consecutiveWins)
 
@@ -1195,12 +1209,44 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           {/* 1. LEFT COLUMN: Live Dealer Showcase & Round Item Drop Reward (까만 배경 완전 제거 & 펠트 카지노 테이블 투과!) */}
           <div className="hidden lg:flex flex-col justify-between p-2 sm:p-3 font-mono text-xs overflow-hidden bg-transparent border-none shadow-none">
             <div className="space-y-2.5 flex-1 flex flex-col min-h-0">
-              <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest border-b border-emerald-400/40 pb-1.5 flex items-center justify-between shrink-0">
-                <span>딜러 프로필</span>
+              <h4 className="text-xs font-black text-emerald-300 uppercase tracking-widest border-b border-emerald-500/40 pb-1.5 flex items-center justify-between shrink-0 font-mono">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
+                  <span>📡 LIVE CCTV FEED [CAM-01]</span>
+                </span>
+                <span className="text-[10px] text-amber-400 font-bold">VIP SURVEILLANCE</span>
               </h4>
 
-              {/* Live Dealer CCTV Media Box (세로 3:4 럭셔리 대형 스탠딩 카지노 카드 프레임!) */}
-              <div className="relative w-full aspect-[3/4] flex-1 min-h-[220px] max-h-[360px] rounded-2xl overflow-hidden border-2 border-amber-400/80 bg-emerald-950/60 shadow-[0_0_30px_rgba(245,158,11,0.4)] group">
+              {/* Live Dealer CCTV Media Box (High-Tech CCTV Monitor Viewfinder Frame) */}
+              <div className="relative w-full aspect-[3/4] flex-1 min-h-[220px] max-h-[360px] rounded-2xl overflow-hidden border-2 border-emerald-500/80 bg-slate-950 shadow-[0_0_35px_rgba(16,185,129,0.3)] group">
+                {/* CCTV CRT Scanline & Grain Noise Overlays */}
+                <div className="cctv-scanline" />
+                <div className="cctv-noise" />
+
+                {/* Viewfinder Reticle Corners (4개 모서리 조준 테두리) */}
+                <div className="pointer-events-none absolute inset-0 z-10 p-2.5 flex flex-col justify-between">
+                  <div className="flex justify-between">
+                    <span className="border-t-2 border-l-2 border-emerald-400/80 w-3.5 h-3.5 block" />
+                    <span className="border-t-2 border-r-2 border-emerald-400/80 w-3.5 h-3.5 block" />
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="border-b-2 border-l-2 border-emerald-400/80 w-3.5 h-3.5 block" />
+                    <span className="border-b-2 border-r-2 border-emerald-400/80 w-3.5 h-3.5 block" />
+                  </div>
+                </div>
+
+                {/* Top HUD: Blinking Red REC Badge & Live CCTV Timestamp */}
+                <div className="pointer-events-none absolute top-2 inset-x-2 z-20 flex items-center justify-between font-mono">
+                  <div className="flex items-center gap-1 bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded border border-rose-500/60 shadow">
+                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                    <span className="text-[9px] font-black text-rose-400 tracking-wider">REC</span>
+                  </div>
+                  <div className="bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded border border-emerald-500/50 text-[9px] font-bold text-emerald-300 shadow tracking-wider">
+                    {cctvTime}
+                  </div>
+                </div>
+
+                {/* Dealer Media Video/Image Feed */}
                 {activeDealerMedia?.url ? (
                   activeDealerMedia.type === 'video' ? (
                     <video
@@ -1210,54 +1256,61 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                       loop
                       muted
                       playsInline
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover filter contrast-[1.05] brightness-95 saturate-[0.95]"
                     />
                   ) : (
                     <img
                       key={activeDealerMedia.url}
                       src={resolveMediaSrc(activeDealerMedia.url)}
                       alt={currentConfig.dealerName}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover filter contrast-[1.05] brightness-95 saturate-[0.95]"
                     />
                   )
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-emerald-950/80 to-emerald-900/40 text-emerald-200">
-                    <div className="w-14 h-14 rounded-full border-2 border-amber-400/70 p-1 mb-1 bg-emerald-950 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-950 via-emerald-950/70 to-slate-950 text-emerald-200">
+                    <div className="w-16 h-16 rounded-full border-2 border-emerald-400/70 p-1 mb-1 bg-black flex items-center justify-center shadow-lg shadow-emerald-500/30">
                       <span className="text-3xl">🎩</span>
                     </div>
-                    <span className="text-xs font-black text-amber-300 uppercase tracking-widest">
+                    <span className="text-xs font-black text-emerald-300 uppercase tracking-widest font-mono">
                       {currentConfig.dealerName}
                     </span>
-                    <span className="text-[9px] text-amber-400/90 font-bold">
+                    <span className="text-[9px] text-amber-400/90 font-bold font-mono">
                       {currentConfig.dealerTitle}
                     </span>
                   </div>
                 )}
 
-                {/* Stage / Consecutive Wins Badge */}
-                <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
-                  <span className="text-[9px] font-mono font-bold text-amber-300 bg-slate-950/80 px-2 py-0.5 rounded-full border border-amber-400/50 shadow">
+                {/* Stage / Consecutive Wins Badge Overlay */}
+                <div className="pointer-events-none absolute bottom-12 left-2.5 flex items-center gap-1 z-20 font-mono">
+                  <span className="text-[9px] font-bold text-amber-300 bg-black/85 backdrop-blur-sm px-2 py-0.5 rounded border border-amber-400/50 shadow">
                     🔥 {consecutiveWins}{t('casino.highlow.streakCount', { defaultValue: '연승' })}
                   </span>
                   {consecutiveWins >= 6 ? (
-                    <span className="text-[9px] font-mono font-bold text-rose-300 bg-rose-950/90 px-2 py-0.5 rounded-full border border-rose-500/60 shadow">
+                    <span className="text-[9px] font-bold text-rose-300 bg-rose-950/90 backdrop-blur-sm px-2 py-0.5 rounded border border-rose-500/60 shadow">
                       {t('casino.highlow.stage3', { defaultValue: '수위 3' })}
                     </span>
                   ) : consecutiveWins >= 3 ? (
-                    <span className="text-[9px] font-mono font-bold text-purple-300 bg-purple-950/90 px-2 py-0.5 rounded-full border border-purple-500/60 shadow">
+                    <span className="text-[9px] font-bold text-purple-300 bg-purple-950/90 backdrop-blur-sm px-2 py-0.5 rounded border border-purple-500/60 shadow">
                       {t('casino.highlow.stage2', { defaultValue: '수위 2' })}
                     </span>
                   ) : (
-                    <span className="text-[9px] font-mono font-bold text-emerald-300 bg-emerald-950/90 px-2 py-0.5 rounded-full border border-emerald-500/60 shadow">
+                    <span className="text-[9px] font-bold text-emerald-300 bg-emerald-950/90 backdrop-blur-sm px-2 py-0.5 rounded border border-emerald-500/60 shadow">
                       {t('casino.highlow.stage1', { defaultValue: '수위 1' })}
                     </span>
                   )}
                 </div>
 
-                <div className="absolute inset-x-0 bottom-0 p-2 bg-emerald-950/85 backdrop-blur-sm border-t border-amber-400/40 flex items-center justify-between font-mono">
+                {/* CCTV Bottom Info & Signal Bar */}
+                <div className="absolute inset-x-0 bottom-0 p-2.5 bg-slate-950/95 backdrop-blur-md border-t border-emerald-500/40 flex items-center justify-between font-mono z-20">
                   <div>
-                    <h5 className="text-[11px] font-black text-slate-100">{currentConfig.dealerName}</h5>
+                    <h5 className="text-[11px] font-black text-slate-100 flex items-center gap-1">
+                      <span className="text-emerald-400">DEALER:</span> {currentConfig.dealerName}
+                    </h5>
                     <span className="text-[9px] text-amber-400 font-bold">{currentConfig.dealerTitle}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[9px] text-emerald-400 block font-bold">SIGNAL 100%</span>
+                    <span className="text-[8px] text-slate-400 block">30 FPS · HD</span>
                   </div>
                 </div>
               </div>
