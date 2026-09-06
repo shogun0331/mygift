@@ -91,7 +91,6 @@ export function CasinoSlotMachine({
 
   // 딜러 대사 & 음성 재생 상태
   const [dealerDialoguePlay, setDealerDialoguePlay] = useState<DealerDialoguePlay | null>(null)
-  const [showDefeatModal, setShowDefeatModal] = useState(false)
 
   // 딜러 대사 비중복 셔플 덱(Bag System) 관리 ref
   const dialoguePoolsRef = useRef<Record<string, number[]>>({
@@ -339,13 +338,17 @@ export function CasinoSlotMachine({
         setFreeSpinsLeft((prev) => prev + result.freeSpinsAwarded)
       }
 
-      // 마지막 3회 기회가 모두 끝나고 세션 총 당첨금이 0원이면 패배 팝업 및 패배 대본/음성 바로 재생
+      // 추가 기회(3회 도전 + 프리스핀)가 모두 소진되면 딜러 패배 대사 & 음성만 즉시 재생.
+      // 스캐너(스캐터 🎰 3개) 당첨 시 프리스핀 추가 기회가 생성되므로 isGameOver가 false로 유지되어 패배를 건너뜀.
       const isGameOver = nextSpinsLeft <= 0 && nextFreeSpinsLeft <= 0
-      if (isGameOver && updatedTotalWon === 0) {
+      if (isGameOver) {
         const defeatBonus = Math.max(10, Math.round(baseReward * 0.1))
-        onUpdateAssets(userAssetsRef.current + defeatBonus)
+        // 위로금(누적 참여 10%)은 세션 당첨금이 0원인 순수 패배일 때만 지급
+        if (updatedTotalWon === 0) {
+          onUpdateAssets(userAssetsRef.current + defeatBonus)
+        }
 
-        setShowDefeatModal(true)
+        // 패배 팝업 없이 딜러 패배 대사 & 음성만 즉시 재생
         const defeatIdx = getNextDialogueIndex('loss')
         const defeatDealerMedia = getActiveDealerMedia(dealerConfig, (turnForThisSpin - 1) * 3)
         setDealerDialoguePlay({
@@ -358,17 +361,6 @@ export function CasinoSlotMachine({
         })
       }
     }, 1900)
-  }
-
-  // 게임 재도전 (스핀 및 세션 당첨금 리셋)
-  const handleResetGame = () => {
-    setSpinsLeft(3)
-    setFreeSpinsLeft(0)
-    setSessionTotalWon(0)
-    setCurrentTurn(1)
-    setShowDefeatModal(false)
-    setDealerDialoguePlay(null)
-    setLastResult(null)
   }
 
   // 수동 스톱 버튼 액션
@@ -842,45 +834,7 @@ export function CasinoSlotMachine({
         </div>
       </div>
 
-      {/* FLOATING OVERLAY MODAL FOR DEFEAT (마지막 슬롯 3회 도전 시 당첨금 0원이면 패배 팝업 출력) */}
-      {showDefeatModal && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-pop-in select-none">
-          <div className="w-full max-w-sm p-6 rounded-3xl bg-slate-950/95 border-2 border-rose-600 shadow-[0_0_60px_rgba(225,29,72,0.6)] flex flex-col items-center space-y-4 font-sans text-center shadow-2xl relative overflow-hidden">
-            <div className="flex flex-col items-center gap-1.5">
-              <span className="px-4 py-1 rounded-full text-xs font-black uppercase shadow-lg flex items-center gap-1.5 bg-rose-950 border border-rose-500 text-rose-300 shadow-rose-950/80">
-                <span>💀</span>
-                <span>패배</span>
-              </span>
-
-              <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.8)] mt-1">
-                +${Math.max(10, Math.round(baseReward * 0.1)).toLocaleString()}
-              </div>
-            </div>
-
-            <div className="w-full p-3.5 rounded-2xl bg-rose-950/70 border border-rose-500/50 text-xs text-rose-200 text-center font-medium leading-relaxed">
-              💀 패배! 3회 슬롯 도전 중 당첨 라인이 발생하지 않았습니다. (누적 참여 10% 위로금 지급)
-            </div>
-
-            <div className="flex items-center gap-2.5 w-full pt-1">
-              <button
-                onClick={handleResetGame}
-                className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:brightness-110 shadow-[0_0_20px_rgba(245,158,11,0.5)] border border-yellow-200/60 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
-              >
-                <span>🔄</span>
-                <span>다시 도전</span>
-              </button>
-
-              <button
-                onClick={onClose}
-                className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:brightness-110 border border-rose-500/80 shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
-              >
-                <span>✕</span>
-                <span>나가기</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* FLOATING DEFEAT MODAL REMOVED — 기회 소진 시 패배 팝업 없이 딜러 패배 대사 & 음성만 재생 */}
 
       {/* PAYTABLE MODAL */}
       {showPaytable && (
