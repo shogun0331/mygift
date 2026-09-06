@@ -1,6 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from '../locales/i18n'
-import { useGameBgm } from '../game/bgm'
+import { getBgmVolumePercent, setBgmVolumePercent, useGameBgm } from '../game/bgm'
+import { getSeVolumePercent, setSeVolumePercent } from '../game/uiSfx'
+import { getDisplayMode, setDisplayMode, subscribeDisplayMode, type DisplayMode } from '../game/displayMode'
 import { listSaveMetas } from '../game/saveService'
 
 type MenuId =
@@ -47,10 +49,19 @@ type MainMenuProps = {
 }
 
 export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps) {
-  const { t } = useTranslation()
+  const { t, locale, setLocale } = useTranslation()
   const saves = useMemo(() => listSaveMetas(), [])
   const latestSave = saves.length > 0 ? saves[0] : null
   const [active, setActive] = useState<MenuId>(latestSave ? 'continue' : 'new')
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [bgmVolume, setBgmVolume] = useState(() => getBgmVolumePercent())
+  const [seVolume, setSeVolume] = useState(() => getSeVolumePercent())
+  const [displayModeState, setDisplayModeState] = useState<DisplayMode>(() => getDisplayMode())
+
+  useEffect(() => {
+    return subscribeDisplayMode((m) => setDisplayModeState(m))
+  }, [])
+
   const showEditor = import.meta.env.DEV
   useGameBgm('menu')
 
@@ -66,6 +77,10 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
     }
     if (id === 'load') {
       onLoadGame()
+      return
+    }
+    if (id === 'settings') {
+      setIsSettingsOpen(true)
       return
     }
     if (id === 'edit') {
@@ -237,6 +252,148 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
           </span>
         </div>
       </footer>
+
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="neon-glow-card relative w-full max-w-lg rounded-2xl bg-slate-900/95 border border-indigo-500/30 p-6 shadow-2xl space-y-6">
+            <div className="flex items-center justify-between border-b border-indigo-500/20 pb-4">
+              <h2 className="text-lg font-bold text-slate-100 tracking-wider flex items-center gap-2">
+                ⚙️ {t('settings.title')}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setIsSettingsOpen(false)}
+                className="text-slate-400 hover:text-white text-lg font-bold w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-800 transition-all"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Display Mode */}
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold text-slate-400 tracking-wider">
+                📺 {t('settings.displayMode')}
+              </label>
+              <p className="text-[10px] text-slate-500">
+                {t('settings.displayModeDesc')}
+              </p>
+              <div className="grid grid-cols-2 gap-3 mt-1">
+                <button
+                  type="button"
+                  onClick={() => setDisplayMode('fullscreen')}
+                  className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold border transition-all ${
+                    displayModeState === 'fullscreen'
+                      ? 'border-indigo-400 bg-indigo-600/30 text-indigo-100 shadow-[0_0_12px_rgba(99,102,241,0.3)]'
+                      : 'border-indigo-500/20 bg-slate-950 text-slate-400 hover:border-indigo-500/40 hover:text-slate-200'
+                  }`}
+                >
+                  🖥️ {t('settings.fullscreen')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDisplayMode('borderless')}
+                  className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold border transition-all ${
+                    displayModeState === 'borderless'
+                      ? 'border-indigo-400 bg-indigo-600/30 text-indigo-100 shadow-[0_0_12px_rgba(99,102,241,0.3)]'
+                      : 'border-indigo-500/20 bg-slate-950 text-slate-400 hover:border-indigo-500/40 hover:text-slate-200'
+                  }`}
+                >
+                  🔲 {t('settings.borderless')}
+                </button>
+              </div>
+            </div>
+
+            {/* Language */}
+            <div className="flex flex-col gap-2 border-t border-white/5 pt-4">
+              <label className="text-xs font-bold text-slate-400 tracking-wider">
+                🌐 {t('settings.language')}
+              </label>
+              <p className="text-[10px] text-slate-500">
+                {t('settings.languageDesc')}
+              </p>
+              <div className="relative mt-1">
+                <select
+                  value={locale}
+                  onChange={(e) => setLocale(e.target.value as any)}
+                  className="w-full bg-slate-950 border border-indigo-500/30 rounded-xl px-4 py-3 text-xs text-slate-200 font-bold focus:outline-none focus:border-pink-500/60 appearance-none cursor-pointer transition-all"
+                >
+                  <option value="KO">한국어 (KO)</option>
+                  <option value="EN">English (EN)</option>
+                  <option value="JA">日本語 (JA)</option>
+                  <option value="ZH-CN">简体中文 (ZH-CN)</option>
+                  <option value="RU">Русский (RU)</option>
+                  <option value="ES">Español (ES)</option>
+                  <option value="DE">Deutsch (DE)</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-indigo-400">
+                  <svg className="fill-current h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Audio */}
+            <div className="border-t border-white/5 pt-4 space-y-4">
+              <h3 className="text-xs font-bold text-slate-400 tracking-wider">
+                🔊 {t('settings.audio')}
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] text-slate-500 font-semibold">{t('settings.bgm')}</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={bgmVolume}
+                    onInput={(e) => {
+                      const next = Number(e.currentTarget.value)
+                      setBgmVolume(next)
+                      setBgmVolumePercent(next)
+                    }}
+                    onChange={(e) => {
+                      const next = Number(e.currentTarget.value)
+                      setBgmVolume(next)
+                      setBgmVolumePercent(next)
+                    }}
+                    className="accent-pink-500 bg-slate-950 border border-indigo-500/20 h-1.5 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] text-slate-500 font-semibold">{t('settings.se')}</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={seVolume}
+                    onInput={(e) => {
+                      const next = Number(e.currentTarget.value)
+                      setSeVolume(next)
+                      setSeVolumePercent(next)
+                    }}
+                    onChange={(e) => {
+                      const next = Number(e.currentTarget.value)
+                      setSeVolume(next)
+                      setSeVolumePercent(next)
+                    }}
+                    className="accent-pink-500 bg-slate-950 border border-indigo-500/20 h-1.5 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-4 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsSettingsOpen(false)}
+                className="game-btn px-6 py-2.5 rounded-xl font-bold text-xs border border-indigo-400/40 bg-indigo-600/20 text-slate-100 hover:bg-indigo-600/40 transition-all"
+              >
+                {t('settings.back')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

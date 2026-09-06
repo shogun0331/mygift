@@ -170,7 +170,11 @@
   },
   "settings": {
     "title": "SETTINGS",
-    "language": "언어 설정",
+    "displayMode": "Anzeigemodus",
+    "displayModeDesc": "Wählen Sie Vollbildmodus oder rahmenlosen Fenstermodus.",
+    "fullscreen": "Vollbildmodus",
+    "borderless": "Rahmenloser Fenstermodus",
+    "language": "Sprache",
     "languageDesc": "인게임 및 에디터 화면의 언어를 선택합니다.",
     "audio": "오디오 설정",
     "bgm": "배경음악 볼륨",

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
 import { FpsCounter } from '../components/FpsCounter'
 import { getBgmVolumePercent, setBgmVolumePercent, useGameBgm } from '../game/bgm'
+import { getDisplayMode, setDisplayMode, subscribeDisplayMode, type DisplayMode } from '../game/displayMode'
 import { tierViewerCap, type StationTierId } from '../game/stationGradeConfig'
 import { getSeVolumePercent, playSfx, setSeVolumePercent } from '../game/uiSfx'
 import {
@@ -753,6 +754,11 @@ export function InGame({
   const [tab, setTab] = useState<GameTab>('dashboard')
   const [bgmVolume, setBgmVolume] = useState(() => getBgmVolumePercent())
   const [seVolume, setSeVolume] = useState(() => getSeVolumePercent())
+  const [displayModeState, setDisplayModeState] = useState<DisplayMode>(() => getDisplayMode())
+
+  useEffect(() => {
+    return subscribeDisplayMode((m) => setDisplayModeState(m))
+  }, [])
   const [scheduleStudioMode, setScheduleStudioMode] = useState<'creator' | 'staff' | undefined>(undefined)
   const [scheduleSelectedStaffId, setScheduleSelectedStaffId] = useState<string | null>(null)
 
@@ -4580,7 +4586,40 @@ export function InGame({
             <div className="space-y-6">
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-slate-400 tracking-wider">
-                  {t('settings.language')}
+                  📺 {t('settings.displayMode')}
+                </label>
+                <p className="text-[10px] text-slate-600 mb-1">
+                  {t('settings.displayModeDesc')}
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setDisplayMode('fullscreen')}
+                    className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold border transition-all ${
+                      displayModeState === 'fullscreen'
+                        ? 'border-indigo-400 bg-indigo-600/30 text-indigo-100 shadow-[0_0_12px_rgba(99,102,241,0.3)]'
+                        : 'border-indigo-500/20 bg-slate-900 text-slate-400 hover:border-indigo-500/40 hover:text-slate-200'
+                    }`}
+                  >
+                    🖥️ {t('settings.fullscreen')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDisplayMode('borderless')}
+                    className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold border transition-all ${
+                      displayModeState === 'borderless'
+                        ? 'border-indigo-400 bg-indigo-600/30 text-indigo-100 shadow-[0_0_12px_rgba(99,102,241,0.3)]'
+                        : 'border-indigo-500/20 bg-slate-900 text-slate-400 hover:border-indigo-500/40 hover:text-slate-200'
+                    }`}
+                  >
+                    🔲 {t('settings.borderless')}
+                  </button>
+                </div>
+              </div>
+
+              <div className="border-t border-white/5 pt-5 flex flex-col gap-2">
+                <label className="text-xs font-bold text-slate-400 tracking-wider">
+                  🌐 {t('settings.language')}
                 </label>
                 <p className="text-[10px] text-slate-600 mb-1">
                   {t('settings.languageDesc')}

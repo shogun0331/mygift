@@ -170,6 +170,10 @@
   },
   "settings": {
     "title": "SETTINGS",
+    "displayMode": "显示模式",
+    "displayModeDesc": "选择全屏模式或无边框窗口模式。",
+    "fullscreen": "全屏模式",
+    "borderless": "无边框窗口模式",
     "language": "语言设置",
     "languageDesc": "选择游戏内及编辑器的显示语言。",
     "audio": "音频设置",

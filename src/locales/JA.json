@@ -164,6 +164,10 @@
   },
   "settings": {
     "title": "SETTINGS",
+    "displayMode": "画面モード",
+    "displayModeDesc": "フルスクリーンモードまたはボーダレスウィンドウモードを選択します。",
+    "fullscreen": "フルスクリーン",
+    "borderless": "ボーダレスウィンドウ",
     "language": "言語設定",
     "languageDesc": "インゲームおよびエディタの言語を選択します。",
     "audio": "オーディオ設定",

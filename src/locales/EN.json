@@ -180,6 +180,10 @@
   },
   "settings": {
     "title": "SETTINGS",
+    "displayMode": "Display Mode",
+    "displayModeDesc": "Select Fullscreen or Borderless Windowed mode.",
+    "fullscreen": "Fullscreen",
+    "borderless": "Borderless Windowed",
     "language": "Language Settings",
     "languageDesc": "Select the language for the in-game and editor UI.",
     "audio": "Audio Settings",
