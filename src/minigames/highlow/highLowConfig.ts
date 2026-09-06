@@ -57,6 +57,17 @@ export interface ItemDropRates {
   staff_hire: number // 0 ~ 100 (%)
 }
 
+export interface DealerMediaSlot {
+  url: string
+  type: 'image' | 'video'
+}
+
+export interface DealerMediaStages {
+  tier1?: DealerMediaSlot // 수위 1 (기본 / 0~2연승)
+  tier2?: DealerMediaSlot // 수위 2 (3연승 달성)
+  tier3?: DealerMediaSlot // 수위 3 (6연승 이상 달성)
+}
+
 export interface HighLowRoomConfig {
   id: HighLowRoomId
   name: string
@@ -67,12 +78,36 @@ export interface HighLowRoomConfig {
   dealerTitle: string
   dealerMediaUrl: string
   dealerMediaType: 'image' | 'video'
+  /** 3연승마다 단계별로 해금되는 3단계 수위 딜러 미디어 */
+  dealerMediaStages?: DealerMediaStages
   badgeColor: string
   borderColor: string
   houseEdge: number // default 0.03 (3%)
   itemDropRate?: number // 하위 호환용 (단일)
   itemDropRates: ItemDropRates // 개별 아이템 등장 확률 (%)
   maxComboLimit: number // 최대 콤보 제한 (1 ~ 10회)
+}
+
+export function getActiveDealerMedia(
+  config: HighLowRoomConfig | undefined | null,
+  consecutiveWins: number,
+): DealerMediaSlot | null {
+  if (!config) return null
+  const stages = config.dealerMediaStages
+
+  if (consecutiveWins >= 6 && stages?.tier3?.url) {
+    return stages.tier3
+  }
+  if (consecutiveWins >= 3 && stages?.tier2?.url) {
+    return stages.tier2
+  }
+  if (stages?.tier1?.url) {
+    return stages.tier1
+  }
+  if (config.dealerMediaUrl) {
+    return { url: config.dealerMediaUrl, type: config.dealerMediaType }
+  }
+  return null
 }
 
 export type HighLowConfigMap = Record<HighLowRoomId, HighLowRoomConfig>

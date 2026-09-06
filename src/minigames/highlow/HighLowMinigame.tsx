@@ -12,6 +12,7 @@ import {
   calculatePayout,
   createDeck,
   rollRewardItem,
+  getActiveDealerMedia,
 } from './highLowConfig'
 import { useTranslation } from '../../locales/i18n'
 
@@ -685,6 +686,9 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
   // 통계
   const [stats, setStats] = useState({ wins: 0, losses: 0, draws: 0 })
+  const [consecutiveWins, setConsecutiveWins] = useState(0)
+
+  const activeDealerMedia = getActiveDealerMedia(currentConfig, consecutiveWins)
 
   // 게임 로그
   const [logs, setLogs] = useState<LogEntry[]>([])
@@ -936,6 +940,16 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         onUpdateChips(selectedRoomId, updatedChips)
         setStats((s) => ({ ...s, wins: s.wins + 1 }))
 
+        setConsecutiveWins((prev) => {
+          const nextWins = prev + 1
+          if (nextWins === 3) {
+            addLog(`🔥 3연승 달성! 딜러 수위 2 미디어가 해금됩니다!`, 'win')
+          } else if (nextWins === 6) {
+            addLog(`🔥 6연승 달성! 딜러 수위 3 미디어가 해금됩니다!`, 'win')
+          }
+          return nextWins
+        })
+
         if (currentRewardItem) {
           updateInventory((inv) => {
             if (currentRewardItem.type === 'staff_hire' && inv.some((item) => item.type === 'staff_hire')) {
@@ -962,6 +976,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           setGameResult('LOSS')
           setRewardAmount(0)
           setStats((s) => ({ ...s, losses: s.losses + 1 }))
+          setConsecutiveWins(0)
           addLog(`💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 자산 차감 없음`, 'loss')
         }
       }
@@ -1167,10 +1182,11 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
               {/* Live Dealer CCTV Media Box (세로 3:4 럭셔리 대형 스탠딩 카지노 카드 프레임!) */}
               <div className="relative w-full aspect-[3/4] flex-1 min-h-[220px] max-h-[360px] rounded-2xl overflow-hidden border-2 border-amber-400/80 bg-emerald-950/60 shadow-[0_0_30px_rgba(245,158,11,0.4)] group">
-                {currentConfig.dealerMediaUrl ? (
-                  currentConfig.dealerMediaType === 'video' ? (
+                {activeDealerMedia?.url ? (
+                  activeDealerMedia.type === 'video' ? (
                     <video
-                      src={currentConfig.dealerMediaUrl}
+                      key={activeDealerMedia.url}
+                      src={activeDealerMedia.url}
                       autoPlay
                       loop
                       muted
@@ -1179,7 +1195,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     />
                   ) : (
                     <img
-                      src={currentConfig.dealerMediaUrl}
+                      key={activeDealerMedia.url}
+                      src={activeDealerMedia.url}
                       alt={currentConfig.dealerName}
                       className="w-full h-full object-cover"
                     />
@@ -1197,6 +1214,26 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     </span>
                   </div>
                 )}
+
+                {/* Stage / Consecutive Wins Badge */}
+                <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
+                  <span className="text-[9px] font-mono font-bold text-amber-300 bg-slate-950/80 px-2 py-0.5 rounded-full border border-amber-400/50 shadow">
+                    🔥 {consecutiveWins}연승
+                  </span>
+                  {consecutiveWins >= 6 ? (
+                    <span className="text-[9px] font-mono font-bold text-rose-300 bg-rose-950/90 px-2 py-0.5 rounded-full border border-rose-500/60 shadow">
+                      수위 3
+                    </span>
+                  ) : consecutiveWins >= 3 ? (
+                    <span className="text-[9px] font-mono font-bold text-purple-300 bg-purple-950/90 px-2 py-0.5 rounded-full border border-purple-500/60 shadow">
+                      수위 2
+                    </span>
+                  ) : (
+                    <span className="text-[9px] font-mono font-bold text-emerald-300 bg-emerald-950/90 px-2 py-0.5 rounded-full border border-emerald-500/60 shadow">
+                      수위 1
+                    </span>
+                  )}
+                </div>
 
                 <div className="absolute inset-x-0 bottom-0 p-2 bg-emerald-950/85 backdrop-blur-sm border-t border-amber-400/40 flex items-center justify-between font-mono">
                   <div>

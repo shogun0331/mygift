@@ -249,60 +249,231 @@ export function HighLowEditorPanel({
 
       {/* Dealer Media & Round Balance Settings */}
       <div className="space-y-6">
-          {/* SECTION 1: 딜러 미디어 슬롯 */}
-          <div className="p-6 rounded-3xl bg-slate-900/80 border-2 border-pink-500/30 shadow-xl space-y-4">
-            <div className="flex items-center justify-between border-b border-pink-500/20 pb-3">
-              <h3 className="text-base font-black text-pink-400 flex items-center gap-2">
-                📸 [{currentRoomConfig.name}] 딜러 미디어 슬롯
-              </h3>
+          {/* SECTION 1: 딜러 3단계 수위 미디어 슬롯 (연승에 따른 수위 변신) */}
+          <div className="p-6 rounded-3xl bg-slate-900/80 border-2 border-pink-500/30 shadow-xl space-y-5">
+            <div className="flex flex-wrap items-center justify-between border-b border-pink-500/20 pb-3 gap-2">
+              <div>
+                <h3 className="text-base font-black text-pink-400 flex items-center gap-2">
+                  📸 딜러 연승 미디어 3단계 설정 (수위 1 ~ 수위 3)
+                </h3>
+                <p className="text-xs text-slate-400 font-mono mt-1">
+                  플레이어가 3연승할 때마다 딜러 미디어가 수위1 ➔ 수위2(3연승) ➔ 수위3(6연승)으로 변신합니다.
+                </p>
+              </div>
               <span className="text-xs font-mono text-cyan-300">
-                Drag & Drop 또는 파일 선택 지원
+                각 수위별 이미지/동영상 (MP4, WEBM) 등록 가능
               </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6 p-5 rounded-2xl bg-slate-950/90 border border-pink-500/20">
-              {/* Dealer Slot Avatar Display */}
-              <HighLowDealerSlot
-                dealerName={currentRoomConfig.dealerName}
-                dealerTitle={currentRoomConfig.dealerTitle}
-                mediaUrl={currentRoomConfig.dealerMediaUrl}
-                mediaType={currentRoomConfig.dealerMediaType}
-                editable={true}
-                onMediaChange={(url, type) => {
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {/* 수위 1 (기본 / 0~2연승) */}
+              {(() => {
+                const mediaSlot = currentRoomConfig.dealerMediaStages?.tier1 || {
+                  url: currentRoomConfig.dealerMediaUrl || '',
+                  type: currentRoomConfig.dealerMediaType || 'image',
+                }
+
+                const handleUpdateStage = (url: string, type: 'image' | 'video') => {
+                  const updatedStages = {
+                    ...currentRoomConfig.dealerMediaStages,
+                    tier1: { url, type },
+                  }
+                  handleUpdateConfigField(activeRoomId, 'dealerMediaStages', updatedStages)
                   handleUpdateConfigField(activeRoomId, 'dealerMediaUrl', url)
                   handleUpdateConfigField(activeRoomId, 'dealerMediaType', type)
-                }}
-                statusMessage="미디어를 여기에 클릭/드롭하세요!"
-              />
+                }
 
-              {/* Upload Action Guide & Buttons */}
-              <div className="flex-1 flex flex-col justify-between space-y-3 text-xs font-mono">
-                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1 text-slate-300">
-                  <p className="font-bold text-pink-300">📁 딜러 미디어 업로드 가이드:</p>
-                  <p>• 지원 포맷: PNG, JPG, WEBP, GIF (이미지) / MP4, WEBM (동영상)</p>
-                  <p>• 딜러 원형 아바타 슬롯에 자동으로 맞추어 렌더링됩니다.</p>
-                </div>
+                return (
+                  <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-700 flex flex-col items-center space-y-3 relative group">
+                    <div className="w-full flex items-center justify-between border-b border-slate-800 pb-2">
+                      <span className="text-xs font-black text-cyan-300">
+                        🔞 수위 1 (기본)
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        0 ~ 2연승 시
+                      </span>
+                    </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="px-4 py-2.5 rounded-xl font-bold text-xs bg-pink-600 hover:bg-pink-500 text-white shadow-md shadow-pink-600/30 transition-all flex items-center gap-2"
-                  >
-                    📁 이미지 / 동영상 파일 선택
-                  </button>
+                    <HighLowDealerSlot
+                      dealerName={currentRoomConfig.dealerName}
+                      dealerTitle="수위 1 (기본 딜러)"
+                      mediaUrl={mediaSlot.url}
+                      mediaType={mediaSlot.type}
+                      editable={true}
+                      onMediaChange={handleUpdateStage}
+                      statusMessage="수위 1 미디어 등록"
+                    />
 
-                  {currentRoomConfig.dealerMediaUrl && (
-                    <button
-                      onClick={() => {
-                        handleUpdateConfigField(activeRoomId, 'dealerMediaUrl', '')
-                      }}
-                      className="px-3.5 py-2.5 rounded-xl bg-rose-950 text-rose-300 border border-rose-500/40 hover:bg-rose-900 transition-all text-xs font-semibold"
-                    >
-                      🗑️ 미디어 삭제 (기본 아바타 사용)
-                    </button>
-                  )}
-                </div>
-              </div>
+                    <div className="w-full flex flex-col gap-2 pt-2 border-t border-slate-800">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const input = document.createElement('input')
+                          input.type = 'file'
+                          input.accept = 'image/*,video/*'
+                          input.onchange = (e: any) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              const isVideo = file.type.startsWith('video/')
+                              const url = URL.createObjectURL(file)
+                              handleUpdateStage(url, isVideo ? 'video' : 'image')
+                            }
+                          }
+                          input.click()
+                        }}
+                        className="w-full py-2 rounded-xl font-bold text-xs bg-cyan-600 hover:bg-cyan-500 text-white shadow transition-all cursor-pointer"
+                      >
+                        📁 수위 1 파일 선택
+                      </button>
+                      {mediaSlot.url && (
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateStage('', 'image')}
+                          className="w-full py-1.5 rounded-xl bg-rose-950 text-rose-300 border border-rose-500/40 text-[11px] font-semibold cursor-pointer"
+                        >
+                          🗑️ 삭제
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()}
+
+              {/* 수위 2 (3연승 달성 시) */}
+              {(() => {
+                const mediaSlot = currentRoomConfig.dealerMediaStages?.tier2 || { url: '', type: 'image' }
+
+                const handleUpdateStage = (url: string, type: 'image' | 'video') => {
+                  const updatedStages = {
+                    ...currentRoomConfig.dealerMediaStages,
+                    tier2: { url, type },
+                  }
+                  handleUpdateConfigField(activeRoomId, 'dealerMediaStages', updatedStages)
+                }
+
+                return (
+                  <div className="p-4 rounded-2xl bg-slate-950/90 border border-amber-500/50 flex flex-col items-center space-y-3 relative group">
+                    <div className="w-full flex items-center justify-between border-b border-amber-500/30 pb-2">
+                      <span className="text-xs font-black text-amber-300">
+                        🔥 수위 2 (3연승)
+                      </span>
+                      <span className="text-[10px] font-mono text-amber-400 font-bold">
+                        3 ~ 5연승 달성 시
+                      </span>
+                    </div>
+
+                    <HighLowDealerSlot
+                      dealerName={currentRoomConfig.dealerName}
+                      dealerTitle="수위 2 (3연승 변신)"
+                      mediaUrl={mediaSlot.url}
+                      mediaType={mediaSlot.type}
+                      editable={true}
+                      onMediaChange={handleUpdateStage}
+                      statusMessage="수위 2 미디어 등록"
+                    />
+
+                    <div className="w-full flex flex-col gap-2 pt-2 border-t border-slate-800">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const input = document.createElement('input')
+                          input.type = 'file'
+                          input.accept = 'image/*,video/*'
+                          input.onchange = (e: any) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              const isVideo = file.type.startsWith('video/')
+                              const url = URL.createObjectURL(file)
+                              handleUpdateStage(url, isVideo ? 'video' : 'image')
+                            }
+                          }
+                          input.click()
+                        }}
+                        className="w-full py-2 rounded-xl font-bold text-xs bg-amber-600 hover:bg-amber-500 text-slate-950 shadow transition-all cursor-pointer"
+                      >
+                        📁 수위 2 파일 선택
+                      </button>
+                      {mediaSlot.url && (
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateStage('', 'image')}
+                          className="w-full py-1.5 rounded-xl bg-rose-950 text-rose-300 border border-rose-500/40 text-[11px] font-semibold cursor-pointer"
+                        >
+                          🗑️ 삭제
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()}
+
+              {/* 수위 3 (6연승 이상 달성 시) */}
+              {(() => {
+                const mediaSlot = currentRoomConfig.dealerMediaStages?.tier3 || { url: '', type: 'image' }
+
+                const handleUpdateStage = (url: string, type: 'image' | 'video') => {
+                  const updatedStages = {
+                    ...currentRoomConfig.dealerMediaStages,
+                    tier3: { url, type },
+                  }
+                  handleUpdateConfigField(activeRoomId, 'dealerMediaStages', updatedStages)
+                }
+
+                return (
+                  <div className="p-4 rounded-2xl bg-slate-950/90 border border-pink-500/60 flex flex-col items-center space-y-3 relative group">
+                    <div className="w-full flex items-center justify-between border-b border-pink-500/30 pb-2">
+                      <span className="text-xs font-black text-pink-300">
+                        💥 수위 3 (6연승 이상)
+                      </span>
+                      <span className="text-[10px] font-mono text-pink-400 font-bold">
+                        6연승+ 최고수위
+                      </span>
+                    </div>
+
+                    <HighLowDealerSlot
+                      dealerName={currentRoomConfig.dealerName}
+                      dealerTitle="수위 3 (최고 수위)"
+                      mediaUrl={mediaSlot.url}
+                      mediaType={mediaSlot.type}
+                      editable={true}
+                      onMediaChange={handleUpdateStage}
+                      statusMessage="수위 3 미디어 등록"
+                    />
+
+                    <div className="w-full flex flex-col gap-2 pt-2 border-t border-slate-800">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const input = document.createElement('input')
+                          input.type = 'file'
+                          input.accept = 'image/*,video/*'
+                          input.onchange = (e: any) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              const isVideo = file.type.startsWith('video/')
+                              const url = URL.createObjectURL(file)
+                              handleUpdateStage(url, isVideo ? 'video' : 'image')
+                            }
+                          }
+                          input.click()
+                        }}
+                        className="w-full py-2 rounded-xl font-bold text-xs bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white shadow transition-all cursor-pointer"
+                      >
+                        📁 수위 3 파일 선택
+                      </button>
+                      {mediaSlot.url && (
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateStage('', 'image')}
+                          className="w-full py-1.5 rounded-xl bg-rose-950 text-rose-300 border border-rose-500/40 text-[11px] font-semibold cursor-pointer"
+                        >
+                          🗑️ 삭제
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
           </div>
 
