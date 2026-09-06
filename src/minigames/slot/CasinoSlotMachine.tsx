@@ -429,7 +429,7 @@ export function CasinoSlotMachine({
 
       {/* 2. FULL-WIDTH INTEGRATED EMERALD FELT CASINO STAGE (3-COLUMN RESPONSIVE LAYOUT) */}
       <div className="relative z-10 flex-1 p-3 sm:p-4 rounded-2xl border-2 border-amber-400/40 bg-gradient-to-b from-slate-950 via-slate-900/90 to-slate-950 backdrop-blur-md shadow-[inset_0_0_90px_rgba(245,158,11,0.2),0_0_50px_rgba(245,158,11,0.15)] my-auto py-2 flex flex-col min-h-0 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr_360px] gap-3 sm:gap-5 items-stretch flex-1 min-h-0 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4 sm:gap-6 items-center flex-1 min-h-0 overflow-hidden">
           
           {/* LEFT COLUMN: Live Dealer Showcase (High-Tech CCTV Surveillance Feed) */}
           <div className="hidden lg:flex flex-col justify-between p-2 sm:p-3 font-mono text-xs overflow-hidden bg-transparent border-none shadow-none">
@@ -530,8 +530,8 @@ export function CasinoSlotMachine({
           </div>
 
           {/* MIDDLE COLUMN: Authentic Pachislot Cabinet & Reels */}
-          <div className="relative flex flex-col items-center justify-center w-full min-h-0 overflow-y-auto">
-            <div className={`pachislot-cabinet ${machineToneClass} flex flex-col relative w-full`}>
+          <div className="relative flex flex-col items-center justify-center w-full min-h-0 overflow-visible max-w-2xl mx-auto">
+            <div className={`pachislot-cabinet ${machineToneClass} flex flex-col relative w-full max-w-xl mx-auto`}>
               {/* COIN PARTICLES OVERLAY */}
               {coinParticles.length > 0 && (
                 <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
@@ -812,53 +812,12 @@ export function CasinoSlotMachine({
                       disabled={isSpinning || isOutOfSpins}
                       onClick={handleSpin}
                       className="w-9 h-9 rounded-full bg-gradient-to-tr from-red-700 via-red-500 to-yellow-300 border-2 border-yellow-200 shadow-[0_0_20px_rgba(239,68,68,0.9)] -translate-x-3 -translate-y-4 hover:scale-110 active:scale-95 transition-transform cursor-pointer"
-                      title={t('casino.spin').replace('{spins}', String(spinsLeft))}
                     />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* RIGHT COLUMN: Paytable & Stats Log */}
-          <div className="hidden lg:flex flex-col justify-between p-3 rounded-2xl bg-amber-950/30 border border-amber-400/30 backdrop-blur-md space-y-3 font-mono text-xs overflow-hidden">
-            <div className="space-y-2 border-b border-amber-400/30 pb-2">
-              <h4 className="text-xs font-black text-amber-300 uppercase tracking-widest flex items-center gap-1.5">
-                <span>📖</span>
-                <span>심볼 배율 정보</span>
-              </h4>
-              <div className="grid grid-cols-2 gap-1.5 text-[11px]">
-                {Object.values(SLOT_SYMBOLS).slice(0, 6).map((sym) => (
-                  <div
-                    key={sym.id}
-                    className="flex items-center justify-between px-2 py-1 rounded-lg bg-slate-950/80 border border-amber-400/20"
-                  >
-                    <span className="text-base">{sym.icon}</span>
-                    <span className="font-bold text-amber-300">{sym.multiplier}x</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex-1 space-y-2 overflow-y-auto">
-              <h4 className="text-xs font-black text-amber-300 uppercase tracking-widest">
-                🏆 슬롯 세션 총획득
-              </h4>
-              <div className="p-3 rounded-xl bg-slate-950/80 border border-amber-400/30 text-center space-y-1">
-                <span className="text-[10px] text-slate-400 block font-bold">SESSION TOTAL WIN</span>
-                <span className="text-xl font-black text-yellow-300 font-mono">
-                  +${sessionTotalWon.toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-2 border-t border-amber-400/30 text-center">
-              <span className="text-[10px] font-bold text-amber-400/80">
-                VIP CYBER SLOT MACHINE
-              </span>
-            </div>
-          </div>
-
         </div>
       </div>
 
