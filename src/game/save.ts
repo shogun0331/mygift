@@ -102,6 +102,7 @@ export type SaveMeta = {
   viewers: number
   /** 게임 내 현재 날짜 (YYYY.MM.DD) */
   date: string
+  stationGrade?: StationGrade
   topCharacter?: TopCharacterMeta | null
 }
 
@@ -258,6 +259,7 @@ export function saveMetaFrom(save: GameSave): SaveMeta {
     assets: save.assets,
     viewers: save.league?.viewers ?? 0,
     date: gameDateString(save.gameMonth ?? 0),
+    stationGrade: save.stationGrade,
     topCharacter: getTopCreatorMeta(save),
   }
 }

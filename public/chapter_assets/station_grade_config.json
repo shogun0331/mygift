@@ -455,8 +455,8 @@
         "judgeAttackMod": 1.3
       },
       "top": {
-        "targetSatisfaction": 220,
-        "recommendedGrade": "S",
+        "targetSatisfaction": 200,
+        "recommendedGrade": "A",
         "staminaCost": 30,
         "judgeAttackMod": 1.5
       }

@@ -815,10 +815,17 @@ export function InGame({
   const [showCasinoModal, setShowCasinoModal] = useState(boot?.showCasinoModal ?? false)
   const [activeCasinoRoomId, setActiveCasinoRoomId] = useState<HighLowRoomId | null>(null)
 
+  const getCasinoRequiredTurns = (grade: StationGrade): number => {
+    if (grade === 'top') return 1 // 일등기업: 항상 열림
+    if (grade === 'large') return 2 // 대기업: 2턴에 1번
+    return 3 // 중소기업, 중견기업: 3턴에 1번
+  }
+
   const isCasinoGradeUnlocked = useMemo(() => {
     return stationTierRank(stationGrade) >= stationTierRank('sme')
   }, [stationGrade])
-  const isCasinoAvailable = isCasinoGradeUnlocked && casinoTurnCount >= 3
+  const isCasinoAvailable =
+    isCasinoGradeUnlocked && (stationGrade === 'top' || casinoTurnCount >= getCasinoRequiredTurns(stationGrade))
 
   const highLowConfigs = useMemo(() => loadHighLowConfig(), [])
   const [settlementAssetsAfter, setSettlementAssetsAfter] = useState(0)
@@ -3136,7 +3143,7 @@ export function InGame({
     const nextMonthNumber = broadcastMonthNumberRef.current + 1
     broadcastMonthNumberRef.current = nextMonthNumber
     setBroadcastMonthNumber(nextMonthNumber)
-    setCasinoTurnCount((c) => Math.min(3, c + 1))
+    setCasinoTurnCount((c) => Math.min(getCasinoRequiredTurns(stationGradeRef.current), c + 1))
     if (stationAuditCooldownRef.current > 0) {
       const nextCooldown = Math.max(0, stationAuditCooldownRef.current - 1)
       stationAuditCooldownRef.current = nextCooldown
@@ -3356,19 +3363,21 @@ export function InGame({
   function checkProposalEvent(openScout: boolean): boolean {
     const isTopRank =
       leagueRef.current.currentRank === 1 ||
-      stationGradeRef.current === 'top' ||
-      companyTierOf(leagueRef.current.currentRank).id === 'top'
+      stationGradeRef.current === 'top'
 
     if (!isTopRank) return false
 
-    const allEligible = ownedCreatorsRef.current
+    // 데이트 1차, 2차, H이벤트까지 모두 완료(dateArcStep >= 3)한 크리에이터만 고백 가능
+    const allEligible = ownedCreatorsRef.current.filter((c) => (c.dateArcStep ?? 0) >= 3)
     if (allEligible.length === 0) return false
 
     let pendingCreators = allEligible.filter((c) => !c.proposalState)
 
     // 모두 거부(rejected)한 상태인 경우, 다음 사이클을 위해 상태를 리셋하고 이번 턴은 넘김
     if (pendingCreators.length === 0 && allEligible.every((c) => c.proposalState === 'rejected')) {
-      const resetOwned = ownedCreatorsRef.current.map((c) => ({ ...c, proposalState: null }))
+      const resetOwned = ownedCreatorsRef.current.map((c) =>
+        (c.dateArcStep ?? 0) >= 3 ? { ...c, proposalState: null } : c,
+      )
       ownedCreatorsRef.current = resetOwned
       onOwnedCreatorsChangeRef.current(resetOwned)
       flushAutoSave()
@@ -3419,13 +3428,11 @@ export function InGame({
     flushAutoSave()
     setProposalPlayCreator(null)
     const openScout = pendingScoutAfterRankRef.current
-    continueAfterMonthModals(openScout)
+    // 거부 시 한 턴에 다음 캐릭터가 연달아 고백하지 않도록 바로 다음 모달/소셜 큐로 진행
+    proceedNextAfterProposal(openScout)
   }
 
-  function continueAfterMonthModals(openScout: boolean) {
-    if (checkProposalEvent(openScout)) {
-      return
-    }
+  function proceedNextAfterProposal(openScout: boolean) {
     const next = pendingSocialQueueRef.current.shift() ?? null
     if (next) {
       pendingScoutAfterRankRef.current = openScout
@@ -3441,6 +3448,13 @@ export function InGame({
       return
     }
     releaseMonthEndLock(openScout)
+  }
+
+  function continueAfterMonthModals(openScout: boolean) {
+    if (checkProposalEvent(openScout)) {
+      return
+    }
+    proceedNextAfterProposal(openScout)
   }
 
   function patchOwnedCreator(creatorId: string, patch: (creator: OwnedCreator) => OwnedCreator) {
@@ -4971,7 +4985,7 @@ export function InGame({
                   </span>
                 ) : isCasino && !isCasinoAvailable ? (
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-slate-900 border border-amber-400/60 text-amber-400 rounded-full shadow">
-                    {t('casino.turnBadge', { count: Math.max(0, 3 - casinoTurnCount) })}
+                    {t('casino.turnBadge', { count: Math.max(0, getCasinoRequiredTurns(stationGrade) - casinoTurnCount) })}
                   </span>
                 ) : alert ? (
                   <RedDot label={alertLabel} />
@@ -5004,7 +5018,9 @@ export function InGame({
               }}
               onClose={() => {
                 setShowCasinoModal(false)
-                setCasinoTurnCount(0)
+                if (stationGradeRef.current !== 'top') {
+                  setCasinoTurnCount(0)
+                }
                 scheduleAutoSave()
               }}
             />
@@ -5044,7 +5060,9 @@ export function InGame({
               }}
               onClose={() => {
                 setActiveCasinoRoomId(null)
-                setCasinoTurnCount(0)
+                if (stationGradeRef.current !== 'top') {
+                  setCasinoTurnCount(0)
+                }
                 scheduleAutoSave()
               }}
               initialRoomId={activeCasinoRoomId}
