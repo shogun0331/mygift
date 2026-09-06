@@ -898,13 +898,14 @@
       "noAssetDeduction": "자산 차감 없음",
       "cashoutBtn": "100% 수령 & 나가기",
       "nextRoundBtn": "다음 라운드 도전",
-      "exitCashoutNotice": "지금 [나가기] 선택 시 누적 당첨금 100% (${amount}) 즉시 수령",
-      "nextRoundRiskNotice": "다음 라운드 패배 시 10% (${amount})만 보장 (90% 손실)",
+      "cashoutNoticeLine": "[나가기] $${amount} (100% 수령) | [다음 라운드] 패배 시 $${guaranteed} (10%) 보장",
+      "exitCashoutNotice": "지금 [나가기] 선택 시 누적 당첨금 100% ($${amount}) 즉시 수령",
+      "nextRoundRiskNotice": "다음 라운드 패배 시 10% ($${amount})만 보장 (90% 손실)",
       "cashoutOptionTitle": "100% 확정 수령",
       "nextRoundOptionTitle": "다음 라운드",
       "cashoutOptionDesc": "지금 나가면 전액 수령",
       "nextRoundOptionDesc": "패배 시 10%만 보장",
-      "lossPenaltyNotice": "💀 패배! 누적 당첨금의 90%가 차감되었습니다.",
+      "lossPenaltyNotice": "💀 패배! 90% 소멸 (10% 보장: +$${amount})",
       "items": {
         "peek_card": {
           "name": "카드 엿보기",
