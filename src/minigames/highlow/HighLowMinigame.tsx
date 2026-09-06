@@ -947,10 +947,11 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
       const currentBet = customAnte ?? currentConfig.ante
 
       if (outcome === 'WIN') {
-        const reward = Math.floor(currentBet * rawPayout)
-        setRewardAmount(reward)
-        setTotalWinnings((prev) => prev + reward)
-        const updatedChips = currentChips + reward
+        const grossReward = Math.floor(currentBet * rawPayout)
+        const netProfit = Math.max(0, grossReward - currentBet)
+        setRewardAmount(netProfit)
+        setTotalWinnings((prev) => prev + netProfit)
+        const updatedChips = currentChips + netProfit
         onUpdateChips(selectedRoomId, updatedChips)
         setStats((s) => ({ ...s, wins: s.wins + 1 }))
 
@@ -976,7 +977,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           })
         }
 
-        addLog(`🎉 승리! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> +$${reward.toLocaleString()} 획득!`, 'win')
+        addLog(`🎉 승리! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> +$${netProfit.toLocaleString()} (순수익) 획득!`, 'win')
       } else if (outcome === 'DRAW') {
         setRewardAmount(0)
         setStats((s) => ({ ...s, draws: s.draws + 1 }))
