@@ -393,3 +393,297 @@ export function playCoinCountUpTickSound(step = 0) {
   }
 }
 
+/** 카드 넘기기 / 드로우 효과음 (Swish / Flip Sound) */
+export function playCardFlipSound() {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.5
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+
+    // 노이즈 버스트 (카드 마찰음)
+    const bufferSize = ctx.sampleRate * 0.06
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+    const data = buffer.getChannelData(0)
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1
+    }
+
+    const noise = ctx.createBufferSource()
+    noise.buffer = buffer
+
+    const filter = ctx.createBiquadFilter()
+    filter.type = 'bandpass'
+    filter.frequency.setValueAtTime(1200, now)
+    filter.frequency.exponentialRampToValueAtTime(300, now + 0.06)
+    filter.Q.setValueAtTime(3, now)
+
+    const gain = ctx.createGain()
+    gain.gain.setValueAtTime(vol * 0.4, now)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06)
+
+    noise.connect(filter)
+    filter.connect(gain)
+    gain.connect(ctx.destination)
+
+    noise.start(now)
+    noise.stop(now + 0.06)
+
+    // 카드 착지 스냅 톤 (Snap tone)
+    const osc = ctx.createOscillator()
+    const snapGain = ctx.createGain()
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(450, now)
+    osc.frequency.exponentialRampToValueAtTime(120, now + 0.04)
+
+    snapGain.gain.setValueAtTime(vol * 0.3, now)
+    snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04)
+
+    osc.connect(snapGain)
+    snapGain.connect(ctx.destination)
+
+    osc.start(now)
+    osc.stop(now + 0.04)
+  } catch {
+    // ignore
+  }
+}
+
+/** 배팅 버튼 클릭 / 칩 베팅 사운드 (Chip Drop / Bet Snap Sound) */
+export function playBetClickSound() {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.6
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+
+    // 1. 칩 팅기는 맑은 피치 핑
+    const pingOsc = ctx.createOscillator()
+    const pingGain = ctx.createGain()
+    pingOsc.type = 'sine'
+    pingOsc.frequency.setValueAtTime(1800, now)
+    pingOsc.frequency.exponentialRampToValueAtTime(800, now + 0.05)
+
+    pingGain.gain.setValueAtTime(vol * 0.5, now)
+    pingGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05)
+
+    pingOsc.connect(pingGain)
+    pingGain.connect(ctx.destination)
+
+    pingOsc.start(now)
+    pingOsc.stop(now + 0.05)
+
+    // 2. 칩 묵직한 탁 소리 (Low Thud)
+    const thudOsc = ctx.createOscillator()
+    const thudGain = ctx.createGain()
+    thudOsc.type = 'triangle'
+    thudOsc.frequency.setValueAtTime(250, now)
+    thudOsc.frequency.exponentialRampToValueAtTime(60, now + 0.08)
+
+    thudGain.gain.setValueAtTime(vol * 0.6, now)
+    thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08)
+
+    thudOsc.connect(thudGain)
+    thudGain.connect(ctx.destination)
+
+    thudOsc.start(now)
+    thudOsc.stop(now + 0.08)
+  } catch {
+    // ignore
+  }
+}
+
+/** 하이로우 승리 사운드 (High-Low Win Fanfare Sound) */
+export function playHighLowWinSound(isBigWin = false) {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.75
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+
+    if (isBigWin) {
+      // 대형 3연승/6연승 팡파르 (C5 -> E5 -> G5 -> C6 -> E6 메가 아르페지오)
+      const notes = [
+        { freq: 523.25, start: 0, duration: 0.1 },
+        { freq: 659.25, start: 0.08, duration: 0.1 },
+        { freq: 783.99, start: 0.16, duration: 0.1 },
+        { freq: 1046.5, start: 0.24, duration: 0.15 },
+        { freq: 1318.51, start: 0.36, duration: 0.7 },
+        { freq: 1567.98, start: 0.36, duration: 0.7 },
+      ]
+
+      notes.forEach(({ freq, start, duration }) => {
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+
+        osc.type = 'triangle'
+        osc.frequency.setValueAtTime(freq, now + start)
+
+        gain.gain.setValueAtTime(0, now + start)
+        gain.gain.linearRampToValueAtTime(vol * 0.45, now + start + 0.01)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+
+        osc.start(now + start)
+        osc.stop(now + start + duration)
+      })
+    } else {
+      // 일반 승리 3화음 (G5 -> C6 -> E6)
+      const notes = [
+        { freq: 783.99, start: 0, duration: 0.12 },
+        { freq: 1046.5, start: 0.09, duration: 0.15 },
+        { freq: 1318.51, start: 0.18, duration: 0.45 },
+      ]
+
+      notes.forEach(({ freq, start, duration }) => {
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(freq, now + start)
+
+        gain.gain.setValueAtTime(0, now + start)
+        gain.gain.linearRampToValueAtTime(vol * 0.4, now + start + 0.01)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+
+        osc.start(now + start)
+        osc.stop(now + start + duration)
+      })
+    }
+  } catch {
+    // ignore
+  }
+}
+
+/** 하이로우 패배 사운드 (High-Low Defeat Sound) */
+export function playHighLowLossSound() {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.7
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+
+    // 하강하는 어두운 톤 (Sawtooth pitch drop)
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+
+    osc.type = 'sawtooth'
+    osc.frequency.setValueAtTime(320, now)
+    osc.frequency.exponentialRampToValueAtTime(80, now + 0.35)
+
+    gain.gain.setValueAtTime(vol * 0.35, now)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35)
+
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+
+    osc.start(now)
+    osc.stop(now + 0.35)
+
+    // 패배 쿵 베이스
+    const subOsc = ctx.createOscillator()
+    const subGain = ctx.createGain()
+    subOsc.type = 'sine'
+    subOsc.frequency.setValueAtTime(110, now + 0.05)
+    subOsc.frequency.exponentialRampToValueAtTime(35, now + 0.4)
+
+    subGain.gain.setValueAtTime(vol * 0.5, now + 0.05)
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4)
+
+    subOsc.connect(subGain)
+    subGain.connect(ctx.destination)
+
+    subOsc.start(now + 0.05)
+    subOsc.stop(now + 0.4)
+  } catch {
+    // ignore
+  }
+}
+
+/** 하이로우 무승부 / 쉴드 발동 사운드 */
+export function playHighLowDrawSound() {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.5
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+    const notes = [
+      { freq: 587.33, start: 0, duration: 0.15 }, // D5
+      { freq: 587.33, start: 0.12, duration: 0.25 }, // D5 double tap
+    ]
+
+    notes.forEach(({ freq, start, duration }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, now + start)
+
+      gain.gain.setValueAtTime(0, now + start)
+      gain.gain.linearRampToValueAtTime(vol * 0.3, now + start + 0.01)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(now + start)
+      osc.stop(now + start + duration)
+    })
+  } catch {
+    // ignore
+  }
+}
+
+/** 아이템 사용 이펙트 사운드 (Magic Sparkle Up Sound) */
+export function playItemUseSound() {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.65
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+    const notes = [
+      { freq: 1318.51, start: 0, duration: 0.1 }, // E6
+      { freq: 1567.98, start: 0.06, duration: 0.1 }, // G6
+      { freq: 1975.53, start: 0.12, duration: 0.1 }, // B6
+      { freq: 2637.02, start: 0.18, duration: 0.35 }, // E7
+    ]
+
+    notes.forEach(({ freq, start, duration }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, now + start)
+
+      gain.gain.setValueAtTime(0, now + start)
+      gain.gain.linearRampToValueAtTime(vol * 0.35, now + start + 0.01)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(now + start)
+      osc.stop(now + start + duration)
+    })
+  } catch {
+    // ignore
+  }
+}
+

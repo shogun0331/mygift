@@ -15,6 +15,14 @@ import {
   getActiveDealerMedia,
 } from './highLowConfig'
 import { useTranslation } from '../../locales/i18n'
+import {
+  playCardFlipSound,
+  playBetClickSound,
+  playHighLowWinSound,
+  playHighLowLossSound,
+  playHighLowDrawSound,
+  playItemUseSound,
+} from '../../game/uiSfx'
 
 export type GamePhase =
   | 'LOBBY'
@@ -769,6 +777,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
     setTimeout(() => {
       setIsDealerFlyIn(false)
       setIsDealerRevealing(true)
+      playCardFlipSound()
 
       setTimeout(() => {
         setIsDealerRevealing(false)
@@ -785,6 +794,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   // 3. 유저의 HIGH / LOW / TIE 선택 -> 플레이어 대형 카드가 날라와 짠! 하고 등장
   const handleSelectChoice = (choice: 'HIGH' | 'LOW' | 'TIE') => {
     if (phase !== 'WAITING_CHOICE' || !dealerCard) return
+
+    playBetClickSound()
 
     // 엿보기 카드 끄기: 배팅 선택 시 보이던 엿보기 반투명 효과가 꺼지고 다시 뒷면 카드 가림 상태로 완벽 복원!
     if (activeBuffs.peekCard) {
@@ -831,6 +842,8 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
       addLog(`⚠️ 이미 이번 라운드에 [패배 쉴드]가 발동 중입니다. (한 턴 중복 사용 불가)`, 'draw')
       return
     }
+
+    playItemUseSound()
 
     if (itemType === 'staff_hire') {
       // 스태프 영입 카드는 1개 인벤토리에서 소모
@@ -895,6 +908,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
     if (phase !== 'DEALING_PLAYER' || !dealerCard || !playerCard || !userChoice || isPlayerRevealing) return
 
     setIsPlayerRevealing(true)
+    playCardFlipSound()
 
     setTimeout(() => {
       setIsPlayerRevealing(false)
@@ -947,6 +961,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           } else if (nextWins === 6) {
             addLog(`🔥 6연승 달성! 딜러 수위 3 미디어가 해금됩니다!`, 'win')
           }
+          playHighLowWinSound(nextWins >= 3)
           return nextWins
         })
 
@@ -965,18 +980,21 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
       } else if (outcome === 'DRAW') {
         setRewardAmount(0)
         setStats((s) => ({ ...s, draws: s.draws + 1 }))
+        playHighLowDrawSound()
         addLog(`🤝 무승부(DRAW)! 딜러와 동일한 카드 [${getCardDisplayValue(pVal)}] -> 자산 변동 없음`, 'draw')
       } else {
         if (activeBuffs.lossShield) {
           setGameResult('DRAW')
           setRewardAmount(0)
           setStats((s) => ({ ...s, draws: s.draws + 1 }))
+          playHighLowDrawSound()
           addLog(`🛡️ 패배 무효화 쉴드 발동! 판돈 손실 방어`, 'win')
         } else {
           setGameResult('LOSS')
           setRewardAmount(0)
           setStats((s) => ({ ...s, losses: s.losses + 1 }))
           setConsecutiveWins(0)
+          playHighLowLossSound()
           addLog(`💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 자산 차감 없음`, 'loss')
         }
       }
