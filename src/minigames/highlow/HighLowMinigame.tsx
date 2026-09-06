@@ -1689,20 +1689,23 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                 </div>
               </div>
 
-              {/* Ultra-Clean Single Line Explanation */}
+              {/* Ultra-Clean 2-Line Explanation: 1. Cumulative Winnings, 2. Defeat 10% Guaranteed */}
               {gameResult === 'WIN' && (
-                <div className="w-full space-y-2 py-2 px-3.5 rounded-2xl bg-slate-900/90 border border-amber-400/30 text-xs">
+                <div className="w-full space-y-2 py-3 px-4 rounded-2xl bg-slate-900/90 border border-amber-400/30 text-xs">
                   <div className="flex items-center justify-between font-bold text-amber-300">
-                    <span className="text-[11px] text-slate-300">🏆 {t('casino.highlow.myStationAssets', { defaultValue: '누적 당첨금' })}:</span>
-                    <span className="font-mono text-sm">${totalWinnings.toLocaleString()}</span>
+                    <span className="text-slate-300 flex items-center gap-1.5">
+                      <span>🏆</span>
+                      <span>{t('casino.highlow.myStationAssets', { defaultValue: '누적 당첨금액' })}:</span>
+                    </span>
+                    <span className="font-mono text-base text-amber-300 font-black">${totalWinnings.toLocaleString()}</span>
                   </div>
 
-                  <div className="text-[11px] text-slate-200 text-center border-t border-slate-800 pt-2 leading-relaxed font-medium">
-                    {t('casino.highlow.cashoutNoticeLine', {
-                      amount: totalWinnings.toLocaleString(),
-                      guaranteed: Math.floor(totalWinnings * 0.1).toLocaleString(),
-                      defaultValue: `[나가기] $${totalWinnings.toLocaleString()} (100% 수령) | [다음 라운드] 패배 시 $${Math.floor(totalWinnings * 0.1).toLocaleString()} (10%) 보장`,
-                    })}
+                  <div className="flex items-center justify-between font-bold text-rose-300 border-t border-slate-800 pt-2">
+                    <span className="text-[11px] text-slate-300 flex items-center gap-1.5">
+                      <span>🛡️</span>
+                      <span>{t('casino.highlow.lossGuaranteedLabel', { defaultValue: '패배 시 10% 보장' })}:</span>
+                    </span>
+                    <span className="font-mono text-sm text-rose-300 font-bold">${Math.floor(totalWinnings * 0.1).toLocaleString()}</span>
                   </div>
                 </div>
               )}
@@ -1711,7 +1714,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                 <div className="w-full p-3 rounded-2xl bg-rose-950/70 border border-rose-500/50 text-xs text-rose-200 text-center font-medium">
                   {t('casino.highlow.lossPenaltyNotice', {
                     amount: rewardAmount.toLocaleString(),
-                    defaultValue: `💀 패배! 90% 소멸 (10% 보장: +$${rewardAmount.toLocaleString()})`,
+                    defaultValue: `💀 패배! 10% 보장 (+${rewardAmount.toLocaleString()})`,
                   })}
                 </div>
               )}
