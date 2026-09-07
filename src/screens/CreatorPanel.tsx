@@ -40,7 +40,7 @@ import {
   characterDisplayName,
 } from '../game/characterLocales'
 import { isHUnlocked } from '../game/social'
-import { hasUsedCreatorVip, vipAcceptPayoutRange } from '../game/vip'
+import { vipAcceptPayoutRange } from '../game/vip'
 import { useTranslation } from '../locales/i18n'
 import {
   maxScoutCreatorsForGrade,
@@ -103,6 +103,7 @@ type CreatorPanelProps = {
   onHDirect?: (creatorId: string) => void
   onVipDirect?: (creatorId: string) => void
   lastHActionMonth?: number
+  lastVipActionMonth?: number
 }
 
 const GRADE_STYLE: Record<Grade, string> = {
@@ -206,6 +207,7 @@ export function CreatorPanel({
   onHDirect,
   onVipDirect,
   lastHActionMonth,
+  lastVipActionMonth,
   stationRank = 100,
 }: CreatorPanelProps) {
   const { t, locale } = useTranslation()
@@ -400,6 +402,7 @@ export function CreatorPanel({
         onHDirect={onHDirect}
         onVipDirect={onVipDirect}
         lastHActionMonth={lastHActionMonth}
+        lastVipActionMonth={lastVipActionMonth}
       />
     )
   }
@@ -1124,6 +1127,7 @@ function CreatorDetailView({
   onHDirect,
   onVipDirect,
   lastHActionMonth,
+  lastVipActionMonth,
 }: {
   companyViewers?: number
   stationRank?: number
@@ -1139,6 +1143,7 @@ function CreatorDetailView({
   onHDirect?: (creatorId: string) => void
   onVipDirect?: (creatorId: string) => void
   lastHActionMonth?: number
+  lastVipActionMonth?: number
 }) {
   const { t, locale } = useTranslation()
   const assignedSlot = studioSlots?.find(
@@ -1436,7 +1441,7 @@ function CreatorDetailView({
 
                     <button
                       type="button"
-                      disabled={hasUsedCreatorVip(creator)}
+                      disabled={lastVipActionMonth === broadcastMonthNumber}
                       onClick={() => onVipDirect?.(creator.id)}
                       className="flex w-full items-start justify-between gap-3 rounded-xl border border-amber-400/40 bg-gradient-to-r from-amber-950/40 via-yellow-950/30 to-amber-950/40 px-3 py-2.5 text-left transition hover:border-amber-400/60 hover:bg-amber-900/30 hover:shadow-[0_0_15px_rgba(251,191,36,0.3)] disabled:cursor-not-allowed disabled:opacity-40"
                     >
@@ -1457,7 +1462,7 @@ function CreatorDetailView({
                             )}
                           </span>
                         </span>
-                        {hasUsedCreatorVip(creator) ? (
+                        {lastVipActionMonth === broadcastMonthNumber ? (
                           <span className="mt-1 block text-[10px] font-semibold text-amber-300/80">
                             {t('social.vipAlreadyUsedThisTurn')}
                           </span>

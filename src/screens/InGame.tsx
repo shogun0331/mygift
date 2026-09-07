@@ -245,8 +245,6 @@ import {
   applyVipStaminaDrain,
   rollVipAcceptPayout,
   rollVipRejectViewers,
-  hasUsedCreatorVip,
-  markCreatorVipUsed,
   toVipOffer,
   type VipOffer,
 } from '../game/vip'
@@ -1095,7 +1093,7 @@ export function InGame({
   const [lastHActionMonth, setLastHActionMonth] = useState(boot?.lastHActionMonth ?? 0)
   const lastHActionMonthRef = useRef(lastHActionMonth)
   lastHActionMonthRef.current = lastHActionMonth
-  const [lastVipActionMonth] = useState(boot?.lastVipActionMonth ?? 0)
+  const [lastVipActionMonth, setLastVipActionMonth] = useState(boot?.lastVipActionMonth ?? 0)
   const lastVipActionMonthRef = useRef(lastVipActionMonth)
   lastVipActionMonthRef.current = lastVipActionMonth
   const [donationThanksPlay, setDonationThanksPlay] = useState<DonationThanksPlay | null>(null)
@@ -4111,16 +4109,13 @@ export function InGame({
   }
 
   function handleVipDirect(creatorId: string) {
+    if (lastVipActionMonthRef.current === broadcastMonthNumberRef.current) return
     const creator = ownedCreatorsRef.current.find((c) => c.id === creatorId)
-    if (!creator || hasUsedCreatorVip(creator)) return
-    const marked = markCreatorVipUsed(creator)
-    const nextOwned = ownedCreatorsRef.current.map((row) =>
-      row.id === creatorId ? marked : row,
-    )
-    ownedCreatorsRef.current = nextOwned
-    onOwnedCreatorsChangeRef.current(nextOwned)
+    if (!creator) return
+    setLastVipActionMonth(broadcastMonthNumberRef.current)
+    lastVipActionMonthRef.current = broadcastMonthNumberRef.current
 
-    const offer = toVipOffer(marked)
+    const offer = toVipOffer(creator)
     const payout = rollVipAcceptPayout(leagueRef.current.currentRank)
     const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
     const vipEventId = charDef?.eventLinks?.vip
@@ -4142,7 +4137,7 @@ export function InGame({
       }
     }
 
-    setVipDepartPlay({ creator: marked, offer, payout, next })
+    setVipDepartPlay({ creator, offer, payout, next })
     flushAutoSave()
   }
 
@@ -5438,6 +5433,7 @@ export function InGame({
             onHDirect={handleHDirect}
             onVipDirect={handleVipDirect}
             lastHActionMonth={lastHActionMonth}
+            lastVipActionMonth={lastVipActionMonth}
           />
         ) : tab === 'schedule' ? (
           <SchedulePanel
