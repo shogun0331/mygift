@@ -3828,6 +3828,146 @@ html.theme-on-air .audio-bar:nth-child(4) { height: 65%; }
   }
 }
 
+/* ── Ranking panel celebration overlay (승급 축하 연출) ── */
+.rank-celebration {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.rank-celebration-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 40%, rgba(251, 191, 36, 0.28), transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 30%, rgba(253, 224, 71, 0.18), transparent 55%);
+  animation: rank-celebration-glow 2.2s ease-out forwards;
+}
+
+@keyframes rank-celebration-glow {
+  0% { opacity: 0; transform: scale(0.8); }
+  20% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.15; transform: scale(1.1); }
+}
+
+.rank-celebration-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.rank-confetti-piece {
+  position: absolute;
+  top: -12px;
+  left: var(--cx, 50%);
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--cl, #fbbf24);
+  transform-origin: center;
+  animation: rank-confetti-fall 2.8s ease-in forwards;
+  animation-delay: var(--cd, 0s);
+  opacity: 0;
+}
+
+@keyframes rank-confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg) scale(var(--cs, 1));
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(420px) rotate(var(--cr, 180deg)) scale(var(--cs, 1));
+  }
+}
+
+.rank-celebration-card {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 1.2rem 2rem;
+  border-radius: 1.2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.88) 0%,
+    rgba(30, 27, 75, 0.85) 50%,
+    rgba(15, 23, 42, 0.88) 100%
+  );
+  border: 1.5px solid rgba(251, 191, 36, 0.35);
+  box-shadow:
+    0 0 30px rgba(251, 191, 36, 0.22),
+    inset 0 0 20px rgba(253, 224, 71, 0.06);
+  backdrop-filter: blur(16px);
+  animation: rank-celebration-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+@keyframes rank-celebration-pop {
+  from { transform: scale(0.5) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.rank-celebration-kicker {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #fbbf24;
+}
+
+.rank-celebration-title {
+  margin-top: 0.3rem;
+  font-size: 1.8rem;
+  line-height: 1.1;
+  font-weight: 900;
+  color: #fde68a;
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.55);
+}
+
+.rank-celebration-grades {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rank-celebration-from {
+  color: #94a3b8;
+}
+
+.rank-celebration-arrow {
+  color: #fbbf24;
+  font-size: 1.15rem;
+}
+
+.rank-celebration-to {
+  color: #fde68a;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rank-celebration-glow,
+  .rank-celebration-card,
+  .rank-confetti-piece {
+    animation: none;
+  }
+
+  .rank-celebration-card {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* ── Production training burst ── */
 .training-fx-layer {
   position: absolute;

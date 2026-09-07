@@ -132,7 +132,7 @@ export function StationReviewModal({ promoted, status, onConfirm, onDecline, onC
         <div className="mt-4 rounded-xl border border-white/5 bg-slate-900/60 p-3.5 shadow-inner">
           <div className="flex items-center justify-between gap-2">
             <div className="flex-1 rounded-lg border border-slate-700/60 bg-slate-800/80 px-3 py-2 text-center shadow-sm">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">이전 등급</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('station.previousGrade')}</p>
               <p className="mt-0.5 text-sm font-extrabold text-slate-200">
                 {stationGradeLabel(status.current, locale)}
               </p>
@@ -144,7 +144,7 @@ export function StationReviewModal({ promoted, status, onConfirm, onDecline, onC
                   ➔
                 </div>
                 <div className="flex-1 rounded-lg border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 px-3 py-2 text-center shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-                  <p className="text-[10px] font-bold text-amber-300/80 uppercase tracking-wider">승급 등급</p>
+                  <p className="text-[10px] font-bold text-amber-300/80 uppercase tracking-wider">{t('station.promotedGrade')}</p>
                   <p className="mt-0.5 text-sm font-black text-amber-200">
                     {stationGradeLabel(status.next, locale)}
                   </p>

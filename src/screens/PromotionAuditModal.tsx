@@ -710,7 +710,7 @@ export function PromotionAuditModal({
                             : 'border-purple-400/60 bg-purple-950/80 text-purple-200'
                         }`}
                       >
-                        {judgeSpeechBubble.type === 'attack' ? '⚔️ 심사관 반격!' : '⚖️ 심사평'}
+                        {judgeSpeechBubble.type === 'attack' ? t('audit.inspectorAttack') : t('audit.inspectorComment')}
                       </span>
                       <span className="text-xs sm:text-sm font-black text-slate-100 tracking-wide">
                         {judgeName}
@@ -848,8 +848,7 @@ export function PromotionAuditModal({
                     <span className="font-bold text-slate-200">⚖️ {t('audit.satisfactionLabel')}</span>
                   </div>
                   <span className="font-black tabular-nums text-amber-300">
-                    {session.currentSatisfaction} / {session.targetSatisfaction} 점 (
-                    {Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100)}%)
+                    {t('audit.satisfactionScoreFormat', { current: session.currentSatisfaction, target: session.targetSatisfaction, percent: Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100) })}
                   </span>
                 </div>
                 <div className="h-3 overflow-hidden rounded-full border border-white/10 bg-slate-900 shadow-inner">
@@ -1148,8 +1147,7 @@ export function PromotionAuditModal({
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-slate-400 font-bold">🔥 {t('audit.finalSatisfactionHeader')}</span>
                     <span className="font-black tabular-nums text-emerald-400">
-                      {session.currentSatisfaction} / {session.targetSatisfaction} 점 (
-                      {Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100)}%)
+                      {t('audit.satisfactionScoreFormat', { current: session.currentSatisfaction, target: session.targetSatisfaction, percent: Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100) })}
                     </span>
                   </div>
                 </div>

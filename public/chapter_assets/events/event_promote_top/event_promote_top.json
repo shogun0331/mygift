@@ -1,0 +1,415 @@
+{
+  "id": "event_promote_top",
+  "projectId": "custom",
+  "projectTitle": "직접 생성",
+  "chapterId": 1,
+  "titleKey": "event_promote_top",
+  "title": "일등기업 승급 (동업자의 길)",
+  "startNode": "graphic_01",
+  "nodes": [
+    {
+      "id": "graphic_01",
+      "type": "graphic",
+      "image": "promote_top_01_luxury_office.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_01_bg",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "배경: 최고급 시설을 갖춘 방송국 사무실. 전용 바와 탁 트인 전망, 업계 최정상 기업의 위엄이 느껴진다.",
+      "text_key": "node_01_bg"
+    },
+    {
+      "id": "node_02_pl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(혼잣말) 드디어... 일등기업.",
+      "text_key": "node_02_pl"
+    },
+    {
+      "id": "node_03_pl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "시작할 때는 상상도 못 했는데... 여기까지 왔네.",
+      "text_key": "node_03_pl"
+    },
+    {
+      "id": "graphic_02",
+      "type": "graphic",
+      "image": "promote_top_02_door_lady.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_04_bg",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "사무실 문이 열리고, 한층 더 우아한 와인레드 드레스를 입은 사모님이 걸어 들어온다.",
+      "text_key": "node_04_bg"
+    },
+    {
+      "id": "node_05_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "(조용히 박수) 드디어... 이 날이 왔군요.",
+      "text_key": "node_05_ld"
+    },
+    {
+      "id": "node_06_pl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(돌아서며) 사모님... 오늘은 특별히 찾아주신 거죠?",
+      "text_key": "node_06_pl"
+    },
+    {
+      "id": "node_07_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "(의자에 앉으며) 그럼요. 일등기업 승급을 직접 축하해드리려고요.",
+      "text_key": "node_07_ld"
+    },
+    {
+      "id": "graphic_03",
+      "type": "graphic",
+      "image": "promote_top_03_toast_wine.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_08_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "(와인잔을 들어 올리며) 이 방송국을 인수할 때만 해도...",
+      "text_key": "node_08_ld"
+    },
+    {
+      "id": "node_09_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "이렇게 될 줄은 저도 몰랐어요.",
+      "text_key": "node_09_ld"
+    },
+    {
+      "id": "node_10_pl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(살짝 웃으며) 저도요. 솔직히... 처음엔 망할 줄 알았습니다.",
+      "text_key": "node_10_pl"
+    },
+    {
+      "id": "node_11_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "(웃으며) 그래도 해냈잖아요.",
+      "text_key": "node_11_ld"
+    },
+    {
+      "id": "graphic_04",
+      "type": "graphic",
+      "image": "promote_top_04_handing_envelope.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_12_bg",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "사모님이 품에서 두툼한 서류 봉투를 꺼내어 탁자 위에 올려놓는다.",
+      "text_key": "node_12_bg"
+    },
+    {
+      "id": "node_13_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "(서류 봉투를 건네며) 이제 더 이상 제가 간섭할 일은 없어요.",
+      "text_key": "node_13_ld"
+    },
+    {
+      "id": "node_14_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "이 방송국은 완전히 당신의 것이에요.",
+      "text_key": "node_14_ld"
+    },
+    {
+      "id": "node_15_choice",
+      "type": "choice",
+      "choices": [
+        {
+          "id": "c1",
+          "text": "이 자리까지 올 수 있게 믿어주셔서 감사합니다.",
+          "text_key": "c1",
+          "nextNode": "node_15_res1",
+          "points": [
+            {
+              "id": "p_trust",
+              "name": "사모님의 신뢰",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "앞으로도 이 방송국을 최고의 자리에서 지켜내겠습니다.",
+          "text_key": "c2",
+          "nextNode": "node_15_res2",
+          "points": [
+            {
+              "id": "p_trust",
+              "name": "사모님의 신뢰",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node_15_res1",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(봉투를 받으며) ...감사합니다. 저를 믿고 이 자리까지 오게 해주셔서.",
+      "text_key": "node_15_res1"
+    },
+    {
+      "id": "node_15_res2",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(봉투를 받으며) 감사합니다. 정상의 자리에서 절대 내려오지 않겠습니다.",
+      "text_key": "node_15_res2"
+    },
+    {
+      "id": "graphic_05",
+      "type": "graphic",
+      "image": "promote_top_05_shoulder_pat.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_16_bg",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "사모님이 자리에서 일어나 다정하게 어깨를 토닥인다.",
+      "text_key": "node_16_bg"
+    },
+    {
+      "id": "node_17_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "(부드럽게) 앞으로는 당신이 이 방송국의 얼굴이에요.",
+      "text_key": "node_17_ld"
+    },
+    {
+      "id": "node_18_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "더 큰 꿈을 꿔도 좋아요. 해외 진출, 프랜차이즈, 무엇이든.",
+      "text_key": "node_18_ld"
+    },
+    {
+      "id": "node_19_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "당신은 충분히 해낼 수 있는 사람이에요.",
+      "text_key": "node_19_ld"
+    },
+    {
+      "id": "node_20_pl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(고개를 끄덕이며) ...명심하겠습니다.",
+      "text_key": "node_20_pl"
+    },
+    {
+      "id": "graphic_06",
+      "type": "graphic",
+      "image": "promote_top_06_looking_back.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_21_bg",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "사모님이 문 밖으로 나서려다 멈춰 서서 돌아본다.",
+      "text_key": "node_21_bg"
+    },
+    {
+      "id": "node_22_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "(돌아보며) 그리고...",
+      "text_key": "node_22_ld"
+    },
+    {
+      "id": "node_23_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "이제는 저도 당신을 '사장님'이 아니라... '동업자'라고 부를게요.",
+      "text_key": "node_23_ld"
+    },
+    {
+      "id": "node_24_ld",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "owner_lady",
+      "text": "(미소) 앞으로도 잘 부탁드려요, 동업자.",
+      "text_key": "node_24_ld"
+    },
+    {
+      "id": "node_25_pl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(웃으며) ...네. 저희 함께 잘해봐요.",
+      "text_key": "node_25_pl"
+    },
+    {
+      "id": "graphic_07",
+      "type": "graphic",
+      "image": "promote_top_07_empty_office.webp",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
+      "id": "node_26_bg",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "사모님이 떠나고 조용해진 사무실. 창밖의 야경이 환하게 빛난다.",
+      "text_key": "node_26_bg"
+    },
+    {
+      "id": "node_27_pl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(혼잣말) 동업자라...",
+      "text_key": "node_27_pl"
+    },
+    {
+      "id": "node_28_pl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(서류를 정리하며) 좋아. 이제 진짜 시작이다.",
+      "text_key": "node_28_pl"
+    }
+  ],
+  "characters": [
+    {
+      "id": "owner_lady",
+      "name": "사모님",
+      "names": {
+        "ko": "사모님",
+        "en": "Former Owner",
+        "ja": "前オーナー",
+        "zh-cn": "前老板娘",
+        "ru": "Бывшая владелица",
+        "es": "Ex-propietaria",
+        "de": "Ehemalige Besitzerin"
+      }
+    }
+  ],
+  "points": [
+    {
+      "id": "p_trust",
+      "name": "사모님의 신뢰",
+      "initial": 0
+    }
+  ],
+  "media": [
+    {
+      "id": "media_promote_top_01_luxury_office",
+      "kind": "image",
+      "fileName": "promote_top_01_luxury_office.webp",
+      "url": "media://chapter_assets/events/event_promote_top/images/promote_top_01_luxury_office.webp",
+      "sourcePath": "chapter_assets/events/event_promote_top/images/promote_top_01_luxury_office.webp",
+      "size": 132374
+    },
+    {
+      "id": "media_promote_top_02_door_lady",
+      "kind": "image",
+      "fileName": "promote_top_02_door_lady.webp",
+      "url": "media://chapter_assets/events/event_promote_top/images/promote_top_02_door_lady.webp",
+      "sourcePath": "chapter_assets/events/event_promote_top/images/promote_top_02_door_lady.webp",
+      "size": 128160
+    },
+    {
+      "id": "media_promote_top_03_toast_wine",
+      "kind": "image",
+      "fileName": "promote_top_03_toast_wine.webp",
+      "url": "media://chapter_assets/events/event_promote_top/images/promote_top_03_toast_wine.webp",
+      "sourcePath": "chapter_assets/events/event_promote_top/images/promote_top_03_toast_wine.webp",
+      "size": 129876
+    },
+    {
+      "id": "media_promote_top_04_handing_envelope",
+      "kind": "image",
+      "fileName": "promote_top_04_handing_envelope.webp",
+      "url": "media://chapter_assets/events/event_promote_top/images/promote_top_04_handing_envelope.webp",
+      "sourcePath": "chapter_assets/events/event_promote_top/images/promote_top_04_handing_envelope.webp",
+      "size": 129464
+    },
+    {
+      "id": "media_promote_top_05_shoulder_pat",
+      "kind": "image",
+      "fileName": "promote_top_05_shoulder_pat.webp",
+      "url": "media://chapter_assets/events/event_promote_top/images/promote_top_05_shoulder_pat.webp",
+      "sourcePath": "chapter_assets/events/event_promote_top/images/promote_top_05_shoulder_pat.webp",
+      "size": 125146
+    },
+    {
+      "id": "media_promote_top_06_looking_back",
+      "kind": "image",
+      "fileName": "promote_top_06_looking_back.webp",
+      "url": "media://chapter_assets/events/event_promote_top/images/promote_top_06_looking_back.webp",
+      "sourcePath": "chapter_assets/events/event_promote_top/images/promote_top_06_looking_back.webp",
+      "size": 104158
+    },
+    {
+      "id": "media_promote_top_07_empty_office",
+      "kind": "image",
+      "fileName": "promote_top_07_empty_office.webp",
+      "url": "media://chapter_assets/events/event_promote_top/images/promote_top_07_empty_office.webp",
+      "sourcePath": "chapter_assets/events/event_promote_top/images/promote_top_07_empty_office.webp",
+      "size": 126942
+    }
+  ],
+  "defaultLanguage": "ko",
+  "sourceZipName": "직접 생성",
+  "createdAt": "2026-09-07T05:46:23.817Z",
+  "ownerCharacterId": null
+}

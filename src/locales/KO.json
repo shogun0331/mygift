@@ -42,6 +42,7 @@
     "weekUnit": "주",
     "nextStationGrade": "다음 방송국 등급",
     "nextGoal": "목표 시청자",
+    "mission": "미션",
     "nextGradeMaxed": "최고 등급",
     "nextGoalMaxed": "달성 완료",
     "nextGoalReady": "심사 조건 충족",
@@ -523,6 +524,8 @@
     "reviewMax": "최고 등급 유지",
     "reviewMaxBody": "이미 일등기업입니다. 순위 상한과 시청자 캡이 해제된 상태입니다.",
     "reviewFailBody": "조건을 충족하지 못해 등급이 유지됩니다. 하락은 없습니다. 다음 달에 다시 심사합니다.",
+    "previousGrade": "이전 등급",
+    "promotedGrade": "승급 등급",
     "rewardTitle": "승급 보상",
     "rewardAssets": "자산 +{amount}",
     "rewardSp": "SP +{n}",
@@ -1001,7 +1004,21 @@
     "failNoCardsDesc": "제출 가능한 크리에이터 카드가 소진되었습니다. 스테미나를 회복한 후 재도전해 주세요.",
     "failDefaultDesc": "목표 만족도 달성에 실패하였습니다. 덱을 보강한 후 재도전해 주세요.",
     "passConfirmBtn": "🎉 승급 확정 및 계속하기",
+    "inspectorAttack": "⚔️ 심사관 반격!",
+    "inspectorComment": "⚖️ 심사평",
+    "satisfactionScoreFormat": "{current} / {target} 점 ({percent}%)",
     "failRetryBtn": "확인 및 재도전"
+  },
+  "promotionNotice": {
+    "badge": "PROMOTION EXAM READY",
+    "title": "🎓 승급 심사 자격 획득!",
+    "desc": "목표 스탯을 달성하여 상위 등급 심사에 도전할 수 있습니다.",
+    "currentGrade": "현재 등급",
+    "targetGrade": "심사 목표",
+    "readyDesc": "{name} 님이 {toGrade}급 승급 심사를 치를 준비가 되었습니다.",
+    "readyHint": "크리에이터 관리 메뉴에서 승급 심사를 진행해보세요.",
+    "later": "나중에 하기",
+    "goToCreator": "크리에이터 관리로 이동 ➔"
   },
   "gallery": {
     "title": "갤러리",
@@ -1031,6 +1048,39 @@
     "slotDate1": "데이트 1",
     "slotDate2": "데이트 2",
     "slotEnding": "엔딩 스토리"
+  },
+  "mission": {
+    "viewers": {
+      "title": "목표 시청자 {viewers}명 달성",
+      "hintNoCreator": "먼저 크리에이터를 영입하고 스튜디오에 배치해 방송을 시작하세요.",
+      "hintLow": "시청자가 부족해요. 스케줄에 캐릭터를 배치해 방송하고, SNS를 게시하면 시청자·구독자가 늘어나요.",
+      "hintClose": "조금만 더! 시청자 {cur}명 / {viewers}명. 방송과 SNS로 마무리하세요."
+    },
+    "grade": {
+      "title": "{grade}등급 크리에이터 {count}명 준비",
+      "hintPromote": "등급 요구를 채웠어요. 이제 해당 캐릭터를 등급 승급시켜 심사 준비를 끝내세요.",
+      "hintTrain": "다음 승급은 {grade}등급 이상 {need}명이 필요해요. (현재 {have}명) 방송·트레이닝으로 키우고 등급을 올리세요."
+    },
+    "audit": {
+      "title": "승급 심사에 도전",
+      "hint": "모든 조건을 갖췄어요! 승급 심사관을 만나 심사에 도전하세요.",
+      "titleAuto": "승급 조건 충족",
+      "hintAuto": "모든 조건을 갖췄어요. 승급이 진행됩니다."
+    },
+    "rank1": {
+      "title": "방송국 1위 달성",
+      "hintDone": "축하합니다! 방송국 1위에 올랐습니다.",
+      "hintBroadcast": "시청자를 더 모아 방송국 1위에 도전하세요. 방송을 계속하고 SNS를 올리세요.",
+      "hintReach": "방송국 1위까지 시청자 {top}명이 목표예요. 방송을 계속하고 SNS를 게시하세요."
+    },
+    "label": "임무",
+    "reward": "임무 완료! 보상 +{reward}",
+    "quest": {
+      "sns": "{name}의 SNS를 게시하세요",
+      "train": "{name}의 트레이닝을 진행하세요",
+      "vacation": "{name}에게 특별휴가를 주세요",
+      "promote": "{name}의 등급을 승급하세요"
+    }
   },
   "tutorial": {
     "skip": "튜토리얼 건너뛰기",

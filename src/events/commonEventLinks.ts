@@ -12,6 +12,11 @@ type CommonEventSlot = {
 /** 캐릭터에 묶이지 않는 공용 이벤트 슬롯 */
 export const COMMON_EVENT_SLOTS = [
   {
+    key: 'intro',
+    label: '새 게임 인트로',
+    hint: '새 게임 시작 시 재생되는 첫 이벤트',
+  },
+  {
     key: 'vipAppear',
     label: 'VIP 등장 이벤트',
     hint: 'VIP가 방송국을 찾아올 때',
@@ -64,12 +69,13 @@ export type CommonEventLinks = Record<CommonEventSlotKey, string | null>
 
 export function emptyCommonEventLinks(): CommonEventLinks {
   return {
+    intro: 'event_intro_station',
     vipAppear: null,
-    promoteTiny: null,
+    promoteTiny: 'event_promote_tiny',
     promoteSme: null,
     promoteMid: null,
     promoteLarge: null,
-    promoteTop: null,
+    promoteTop: 'event_promote_top',
   }
 }
 

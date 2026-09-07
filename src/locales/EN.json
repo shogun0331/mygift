@@ -42,6 +42,7 @@
     "weekUnit": "w",
     "nextStationGrade": "NEXT GRADE",
     "nextGoal": "TARGET VIEWERS",
+    "mission": "MISSION",
     "nextGradeMaxed": "MAX TIER",
     "nextGoalMaxed": "COMPLETE",
     "nextGoalReady": "READY FOR REVIEW",
@@ -523,6 +524,8 @@
     "reviewMax": "Top grade held",
     "reviewMaxBody": "You are already a top-tier company. Rank and viewer caps are lifted.",
     "reviewFailBody": "Conditions were not met, so the grade stays. Grades never drop. Next review is next month.",
+    "previousGrade": "Previous Grade",
+    "promotedGrade": "New Grade",
     "rewardTitle": "Promotion rewards",
     "rewardAssets": "Assets +{amount}",
     "rewardSp": "SP +{n}",
@@ -1001,7 +1004,21 @@
     "failNoCardsDesc": "Playable creator cards have run out. Please recover stamina and try again.",
     "failDefaultDesc": "Failed to achieve target satisfaction. Strengthen your deck and try again.",
     "passConfirmBtn": "🎉 Confirm Promotion & Continue",
+    "inspectorAttack": "⚔️ Inspector Counter!",
+    "inspectorComment": "⚖️ Verdict",
+    "satisfactionScoreFormat": "{current} / {target} pts ({percent}%)",
     "failRetryBtn": "Confirm & Retry"
+  },
+  "promotionNotice": {
+    "badge": "PROMOTION EXAM READY",
+    "title": "🎓 Promotion Exam Qualified!",
+    "desc": "Target stats reached. You can now challenge the next grade exam.",
+    "currentGrade": "Current Grade",
+    "targetGrade": "Exam Target",
+    "readyDesc": "{name} is ready to take the Grade {toGrade} promotion exam.",
+    "readyHint": "Go to Creator Management to start the promotion exam.",
+    "later": "Later",
+    "goToCreator": "Go to Creator Management ➔"
   },
   "gallery": {
     "title": "Gallery",
@@ -1031,6 +1048,39 @@
     "slotDate1": "Date 1",
     "slotDate2": "Date 2",
     "slotEnding": "Ending Story"
+  },
+  "mission": {
+    "viewers": {
+      "title": "Reach {viewers} viewers",
+      "hintNoCreator": "Recruit a creator, assign them to a studio slot, and start broadcasting.",
+      "hintLow": "Not enough viewers. Place characters in the schedule to broadcast and post SNS to grow viewers and subscribers.",
+      "hintClose": "Almost there! Viewers {cur} / {viewers}. Keep broadcasting and posting SNS."
+    },
+    "grade": {
+      "title": "Prepare {count} Grade {grade} creators",
+      "hintPromote": "Grade requirements met. Promote the character to finish audit prep.",
+      "hintTrain": "Next promotion requires {need} Grade {grade}+ creators ({have} current). Broadcast, train, and promote to level up."
+    },
+    "audit": {
+      "title": "Challenge promotion audit",
+      "hint": "All conditions met! Meet the auditor and challenge the audit.",
+      "titleAuto": "Promotion conditions met",
+      "hintAuto": "All conditions met. Promotion will proceed."
+    },
+    "rank1": {
+      "title": "Reach Station Rank #1",
+      "hintDone": "Congratulations! You've reached Station Rank #1.",
+      "hintBroadcast": "Gather more viewers to reach Rank #1. Keep broadcasting and posting SNS.",
+      "hintReach": "Target: {top} viewers to reach Rank #1. Keep broadcasting and posting SNS."
+    },
+    "label": "Quest",
+    "reward": "Quest complete! Reward +{reward}",
+    "quest": {
+      "sns": "Post {name}'s SNS",
+      "train": "Train {name}",
+      "vacation": "Give {name} a special vacation",
+      "promote": "Promote {name}'s grade"
+    }
   },
   "tutorial": {
     "skip": "Skip Tutorial",

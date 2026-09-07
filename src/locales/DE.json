@@ -41,6 +41,7 @@
     "weekUnit": "Wo.",
     "nextStationGrade": "Nächster Grad",
     "nextGoal": "Ziel-Zuschauer",
+    "mission": "Mission",
     "nextGradeMaxed": "Höchster Grad",
     "nextGoalMaxed": "Erreicht",
     "nextGoalReady": "Prüfungsbereit",
@@ -513,6 +514,8 @@
     "reviewMax": "Höchste Klasse gehalten",
     "reviewMaxBody": "Du bist bereits Top-Firma. Rang- und Zuschauerlimit aufgehoben.",
     "reviewFailBody": "Bedingungen nicht erfüllt — Klasse bleibt. Kein Abstieg. Nächste Prüfung im nächsten Monat.",
+    "previousGrade": "Vorherige Stufe",
+    "promotedGrade": "Neue Stufe",
     "rewardTitle": "Aufstiegsbelohnung",
     "rewardAssets": "Vermögen +{amount}",
     "rewardSp": "SP +{n}",
@@ -990,7 +993,21 @@
     "failNoCardsDesc": "Keine ausspielbaren Karten mehr. Bitte erhole Ausdauer und versuche es erneut.",
     "failDefaultDesc": "Zielzufriedenheit nicht erreicht. Verstärke dein Deck und versuche es erneut.",
     "passConfirmBtn": "🎉 Aufstieg bestätigen & Weiter",
+    "inspectorAttack": "⚔️ Prüfer-Konter!",
+    "inspectorComment": "⚖️ Urteil",
+    "satisfactionScoreFormat": "{current} / {target} Punkte ({percent}%)",
     "failRetryBtn": "Bestätigen & Wiederholen"
+  },
+"promotionNotice": {
+    "badge": "PROMOTION EXAM READY",
+    "title": "🎓 Qualifikation für die Aufstiegsprüfung erreicht!",
+    "desc": "Zielwerte erreicht. Du kannst dich jetzt der Prüfung für die nächste Stufe stellen.",
+    "currentGrade": "Aktuelle Stufe",
+    "targetGrade": "Prüfungsziel",
+    "readyDesc": "{name} ist bereit, die Aufstiegsprüfung zur Stufe {toGrade} abzulegen.",
+    "readyHint": "Gehe zum Creator-Management-Menü, um die Aufstiegsprüfung zu starten.",
+    "later": "Später",
+    "goToCreator": "Zum Creator-Management ➔"
   },
   "gallery": {
     "title": "Galerie",
@@ -1020,6 +1037,39 @@
     "slotDate1": "Date 1",
     "slotDate2": "Date 2",
     "slotEnding": "Finalgeschichte"
+  },
+  "mission": {
+    "viewers": {
+      "title": "Ziel-Zuschauer {viewers} erreichen",
+      "hintNoCreator": "Rekrutiere zuerst einen Creator, weise ihn einem Studio zu und beginne die Übertragung.",
+      "hintLow": "Zu wenige Zuschauer. setze Charaktere im Zeitplan ein, sende und veröffentliche SNS, um Zuschauer und Abonnenten zu steigern.",
+      "hintClose": "Fast geschafft! Zuschauer {cur} / {viewers}. Weiter senden und SNS posten!"
+    },
+    "grade": {
+      "title": "{count} Creator der Stufe {grade} vorbereiten",
+      "hintPromote": "Stufenvoraussetzungen erfüllt. Befördere den Charakter, um die Prüfungsvorbereitung abzuschließen.",
+      "hintTrain": "Die nächste Beförderung erfordert {need} Creator der Stufe {grade}+ (aktuell {have}). Sende, trainiere und befördere."
+    },
+    "audit": {
+      "title": "Beförderungsprüfung bestehen",
+      "hint": "Alle Bedingungen erfüllt! Triff den Prüfer und besteh die Prüfung.",
+      "titleAuto": "Beförderungsbedingungen erfüllt",
+      "hintAuto": "Alle Bedingungen erfüllt. Beförderung wird eingeleitet."
+    },
+    "rank1": {
+      "title": "Sender-Rang #1 erreichen",
+      "hintDone": "Herzlichen Glückwunsch! Du hast Rang #1 erreicht.",
+      "hintBroadcast": "Sammle mehr Zuschauer für Rang #1. Weiter senden und SNS posten.",
+      "hintReach": "Ziel: {top} Zuschauer bis Rang #1. Weiter senden und SNS posten."
+    },
+    "label": "Mission",
+    "reward": "Mission abgeschlossen! Belohnung +{reward}",
+    "quest": {
+      "sns": "SNS von {name} veröffentlichen",
+      "train": "Training für {name} durchführen",
+      "vacation": "{name} Sonderurlaub geben",
+      "promote": "Grad von {name} befördern"
+    }
   },
   "tutorial": {
     "skip": "Tutorial überspringen",

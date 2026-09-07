@@ -1,5 +1,44 @@
 [
   {
+    "id": "event_promote_top",
+    "projectId": "custom",
+    "projectTitle": "직접 생성",
+    "chapterId": 1,
+    "titleKey": "event_promote_top",
+    "title": "일등기업 승급 (동업자의 길)",
+    "startNode": "graphic_01",
+    "defaultLanguage": "ko",
+    "sourceZipName": "직접 생성",
+    "createdAt": "2026-09-07T05:44:43.958Z",
+    "ownerCharacterId": null
+  },
+  {
+    "id": "event_promote_tiny",
+    "projectId": "custom",
+    "projectTitle": "직접 생성",
+    "chapterId": 1,
+    "titleKey": "event_promote_tiny",
+    "title": "영세기업 승급 (사모님의 방문)",
+    "startNode": "graphic_01",
+    "defaultLanguage": "ko",
+    "sourceZipName": "직접 생성",
+    "createdAt": "2026-09-07T05:22:28.169Z",
+    "ownerCharacterId": null
+  },
+  {
+    "id": "event_intro_station",
+    "projectId": "custom",
+    "projectTitle": "직접 생성",
+    "chapterId": 1,
+    "titleKey": "event_intro_station",
+    "title": "새 게임 인트로 (방송국 인수)",
+    "startNode": "graphic_01",
+    "defaultLanguage": "ko",
+    "sourceZipName": "직접 생성",
+    "createdAt": "2026-09-07T05:02:22.539Z",
+    "ownerCharacterId": null
+  },
+  {
     "id": "scout_a",
     "projectId": "custom",
     "projectTitle": "직접 생성",

@@ -337,14 +337,14 @@ export function TutorialGuideOverlay({
         <>
           {/* Top block */}
           <div
-            className={`fixed top-0 left-0 right-0 bg-black/65 backdrop-blur-[2px] transition-all duration-200 ${
+            className={`fixed top-0 left-0 right-0 bg-black/30 transition-all duration-200 ${
               step === 'studio_assign' || step === 'staff_assign' ? 'pointer-events-none' : 'pointer-events-auto'
             }`}
             style={{ height: `${Math.max(0, targetRect.top)}px` }}
           />
           {/* Bottom block */}
           <div
-            className={`fixed left-0 right-0 bottom-0 bg-black/65 backdrop-blur-[2px] transition-all duration-200 ${
+            className={`fixed left-0 right-0 bottom-0 bg-black/30 transition-all duration-200 ${
               step === 'studio_assign' || step === 'staff_assign' ? 'pointer-events-none' : 'pointer-events-auto'
             }`}
             style={{
@@ -353,7 +353,7 @@ export function TutorialGuideOverlay({
           />
           {/* Left block */}
           <div
-            className={`fixed left-0 bg-black/65 backdrop-blur-[2px] transition-all duration-200 ${
+            className={`fixed left-0 bg-black/30 transition-all duration-200 ${
               step === 'studio_assign' || step === 'staff_assign' ? 'pointer-events-none' : 'pointer-events-auto'
             }`}
             style={{
@@ -364,7 +364,7 @@ export function TutorialGuideOverlay({
           />
           {/* Right block */}
           <div
-            className={`fixed right-0 bg-black/65 backdrop-blur-[2px] transition-all duration-200 ${
+            className={`fixed right-0 bg-black/30 transition-all duration-200 ${
               step === 'studio_assign' || step === 'staff_assign' ? 'pointer-events-none' : 'pointer-events-auto'
             }`}
             style={{
@@ -389,7 +389,7 @@ export function TutorialGuideOverlay({
       ) : (
         /* Full Backdrop when rect not found yet */
         <div
-          className={`fixed inset-0 bg-black/65 backdrop-blur-[2px] ${
+          className={`fixed inset-0 bg-black/30 ${
             step === 'studio_assign' || step === 'staff_assign' ? 'pointer-events-none' : 'pointer-events-auto'
           }`}
         />

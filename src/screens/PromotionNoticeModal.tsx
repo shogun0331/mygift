@@ -26,7 +26,7 @@ export function PromotionNoticeModal({
   onConfirm,
   onGoToCreator,
 }: PromotionNoticeModalProps) {
-  const { t: _t, locale } = useTranslation()
+  const { t, locale } = useTranslation()
   const displayName = characterDisplayName(creator, locale)
   const displayJob = characterDisplayJob(creator, locale)
   const iconUrl = findCharacterIconUrl(creator) || creator.profileImageUrl
@@ -42,13 +42,13 @@ export function PromotionNoticeModal({
         <div className="relative border-b border-indigo-400/20 bg-gradient-to-b from-indigo-950/80 via-purple-950/40 to-transparent px-6 pb-5 pt-7 text-center">
           <div className="mx-auto mb-2 inline-flex items-center gap-1.5 rounded-full border border-amber-400/50 bg-amber-500/20 px-3 py-1 text-[11px] font-black tracking-widest text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.3)]">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping" />
-            PROMOTION EXAM READY
+            {t('promotionNotice.badge')}
           </div>
           <h2 className="text-xl font-black tracking-tight text-slate-100">
-            🎓 승급 심사 자격 획득!
+            {t('promotionNotice.title')}
           </h2>
           <p className="mt-1 text-xs text-slate-400">
-            목표 스탯을 달성하여 상위 등급 심사에 도전할 수 있습니다.
+            {t('promotionNotice.desc')}
           </p>
         </div>
 
@@ -79,7 +79,7 @@ export function PromotionNoticeModal({
           {/* 등급 전환 박스 */}
           <div className="flex items-center justify-center gap-4 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-indigo-950/40 px-4 py-3.5 shadow">
             <div className="text-center">
-              <span className="text-[10px] font-bold text-slate-400 block mb-1">현재 등급</span>
+              <span className="text-[10px] font-bold text-slate-400 block mb-1">{t('promotionNotice.currentGrade')}</span>
               <span
                 className={`inline-block rounded-lg border px-3.5 py-1 text-sm font-black italic tracking-widest ${GRADE_STYLE[fromGrade]}`}
               >
@@ -88,7 +88,7 @@ export function PromotionNoticeModal({
             </div>
             <div className="text-xl font-bold text-indigo-300 animate-pulse">➔</div>
             <div className="text-center">
-              <span className="text-[10px] font-bold text-amber-300 block mb-1">심사 목표</span>
+              <span className="text-[10px] font-bold text-amber-300 block mb-1">{t('promotionNotice.targetGrade')}</span>
               <span
                 className={`inline-block rounded-lg border px-3.5 py-1 text-sm font-black italic tracking-widest ${GRADE_STYLE[toGrade]}`}
               >
@@ -98,8 +98,8 @@ export function PromotionNoticeModal({
           </div>
 
           <p className="text-center text-xs leading-relaxed text-slate-400">
-            <strong className="text-slate-200">{displayName}</strong> 님이 <strong className="text-amber-300">{toGrade}급 승급 심사</strong>를 치를 준비가 되었습니다.<br />
-            크리에이터 관리 메뉴에서 승급 심사를 진행해보세요.
+            {t('promotionNotice.readyDesc', { name: displayName, toGrade })}<br />
+            {t('promotionNotice.readyHint')}
           </p>
         </div>
 
@@ -110,14 +110,14 @@ export function PromotionNoticeModal({
             onClick={onConfirm}
             className="game-btn w-full sm:w-auto rounded-xl px-4 py-2.5 text-xs text-slate-400 hover:text-slate-200"
           >
-            나중에 하기
+            {t('promotionNotice.later')}
           </button>
           <button
             type="button"
             onClick={onGoToCreator}
             className="game-btn game-btn-primary w-full sm:w-auto rounded-xl px-5 py-2.5 text-xs font-bold text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]"
           >
-            크리에이터 관리로 이동 ➔
+            {t('promotionNotice.goToCreator')}
           </button>
         </div>
       </div>

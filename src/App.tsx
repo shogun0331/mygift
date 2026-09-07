@@ -1547,6 +1547,7 @@ export default function App() {
           onOpenEditor={() => openEditor('game')}
           watchedEventIds={watchedEventIds}
           onEventWatched={markEventWatched}
+          commonEventLinks={commonEventLinks}
           stationGradeConfig={stationGradeConfig}
           companyMeta={companyMeta}
           initialSave={initialSave}

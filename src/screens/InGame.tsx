@@ -70,6 +70,12 @@ import {
   type StaffKind,
 } from '../game/slotManagers'
 import { PromotionAuditModal } from './PromotionAuditModal'
+import {
+  QUEST_DEFS,
+  pickQuestKind,
+  type QuestAvailability,
+  type QuestKind,
+} from '../game/quests'
 import { AuditSimulatorDeckModal } from './AuditSimulatorDeckModal'
 import { AchievementsPanel } from './AchievementsPanel'
 import {
@@ -123,6 +129,7 @@ import {
   scaleDayPlanTimes,
   applyBroadcastBlockToCreatorPlan,
   maybeInjectMonthlySuperDonation,
+  calcMonthRevenueWon,
   type DayEvent,
   type StudioDayPlan,
 } from '../game/economy'
@@ -253,7 +260,7 @@ import {
   type SocialPending,
 } from '../game/social'
 import { RankChangeModal } from './RankChangeModal'
-import { RankingPanel } from './RankingPanel'
+import { RankingPanel, type RankPromotionCelebration } from './RankingPanel'
 import { StationReviewModal } from './StationReviewModal'
 import { StationPromotionFx } from './StationPromotionFx'
 import { PromotionCongratsDialogue, type PromotionCongratsPlay } from './PromotionCongratsDialogue'
@@ -266,10 +273,15 @@ import { VipDepartDialogue } from './VipDepartDialogue'
 import { ShortsVnPlayer } from './ShortsVnPlayer'
 import { SpecialVacationPlayer } from './SpecialVacationPlayer'
 import { DonationThanksDialogue, type DonationThanksPlay } from './DonationThanksDialogue'
+import { pickRandomDonationThanks } from '../game/donationLines'
+import { getPromotionVoiceUrl } from '../game/promotionLines'
+import { characterSoundUrl, resolveMediaSrc } from '../game/mediaUrl'
 import { ProposalShortsPlayer } from './ProposalShortsPlayer'
 import { WeeklySettlementModal } from './WeeklySettlementModal'
 import { EventSimulator } from '../events/EventSimulator'
+import type { CommonEventLinks } from '../events/commonEventLinks'
 import type { GameEvent } from '../events/types'
+import { EVENT_LOCALES, mergeEventLocalization } from '../events/eventLocales'
 import { HighLowMinigame } from '../minigames/highlow/HighLowMinigame'
 import { loadHighLowConfig } from '../minigames/highlow/highLowStore'
 import { type HighLowRoomId } from '../minigames/highlow/highLowConfig'
@@ -289,6 +301,30 @@ type SpeedOption = (typeof SPEED_OPTIONS)[number]
 
 const INITIAL_ASSETS = 200_000
 const MAX_RECENT_EVENTS = 24
+
+/**
+ * /chapter_assets/events/{eventId}.json 을 fetch하고, loc/{lang}.json 번역 파일도
+ * 함께 로드하여 localization이 포함된 GameEvent를 반환한다.
+ * events 배열에 이벤트가 없거나 Electron 환경에서 localization이 비어있는 경우 사용.
+ */
+async function fetchEventWithLoc(eventId: string): Promise<GameEvent | null> {
+  const base = await fetch(`/chapter_assets/events/${eventId}.json`).then((r) => r.json())
+  if (!base || !base.id) return null
+  const loc = mergeEventLocalization(base.localization)
+  const results = await Promise.allSettled(
+    EVENT_LOCALES.map((lang) =>
+      fetch(`/chapter_assets/events/${eventId}/loc/${lang}.json`).then((r) => r.json()),
+    ),
+  )
+  for (let i = 0; i < EVENT_LOCALES.length; i++) {
+    const lang = EVENT_LOCALES[i]
+    const result = results[i]
+    if (result.status === 'fulfilled' && result.value && typeof result.value === 'object') {
+      loc[lang] = { ...loc[lang], ...result.value }
+    }
+  }
+  return { ...base, localization: loc } as GameEvent
+}
 
 type WeekInspection = {
   creatorId: string
@@ -547,25 +583,6 @@ function IconHudAssets() {
   )
 }
 
-function IconHudNextGrade() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M4.5 18.5V8.2L12 4.5l7.5 3.7v10.3"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9.2 18.5v-5.2h5.6v5.2"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 function IconHudNextGoal() {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -708,6 +725,7 @@ type InGameProps = {
   onOpenEditor?: () => void
   watchedEventIds?: string[]
   onEventWatched?: (eventId: string) => void
+  commonEventLinks?: CommonEventLinks
   stationGradeConfig: StationGradeConfig
   /** 회사 메타 (새 게임/로드 시) — null이면 저장 비활성 */
   companyMeta?: { id: string; name: string; createdAt: number } | null
@@ -735,6 +753,7 @@ export function InGame({
   onOpenEditor,
   watchedEventIds = [],
   onEventWatched,
+  commonEventLinks,
   stationGradeConfig,
   companyMeta = null,
   initialSave = null,
@@ -775,6 +794,29 @@ export function InGame({
     !boot ||
     boot.tutorialDone === false ||
     ((boot.ownedCreators?.length ?? 0) === 0 && (boot.gameMonth ?? 0) === 0)
+
+  // 새 게임 시작 시 인트로 VN 재생
+  const introPlayedRef = useRef(false)
+  const [introEventPlay, setIntroEventPlay] = useState<GameEvent | null>(() => {
+    if (!isFreshNewGame) return null
+    const introEventId = commonEventLinks?.intro || 'event_intro_station'
+    if (watchedEventIds.includes(introEventId)) return null
+    const found = events.find((e) => e.id === introEventId)
+    if (found) introPlayedRef.current = true
+    return found ?? null
+  })
+
+  useEffect(() => {
+    if (!isFreshNewGame || introPlayedRef.current || introEventPlay) return
+    const introEventId = commonEventLinks?.intro || 'event_intro_station'
+    if (watchedEventIds.includes(introEventId)) return
+    const found = events.find((e) => e.id === introEventId)
+    if (found) {
+      introPlayedRef.current = true
+      setIntroEventPlay(found)
+    }
+  }, [events, commonEventLinks, isFreshNewGame, watchedEventIds, introEventPlay])
+
   const [tutorialDone, setTutorialDone] = useState<boolean>(
     boot?.tutorialDone ?? !isFreshNewGame,
   )
@@ -925,7 +967,11 @@ export function InGame({
     fromRank: number
     toRank: number
   } | null>(null)
+  /** 랭킹 패널에 표시되는 축하 연출 정보 — promotionFx와 동일 시점에 세팅, VN 종료 후 해제 */
+  const [promotionCelebration, setPromotionCelebration] =
+    useState<RankPromotionCelebration | null>(null)
   const [promotionCongratsPlay, setPromotionCongratsPlay] = useState<PromotionCongratsPlay | null>(null)
+  const [promoteEventPlay, setPromoteEventPlay] = useState<GameEvent | null>(null)
   const [stationAuditTarget, setStationAuditTargetState] = useState<{
     currentTier: StationGrade
     nextTier: Exclude<StationGrade, 'black' | 'tiny'>
@@ -1399,7 +1445,8 @@ export function InGame({
       },
       stationGradeConfig,
     )
-    // 영세기업(tiny) 승급은 자동 진행되므로, 중소기업(sme) 이상 승급일 때만 심사 버튼 활성화
+    // 일반사업자(black) -> 영세기업(tiny) 승급만 시청자 수 달성 시 자동 진행되며,
+    // 영세기업(tiny) -> 중소기업(sme)부터 승급심사 버튼 활성화
     return Boolean(
       review.promoted &&
         review.status.next &&
@@ -1417,10 +1464,11 @@ export function InGame({
   ])
 
   // 일반사업자(black) -> 영세기업(tiny) 자동 승급 (심사 버튼 없이 조건 달성 시 즉시 자동 승급)
+  // 영세기업(tiny) -> 중소기업(sme)부터는 승급심사(미니게임) 필수
   useEffect(() => {
     if (stationGrade !== 'black' || broadcastPhase === 'live') return
     const review = applyStationReview(
-      'black',
+      stationGrade,
       league.viewers,
       ownedCreators,
       {
@@ -1429,8 +1477,12 @@ export function InGame({
       },
       stationGradeConfig,
     )
-    if (review.promoted && review.status.next === 'tiny') {
-      const nextGrade = 'tiny'
+    if (
+      review.promoted &&
+      review.status.next &&
+      review.status.next === 'tiny'
+    ) {
+      const nextGrade = review.status.next
       const oldRank = leagueRef.current.currentRank
       const newRank = stationRankForGrade(nextGrade, leagueRef.current.viewers)
       stationGradeRef.current = nextGrade
@@ -1439,10 +1491,14 @@ export function InGame({
       pendingPromotionRef.current = { nextGrade, oldRank, newRank }
       setTab('ranking')
       setPromotionFx({
-        fromGrade: 'black',
+        fromGrade: stationGrade,
         toGrade: nextGrade,
         fromRank: oldRank,
         toRank: newRank,
+      })
+      setPromotionCelebration({
+        fromGradeLabel: t(companyTierLabelKey(stationGrade)),
+        toGradeLabel: t(companyTierLabelKey(nextGrade)),
       })
       setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
       scheduleAutoSave()
@@ -1453,8 +1509,82 @@ export function InGame({
     league.viewers,
     ownedCreators,
     unlockedSlotCount,
-    assets,
-    stationGradeConfig,
+  ])
+
+  // 영세기업(tiny) 이상인데 영세기업 승급 이벤트를 아직 보지 않은 경우 자동 재생
+  useEffect(() => {
+    if (
+      stationGrade === 'black' ||
+      watchedEventIds.includes('event_promote_tiny') ||
+      broadcastPhase === 'live' ||
+      promotionFx ||
+      promoteEventPlay ||
+      introEventPlay ||
+      scoutEventState ||
+      vipEventPlay
+    ) {
+      return
+    }
+    const promoEvent = events.find((e) => e.id === 'event_promote_tiny')
+    if (promoEvent) {
+      setPromoteEventPlay(promoEvent)
+    } else {
+      fetchEventWithLoc('event_promote_tiny')
+        .then((evData) => {
+          if (evData) setPromoteEventPlay(evData)
+        })
+        .catch((err) => {
+          console.warn('Failed to load event_promote_tiny fallback:', err)
+        })
+    }
+  }, [
+    stationGrade,
+    watchedEventIds,
+    broadcastPhase,
+    promotionFx,
+    promoteEventPlay,
+    introEventPlay,
+    scoutEventState,
+    vipEventPlay,
+    events,
+  ])
+
+  // 일등기업(top) 승급 이벤트 — 대기업(large) 승급 심사 후 일등기업이 된 시점에 자동 재생
+  useEffect(() => {
+    if (
+      stationGrade !== 'top' ||
+      watchedEventIds.includes('event_promote_top') ||
+      broadcastPhase === 'live' ||
+      promotionFx ||
+      promoteEventPlay ||
+      introEventPlay ||
+      scoutEventState ||
+      vipEventPlay
+    ) {
+      return
+    }
+    const promoEvent = events.find((e) => e.id === 'event_promote_top')
+    if (promoEvent) {
+      setPromoteEventPlay(promoEvent)
+    } else {
+      fetchEventWithLoc('event_promote_top')
+        .then((evData) => {
+          if (evData) setPromoteEventPlay(evData)
+        })
+        .catch((err) => {
+          console.warn('Failed to load event_promote_top fallback:', err)
+        })
+    }
+  }, [
+    stationGrade,
+    watchedEventIds,
+    broadcastPhase,
+    promotionFx,
+    promoteEventPlay,
+    introEventPlay,
+    scoutEventState,
+    vipEventPlay,
+    events,
   ])
 
   // 보유 로스터 승격 게이트 즉시 반영 (정산 시 방송 인원만 보고 막힌 순위 보정)
@@ -3367,7 +3497,7 @@ export function InGame({
     continueAfterMonthModals(openScout)
   }
 
-  function checkStaffSalaryRaise() {
+  function checkStaffSalaryRaise(openScout: boolean) {
     const hiredStaffIds = managerStateRef.current.hiredStaffIds
     if (hiredStaffIds.length === 0) return false
 
@@ -3404,6 +3534,7 @@ export function InGame({
     // 인상 요구 연봉: 최고 연봉의 85% 수준 (최소 $24,000 이상)
     const requestedSalary = Math.max(24000, Math.round(maxSalary * 0.85))
 
+    pendingScoutAfterRankRef.current = openScout
     setStaffSalaryRaiseRequest({
       staffId: targetStaffId,
       staffName: staffDisplayName(targetStaff, locale),
@@ -3429,7 +3560,8 @@ export function InGame({
       [staffId]: gameMonthRef.current,
     }))
     setStaffSalaryRaiseRequest(null)
-    setStartBroadcastLocked(false)
+    const openScout = pendingScoutAfterRankRef.current
+    continueAfterMonthModals(openScout)
   }
 
   function handleRejectStaffSalaryRaise() {
@@ -3445,7 +3577,8 @@ export function InGame({
     onManagerStateChangeRef.current(next)
     alert(t('alert.staffQuit').replace('{name}', staffName))
     setStaffSalaryRaiseRequest(null)
-    setStartBroadcastLocked(false)
+    const openScout = pendingScoutAfterRankRef.current
+    continueAfterMonthModals(openScout)
   }
 
   function checkPromotionExamNotices(openScout: boolean): boolean {
@@ -3484,7 +3617,7 @@ export function InGame({
     if (checkPromotionExamNotices(openScout)) {
       return
     }
-    if (checkStaffSalaryRaise()) {
+    if (checkStaffSalaryRaise(openScout)) {
       return
     }
     if (checkProposalEvent(openScout)) {
@@ -3674,7 +3807,7 @@ export function InGame({
     if (checkPromotionExamNotices(openScout)) {
       return
     }
-    if (checkStaffSalaryRaise()) {
+    if (checkStaffSalaryRaise(openScout)) {
       return
     }
     if (checkProposalEvent(openScout)) {
@@ -4125,6 +4258,7 @@ export function InGame({
     onOwnedCreatorsChangeRef.current(nextOwned)
     playSfx('training')
     scheduleAutoSave()
+    signalQuest('train', creatorId)
   }
 
   function confirmPromotionExam() {
@@ -4148,6 +4282,7 @@ export function InGame({
     onOwnedCreatorsChangeRef.current(nextOwned)
     queuePromotionSalary(promoted, play.result.fromGrade, play.result.toGrade)
     scheduleAutoSave()
+    signalQuest('promote', play.creatorId)
   }
 
   function handleSnsCompose(creatorId: string): SnsHeat | null {
@@ -4177,6 +4312,7 @@ export function InGame({
     playSfx('sns-write')
     unlockCharacterAchievement(creatorId, 'sns')
     if (rolled.heat === 3) unlockCharacterAchievement(creatorId, 'sns_heat3')
+    signalQuest('sns', creatorId)
     return rolled.heat
   }
 
@@ -4220,6 +4356,8 @@ export function InGame({
       unlockCharacterAchievement(entry.creatorId, 'sns')
       if (entry.heat === 3) unlockCharacterAchievement(entry.creatorId, 'sns_heat3')
     }
+    // 일괄 게시: 대상 캐릭터가 포함됐다면 SNS 임무 클리어
+    for (const entry of posted) signalQuest('sns', entry.creatorId)
     return posted
   }
 
@@ -4250,6 +4388,7 @@ export function InGame({
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
     flushAutoSave()
+    signalQuest('vacation', creatorId)
     playSfx('condition-recover')
     unlockCharacterAchievement(creatorId, 'vacation')
     if (recovered) setVacationPlay(recovered)
@@ -4689,9 +4828,6 @@ export function InGame({
     assets,
     stationGradeConfig,
   ])
-  const nextStationGradeLabel = stationReviewHud.next
-    ? t(companyTierLabelKey(stationReviewHud.next))
-    : t('hud.nextGradeMaxed')
   const nextGoalRequired = Math.max(1, stationReviewHud.requiredViewers || 1)
   const nextGoalPct = stationReviewHud.next
     ? Math.min(100, Math.round((stationReviewHud.viewers / nextGoalRequired) * 100))
@@ -4700,6 +4836,213 @@ export function InGame({
     ? formatHudGoalCount(stationReviewHud.viewers, stationReviewHud.requiredViewers, t)
     : t('hud.nextGoalMaxed')
   const nextGoalMet = Boolean(stationReviewHud.next && stationReviewHud.viewersMet)
+
+  // ── 탑 HUD 퀘스트(임무): 한 턴에 1개 ──
+  const [questKind, setQuestKind] = useState<QuestKind | null>(null)
+  const [questDone, setQuestDone] = useState(false)
+  const [questReward, setQuestReward] = useState(0)
+  const [questTarget, setQuestTarget] = useState('')
+  const [questTargetImg, setQuestTargetImg] = useState('')
+  const [questFx, setQuestFx] = useState(false)
+  const [questReaction, setQuestReaction] = useState('')
+  const [questVoices, setQuestVoices] = useState<string[]>([])
+  const questKindRef = useRef<QuestKind | null>(null)
+  const questDoneRef = useRef(false)
+  const questRewardRef = useRef(0)
+  const questTargetIdRef = useRef('')
+  const questFxTimerRef = useRef<number | null>(null)
+  const questReactTimerRef = useRef<number | null>(null)
+  const questAudioRef = useRef<HTMLAudioElement | null>(null)
+  const questAgeRef = useRef(1)
+  const questLifespanRef = useRef(3)
+  useEffect(() => {
+    questKindRef.current = questKind
+  }, [questKind])
+  useEffect(() => {
+    questDoneRef.current = questDone
+  }, [questDone])
+  // 턴 전환 시 임무 유지/교체: 완료했거나 2~3턴 내 미클리어면 새 임무 발급
+  useEffect(() => {
+    const age = (questAgeRef.current ?? 0) + 1
+    const lifespan = questLifespanRef.current ?? 3
+    const completed = questDoneRef.current
+    const needNew = questKindRef.current == null || completed || age > lifespan
+    if (!needNew) {
+      questAgeRef.current = age
+      return
+    }
+    // ── 새 임무 발급 ──
+    questAgeRef.current = 1
+    questLifespanRef.current = 2 + Math.floor(Math.random() * 2) // 2~3턴
+    setQuestDone(false)
+    setQuestTarget('')
+    setQuestTargetImg('')
+    const owned = ownedCreatorsRef.current
+    const statVal = (
+      cr: (typeof owned)[number],
+      key: 'statSexy' | 'statElegance' | 'statCommunication' | 'statPerformance',
+    ) => Number(cr[key] ?? 0)
+    const mainOf = (cr: (typeof owned)[number]) => {
+      switch (cr.statType) {
+        case 'sexy':
+          return statVal(cr, 'statSexy')
+        case 'elegance':
+          return statVal(cr, 'statElegance')
+        case 'communication':
+          return statVal(cr, 'statCommunication')
+        default:
+          return statVal(cr, 'statPerformance')
+      }
+    }
+    // 트레이닝으로 실제 성장 가능: 승급상태 아님 & 주력 스탯 100 미만
+    const trainFeasible = (cr: (typeof owned)[number]) =>
+      !isPromotionExamReady(cr as never) && mainOf(cr) < 100
+    // SNS 남은 글: 전체 - (게시 완료 + 작성중(pending))
+    const snsRemaining = (cr: (typeof owned)[number]) =>
+      (cr.snsPosts?.length ?? 0) -
+      ((cr.snsPublishedIds?.length ?? 0) + (cr.snsPending ? 1 : 0))
+    const avail: QuestAvailability = {
+      hasAnyCreator: owned.length > 0,
+      canPromote: owned.some((cr) => isPromotionExamReady(cr as never)),
+      hasLowStamina: owned.some((cr) => Number(cr.stamina) < 25),
+      canSns: owned.some((cr) => snsRemaining(cr) > 0),
+      canTrain: owned.some(trainFeasible),
+    }
+    const kind = pickQuestKind(avail, questKindRef.current)
+    setQuestKind(kind)
+    // 대상 캐릭터: 가능한 후보 중 무작위 + 직전 미션 타겟은 피함(특정 캐릭터 반복 방지)
+    const prevTargetId = questTargetIdRef.current
+    const pickCand = (cands: typeof owned): (typeof owned)[number] | null => {
+      if (cands.length === 0) return null
+      let pool = cands
+      if (cands.length > 1 && prevTargetId) pool = cands.filter((c) => c.id !== prevTargetId)
+      const chosen = pool[Math.floor(Math.random() * pool.length)]
+      return chosen ?? cands[0] ?? null
+    }
+    let cands: typeof owned = []
+    if (kind === 'vacation') {
+      const lows = owned.filter((cr) => Number(cr.stamina) < 25)
+      const minSt = Math.min(...lows.map((cr) => Number(cr.stamina)))
+      cands = Number.isFinite(minSt) ? lows.filter((cr) => Number(cr.stamina) <= minSt + 10) : []
+    } else if (kind === 'sns') {
+      cands = owned.filter((cr) => snsRemaining(cr) > 0)
+    } else if (kind === 'train') {
+      cands = owned.filter(trainFeasible)
+    } else if (kind === 'promote') {
+      cands = owned.filter((cr) => isPromotionExamReady(cr as never))
+    }
+    const chosen = pickCand(cands)
+    const tgt = chosen
+      ? {
+          id: chosen.id,
+          name: characterDisplayName(chosen, locale),
+          img: chosen.profileImageUrl ?? '',
+        }
+      : null
+    questTargetIdRef.current = tgt ? tgt.id : ''
+    setQuestTarget(tgt ? tgt.name : '')
+    setQuestTargetImg(tgt ? tgt.img : '')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameMonth])
+
+  // 클리어 리액션 음성 재생: 단일 <audio> 요소만 재사용 → 다중 생성 없음(겹침 원천 차단)
+  useEffect(() => {
+    if (!questVoices.length) return
+    let el = questAudioRef.current
+    if (!el) {
+      el = new Audio()
+      el.preload = 'auto'
+      questAudioRef.current = el
+    }
+    el.pause()
+    el.volume = Math.max(0.2, Math.min(1, (getSeVolumePercent() || 80) / 100))
+    let cancelled = false
+    let idx = 0
+    const tryNext = () => {
+      if (cancelled) return
+      if (idx >= questVoices.length) {
+        console.warn('[quest-voice] 모든 후보 실패 →', questVoices)
+        return
+      }
+      const src = questVoices[idx++]
+      const onError = () => {
+        if (cancelled) return
+        console.warn('[quest-voice] 로드 실패 → 다음:', src)
+        tryNext()
+      }
+      el!.onerror = onError
+      el!.src = src
+      void el
+        .play()
+        .catch(() => {
+          // 오토플레이 거부 등 → 잠시 후 로드 실패 상태면 다음 후보로
+          if (!cancelled) {
+            window.setTimeout(() => {
+              if (!cancelled && el!.error) tryNext()
+            }, 0)
+          }
+        })
+    }
+    tryNext()
+    return () => {
+      cancelled = true
+      el?.pause()
+    }
+  }, [questVoices])
+
+  // ── 퀘스트 완료 처리: 행동 완료 시 보상(예상매출 수준) 지급 ──
+  function signalQuest(kind: QuestKind, creatorId?: string) {
+    if (questKindRef.current !== kind || questDoneRef.current) return
+    // 지목형 임무(전부)는 대상 캐릭터 일치 시에만 완료
+    if (
+      questTargetIdRef.current &&
+      creatorId !== questTargetIdRef.current
+    ) {
+      return
+    }
+    // 보상 = 대상 캐릭터의 예상 월 매출 (크리에이터 관리와 동일 계산)
+    let reward = 0
+    const targetId = questTargetIdRef.current
+    if (targetId) {
+      const target = ownedCreatorsRef.current.find((c) => c.id === targetId)
+      if (target) {
+        reward = calcMonthRevenueWon(target, 0, 1, leagueRef.current?.viewers ?? 0)
+      }
+    }
+    if (reward <= 0) reward = 1000
+    const next = assetsRef.current + reward
+    assetsRef.current = next
+    setAssets(next)
+    questRewardRef.current = reward
+    questDoneRef.current = true
+    setQuestReward(reward)
+    setQuestDone(true)
+    // 화려한 완료 이펙트(반짝)
+    if (questFxTimerRef.current) window.clearTimeout(questFxTimerRef.current)
+    setQuestFx(true)
+    questFxTimerRef.current = window.setTimeout(() => setQuestFx(false), 1400)
+    // 클리어 리액션: 대상 캐릭터의 방송 중 후원 감사 대본 및 음성 재생
+    const reactCreator = ownedCreatorsRef.current.find((c) => c.id === questTargetIdRef.current)
+    if (reactCreator) {
+      const resp =
+        pickRandomDonationThanks(reactCreator.name, locale) ||
+        pickRandomDonationThanks(reactCreator.id, locale)
+      if (resp) {
+        setQuestReaction(resp.text)
+        const promo =
+          getPromotionVoiceUrl(reactCreator.name) || getPromotionVoiceUrl(reactCreator.id)
+        const cands: string[] = [resp.voiceUrl]
+        if (promo) cands.push(promo)
+        setQuestVoices(cands)
+      }
+    }
+    if (questReactTimerRef.current) window.clearTimeout(questReactTimerRef.current)
+    questReactTimerRef.current = window.setTimeout(() => {
+      setQuestReaction('')
+      setQuestVoices([])
+    }, 6000)
+    scheduleAutoSave()
+  }
 
   function handleTutorialAutoAssign() {
     if (ownedCreatorsRef.current.length === 0 || studioSlotsRef.current.length === 0) return
@@ -4771,12 +5114,89 @@ export function InGame({
         <div className="flex min-w-0 flex-1 items-center justify-center gap-2 lg:gap-3">
           {broadcastPhase !== 'live' ? (
             <div className="game-hud-strip game-hud-strip--goal shrink-0">
-              <div className="game-hud-cell game-hud-cell--next-grade">
-                <div className="game-hud-cell-head">
-                  <IconHudNextGrade />
-                  <p className="game-stat-label">{t('hud.nextStationGrade')}</p>
+              <div className="game-hud-cell game-hud-cell--quest shrink-0">
+                <style>{`@keyframes qxFlash{0%{transform:translate(-50%,-50%) scale(.5);opacity:.95}100%{transform:translate(-50%,-50%) scale(2.7);opacity:0}}@keyframes qxPop{0%{transform:translate(-50%,-50%) scale(.3) rotate(0);opacity:0}12%{opacity:1}100%{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(1.15) rotate(120deg);opacity:0}}`}</style>
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <div className="relative shrink-0">
+                    {questKind && questTargetImg ? (
+                      <img
+                        src={questTargetImg}
+                        alt=""
+                        className={`relative z-10 h-10 w-10 rounded-full object-cover ring-2 ${
+                          questDone ? 'ring-emerald-400' : 'ring-white/25'
+                        }`}
+                      />
+                    ) : (
+                      <span className="relative z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-800/80 text-2xl leading-none">
+                        {questKind ? QUEST_DEFS[questKind].icon : '🎯'}
+                      </span>
+                    )}
+                    {questFx ? (
+                      <>
+                        <span
+                          aria-hidden
+                          className="pointer-events-none absolute left-1/2 top-1/2 h-12 w-12 rounded-full bg-emerald-300/40"
+                          style={{ animation: 'qxFlash .75s ease-out forwards' }}
+                        />
+                        {Array.from({ length: 10 }).map((_, i) => {
+                          const ang = (i / 10) * Math.PI * 2
+                          const dist = i % 2 === 0 ? 30 : 20
+                          return (
+                            <span
+                              key={i}
+                              aria-hidden
+                              className="pointer-events-none absolute left-1/2 top-1/2 text-sm font-black"
+                              style={
+                                {
+                                  '--tx': `${Math.round(Math.cos(ang) * dist)}px`,
+                                  '--ty': `${Math.round(Math.sin(ang) * dist - 6)}px`,
+                                  color:
+                                    i % 3 === 0
+                                      ? '#fde68a'
+                                      : i % 3 === 1
+                                        ? '#f0abfc'
+                                        : '#6ee7b7',
+                                  animation: 'qxPop .95s ease-out forwards',
+                                  animationDelay: `${i * 26}ms`,
+                                  textShadow: '0 0 8px currentColor',
+                                } as React.CSSProperties
+                              }
+                            >
+                              ✦
+                            </span>
+                          )
+                        })}
+                      </>
+                    ) : null}
+                    {questDone ? (
+                      <span className="absolute -bottom-0.5 -right-0.5 z-20 inline-flex h-4 w-4 items-center justify-center rounded-full border border-emerald-300 bg-emerald-500 text-[10px] font-black leading-none text-white">
+                        ✔
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="flex min-w-0 flex-col">
+                    <p className="game-stat-label">{t('mission.label')}</p>
+                    <p className="truncate text-[13px] font-black leading-tight text-slate-100">
+                      {questKind
+                        ? t(
+                            QUEST_DEFS[questKind].textKey,
+                            questTarget ? { name: questTarget } : undefined,
+                          )
+                        : '—'}
+                    </p>
+                    {questDone && questReward > 0 ? (
+                      <p className="truncate text-[10px] font-black leading-none text-emerald-300">
+                        {t('mission.reward', { reward: formatMoney(questReward) })}
+                      </p>
+                    ) : null}
+                    {questReaction ? (
+                      <p className="mt-1 max-w-[230px] rounded-md border border-white/10 bg-slate-900/80 px-1.5 py-1 text-[11px] font-semibold leading-snug text-white/95 shadow">
+                        <span className="mr-0.5 text-amber-300">“</span>
+                        {questReaction}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
-                <p className="game-stat-value text-violet-100">{nextStationGradeLabel}</p>
               </div>
               <div className="game-hud-cell game-hud-cell--next-goal">
                 <div className="game-hud-cell-head">
@@ -5099,6 +5519,7 @@ export function InGame({
             creators={toRankCreators(ownedCreators)}
             turnsUntilRankRefresh={rankRefreshTurnsLeft}
             rankPlay={rankBubblePlay}
+            promotionCelebration={promotionCelebration}
             onRankPlayDone={() => {
               setRankBubblePlay(null)
               const pending = pendingRankAfterBubbleRef.current
@@ -5564,7 +5985,11 @@ export function InGame({
           onConfirm={() => {
             const review = stationReview
             setStationReview(null)
-            if (review.promoted && review.status.next && review.status.next !== 'tiny') {
+            if (
+              review.promoted &&
+              review.status.next &&
+              review.status.next !== 'tiny'
+            ) {
               setStationAuditTarget({
                 currentTier: review.status.current,
                 nextTier: review.status.next as Exclude<StationGrade, 'black' | 'tiny'>,
@@ -5586,6 +6011,10 @@ export function InGame({
                 toGrade: nextGrade,
                 fromRank: oldRank,
                 toRank: newRank,
+              })
+              setPromotionCelebration({
+                fromGradeLabel: t(companyTierLabelKey(review.status.current)),
+                toGradeLabel: t(companyTierLabelKey(nextGrade)),
               })
               setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
               return
@@ -5700,6 +6129,10 @@ export function InGame({
                 fromRank: oldRank,
                 toRank: newRank,
               })
+              setPromotionCelebration({
+                fromGradeLabel: t(companyTierLabelKey(target.currentTier)),
+                toGradeLabel: t(companyTierLabelKey(nextGrade)),
+              })
               setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
               return
             }
@@ -5722,16 +6155,87 @@ export function InGame({
           fromRank={promotionFx.fromRank}
           toRank={promotionFx.toRank}
           onDone={() => {
-            // 배너가 끝나면 승급 반영 후 보유 캐릭터 축하 대사/보이스 재생
+            const nextGrade = promotionFx.toGrade
             applyPendingPromotion()
             setPromotionFx(null)
+            // 승급에 해당하는 공용 이벤트 (tiny -> promoteTiny, sme -> promoteSme 등) 확인
+            const promoSlotMap: Record<string, keyof CommonEventLinks> = {
+              tiny: 'promoteTiny',
+              sme: 'promoteSme',
+              mid: 'promoteMid',
+              large: 'promoteLarge',
+              top: 'promoteTop',
+            }
+            const slotKey = promoSlotMap[nextGrade]
+            const defaultEventIdMap: Partial<Record<string, string>> = {
+              tiny: 'event_promote_tiny',
+              sme: 'event_promote_sme',
+              mid: 'event_promote_mid',
+              large: 'event_promote_large',
+              top: 'event_promote_top',
+            }
+            const promoEventId =
+              (slotKey ? commonEventLinks?.[slotKey] : null) ||
+              defaultEventIdMap[nextGrade] ||
+              null
+            const promoEvent = promoEventId ? events.find((e) => e.id === promoEventId) : null
+
+            if (promoEvent) {
+              setPromoteEventPlay(promoEvent)
+            } else if (promoEventId) {
+              // events에 아직 없더라도 직접 로드 시도 (모든 등급 승급 대상, loc 번역 포함)
+              fetchEventWithLoc(promoEventId)
+                .then((evData) => {
+                  if (evData) {
+                    setPromoteEventPlay(evData)
+                  } else {
+                    const speaker = pickRandomOwnedPromotionSpeaker(ownedCreatorsRef.current)
+                    if (speaker) setPromotionCongratsPlay({ creator: speaker })
+                    else {
+                      setPromotionCelebration(null)
+                      continueMonthEndFlow()
+                    }
+                  }
+                })
+                .catch(() => {
+                  const speaker = pickRandomOwnedPromotionSpeaker(ownedCreatorsRef.current)
+                  if (speaker) setPromotionCongratsPlay({ creator: speaker })
+                  else {
+                    setPromotionCelebration(null)
+                    continueMonthEndFlow()
+                  }
+                })
+            } else {
+              const speaker = pickRandomOwnedPromotionSpeaker(ownedCreatorsRef.current)
+              if (speaker) {
+                setPromotionCongratsPlay({ creator: speaker })
+              } else {
+                setPromotionCelebration(null)
+                continueMonthEndFlow()
+              }
+            }
+          }}
+        />
+      ) : null}
+
+      {promoteEventPlay ? (
+        <EventSimulator
+          key={`promote-event-${promoteEventPlay.id}`}
+          event={promoteEventPlay}
+          mode="game"
+          onClose={() => {
+            onEventWatched?.(promoteEventPlay.id)
+            setPromoteEventPlay(null)
             const speaker = pickRandomOwnedPromotionSpeaker(ownedCreatorsRef.current)
             if (speaker) {
               setPromotionCongratsPlay({ creator: speaker })
             } else {
+              setPromotionCelebration(null)
               continueMonthEndFlow()
             }
           }}
+          registeredCharacters={registeredCharacters}
+          allowSkip={true}
         />
       ) : null}
 
@@ -5740,6 +6244,7 @@ export function InGame({
           play={promotionCongratsPlay}
           onClose={() => {
             setPromotionCongratsPlay(null)
+            setPromotionCelebration(null)
             continueMonthEndFlow()
           }}
         />
@@ -5780,6 +6285,20 @@ export function InGame({
             setEndingEventPlay(null)
             const openScout = pendingScoutAfterRankRef.current
             continueAfterMonthModals(openScout)
+          }}
+          registeredCharacters={registeredCharacters}
+          allowSkip={true}
+        />
+      ) : null}
+
+      {introEventPlay ? (
+        <EventSimulator
+          key={`intro-vn-${introEventPlay.id}`}
+          event={introEventPlay}
+          mode="game"
+          onClose={() => {
+            onEventWatched?.(introEventPlay.id)
+            setIntroEventPlay(null)
           }}
           registeredCharacters={registeredCharacters}
           allowSkip={true}

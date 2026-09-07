@@ -25,6 +25,12 @@ export type RankBubblePlay = {
   toRank: number
 }
 
+/** 승급 축하 연출용 정보 — RankingPanel 내부 오버레이에서 사용 */
+export type RankPromotionCelebration = {
+  fromGradeLabel: string
+  toGradeLabel: string
+}
+
 type RankingPanelProps = {
   league: LeagueState
   stationGrade: StationGrade
@@ -35,6 +41,8 @@ type RankingPanelProps = {
   turnsUntilRankRefresh: number
   rankPlay?: RankBubblePlay | null
   onRankPlayDone?: () => void
+  /** 승급 축하 연출 정보 — 전달 시 랭킹 패널에 축하 메시지/파티클이 표시됨 */
+  promotionCelebration?: RankPromotionCelebration | null
   creators: Array<{ grade: Grade; snsSubscribers?: number }>
   onOpenScout?: () => void
 }
@@ -53,6 +61,7 @@ export function RankingPanel({
   turnsUntilRankRefresh,
   rankPlay = null,
   onRankPlayDone,
+  promotionCelebration = null,
   creators,
 }: RankingPanelProps) {
   const { t } = useTranslation()
@@ -112,6 +121,9 @@ export function RankingPanel({
 
   return (
     <div className="rank-arena">
+      {promotionCelebration ? (
+        <CelebrationOverlay celebration={promotionCelebration} />
+      ) : null}
       <div className="rank-stats" role="status">
         <div className="rank-stats-row">
           <span className="rank-stats-ico rank-stats-ico--viewers" aria-hidden />
@@ -399,4 +411,66 @@ function RewardSummary({ reward }: { reward: MilestoneReward }) {
   if (reward.specialEventUnlock) parts.push(t('ranking.rewardHidden'))
   if (reward.isGameClear) parts.push(t('ranking.rewardClear'))
   return <span>{parts.join(' · ') || t('ranking.noReward')}</span>
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ * 승급 축하 오버레이 — 랭킹 패널 상단에 축하 메시지와 파티클 이펙트 표시
+ * ═══════════════════════════════════════════════════════════════════ */
+const CELEBRATION_CONFETTI_COLORS = [
+  '#fbbf24',
+  '#fde68a',
+  '#fb923c',
+  '#f472b6',
+  '#a5f3fc',
+  '#6ee7b7',
+  '#c084fc',
+  '#f87171',
+]
+
+function CelebrationOverlay({
+  celebration,
+}: {
+  celebration: RankPromotionCelebration
+}) {
+  const { t } = useTranslation()
+  return (
+    <div className="rank-celebration" aria-live="assertive" role="status">
+      {/* 파티클 (콘페티) */}
+      <div className="rank-celebration-confetti" aria-hidden>
+        {Array.from({ length: 36 }, (_, i) => (
+          <span
+            key={i}
+            className="rank-confetti-piece"
+            style={
+              {
+                '--cx': `${(i * 2.8) % 100}%`,
+                '--cd': `${(i % 12) * 0.12}s`,
+                '--cl': CELEBRATION_CONFETTI_COLORS[i % CELEBRATION_CONFETTI_COLORS.length],
+                '--cr': `${(i * 37) % 360}deg`,
+                '--cs': `${0.6 + (i % 4) * 0.22}`,
+              } as CSSProperties
+            }
+          />
+        ))}
+      </div>
+
+      {/* 글로우 라이트 빔 */}
+      <div className="rank-celebration-glow" aria-hidden />
+
+      {/* 축하 메시지 카드 */}
+      <div className="rank-celebration-card">
+        <p className="rank-celebration-kicker">
+          {t('station.reviewKicker')}
+        </p>
+        <h2 className="rank-celebration-title">
+          {t('station.reviewPass')}
+        </h2>
+        <div className="rank-celebration-grades">
+          <span className="rank-celebration-from">{celebration.fromGradeLabel}</span>
+          <span className="rank-celebration-arrow">→</span>
+          <span className="rank-celebration-to">{celebration.toGradeLabel}</span>
+        </div>
+      </div>
+    </div>
+  )
 }

@@ -41,6 +41,7 @@
     "weekUnit": "週",
     "nextStationGrade": "次の放送局等級",
     "nextGoal": "目標視聴者",
+    "mission": "ミッション",
     "nextGradeMaxed": "最高等級",
     "nextGoalMaxed": "達成済み",
     "nextGoalReady": "審査条件達成",
@@ -505,6 +506,8 @@
     "reviewMax": "最高等級維持",
     "reviewMaxBody": "すでに一流企業です。順位上限と視聴者キャップが解除されています。",
     "reviewFailBody": "条件を満たせず等級が維持されます。降格はありません。来月に再度審査します。",
+    "previousGrade": "以前の等級",
+    "promotedGrade": "昇格後の等級",
     "rewardTitle": "昇格報酬",
     "rewardSp": "SP +{n}",
     "rewardSlots": "スタジオスロット {n}枠解放",
@@ -946,7 +949,21 @@
     "failNoCardsDesc": "出札可能なクリエイターカードがなくなりました。スタミナを回復して再挑戦してください。",
     "failDefaultDesc": "目標満足度の達成に失敗しました。デッキを強化して再挑戦してください。",
     "passConfirmBtn": "🎉 昇格確定＆つづける",
+    "inspectorAttack": "⚔️ 審査官の反撃！",
+    "inspectorComment": "⚖️ 審査評",
+    "satisfactionScoreFormat": "{current} / {target} 点 ({percent}%)",
     "failRetryBtn": "確認＆再挑戦"
+  },
+  "promotionNotice": {
+    "badge": "PROMOTION EXAM READY",
+    "title": "🎓 昇格審査の資格を獲得！",
+    "desc": "目標ステータスを達成し、上位等級の審査に挑戦できるようになりました。",
+    "currentGrade": "現在の等級",
+    "targetGrade": "審査目標",
+    "readyDesc": "{name} さんが {toGrade}等級昇格審査を受ける準備ができました。",
+    "readyHint": "クリエイター管理メニューから昇格審査を進めてください。",
+    "later": "後で",
+    "goToCreator": "クリエイター管理へ移動 ➔"
   },
   "gallery": {
     "title": "ギャラリー",
@@ -976,6 +993,39 @@
     "slotDate1": "デート 1",
     "slotDate2": "デート 2",
     "slotEnding": "エンディングストーリー"
+  },
+  "mission": {
+    "viewers": {
+      "title": "目標視聴者 {viewers}人達成",
+      "hintNoCreator": "まずクリエイターをスカウトし、スタジオに配置して配信を始めましょう。",
+      "hintLow": "視聴者が足りません。スケジュールにキャラクターを配置して配信し、SNSを投稿すると視聴者・フォロワーが増えます。",
+      "hintClose": "もう少し！視聴者 {cur}人 / {viewers}人。配信とSNSでラストスパート！"
+    },
+    "grade": {
+      "title": "{grade}等級クリエイター {count}人準備",
+      "hintPromote": "等級要件を満たしました。該当キャラクターを昇格させて審査準備を完了しましょう。",
+      "hintTrain": "次の昇格には{grade}等級以上 {need}人が必要です。（現在 {have}人）配信・トレーニングで育てて等級を上げましょう。"
+    },
+    "audit": {
+      "title": "昇格審査に挑戦",
+      "hint": "すべての条件を満たしました！昇格審査官に会い、審査に挑戦しましょう。",
+      "titleAuto": "昇格条件達成",
+      "hintAuto": "すべての条件を満たしました。昇格が進行します。"
+    },
+    "rank1": {
+      "title": "放送局1位達成",
+      "hintDone": "おめでとうございます！放送局1位に到達しました。",
+      "hintBroadcast": "視聴者をさらに集めて放送局1位を目指しましょう。配信を続け、SNSを投稿しましょう。",
+      "hintReach": "放送局1位まで目標視聴者 {top}人。配信を続け、SNSを投稿しましょう。"
+    },
+    "label": "クエスト",
+    "reward": "クエスト完了！報酬 +{reward}",
+    "quest": {
+      "sns": "{name}のSNSを投稿してください",
+      "train": "{name}のトレーニングを行ってください",
+      "vacation": "{name}に特別休暇を与えてください",
+      "promote": "{name}の等級を昇格してください"
+    }
   },
   "tutorial": {
     "skip": "チュートリアルをスキップ",

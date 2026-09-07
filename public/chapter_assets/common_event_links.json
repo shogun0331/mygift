@@ -1,8 +1,9 @@
 {
+  "intro": "event_intro_station",
   "vipAppear": null,
-  "promoteTiny": null,
+  "promoteTiny": "event_promote_tiny",
   "promoteSme": null,
   "promoteMid": null,
   "promoteLarge": null,
-  "promoteTop": null
+  "promoteTop": "event_promote_top"
 }

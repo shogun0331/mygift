@@ -41,6 +41,7 @@
     "weekUnit": "sem.",
     "nextStationGrade": "Siguiente grado",
     "nextGoal": "Espectadores objetivo",
+    "mission": "Misión",
     "nextGradeMaxed": "Grado máximo",
     "nextGoalMaxed": "Completado",
     "nextGoalReady": "Listo para revisión",
@@ -513,6 +514,8 @@
     "reviewMax": "Grado máximo mantenido",
     "reviewMaxBody": "Ya eres una empresa de primer nivel. Límites de rango y espectadores liberados.",
     "reviewFailBody": "No cumpliste las condiciones; el grado se mantiene. No hay descenso. Se revisa el próximo mes.",
+    "previousGrade": "Grado anterior",
+    "promotedGrade": "Nuevo grado",
     "rewardTitle": "Recompensa de ascenso",
     "rewardAssets": "Activos +{amount}",
     "rewardSp": "SP +{n}",
@@ -990,7 +993,21 @@
     "failNoCardsDesc": "Se han agotado las cartas jugables. Recupera estamina e inténtalo de nuevo.",
     "failDefaultDesc": "No se alcanzó la satisfacción objetivo. Refuerza tu mazo e inténtalo de nuevo.",
     "passConfirmBtn": "🎉 Confirmar Ascenso y Continuar",
+    "inspectorAttack": "⚔️ ¡Contraataque del inspector!",
+    "inspectorComment": "⚖️ Veredicto",
+    "satisfactionScoreFormat": "{current} / {target} pts ({percent}%)",
     "failRetryBtn": "Confirmar Reintento"
+  },
+"promotionNotice": {
+    "badge": "PROMOTION EXAM READY",
+    "title": "🎓 ¡Calificación para el examen de ascenso obtenida!",
+    "desc": "Has alcanzado las estadísticas objetivo. Ya puedes desafiar el examen del siguiente grado.",
+    "currentGrade": "Grado actual",
+    "targetGrade": "Objetivo del examen",
+    "readyDesc": "{name} está listo(a) para presentar el examen de ascenso al grado {toGrade}.",
+    "readyHint": "Ve al menú de Gestión de Creadores para iniciar el examen de ascenso.",
+    "later": "Más tarde",
+    "goToCreator": "Ir a Gestión de Creadores ➔"
   },
   "gallery": {
     "title": "Galería",
@@ -1020,6 +1037,39 @@
     "slotDate1": "Cita 1",
     "slotDate2": "Cita 2",
     "slotEnding": "Historia final"
+  },
+  "mission": {
+    "viewers": {
+      "title": "Alcanzar {viewers} espectadores",
+      "hintNoCreator": "Primero recluta un creador, asígnalo a un estudio y comienza a transmitir.",
+      "hintLow": "Faltan espectadores. Coloca personajes en el horario para transmitir y publica SNS para crecer.",
+      "hintClose": "¡Casi! Espectadores {cur} / {viewers}. Sigue transmitiendo y publicando SNS."
+    },
+    "grade": {
+      "title": "Prepara {count} creadores de grado {grade}",
+      "hintPromote": "Requisitos de grado cumplidos. Promueve al personaje para terminar la preparación.",
+      "hintTrain": "El próximo ascenso requiere {need} creadores de grado {grade}+ (actualmente {have}). Transmite, entrena y promueve."
+    },
+    "audit": {
+      "title": "Desafiar auditoría de ascenso",
+      "hint": "¡Todas las condiciones cumplidas! Conoce al auditor y desafia la auditoría.",
+      "titleAuto": "Condiciones de ascenso cumplidas",
+      "hintAuto": "Todas las condiciones cumplidas. El ascenso procederá."
+    },
+    "rank1": {
+      "title": "Alcanzar el puesto #1",
+      "hintDone": "¡Felicidades! Has alcanzado el puesto #1 de la cadena.",
+      "hintBroadcast": "Consigue más espectadores para el puesto #1. Sigue transmitiendo y publicando SNS.",
+      "hintReach": "Objetivo: {top} espectadores para el puesto #1. Sigue transmitiendo y publicando SNS."
+    },
+    "label": "Misión",
+    "reward": "¡Misión completa! Recompensa +{reward}",
+    "quest": {
+      "sns": "Publicar SNS de {name}",
+      "train": "Entrenar a {name}",
+      "vacation": "Dar vacaciones especiales a {name}",
+      "promote": "Promover el grado de {name}"
+    }
   },
   "tutorial": {
     "skip": "Saltar tutorial",

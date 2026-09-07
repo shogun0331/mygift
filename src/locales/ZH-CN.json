@@ -41,6 +41,7 @@
     "weekUnit": "周",
     "nextStationGrade": "下一广播局等级",
     "nextGoal": "目标观众",
+    "mission": "任务",
     "nextGradeMaxed": "最高等级",
     "nextGoalMaxed": "已达成",
     "nextGoalReady": "已满足审核条件",
@@ -513,6 +514,8 @@
     "reviewMax": "最高等级保持",
     "reviewMaxBody": "已是一流企业。排名上限与观众上限已解除。",
     "reviewFailBody": "条件未满足，等级保持。不会降级。下月再次审核。",
+    "previousGrade": "上一等级",
+    "promotedGrade": "晋升等级",
     "rewardTitle": "晋升奖励",
     "rewardAssets": "资产 +{amount}",
     "rewardSp": "SP +{n}",
@@ -990,7 +993,21 @@
     "failNoCardsDesc": "可出牌的创作者卡片已耗尽。请恢复体力后重试。",
     "failDefaultDesc": "未能达到目标满意度。请强化卡组后重试。",
     "passConfirmBtn": "🎉 确认晋升并继续",
+    "inspectorAttack": "⚔️ 审核官反击！",
+    "inspectorComment": "⚖️ 审核评语",
+    "satisfactionScoreFormat": "{current} / {target} 分 ({percent}%)",
     "failRetryBtn": "确认并重试"
+  },
+  "promotionNotice": {
+    "badge": "PROMOTION EXAM READY",
+    "title": "🎓 获得升级审核资格！",
+    "desc": "已达成目标属性，可以挑战更高等级的审核了。",
+    "currentGrade": "当前等级",
+    "targetGrade": "审核目标",
+    "readyDesc": "{name} 已准备好进行 {toGrade}级升级审核。",
+    "readyHint": "前往角色管理菜单进行升级审核。",
+    "later": "稍后",
+    "goToCreator": "前往角色管理 ➔"
   },
   "gallery": {
     "title": "画廊",
@@ -1020,6 +1037,39 @@
     "slotDate1": "约会 1",
     "slotDate2": "约会 2",
     "slotEnding": "结局故事"
+  },
+  "mission": {
+    "viewers": {
+      "title": "达成目标观众 {viewers}人",
+      "hintNoCreator": "先招募主播，安排到演播室开始直播。",
+      "hintLow": "观众不足。在时间表中安排角色进行直播，发布SNS来增加观众和订阅者。",
+      "hintClose": "就差一点！观众 {cur}人 / {viewers}人。继续直播和发布SNS！"
+    },
+    "grade": {
+      "title": "准备 {count}名 {grade}等级主播",
+      "hintPromote": "等级要求已满足。将该角色升级以完成审核准备。",
+      "hintTrain": "下次升级需要 {grade}等级以上 {need}人。（当前 {have}人）通过直播、培训来提升等级。"
+    },
+    "audit": {
+      "title": "挑战升级审核",
+      "hint": "所有条件已满足！去见审核官，挑战审核吧。",
+      "titleAuto": "升级条件满足",
+      "hintAuto": "所有条件已满足。升级即将进行。"
+    },
+    "rank1": {
+      "title": "达成广播局第一名",
+      "hintDone": "恭喜！你已登顶广播局第一名。",
+      "hintBroadcast": "继续收集观众以登顶第一名。持续直播和发布SNS。",
+      "hintReach": "目标：再获 {top}名观众登顶第一名。持续直播和发布SNS。"
+    },
+    "label": "任务",
+    "reward": "任务完成！奖励 +{reward}",
+    "quest": {
+      "sns": "发布{name}的SNS",
+      "train": "对{name}进行培训",
+      "vacation": "给{name}特别假期",
+      "promote": "升级{name}的等级"
+    }
   },
   "tutorial": {
     "skip": "跳过教程",
