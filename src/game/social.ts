@@ -204,85 +204,90 @@ function consumeChannel(): SpawnChannel {
  */
 import type { StationGrade } from './stationGradeConfig'
 
+/** 세이브/로드 등으로 wait가 음수/비정상이면 0~2로 정규화 (2턴 캐던스 보호) */
+function normalizeSpawnState(raw: SocialSpawnState): SocialSpawnState {
+  const clamp = (v: unknown) => {
+    const n = Number(v)
+    const safe = Number.isFinite(n) ? n : 2
+    return Math.min(2, Math.max(0, Math.round(safe)))
+  }
+  return {
+    date: { wait: clamp(raw?.date?.wait), ready: Boolean(raw?.date?.ready) },
+    vip: { wait: clamp(raw?.vip?.wait), ready: Boolean(raw?.vip?.ready) },
+    h: { wait: clamp(raw?.h?.wait), ready: Boolean(raw?.h?.ready) },
+  }
+}
+
+function allChannels(channel: SpawnChannel): SocialSpawnState {
+  return { date: { ...channel }, vip: { ...channel }, h: { ...channel } }
+}
+
+/**
+ * 월 종료 시 호출.
+ * 2턴 캐던스가 차면 메인 이벤트(데이트 1·2차 / 첫 H)가 남아 있을 경우
+ * {무조건} 1개를 발행한다. 메인 이벤트가 모두 소진된 이후에는
+ * VIP/H 재이용을 확률(80%)로 발행한다.
+ * 블락(게임 클리어) 중에는 캐던스를 소모하지 않고 유지한다.
+ */
 export function advanceAndPickSocialEvent(
   state: SocialSpawnState,
   roster: OwnedCreator[],
   blocked: boolean,
   stationGrade?: StationGrade,
 ): { state: SocialSpawnState; event: SocialPending | null } {
-  const currentWait = state.date?.wait ?? 2
+  const normalized = normalizeSpawnState(state)
+  const currentWait = normalized.date.wait
+
+  // 블락(게임 클리어 등) 중에는 캐던스를 소모하지 않고 유지
+  if (blocked) {
+    return { state: normalized, event: null }
+  }
+
   const nextWait = currentWait - 1
 
-  const nextState: SocialSpawnState = {
-    date: { wait: nextWait, ready: nextWait <= 0 },
-    vip: { wait: nextWait, ready: nextWait <= 0 },
-    h: { wait: nextWait, ready: nextWait <= 0 },
+  // 아직 2턴이 채워지지 않은 경우 대기
+  if (nextWait > 0) {
+    return {
+      state: allChannels({ wait: nextWait, ready: false }),
+      event: null,
+    }
   }
 
-  // 아직 2달(2턴)이 되지 않았거나 블락된 경우 이벤트 없음
-  if (nextWait > 0 || blocked) {
-    return { state: nextState, event: null }
-  }
-
-  // 1. 메인 이벤트 대상 검색: 데이트 1·2차(dateArcStep < 2) 및 첫 H 이벤트(dateArcStep === 2)
+  // 1. 메인 이벤트 대상 검색: 데이트 1·2차(dateArcStep < 2) 및 첫 H(dateArcStep === 2)
   const mainDateTarget = pickDateTarget(roster)
   const mainHUnlockTarget = pickHUnlockTarget(roster)
 
   let event: SocialPending | null = null
 
-  // 1) 메인 이벤트가 남아있는 경우 -> 메인 이벤트 진행 (높은 확률 약 85%)
   if (mainDateTarget || mainHUnlockTarget) {
-    if (rollChance(DATE_SPAWN.chance)) {
-      if (mainDateTarget && mainHUnlockTarget) {
-        event = Math.random() < 0.5 ? buildDatePending(mainDateTarget) : buildDatePending(mainHUnlockTarget)
-      } else if (mainDateTarget) {
-        event = buildDatePending(mainDateTarget)
-      } else if (mainHUnlockTarget) {
-        event = buildDatePending(mainHUnlockTarget)
-      }
+    // 메인 이벤트가 남아 있으면 확률 판정 없이 무조건 발행 (2턴 캐던스 보장)
+    if (mainDateTarget && mainHUnlockTarget) {
+      event = Math.random() < 0.5 ? buildDatePending(mainDateTarget) : buildDatePending(mainHUnlockTarget)
+    } else if (mainDateTarget) {
+      event = buildDatePending(mainDateTarget)
+    } else if (mainHUnlockTarget) {
+      event = buildDatePending(mainHUnlockTarget)
     }
   } else {
-    // 2) 메인 이벤트가 없을 경우 -> VIP 이벤트 및 H 재이벤트(H 완료된 크리에이터 대상) 중 높은 확률(약 80%)로 등장
+    // 2) 메인 이벤트가 없을 경우 -> VIP 및 H 재이용 중 확률(80%)로 발행
     const isVipAllowed = !stationGrade || (stationGrade !== 'black' && stationGrade !== 'tiny')
     const vipTarget = isVipAllowed ? pickVipTarget(roster) : null
-    const hRetryTarget = pickHCompletedTarget(roster) // dateArcStep >= 3 (메인 H이벤트가 지난 크리에이터만)
+    const hRetryTarget = pickHCompletedTarget(roster)
 
     const candidatePool: SocialPending[] = []
-    if (vipTarget) {
-      candidatePool.push({ kind: 'vip', offer: toVipOffer(vipTarget) })
-    }
-    if (hRetryTarget) {
-      candidatePool.push(buildHRetryPending(hRetryTarget))
-    }
+    if (vipTarget) candidatePool.push({ kind: 'vip', offer: toVipOffer(vipTarget) })
+    if (hRetryTarget) candidatePool.push(buildHRetryPending(hRetryTarget))
 
-    if (candidatePool.length > 0) {
-      // 높은 확률로 등장 (무조건 100%는 아님, 약 80%)
-      if (rollChance(0.80)) {
-        event = candidatePool[Math.floor(Math.random() * candidatePool.length)]
-      }
+    if (candidatePool.length > 0 && rollChance(0.8)) {
+      event = candidatePool[Math.floor(Math.random() * candidatePool.length)] ?? null
     }
   }
 
   // 소셜 이벤트가 발행된 경우 쿨다운을 2달(2턴)로 리셋
   if (event) {
-    const resetChannel = consumeChannel()
-    return {
-      state: {
-        date: resetChannel,
-        vip: resetChannel,
-        h: resetChannel,
-      },
-      event,
-    }
+    return { state: allChannels(consumeChannel()), event }
   }
 
-  // 이번 턴에 확률로 미발동되었거나 대상이 없어 발행하지 못한 경우, 다음 턴에도 즉시 판정 시도할 수 있도록 wait: 0 유지
-  return {
-    state: {
-      date: { wait: 0, ready: true },
-      vip: { wait: 0, ready: true },
-      h: { wait: 0, ready: true },
-    },
-    event: null,
-  }
+  // 미발행(2차 확률 미달/대상 없음) → 다음 턴 즉시 재판정
+  return { state: allChannels({ wait: 0, ready: true }), event: null }
 }
