@@ -75,7 +75,7 @@ check(config.balance?.viewerPerCommPoint === 20, `balance.viewerPerCommPoint = 2
 check(config.balance?.viewerOrganicGrowthRate === 0.1, `balance.viewerOrganicGrowthRate = 0.1 (실제: ${config.balance?.viewerOrganicGrowthRate})`)
 check(config.balance?.viewerGrowthRate === 0.18, `balance.viewerGrowthRate = 0.18 (실제: ${config.balance?.viewerGrowthRate})`)
 check(config.balance?.idleViewerDecay === 0.04, `balance.idleViewerDecay = 0.04 (실제: ${config.balance?.idleViewerDecay})`)
-check(config.balance?.subscriberViewerRate === 0.2, `balance.subscriberViewerRate = 0.2 (실제: ${config.balance?.subscriberViewerRate})`)
+check(config.balance?.subscriberViewerRate === 0.05, `balance.subscriberViewerRate = 0.05 (실제: ${config.balance?.subscriberViewerRate})`)
 
 // 2) 승급 판정 — tiny, 10000명 → eligible
 const r5000 = applyStationReview(config, 'tiny', 10000)

@@ -22,7 +22,9 @@ export const CARE_CONDITION_FLOOR = 90
 export const SECURITY_CHANCE_MUL = 0
 export const REPAIR_FAIL_MUL = 0
 export const PRODUCTION_REVENUE_MUL = 1.25
-export const PRODUCTION_VIEWER_BONUS_RATE = 0.02
+/** 생산 스탭 주간 시청자 보너스 비율. 과거 0.02(2%)였으나 슬롯 수×주 수(6×4=24회/월)로
+ *  복리 폭증해 월 +60%에 달해 과하게 높았음. 0.2%로 낮춰 월 약 +5% 수준으로 조정. */
+export const PRODUCTION_VIEWER_BONUS_RATE = 0.002
 export const PRODUCTION_VIEWER_BONUS_MIN = 12
 
 export function productionViewerBonus(currentViewers: number) {
