@@ -4116,9 +4116,9 @@ export function InGame({
     if (lastVipActionMonthByCreatorRef.current[creatorId] === broadcastMonthNumberRef.current) return
     const creator = ownedCreatorsRef.current.find((c) => c.id === creatorId)
     if (!creator) return
-    const next = { ...lastVipActionMonthByCreatorRef.current, [creatorId]: broadcastMonthNumberRef.current }
-    lastVipActionMonthByCreatorRef.current = next
-    setLastVipActionMonthByCreator(next)
+    const updatedVipMap = { ...lastVipActionMonthByCreatorRef.current, [creatorId]: broadcastMonthNumberRef.current }
+    lastVipActionMonthByCreatorRef.current = updatedVipMap
+    setLastVipActionMonthByCreator(updatedVipMap)
 
     const offer = toVipOffer(creator)
     const payout = rollVipAcceptPayout(leagueRef.current.currentRank)
@@ -5926,15 +5926,8 @@ export function InGame({
         <SnsResultModal
           result={snsResultQueue[0]}
           onConfirm={() => {
-            const current = snsResultQueue[0]
-            if (current && current.viewersGained > 0) {
-              const nextViewers = capStationViewers(
-                leagueRef.current.viewers + current.viewersGained,
-                stationGradeRef.current,
-              )
-              leagueRef.current = { ...leagueRef.current, viewers: nextViewers }
-              setLeague(leagueRef.current)
-            }
+            // SNS 시청자는 월말 처리(finishBroadcastMonth)에서 이미 league 시청자에 반영됨.
+            // 여기서 다시 더하면 2중 가산이 되므로 추가하지 않는다.
             const rest = snsResultQueueRef.current.slice(1)
             snsResultQueueRef.current = rest
             setSnsResultQueue(rest)
