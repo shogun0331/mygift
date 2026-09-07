@@ -22,15 +22,16 @@ export const CARE_CONDITION_FLOOR = 90
 export const SECURITY_CHANCE_MUL = 0
 export const REPAIR_FAIL_MUL = 0
 export const PRODUCTION_REVENUE_MUL = 1.25
-/** 생산 스탭 주간 시청자 보너스 비율. 과거 0.02(2%)였으나 슬롯 수×주 수(6×4=24회/월)로
- *  복리 폭증해 월 +60%에 달해 과하게 높았음. 0.2%로 낮춰 월 약 +5% 수준으로 조정. */
-export const PRODUCTION_VIEWER_BONUS_RATE = 0.002
+/** 프로덕션 스탭 주간 시청자 보너스 — 해당 캐릭터의 SNS 구독자 수 기준 비례.
+ *  과거 시청자 수 기준(2%)이었으나 복리 폭증 문제로 SNS 구독자 수 기준으로 변경.
+ *  SNS 구독자 최대 10만 명, 2% → 최대 +2,000/회, 주 1회 × 4주 = 월 최대 +8,000. */
+export const PRODUCTION_VIEWER_BONUS_RATE = 0.02
 export const PRODUCTION_VIEWER_BONUS_MIN = 12
 
-export function productionViewerBonus(currentViewers: number) {
+export function productionViewerBonus(snsSubscribers: number) {
   return Math.max(
     PRODUCTION_VIEWER_BONUS_MIN,
-    Math.round(Math.max(0, currentViewers) * PRODUCTION_VIEWER_BONUS_RATE),
+    Math.round(Math.max(0, snsSubscribers) * PRODUCTION_VIEWER_BONUS_RATE),
   )
 }
 

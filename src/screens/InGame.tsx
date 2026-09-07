@@ -2463,12 +2463,12 @@ export function InGame({
     )
   }
 
-  function grantProductionBonus(slotId: string, creatorId: string, creatorName: string) {
+  function grantProductionBonus(slotId: string, creatorId: string, creatorName: string, snsSubscribers: number) {
     if (productionBonusShownRef.current.has(slotId)) return
     const production = staffBonusOf(managerStateRef.current, slotId, 'production')
     if (!production.equipped) return
     productionBonusShownRef.current.add(slotId)
-    const bonus = productionViewerBonus(leagueRef.current.viewers)
+    const bonus = productionViewerBonus(snsSubscribers)
     if (bonus > 0) {
       const beforeViewers = leagueRef.current.viewers
       const nextViewers = capStationViewers(
@@ -2667,7 +2667,12 @@ export function InGame({
     if (alreadyBroken) {
       // 고장난 칸은 장비 검사/프로덕션만 스킵. 보안 연출은 이미 처리됨.
       if (!blockedOrResolved || staffBonusOf(managers, inspection.slotId, 'production').equipped) {
-        grantProductionBonus(inspection.slotId, creator.id, characterDisplayName(creator, locale))
+        grantProductionBonus(
+          inspection.slotId,
+          creator.id,
+          characterDisplayName(creator, locale),
+          creator.snsSubscribers ?? 0,
+        )
       }
       return
     }
@@ -2712,7 +2717,12 @@ export function InGame({
 
     // 프로덕션은 매 검사마다 한 번 보너스·연출 (슬롯당 주 1회는 grant 쪽에서 가드)
     if (!blockedOrResolved || staffBonusOf(managers, inspection.slotId, 'production').equipped) {
-      grantProductionBonus(inspection.slotId, creator.id, characterDisplayName(creator, locale))
+      grantProductionBonus(
+        inspection.slotId,
+        creator.id,
+        characterDisplayName(creator, locale),
+        creator.snsSubscribers ?? 0,
+      )
     }
   }
 
@@ -2922,7 +2932,12 @@ export function InGame({
       const slotId = findSlotIdForCreator(studioSlotsRef.current, creatorId)
       const creator = nextOwned.find((row) => row.id === creatorId)
       if (!slotId || !creator) continue
-      grantProductionBonus(slotId, creator.id, characterDisplayName(creator, locale))
+      grantProductionBonus(
+        slotId,
+        creator.id,
+        characterDisplayName(creator, locale),
+        creator.snsSubscribers ?? 0,
+      )
     }
 
     const failMulBySlotId: Record<string, number> = {}
