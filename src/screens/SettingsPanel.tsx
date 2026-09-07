@@ -3,6 +3,7 @@ import { getBgmVolumePercent, setBgmVolumePercent } from '../game/bgm'
 import { getSeVolumePercent, setSeVolumePercent, playSfx } from '../game/uiSfx'
 import { getDisplayMode, setDisplayMode, type DisplayMode } from '../game/displayMode'
 import { useState } from 'react'
+import { AchievementsPanel } from './AchievementsPanel'
 
 type SettingsPanelProps = {
   onClose: () => void
@@ -13,6 +14,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const [bgmVolume, setBgmVolumeState] = useState(() => getBgmVolumePercent())
   const [seVolume, setSeVolumeState] = useState(() => getSeVolumePercent())
   const [displayModeState, setDisplayModeState] = useState<DisplayMode>(() => getDisplayMode())
+  const [showAchievements, setShowAchievements] = useState(false)
 
   return (
     <div className="save-panel-slide-in relative z-20 flex flex-col h-[84vh] max-h-[720px] w-[clamp(440px,48vw,780px)] rounded-3xl border-2 border-indigo-500/40 bg-slate-950/95 backdrop-blur-2xl p-6 sm:p-7 shadow-[0_0_90px_rgba(79,70,229,0.35)] select-none">
@@ -185,7 +187,40 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             </div>
           </div>
         </div>
+
+        {/* Achievements Navigation Button */}
+        <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-950/30 via-slate-900/50 to-amber-950/30 p-4 space-y-2.5 backdrop-blur-md">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xs sm:text-sm font-black text-amber-300 tracking-wide uppercase flex items-center gap-2 font-mono">
+                <span>🏆</span> {t('menu.achievements') || '업적 (ACHIEVEMENTS)'}
+              </h3>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                {t('achievements.subtitle') || '게임 내 모든 도전 과제 달성 현황을 확인합니다.'}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              playSfx('ui-click')
+              setShowAchievements(true)
+            }}
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-black border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 text-amber-200 shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_25px_rgba(245,158,11,0.4)] transition-all cursor-pointer"
+          >
+            <span>🏆</span>
+            <span>{t('menu.achievements') || '업적 확인하기'}</span>
+            <span className="font-mono text-xs text-amber-400">▶</span>
+          </button>
+        </div>
       </div>
+
+      {/* Fullscreen Achievements Modal when opened inside settings */}
+      {showAchievements && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 sm:p-6">
+          <AchievementsPanel onClose={() => setShowAchievements(false)} />
+        </div>
+      )}
     </div>
   )
 }

@@ -380,6 +380,10 @@ export type OwnedCreator = RegisteredCharacter & {
   snsSubscribers?: number
   /** 연속 가벼운 어필 횟수. 파격적인 화보 가중치 */
   snsHeat3Pity?: number
+  /** 방송 턴 누적 트레이닝 카운트 */
+  trainingTurns?: number
+  /** 상세보기 VIP 만남 — 캐릭터당 1회 */
+  vipUsed?: boolean
   /** @deprecated trust 사용. 구 세이브 호환용 */
   loyalty?: number
 }
@@ -518,6 +522,7 @@ export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
     condition: conditionFromScore(conditionScore),
     restStreak: 0,
     lastVacationMonth: null,
+    vipUsed: false,
     dateArcStep: 0,
     snsPublishedIds: [],
     snsFeed: [],
@@ -559,7 +564,8 @@ export function normalizeOwnedCreator(
     conditionScore = mid[conditionTier] ?? 60
   }
   conditionScore = Math.max(0, Math.min(100, Math.round(conditionScore)))
-  const lastVacationMonthRaw = Number(raw.lastVacationMonth)
+  const lastVacationMonthRaw =
+    raw.lastVacationMonth == null ? Number.NaN : Number(raw.lastVacationMonth)
   const arcRaw = Math.round(Number(raw.dateArcStep ?? 0) || 0)
   const dateArcStep: 0 | 1 | 2 | 3 = arcRaw <= 0 ? 0 : arcRaw === 1 ? 1 : arcRaw === 2 ? 2 : 3
   const personalityOf = (value: unknown) => {
@@ -583,7 +589,11 @@ export function normalizeOwnedCreator(
     conditionScore,
     condition: conditionFromScore(conditionScore),
     restStreak: Math.max(0, Math.round(Number(raw.restStreak ?? 0) || 0)),
-    lastVacationMonth: Number.isFinite(lastVacationMonthRaw) ? lastVacationMonthRaw : null,
+    lastVacationMonth:
+      Number.isFinite(lastVacationMonthRaw) && lastVacationMonthRaw > 0
+        ? Math.round(lastVacationMonthRaw)
+        : null,
+    vipUsed: Boolean(raw.vipUsed),
     proposalState:
       raw.proposalState === 'accepted'
         ? 'accepted'

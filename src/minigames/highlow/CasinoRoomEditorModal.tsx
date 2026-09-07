@@ -115,7 +115,7 @@ export const CasinoRoomEditorModal: React.FC<CasinoRoomEditorModalProps> = ({
               className="w-full accent-cyan-400 cursor-pointer"
             />
             <p className="text-[10px] text-slate-400 leading-relaxed">
-              * 딜러 프로필 하단에 승리 보상 아이템(카드 엿보기, 배당 2배, 패배 무효화 쉴드, 스태프 영입권)이 등장할 확률을 세팅합니다.
+              * 딜러 프로필 하단에 승리 보상 아이템(카드 엿보기, 배당 2배, 패배 쉴드)이 등장할 확률을 세팅합니다.
             </p>
           </div>
 

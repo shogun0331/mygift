@@ -16,6 +16,7 @@ import {
   calcConditionFullCareCost,
   calcVacationCost,
   canBroadcastByStamina,
+  isStaminaDepleted,
   CONDITION_ICON,
   CONDITION_LABEL_KEY,
   conditionFromScore,
@@ -30,6 +31,7 @@ import {
   calcPromotionExamCost,
   calcTrainingCost,
   canTrainCreator,
+  getRequiredTrainingTurns,
   mainStatValueOf,
   nextGradeBreak,
 } from '../game/training'
@@ -37,6 +39,8 @@ import {
   characterDisplayJob,
   characterDisplayName,
 } from '../game/characterLocales'
+import { isHUnlocked } from '../game/social'
+import { hasUsedCreatorVip, vipAcceptPayoutRange } from '../game/vip'
 import { useTranslation } from '../locales/i18n'
 import {
   maxScoutCreatorsForGrade,
@@ -55,9 +59,11 @@ import { findSlotIdForStaff } from '../game/slotManagers'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import type { ScoutedStaffCandidate } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
+import type { TutorialStep } from '../components/TutorialGuideOverlay'
 
 type CreatorPanelProps = {
   companyViewers?: number
+  stationRank?: number
   ownedCreators: OwnedCreator[]
   registeredCharacters: RegisteredCharacter[]
   scoutState: ScoutSystemState
@@ -65,6 +71,8 @@ type CreatorPanelProps = {
   broadcastMonthNumber: number
   stationGrade: StationGrade
   stationGradeConfig?: StationGradeConfig
+  tutorialStep?: TutorialStep | null
+  onTutorialStepChange?: (step: TutorialStep | null) => void
   /** 명세서 종료 후 스카우트 강제 오픈 */
   openScout?: boolean
   onScoutClosed?: () => void
@@ -92,6 +100,9 @@ type CreatorPanelProps = {
   onScoutCreator: () => void
   studioSlots: StudioSlot[]
   onAssignStaffPlacement: (staffId: string) => void
+  onHDirect?: (creatorId: string) => void
+  onVipDirect?: (creatorId: string) => void
+  lastHActionMonth?: number
 }
 
 const GRADE_STYLE: Record<Grade, string> = {
@@ -169,6 +180,8 @@ export function CreatorPanel({
   onScoutClosed,
   openStaffScout = false,
   onStaffScoutClosed,
+  tutorialStep,
+  onTutorialStepChange,
   onScoutViewed,
   onScoutPass,
   onScoutHire,
@@ -190,6 +203,10 @@ export function CreatorPanel({
   onScoutCreator,
   studioSlots,
   onAssignStaffPlacement,
+  onHDirect,
+  onVipDirect,
+  lastHActionMonth,
+  stationRank = 100,
 }: CreatorPanelProps) {
   const { t, locale } = useTranslation()
   const [view, setView] = useState<'roster' | 'scout' | 'staffScout'>('roster')
@@ -218,6 +235,12 @@ export function CreatorPanel({
     () => canAffordBulkSnsCompose(ownedCreators, assets),
     [ownedCreators, assets],
   )
+  const canAffordActiveScoutOffer = Boolean(
+    scoutState.activeOffer &&
+      canHireScoutOffer(scoutState.activeOffer, assets, ownedCreators.length <= 0).ok,
+  )
+  const showCreatorScoutDot =
+    canAffordActiveScoutOffer || (!scoutState.activeOffer && creatorScoutAvailable)
 
   useEffect(() => {
     if (!openScout) return
@@ -253,6 +276,9 @@ export function CreatorPanel({
   const handleScoutStaffClick = () => {
     isScoutingRef.current = true
     onScoutStaff()
+    if (tutorialStep === 'staff_scout_open') {
+      onTutorialStepChange?.('staff_hire')
+    }
   }
 
   const handleScoutCreatorClick = () => {
@@ -361,14 +387,19 @@ export function CreatorPanel({
     return (
       <CreatorDetailView
         companyViewers={companyViewers}
+        stationRank={stationRank}
         creator={selected}
         assets={assets}
         broadcastMonthNumber={broadcastMonthNumber}
         ownedCreators={ownedCreators}
+        studioSlots={studioSlots}
         onBack={() => setSelectedId(null)}
         onConditionCare={onConditionCare}
         onVacation={onVacation}
         onProductionTraining={onProductionTraining}
+        onHDirect={onHDirect}
+        onVipDirect={onVipDirect}
+        lastHActionMonth={lastHActionMonth}
       />
     )
   }
@@ -423,7 +454,7 @@ export function CreatorPanel({
                 }`}
               >
                 {t('creator.scout')}
-                {scoutState.activeOffer || creatorScoutAvailable ? (
+                {showCreatorScoutDot ? (
                   <RedDot label={t('creator.scoutAvailable')} />
                 ) : null}
               </button>
@@ -445,6 +476,7 @@ export function CreatorPanel({
               <thead className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur-sm">
                 <tr className="border-b border-white/10 text-[10px] tracking-wide text-slate-500 uppercase select-none">
                   <th className="px-3 py-2.5 font-semibold sm:px-4">{t('common.name')}</th>
+                  <th className="px-3 py-2.5 font-semibold text-center">{t('menu.studio')}</th>
                   <th className="px-3 py-2.5 font-semibold">
                     <button
                       type="button"
@@ -540,6 +572,9 @@ export function CreatorPanel({
                     : calcTrainingCost(creator)
                   const trainAvailable =
                     canTrainCreator(creator) && assets >= trainingCost
+                  const assignedSlot = studioSlots?.find(
+                    (slot) => slot.status === 'assigned' && slot.assignment?.creatorId === creator.id,
+                  )
                   return (
                     <tr
                       key={creator.id}
@@ -566,8 +601,26 @@ export function CreatorPanel({
                             </div>
                           )}
                           <div className="min-w-0">
-                            <div className="flex min-w-0 items-center gap-1.5">
+                            <div className="flex min-w-0 items-center gap-1.5 flex-wrap">
                               <p className="truncate font-semibold text-slate-100">{displayName}</p>
+                              {examReady ? (
+                                <span
+                                  title={t('creator.promotionPendingTooltip')}
+                                  className="shrink-0 inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-amber-200 shadow-[0_0_10px_rgba(251,191,36,0.35)] animate-pulse"
+                                >
+                                  <span>🏆</span>
+                                  {t('creator.promotionPendingBadge')}
+                                </span>
+                              ) : null}
+                              {isHUnlocked(creator) ? (
+                                <span
+                                  title={t('social.hUnlockedTooltip')}
+                                  className="shrink-0 inline-flex items-center gap-1 rounded-full border border-pink-500/50 bg-pink-500/15 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-pink-300 shadow-[0_0_8px_rgba(236,72,153,0.25)]"
+                                >
+                                  <span>💕</span>
+                                  {t('social.hUnlockedBadge')}
+                                </span>
+                              ) : null}
                               {snsPosted ? (
                                 <span
                                   title={t('sns.alreadyPosted')}
@@ -581,12 +634,34 @@ export function CreatorPanel({
                           </div>
                         </div>
                       </td>
+                      <td className="px-3 py-2.5 text-center">
+                        {assignedSlot ? (
+                          <span
+                            title={t('menu.studio')}
+                            className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 text-xs font-black shadow-[0_0_8px_rgba(52,211,153,0.35)]"
+                          >
+                            ✓
+                          </span>
+                        ) : (
+                          <span className="text-slate-600 text-xs font-semibold">-</span>
+                        )}
+                      </td>
                       <td className="px-3 py-2.5">
-                        <span
-                          className={`rounded-md border px-2 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}
-                        >
-                          {creator.grade}
-                        </span>
+                        <div className="inline-flex items-center gap-1">
+                          <span
+                            className={`rounded-md border px-2 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}
+                          >
+                            {creator.grade}
+                          </span>
+                          {examReady ? (
+                            <span
+                              title={t('creator.promotionPendingTooltip')}
+                              className="text-[10px] font-black text-amber-300 animate-bounce"
+                            >
+                              ▲
+                            </span>
+                          ) : null}
+                        </div>
                       </td>
                       <td className="px-3 py-2.5">
                         <div
@@ -625,7 +700,13 @@ export function CreatorPanel({
                         <div className="flex flex-wrap gap-1.5">
                           <button
                             type="button"
-                            onClick={() => setSnsCreatorId(creator.id)}
+                            data-tutorial={index === 0 ? 'sns-compose-btn' : undefined}
+                            onClick={() => {
+                              setSnsCreatorId(creator.id)
+                              if (tutorialStep === 'sns_open_compose') {
+                                onTutorialStepChange?.('sns_post')
+                              }
+                            }}
                             className={`game-btn relative rounded-lg px-2.5 py-1 text-xs ${
                               snsPosted
                                 ? 'border-emerald-400/35 bg-emerald-500/10 text-emerald-100'
@@ -675,11 +756,19 @@ export function CreatorPanel({
                 {scoutedStaffCandidate ? (
                   <button
                     type="button"
-                    onClick={() => setView('staffScout')}
+                    data-tutorial="staff-scout-btn"
+                    onClick={() => {
+                      setView('staffScout')
+                      if (tutorialStep === 'staff_scout_open') {
+                        onTutorialStepChange?.('staff_hire')
+                      }
+                    }}
                     className="game-btn game-btn-primary relative rounded-lg px-3 py-1 text-xs border border-indigo-400/40 bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30 transition"
                   >
                     {t('creator.staffOfferCheck')}
-                    <RedDot label={t('creator.staffScoutNewArrival')} />
+                    {assets >= scoutedStaffCandidate.proposedHireCost ? (
+                      <RedDot label={t('creator.staffScoutNewArrival')} />
+                    ) : null}
                   </button>
                 ) : (() => {
                   const hasAvailableStaffToScout = registeredStaff.some(
@@ -692,6 +781,7 @@ export function CreatorPanel({
                   return (
                     <button
                       type="button"
+                      data-tutorial="staff-scout-btn"
                       disabled={!canScout}
                       onClick={handleScoutStaffClick}
                       className={`game-btn game-btn-primary relative rounded-lg px-3 py-1 text-xs disabled:opacity-40 disabled:cursor-not-allowed ${
@@ -999,6 +1089,7 @@ function ScoutView({
                 )}
                 <button
                   type="button"
+                  data-tutorial="scout-hire-btn"
                   disabled={!hireCheck?.ok}
                   onClick={() => onHire(offer)}
                   className="game-btn-pink rounded-xl px-4 py-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
@@ -1020,26 +1111,39 @@ function fillLocale(template: string, vars: Record<string, string>) {
 
 function CreatorDetailView({
   companyViewers = 0,
+  stationRank = 100,
   creator,
   assets,
   broadcastMonthNumber,
   ownedCreators = [],
+  studioSlots,
   onBack,
   onConditionCare,
   onVacation,
   onProductionTraining,
+  onHDirect,
+  onVipDirect,
+  lastHActionMonth,
 }: {
   companyViewers?: number
+  stationRank?: number
   creator: OwnedCreator
   assets: number
   broadcastMonthNumber: number
   ownedCreators?: OwnedCreator[]
+  studioSlots?: StudioSlot[]
   onBack: () => void
   onConditionCare: (creatorId: string) => void
   onVacation: (creatorId: string) => void
   onProductionTraining: (creatorId: string) => void
+  onHDirect?: (creatorId: string) => void
+  onVipDirect?: (creatorId: string) => void
+  lastHActionMonth?: number
 }) {
   const { t, locale } = useTranslation()
+  const assignedSlot = studioSlots?.find(
+    (s) => s.status === 'assigned' && s.assignment?.creatorId === creator.id,
+  )
   const displayName = characterDisplayName(creator, locale)
   const displayJob = characterDisplayJob(creator, locale)
   const staminaPct = Math.round((creator.stamina / Math.max(1, creator.staminaMax)) * 100)
@@ -1052,8 +1156,9 @@ function CreatorDetailView({
   const vacationUsed = Boolean(
     ownedCreators?.some((c) => c.lastVacationMonth === broadcastMonthNumber),
   )
+  const staminaDepleted = isStaminaDepleted(creator.stamina)
   const canAffordVacation = assets >= vacationCost
-  const canVacation = !vacationUsed && canAffordVacation
+  const canVacation = !staminaDepleted && !vacationUsed && canAffordVacation
   const broadcastBlocked = !canBroadcastByStamina(creator.stamina)
   const careCost = calcConditionFullCareCost(creator.grade)
   const conditionFull = conditionScore >= 100
@@ -1061,20 +1166,29 @@ function CreatorDetailView({
   const canCare = !conditionFull && canAffordCare
   const statType = normalizeCreatorStatType(creator.statType)
   const mainStatLabel = t(STAT_VALUE_LABEL_KEY[statType])
+  const vipPayout = vipAcceptPayoutRange(stationRank)
   const mainStatValue = mainStatValueOf(creator)
   const nextBreak = nextGradeBreak(creator.grade)
   const breakNeed = nextBreak ? Math.max(0, nextBreak.need - mainStatValue) : 0
   const examReady = isPromotionExamReady(creator)
-  const trainingCost = examReady ? calcPromotionExamCost(creator) : calcTrainingCost(creator)
+  const trainingTurns = creator.trainingTurns ?? 0
+  const reqTrainingTurns = getRequiredTrainingTurns(creator.grade)
+  const trainingCost = examReady
+    ? calcPromotionExamCost(creator)
+    : calcTrainingCost(creator)
   const canAffordTraining = assets >= trainingCost
-  const trainingMaxed = !canTrainCreator(creator)
-  const canTrain = canAffordTraining && !trainingMaxed
-  const trainButtonLabel = trainingMaxed
-    ? t('creator.trainingMaxed')
-    : !canAffordTraining
+  const trainingMaxed = mainStatValue >= 100
+  const canTrain = examReady
+    ? canAffordTraining
+    : !trainingMaxed && canAffordTraining
+  const trainButtonLabel = examReady
+    ? !canAffordTraining
       ? t('creator.trainingNeedAssets')
-      : examReady
-        ? t('creator.trainingExamAction')
+      : t('creator.trainingExamAction')
+    : trainingMaxed
+      ? t('creator.trainingMaxed')
+      : !canAffordTraining
+        ? t('creator.trainingNeedAssets')
         : t('creator.trainingAction')
   const [trainFxKey, setTrainFxKey] = useState(0)
   const [trainHot, setTrainHot] = useState(false)
@@ -1093,11 +1207,17 @@ function CreatorDetailView({
         </button>
         <div className="min-w-0 flex-1">
           <p className="game-kicker">CREATOR PROFILE</p>
-          <h2 className="truncate text-base font-semibold text-slate-100">
-            {displayName}{' '}
-            <span className={`ml-1.5 rounded-md border px-2 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}>
+          <h2 className="flex items-center gap-2 truncate text-base font-semibold text-slate-100 flex-wrap">
+            <span>{displayName}</span>
+            <span className={`rounded-md border px-2 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}>
               {creator.grade}
             </span>
+            {assignedSlot ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/50 bg-emerald-500/15 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_8px_rgba(52,211,153,0.3)]">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                {t('menu.studio')} ✓
+              </span>
+            ) : null}
           </h2>
         </div>
         <div className="rounded-xl border border-cyan-400/25 bg-cyan-500/10 px-3 py-2 text-right">
@@ -1136,6 +1256,12 @@ function CreatorDetailView({
               <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-xs font-bold text-slate-200">
                 {t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(creator.statType)])}
               </span>
+              {assignedSlot ? (
+                <span className="inline-flex items-center gap-1 rounded border border-emerald-400/50 bg-emerald-950/70 px-2 py-0.5 text-xs font-bold text-emerald-300 shadow">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {t('menu.studio')} ✓
+                </span>
+              ) : null}
             </div>
             <div className="absolute inset-x-0 bottom-0 p-3">
               <p className="text-[10px] font-semibold tracking-wide text-slate-400">{displayJob}</p>
@@ -1243,7 +1369,11 @@ function CreatorDetailView({
                     <span className="mt-1 block text-[10px] leading-4 text-slate-400">
                       {t('creator.vacationDesc')}
                     </span>
-                    {vacationUsed ? (
+                    {staminaDepleted ? (
+                      <span className="mt-1 block text-[10px] font-semibold text-rose-400">
+                        {t('creator.vacationStaminaZero')}
+                      </span>
+                    ) : vacationUsed ? (
                       <span className="mt-1 block text-[10px] font-semibold text-amber-300/80">
                         {t('creator.vacationUsed')}
                       </span>
@@ -1261,6 +1391,93 @@ function CreatorDetailView({
                     {vacationCost === 0 ? '$0 (FREE)' : formatMoneySigned(-vacationCost)}
                   </span>
                 </button>
+
+                {isHUnlocked(creator) ? (
+                  <>
+                    {(() => {
+                      const isStaminaZero = isStaminaDepleted(creator.stamina)
+                      const isTurnUsed = lastHActionMonth === broadcastMonthNumber
+                      const isHDisabled = isTurnUsed || isStaminaZero
+                      return (
+                        <button
+                          type="button"
+                          disabled={isHDisabled}
+                          onClick={() => onHDirect?.(creator.id)}
+                          className="flex w-full items-start justify-between gap-3 rounded-xl border border-pink-500/40 bg-gradient-to-r from-pink-950/40 via-purple-950/30 to-pink-950/40 px-3 py-2.5 text-left transition hover:border-pink-400/60 hover:bg-pink-900/30 hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <span className="min-w-0">
+                            <span className="flex items-center gap-1.5 text-sm font-bold text-pink-200">
+                              <span aria-hidden>💕</span>
+                              {t('social.hActionTitle')}
+                            </span>
+                            <span className="mt-1 block text-[10px] leading-4 text-pink-300/80">
+                              {t('social.hActionDesc')}
+                            </span>
+                            {isStaminaZero ? (
+                              <span className="mt-1 block text-[10px] font-semibold text-rose-400">
+                                {t('social.hStaminaZero')}
+                              </span>
+                            ) : isTurnUsed ? (
+                              <span className="mt-1 block text-[10px] font-semibold text-amber-300/80">
+                                {t('social.hAlreadyUsedThisTurn')}
+                              </span>
+                            ) : (
+                              <span className="mt-1 block text-[10px] font-semibold text-emerald-400">
+                                {t('social.hReady')}
+                              </span>
+                            )}
+                          </span>
+                          <span className="shrink-0 text-xs font-black text-pink-300 rounded-lg border border-pink-500/40 bg-pink-500/20 px-2 py-1 shadow">
+                            {t('social.hActionTag')}
+                          </span>
+                        </button>
+                      )
+                    })()}
+
+                    <button
+                      type="button"
+                      disabled={hasUsedCreatorVip(creator)}
+                      onClick={() => onVipDirect?.(creator.id)}
+                      className="flex w-full items-start justify-between gap-3 rounded-xl border border-amber-400/40 bg-gradient-to-r from-amber-950/40 via-yellow-950/30 to-amber-950/40 px-3 py-2.5 text-left transition hover:border-amber-400/60 hover:bg-amber-900/30 hover:shadow-[0_0_15px_rgba(251,191,36,0.3)] disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <span className="min-w-0">
+                        <span className="flex items-center gap-1.5 text-sm font-bold text-amber-200">
+                          <span aria-hidden>👑</span>
+                          {t('social.vipActionTitle')}
+                        </span>
+                        <span className="mt-1 block text-[10px] leading-4 text-amber-300/80">
+                          {t('social.vipActionDesc')}
+                        </span>
+                        <span className="mt-1 flex items-center gap-1 text-[11px] font-black text-amber-300">
+                          <span>💰</span>
+                          <span>
+                            {t('social.vipActionPayout').replace(
+                              '{range}',
+                              `${formatMoney(vipPayout.min)} ~ ${formatMoney(vipPayout.max)}`,
+                            )}
+                          </span>
+                        </span>
+                        {hasUsedCreatorVip(creator) ? (
+                          <span className="mt-1 block text-[10px] font-semibold text-amber-300/80">
+                            {t('social.vipAlreadyUsedThisTurn')}
+                          </span>
+                        ) : (
+                          <span className="mt-1 block text-[10px] font-semibold text-emerald-400">
+                            {t('social.vipReady')}
+                          </span>
+                        )}
+                      </span>
+                      <div className="shrink-0 flex flex-col items-end gap-1">
+                        <span className="text-xs font-black text-amber-300 rounded-lg border border-amber-400/40 bg-amber-500/20 px-2 py-1 shadow">
+                          {t('social.vipActionTag')}
+                        </span>
+                        <span className="text-[11px] font-black text-emerald-400">
+                          +{formatMoney(vipPayout.min)}~
+                        </span>
+                      </div>
+                    </button>
+                  </>
+                ) : null}
               </div>
             </article>
 
@@ -1319,6 +1536,21 @@ function CreatorDetailView({
                       off: String(TRAINING_OFF_GAIN.min),
                     })}
                   </p>
+                  {examReady ? (
+                    <p className="mt-1.5 text-[10px] font-bold text-amber-300">
+                      🏆 {t('creator.promotionPendingTooltip')}
+                    </p>
+                  ) : (
+                    <p className="mt-1.5 text-[10px] leading-4 text-slate-400">
+                      ⚡{' '}
+                      {fillLocale(t('creator.trainingIntervalHint'), {
+                        grade: creator.grade,
+                        turns: String(reqTrainingTurns),
+                        current: String(trainingTurns),
+                        required: String(reqTrainingTurns),
+                      })}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -1604,6 +1836,7 @@ function StaffScoutView({
               </button>
               <button
                 type="button"
+                data-tutorial="staff-hire-btn"
                 disabled={!canAfford}
                 onClick={() => onHire(candidate.id, candidate.proposedHireCost, candidate.proposedSalary)}
                 className="game-btn-pink rounded-xl px-3 py-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"

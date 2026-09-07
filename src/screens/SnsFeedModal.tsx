@@ -262,6 +262,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
           <div className="shrink-0 border-t border-white/8 bg-[#080c16] px-3 py-2.5">
             <button
               type="button"
+              data-tutorial="sns-post-btn"
               disabled={!canCompose}
               onClick={submitCompose}
               className="game-btn game-btn-primary relative flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-[13px] font-bold disabled:cursor-not-allowed disabled:opacity-35"

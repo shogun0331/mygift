@@ -238,6 +238,11 @@ export function canBroadcastByStamina(stamina: number) {
   return Math.round(stamina) >= STAMINA_BROADCAST_MIN
 }
 
+/** 스테미나 고갈(0) — 방송·H·특별휴가로 즉시 회복 불가, 한 턴 휴식 필요 */
+export function isStaminaDepleted(stamina: number) {
+  return Math.round(stamina) <= 0
+}
+
 /** CCTV 주간 진행률에 따른 스테미나 미리보기 */
 export function previewLiveStamina(
   stamina: number,
@@ -562,13 +567,15 @@ export function applyConditionFullCare<T extends StaminaConditionState>(creator:
   )
 }
 
-/** 특별휴가 — 스테미나 풀 충전 + 컨디션 소폭 회복 */
+/** 특별휴가 — 스테미나 60% 충전 + 컨디션 소폭 회복. 스테미나 0(고갈)이면 회복 불가 */
 export function applyVacationRecovery<T extends StaminaConditionState>(creator: T): T {
+  if (isStaminaDepleted(creator.stamina ?? 0)) return creator
   const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
+  const recoveredStamina = Math.round(staminaMax * 0.6)
   return withVitals(
     creator,
     scoreOf(creator) + VACATION_CONDITION_GAIN,
-    staminaMax,
+    Math.min(staminaMax, Math.max(creator.stamina ?? 0, recoveredStamina)),
     creator.restStreak ?? 0,
   )
 }
@@ -588,8 +595,9 @@ export function applyVitalsDelta<T extends StaminaConditionState>(
   )
 }
 
-/** H 씬 보상 — 체력과 컨디션을 100(최대)으로 풀 회복 */
+/** H 씬 보상 — 체력과 컨디션을 100(최대)으로 풀 회복. 스테미나 0(고갈)이면 회복 불가 */
 export function applyFullVitalsRecovery<T extends StaminaConditionState>(creator: T): T {
+  if (isStaminaDepleted(creator.stamina ?? 0)) return creator
   const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
   return withVitals(
     creator,

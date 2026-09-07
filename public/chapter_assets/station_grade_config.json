@@ -444,7 +444,7 @@
       },
       "mid": {
         "targetSatisfaction": 110,
-        "recommendedGrade": "A",
+        "recommendedGrade": "B",
         "staminaCost": 20,
         "judgeAttackMod": 1.15
       },

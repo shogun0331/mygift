@@ -33,6 +33,7 @@ import {
 } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
 import {
+  assignCreatorToSlot,
   calcSlotUnlockCost,
   countUnlockedSlots,
   findNextUnlockableSlot,
@@ -70,6 +71,13 @@ import {
 } from '../game/slotManagers'
 import { PromotionAuditModal } from './PromotionAuditModal'
 import { AuditSimulatorDeckModal } from './AuditSimulatorDeckModal'
+import { AchievementsPanel } from './AchievementsPanel'
+import {
+  unlockAchievement,
+  unlockCharacterAchievement,
+  revokeAchievement,
+  registerCharacterAchievements,
+} from '../game/achievements'
 import type { BroadcastPhase } from '../game/broadcast'
 import {
   GAME_EPOCH,
@@ -93,6 +101,7 @@ import {
   calcWeeklyBroadcastStaminaCost,
   calcWeeklyBroadcastConditionCost,
   canBroadcastByStamina,
+  isStaminaDepleted,
   conditionRevenueMultOf,
   isCreatorBroadcastBlockedLive,
   previewLiveConditionScore,
@@ -128,12 +137,18 @@ import {
 } from '../game/promotionExam'
 import { getAuditDocPassNotice } from '../game/judgeDialogues'
 import { characterDisplayName } from '../game/characterLocales'
-import { applyProductionTraining, calcPromotionExamCost, calcTrainingCost } from '../game/training'
+import {
+  applyBroadcastTrainingTick,
+  applyProductionTraining,
+  calcPromotionExamCost,
+  calcTrainingCost,
+  nextGradeBreak,
+} from '../game/training'
 import {
   calcSnsPostCost,
   calcSnsSubscribersGain,
   MAX_CREATOR_SNS_SUBSCRIBERS,
-  previewBulkSnsCompose,
+  planBulkSnsCompose,
   resolveSnsPending,
   rollSnsCompose,
   snsCaptionOf,
@@ -196,10 +211,12 @@ import { type ScoutedStaffCandidate } from '../game/characters'
 import { RecruitCardFlyFx, type RecruitFlyCard } from './RecruitCardFlyFx'
 import { RestRequiredModal } from './RestRequiredModal'
 import { PromotionSlotModal } from './PromotionSlotModal'
+import { PromotionNoticeModal } from './PromotionNoticeModal'
 import { SnsResultModal } from './SnsResultModal'
 import { SalaryNegotiateModal } from './SalaryNegotiateModal'
 import { SchedulePanel } from './SchedulePanel'
 import { GameClearModal } from './GameClearModal'
+import { TutorialGuideOverlay, type TutorialStep } from '../components/TutorialGuideOverlay'
 import {
   applyStationReview,
   capStationViewers,
@@ -221,6 +238,9 @@ import {
   applyVipStaminaDrain,
   rollVipAcceptPayout,
   rollVipRejectViewers,
+  hasUsedCreatorVip,
+  markCreatorVipUsed,
+  toVipOffer,
   type VipOffer,
 } from '../game/vip'
 import {
@@ -668,7 +688,7 @@ function GoldenVegasLoungeBackground() {
 const TABS: { id: GameTab; label: string; icon: ReactNode }[] = [
   { id: 'dashboard', label: 'DASHBOARD', icon: <IconDashboard /> },
   { id: 'creator', label: 'CREATOR', icon: <IconCreator /> },
-  { id: 'schedule', label: 'SCHEDULE', icon: <IconSchedule /> },
+  { id: 'schedule', label: 'STUDIO', icon: <IconSchedule /> },
   { id: 'ranking', label: 'RANKING', icon: <IconRanking /> },
   { id: 'casino', label: 'CASINO', icon: <IconCasino /> },
 ]
@@ -751,7 +771,26 @@ export function InGame({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
-  const [tab, setTab] = useState<GameTab>('dashboard')
+  const isFreshNewGame =
+    !boot ||
+    boot.tutorialDone === false ||
+    ((boot.ownedCreators?.length ?? 0) === 0 && (boot.gameMonth ?? 0) === 0)
+  const [tutorialDone, setTutorialDone] = useState<boolean>(
+    boot?.tutorialDone ?? !isFreshNewGame,
+  )
+  const tutorialDoneRef = useRef(tutorialDone)
+  tutorialDoneRef.current = tutorialDone
+
+  const [tutorialStep, setTutorialStep] = useState<TutorialStep | null>(() => {
+    if (boot?.tutorialDone) return null
+    if (isFreshNewGame) return 'scout_hire'
+    return null
+  })
+
+  const [tab, setTab] = useState<GameTab>(() => {
+    if (isFreshNewGame && !boot?.tutorialDone) return 'creator'
+    return 'dashboard'
+  })
   const [bgmVolume, setBgmVolume] = useState(() => getBgmVolumePercent())
   const [seVolume, setSeVolume] = useState(() => getSeVolumePercent())
   const [displayModeState, setDisplayModeState] = useState<DisplayMode>(() => getDisplayMode())
@@ -814,6 +853,38 @@ export function InGame({
   const [casinoTurnCount, setCasinoTurnCount] = useState(boot?.casinoTurnCount ?? 0) // 0..3 (3턴에 1번 활성화)
   const [showCasinoModal, setShowCasinoModal] = useState(boot?.showCasinoModal ?? false)
   const [activeCasinoRoomId, setActiveCasinoRoomId] = useState<HighLowRoomId | null>(null)
+  const [showAchievementsModal, setShowAchievementsModal] = useState(false)
+
+  // 캐릭터 업적 등록
+  useEffect(() => {
+    if (registeredCharacters.length > 0) {
+      registerCharacterAchievements(registeredCharacters)
+    }
+  }, [registeredCharacters])
+
+  // 업적 체크 (S등급 크리에이터, 방송국 등급, 누적 방송 턴)
+  useEffect(() => {
+    for (const c of ownedCreators) {
+      if (c.grade === 'S') {
+        unlockCharacterAchievement(c.id, 's_rank')
+      }
+      if (!(typeof c.lastVacationMonth === 'number' && c.lastVacationMonth > 0)) {
+        revokeAchievement(`char_${c.id}_vacation`)
+      }
+    }
+    if (stationGrade === 'tiny') unlockAchievement('station_grade_tiny')
+    else if (stationGrade === 'sme') unlockAchievement('station_grade_sme')
+    else if (stationGrade === 'mid') unlockAchievement('station_grade_mid')
+    else if (stationGrade === 'large') unlockAchievement('station_grade_large')
+    else if (stationGrade === 'top') unlockAchievement('station_grade_top')
+
+    if (gameMonth >= 1) unlockAchievement('broadcast_turns_1')
+    if (gameMonth >= 10) unlockAchievement('broadcast_turns_10')
+    if (gameMonth >= 20) unlockAchievement('broadcast_turns_20')
+    if (gameMonth >= 30) unlockAchievement('broadcast_turns_30')
+    if (gameMonth >= 40) unlockAchievement('broadcast_turns_40')
+    if (gameMonth >= 50) unlockAchievement('broadcast_turns_50')
+  }, [ownedCreators, stationGrade, gameMonth])
 
   const getCasinoRequiredTurns = (grade: StationGrade): number => {
     if (grade === 'top') return 1 // 일등기업: 항상 열림
@@ -833,7 +904,9 @@ export function InGame({
   const [broadcastEndedNotice, setBroadcastEndedNotice] = useState(false)
   /** 월간 방송 종료 후 명세서 대기·표시 중 — 닫기 전까지 방송 시작 잠금 */
   const [startBroadcastLocked, setStartBroadcastLocked] = useState(false)
-  const [openCreatorScout, setOpenCreatorScout] = useState(false)
+  const [openCreatorScout, setOpenCreatorScout] = useState(
+    () => Boolean(isFreshNewGame && !boot?.tutorialDone),
+  )
   const [openStaffScout, setOpenStaffScout] = useState(false)
   const [broadcastMonthNumber, setBroadcastMonthNumber] = useState(
     boot?.broadcastMonthNumber ?? 1,
@@ -973,6 +1046,12 @@ export function InGame({
       | { kind: 'rewards' }
   } | null>(null)
   const [vacationPlay, setVacationPlay] = useState<OwnedCreator | null>(null)
+  const [lastHActionMonth, setLastHActionMonth] = useState(boot?.lastHActionMonth ?? 0)
+  const lastHActionMonthRef = useRef(lastHActionMonth)
+  lastHActionMonthRef.current = lastHActionMonth
+  const [lastVipActionMonth] = useState(boot?.lastVipActionMonth ?? 0)
+  const lastVipActionMonthRef = useRef(lastVipActionMonth)
+  lastVipActionMonthRef.current = lastVipActionMonth
   const [donationThanksPlay, setDonationThanksPlay] = useState<DonationThanksPlay | null>(null)
   const donationThanksPlayRef = useRef(donationThanksPlay)
   donationThanksPlayRef.current = donationThanksPlay
@@ -1061,6 +1140,18 @@ export function InGame({
     creatorName: string
     result: PromotionExamResult
   } | null>(null)
+  const [notifiedPromotionExams, setNotifiedPromotionExams] = useState<string[]>(
+    boot?.notifiedPromotionExams ?? [],
+  )
+  const notifiedPromotionExamsRef = useRef(notifiedPromotionExams)
+  notifiedPromotionExamsRef.current = notifiedPromotionExams
+
+  const [promotionExamNotice, setPromotionExamNotice] = useState<{
+    creator: OwnedCreator
+    fromGrade: Grade
+    toGrade: Grade
+  } | null>(null)
+
   const [snsResultQueue, setSnsResultQueue] = useState<SnsResult[]>([])
   const snsResultQueueRef = useRef<SnsResult[]>([])
   const promotionExamRef = useRef(promotionExam)
@@ -1078,6 +1169,15 @@ export function InGame({
   /** 하단 탭 클릭 — 첫 영입(0명)일 때만 스카우트 화면으로 자동 이동하고, 1명 이상일 때는 무조건 메인 매니지먼트(크리에이터&스태프 목록) 화면으로 진입 */
   function handleTabClick(next: GameTab) {
     setTab(next)
+    if (tutorialStep === 'nav_dashboard' && next === 'dashboard') {
+      setTutorialStep('start_broadcast')
+    }
+    if (tutorialStep === 'nav_creator_for_staff' && next === 'creator') {
+      setTutorialStep('staff_scout_open')
+    }
+    if (tutorialStep === 'nav_creator_for_sns' && next === 'creator') {
+      setTutorialStep('sns_open_compose')
+    }
     if (next !== 'creator') return
     if (ownedCreatorsRef.current.length === 0) {
       if (scoutSystem.activeOffer) {
@@ -1092,6 +1192,9 @@ export function InGame({
     onScout(creator)
     setScoutSystem((prev) => clearFirstHireGuarantee(prev))
     setTab('schedule')
+    if (tutorialStep === 'scout_hire') {
+      setTutorialStep('studio_assign')
+    }
     setRecruitFlyCard({
       id: creator.id,
       name: creator.name,
@@ -1272,6 +1375,17 @@ export function InGame({
     const meetsRank = meetsSlotUnlockByRank(stationGradeConfig, league.currentRank, unlockedSlotCount)
     return meetsGrade || meetsRank
   }, [studioSlots, unlockedSlotCount, stationGradeConfig, assets, stationGrade, league.currentRank])
+
+  const canAffordCreatorScoutHire = Boolean(
+    scoutSystem.activeOffer &&
+      canHireScoutOffer(scoutSystem.activeOffer, assets, ownedCreators.length === 0).ok,
+  )
+  const canAffordStaffScoutHire = Boolean(
+    scoutedStaffCandidate && assets >= scoutedStaffCandidate.proposedHireCost,
+  )
+  const hasStaffToScout = registeredStaff.some(
+    (staff) => !managerState.hiredStaffIds.includes(staff.id),
+  )
 
   const isStationPromotionEligible = useMemo(() => {
     if (broadcastPhase === 'live') return false
@@ -1553,6 +1667,10 @@ export function InGame({
       casinoTurnCount: casinoTurnCountRef.current,
       showCasinoModal: showCasinoModalRef.current,
       stationAuditCooldown: stationAuditCooldownRef.current,
+      notifiedPromotionExams: notifiedPromotionExamsRef.current,
+      lastHActionMonth: lastHActionMonthRef.current,
+      lastVipActionMonth: lastVipActionMonthRef.current,
+      tutorialDone: tutorialDoneRef.current,
     }
   }
 
@@ -1747,6 +1865,9 @@ export function InGame({
     })
     if (injected.fired) {
       superDonationFiredMonthRef.current = broadcastMonthNumberRef.current
+    }
+    for (const creator of assigned) {
+      unlockCharacterAchievement(creator.id, 'first_broadcast')
     }
     dayPlanRef.current = injected.plan
     dayEventsFlatRef.current = injected.plan.plans
@@ -2574,8 +2695,16 @@ export function InGame({
         profileImageUrl: staffCardUrl(staff) || staffIconUrl(staff),
         isStaff: true,
       })
-      setScheduleStudioMode('staff')
-      setTab('schedule')
+      if (tutorialStep === 'staff_hire') {
+        setTutorialStep('staff_assign')
+        setScheduleStudioMode('staff')
+        setScheduleSelectedStaffId(staffId)
+        setTab('schedule')
+      } else {
+        setScheduleStudioMode('staff')
+        setScheduleSelectedStaffId(staffId)
+        setTab('schedule')
+      }
     }
 
     scheduleAutoSave()
@@ -2586,6 +2715,10 @@ export function InGame({
     const next = equipStaff(managerStateRef.current, slotId, kind, staffId)
     managerStateRef.current = next
     onManagerStateChangeRef.current(next)
+    if (tutorialStep === 'staff_assign') {
+      setTutorialStep('nav_creator_for_sns')
+    }
+    scheduleAutoSave()
   }
 
   function handleUnequipStaff(slotId: string, kind: StaffKind) {
@@ -2825,6 +2958,14 @@ export function InGame({
     const nextMonth = gameMonthRef.current + 1
     gameMonthRef.current = nextMonth
     setGameMonth(nextMonth)
+
+    // 방송 턴 업적 트리거 (1턴, 10턴, 20턴, 30턴, 40턴, 50턴)
+    if (nextMonth >= 1) unlockAchievement('broadcast_turns_1')
+    if (nextMonth >= 10) unlockAchievement('broadcast_turns_10')
+    if (nextMonth >= 20) unlockAchievement('broadcast_turns_20')
+    if (nextMonth >= 30) unlockAchievement('broadcast_turns_30')
+    if (nextMonth >= 40) unlockAchievement('broadcast_turns_40')
+    if (nextMonth >= 50) unlockAchievement('broadcast_turns_50')
 
     const weekSnapshot = weekAccumRef.current
     const nextOwned = ownedCreatorsRef.current
@@ -3143,7 +3284,32 @@ export function InGame({
     const nextMonthNumber = broadcastMonthNumberRef.current + 1
     broadcastMonthNumberRef.current = nextMonthNumber
     setBroadcastMonthNumber(nextMonthNumber)
-    setCasinoTurnCount((c) => Math.min(getCasinoRequiredTurns(stationGradeRef.current), c + 1))
+
+    // 방송 종료 시 등급별 턴을 누적하고, 필요 턴이 차면 조용히 자동 트레이닝
+    const nextOwnedWithTraining = ownedCreatorsRef.current.map(applyBroadcastTrainingTick)
+    ownedCreatorsRef.current = nextOwnedWithTraining
+    onOwnedCreatorsChangeRef.current(nextOwnedWithTraining)
+
+    const reqCasinoTurns = getCasinoRequiredTurns(stationGradeRef.current)
+    const isUnlocked = isCasinoGradeUnlocked
+    const wasCasinoOpen = isUnlocked && (stationGradeRef.current === 'top' || casinoTurnCountRef.current >= reqCasinoTurns)
+    const nextCasinoTurns = Math.min(reqCasinoTurns, casinoTurnCountRef.current + 1)
+    const willCasinoOpen = isUnlocked && (stationGradeRef.current === 'top' || nextCasinoTurns >= reqCasinoTurns)
+
+    setCasinoTurnCount(nextCasinoTurns)
+    if (!wasCasinoOpen && willCasinoOpen) {
+      const casinoOpenEvent: DayEvent = {
+        id: `casino-open-${nextMonthNumber}-${Math.round(performance.now())}`,
+        creatorId: '',
+        creatorName: '',
+        type: 'viewers',
+        amount: 0,
+        text: `🎰 ✨ [골든 베가스 카지노] 라운지가 오픈되었습니다! (하단 CASINO 탭)`,
+        atMs: 0,
+        tone: 'bg-amber-500',
+      }
+      setLiveEvents((prev) => [casinoOpenEvent, ...prev].slice(0, MAX_RECENT_EVENTS))
+    }
     if (stationAuditCooldownRef.current > 0) {
       const nextCooldown = Math.max(0, stationAuditCooldownRef.current - 1)
       stationAuditCooldownRef.current = nextCooldown
@@ -3169,12 +3335,24 @@ export function InGame({
       setSettlementAssetsAfter(assetsAfter)
       setSettlementPortraits(portraits)
       setWeeklyStatement(statement)
+      if (!tutorialDoneRef.current) {
+        setTutorialStep('statement_confirm')
+      }
     }, 1800)
     // 방송 턴 마무리 → 즉시 저장
     flushAutoSave()
   }
 
   function finishWeeklyStatementFollowup() {
+    if (!tutorialDoneRef.current) {
+      setStaffScoutAvailable(true)
+      staffScoutAvailableRef.current = true
+      if (tab === 'creator') {
+        setTutorialStep('staff_scout_open')
+      } else {
+        setTutorialStep('nav_creator_for_staff')
+      }
+    }
     const openScout =
       ownedCreatorsRef.current.length === 0 &&
       Boolean(scoutSystemRef.current.activeOffer)
@@ -3270,11 +3448,53 @@ export function InGame({
     setStartBroadcastLocked(false)
   }
 
-  function releaseMonthEndLock(openScout: boolean) {
-    pendingScoutAfterRankRef.current = false
+  function checkPromotionExamNotices(openScout: boolean): boolean {
+    for (const creator of ownedCreatorsRef.current) {
+      if (isPromotionExamReady(creator)) {
+        const nextBreak = nextGradeBreak(creator.grade)
+        if (!nextBreak) continue
+        const key = `${creator.id}:${nextBreak.grade}`
+        if (!notifiedPromotionExamsRef.current.includes(key)) {
+          const nextNotified = [...notifiedPromotionExamsRef.current, key]
+          notifiedPromotionExamsRef.current = nextNotified
+          setNotifiedPromotionExams(nextNotified)
+          pendingScoutAfterRankRef.current = openScout
+          setStartBroadcastLocked(true)
+          setPromotionExamNotice({
+            creator,
+            fromGrade: creator.grade,
+            toGrade: nextBreak.grade,
+          })
+          flushAutoSave()
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  function handleClosePromotionExamNotice(goToCreator: boolean) {
+    setPromotionExamNotice(null)
+    const openScout = pendingScoutAfterRankRef.current
+    if (goToCreator) {
+      setTab('creator')
+      setStartBroadcastLocked(false)
+      return
+    }
+    if (checkPromotionExamNotices(openScout)) {
+      return
+    }
     if (checkStaffSalaryRaise()) {
       return
     }
+    if (checkProposalEvent(openScout)) {
+      return
+    }
+    proceedNextAfterProposal(openScout)
+  }
+
+  function releaseMonthEndLock(openScout: boolean) {
+    pendingScoutAfterRankRef.current = false
     setStartBroadcastLocked(false)
     if (openScout && scoutSystemRef.current.activeOffer && ownedCreatorsRef.current.length === 0) {
       setTab('creator')
@@ -3451,6 +3671,12 @@ export function InGame({
   }
 
   function continueAfterMonthModals(openScout: boolean) {
+    if (checkPromotionExamNotices(openScout)) {
+      return
+    }
+    if (checkStaffSalaryRaise()) {
+      return
+    }
     if (checkProposalEvent(openScout)) {
       return
     }
@@ -3477,7 +3703,7 @@ export function InGame({
       return nextCreator
     })
     setSocialUi({ mode: 'dateResult', pending })
-    scheduleAutoSave()
+    flushAutoSave()
   }
 
   function resolveShortsBeats(creatorId: string, slot: 'vip' | 'h'): ShortsVnBeat[] {
@@ -3521,6 +3747,7 @@ export function InGame({
       creatorName: offer.creatorName,
       payout: Math.max(0, Math.round(payout)),
     })
+    flushAutoSave()
   }
 
   function handleVipAccept() {
@@ -3616,6 +3843,8 @@ export function InGame({
   function handleHRetryAccept() {
     if (socialUi?.mode !== 'hRetryOffer') return
     const pending = socialUi.pending
+    const target = ownedCreatorsRef.current.find((c) => c.id === pending.creatorId)
+    if (!target || isStaminaDepleted(target.stamina)) return
     const charDef = registeredCharactersRef.current.find((c) => c.id === pending.creatorId)
     const eventId = charDef?.eventLinks?.h
     const event = eventId ? eventsRef.current.find((e) => e.id === eventId) ?? null : null
@@ -3660,7 +3889,10 @@ export function InGame({
   }
 
   function applyHRetryAccept(pending: HRetryPending) {
-    patchOwnedCreator(pending.creatorId, (creator) => applyFullVitalsRecovery(creator))
+    patchOwnedCreator(pending.creatorId, (creator) => {
+      if (isStaminaDepleted(creator.stamina)) return creator
+      return applyFullVitalsRecovery(creator)
+    })
     setSocialUi({
       mode: 'hRetryResult',
       pending,
@@ -3668,7 +3900,7 @@ export function InGame({
       staminaLoss: 0,
       conditionLoss: 0,
     })
-    scheduleAutoSave()
+    flushAutoSave()
   }
 
   function handleHRetryReject() {
@@ -3685,7 +3917,100 @@ export function InGame({
       staminaLoss: 0,
       conditionLoss: loss,
     })
-    scheduleAutoSave()
+    flushAutoSave()
+  }
+
+  function handleHDirect(creatorId: string) {
+    if (lastHActionMonthRef.current === broadcastMonthNumberRef.current) return
+    const creator = ownedCreatorsRef.current.find((c) => c.id === creatorId)
+    if (!creator || isStaminaDepleted(creator.stamina)) return
+    setLastHActionMonth(broadcastMonthNumberRef.current)
+    lastHActionMonthRef.current = broadcastMonthNumberRef.current
+
+    const pending: HRetryPending = {
+      kind: 'hRetry',
+      creatorId: creator.id,
+      creatorName: creator.name,
+      grade: creator.grade,
+    }
+    const charDef = registeredCharactersRef.current.find((c) => c.id === creatorId)
+    const eventId = charDef?.eventLinks?.h
+    const event = eventId ? eventsRef.current.find((e) => e.id === eventId) ?? null : null
+
+    let beats = resolveShortsBeats(creatorId, 'h')
+    if (beats.length === 0 && event && event.media && event.media.length > 0) {
+      const mediaAssets = event.media.filter((m) => m.kind === 'image' || m.kind === 'video')
+      if (mediaAssets.length > 0) {
+        beats = mediaAssets.map((asset, idx) => ({
+          id: `fallback-beat-${idx}`,
+          mediaUrl: asset.url,
+          caption: '',
+          durationSec: asset.kind === 'video' ? 5 : 3,
+          blurRegions: [],
+        }))
+      }
+    }
+    if (beats.length === 0) {
+      const profileUrl = findCharacterProfileUrl(
+        ownedCreatorsRef.current.find((c) => c.id === creatorId) || charDef,
+      )
+      if (profileUrl) {
+        beats = [
+          {
+            id: 'fallback-beat-profile',
+            mediaUrl: profileUrl,
+            caption: '',
+            durationSec: 4,
+            blurRegions: [],
+          },
+        ]
+      }
+    }
+
+    setSocialUi({
+      mode: 'hRetryShorts',
+      pending,
+      event,
+      staminaLoss: 0,
+      beats,
+    })
+    flushAutoSave()
+  }
+
+  function handleVipDirect(creatorId: string) {
+    const creator = ownedCreatorsRef.current.find((c) => c.id === creatorId)
+    if (!creator || hasUsedCreatorVip(creator)) return
+    const marked = markCreatorVipUsed(creator)
+    const nextOwned = ownedCreatorsRef.current.map((row) =>
+      row.id === creatorId ? marked : row,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+
+    const offer = toVipOffer(marked)
+    const payout = rollVipAcceptPayout(leagueRef.current.currentRank)
+    const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
+    const vipEventId = charDef?.eventLinks?.vip
+    const vipEvent = vipEventId
+      ? eventsRef.current.find((e) => e.id === vipEventId) ?? null
+      : null
+
+    let next:
+      | { kind: 'vn'; event: GameEvent }
+      | { kind: 'shorts'; event: GameEvent; beats: ShortsVnBeat[] }
+      | { kind: 'rewards' } = { kind: 'rewards' }
+
+    if (vipEvent) {
+      const beats = resolveShortsBeats(offer.creatorId, 'vip')
+      if (watchedEventIds.includes(vipEvent.id) && beats.length > 0) {
+        next = { kind: 'shorts', event: vipEvent, beats }
+      } else {
+        next = { kind: 'vn', event: vipEvent }
+      }
+    }
+
+    setVipDepartPlay({ creator: marked, offer, payout, next })
+    flushAutoSave()
   }
 
   function handleConditionCare(creatorId: string) {
@@ -3781,6 +4106,9 @@ export function InGame({
       return
     }
 
+    const trainingCost = calcTrainingCost(target)
+    if (assetsRef.current < trainingCost) return
+
     const result = applyProductionTraining(target)
     const totalGain =
       result.gains.statSexy +
@@ -3788,9 +4116,8 @@ export function InGame({
       result.gains.statCommunication +
       result.gains.statPerformance
     if (totalGain <= 0) return
-    const trainingCost = calcTrainingCost(target)
-    if (assetsRef.current < trainingCost) return
-    if (trainingCost > 0 && !spendAssets(trainingCost)) return
+    if (!spendAssets(trainingCost)) return
+
     const nextOwned = ownedCreatorsRef.current.map((creator) =>
       creator.id === creatorId ? result.creator : creator,
     )
@@ -3813,7 +4140,7 @@ export function InGame({
     if (play.result.kind === 'fail') return
     const target = ownedCreatorsRef.current.find((c) => c.id === play.creatorId)
     if (!target) return
-    const promoted = applyPromotionExamResult(target, play.result)
+    const promoted = { ...applyPromotionExamResult(target, play.result), trainingTurns: 0 }
     const nextOwned = ownedCreatorsRef.current.map((creator) =>
       creator.id === play.creatorId ? promoted : creator,
     )
@@ -3841,25 +4168,27 @@ export function InGame({
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    if (tutorialStep === 'sns_post') {
+      setTutorialStep(null)
+      setTutorialDone(true)
+      tutorialDoneRef.current = true
+    }
     scheduleAutoSave()
     playSfx('sns-write')
+    unlockCharacterAchievement(creatorId, 'sns')
+    if (rolled.heat === 3) unlockCharacterAchievement(creatorId, 'sns_heat3')
     return rolled.heat
   }
 
   function handleBulkSnsCompose(): BulkSnsRevealEntry[] {
-    const preview = previewBulkSnsCompose(ownedCreatorsRef.current)
-    const totalCost = preview.eligibleIds.reduce((sum, id) => {
-      const creator = ownedCreatorsRef.current.find((c) => c.id === id)
-      const postCount = (creator?.snsPosts ?? []).length
-      return sum + calcSnsPostCost(postCount)
-    }, 0)
-    if (preview.eligibleIds.length === 0 || !spendAssets(totalCost)) return []
+    const plan = planBulkSnsCompose(ownedCreatorsRef.current, assetsRef.current)
+    if (plan.affordableIds.length === 0 || !spendAssets(plan.totalCost)) return []
 
-    const eligibleSet = new Set(preview.eligibleIds)
+    const affordableSet = new Set(plan.affordableIds)
 
     const posted: BulkSnsRevealEntry[] = []
     const nextOwned = ownedCreatorsRef.current.map((creator) => {
-      if (!eligibleSet.has(creator.id)) return creator
+      if (!affordableSet.has(creator.id)) return creator
       const rolled = rollSnsCompose(
         creator.snsPosts ?? [],
         creator.snsPublishedIds ?? [],
@@ -3887,12 +4216,17 @@ export function InGame({
     onOwnedCreatorsChangeRef.current(nextOwned)
     scheduleAutoSave()
     if (posted.length > 0) playSfx('sns-write')
+    for (const entry of posted) {
+      unlockCharacterAchievement(entry.creatorId, 'sns')
+      if (entry.heat === 3) unlockCharacterAchievement(entry.creatorId, 'sns_heat3')
+    }
     return posted
   }
 
   function handleVacation(creatorId: string) {
     const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
     if (!target) return
+    if (isStaminaDepleted(target.stamina)) return
     if (vacationPlay) return
     const month = broadcastMonthNumberRef.current
     const isAnyVacationUsedThisTurn = ownedCreatorsRef.current.some(
@@ -3915,8 +4249,9 @@ export function InGame({
     })
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
-    scheduleAutoSave()
+    flushAutoSave()
     playSfx('condition-recover')
+    unlockCharacterAchievement(creatorId, 'vacation')
     if (recovered) setVacationPlay(recovered)
   }
 
@@ -3998,6 +4333,9 @@ export function InGame({
     if (statementDelayTimerRef.current != null) {
       window.clearTimeout(statementDelayTimerRef.current)
       statementDelayTimerRef.current = null
+    }
+    if (tutorialStep === 'start_broadcast') {
+      setTutorialStep(null)
     }
     setBroadcastEndedNotice(false)
     weekFinishedRef.current = false
@@ -4363,6 +4701,30 @@ export function InGame({
     : t('hud.nextGoalMaxed')
   const nextGoalMet = Boolean(stationReviewHud.next && stationReviewHud.viewersMet)
 
+  function handleTutorialAutoAssign() {
+    if (ownedCreatorsRef.current.length === 0 || studioSlotsRef.current.length === 0) return
+    const creator = ownedCreatorsRef.current[0]
+    const card = toStudioHandCard(creator)
+    const slot0 = studioSlotsRef.current[0]
+    if (!slot0) return
+    const next = assignCreatorToSlot(studioSlotsRef.current, slot0.id, card)
+    studioSlotsRef.current = next
+    onStudioSlotsChange(next)
+    playSfx('studio-place')
+    setTutorialStep('nav_dashboard')
+  }
+
+  function handleTutorialAutoAssignStaff() {
+    const hiredId = managerStateRef.current.hiredStaffIds[0]
+    if (!hiredId || studioSlotsRef.current.length === 0) return
+    const staff = registeredStaff.find((s) => s.id === hiredId)
+    if (!staff) return
+    const slot0 = studioSlotsRef.current[0]
+    if (!slot0) return
+    handleEquipStaff(slot0.id, staff.kind, staff.id)
+    playSfx('studio-place')
+  }
+
   return (
     <main
       className={`game-stage fixed inset-0 grid h-dvh overflow-hidden ${
@@ -4613,6 +4975,7 @@ export function InGame({
         {tab === 'dashboard' ? null : tab === 'creator' ? (
           <CreatorPanel
             companyViewers={league.viewers}
+            stationRank={league.currentRank}
             ownedCreators={ownedCreators}
             registeredCharacters={registeredCharacters}
             scoutState={scoutSystem}
@@ -4624,6 +4987,8 @@ export function InGame({
             onScoutClosed={() => setOpenCreatorScout(false)}
             openStaffScout={openStaffScout}
             onStaffScoutClosed={() => setOpenStaffScout(false)}
+            tutorialStep={tutorialStep}
+            onTutorialStepChange={setTutorialStep}
             onScoutViewed={() => setScoutSystem((prev) => markScoutViewed(prev))}
             onScoutPass={() => {
               setScoutSystem((prev) => passScoutOffer(prev))
@@ -4650,13 +5015,24 @@ export function InGame({
             onScoutCreator={handleScoutCreator}
             studioSlots={studioSlots}
             onAssignStaffPlacement={handleAssignStaffPlacement}
+            onHDirect={handleHDirect}
+            onVipDirect={handleVipDirect}
+            lastHActionMonth={lastHActionMonth}
           />
         ) : tab === 'schedule' ? (
           <SchedulePanel
             slots={studioSlots}
             handCards={handCards}
             ownedCreators={ownedCreators}
-            onSlotsChange={onStudioSlotsChange}
+            onSlotsChange={(nextSlots) => {
+              onStudioSlotsChange(nextSlots)
+              if (
+                tutorialStep === 'studio_assign' &&
+                nextSlots.some((s) => s.status === 'assigned' && s.assignment)
+              ) {
+                setTutorialStep('nav_dashboard')
+              }
+            }}
             pendingHandCreatorId={recruitFlyCard?.id ?? null}
             spotlightCreatorId={spotlightCreatorId}
             placementLocked={broadcastPhase === 'live'}
@@ -4867,6 +5243,21 @@ export function InGame({
                 </span>
               </div>
 
+              {/* Achievements Modal Open Button */}
+              <div className="border-t border-amber-500/25 pt-5 mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    playSfx('ui-click')
+                    setShowAchievementsModal(true)
+                  }}
+                  className="game-btn w-full py-3.5 px-6 rounded-xl font-black text-sm border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 text-amber-200 shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_25px_rgba(245,158,11,0.4)] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span className="text-base">🏆</span>
+                  <span>{t('menu.achievements') || '업적 (Achievements)'}</span>
+                </button>
+              </div>
+
               <div className="border-t border-white/10 pt-5 mt-6">
                 <button
                   type="button"
@@ -4889,7 +5280,10 @@ export function InGame({
               <div className="border-t border-rose-500/25 pt-6 mt-10">
                 <button
                   type="button"
-                  onClick={onBack}
+                  onClick={() => {
+                    flushAutoSave()
+                    onBack?.()
+                  }}
                   className="game-btn w-full py-3.5 px-6 rounded-xl font-black text-sm bg-gradient-to-r from-rose-700 via-red-600 to-rose-700 hover:from-rose-600 hover:to-red-500 border border-rose-400/60 text-white shadow-[0_0_20px_rgba(244,63,94,0.45)] hover:shadow-[0_0_35px_rgba(244,63,94,0.75)] transition-all flex items-center justify-center gap-2"
                 >
                   <svg className="w-4.5 h-4.5 fill-current" viewBox="0 0 24 24">
@@ -4926,26 +5320,38 @@ export function InGame({
 
             const alert =
               (item.id === 'creator' &&
-                (creatorScoutAvailable ||
-                  staffScoutAvailable ||
-                  Boolean(scoutSystem.activeOffer) ||
-                  Boolean(scoutedStaffCandidate))) ||
+                (canAffordCreatorScoutHire ||
+                  canAffordStaffScoutHire ||
+                  (!scoutSystem.activeOffer && creatorScoutAvailable) ||
+                  (!scoutedStaffCandidate && staffScoutAvailable && hasStaffToScout))) ||
               (item.id === 'schedule' && canUnlockStudioSlot)
             const alertLabel =
               item.id === 'creator' && alert
-                ? scoutSystem.activeOffer
+                ? canAffordCreatorScoutHire
                   ? t('creator.scoutNewArrival')
-                  : scoutedStaffCandidate
+                  : canAffordStaffScoutHire
                     ? t('creator.staffScoutNewArrival')
                     : t('menu.creator')
                 : item.id === 'schedule' && alert
                   ? '신규 방송 슬롯 해금 가능!'
                   : undefined
 
+            const isCasinoOpen = isCasino && isCasinoAvailable
+            const casinoOpenStyle = isCasinoOpen
+              ? 'border-2 border-amber-300/90 bg-gradient-to-t from-pink-950/90 via-purple-900/85 to-amber-950/90 text-amber-200 shadow-[0_0_20px_rgba(251,191,36,0.7),0_0_35px_rgba(236,72,153,0.8),inset_0_0_15px_rgba(251,191,36,0.4)] ring-2 ring-pink-500/60 ring-offset-1 ring-offset-slate-950 hover:brightness-125 transition-all animate-pulse'
+              : ''
+
             return (
               <button
                 key={item.id}
                 type="button"
+                data-tutorial={
+                  item.id === 'dashboard'
+                    ? 'nav-tab-dashboard'
+                    : item.id === 'creator'
+                      ? 'nav-tab-creator'
+                      : undefined
+                }
                 disabled={isDisabledCasino}
                 onClick={() => {
                   if (isCasino) {
@@ -4965,22 +5371,34 @@ export function InGame({
                   }
                   handleTabClick(item.id)
                 }}
-                className={`game-btn-tab relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-4 py-2.5 text-xs font-semibold tracking-wide ${
+                className={`game-btn-tab relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-4 py-2.5 text-xs font-semibold tracking-wide overflow-visible ${
                   isActive ? 'is-active' : ''
                 } ${
                   isDisabledCasino
                     ? 'opacity-40 cursor-not-allowed border border-slate-800/60 bg-slate-950/40 text-slate-600'
                     : ''
-                }`}
+                } ${casinoOpenStyle}`}
               >
-                {item.icon}
-                <span>{item.label}</span>
+                {isCasinoOpen ? (
+                  <div className="relative">
+                    <span className="absolute -inset-1 rounded-full bg-amber-400/40 blur-sm animate-ping" />
+                    <span className="relative text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,0.95)]">
+                      {item.icon}
+                    </span>
+                  </div>
+                ) : (
+                  item.icon
+                )}
+                <span className={isCasinoOpen ? 'font-black tracking-wider text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.9)] scale-105' : ''}>
+                  {item.label}
+                </span>
                 {isCasino && !isCasinoGradeUnlocked ? (
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-slate-900 border border-slate-700 text-slate-400 rounded-full shadow">
                     중소기업 필요
                   </span>
                 ) : isCasino && isCasinoAvailable ? (
-                  <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-pink-600 text-white rounded-full animate-bounce shadow">
+                  <span className="absolute -top-2.5 -right-2.5 px-2 py-0.5 text-[10px] font-black font-mono bg-gradient-to-r from-amber-400 via-pink-500 to-rose-600 text-white rounded-full animate-bounce shadow-[0_0_14px_rgba(244,63,94,0.95)] border border-amber-200 flex items-center gap-1 z-10">
+                    <span className="h-1.5 w-1.5 rounded-full bg-yellow-200 animate-ping" />
                     OPEN
                   </span>
                 ) : isCasino && !isCasinoAvailable ? (
@@ -5039,7 +5457,6 @@ export function InGame({
             <HighLowMinigame
               configs={highLowConfigs}
               customAnte={getHighLowAnteForGrade(stationGradeConfig, stationGradeRef.current)}
-              hasAvailableStaff={registeredStaff.some((s) => !managerStateRef.current.hiredStaffIds.includes(s.id))}
               userChipsMap={{
                 local: assets,
                 star: assets,
@@ -5049,14 +5466,6 @@ export function InGame({
                 if (newAssets < assetsRef.current) playSfx('asset-spend')
                 assetsRef.current = newAssets
                 setAssets(newAssets)
-              }}
-              onHireStaff={() => {
-                const hired = managerStateRef.current.hiredStaffIds
-                const available = registeredStaff.filter((s) => !hired.includes(s.id))
-                if (available.length > 0) {
-                  const target = available[0]
-                  handleHireStaff(target.id, 0, 24000)
-                }
               }}
               onClose={() => {
                 setActiveCasinoRoomId(null)
@@ -5581,6 +5990,16 @@ export function InGame({
         />
       ) : null}
 
+      {promotionExamNotice ? (
+        <PromotionNoticeModal
+          creator={promotionExamNotice.creator}
+          fromGrade={promotionExamNotice.fromGrade}
+          toGrade={promotionExamNotice.toGrade}
+          onConfirm={() => handleClosePromotionExamNotice(false)}
+          onGoToCreator={() => handleClosePromotionExamNotice(true)}
+        />
+      ) : null}
+
       {activePromotePopup ? (
         <SalaryNegotiateModal
           creatorName={activePromotePopup.creatorName}
@@ -5639,6 +6058,24 @@ export function InGame({
           allowSkip={true}
         />
       ) : null}
+
+      {showAchievementsModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 sm:p-6">
+          <AchievementsPanel onClose={() => setShowAchievementsModal(false)} />
+        </div>
+      ) : null}
+
+      <TutorialGuideOverlay
+        step={tutorialStep}
+        onSkip={() => {
+          setTutorialStep(null)
+          setTutorialDone(true)
+          tutorialDoneRef.current = true
+          scheduleAutoSave()
+        }}
+        onAutoAssignSlot={handleTutorialAutoAssign}
+        onAutoAssignStaff={handleTutorialAutoAssignStaff}
+      />
     </main>
   )
 }

@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import type { OwnedCreator } from '../game/characters'
 import { formatMoney } from '../game/money'
-import { calcSnsPostCost, previewBulkSnsCompose, rollSnsCompose, type BulkSnsRevealEntry } from '../game/sns'
+import { planBulkSnsCompose, type BulkSnsRevealEntry } from '../game/sns'
 import { useTranslation } from '../locales/i18n'
 
 type SnsBulkComposeModalProps = {
@@ -20,21 +20,9 @@ export function SnsBulkComposeModal({
 }: SnsBulkComposeModalProps) {
   const { t } = useTranslation()
 
-  const preview = useMemo(() => previewBulkSnsCompose(creators), [creators])
+  const plan = useMemo(() => planBulkSnsCompose(creators, assets), [creators, assets])
 
-  const totalCost = useMemo(() => {
-    return preview.eligibleIds.reduce((sum, id) => {
-      const creator = creators.find((c) => c.id === id)
-      if (!creator) return sum
-      const posts = creator.snsPosts ?? []
-      const rolled = rollSnsCompose(posts, creator.snsPublishedIds ?? [], creator.snsHeat3Pity ?? 0)
-      const heat = rolled?.heat ?? 2
-      return sum + calcSnsPostCost(posts.length, heat)
-    }, 0)
-  }, [creators, preview.eligibleIds])
-
-  const canAfford = assets >= totalCost
-  const canSubmit = preview.eligibleIds.length > 0 && canAfford
+  const canSubmit = plan.affordableIds.length > 0
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -77,31 +65,44 @@ export function SnsBulkComposeModal({
           <p className="text-[12px] leading-5 text-slate-400">{t('sns.bulkComposeHint')}</p>
 
           <div className="mt-4 rounded-xl border border-white/8 bg-black/25 px-3 py-3 text-[12px] leading-5 text-slate-300">
-            <p className="font-semibold text-slate-100">
-              {t('sns.bulkComposeTarget').replace('{count}', String(preview.eligibleIds.length))}
-            </p>
-            {preview.skippedPending > 0 ? (
-              <p className="mt-1 text-amber-300/90">
-                {t('sns.bulkComposeSkippedPending').replace('{count}', String(preview.skippedPending))}
+            {plan.skippedNoFunds > 0 && plan.affordableIds.length > 0 ? (
+              <p className="font-semibold text-amber-200">
+                {t('sns.bulkComposeAffordableTarget')
+                  .replace('{total}', String(plan.eligibleIds.length))
+                  .replace('{count}', String(plan.affordableIds.length))}
+              </p>
+            ) : (
+              <p className="font-semibold text-slate-100">
+                {t('sns.bulkComposeTarget').replace('{count}', String(plan.eligibleIds.length))}
+              </p>
+            )}
+            {plan.skippedPending > 0 ? (
+              <p className="mt-1 text-slate-400">
+                {t('sns.bulkComposeSkippedPending').replace('{count}', String(plan.skippedPending))}
               </p>
             ) : null}
-            {preview.skippedNoStock > 0 ? (
+            {plan.skippedNoStock > 0 ? (
               <p className="mt-1 text-slate-500">
-                {t('sns.bulkComposeSkippedNoStock').replace('{count}', String(preview.skippedNoStock))}
+                {t('sns.bulkComposeSkippedNoStock').replace('{count}', String(plan.skippedNoStock))}
+              </p>
+            ) : null}
+            {plan.skippedNoFunds > 0 ? (
+              <p className="mt-1 text-rose-300/90">
+                {t('sns.bulkComposeSkippedNoFunds').replace('{count}', String(plan.skippedNoFunds))}
               </p>
             ) : null}
             <p className="mt-2 flex items-baseline justify-between gap-2 border-t border-white/8 pt-2">
               <span className="text-slate-400">{t('sns.bulkComposeTotalCost')}</span>
               <span className="text-base font-black tabular-nums text-amber-300">
-                {formatMoney(totalCost)}
+                {formatMoney(plan.totalCost)}
               </span>
             </p>
-            {!canAfford && preview.eligibleIds.length > 0 ? (
+            {plan.eligibleIds.length > 0 && plan.affordableIds.length === 0 ? (
               <p className="mt-1 text-right text-[11px] font-semibold text-rose-300">
                 {t('sns.needAssets')}
               </p>
             ) : null}
-            {preview.eligibleIds.length === 0 ? (
+            {plan.eligibleIds.length === 0 ? (
               <p className="mt-2 text-center text-[11px] text-slate-500">{t('sns.bulkComposeNone')}</p>
             ) : null}
           </div>
@@ -118,7 +119,7 @@ export function SnsBulkComposeModal({
             className="game-btn game-btn-primary flex-1 rounded-xl py-2.5 text-sm font-semibold disabled:opacity-35"
           >
             {t('sns.bulkComposeConfirm')}
-            <span className="ml-1.5 tabular-nums text-amber-200">{formatMoney(totalCost)}</span>
+            <span className="ml-1.5 tabular-nums text-amber-200">{formatMoney(plan.totalCost)}</span>
           </button>
         </footer>
       </div>

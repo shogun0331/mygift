@@ -6,6 +6,7 @@ import { listSaveMetas } from '../game/saveService'
 import { SaveListPanel } from './SaveListPanel'
 import { SettingsPanel } from './SettingsPanel'
 import { EndingGalleryPanel } from './EndingGalleryPanel'
+import { AchievementsPanel } from './AchievementsPanel'
 import { MainMenuBackgroundSlideshow } from './MainMenuBackgroundSlideshow'
 
 type MenuId =
@@ -14,10 +15,11 @@ type MenuId =
   | 'load'
   | 'settings'
   | 'gallery'
+  | 'achievements'
   | 'exit'
   | 'edit'
 
-type LeftPanelType = 'load' | 'settings' | 'gallery' | null
+type LeftPanelType = 'load' | 'settings' | 'gallery' | 'achievements' | null
 
 type MenuItemDef = {
   id: Exclude<MenuId, 'continue' | 'edit'>
@@ -30,6 +32,7 @@ const MENU_ITEMS: MenuItemDef[] = [
   { id: 'load', labelKey: 'menu.loadGame', subKey: 'menu.savedData' },
   { id: 'settings', labelKey: 'menu.settings' },
   { id: 'gallery', labelKey: 'menu.gallery' },
+  { id: 'achievements', labelKey: 'menu.achievements' },
   { id: 'exit', labelKey: 'menu.exit' },
 ]
 
@@ -41,10 +44,17 @@ type MainMenuProps = {
 
 export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps) {
   const { t } = useTranslation()
-  const saves = useMemo(() => listSaveMetas(), [])
+  const [saves, setSaves] = useState(() => listSaveMetas())
   const latestSave = saves.length > 0 ? saves[0] : null
   const [active, setActive] = useState<MenuId>(latestSave ? 'continue' : 'new')
   const [activeLeftPanel, setActiveLeftPanel] = useState<LeftPanelType>(null)
+
+  // If latestSave disappears, switch active from 'continue' to 'new'
+  useEffect(() => {
+    if (!latestSave && active === 'continue') {
+      setActive('new')
+    }
+  }, [latestSave, active])
 
   const showEditor = import.meta.env.DEV
   useGameBgm('menu')
@@ -80,6 +90,10 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
     }
     if (id === 'gallery') {
       setActiveLeftPanel((prev) => (prev === 'gallery' ? null : 'gallery'))
+      return
+    }
+    if (id === 'achievements') {
+      setActiveLeftPanel((prev) => (prev === 'achievements' ? null : 'achievements'))
       return
     }
     setActiveLeftPanel(null)
@@ -137,10 +151,12 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
       {/* Cyber Grid Overlay */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,black,transparent)] opacity-60" />
 
-      {/* ── LEFT SLIDING PANEL (LOAD / SETTINGS / GALLERY) ── */}
+      {/* ── LEFT SLIDING PANEL (LOAD / SETTINGS / GALLERY / ACHIEVEMENTS) ── */}
       <div
         className={`relative z-20 flex-1 ${
-          activeLeftPanel === 'gallery' ? 'max-w-[1240px]' : 'max-w-[780px]'
+          activeLeftPanel === 'gallery' || activeLeftPanel === 'achievements'
+            ? 'max-w-[1240px]'
+            : 'max-w-[780px]'
         } mr-6 transition-all duration-300`}
       >
         {activeLeftPanel === 'load' && (
@@ -150,6 +166,7 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
               onLoadGame(id)
             }}
             onClose={() => setActiveLeftPanel(null)}
+            onSavesChange={() => setSaves(listSaveMetas())}
           />
         )}
         {activeLeftPanel === 'settings' && (
@@ -157,6 +174,9 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
         )}
         {activeLeftPanel === 'gallery' && (
           <EndingGalleryPanel onClose={() => setActiveLeftPanel(null)} />
+        )}
+        {activeLeftPanel === 'achievements' && (
+          <AchievementsPanel onClose={() => setActiveLeftPanel(null)} />
         )}
       </div>
 

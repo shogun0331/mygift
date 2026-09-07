@@ -83,6 +83,14 @@ export type GameSave = {
   showCasinoModal?: boolean
   /** 방송국 승급 심사 실패 후 재도전 쿨다운 (턴 단위) */
   stationAuditCooldown?: number
+  /** 이미 팝업으로 안내한 크리에이터 승급심사 키 목록 (creatorId:targetGrade) */
+  notifiedPromotionExams?: string[]
+  /** 이번 턴에 H하기를 수행한 월 번호 (1턴 1회 제한) */
+  lastHActionMonth?: number
+  /** 이번 턴에 VIP 만남을 수행한 월 번호 (1턴 1회 제한) */
+  lastVipActionMonth?: number
+  /** 첫 튜토리얼 완료 여부 */
+  tutorialDone?: boolean
 }
 
 export type TopCharacterMeta = {

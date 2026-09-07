@@ -84,6 +84,11 @@ export function dateArcAfter(step: DateStepKey): DateArcStep {
   return 3
 }
 
+export function isHUnlocked(creator?: Pick<OwnedCreator, 'dateArcStep'> | null): boolean {
+  if (!creator) return false
+  return normalizeDateArcStep(creator.dateArcStep) >= 3
+}
+
 function notExcluded(creator: OwnedCreator, exclude: Set<string>) {
   return !exclude.has(creator.id)
 }
@@ -123,7 +128,10 @@ export function pickHCompletedTarget(
 ): OwnedCreator | null {
   return pickOne(
     creators.filter(
-      (creator) => notExcluded(creator, exclude) && normalizeDateArcStep(creator.dateArcStep) >= 3,
+      (creator) =>
+        notExcluded(creator, exclude) &&
+        normalizeDateArcStep(creator.dateArcStep) >= 3 &&
+        (creator.stamina ?? 0) > 0,
     ),
   )
 }

@@ -584,14 +584,14 @@ export function HighLowEditorPanel({
               </div>
             </div>
 
-            {/* 4가지 아이템 개별 등장 확률 (%) 설정 */}
+            {/* 아이템 개별 등장 확률 (%) 설정 */}
             <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
               <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
                 <span>🎁</span>
                 <span>아이템별 개별 등장 확률 설정 (Item Drop Rates %)</span>
               </h4>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-mono">
                 <div>
                   <label className="block text-cyan-300 font-bold mb-1">👁️ 카드 엿보기 (%)</label>
                   <input
@@ -643,24 +643,6 @@ export function HighLowEditorPanel({
                       })
                     }}
                     className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-pink-200 font-bold focus:border-pink-400 outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-purple-300 font-bold mb-1">🎩 스태프 영입 (%)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={currentRoomConfig.itemDropRates?.staff_hire ?? 5}
-                    onChange={(e) => {
-                      const val = Math.min(100, Math.max(0, Number(e.target.value) || 0))
-                      handleUpdateConfigField(activeRoomId, 'itemDropRates', {
-                        ...currentRoomConfig.itemDropRates,
-                        staff_hire: val,
-                      })
-                    }}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-purple-200 font-bold focus:border-purple-400 outline-none"
                   />
                 </div>
               </div>

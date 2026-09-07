@@ -926,6 +926,7 @@ export function DashboardPanel({
 
         <button
           type="button"
+          data-tutorial="start-broadcast-btn"
           onClick={onStartBroadcast}
           disabled={!canStartBroadcast}
           className="game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"

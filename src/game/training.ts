@@ -20,14 +20,10 @@ const TRAINING_GRADE_MULT: Record<Grade, number> = {
   S: 9.0,
 }
 
-/** 훈련 비용 활성화 — 트레이닝은 자산 소비의 핵심 (레벨디자인 2단계 적용) */
-const TRAINING_COST_FREE = false
-
 /** 다음 트레이닝 비용. 주력 스탯·등급이 높을수록 급격히 비싸진다 */
 export function calcTrainingCost(
   creator: Pick<OwnedCreator, CreatorStatField | 'statType' | 'grade'>,
 ): number {
-  if (TRAINING_COST_FREE) return 0
   const main = Math.min(99, mainStatValueOf(creator))
   const raw = TRAINING_COST_BASE * TRAINING_COST_GROWTH ** main * TRAINING_GRADE_MULT[creator.grade]
   const unit = raw >= 100_000 ? 1_000 : raw >= 10_000 ? 100 : 10
@@ -94,6 +90,31 @@ export function nextGradeBreak(grade: Grade): { grade: Exclude<Grade, 'C'>; need
   const next = GRADE_ORDER[idx + 1]
   if (next === 'C' || next == null) return null
   return { grade: next, need: GRADE_BREAK_NEED[next] }
+}
+
+export const GRADE_TRAINING_TURNS: Record<Grade, number> = {
+  C: 2,
+  B: 3,
+  A: 4,
+  S: 5,
+}
+
+export function getRequiredTrainingTurns(grade: Grade): number {
+  return GRADE_TRAINING_TURNS[grade] ?? 2
+}
+
+/** 방송 1턴 누적. 필요 턴에 도달하면 주력 +2~3 / 그 외 +1을 조용히 적용하고 카운터를 리셋한다 */
+export function applyBroadcastTrainingTick(creator: OwnedCreator): OwnedCreator {
+  if (wouldPromote(creator) || mainStatValueOf(creator) >= 100) {
+    return creator
+  }
+  const req = getRequiredTrainingTurns(creator.grade)
+  const nextTurns = (creator.trainingTurns ?? 0) + 1
+  if (nextTurns < req) {
+    return { ...creator, trainingTurns: nextTurns }
+  }
+  const trained = applyProductionTraining(creator)
+  return { ...trained.creator, trainingTurns: 0 }
 }
 
 export function wouldPromote(

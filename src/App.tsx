@@ -38,6 +38,7 @@ import {
   type RegisteredCharacter,
   type CharacterVideo,
 } from './game/characters'
+import { unlockAchievement, registerCharacterAchievements } from './game/achievements'
 import { fetchPublicJson } from './game/publicJson'
 import { resolveMediaSrc } from './game/mediaUrl'
 import { createInitialStudioSlots, type StudioSlot } from './game/studioSlots'
@@ -59,6 +60,7 @@ import type { AddCharacterPayload } from './screens/EditorScreen'
 import { EditorScreen } from './screens/EditorScreen'
 import { InGame } from './screens/InGame'
 import { MainMenu } from './screens/MainMenu'
+import { AchievementToastOverlay } from './components/AchievementToastOverlay'
 import { hydrateOwnedCreator, type GameSave } from './game/save'
 import {
   captureCurrentSave,
@@ -996,6 +998,7 @@ export default function App() {
   // 에디터에서 캐릭터를 수정하면 보유 크리에이터·스튜디오 배치에 즉시 반영
   useEffect(() => {
     if (!isLoaded) return
+    registerCharacterAchievements(registeredCharacters)
     setOwnedCreators((prev) => syncOwnedWithRegistered(prev, registeredCharacters))
   }, [registeredCharacters, isLoaded])
 
@@ -1362,6 +1365,30 @@ export default function App() {
   function markEventWatched(eventId: string) {
     if (!eventId) return
     setWatchedEventIds((prev) => (prev.includes(eventId) ? prev : [...prev, eventId]))
+    for (const char of registeredCharacters) {
+      if (!char.eventLinks) continue
+      if (char.eventLinks.date1 && char.eventLinks.date1 === eventId) {
+        unlockAchievement(`char_${char.id}_date1`)
+      }
+      if (char.eventLinks.date2 && char.eventLinks.date2 === eventId) {
+        unlockAchievement(`char_${char.id}_date2`)
+      }
+      if (char.eventLinks.h && char.eventLinks.h === eventId) {
+        unlockAchievement(`char_${char.id}_h`)
+      }
+      if (char.eventLinks.vip && char.eventLinks.vip === eventId) {
+        unlockAchievement(`char_${char.id}_vip`)
+      }
+    }
+  }
+
+  function handleStationGradeChange(next: StationGrade) {
+    setStationGrade(next)
+    if (next === 'tiny') unlockAchievement('station_grade_tiny')
+    else if (next === 'sme') unlockAchievement('station_grade_sme')
+    else if (next === 'mid') unlockAchievement('station_grade_mid')
+    else if (next === 'large') unlockAchievement('station_grade_large')
+    else if (next === 'top') unlockAchievement('station_grade_top')
   }
 
   const handleSaveEventsManual = async () => {
@@ -1469,70 +1496,67 @@ export default function App() {
     }
   }
 
-  if (screen === 'editor') {
-    return (
-      <EditorScreen
-        registeredCharacters={registeredCharacters}
-        onRegisterCharacter={handleRegisterCharacter}
-        onUpdateCharacter={handleUpdateCharacter}
-        onDeleteCharacter={handleDeleteCharacter}
-        events={events}
-        isEventsLoaded={isEventsLoaded}
-        onEventsChange={setEvents}
-        onSaveEventsManual={handleSaveEventsManual}
-        commonEventLinks={commonEventLinks}
-        onCommonEventLinksChange={setCommonEventLinks}
-        stationGradeConfig={stationGradeConfig}
-        onStationGradeConfigChange={setStationGradeConfigState}
-        onSaveStationGradeManual={handleSaveStationGradeManual}
-        onReloadStationGradeFromFile={handleReloadStationGradeFromFile}
-        currentViewers={league.viewers}
-        onCurrentViewersChange={handleCurrentViewersChange}
-        registeredStaff={registeredStaff}
-        onRegisterStaff={handleRegisterStaff}
-        onUpdateStaff={handleUpdateStaff}
-        onDeleteStaff={handleDeleteStaff}
-        bgmConfig={bgmConfig}
-        onBgmConfigChange={setBgmConfig}
-        onUploadBgm={handleUploadBgm}
-        onClearBgm={handleClearBgm}
-        onBack={() => setScreen(editorReturnScreen === 'game' ? 'game' : 'main')}
-      />
-    )
-  }
-
-  if (screen === 'game') {
-    return (
-      <InGame
-        registeredCharacters={registeredCharacters}
-        ownedCreators={ownedCreators}
-        studioSlots={studioSlots}
-        events={events}
-        registeredStaff={registeredStaff}
-        managerState={managerState}
-        onManagerStateChange={setManagerState}
-        onStudioSlotsChange={setStudioSlots}
-        onOwnedCreatorsChange={setOwnedCreators}
-        onScout={handleScout}
-        onBack={() => {
-          flushAutoSave()
-          setScreen('main')
-        }}
-        onOpenEditor={() => openEditor('game')}
-        watchedEventIds={watchedEventIds}
-        onEventWatched={markEventWatched}
-        stationGradeConfig={stationGradeConfig}
-        companyMeta={companyMeta}
-        initialSave={initialSave}
-        league={league}
-        stationGrade={stationGrade}
-        onLeagueChange={setLeague}
-        onStationGradeChange={setStationGrade}
-      />
-    )
-  }
-
-  return (
+  const screenTree =
+    screen === 'editor' ? (
+      <>
+        <EditorScreen
+          registeredCharacters={registeredCharacters}
+          onRegisterCharacter={handleRegisterCharacter}
+          onUpdateCharacter={handleUpdateCharacter}
+          onDeleteCharacter={handleDeleteCharacter}
+          events={events}
+          isEventsLoaded={isEventsLoaded}
+          onEventsChange={setEvents}
+          onSaveEventsManual={handleSaveEventsManual}
+          commonEventLinks={commonEventLinks}
+          onCommonEventLinksChange={setCommonEventLinks}
+          stationGradeConfig={stationGradeConfig}
+          onStationGradeConfigChange={setStationGradeConfigState}
+          onSaveStationGradeManual={handleSaveStationGradeManual}
+          onReloadStationGradeFromFile={handleReloadStationGradeFromFile}
+          currentViewers={league.viewers}
+          onCurrentViewersChange={handleCurrentViewersChange}
+          registeredStaff={registeredStaff}
+          onRegisterStaff={handleRegisterStaff}
+          onUpdateStaff={handleUpdateStaff}
+          onDeleteStaff={handleDeleteStaff}
+          bgmConfig={bgmConfig}
+          onBgmConfigChange={setBgmConfig}
+          onUploadBgm={handleUploadBgm}
+          onClearBgm={handleClearBgm}
+          onBack={() => setScreen(editorReturnScreen === 'game' ? 'game' : 'main')}
+        />
+      </>
+    ) : screen === 'game' ? (
+      <>
+        <InGame
+          registeredCharacters={registeredCharacters}
+          ownedCreators={ownedCreators}
+          studioSlots={studioSlots}
+          events={events}
+          registeredStaff={registeredStaff}
+          managerState={managerState}
+          onManagerStateChange={setManagerState}
+          onStudioSlotsChange={setStudioSlots}
+          onOwnedCreatorsChange={setOwnedCreators}
+          onScout={handleScout}
+          onBack={() => {
+            flushAutoSave()
+            setScreen('main')
+          }}
+          onOpenEditor={() => openEditor('game')}
+          watchedEventIds={watchedEventIds}
+          onEventWatched={markEventWatched}
+          stationGradeConfig={stationGradeConfig}
+          companyMeta={companyMeta}
+          initialSave={initialSave}
+          league={league}
+          stationGrade={stationGrade}
+          onLeagueChange={setLeague}
+          onStationGradeChange={handleStationGradeChange}
+        />
+      </>
+    ) : (
     <>
       <MainMenu
         onNewGame={() => setShowNewGame(true)}
@@ -1557,6 +1581,13 @@ export default function App() {
           onClose={() => setShowLoadGame(false)}
         />
       ) : null}
+    </>
+    )
+
+  return (
+    <>
+      {screenTree}
+      <AchievementToastOverlay />
     </>
   )
 }

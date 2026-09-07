@@ -287,24 +287,63 @@ export function canComposeSnsCreator(
   return assets >= calcSnsPostCost(posts.length, rolled.heat)
 }
 
-/** 일괄 SNS: 대상이 있고 총 촬영비를 감당할 수 있는지 */
-export function canAffordBulkSnsCompose(
+export type BulkSnsComposePlan = {
+  eligibleIds: string[]
+  affordableIds: string[]
+  totalCost: number
+  fullCost: number
+  skippedPending: number
+  skippedNoStock: number
+  skippedNoFunds: number
+}
+
+export function planBulkSnsCompose(
   creators: readonly SnsComposeCandidate[],
   assets: number,
-): boolean {
-  const { eligibleIds } = previewBulkSnsCompose(creators)
-  if (eligibleIds.length === 0) return false
+): BulkSnsComposePlan {
+  const preview = previewBulkSnsCompose(creators)
   const byId = new Map(creators.map((creator) => [creator.id, creator]))
+  const affordableIds: string[] = []
+  let remaining = assets
   let totalCost = 0
-  for (const id of eligibleIds) {
+  let fullCost = 0
+  let skippedNoFunds = 0
+
+  for (const id of preview.eligibleIds) {
     const creator = byId.get(id)
     if (!creator) continue
     const posts = creator.snsPosts ?? []
     const rolled = rollSnsCompose(posts, creator.snsPublishedIds ?? [], creator.snsHeat3Pity ?? 0)
     const heat = rolled?.heat ?? 2
-    totalCost += calcSnsPostCost(posts.length, heat)
+    const cost = calcSnsPostCost(posts.length, heat)
+    fullCost += cost
+    if (remaining >= cost) {
+      remaining -= cost
+      totalCost += cost
+      affordableIds.push(id)
+    } else {
+      skippedNoFunds += 1
+    }
   }
-  return assets >= totalCost
+
+  return {
+    eligibleIds: preview.eligibleIds,
+    affordableIds,
+    totalCost,
+    fullCost,
+    skippedPending: preview.skippedPending,
+    skippedNoStock: preview.skippedNoStock,
+    skippedNoFunds,
+  }
+}
+
+/** 일괄 SNS: 1명이라도 등록할 수 있는 자산이 있는지 */
+export function canAffordBulkSnsCompose(
+  creators: readonly SnsComposeCandidate[],
+  assets: number,
+): boolean {
+  const plan = planBulkSnsCompose(creators, assets)
+  return plan.affordableIds.length > 0
 }
 
 export function snsHeatProgress(

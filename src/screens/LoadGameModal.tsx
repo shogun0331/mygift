@@ -102,28 +102,45 @@ export function LoadGameModal({ onLoad, onClose }: LoadGameModalProps) {
                         ) : null}
                       </div>
 
-                      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
-                        <span className="font-semibold text-slate-300">📅 {save.date}</span>
-                        <span>·</span>
-                        <span className="font-bold text-amber-300">💰 {formatMoney(save.assets)}</span>
-                        <span>·</span>
-                        <span className="font-semibold text-indigo-300">
-                          👥 {save.viewers.toLocaleString('en-US')}{t('ranking.viewersUnit')}
-                        </span>
+                      <div className="grid grid-cols-3 gap-2 mt-2 text-xs">
+                        <div className="flex flex-col justify-center rounded-xl border border-slate-700/60 bg-black/40 px-2.5 py-1">
+                          <span className="text-[9px] font-mono font-bold text-indigo-300/70 uppercase">DATE</span>
+                          <span className="font-mono font-bold text-slate-200 truncate mt-0.5 flex items-center gap-1">
+                            <span>📅</span>
+                            <span>{save.date}</span>
+                          </span>
+                        </div>
+                        <div className="flex flex-col justify-center rounded-xl border border-amber-500/25 bg-amber-950/25 px-2.5 py-1 shadow-sm">
+                          <span className="text-[9px] font-mono font-bold text-amber-300/70 uppercase">ASSETS</span>
+                          <span className="font-mono font-bold text-amber-300 truncate mt-0.5 flex items-center gap-1">
+                            <span>💰</span>
+                            <span>{formatMoney(save.assets)}</span>
+                          </span>
+                        </div>
+                        <div className="flex flex-col justify-center rounded-xl border border-purple-500/25 bg-purple-950/25 px-2.5 py-1 shadow-sm">
+                          <span className="text-[9px] font-mono font-bold text-purple-300/70 uppercase">VIEWERS</span>
+                          <span className="font-mono font-bold text-purple-200 truncate mt-0.5 flex items-center gap-1">
+                            <span className="text-pink-400">👥</span>
+                            <span>{save.viewers.toLocaleString('en-US')}{t('ranking.viewersUnit')}</span>
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </button>
 
-                  <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-end">
-                    <span className="shrink-0 text-xs font-bold text-slate-400">
+                  <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-end shrink-0 pt-2 sm:pt-0 sm:pl-3 border-t sm:border-t-0 sm:border-l border-white/5">
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-cyan-300 font-mono bg-cyan-950/40 border border-cyan-500/30 px-2 py-0.5 rounded-lg">
                       ⏱️ {formatPlaytime(save.playtimeMs)}
                     </span>
                     <button
                       type="button"
                       onClick={() => setPendingDelete(save.id)}
-                      className="rounded-lg border border-rose-400/30 bg-rose-500/10 px-2.5 py-1 text-xs font-bold text-rose-300 transition hover:border-rose-400/60 hover:bg-rose-500/25"
+                      className="rounded-lg border border-rose-500/30 bg-rose-950/30 p-1.5 text-xs font-bold text-rose-300 transition hover:border-rose-400 hover:bg-rose-600/30 hover:text-white"
+                      title={t('save.delete') || '삭제'}
                     >
-                      {t('save.delete')}
+                      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                        <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12z" />
+                      </svg>
                     </button>
                   </div>
                 </div>

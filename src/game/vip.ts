@@ -77,3 +77,13 @@ export function toVipOffer(creator: OwnedCreator): VipOffer {
     profileImageUrl: creator.profileImageUrl || null,
   }
 }
+
+/** 상세보기 VIP 만남은 캐릭터당 1회 */
+export function hasUsedCreatorVip(creator: Pick<OwnedCreator, 'vipUsed'>): boolean {
+  return Boolean(creator.vipUsed)
+}
+
+export function markCreatorVipUsed<T extends { vipUsed?: boolean }>(creator: T): T {
+  if (creator.vipUsed) return creator
+  return { ...creator, vipUsed: true }
+}

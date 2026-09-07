@@ -127,8 +127,19 @@ export function DateResultModal({
             {t('date.resultBody').replace('{name}', pending.creatorName)}
           </p>
           {pending.step === 'h' && (
-            <div className="mt-5 rounded-2xl border border-emerald-400/40 bg-emerald-950/50 p-4 shadow-[0_0_25px_rgba(52,211,153,0.25)]">
-              <p className="text-sm font-black text-emerald-300">{t('date.fullRecovery')}</p>
+            <div className="mt-5 space-y-2.5">
+              <div className="rounded-2xl border border-emerald-400/40 bg-emerald-950/50 p-3 shadow-[0_0_25px_rgba(52,211,153,0.25)]">
+                <p className="text-sm font-black text-emerald-300">{t('date.fullRecovery')}</p>
+              </div>
+              <div className="rounded-2xl border border-pink-400/50 bg-gradient-to-r from-pink-950/80 via-purple-950/80 to-pink-950/80 p-4 shadow-[0_0_30px_rgba(236,72,153,0.35)] text-left">
+                <div className="flex items-center gap-2 text-pink-300 font-black text-sm">
+                  <span className="text-base">🔓</span>
+                  <span>{t('social.hUnlockTitle')}</span>
+                </div>
+                <p className="mt-1 text-xs text-pink-100/90 leading-relaxed">
+                  {t('social.hUnlockDesc').replace('{name}', pending.creatorName)}
+                </p>
+              </div>
             </div>
           )}
           <div className="mt-7 flex justify-center">

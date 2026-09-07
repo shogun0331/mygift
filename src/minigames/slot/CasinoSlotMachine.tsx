@@ -25,6 +25,7 @@ import { resolveMediaSrc } from '../../game/mediaUrl'
 import { DEFAULT_HIGH_LOW_CONFIG, getActiveDealerMedia } from '../highlow/highLowConfig'
 import { loadHighLowConfig } from '../highlow/highLowStore'
 import { HighLowDealerDialogue, type DealerDialoguePlay } from '../highlow/HighLowDealerDialogue'
+import { unlockAchievement } from '../../game/achievements'
 
 export type CasinoSlotMachineProps = {
   stationGrade?: StationGrade | null
@@ -252,6 +253,11 @@ export function CasinoSlotMachine({
 
         // 당첨 등급(Tier) 판정
         let currentTier: 'small' | 'medium' | 'big' | 'jackpot' = 'small'
+        const hasSevenLine = result.winningLines.some((line) => line.matchedSymbol.id === 'seven')
+        if (result.isJackpot || hasSevenLine) {
+          unlockAchievement('casino_slot_777')
+        }
+
         if (result.isJackpot) {
           currentTier = 'jackpot'
         } else if (result.winningLines.length >= 3 || result.totalWinAmount >= baseReward * 8) {

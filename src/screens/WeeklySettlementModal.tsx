@@ -410,6 +410,7 @@ export function WeeklySettlementModal({
               </div>
               <button
                 type="button"
+                data-tutorial="statement-confirm-btn"
                 onClick={onConfirm}
                 className="game-btn game-btn-primary min-w-[148px] px-6 py-2.5 text-sm"
               >

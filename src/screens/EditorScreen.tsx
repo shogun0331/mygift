@@ -41,6 +41,7 @@ import { SlotEditorPanel } from '../minigames/slot/SlotEditorPanel'
 import { BgmEditorPanel } from './BgmEditorPanel'
 import { useGameBgm, type BgmTrack, type GameBgmConfig } from '../game/bgm'
 import { setMosaicStrength, useMosaicStrength } from '../game/visualFx'
+import { resetAchievements } from '../game/achievements'
 
 type EditorTab =
   | 'character'
@@ -185,9 +186,25 @@ export function EditorScreen({
             <p className="game-kicker">DEV ONLY</p>
             <h1 className="game-title mt-1 text-2xl">EDITOR</h1>
           </div>
-          <button type="button" onClick={onBack} className="game-btn px-4 py-2 text-sm">
-            뒤로가기
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('모든 업적 달성 기록을 초기화하시겠습니까?\n(Reset all unlocked achievements?)')) {
+                  resetAchievements()
+                  alert('모든 업적이 초기화되었습니다. (All achievements have been reset.)')
+                }
+              }}
+              className="game-btn flex items-center gap-1.5 border border-amber-500/50 bg-amber-950/40 text-amber-300 hover:bg-amber-800/50 hover:text-amber-100 px-3.5 py-2 text-sm font-bold shadow-[0_0_15px_rgba(245,158,11,0.2)] transition"
+              title="저장된 모든 업적 달성 내역을 초기화합니다"
+            >
+              <span>🏆</span>
+              <span>업적 초기화</span>
+            </button>
+            <button type="button" onClick={onBack} className="game-btn px-4 py-2 text-sm">
+              뒤로가기
+            </button>
+          </div>
         </header>
       )}
 

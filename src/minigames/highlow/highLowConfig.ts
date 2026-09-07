@@ -32,7 +32,7 @@ export const CASINO_ITEMS_INFO: Record<CasinoItemType, Omit<CasinoItem, 'id'>> =
     type: 'loss_shield',
     name: '패배 쉴드',
     icon: '🛡️',
-    description: '패배 시 판돈 손실을 100% 방어합니다.',
+    description: '패배해도 퇴장하지 않고 라운드를 이어갑니다.',
     badgeColor: '#ec4899',
   },
   staff_hire: {
@@ -131,7 +131,7 @@ export const DEFAULT_HIGH_LOW_CONFIG: HighLowConfigMap = {
       peek_card: 20,
       double_payout: 15,
       loss_shield: 10,
-      staff_hire: 5,
+      staff_hire: 0,
     },
     maxComboLimit: 3,
   },
@@ -153,7 +153,7 @@ export const DEFAULT_HIGH_LOW_CONFIG: HighLowConfigMap = {
       peek_card: 25,
       double_payout: 20,
       loss_shield: 15,
-      staff_hire: 10,
+      staff_hire: 0,
     },
     maxComboLimit: 5,
   },
@@ -175,25 +175,21 @@ export const DEFAULT_HIGH_LOW_CONFIG: HighLowConfigMap = {
       peek_card: 30,
       double_payout: 25,
       loss_shield: 20,
-      staff_hire: 15,
+      staff_hire: 0,
     },
     maxComboLimit: 7,
   },
 }
 
 /**
- * 룸의 4가지 아이템 개별 등장 확률(%)을 바탕으로 매 라운드 보상 아이템 롤링
+ * 룸의 아이템 개별 등장 확률(%)을 바탕으로 매 라운드 보상 아이템 롤링 (스태프 영입은 제외)
  */
-export function rollRewardItem(
-  config: HighLowRoomConfig,
-  options?: { allowStaff?: boolean },
-): CasinoItem | null {
-  const allowStaff = options?.allowStaff ?? true
+export function rollRewardItem(config: HighLowRoomConfig): CasinoItem | null {
   const rates = config.itemDropRates || {
     peek_card: config.itemDropRate || 20,
     double_payout: config.itemDropRate || 15,
     loss_shield: config.itemDropRate || 10,
-    staff_hire: config.itemDropRate || 5,
+    staff_hire: 0,
   }
 
   const candidates: { type: CasinoItemType; rate: number }[] = [
@@ -201,9 +197,6 @@ export function rollRewardItem(
     { type: 'double_payout', rate: rates.double_payout ?? 15 },
     { type: 'loss_shield', rate: rates.loss_shield ?? 10 },
   ]
-  if (allowStaff) {
-    candidates.push({ type: 'staff_hire', rate: rates.staff_hire ?? 5 })
-  }
 
   const passedItems = candidates.filter((item) => {
     const rnd = Math.random() * 100

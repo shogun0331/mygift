@@ -207,16 +207,14 @@ export function SchedulePanel({
   useEffect(() => {
     if (defaultStudioMode) {
       setStudioMode(defaultStudioMode)
-      onResetDefaultMode?.()
     }
-  }, [defaultStudioMode, onResetDefaultMode])
-
-  useEffect(() => {
     if (defaultSelectedStaffId) {
       setSelectedStaffId(defaultSelectedStaffId)
+    }
+    if (defaultStudioMode || defaultSelectedStaffId) {
       onResetDefaultMode?.()
     }
-  }, [defaultSelectedStaffId, onResetDefaultMode])
+  }, [defaultStudioMode, defaultSelectedStaffId, onResetDefaultMode])
 
   const hiredStaff = registeredStaff.filter((row) => managerState?.hiredStaffIds.includes(row.id))
   const placeableStaff = hiredStaff.filter(
@@ -261,9 +259,11 @@ export function SchedulePanel({
     onSlotsChange(clearStudioSlot(slots, slotId))
   }
 
-  function assignStaffToSlot(slotId: string, staffId: string) {
+  function assignStaffToSlot(slotId: string, staffId?: string) {
     if (placementLocked || !managerState || !onEquipStaff) return
-    const staff = hiredStaff.find((row) => row.id === staffId)
+    const idToAssign = staffId || selectedStaffId || placeableStaff[0]?.id
+    if (!idToAssign) return
+    const staff = hiredStaff.find((row) => row.id === idToAssign)
     const slot = slots.find((row) => row.id === slotId)
     if (!staff || !slot || slot.status === 'locked') return
     onEquipStaff(slotId, staff.kind, staff.id)
@@ -347,7 +347,7 @@ export function SchedulePanel({
                 aspectRatio: '9 / 8',
               }}
             >
-            {slots.map((slot) => {
+            {slots.map((slot, index) => {
               const locked = slot.status === 'locked'
               const canUnlock =
                 locked &&
@@ -465,6 +465,7 @@ export function SchedulePanel({
                 >
                   <button
                     type="button"
+                    data-tutorial={index === 0 ? (staffMode ? 'staff-slot-0' : 'studio-slot-0') : undefined}
                     disabled={(locked && !canUnlock) || (placementLocked && !canUnlock)}
                     draggable={!staffMode && filled && !placementLocked}
                     onDragStart={(e) => {
@@ -490,7 +491,7 @@ export function SchedulePanel({
                       }
                       if (locked || placementLocked) return
                       if (staffMode) {
-                        if (selectedStaffId) assignStaffToSlot(slot.id, selectedStaffId)
+                        assignStaffToSlot(slot.id, selectedStaffId || undefined)
                         return
                       }
                       if (selectedCard) {
@@ -538,8 +539,11 @@ export function SchedulePanel({
                           registeredStaff={registeredStaff}
                           placementLocked={placementLocked}
                           selectedStaffId={selectedStaffId}
-                          onPlaceSelected={() => {
-                            if (selectedStaffId) assignStaffToSlot(slot.id, selectedStaffId)
+                          onPlaceSelected={(targetKind) => {
+                            const targetStaff = selectedStaffId
+                              ? hiredStaff.find((s) => s.id === selectedStaffId)
+                              : placeableStaff.find((s) => s.kind === targetKind) || placeableStaff[0]
+                            if (targetStaff) assignStaffToSlot(slot.id, targetStaff.id)
                           }}
                           onUnequip={(kind) => onUnequipStaff?.(slot.id, kind)}
                         />
@@ -777,9 +781,10 @@ export function SchedulePanel({
               </div>
             ) : (
               <div data-studio-staff-bay-target className="grid grid-cols-2 content-start items-start gap-2">
-                {placeableStaff.map((staff) => (
+                {placeableStaff.map((staff, index) => (
                   <StaffHandCard
                     key={staff.id}
+                    dataTutorial={index === 0 ? 'staff-hand-card-0' : undefined}
                     staff={staff}
                     locale={locale}
                     selected={selectedStaffId === staff.id}
@@ -802,7 +807,7 @@ export function SchedulePanel({
             </div>
           ) : (
             <div className="grid grid-cols-2 content-start items-start gap-2">
-              {placeableHandCards.map((card) => {
+              {placeableHandCards.map((card, index) => {
                 const isSelected = selectedCard === card.id
                 const isPending = pendingHandCreatorId === card.id
                 const isSpotlight = spotlightCreatorId === card.id
@@ -823,6 +828,7 @@ export function SchedulePanel({
                   <button
                     key={card.id}
                     type="button"
+                    data-tutorial={index === 0 ? 'studio-hand-card-0' : undefined}
                     data-studio-hand-card={card.id}
                     draggable={!isPending && !blocked && !placementLocked}
                     onDragStart={(e) => {
@@ -1023,7 +1029,7 @@ function StaffSlotFace({
   registeredStaff: RegisteredStaff[]
   placementLocked: boolean
   selectedStaffId: string | null
-  onPlaceSelected: () => void
+  onPlaceSelected: (kind: StaffKind) => void
   onUnequip: (kind: StaffKind) => void
 }) {
   const { t, locale } = useTranslation()
@@ -1064,7 +1070,7 @@ function StaffSlotFace({
                   onUnequip(kind)
                   return
                 }
-                if (selectedStaffId) onPlaceSelected()
+                onPlaceSelected(kind)
               }}
               className={`relative min-h-0 overflow-hidden rounded-md border text-left transition ${
                 staff
@@ -1128,6 +1134,7 @@ function StaffHandCard({
   hireable = false,
   assets = 0,
   placementLocked,
+  dataTutorial,
   onSelect,
   onHire,
   onDragStart,
@@ -1141,6 +1148,7 @@ function StaffHandCard({
   hireable?: boolean
   assets?: number
   placementLocked: boolean
+  dataTutorial?: string
   onSelect?: () => void
   onHire?: () => boolean | void
   onDragStart?: (event: DragEvent) => void
@@ -1154,6 +1162,7 @@ function StaffHandCard({
   return (
     <button
       type="button"
+      data-tutorial={dataTutorial}
       data-studio-staff-bay-card={staff.id}
       draggable={!hireable && !placementLocked}
       onDragStart={(event) => {
