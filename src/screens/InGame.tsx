@@ -1093,9 +1093,13 @@ export function InGame({
   const [lastHActionMonth, setLastHActionMonth] = useState(boot?.lastHActionMonth ?? 0)
   const lastHActionMonthRef = useRef(lastHActionMonth)
   lastHActionMonthRef.current = lastHActionMonth
-  const [lastVipActionMonth, setLastVipActionMonth] = useState(boot?.lastVipActionMonth ?? 0)
-  const lastVipActionMonthRef = useRef(lastVipActionMonth)
-  lastVipActionMonthRef.current = lastVipActionMonth
+  const initialVipMap: Record<string, number> =
+    typeof boot?.lastVipActionMonth === 'object' && boot?.lastVipActionMonth !== null
+      ? (boot.lastVipActionMonth as Record<string, number>)
+      : {}
+  const [lastVipActionMonthByCreator, setLastVipActionMonthByCreator] = useState<Record<string, number>>(initialVipMap)
+  const lastVipActionMonthByCreatorRef = useRef(lastVipActionMonthByCreator)
+  lastVipActionMonthByCreatorRef.current = lastVipActionMonthByCreator
   const [donationThanksPlay, setDonationThanksPlay] = useState<DonationThanksPlay | null>(null)
   const donationThanksPlayRef = useRef(donationThanksPlay)
   donationThanksPlayRef.current = donationThanksPlay
@@ -1797,7 +1801,7 @@ export function InGame({
       stationAuditCooldown: stationAuditCooldownRef.current,
       notifiedPromotionExams: notifiedPromotionExamsRef.current,
       lastHActionMonth: lastHActionMonthRef.current,
-      lastVipActionMonth: lastVipActionMonthRef.current,
+      lastVipActionMonth: lastVipActionMonthByCreatorRef.current,
       tutorialDone: tutorialDoneRef.current,
     }
   }
@@ -4109,11 +4113,12 @@ export function InGame({
   }
 
   function handleVipDirect(creatorId: string) {
-    if (lastVipActionMonthRef.current === broadcastMonthNumberRef.current) return
+    if (lastVipActionMonthByCreatorRef.current[creatorId] === broadcastMonthNumberRef.current) return
     const creator = ownedCreatorsRef.current.find((c) => c.id === creatorId)
     if (!creator) return
-    setLastVipActionMonth(broadcastMonthNumberRef.current)
-    lastVipActionMonthRef.current = broadcastMonthNumberRef.current
+    const next = { ...lastVipActionMonthByCreatorRef.current, [creatorId]: broadcastMonthNumberRef.current }
+    lastVipActionMonthByCreatorRef.current = next
+    setLastVipActionMonthByCreator(next)
 
     const offer = toVipOffer(creator)
     const payout = rollVipAcceptPayout(leagueRef.current.currentRank)
@@ -5433,7 +5438,7 @@ export function InGame({
             onHDirect={handleHDirect}
             onVipDirect={handleVipDirect}
             lastHActionMonth={lastHActionMonth}
-            lastVipActionMonth={lastVipActionMonth}
+            lastVipActionMonthByCreator={lastVipActionMonthByCreator}
           />
         ) : tab === 'schedule' ? (
           <SchedulePanel

@@ -87,8 +87,8 @@ export type GameSave = {
   notifiedPromotionExams?: string[]
   /** 이번 턴에 H하기를 수행한 월 번호 (1턴 1회 제한) */
   lastHActionMonth?: number
-  /** 이번 턴에 VIP 만남을 수행한 월 번호 (1턴 1회 제한) */
-  lastVipActionMonth?: number
+  /** 이번 턴에 VIP 만남을 수행한 캐릭터별 월 번호 매핑 (creatorId → month) */
+  lastVipActionMonth?: Record<string, number>
   /** 첫 튜토리얼 완료 여부 */
   tutorialDone?: boolean
 }
