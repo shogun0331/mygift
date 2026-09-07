@@ -1669,6 +1669,7 @@ export function InGame({
   const pendingWeekAdvanceAfterToxicRef = useRef(false)
   const statementDelayTimerRef = useRef<number | null>(null)
   const leagueRef = useRef(league)
+  const monthStartViewersRef = useRef(league.viewers)
   const pendingScoutAfterRankRef = useRef(false)
   const pendingRankResultRef = useRef<RankSettlementResult | null>(null)
   const pendingRankAfterBubbleRef = useRef<RankSettlementResult | null>(null)
@@ -3226,7 +3227,7 @@ export function InGame({
 
 
 
-    const viewersBefore = leagueRef.current.viewers
+    const viewersBefore = monthStartViewersRef.current
     const rankBefore = leagueRef.current.currentRank
 
     const broadcastedIds = new Set(weekSnapshot.byCreator.keys())
@@ -4481,6 +4482,8 @@ export function InGame({
     setStartBroadcastLocked(false)
     setTab('dashboard')
     setBroadcastPhase('live')
+    // 방송 시작 시점 시청자를 기록 — 방송 중 생산 보너스로 늘어난 시청자도 명세서에 포함되도록
+    monthStartViewersRef.current = leagueRef.current.viewers
     rollLivePlayVideos()
     setMonthWeekIndex(0)
     monthWeekIndexRef.current = 0
