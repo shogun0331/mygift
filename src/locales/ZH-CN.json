@@ -496,7 +496,12 @@
     "careExpenseLabel": "状态照料 ({name})",
     "taxLabel": "所得税",
     "taxDetail": "基于{year}年年度收益 {amount}",
-    "viewersLost": "观众流失"
+    "viewersLost": "观众流失",
+    "viewersBreakdownTitle": "观众增减明细",
+    "viewersProduction": "制作加成",
+    "viewersSns": "SNS 订阅者",
+    "viewersBase": "联盟/其他",
+    "viewersTotal": "合计"
   },
   "station": {
     "gradeBadge": "{grade}级",

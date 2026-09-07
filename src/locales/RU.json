@@ -496,7 +496,12 @@
     "careExpenseLabel": "Уход за состоянием ({name})",
     "taxLabel": "Подоходный налог",
     "taxDetail": "на основе годового дохода {amount} за {year}",
-    "viewersLost": "Потеря зрителей"
+    "viewersLost": "Потеря зрителей",
+    "viewersBreakdownTitle": "Изменение зрителей",
+    "viewersProduction": "Бонус производства",
+    "viewersSns": "Подписчики SNS",
+    "viewersBase": "Лига / прочее",
+    "viewersTotal": "Итого"
   },
   "station": {
     "gradeBadge": "{grade} класс",

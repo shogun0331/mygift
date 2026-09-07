@@ -81,6 +81,12 @@ export type WeeklyStatement = {
   viewersAfter: number
   /** 이번 달 획득(증감) 시청자 */
   viewersGained: number
+  /** 생산 스탭 보너스로 늘어난 시청자 */
+  productionViewersGained: number
+  /** SNS 포스팅으로 늘어난 시청자 */
+  snsViewersGained: number
+  /** 그 외(리그 성장/이탈/마일스톤 등) 시청자 변동 */
+  baseViewersGained: number
 }
 
 export type WeeklyCreatorAccum = {
@@ -208,6 +214,10 @@ export function buildWeeklyStatement(opts: {
   annualRevenueForTaxWon?: number
   viewersBefore?: number
   viewersAfter?: number
+  /** 생산 스탭 보너스로 늘어난 시청자 (기본 0) */
+  productionViewersGained?: number
+  /** SNS 포스팅으로 늘어난 시청자 (기본 0) */
+  snsViewersGained?: number
   /** 이번 달 정산 시점의 리그 순위 */
   rank?: number
   previousRank?: number
@@ -387,6 +397,13 @@ export function buildWeeklyStatement(opts: {
     highlights.push(translate(getCurrentLocale(), 'feed.noSpecialEvents'))
   }
 
+  const viewersBefore = Math.max(0, Math.round(opts.viewersBefore ?? 0))
+  const viewersAfter = Math.max(0, Math.round(opts.viewersAfter ?? opts.viewersBefore ?? 0))
+  const viewersGained = viewersAfter - viewersBefore
+  const productionViewersGained = Math.max(0, Math.round(opts.productionViewersGained ?? 0))
+  const snsViewersGained = Math.max(0, Math.round(opts.snsViewersGained ?? 0))
+  const baseViewersGained = viewersGained - productionViewersGained - snsViewersGained
+
   return {
     monthNumber: week.monthNumber,
     issuedDate,
@@ -402,11 +419,12 @@ export function buildWeeklyStatement(opts: {
     rank: Math.max(1, Math.round(opts.rank ?? 1)),
     previousRank: opts.previousRank != null ? Math.max(1, Math.round(opts.previousRank)) : undefined,
     rankChange: opts.rankChange ?? (opts.previousRank != null && opts.rank != null ? Math.round(opts.previousRank - opts.rank) : 0),
-    viewersBefore: Math.max(0, Math.round(opts.viewersBefore ?? 0)),
-    viewersAfter: Math.max(0, Math.round(opts.viewersAfter ?? opts.viewersBefore ?? 0)),
-    viewersGained:
-      Math.max(0, Math.round(opts.viewersAfter ?? opts.viewersBefore ?? 0)) -
-      Math.max(0, Math.round(opts.viewersBefore ?? 0)),
+    viewersBefore,
+    viewersAfter,
+    viewersGained,
+    productionViewersGained,
+    snsViewersGained,
+    baseViewersGained,
   }
 }
 

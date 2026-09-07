@@ -496,7 +496,12 @@
     "careExpenseLabel": "Zustandsbetreuung ({name})",
     "taxLabel": "Einkommensteuer",
     "taxDetail": "basierend auf {year} Jahresumsatz {amount}",
-    "viewersLost": "Verlorene Zuschauer"
+    "viewersLost": "Verlorene Zuschauer",
+    "viewersBreakdownTitle": "Zuschauer-Veränderungen",
+    "viewersProduction": "Produktionsbonus",
+    "viewersSns": "SNS-Abonnenten",
+    "viewersBase": "Liga / Sonstiges",
+    "viewersTotal": "Gesamt"
   },
   "station": {
     "gradeBadge": "Klasse {grade}",

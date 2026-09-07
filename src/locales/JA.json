@@ -488,7 +488,12 @@
     "careExpenseLabel": "コンディションケア ({name})",
     "taxLabel": "所得税",
     "taxDetail": "{year}年の年間収益 {amount} 基準",
-    "viewersLost": "視聴者離脱"
+    "viewersLost": "視聴者離脱",
+    "viewersBreakdownTitle": "視聴者増減内訳",
+    "viewersProduction": "制作ボーナス",
+    "viewersSns": "SNSフォロワー",
+    "viewersBase": "リーグ/その他",
+    "viewersTotal": "合計"
   },
   "station": {
     "gradeBadge": "{grade}等級",

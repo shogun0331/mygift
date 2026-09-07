@@ -1663,6 +1663,8 @@ export function InGame({
   const toxicQteQueueRef = useRef<ToxicWhackQteItem[]>([])
   const weekInspectionsRef = useRef<WeekInspection[]>([])
   const productionBonusShownRef = useRef(new Set<string>())
+  /** 이번 달 생산 스탭 보너스로 늘어난 시청자 누적 (명세서 분리 기입용) */
+  const productionViewersGainedRef = useRef(0)
   const broadcastBlockedSinceRef = useRef<Record<string, number>>({})
   const liveStaminaDrainByCreatorIdRef = useRef<Record<string, number>>({})
   const liveConditionDrainByCreatorIdRef = useRef<Record<string, number>>({})
@@ -2468,11 +2470,13 @@ export function InGame({
     productionBonusShownRef.current.add(slotId)
     const bonus = productionViewerBonus(leagueRef.current.viewers)
     if (bonus > 0) {
+      const beforeViewers = leagueRef.current.viewers
       const nextViewers = capStationViewers(
-        leagueRef.current.viewers + bonus,
+        beforeViewers + bonus,
         stationGradeRef.current,
       )
       leagueRef.current = { ...leagueRef.current, viewers: nextViewers }
+      productionViewersGainedRef.current += nextViewers - beforeViewers
       setLeague(leagueRef.current)
     }
     const name = staffNameOf(production.staffId)
@@ -3391,6 +3395,8 @@ export function InGame({
         }
       }),
     )
+    const productionViewers = productionViewersGainedRef.current
+    const snsViewers = Math.max(0, Math.round(extraViewers))
     const statement = {
       ...statementDraft,
       lines: statementDraft.lines.map((line) => ({
@@ -3402,6 +3408,9 @@ export function InGame({
       viewersBefore,
       viewersAfter: leagueRef.current.viewers,
       viewersGained,
+      productionViewersGained: productionViewers,
+      snsViewersGained: snsViewers,
+      baseViewersGained: viewersGained - productionViewers - snsViewers,
     }
 
     const socialBlocked = Boolean(pendingRankResultRef.current?.gameCleared)
@@ -4484,6 +4493,7 @@ export function InGame({
     setBroadcastPhase('live')
     // 방송 시작 시점 시청자를 기록 — 방송 중 생산 보너스로 늘어난 시청자도 명세서에 포함되도록
     monthStartViewersRef.current = leagueRef.current.viewers
+    productionViewersGainedRef.current = 0
     rollLivePlayVideos()
     setMonthWeekIndex(0)
     monthWeekIndexRef.current = 0

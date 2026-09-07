@@ -50,6 +50,12 @@ function signedWon(amount: number) {
   return formatMoneySigned(amount)
 }
 
+function signedViewerCount(value: number) {
+  const rounded = Math.round(value)
+  const sign = rounded > 0 ? '+' : rounded < 0 ? '-' : ''
+  return `${sign}${Math.abs(rounded).toLocaleString('en-US')}`
+}
+
 function amountClass(amount: number, kind: 'plain' | 'signed' = 'signed') {
   if (amount > 0) return 'statement-amt-pos'
   if (amount < 0) return 'statement-amt-neg'
@@ -184,6 +190,71 @@ export function WeeklySettlementModal({
               </div>
             </div>
           </header>
+
+          <section className="mt-4 shrink-0 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+            <h3 className="game-stat-label">{t('settlement.viewersBreakdownTitle')}</h3>
+            <dl className="mt-2 grid grid-cols-1 gap-x-8 gap-y-1.5 text-xs sm:grid-cols-2">
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-slate-400">{t('settlement.viewersProduction')}</dt>
+                <dd
+                  className={`tabular-nums font-semibold ${
+                    statement.productionViewersGained > 0 ? 'statement-amt-pos' : 'text-slate-500'
+                  }`}
+                >
+                  {signedViewerCount(statement.productionViewersGained)}
+                  {t('settlement.viewersUnit')}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-slate-400">{t('settlement.viewersSns')}</dt>
+                <dd
+                  className={`tabular-nums font-semibold ${
+                    statement.snsViewersGained > 0 ? 'statement-amt-pos' : 'text-slate-500'
+                  }`}
+                >
+                  {signedViewerCount(statement.snsViewersGained)}
+                  {t('settlement.viewersUnit')}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-slate-400">{t('settlement.viewersBase')}</dt>
+                <dd
+                  className={`tabular-nums font-semibold ${
+                    statement.baseViewersGained > 0
+                      ? 'statement-amt-pos'
+                      : statement.baseViewersGained < 0
+                        ? 'statement-amt-neg'
+                        : 'text-slate-500'
+                  }`}
+                >
+                  {signedViewerCount(statement.baseViewersGained)}
+                  {t('settlement.viewersUnit')}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-1.5">
+                <dt className="font-semibold text-slate-200">{t('settlement.viewersTotal')}</dt>
+                <dd
+                  className={`tabular-nums font-bold ${
+                    statement.viewersGained > 0
+                      ? 'statement-amt-pos'
+                      : statement.viewersGained < 0
+                        ? 'statement-amt-neg'
+                        : 'text-slate-100'
+                  }`}
+                >
+                  {signedViewerCount(statement.viewersGained)}
+                  {t('settlement.viewersUnit')}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-1.5 sm:col-span-2">
+                <dt className="font-semibold text-slate-200">{t('settlement.viewersHeld')}</dt>
+                <dd className="tabular-nums font-bold text-slate-100">
+                  {formatViewers(statement.viewersAfter)}
+                  {t('settlement.viewersUnit')}
+                </dd>
+              </div>
+            </dl>
+          </section>
 
           <div className="mt-4 min-h-0 flex-1 overflow-auto">
             <table className="statement-table statement-table--creators w-full min-w-[760px] border-collapse text-left">
