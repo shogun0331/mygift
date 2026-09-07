@@ -2,7 +2,7 @@ import type { Grade, OwnedCreator } from './characters'
 import { characterDisplayName } from './characterLocales'
 import { getCurrentLocale } from '../locales/i18n'
 import { rollInt } from './stats'
-import { pickVipTarget, toVipOffer, type VipOffer } from './vip'
+import { type VipOffer } from './vip'
 
 export type DateArcStep = 0 | 1 | 2 | 3
 export type DateStepKey = 'date1' | 'date2' | 'h'
@@ -200,9 +200,6 @@ function consumeChannel(): SpawnChannel {
 
 /**
  * 월 종료 시 호출.
- * 정확히 2달(2턴) 마다 한 번씩만 소셜 이벤트(데이트/H/VIP)가 발동하도록 보장합니다.
- */
-import type { StationGrade } from './stationGradeConfig'
 
 /** 세이브/로드 등으로 wait가 음수/비정상이면 0~2로 정규화 (2턴 캐던스 보호) */
 function normalizeSpawnState(raw: SocialSpawnState): SocialSpawnState {
@@ -225,15 +222,14 @@ function allChannels(channel: SpawnChannel): SocialSpawnState {
 /**
  * 월 종료 시 호출.
  * 2턴 캐던스가 차면 메인 이벤트(데이트 1·2차 / 첫 H)가 남아 있을 경우
- * {무조건} 1개를 발행한다. 메인 이벤트가 모두 소진된 이후에는
- * VIP/H 재이용을 확률(80%)로 발행한다.
+ * {무조건} 1개를 발행한다.
+ * VIP/H 재이용은 버튼으로 직접 이용하므로 자동 발행하지 않는다.
  * 블락(게임 클리어) 중에는 캐던스를 소모하지 않고 유지한다.
  */
 export function advanceAndPickSocialEvent(
   state: SocialSpawnState,
   roster: OwnedCreator[],
   blocked: boolean,
-  stationGrade?: StationGrade,
 ): { state: SocialSpawnState; event: SocialPending | null } {
   const normalized = normalizeSpawnState(state)
   const currentWait = normalized.date.wait
@@ -257,37 +253,19 @@ export function advanceAndPickSocialEvent(
   const mainDateTarget = pickDateTarget(roster)
   const mainHUnlockTarget = pickHUnlockTarget(roster)
 
-  let event: SocialPending | null = null
-
   if (mainDateTarget || mainHUnlockTarget) {
     // 메인 이벤트가 남아 있으면 확률 판정 없이 무조건 발행 (2턴 캐던스 보장)
+    let event: SocialPending
     if (mainDateTarget && mainHUnlockTarget) {
       event = Math.random() < 0.5 ? buildDatePending(mainDateTarget) : buildDatePending(mainHUnlockTarget)
     } else if (mainDateTarget) {
       event = buildDatePending(mainDateTarget)
-    } else if (mainHUnlockTarget) {
-      event = buildDatePending(mainHUnlockTarget)
+    } else {
+      event = buildDatePending(mainHUnlockTarget!)
     }
-  } else {
-    // 2) 메인 이벤트가 없을 경우 -> VIP 및 H 재이용 중 확률(80%)로 발행
-    const isVipAllowed = !stationGrade || (stationGrade !== 'black' && stationGrade !== 'tiny')
-    const vipTarget = isVipAllowed ? pickVipTarget(roster) : null
-    const hRetryTarget = pickHCompletedTarget(roster)
-
-    const candidatePool: SocialPending[] = []
-    if (vipTarget) candidatePool.push({ kind: 'vip', offer: toVipOffer(vipTarget) })
-    if (hRetryTarget) candidatePool.push(buildHRetryPending(hRetryTarget))
-
-    if (candidatePool.length > 0 && rollChance(0.8)) {
-      event = candidatePool[Math.floor(Math.random() * candidatePool.length)] ?? null
-    }
-  }
-
-  // 소셜 이벤트가 발행된 경우 쿨다운을 2달(2턴)로 리셋
-  if (event) {
     return { state: allChannels(consumeChannel()), event }
   }
 
-  // 미발행(2차 확률 미달/대상 없음) → 다음 턴 즉시 재판정
+  // 메인 이벤트 대상이 없으면 발행하지 않음 (VIP/H 재이용은 버튼으로 직접 이용)
   return { state: allChannels({ wait: 0, ready: true }), event: null }
 }

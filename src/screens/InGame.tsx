@@ -3433,7 +3433,6 @@ export function InGame({
       socialSpawnRef.current,
       ownedCreatorsRef.current,
       socialBlocked,
-      stationGradeRef.current,
     )
     socialSpawnRef.current = socialRoll.state
     pendingSocialQueueRef.current = socialRoll.event ? [socialRoll.event] : []
