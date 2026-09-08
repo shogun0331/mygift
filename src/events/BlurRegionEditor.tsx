@@ -87,8 +87,8 @@ export function MosaicRegionLayer({
         if (rw <= 0 || rh <= 0) return null
         const mediaStyle: CSSProperties = {
           position: 'absolute',
-          left: (rect.x - rx) / block,
-          top: (rect.y - ry) / block,
+          left: rect.x - rx,
+          top: rect.y - ry,
           width: rect.w / block,
           height: rect.h / block,
           transform: `scale(${block})`,
