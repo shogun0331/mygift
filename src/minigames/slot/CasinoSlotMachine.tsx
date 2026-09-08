@@ -23,7 +23,7 @@ import {
 import { useTranslation } from '../../locales/i18n'
 import { resolveMediaSrc } from '../../game/mediaUrl'
 import { DEFAULT_HIGH_LOW_CONFIG, getActiveDealerMedia } from '../highlow/highLowConfig'
-import { loadHighLowConfig } from '../highlow/highLowStore'
+import { loadHighLowConfig, loadHighLowConfigFromDisk } from '../highlow/highLowStore'
 import { HighLowDealerDialogue, type DealerDialoguePlay } from '../highlow/HighLowDealerDialogue'
 import { unlockAchievement } from '../../game/achievements'
 
@@ -70,7 +70,7 @@ export function CasinoSlotMachine({
   const baseReward = getBetAmountByGrade(stationGrade)
 
   // 하이로우 미디어 등록 단일 딜러 설정 로드 (선택 드롭다운 제거)
-  const [dealerConfig] = useState(() => {
+  const [dealerConfig, setDealerConfig] = useState(() => {
     const map = loadHighLowConfig()
     for (const key of ['legend', 'local', 'star'] as const) {
       const cfg = map[key]
@@ -84,6 +84,29 @@ export function CasinoSlotMachine({
     }
     return map.legend || map.local || DEFAULT_HIGH_LOW_CONFIG.legend
   })
+
+  useEffect(() => {
+    let cancelled = false
+    void loadHighLowConfigFromDisk().then((map) => {
+      if (cancelled) return
+      for (const key of ['legend', 'local', 'star'] as const) {
+        const cfg = map[key]
+        if (
+          cfg?.dealerMediaStages?.tier1?.url ||
+          cfg?.dealerMediaStages?.tier2?.url ||
+          cfg?.dealerMediaStages?.tier3?.url ||
+          cfg?.dealerMediaUrl
+        ) {
+          setDealerConfig(cfg)
+          return
+        }
+      }
+      setDealerConfig(map.legend || map.local || DEFAULT_HIGH_LOW_CONFIG.legend)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const [spinsLeft, setSpinsLeft] = useState(3)
   const [freeSpinsLeft, setFreeSpinsLeft] = useState(0)

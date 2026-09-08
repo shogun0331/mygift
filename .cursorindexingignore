@@ -1,0 +1,37 @@
+﻿# 인덱싱/의미 검색에서만 제외. 경로를 지정하면 에이전트가 읽을 수 있음.
+# .cursorignore 에 넣으면 이벤트·캐릭터 작업 시 파일을 아예 못 연다.
+
+# --- 대용량 미디어 ---
+public/audio/
+public/casino/
+public/sfx/
+public/proposal_images/
+public/proposal_voices/
+
+# 초상화·스태프 미디어. JSON 정의는 검색에 남김
+public/characters/**/*.png
+public/characters/**/*.jpg
+public/characters/**/*.jpeg
+public/characters/**/*.webp
+public/characters/**/*.gif
+public/characters/**/*.bmp
+public/characters/**/*.mp4
+public/characters/**/*.webm
+public/staff/**/*.png
+public/staff/**/*.jpg
+public/staff/**/*.jpeg
+public/staff/**/*.webp
+public/staff/**/*.gif
+public/staff/**/*.bmp
+public/staff/**/*.mp4
+public/staff/**/*.webm
+
+# 챕터 컷씬·이벤트 로케이션 (2000+ 파일). 루트 설정 JSON 은 남김
+public/chapter_assets/events/
+public/chapter_assets/station_grade_config.json
+
+# --- 루트 생성 잡/캐시 (검색 노이즈) ---
+_*.json
+_*.txt
+이미지*.json
+이미지*.txt

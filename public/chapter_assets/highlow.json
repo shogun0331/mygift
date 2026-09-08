@@ -1,0 +1,110 @@
+{
+  "local": {
+    "id": "local",
+    "name": "로컬 룸 (Local Room)",
+    "subtitle": "초보자를 위한 라이트 듀얼 테이블",
+    "ante": 500,
+    "startChips": 50000,
+    "dealerName": "Dealer",
+    "dealerTitle": "LOCAL DEALER",
+    "dealerMediaUrl": "media://chapter_assets/highlow/local_dealer.mp4",
+    "dealerMediaType": "video",
+    "badgeColor": "#3b82f6",
+    "borderColor": "rgba(59, 130, 246, 0.4)",
+    "houseEdge": 0.03,
+    "itemDropRate": 40,
+    "itemDropRates": {
+      "staff_hire": 0.5,
+      "peek_card": 2,
+      "double_payout": 3,
+      "loss_shield": 2
+    },
+    "maxComboLimit": 3,
+    "dealerMediaStages": {
+      "tier1": {
+        "url": "media://chapter_assets/highlow/local_tier1.mp4",
+        "type": "video"
+      },
+      "tier2": {
+        "url": "media://chapter_assets/highlow/local_tier2.mp4",
+        "type": "video"
+      },
+      "tier3": {
+        "url": "media://chapter_assets/highlow/local_tier3.mp4",
+        "type": "video"
+      }
+    }
+  },
+  "star": {
+    "id": "star",
+    "name": "스타 룸 (Star Room)",
+    "subtitle": "하이 롤러를 위한 하이엔드 베팅 테이블",
+    "ante": 5000,
+    "startChips": 250000,
+    "dealerName": "VIP Cyber",
+    "dealerTitle": "STAR DEALER",
+    "dealerMediaUrl": "",
+    "dealerMediaType": "image",
+    "badgeColor": "#a855f7",
+    "borderColor": "rgba(168, 85, 247, 0.4)",
+    "houseEdge": 0.03,
+    "itemDropRate": 60,
+    "itemDropRates": {
+      "peek_card": 25,
+      "double_payout": 20,
+      "loss_shield": 15,
+      "staff_hire": 10
+    },
+    "maxComboLimit": 5,
+    "dealerMediaStages": {
+      "tier1": {
+        "url": "",
+        "type": "image"
+      },
+      "tier2": {
+        "url": "",
+        "type": "image"
+      },
+      "tier3": {
+        "url": "",
+        "type": "image"
+      }
+    }
+  },
+  "legend": {
+    "id": "legend",
+    "name": "레전드 VIP 룸 (Legend VIP Room)",
+    "subtitle": "최상위 VIP 전용 다크 네온 듀얼 테이블",
+    "ante": 50000,
+    "startChips": 2000000,
+    "dealerName": "KAIRO",
+    "dealerTitle": "LEGEND DEALER",
+    "dealerMediaUrl": "",
+    "dealerMediaType": "image",
+    "badgeColor": "#ec4899",
+    "borderColor": "rgba(236, 72, 153, 0.4)",
+    "houseEdge": 0.03,
+    "itemDropRate": 80,
+    "itemDropRates": {
+      "peek_card": 30,
+      "double_payout": 25,
+      "loss_shield": 20,
+      "staff_hire": 15
+    },
+    "maxComboLimit": 7,
+    "dealerMediaStages": {
+      "tier1": {
+        "url": "",
+        "type": "image"
+      },
+      "tier2": {
+        "url": "",
+        "type": "image"
+      },
+      "tier3": {
+        "url": "",
+        "type": "image"
+      }
+    }
+  }
+}

@@ -9,6 +9,8 @@ import {
 import {
   loadHighLowConfig,
   saveHighLowConfig,
+  saveHighLowConfigAsync,
+  loadHighLowConfigFromDisk,
   loadUserChips,
   saveUserChips,
   resetHighLowData,
@@ -50,13 +52,19 @@ export function HighLowEditorPanel({
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
-    const loadedConfigs = loadHighLowConfig()
-    setConfigs(loadedConfigs)
-    setUserChipsMap({
-      local: loadUserChips('local', loadedConfigs.local.startChips),
-      star: loadUserChips('star', loadedConfigs.star.startChips),
-      legend: loadUserChips('legend', loadedConfigs.legend.startChips),
+    let cancelled = false
+    void loadHighLowConfigFromDisk().then((loadedConfigs) => {
+      if (cancelled) return
+      setConfigs(loadedConfigs)
+      setUserChipsMap({
+        local: loadUserChips('local', loadedConfigs.local.startChips),
+        star: loadUserChips('star', loadedConfigs.star.startChips),
+        legend: loadUserChips('legend', loadedConfigs.legend.startChips),
+      })
     })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const handleUpdateConfigField = <K extends keyof HighLowRoomConfig>(
@@ -74,10 +82,20 @@ export function HighLowEditorPanel({
   }
 
   const handleSaveConfigs = () => {
-    saveHighLowConfig(configs)
-    onSaveStationGradeManual?.()
-    setSaveSuccessMsg(true)
-    setTimeout(() => setSaveSuccessMsg(false), 2000)
+    void saveHighLowConfigAsync(configs)
+      .then((saved) => {
+        setConfigs(saved)
+        onSaveStationGradeManual?.()
+        setSaveSuccessMsg(true)
+        setTimeout(() => setSaveSuccessMsg(false), 2000)
+      })
+      .catch((err) => {
+        console.error(err)
+        saveHighLowConfig(configs)
+        onSaveStationGradeManual?.()
+        setSaveSuccessMsg(true)
+        setTimeout(() => setSaveSuccessMsg(false), 2000)
+      })
   }
 
   const handleResetDefaults = () => {

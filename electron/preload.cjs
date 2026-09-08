@@ -19,6 +19,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteCommonSoundFile: (fileName) => ipcRenderer.invoke('delete-common-sound-file', { fileName }),
   saveBgmAssets: (assets) => ipcRenderer.invoke('save-bgm-assets', { assets }),
   saveHighLowAssets: (assets) => ipcRenderer.invoke('save-highlow-assets', { assets }),
+  saveHighLowConfigJson: (config) => ipcRenderer.invoke('save-highlow-config-json', { config }),
+  loadHighLowConfigJson: () => ipcRenderer.invoke('load-highlow-config-json'),
   saveBgmConfigJson: (config) => ipcRenderer.invoke('save-bgm-config-json', { config }),
   loadBgmConfigJson: () => ipcRenderer.invoke('load-bgm-config-json'),
   deleteBgmFile: (fileName) => ipcRenderer.invoke('delete-bgm-file', { fileName }),

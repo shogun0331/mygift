@@ -281,7 +281,7 @@ import type { CommonEventLinks } from '../events/commonEventLinks'
 import type { GameEvent } from '../events/types'
 import { EVENT_LOCALES, mergeEventLocalization } from '../events/eventLocales'
 import { HighLowMinigame } from '../minigames/highlow/HighLowMinigame'
-import { loadHighLowConfig } from '../minigames/highlow/highLowStore'
+import { loadHighLowConfig, loadHighLowConfigFromDisk } from '../minigames/highlow/highLowStore'
 import { type HighLowRoomId } from '../minigames/highlow/highLowConfig'
 import { CasinoSlotMachine } from '../minigames/slot/CasinoSlotMachine'
 
@@ -941,7 +941,16 @@ export function InGame({
   const isCasinoAvailable =
     isCasinoGradeUnlocked && (stationGrade === 'top' || casinoTurnCount >= getCasinoRequiredTurns(stationGrade))
 
-  const highLowConfigs = useMemo(() => loadHighLowConfig(), [])
+  const [highLowConfigs, setHighLowConfigs] = useState(loadHighLowConfig)
+  useEffect(() => {
+    let cancelled = false
+    void loadHighLowConfigFromDisk().then((next) => {
+      if (!cancelled) setHighLowConfigs(next)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
   const [settlementAssetsAfter, setSettlementAssetsAfter] = useState(0)
   const [settlementPortraits, setSettlementPortraits] = useState<Record<string, string>>({})
   const [broadcastEndedNotice, setBroadcastEndedNotice] = useState(false)

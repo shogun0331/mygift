@@ -230,41 +230,93 @@ function mediaUrlExists(url) {
   return Boolean(resolvePublicAsset(...rel.split(/[/\\]+/).filter(Boolean)))
 }
 
-function catalogItemMediaUsable(item) {
-  if (!item || typeof item !== 'object') return false
-  if (mediaUrlExists(item.profileImageUrl)) return true
-  if (Array.isArray(item.images) && item.images.some((m) => m && mediaUrlExists(m.url))) return true
-  if (Array.isArray(item.videos) && item.videos.some((m) => m && mediaUrlExists(m.url))) return true
-  return false
+function mediaRefUsable(url) {
+  if (!url || typeof url !== 'string') return false
+  if (url.startsWith('data:')) return true
+  if (url.startsWith('blob:')) return false
+  return mediaUrlExists(url)
+}
+
+function pickMediaUrl(overlayUrl, packedUrl) {
+  if (mediaRefUsable(overlayUrl)) return overlayUrl
+  if (mediaRefUsable(packedUrl)) return packedUrl
+  return overlayUrl || packedUrl || ''
+}
+
+function mergeMediaSlot(overlaySlot, packedSlot) {
+  const asSlot = (raw) => {
+    if (!raw) return { url: null, blurRegions: [] }
+    if (typeof raw === 'string') return { url: raw, blurRegions: [] }
+    if (typeof raw === 'object') {
+      return {
+        ...raw,
+        url: typeof raw.url === 'string' ? raw.url : null,
+        blurRegions: Array.isArray(raw.blurRegions) ? raw.blurRegions : [],
+      }
+    }
+    return { url: null, blurRegions: [] }
+  }
+  const overlay = asSlot(overlaySlot)
+  const packed = asSlot(packedSlot)
+  const url = pickMediaUrl(overlay.url, packed.url) || null
+  const blurRegions =
+    overlay.blurRegions.length > 0 ? overlay.blurRegions : packed.blurRegions
+  return { ...packed, ...overlay, url, blurRegions }
+}
+
+function mergeAuditMedia(overlayMedia, packedMedia) {
+  if (!overlayMedia && !packedMedia) return overlayMedia
+  const next = {}
+  for (const key of ['A', 'B', 'C']) {
+    next[key] = mergeMediaSlot(overlayMedia?.[key], packedMedia?.[key])
+  }
+  return next
+}
+
+function mergeShortsVn(overlayVn, packedVn) {
+  if (!packedVn) return overlayVn
+  if (!overlayVn) return packedVn
+  const pickList = (overlayList, packedList) => {
+    if (
+      Array.isArray(overlayList) &&
+      overlayList.some((beat) => mediaRefUsable(beat?.mediaUrl || beat?.url))
+    ) {
+      return overlayList
+    }
+    return Array.isArray(packedList) && packedList.length ? packedList : overlayList
+  }
+  return {
+    ...packedVn,
+    ...overlayVn,
+    vip: pickList(overlayVn.vip, packedVn.vip),
+    h: pickList(overlayVn.h, packedVn.h),
+  }
 }
 
 function mergeCatalogItem(overlayItem, packagedItem) {
   if (!packagedItem) return overlayItem
   if (!overlayItem) return packagedItem
-  if (catalogItemMediaUsable(overlayItem)) {
-    return { ...packagedItem, ...overlayItem }
-  }
+  const overlayImagesUsable =
+    Array.isArray(overlayItem.images) && overlayItem.images.some((m) => m && mediaRefUsable(m.url))
+  const overlayVideosUsable =
+    Array.isArray(overlayItem.videos) && overlayItem.videos.some((m) => m && mediaRefUsable(m.url))
+  const overlayVoicesUsable =
+    Array.isArray(overlayItem.voices) && overlayItem.voices.some((m) => m && mediaRefUsable(m.url))
+  const overlaySnsUsable =
+    Array.isArray(overlayItem.snsPosts) && overlayItem.snsPosts.length > 0
   return {
     ...packagedItem,
     ...overlayItem,
-    profileImageUrl: packagedItem.profileImageUrl ?? overlayItem.profileImageUrl,
-    images:
-      Array.isArray(packagedItem.images) && packagedItem.images.length
-        ? packagedItem.images
-        : overlayItem.images,
-    videos:
-      Array.isArray(packagedItem.videos) && packagedItem.videos.length
-        ? packagedItem.videos
-        : overlayItem.videos,
-    voices:
-      Array.isArray(packagedItem.voices) && packagedItem.voices.length
-        ? packagedItem.voices
-        : overlayItem.voices,
-    snsPosts:
-      Array.isArray(packagedItem.snsPosts) && packagedItem.snsPosts.length
-        ? packagedItem.snsPosts
-        : overlayItem.snsPosts,
-    mediaRevision: packagedItem.mediaRevision ?? overlayItem.mediaRevision,
+    profileImageUrl: pickMediaUrl(overlayItem.profileImageUrl, packagedItem.profileImageUrl),
+    images: overlayImagesUsable ? overlayItem.images : packagedItem.images,
+    videos: overlayVideosUsable ? overlayItem.videos : packagedItem.videos,
+    voices: overlayVoicesUsable ? overlayItem.voices : packagedItem.voices,
+    snsPosts: overlaySnsUsable ? overlayItem.snsPosts : packagedItem.snsPosts,
+    auditMedia: mergeAuditMedia(overlayItem.auditMedia, packagedItem.auditMedia),
+    shortsVn: mergeShortsVn(overlayItem.shortsVn, packagedItem.shortsVn),
+    mediaRevision: overlayImagesUsable
+      ? overlayItem.mediaRevision ?? packagedItem.mediaRevision
+      : packagedItem.mediaRevision ?? overlayItem.mediaRevision,
     characterIconId: packagedItem.characterIconId ?? overlayItem.characterIconId,
     characterIllustrationId: packagedItem.characterIllustrationId ?? overlayItem.characterIllustrationId,
     profileImageId: packagedItem.profileImageId ?? overlayItem.profileImageId,
@@ -298,6 +350,100 @@ function mergeCatalogLists(overlayList, packagedList) {
     result.push(over)
   }
   return result
+}
+
+function mergeJudgeConfig(overlayJudge, packedJudge) {
+  if (!packedJudge) return overlayJudge
+  if (!overlayJudge) return packedJudge
+  return {
+    ...packedJudge,
+    ...overlayJudge,
+    avatarUrl: pickMediaUrl(overlayJudge.avatarUrl, packedJudge.avatarUrl),
+    successMediaUrl: pickMediaUrl(overlayJudge.successMediaUrl, packedJudge.successMediaUrl),
+    failMediaUrl: pickMediaUrl(overlayJudge.failMediaUrl, packedJudge.failMediaUrl),
+    auditMedia: mergeAuditMedia(overlayJudge.auditMedia, packedJudge.auditMedia),
+  }
+}
+
+function mergeStationGradeConfig(overlayConfig, packedConfig) {
+  if (!packedConfig) return overlayConfig
+  if (!overlayConfig) return packedConfig
+  const overlayJudges = overlayConfig.auditConfig?.judges
+  const packedJudges = packedConfig.auditConfig?.judges
+  const packedById = new Map((Array.isArray(packedJudges) ? packedJudges : []).map((j) => [String(j.id), j]))
+  const overlayList = Array.isArray(overlayJudges) && overlayJudges.length ? overlayJudges : packedJudges || []
+  const seen = new Set()
+  const judges = []
+  for (const judge of overlayList) {
+    if (!judge || judge.id == null) continue
+    const id = String(judge.id)
+    seen.add(id)
+    judges.push(mergeJudgeConfig(judge, packedById.get(id)))
+  }
+  for (const packed of packedJudges || []) {
+    if (!packed || packed.id == null) continue
+    const id = String(packed.id)
+    if (seen.has(id)) continue
+    judges.push(packed)
+  }
+  return {
+    ...packedConfig,
+    ...overlayConfig,
+    auditConfig: {
+      ...(packedConfig.auditConfig || {}),
+      ...(overlayConfig.auditConfig || {}),
+      judges,
+    },
+  }
+}
+
+const HIGH_LOW_ROOM_IDS = ['local', 'star', 'legend']
+
+function mergeDealerMediaSlot(overlaySlot, packedSlot) {
+  const overlayUrl = overlaySlot && typeof overlaySlot === 'object' ? overlaySlot.url : ''
+  const packedUrl = packedSlot && typeof packedSlot === 'object' ? packedSlot.url : ''
+  const url = pickMediaUrl(overlayUrl, packedUrl)
+  const overlayType = overlaySlot && typeof overlaySlot === 'object' ? overlaySlot.type : ''
+  const packedType = packedSlot && typeof packedSlot === 'object' ? packedSlot.type : ''
+  const type =
+    mediaRefUsable(overlayUrl) && overlayType
+      ? overlayType
+      : packedType || overlayType || 'image'
+  return { url: url || '', type: type === 'video' ? 'video' : 'image' }
+}
+
+function mergeHighLowRoom(overlayRoom, packedRoom) {
+  if (!packedRoom) return overlayRoom
+  if (!overlayRoom) return packedRoom
+  const overlayStages = overlayRoom.dealerMediaStages && typeof overlayRoom.dealerMediaStages === 'object'
+    ? overlayRoom.dealerMediaStages
+    : {}
+  const packedStages = packedRoom.dealerMediaStages && typeof packedRoom.dealerMediaStages === 'object'
+    ? packedRoom.dealerMediaStages
+    : {}
+  return {
+    ...packedRoom,
+    ...overlayRoom,
+    dealerMediaUrl: pickMediaUrl(overlayRoom.dealerMediaUrl, packedRoom.dealerMediaUrl),
+    dealerMediaType: mediaRefUsable(overlayRoom.dealerMediaUrl)
+      ? overlayRoom.dealerMediaType || packedRoom.dealerMediaType
+      : packedRoom.dealerMediaType || overlayRoom.dealerMediaType || 'image',
+    dealerMediaStages: {
+      tier1: mergeDealerMediaSlot(overlayStages.tier1, packedStages.tier1),
+      tier2: mergeDealerMediaSlot(overlayStages.tier2, packedStages.tier2),
+      tier3: mergeDealerMediaSlot(overlayStages.tier3, packedStages.tier3),
+    },
+  }
+}
+
+function mergeHighLowConfig(overlayConfig, packedConfig) {
+  if (!packedConfig) return overlayConfig
+  if (!overlayConfig) return packedConfig
+  const next = { ...packedConfig, ...overlayConfig }
+  for (const roomId of HIGH_LOW_ROOM_IDS) {
+    next[roomId] = mergeHighLowRoom(overlayConfig[roomId], packedConfig[roomId])
+  }
+  return next
 }
 
 /** 쓰기: asar는 읽기 전용이라 패키징본은 userData/public 에 저장 */
@@ -811,6 +957,71 @@ ipcMain.handle('save-highlow-assets', async (event, { assets }) => {
   }
 })
 
+function persistHighLowDealerSlot(slot, targetDir, filePrefix) {
+  if (!slot || typeof slot !== 'object') {
+    return { url: '', type: 'image' }
+  }
+  const url = saveBase64MediaFile(
+    slot.url,
+    targetDir,
+    filePrefix,
+    'media://chapter_assets/highlow',
+  )
+  const type = slot.type === 'video' || (typeof url === 'string' && /\.(mp4|webm|ogv)$/i.test(url))
+    ? 'video'
+    : 'image'
+  return { url: url || '', type }
+}
+
+ipcMain.handle('save-highlow-config-json', async (event, { config }) => {
+  try {
+    const dir = publicWritePath('chapter_assets')
+    const mediaDir = path.join(dir, 'highlow')
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+    if (!fs.existsSync(mediaDir)) fs.mkdirSync(mediaDir, { recursive: true })
+
+    const packed = app.isPackaged ? readPackagedJson('chapter_assets', 'highlow.json') : null
+    const nextConfig = JSON.parse(JSON.stringify(mergeHighLowConfig(config ?? {}, packed) ?? {}))
+    for (const roomId of HIGH_LOW_ROOM_IDS) {
+      const room = nextConfig[roomId]
+      if (!room || typeof room !== 'object') continue
+      const stages = room.dealerMediaStages && typeof room.dealerMediaStages === 'object' ? room.dealerMediaStages : {}
+      nextConfig[roomId] = {
+        ...room,
+        dealerMediaUrl: saveBase64MediaFile(
+          room.dealerMediaUrl,
+          mediaDir,
+          `${roomId}_dealer`,
+          'media://chapter_assets/highlow',
+        ) || '',
+        dealerMediaStages: {
+          tier1: persistHighLowDealerSlot(stages.tier1, mediaDir, `${roomId}_tier1`),
+          tier2: persistHighLowDealerSlot(stages.tier2, mediaDir, `${roomId}_tier2`),
+          tier3: persistHighLowDealerSlot(stages.tier3, mediaDir, `${roomId}_tier3`),
+        },
+      }
+    }
+
+    writeJson(path.join(dir, 'highlow.json'), nextConfig)
+    return { success: true, config: nextConfig }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('load-highlow-config-json', async () => {
+  try {
+    if (!app.isPackaged) {
+      return { success: true, config: readPublicJson('chapter_assets', 'highlow.json') }
+    }
+    const packed = readPackagedJson('chapter_assets', 'highlow.json')
+    const overlay = readJsonIfExists(overlayFilePath('chapter_assets', 'highlow.json'))
+    return { success: true, config: mergeHighLowConfig(overlay, packed) }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
 ipcMain.handle('save-bgm-assets', async (event, { assets }) => {
   try {
     const targetDir = publicWritePath('chapter_assets', 'bgm')
@@ -980,19 +1191,22 @@ ipcMain.handle('save-station-grade-config-json', async (event, { config }) => {
       fs.mkdirSync(dir, { recursive: true })
     }
 
-    const nextConfig = JSON.parse(JSON.stringify(config ?? {}))
+    const packed = app.isPackaged ? readPackagedJson('chapter_assets', 'station_grade_config.json') : null
+    const nextConfig = JSON.parse(JSON.stringify(mergeStationGradeConfig(config ?? {}, packed) ?? {}))
+    const urlPrefix = 'media://chapter_assets/audits'
     if (nextConfig.auditConfig && Array.isArray(nextConfig.auditConfig.judges)) {
       nextConfig.auditConfig.judges = nextConfig.auditConfig.judges.map((judge, idx) => {
-        const idKey = judge.id || `judge_${idx}`
-        const avatarUrl = saveBase64MediaFile(judge.avatarUrl, auditsDir, `${idKey}_avatar`)
-        const successMediaUrl = saveBase64MediaFile(judge.successMediaUrl, auditsDir, `${idKey}_success`)
-        const failMediaUrl = saveBase64MediaFile(judge.failMediaUrl, auditsDir, `${idKey}_fail`)
-
+        const idKey = judge.id || `judge_${idx + 1}`
         return {
           ...judge,
-          avatarUrl,
-          successMediaUrl,
-          failMediaUrl,
+          avatarUrl: saveBase64MediaFile(judge.avatarUrl, auditsDir, `${idKey}_avatar`, urlPrefix),
+          successMediaUrl: saveBase64MediaFile(judge.successMediaUrl, auditsDir, `${idKey}_success`, urlPrefix),
+          failMediaUrl: saveBase64MediaFile(judge.failMediaUrl, auditsDir, `${idKey}_fail`, urlPrefix),
+          auditMedia: {
+            A: persistAuditMediaSlot(judge.auditMedia?.A, auditsDir, `${idKey}_sat_A`, urlPrefix),
+            B: persistAuditMediaSlot(judge.auditMedia?.B, auditsDir, `${idKey}_sat_B`, urlPrefix),
+            C: persistAuditMediaSlot(judge.auditMedia?.C, auditsDir, `${idKey}_sat_C`, urlPrefix),
+          },
         }
       })
     }
@@ -1006,8 +1220,12 @@ ipcMain.handle('save-station-grade-config-json', async (event, { config }) => {
 
 ipcMain.handle('load-station-grade-config-json', async (event) => {
   try {
-    const config = readPublicJson('chapter_assets', 'station_grade_config.json')
-    return { success: true, config }
+    if (!app.isPackaged) {
+      return { success: true, config: readPublicJson('chapter_assets', 'station_grade_config.json') }
+    }
+    const packed = readPackagedJson('chapter_assets', 'station_grade_config.json')
+    const overlay = readJsonIfExists(overlayFilePath('chapter_assets', 'station_grade_config.json'))
+    return { success: true, config: mergeStationGradeConfig(overlay, packed) }
   } catch (err) {
     return { success: false, error: err.message }
   }

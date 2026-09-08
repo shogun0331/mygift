@@ -50,14 +50,6 @@
       "blurDefault": 4
     },
     {
-      "id": "graphic_c6ee1d47_2",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1786860403048_4_elzj",
       "type": "text",
       "speakerType": "character",
@@ -370,14 +362,6 @@
           "blur": 2
         }
       ],
-      "blurDefault": 4
-    },
-    {
-      "id": "graphic_c6ee1d47_5",
-      "type": "graphic",
-      "image": "",
-      "delay": 2,
-      "blurRegions": [],
       "blurDefault": 4
     },
     {

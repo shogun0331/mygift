@@ -41,6 +41,14 @@ interface ElectronAPI {
   deleteCommonSoundFile?: (
     fileName: string
   ) => Promise<{ success: boolean; error?: string }>
+  saveHighLowAssets?: (
+    assets: Array<{ fileName: string; buffer: ArrayBuffer | number[] }>
+  ) => Promise<{ success: boolean; path?: string; error?: string }>
+  saveHighLowConfigJson?: (
+    config: Record<string, unknown>
+  ) => Promise<{ success: boolean; config?: any; error?: string }>
+  loadHighLowConfigJson?: (
+  ) => Promise<{ success: boolean; config?: Record<string, unknown>; error?: string }>
   saveBgmAssets?: (
     assets: Array<{ fileName: string; buffer: ArrayBuffer | number[] }>
   ) => Promise<{ success: boolean; path?: string; error?: string }>

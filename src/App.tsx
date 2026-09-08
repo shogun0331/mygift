@@ -14,6 +14,7 @@ import {
   pruneUnusedBgmFiles,
   removeBgmFile,
 } from './events/db'
+import { loadHighLowConfigFromDisk } from './minigames/highlow/highLowStore'
 import type { GameEvent } from './events/types'
 import {
   emptyCommonEventLinks,
@@ -832,6 +833,10 @@ export default function App() {
         console.error('Failed to load BGM config:', err)
         setIsBgmConfigLoaded(true)
       })
+
+    void loadHighLowConfigFromDisk().catch((err) => {
+      console.error('Failed to load highlow config:', err)
+    })
 
     loadRegisteredStaffFromDisk()
       .then((rows) => {
