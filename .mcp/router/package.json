@@ -1,0 +1,13 @@
+{
+  "name": "broadcast-mcp-router",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP router that lazily loads backend MCP servers by group to reduce token consumption",
+  "bin": {
+    "broadcast-mcp-router": "./index.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0"
+  }
+}

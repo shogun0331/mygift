@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "groups": {
+    "image-gen": {
+      "description": "이미지·영상 생성 (Fooocus, Simpligen, H3 프롬프트 작성)",
+      "servers": [
+        {
+          "name": "fooocus-local",
+          "command": "python",
+          "args": ["C:/Workspace/Novel/mcp/fooocus_server.py"],
+          "env": { "FOOOCUS_GRADIO_URL": "http://127.0.0.1:7865/" }
+        },
+        {
+          "name": "simpligen",
+          "command": "npx.cmd",
+          "args": ["-y", "@simpligen/mcp"],
+          "env": { "SIMPLIGEN_TOKEN": "YOUR_SIMPLIGEN_TOKEN_HERE" }
+        }
+      ],
+      "skills": [
+        { "name": "h3-prompt-writing", "path": "F:/Broadcast/broadcast-game/.claude/skills/h3-prompt-writing/SKILL.md" }
+      ]
+    },
+    "game-dev": {
+      "description": "Godot 게임 엔진 연동",
+      "servers": [
+        { "name": "godot", "command": "F:/novel-chat/start-godot-mcp.cmd", "args": [] }
+      ],
+      "skills": []
+    },
+    "pinokio": {
+      "description": "Pinokio 런처 개발/런타임 제어",
+      "servers": [],
+      "skills": [
+        { "name": "gepeto", "path": "C:/Users/shogu/.claude/skills/gepeto/SKILL.md" },
+        { "name": "pinokio", "path": "C:/Users/shogu/.claude/skills/pinokio/SKILL.md" }
+      ]
+    },
+    "coordination": {
+      "description": "Paperclip 협업/조정",
+      "servers": [],
+      "skills": [
+        { "name": "paperclip", "path": "C:/Users/shogu/.claude/skills/paperclip/SKILL.md" }
+      ]
+    },
+    "project-context": {
+      "description": "Broadcast Game 프로젝트 컨텍스트",
+      "servers": [],
+      "skills": [
+        { "name": "broadcast-game", "path": "C:/Users/shogu/.claude/skills/broadcast-game/SKILL.md" },
+        { "name": "para-memory-files", "path": "C:/Users/shogu/.claude/skills/para-memory-files/SKILL.md" }
+      ]
+    },
+    "diagnostics": {
+      "description": "진단/디버깅 도구",
+      "servers": [],
+      "skills": [
+        { "name": "diagnose-why-work-stopped", "path": "C:/Users/shogu/.claude/skills/diagnose-why-work-stopped/SKILL.md" },
+        { "name": "terminal-bench-loop", "path": "C:/Users/shogu/.claude/skills/terminal-bench-loop/SKILL.md" }
+      ]
+    }
+  }
+}
