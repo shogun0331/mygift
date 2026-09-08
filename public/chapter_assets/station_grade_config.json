@@ -93,7 +93,7 @@
     },
     "large": {
       "to": "large",
-      "requiredViewers": 150000,
+      "requiredViewers": 100000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 3
@@ -117,7 +117,7 @@
     },
     "top": {
       "to": "top",
-      "requiredViewers": 1000000,
+      "requiredViewers": 300000,
       "minUnlockedSlots": {
         "enabled": false,
         "value": 4
@@ -462,7 +462,7 @@
       }
     }
   },
-  "topClearViewers": 10000000,
+  "topClearViewers": 1000000,
   "slotUnlockPrices": [
     3000,
     3000,

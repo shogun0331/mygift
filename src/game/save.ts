@@ -85,6 +85,8 @@ export type GameSave = {
   stationAuditCooldown?: number
   /** 이미 팝업으로 안내한 크리에이터 승급심사 키 목록 (creatorId:targetGrade) */
   notifiedPromotionExams?: string[]
+  /** 이미 안내한 방송국 승급심사 팝업 키 (currentGrade:nextGrade) — 해당 구간 1회만 */
+  notifiedStationReviewKey?: string | null
   /** 이번 턴에 H하기를 수행한 월 번호 (1턴 1회 제한) */
   lastHActionMonth?: number
   /** 이번 턴에 VIP 만남을 수행한 캐릭터별 월 번호 매핑 (creatorId → month) */

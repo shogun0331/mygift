@@ -1066,6 +1066,7 @@ export function InGame({
     promoted: boolean
     status: StationReviewStatus
   } | null>(null)
+  const stationReviewOfferedRef = useRef<string | null>(boot?.notifiedStationReviewKey ?? null)
   const [vipOffer, setVipOffer] = useState<VipOffer | null>(null)
   const [vipResult, setVipResult] = useState<VipResult | null>(null)
   const [vipEventPlay, setVipEventPlay] = useState<{
@@ -1437,6 +1438,8 @@ export function InGame({
 
   const isStationPromotionEligible = useMemo(() => {
     if (broadcastPhase === 'live') return false
+    if (stationAuditCooldown > 0 || stationAuditTarget) return false
+    const totalSns = ownedCreators.reduce((sum, c) => sum + (c.snsSubscribers ?? 0), 0)
     const review = applyStationReview(
       stationGrade,
       league.viewers,
@@ -1444,6 +1447,7 @@ export function InGame({
       {
         unlockedSlotCount,
         assets,
+        snsSubscribers: totalSns,
       },
       stationGradeConfig,
     )
@@ -1463,6 +1467,8 @@ export function InGame({
     unlockedSlotCount,
     assets,
     stationGradeConfig,
+    stationAuditCooldown,
+    stationAuditTarget,
   ])
 
   // 일반사업자(black) -> 영세기업(tiny) 자동 승급 (심사 버튼 없이 조건 달성 시 즉시 자동 승급)
@@ -1511,6 +1517,54 @@ export function InGame({
     league.viewers,
     ownedCreators,
     unlockedSlotCount,
+  ])
+
+  // 목표 시청자·승급 조건 충족 시 서류 팝업 — 현재 등급→다음 등급 구간당 1회만
+  useEffect(() => {
+    if (!isStationPromotionEligible) return
+    if (broadcastPhase !== 'prep') return
+    if (
+      stationReview ||
+      weeklyStatement ||
+      broadcastEndedNotice ||
+      rankSettlement ||
+      startBroadcastLocked
+    ) {
+      return
+    }
+    const totalSns = ownedCreators.reduce((sum, c) => sum + (c.snsSubscribers ?? 0), 0)
+    const review = applyStationReview(
+      stationGrade,
+      league.viewers,
+      ownedCreators,
+      {
+        unlockedSlotCount,
+        assets,
+        snsSubscribers: totalSns,
+      },
+      stationGradeConfig,
+    )
+    if (review.promoted && review.status.next && review.status.next !== 'tiny') {
+      const key = `${review.status.current}:${review.status.next}`
+      if (stationReviewOfferedRef.current === key) return
+      stationReviewOfferedRef.current = key
+      setStationReview({ promoted: review.promoted, status: review.status })
+      scheduleAutoSave()
+    }
+  }, [
+    isStationPromotionEligible,
+    broadcastPhase,
+    stationReview,
+    weeklyStatement,
+    broadcastEndedNotice,
+    rankSettlement,
+    startBroadcastLocked,
+    stationGrade,
+    league.viewers,
+    ownedCreators,
+    unlockedSlotCount,
+    assets,
+    stationGradeConfig,
   ])
 
   // 영세기업(tiny) 이상인데 영세기업 승급 이벤트를 아직 보지 않은 경우 자동 재생
@@ -1803,6 +1857,7 @@ export function InGame({
       showCasinoModal: showCasinoModalRef.current,
       stationAuditCooldown: stationAuditCooldownRef.current,
       notifiedPromotionExams: notifiedPromotionExamsRef.current,
+      notifiedStationReviewKey: stationReviewOfferedRef.current,
       lastHActionMonth: lastHActionMonthRef.current,
       lastVipActionMonth: lastVipActionMonthByCreatorRef.current,
       tutorialDone: tutorialDoneRef.current,
@@ -3499,6 +3554,24 @@ export function InGame({
     flushAutoSave()
   }
 
+  function evaluateCurrentStationReview() {
+    const totalSns = ownedCreatorsRef.current.reduce(
+      (sum, c) => sum + (c.snsSubscribers ?? 0),
+      0,
+    )
+    return applyStationReview(
+      stationGradeRef.current,
+      leagueRef.current.viewers,
+      ownedCreatorsRef.current,
+      {
+        unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
+        assets: assetsRef.current,
+        snsSubscribers: totalSns,
+      },
+      stationGradeConfig,
+    )
+  }
+
   function finishWeeklyStatementFollowup() {
     if (!tutorialDoneRef.current) {
       setStaffScoutAvailable(true)
@@ -3512,7 +3585,24 @@ export function InGame({
     const openScout =
       ownedCreatorsRef.current.length === 0 &&
       Boolean(scoutSystemRef.current.activeOffer)
-    pendingStationReviewRef.current = false
+    // 매 턴 목표 시청자 및 조건 달성 시 승급심사 서류 팝업
+    if (pendingStationReviewRef.current) {
+      pendingStationReviewRef.current = false
+      pendingScoutAfterRankRef.current = openScout
+      if (stationAuditCooldownRef.current <= 0 && !stationAuditTargetRef.current) {
+        const review = evaluateCurrentStationReview()
+        if (review.promoted && review.status.next && review.status.next !== 'tiny') {
+          const key = `${review.status.current}:${review.status.next}`
+          if (stationReviewOfferedRef.current !== key) {
+            stationReviewOfferedRef.current = key
+            setStartBroadcastLocked(true)
+            setStationReview({ promoted: review.promoted, status: review.status })
+            scheduleAutoSave()
+            return
+          }
+        }
+      }
+    }
     const pendingRank = pendingRankResultRef.current
     pendingRankResultRef.current = null
     if (pendingRank) {
@@ -4420,42 +4510,15 @@ export function InGame({
 
   function handleStartPromotionAudit() {
     if (broadcastPhase === 'live' || startBroadcastLocked) return
-    const review = applyStationReview(
-      stationGradeRef.current,
-      leagueRef.current.viewers,
-      ownedCreatorsRef.current,
-      {
-        unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
-        assets: assetsRef.current,
-      },
-      stationGradeConfig,
-    )
-    if (review.promoted && review.status.next) {
-      if (review.status.next !== 'tiny') {
-        setStationAuditTarget({
-          currentTier: review.status.current,
-          nextTier: review.status.next as Exclude<StationGrade, 'black' | 'tiny'>,
-        })
-        setAuditDocPassNoticeOpen(false)
-        setAuditDeckSelecting(true)
-      } else {
-        const nextGrade = review.status.next
-        const oldRank = leagueRef.current.currentRank
-        const newRank = stationRankForGrade(nextGrade, leagueRef.current.viewers)
-        stationGradeRef.current = nextGrade
-        setStationGrade(nextGrade)
-        grantStationPromotionAssets(nextGrade)
-        pendingPromotionRef.current = { nextGrade, oldRank, newRank }
-        setTab('ranking')
-        setPromotionFx({
-          fromGrade: review.status.current,
-          toGrade: nextGrade,
-          fromRank: oldRank,
-          toRank: newRank,
-        })
-        setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
-        scheduleAutoSave()
-      }
+    if (stationAuditTargetRef.current) return
+    const review = evaluateCurrentStationReview()
+    if (review.promoted && review.status.next && review.status.next !== 'tiny') {
+      setStationAuditTarget({
+        currentTier: review.status.current,
+        nextTier: review.status.next as Exclude<StationGrade, 'black' | 'tiny'>,
+      })
+      setAuditDocPassNoticeOpen(false)
+      setAuditDeckSelecting(true)
     }
   }
 
@@ -5997,50 +6060,17 @@ export function InGame({
         <StationReviewModal
           promoted={stationReview.promoted}
           status={stationReview.status}
-          onClose={() => setStationReview(null)}
-          onDecline={() => {
+          onClose={() => {
             setStationReview(null)
-            stationAuditCooldownRef.current = 2
-            setStationAuditCooldown(2)
+            if (startBroadcastLocked) {
+              continueAfterMonthModals(pendingScoutAfterRankRef.current)
+            }
           }}
           onConfirm={() => {
-            const review = stationReview
             setStationReview(null)
-            if (
-              review.promoted &&
-              review.status.next &&
-              review.status.next !== 'tiny'
-            ) {
-              setStationAuditTarget({
-                currentTier: review.status.current,
-                nextTier: review.status.next as Exclude<StationGrade, 'black' | 'tiny'>,
-              })
-              setAuditDocPassNoticeOpen(true)
-              return
+            if (startBroadcastLocked) {
+              continueAfterMonthModals(pendingScoutAfterRankRef.current)
             }
-            if (review.promoted && review.status.next) {
-              const nextGrade = review.status.next
-              const oldRank = leagueRef.current.currentRank
-              const newRank = stationRankForGrade(nextGrade, leagueRef.current.viewers)
-              stationGradeRef.current = nextGrade
-              setStationGrade(nextGrade)
-              grantStationPromotionAssets(nextGrade)
-              pendingPromotionRef.current = { nextGrade, oldRank, newRank }
-              setTab('ranking')
-              setPromotionFx({
-                fromGrade: review.status.current,
-                toGrade: nextGrade,
-                fromRank: oldRank,
-                toRank: newRank,
-              })
-              setPromotionCelebration({
-                fromGradeLabel: t(companyTierLabelKey(review.status.current)),
-                toGradeLabel: t(companyTierLabelKey(nextGrade)),
-              })
-              setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
-              return
-            }
-            continueMonthEndFlow()
           }}
         />
       ) : null}
