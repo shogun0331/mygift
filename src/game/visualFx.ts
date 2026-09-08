@@ -1,24 +1,50 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'broadcast-mosaic-strength'
-const DEFAULT_STRENGTH = 50
+const STORAGE_KEY = 'broadcast-mosaic-block-px'
+const LEGACY_STRENGTH_KEY = 'broadcast-mosaic-strength'
+export const MOSAIC_BLOCK_PRESETS: readonly number[] = [0, 4, 6, 8, 12, 16, 20, 24]
+const DEFAULT_BLOCK_PX = 8
 
-let strength = loadStrength()
+let blockPx = loadBlockPx()
 const listeners = new Set<() => void>()
 
-function clamp(n: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, n))
+function snapToPreset(px: number): number {
+  if (px <= 0) return 0
+  let best = DEFAULT_BLOCK_PX
+  let bestDist = Number.POSITIVE_INFINITY
+  for (const p of MOSAIC_BLOCK_PRESETS) {
+    const d = Math.abs(p - px)
+    if (d < bestDist) {
+      bestDist = d
+      best = p
+    }
+  }
+  return best
 }
 
-function loadStrength() {
+function loadBlockPx(): number {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw == null) return DEFAULT_STRENGTH
-    const n = Number(raw)
-    if (!Number.isFinite(n)) return DEFAULT_STRENGTH
-    return clamp(Math.round(n), 0, 100)
+    if (raw != null) {
+      const n = Number(raw)
+      if (Number.isFinite(n)) return snapToPreset(n)
+    }
+    // 이전 통합 강도(0~100) 저장값이 있으면 블록 px로 마이그레이션
+    const legacy = localStorage.getItem(LEGACY_STRENGTH_KEY)
+    if (legacy != null) {
+      const n = Number(legacy)
+      if (Number.isFinite(n)) {
+        try {
+          localStorage.removeItem(LEGACY_STRENGTH_KEY)
+        } catch {
+          // ignore
+        }
+        return snapToPreset(Math.round(n * 0.5))
+      }
+    }
+    return DEFAULT_BLOCK_PX
   } catch {
-    return DEFAULT_STRENGTH
+    return DEFAULT_BLOCK_PX
   }
 }
 
@@ -26,29 +52,24 @@ function emit() {
   for (const listener of listeners) listener()
 }
 
-export function getMosaicStrength() {
-  return strength
+export function getMosaicBlockPx() {
+  return blockPx
 }
 
-/** 50 = 원래 강도, 0 = 없음, 100 = 2배 */
-export function getMosaicScale() {
-  return strength / 50
-}
-
-export function setMosaicStrength(next: number) {
-  strength = clamp(Math.round(next), 0, 100)
+export function setMosaicBlockPx(next: number) {
+  blockPx = snapToPreset(Math.round(next))
   try {
-    localStorage.setItem(STORAGE_KEY, String(strength))
+    localStorage.setItem(STORAGE_KEY, String(blockPx))
   } catch {
     // ignore
   }
   emit()
 }
 
-export function useMosaicStrength() {
-  const [value, setValue] = useState(strength)
+export function useMosaicBlockPx() {
+  const [value, setValue] = useState(blockPx)
   useEffect(() => {
-    const onChange = () => setValue(getMosaicStrength())
+    const onChange = () => setValue(getMosaicBlockPx())
     listeners.add(onChange)
     return () => {
       listeners.delete(onChange)

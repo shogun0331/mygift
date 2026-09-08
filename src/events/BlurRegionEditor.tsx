@@ -1,6 +1,6 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
-import { useMosaicStrength } from '../game/visualFx'
+import { useMosaicBlockPx } from '../game/visualFx'
 import type { BlurRegion, EventMediaAsset } from './types'
 
 export const BLUR_MIN = 0
@@ -22,15 +22,6 @@ function blurTint(px: number) {
   const v = clampBlur(px)
   if (v <= 0) return 'transparent'
   return `rgba(0,0,0,${Math.min(0.1, (v / BLUR_MAX) * 0.1)})`
-}
-
-/**
- * 통합 모자이크 강도(%)로 블록 크기(px)를 계산.
- * strength 0→0px(모자이크 없음), 50→25px(기본), 100→50px(최대).
- */
-export function mosaicBlockPx(strength: number) {
-  if (strength <= 0) return 0
-  return Math.max(2, Math.min(50, Math.round(strength * 0.5)))
 }
 
 function makeRegionId() {
@@ -81,76 +72,50 @@ export function MosaicRegionLayer({
   content?: { x: number; y: number; w: number; h: number }
   objectFit?: 'cover' | 'fill' | 'contain'
 }) {
-  const strength = useMosaicStrength()
+  const block = useMosaicBlockPx()
   const rect = content ?? { x: 0, y: 0, w: box.w, h: box.h }
   if (box.w <= 0 || box.h <= 0 || rect.w <= 0 || rect.h <= 0 || regions.length === 0) return null
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {regions.map((region) => {
-        const block = mosaicBlockPx(strength)
         if (block <= 0) return null
         const rx = rect.x + region.x * rect.w
         const ry = rect.y + region.y * rect.h
         const rw = region.w * rect.w
         const rh = region.h * rect.h
         if (rw <= 0 || rh <= 0) return null
+        const mediaStyle: CSSProperties = {
+          position: 'absolute',
+          left: (rect.x - rx) / block,
+          top: (rect.y - ry) / block,
+          width: rect.w / block,
+          height: rect.h / block,
+          transform: `scale(${block})`,
+          transformOrigin: '0 0',
+          imageRendering: 'pixelated',
+          maxWidth: 'none',
+          objectFit,
+        }
         return (
           <div
             key={region.id}
             className="absolute overflow-hidden"
             style={{ left: rx, top: ry, width: rw, height: rh }}
           >
-            <div
-              style={{
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                width: rw / block,
-                height: rh / block,
-                transform: `scale(${block})`,
-                transformOrigin: '0 0',
-                imageRendering: 'pixelated',
-                overflow: 'hidden',
-              }}
-            >
-              {kind === 'video' ? (
-                <video
-                  src={src}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  aria-hidden
-                  style={{
-                    position: 'absolute',
-                    left: -rx / block,
-                    top: -ry / block,
-                    width: rect.w / block,
-                    height: rect.h / block,
-                    imageRendering: 'pixelated',
-                    maxWidth: 'none',
-                    objectFit,
-                  }}
-                />
-              ) : (
-                <img
-                  src={src}
-                  alt=""
-                  aria-hidden
-                  style={{
-                    position: 'absolute',
-                    left: -rx / block,
-                    top: -ry / block,
-                    width: rect.w / block,
-                    height: rect.h / block,
-                    imageRendering: 'pixelated',
-                    maxWidth: 'none',
-                    objectFit,
-                  }}
-                />
-              )}
-            </div>
+            {kind === 'video' ? (
+              <video
+                src={src}
+                autoPlay
+                loop
+                muted
+                playsInline
+                aria-hidden
+                style={mediaStyle}
+              />
+            ) : (
+              <img src={src} alt="" aria-hidden style={mediaStyle} />
+            )}
           </div>
         )
       })}

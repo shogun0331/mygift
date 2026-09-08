@@ -40,7 +40,7 @@ import { HighLowEditorPanel } from '../minigames/highlow/HighLowEditorPanel'
 import { SlotEditorPanel } from '../minigames/slot/SlotEditorPanel'
 import { BgmEditorPanel } from './BgmEditorPanel'
 import { useGameBgm, type BgmTrack, type GameBgmConfig } from '../game/bgm'
-import { setMosaicStrength, useMosaicStrength } from '../game/visualFx'
+import { MOSAIC_BLOCK_PRESETS, setMosaicBlockPx, useMosaicBlockPx } from '../game/visualFx'
 import { resetAchievements } from '../game/achievements'
 
 type EditorTab =
@@ -313,7 +313,7 @@ export function EditorScreen({
           >
             🎰 카지노 슬롯
           </button>
-          <MosaicStrengthSlider />
+          <MosaicBlockPicker />
         </aside>
 
         <section className="relative z-10 min-h-0 overflow-auto p-6">
@@ -680,21 +680,28 @@ export function EditorScreen({
   )
 }
 
-function MosaicStrengthSlider() {
-  const strength = useMosaicStrength()
+function MosaicBlockPicker() {
+  const block = useMosaicBlockPx()
   return (
     <div className="mt-auto rounded-xl border border-white/10 bg-black/25 px-3 py-3">
-      <p className="text-[10px] font-bold tracking-wide text-slate-400">모자이크 강도</p>
+      <p className="text-[10px] font-bold tracking-wide text-slate-400">모자이크 블록 크기</p>
       <p className="mt-0.5 text-[10px] leading-4 text-slate-500">VN · 승급심사 퍼포먼스</p>
-      <input
-        type="range"
-        min={0}
-        max={100}
-        value={strength}
-        onChange={(event) => setMosaicStrength(Number(event.target.value))}
-        className="mt-2 w-full accent-indigo-400"
-      />
-      <p className="mt-1 text-right text-[10px] tabular-nums text-slate-400">{strength}%</p>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {MOSAIC_BLOCK_PRESETS.map((px) => (
+          <button
+            key={px}
+            type="button"
+            onClick={() => setMosaicBlockPx(px)}
+            className={`rounded-lg border px-2 py-1 text-[10px] ${
+              block === px
+                ? 'border-indigo-400/50 bg-indigo-500/20 text-indigo-200'
+                : 'border-white/10 text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            {px === 0 ? '없음' : `${px}px`}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
