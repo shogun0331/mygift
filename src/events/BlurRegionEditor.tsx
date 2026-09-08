@@ -11,7 +11,7 @@ function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n))
 }
 
-/** 0? 釉붾윭 ?놁쓬. `||` 濡?0??湲곕낯媛믪쑝濡?諛붽씀吏 ?딅뒗?? */
+/** 0은 블러 없음. `||` 로 0을 기본값으로 바꾸지 않는다. */
 export function clampBlur(n: number) {
   const v = Number(n)
   if (!Number.isFinite(v)) return BLUR_DEFAULT
@@ -24,11 +24,13 @@ function blurTint(px: number) {
   return `rgba(0,0,0,${Math.min(0.1, (v / BLUR_MAX) * 0.1)})`
 }
 
-/** 釉붾윭 媛뺣룄(px)瑜?紐⑥옄?댄겕 釉붾줉 ?ш린(px)濡?蹂?? 1px = ?먮낯(?쎌????놁쓬). */
-export function mosaicBlockPx(blur: number, scale: number) {
-  const px = clampBlur(blur * scale)
-  if (px <= 0) return 0
-  return Math.max(1, Math.min(BLUR_MAX, Math.round(px)))
+/**
+ * 통합 모자이크 강도(%)로 블록 크기(px)를 계산.
+ * strength 0→0px(모자이크 없음), 50→25px(기본), 100→50px(최대).
+ */
+export function mosaicBlockPx(strength: number) {
+  if (strength <= 0) return 0
+  return Math.max(2, Math.min(50, Math.round(strength * 0.5)))
 }
 
 function makeRegionId() {
@@ -75,19 +77,18 @@ export function MosaicRegionLayer({
   kind: 'image' | 'video'
   regions: BlurRegion[]
   box: { w: number; h: number }
-  /** 誘몃뵒?닿? ?ㅼ젣 ?쒖떆?섎뒗 ?ш컖??px). ?앸왂 ??諛뺤뒪 ?꾩껜. objectFit=cover/fill??留욎떠 ?섍꺼以?寃? */
+  /** 미디어가 실제 표시되는 사각형(px). 생략 시 박스 전체. objectFit=cover/fill에 맞춰 넘겨줄 것. */
   content?: { x: number; y: number; w: number; h: number }
   objectFit?: 'cover' | 'fill' | 'contain'
 }) {
   const strength = useMosaicStrength()
-  const scale = strength / 50
   const rect = content ?? { x: 0, y: 0, w: box.w, h: box.h }
   if (box.w <= 0 || box.h <= 0 || rect.w <= 0 || rect.h <= 0 || regions.length === 0) return null
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {regions.map((region) => {
-        const block = mosaicBlockPx(region.blur, scale)
+        const block = mosaicBlockPx(strength)
         if (block <= 0) return null
         const rx = rect.x + region.x * rect.w
         const ry = rect.y + region.y * rect.h
@@ -127,6 +128,7 @@ export function MosaicRegionLayer({
                     top: -ry / block,
                     width: rect.w / block,
                     height: rect.h / block,
+                    imageRendering: 'pixelated',
                     maxWidth: 'none',
                     objectFit,
                   }}
@@ -142,6 +144,7 @@ export function MosaicRegionLayer({
                     top: -ry / block,
                     width: rect.w / block,
                     height: rect.h / block,
+                    imageRendering: 'pixelated',
                     maxWidth: 'none',
                     objectFit,
                   }}
@@ -170,8 +173,6 @@ export function BlurRegionOverlay({
   src?: string | null
   kind?: 'image' | 'video'
 }) {
-  const strength = useMosaicStrength()
-  const scale = strength / 50
   const boxRef = useRef<HTMLDivElement>(null)
   const [box, setBox] = useState({ w: 0, h: 0 })
 
@@ -207,13 +208,13 @@ export function BlurRegionOverlay({
               top: `${region.y * 100}%`,
               width: `${region.w * 100}%`,
               height: `${region.h * 100}%`,
-              background: blurTint(region.blur * scale),
+              background: blurTint(region.blur),
             }}
           />
         ))
       )}
 
-      {/* ?좏깮/?몃뱾 ?꾩썐?쇱씤 (紐⑥옄?댄겕 ?꾩뿉 ?뱀쓬) */}
+      {/* 선택/핸들 아웃라인 (모자이크 위에 그림) */}
       {regions.map((region) => (
         <div
           key={`outline-${region.id}`}
@@ -282,7 +283,7 @@ type BlurRegionEditorProps = {
   speed?: number
   onChange: (next: { blurRegions: BlurRegion[]; blurDefault: number }) => void
   onClose: () => void
-  /** cover: ?대깽??洹몃옒??16:9 ?щ∼). fit: SNS泥섎읆 ?먮낯 鍮꾩쑉 ?좎? */
+/** cover: 드래그 박스(16:9 비율). fit: SNS처럼 원본 비율 유지 */
   layout?: 'cover' | 'fit'
 }
 
@@ -347,7 +348,7 @@ export function BlurRegionEditor({
       ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
       setDrag({
         kind: 'resize',
-        id: selected.id,
+        id: selected?.id,
         corner: handle.dataset.handle as 'nw' | 'ne' | 'sw' | 'se',
         orig: { ...selected },
       })
@@ -432,9 +433,9 @@ export function BlurRegionEditor({
         <div className="flex items-start justify-between gap-3 border-b border-white/10 px-5 py-4">
           <div>
             <p className="text-[10px] font-semibold tracking-wide text-indigo-300">MOSAIC REGION</p>
-            <h3 className="mt-1 text-base font-semibold text-slate-100">紐⑥옄?댄겕 ?곸뿭 ?몄쭛</h3>
+            <h3 className="mt-1 text-base font-semibold text-slate-100">모자이크 영역 편집</h3>
             <p className="mt-1 text-xs text-slate-500">
-              ?먮낯 ?뚯씪? ?섏젙?섏? ?딆뒿?덈떎. ?ㅻえ瑜?洹몃젮 媛由??꾩튂瑜??뺥빀?덈떎.
+              원하는 영역을 그리고 편집할 수 있습니다. 영역을 그려 가려질 부분을 선택하세요.
             </p>
           </div>
           <button
@@ -442,7 +443,7 @@ export function BlurRegionEditor({
             onClick={onClose}
             className="rounded-xl border border-white/10 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/5"
           >
-            ?リ린
+            닫기
           </button>
         </div>
 
@@ -457,8 +458,8 @@ export function BlurRegionEditor({
                   : 'border-white/10 text-slate-400'
               }`}
             >
-              洹몃━湲?            </button>
-            <button
+              그리기
+            </button><button
               type="button"
               onClick={() => setMode('select')}
               className={`rounded-lg border px-3 py-1.5 text-xs ${
@@ -467,10 +468,10 @@ export function BlurRegionEditor({
                   : 'border-white/10 text-slate-400'
               }`}
             >
-              ?좏깮 / ?섏젙
+              선택 / 수정
             </button>
             <span className="text-[11px] text-slate-500">
-              {mode === 'draw' ? '?쒕옒洹명빐???ㅻえ瑜?洹몃┰?덈떎.' : '?ㅻえ瑜???린嫄곕굹 紐⑥꽌由щ? ?≪븘 ?ш린瑜?諛붽퓠?덈떎.'}
+              {mode === "draw" ? "드래그하여 영역을 그려보세요." : "영역을 클릭하거나 모서리를 끌어 크기를 바꿔보세요."}
             </span>
           </div>
 
@@ -509,7 +510,8 @@ export function BlurRegionEditor({
                 )
               ) : (
                 <div className="flex h-48 w-full items-center justify-center text-sm text-slate-500">
-                  誘몃뵒?대? 癒쇱? ?곌껐?섏꽭??                </div>
+                  미디어를 먼저 연결하세요
+                </div>
               )}
               <BlurRegionOverlay
                 regions={regions}
@@ -517,94 +519,25 @@ export function BlurRegionEditor({
                 showHandles={mode === 'select'}
                 draft={draft}
                 src={asset?.url}
-                kind={asset?.kind}
+                kind={asset?.kind as 'image' | 'video' | undefined}
               />
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <p className="text-[11px] font-semibold text-slate-400">???ㅻえ 湲곕낯 媛뺣룄</p>
-              <input
-                type="range"
-                min={BLUR_MIN}
-                max={BLUR_MAX}
-                step={0.5}
-                value={defaultBlur}
-                onChange={(e) => onChange({ blurRegions: regions, blurDefault: clampBlur(Number(e.target.value)) })}
-                className="w-full accent-indigo-400"
-              />
-              <div className="flex gap-1.5">
-                {[
-                  { label: '?놁쓬', value: 0 },
-                  { label: '?쏀븿', value: 2 },
-                  { label: '蹂댄넻', value: 5 },
-                  { label: '媛뺥븿', value: 12 },
-                ].map((preset) => (
-                  <button
-                    key={preset.value}
-                    type="button"
-                    onClick={() => onChange({ blurRegions: regions, blurDefault: preset.value })}
-                    className="rounded-lg border border-white/10 px-2 py-1 text-[10px] text-slate-400 hover:text-slate-200"
-                  >
-                    {preset.label}
-                  </button>
-                ))}
-                <span className="ml-auto text-[11px] text-slate-400">{defaultBlur}px</span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-[11px] font-semibold text-slate-400">?좏깮???곸뿭 媛뺣룄</p>
-              {selected ? (
-                <>
-                  <input
-                    type="range"
-                    min={BLUR_MIN}
-                    max={BLUR_MAX}
-                    step={0.5}
-                    value={clampBlur(selected.blur)}
-                    onChange={(e) => {
-                      const blur = clampBlur(Number(e.target.value))
-                      updateRegions(regions.map((r) => (r.id === selected.id ? { ...r, blur } : r)))
-                    }}
-                    className="w-full accent-indigo-400"
-                  />
-                  <div className="flex items-center gap-1.5">
-                    {[
-                      { label: '?놁쓬', value: 0 },
-                      { label: '?쏀븿', value: 2 },
-                      { label: '蹂댄넻', value: 5 },
-                      { label: '媛뺥븿', value: 12 },
-                    ].map((preset) => (
-                      <button
-                        key={preset.value}
-                        type="button"
-                        onClick={() =>
-                          updateRegions(regions.map((r) => (r.id === selected.id ? { ...r, blur: preset.value } : r)))
-                        }
-                        className="rounded-lg border border-white/10 px-2 py-1 text-[10px] text-slate-400 hover:text-slate-200"
-                      >
-                        {preset.label}
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const next = regions.filter((r) => r.id !== selected.id)
-                        updateRegions(next)
-                        setSelectedId(next[0]?.id ?? null)
-                      }}
-                      className="ml-auto rounded-lg border border-rose-500/20 px-2 py-1 text-[10px] text-rose-300 hover:bg-rose-500/10"
-                    >
-                      ?곸뿭 ??젣
-                    </button>
-                    <span className="text-[11px] text-slate-400">{clampBlur(selected.blur)}px</span>
-                  </div>
-                </>
-              ) : (
-                <p className="text-[11px] text-slate-500">?좏깮 紐⑤뱶?먯꽌 ?ㅻえ瑜?怨좊Ⅴ硫?媛뺣룄瑜?諛붽? ???덉뒿?덈떎.</p>
-              )}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const next = regions.filter((r) => r.id !== selected?.id)
+                  updateRegions(next)
+                  setSelectedId(next[0]?.id ?? null)
+                }}
+                className="rounded-lg border border-rose-500/20 px-2 py-1 text-[10px] text-rose-300 hover:bg-rose-500/10"
+                disabled={!selected}
+              >
+                영역 삭제
+              </button>
             </div>
           </div>
         </div>

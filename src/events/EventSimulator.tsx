@@ -308,7 +308,7 @@ const EventStageLayer = memo(function EventStageLayer({
           className="h-full w-full object-cover pointer-events-none"
         />
       )}
-      {blurRegions.length > 0 ? <BlurRegionOverlay regions={blurRegions} src={resolveMediaSrc(media.url)} kind={media.kind} /> : null}
+      {blurRegions.length > 0 ? <BlurRegionOverlay regions={blurRegions} src={resolveMediaSrc(media.url)} kind={media.kind as 'image' | 'video'} /> : null}
     </div>
   )
 })
