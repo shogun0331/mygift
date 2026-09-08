@@ -9,6 +9,7 @@ import { playSfx } from '../game/uiSfx'
 
 type ProposalShortsPlayerProps = {
   creatorName: string
+  lookupName?: string
   profileImageUrl?: string | null
   onAccept: () => void
   onReject: () => void
@@ -16,21 +17,23 @@ type ProposalShortsPlayerProps = {
 
 export function ProposalShortsPlayer({
   creatorName,
+  lookupName,
   profileImageUrl,
   onAccept,
   onReject,
 }: ProposalShortsPlayerProps) {
-  const { locale } = useTranslation()
+  const { locale, t } = useTranslation()
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const mediaName = lookupName || creatorName
 
   const dialogueText = useMemo(
-    () => getProposalDialogueText(creatorName, locale),
-    [creatorName, locale],
+    () => getProposalDialogueText(mediaName, locale),
+    [mediaName, locale],
   )
-  const voiceUrl = useMemo(() => getProposalVoiceUrl(creatorName), [creatorName])
+  const voiceUrl = useMemo(() => getProposalVoiceUrl(mediaName), [mediaName])
   const proposalImageUrl = useMemo(
-    () => getProposalImageUrl(creatorName) || profileImageUrl,
-    [creatorName, profileImageUrl],
+    () => getProposalImageUrl(mediaName) || profileImageUrl,
+    [mediaName, profileImageUrl],
   )
 
   useEffect(() => {
@@ -83,13 +86,13 @@ export function ProposalShortsPlayer({
         {/* Top Kicker Header */}
         <div className="mb-3">
           <span className="px-3 py-1 rounded-full text-[10px] font-mono font-black tracking-widest text-pink-300 bg-pink-950 border border-pink-500/40 uppercase shadow">
-            💍 SPECIAL CONFESSION EVENT 💍
+            💍 {t('proposal.kicker')} 💍
           </span>
           <h2
             id="proposal-shorts-title"
             className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-pink-100 italic"
           >
-            {creatorName}의 고백
+            {t('proposal.title', { name: creatorName })}
           </h2>
         </div>
 
@@ -109,7 +112,7 @@ export function ProposalShortsPlayer({
 
           {/* Glowing Ring Icon Badge */}
           <div className="absolute top-2 right-2 bg-pink-500 text-white text-xs font-mono font-black px-2 py-0.5 rounded-full shadow-lg border border-pink-200 animate-pulse">
-            PROPOSE!
+            {t('proposal.badge')}
           </div>
         </div>
 
@@ -118,7 +121,7 @@ export function ProposalShortsPlayer({
           <div
             onClick={replayVoice}
             className="mt-3 px-4 py-3 rounded-2xl bg-slate-950/90 border-2 border-pink-400/80 text-pink-100 text-xs sm:text-sm font-medium shadow-[0_4px_20px_rgba(0,0,0,0.8),0_0_20px_rgba(244,63,94,0.3)] flex items-center gap-2.5 cursor-pointer hover:border-pink-200 transition-all w-full text-left group"
-            title="클릭하여 대사 음성 다시 듣기"
+            title={t('proposal.replayVoice')}
           >
             <span className="text-xl shrink-0 text-pink-400 group-hover:scale-125 transition-transform animate-bounce">
               🔊
@@ -136,14 +139,14 @@ export function ProposalShortsPlayer({
             onClick={onReject}
             className="game-btn flex-1 py-3 px-4 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-xs sm:text-sm transition-all cursor-pointer"
           >
-            ❌ 거부
+            ❌ {t('proposal.reject')}
           </button>
           <button
             type="button"
             onClick={onAccept}
             className="game-btn flex-1 py-3.5 px-4 rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 hover:from-pink-400 hover:to-amber-400 text-white font-black text-sm sm:text-base shadow-[0_0_25px_rgba(244,63,94,0.7)] transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
           >
-            💍 수락하기
+            💍 {t('proposal.accept')}
           </button>
         </div>
       </div>

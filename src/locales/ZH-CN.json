@@ -826,6 +826,14 @@
     "simulatorHint": "点击画面进入下一段。",
     "close": "关闭 ✕"
   },
+  "proposal": {
+    "kicker": "特别告白活动",
+    "title": "{name}的告白",
+    "badge": "PROPOSE!",
+    "replayVoice": "点击重听台词",
+    "reject": "拒绝",
+    "accept": "接受"
+  },
   "casino": {
     "title": "黄金老虎机",
     "paytable": "赔率表",

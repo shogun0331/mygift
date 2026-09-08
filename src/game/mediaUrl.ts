@@ -10,12 +10,14 @@ export function resolveMediaSrc(url: string | null | undefined, cacheKey?: strin
   if (resolved.startsWith('media://')) {
     const rel = resolved.slice('media://'.length).replace(/^\/+/, '')
     const isHttpProtocol = typeof window !== 'undefined' && window.location.protocol.startsWith('http')
-    const inElectron = typeof window !== 'undefined' && Boolean(window.electronAPI)
+    const inElectron =
+      typeof window !== 'undefined' &&
+      (Boolean(window.electronAPI) || /Electron/i.test(navigator.userAgent || ''))
 
     if (isHttpProtocol) {
       resolved = `/${rel}`
     } else if (inElectron) {
-      // 패키징된 asar 안 영상은 file:// 상대경로로 못 읽음 → 커스텀 프로토콜 유지
+      // 패키징본은 file:// 상대경로(dist)에 캐릭터 미디어가 없음 → media:// 유지
       resolved = `media://${rel}`
     } else {
       resolved = `./${rel}`

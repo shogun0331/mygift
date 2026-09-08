@@ -26,8 +26,13 @@
       "!dist/characters/**",
       "!dist/chapter_assets/**",
       "electron/**/*",
-      "public/**/*",
       "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "public",
+        "to": "public"
+      }
     ],
     "win": {
       "target": [

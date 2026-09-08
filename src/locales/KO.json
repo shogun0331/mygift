@@ -837,6 +837,14 @@
     "simulatorHint": "영상 영역을 클릭하면 다음 비트로 진행합니다.",
     "close": "닫기 ✕"
   },
+  "proposal": {
+    "kicker": "SPECIAL CONFESSION EVENT",
+    "title": "{name}의 고백",
+    "badge": "PROPOSE!",
+    "replayVoice": "클릭하여 대사 음성 다시 듣기",
+    "reject": "거부",
+    "accept": "수락하기"
+  },
   "casino": {
     "title": "골든 슬롯머신",
     "paytable": "배당표",

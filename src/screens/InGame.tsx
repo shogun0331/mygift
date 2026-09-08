@@ -272,8 +272,8 @@ import { ShortsVnPlayer } from './ShortsVnPlayer'
 import { SpecialVacationPlayer } from './SpecialVacationPlayer'
 import { DonationThanksDialogue, type DonationThanksPlay } from './DonationThanksDialogue'
 import { pickRandomDonationThanks } from '../game/donationLines'
+import { fetchPublicJson } from '../game/publicJson'
 import { getPromotionVoiceUrl } from '../game/promotionLines'
-import { characterSoundUrl, resolveMediaSrc } from '../game/mediaUrl'
 import { ProposalShortsPlayer } from './ProposalShortsPlayer'
 import { WeeklySettlementModal } from './WeeklySettlementModal'
 import { EventSimulator } from '../events/EventSimulator'
@@ -306,12 +306,12 @@ const MAX_RECENT_EVENTS = 24
  * events 배열에 이벤트가 없거나 Electron 환경에서 localization이 비어있는 경우 사용.
  */
 async function fetchEventWithLoc(eventId: string): Promise<GameEvent | null> {
-  const base = await fetch(`/chapter_assets/events/${eventId}.json`).then((r) => r.json())
+  const base = await fetchPublicJson<GameEvent>(`/chapter_assets/events/${eventId}.json`)
   if (!base || !base.id) return null
   const loc = mergeEventLocalization(base.localization)
   const results = await Promise.allSettled(
     EVENT_LOCALES.map((lang) =>
-      fetch(`/chapter_assets/events/${eventId}/loc/${lang}.json`).then((r) => r.json()),
+      fetchPublicJson<Record<string, string>>(`/chapter_assets/events/${eventId}/loc/${lang}.json`),
     ),
   )
   for (let i = 0; i < EVENT_LOCALES.length; i++) {
@@ -6603,7 +6603,8 @@ export function InGame({
 
       {proposalPlayCreator ? (
         <ProposalShortsPlayer
-          creatorName={proposalPlayCreator.name}
+          creatorName={characterDisplayName(proposalPlayCreator, locale)}
+          lookupName={proposalPlayCreator.name}
           profileImageUrl={findCharacterProfileUrl(proposalPlayCreator)}
           onAccept={handleProposalAccept}
           onReject={handleProposalReject}

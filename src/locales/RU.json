@@ -826,6 +826,14 @@
     "simulatorHint": "Клик по медиа — дальше.",
     "close": "Закрыть ✕"
   },
+  "proposal": {
+    "kicker": "Особое признание",
+    "title": "Признание {name}",
+    "badge": "PROPOSE!",
+    "replayVoice": "Нажмите, чтобы повторить реплику",
+    "reject": "Отказать",
+    "accept": "Принять"
+  },
   "casino": {
     "title": "Золотой слот",
     "paytable": "Таблица выплат",

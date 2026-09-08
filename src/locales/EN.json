@@ -837,6 +837,14 @@
     "simulatorHint": "Click the media to advance.",
     "close": "Close ✕"
   },
+  "proposal": {
+    "kicker": "SPECIAL CONFESSION EVENT",
+    "title": "{name}'s Confession",
+    "badge": "PROPOSE!",
+    "replayVoice": "Click to replay the line",
+    "reject": "Reject",
+    "accept": "Accept"
+  },
   "casino": {
     "title": "Golden Slot Machine",
     "paytable": "Paytable",

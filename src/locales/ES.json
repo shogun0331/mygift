@@ -826,6 +826,14 @@
     "simulatorHint": "Clic en el media para avanzar.",
     "close": "Cerrar ✕"
   },
+  "proposal": {
+    "kicker": "Evento especial de confesión",
+    "title": "Confesión de {name}",
+    "badge": "PROPOSE!",
+    "replayVoice": "Clic para oír de nuevo",
+    "reject": "Rechazar",
+    "accept": "Aceptar"
+  },
   "casino": {
     "title": "Tragamonedas Dorado",
     "paytable": "Tabla de Pagos",

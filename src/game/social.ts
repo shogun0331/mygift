@@ -257,11 +257,11 @@ export function advanceAndPickSocialEvent(
     // 메인 이벤트가 남아 있으면 확률 판정 없이 무조건 발행 (2턴 캐던스 보장)
     let event: SocialPending
     if (mainDateTarget && mainHUnlockTarget) {
-      event = Math.random() < 0.5 ? buildDatePending(mainDateTarget) : buildDatePending(mainHUnlockTarget)
+      event = (Math.random() < 0.5 ? buildDatePending(mainDateTarget) : buildDatePending(mainHUnlockTarget))!
     } else if (mainDateTarget) {
-      event = buildDatePending(mainDateTarget)
+      event = buildDatePending(mainDateTarget)!
     } else {
-      event = buildDatePending(mainHUnlockTarget!)
+      event = buildDatePending(mainHUnlockTarget!)!
     }
     return { state: allChannels(consumeChannel()), event }
   }

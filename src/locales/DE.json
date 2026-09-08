@@ -826,6 +826,14 @@
     "simulatorHint": "Klick auf das Medium für weiter.",
     "close": "Schließen ✕"
   },
+  "proposal": {
+    "kicker": "Besonderes Geständnis",
+    "title": "Geständnis von {name}",
+    "badge": "PROPOSE!",
+    "replayVoice": "Klicken zum erneuten Anhören",
+    "reject": "Ablehnen",
+    "accept": "Annehmen"
+  },
   "casino": {
     "title": "Goldener Spielautomat",
     "paytable": "Auszahlungstabelle",

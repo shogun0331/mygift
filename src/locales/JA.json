@@ -782,6 +782,14 @@
     "assets": "資産",
     "viewers": "視聴者"
   },
+  "proposal": {
+    "kicker": "スペシャル告白イベント",
+    "title": "{name}の告白",
+    "badge": "PROPOSE!",
+    "replayVoice": "クリックでセリフを再生",
+    "reject": "拒否",
+    "accept": "受け入れる"
+  },
   "casino": {
     "title": "ゴールデンスロット",
     "paytable": "配当表",
