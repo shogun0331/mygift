@@ -102,6 +102,10 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
       return
     }
     if (id === 'exit' && window.confirm(t('menu.confirmExit'))) {
+      if (window.electronAPI?.quitApp) {
+        void window.electronAPI.quitApp()
+        return
+      }
       window.close()
     }
   }, [latestSave, onLoadGame, onNewGame, onOpenEditor, t])
@@ -138,7 +142,7 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
   }, [active, activeLeftPanel, handleSelect, menuList])
 
   return (
-    <main className="game-stage relative flex h-full w-full items-center justify-between overflow-hidden px-[clamp(1.5rem,4vw,5rem)] py-6 select-none">
+    <main className="game-stage relative flex h-full w-full items-stretch justify-between overflow-hidden px-[clamp(1.5rem,4vw,5rem)] py-8 select-none">
       {/* Background Animated Ambient Lights */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-[20%] -left-[10%] h-[70vw] w-[70vw] rounded-full bg-gradient-to-br from-indigo-600/15 via-purple-600/10 to-transparent blur-[120px] animate-pulse duration-1000" />
@@ -182,14 +186,14 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
 
       {/* ── RIGHT MENU STACK: TITLE & CYBER BUTTONS ── */}
       <div
-        className="relative z-10 flex flex-col ml-auto"
+        className="relative z-10 ml-auto flex min-h-0 flex-col justify-center overflow-visible"
         style={{
           width: 'clamp(280px, 22vw + 10vh, 460px)',
           gap: 'clamp(1rem, 2vh, 2rem)',
         }}
       >
         {/* Title Header */}
-        <header className="text-right flex flex-col items-end">
+        <header className="flex flex-col items-end overflow-visible pt-1 text-right">
           {/* Live Pill Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-pink-500/40 bg-pink-950/40 backdrop-blur-md mb-2 shadow-[0_0_15px_rgba(236,72,153,0.3)]">
             <span className="h-2 w-2 rounded-full bg-pink-500 animate-ping" />
@@ -198,24 +202,10 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
             </span>
           </div>
 
-          {/* Main Logo Title */}
-          <h1
-            className="font-black leading-[0.85] tracking-tight text-white drop-shadow-[0_10px_25px_rgba(0,0,0,0.8)]"
-            style={{ fontSize: 'clamp(2.8rem, 3.2vw + 2.5vh, 5.5rem)' }}
-          >
-            <span className="bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">
-              STAR
-            </span>
-            <span className="mt-[0.1em] block text-[0.48em] font-extrabold tracking-[0.12em] bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
-              BROADCASTING CO.
-            </span>
+          <h1 className="menu-wordmark" aria-label="Star Broadcasting Co.">
+            <span className="menu-wordmark-star">STAR</span>
+            <span className="menu-wordmark-rest">BROADCASTING CO.</span>
           </h1>
-
-          {/* Subtitle Badge */}
-          <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] font-semibold text-slate-300 shadow-md">
-            <span>{t('menu.desc')}</span>
-            <span className="text-amber-400 font-bold font-mono">({t('menu.finalVer')})</span>
-          </div>
         </header>
 
         {/* Navigation Buttons List */}
@@ -309,17 +299,8 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
         </nav>
       </div>
 
-      {/* Footer Info */}
-      <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between px-8 py-4 text-[11px] font-mono text-slate-500">
-        <span className="tracking-widest">v1.0 (FINAL VER.)</span>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-indigo-400/40 bg-indigo-500/10 text-[10px] font-bold text-indigo-300">
-            A
-          </span>
-          <span className="font-bold tracking-widest text-slate-300">
-            AURA STUDIOS
-          </span>
-        </div>
+      <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-10 px-8 py-4 text-[11px] font-mono text-slate-500">
+        <span className="tracking-widest">v1.0</span>
       </footer>
     </main>
   )

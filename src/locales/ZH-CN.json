@@ -775,6 +775,7 @@
   },
   "save": {
     "newGameTitle": "开始新公司",
+    "newGameBody": "为你即将执掌的放送局命名。",
     "companyName": "公司名称",
     "companyNamePlaceholder": "STAR",
     "companyNameHint": "仅限英文/数字/空格 · 留空则为 STAR",

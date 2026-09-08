@@ -775,6 +775,7 @@
   },
   "save": {
     "newGameTitle": "Nueva compañía",
+    "newGameBody": "Elige el nombre de la emisora que vas a dirigir.",
     "companyName": "Nombre de la compañía",
     "companyNamePlaceholder": "STAR",
     "companyNameHint": "Solo letras/números/espacios · vacío = STAR",

@@ -766,6 +766,7 @@
   },
   "save": {
     "newGameTitle": "新会社を始める",
+    "newGameBody": "これから率いる放送局の名前を決めてください。",
     "companyName": "会社名",
     "companyNamePlaceholder": "STAR",
     "companyNameHint": "英数字・スペースのみ · 空欄なら STAR",

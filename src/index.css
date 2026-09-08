@@ -606,6 +606,276 @@ html.theme-on-air .game-kicker {
   text-shadow: 0 0 24px rgba(129, 140, 248, 0.25);
 }
 
+.menu-wordmark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin: 0;
+  overflow: visible;
+  font-family: var(--font-display);
+  line-height: 1;
+  text-align: right;
+}
+
+.menu-wordmark-star {
+  display: block;
+  overflow: visible;
+  padding-top: 0.12em;
+  font-size: clamp(3.4rem, 4.2vw + 2.8vh, 6.4rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  background: linear-gradient(115deg, #fff8e7 0%, #fde68a 28%, #fff 52%, #f9a8d4 78%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 18px rgba(251, 191, 36, 0.45)) drop-shadow(0 0 36px rgba(236, 72, 153, 0.28));
+}
+
+.new-company-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 40%, rgba(88, 28, 70, 0.22), transparent 58%),
+    rgba(2, 4, 10, 0.82);
+  backdrop-filter: blur(14px);
+}
+
+.new-company-card {
+  position: relative;
+  width: 100%;
+  max-width: 28rem;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(253, 230, 138, 0.18);
+  background:
+    linear-gradient(180deg, rgba(18, 16, 28, 0.96) 0%, rgba(7, 8, 14, 0.98) 100%);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 1.75rem 1.7rem 1.45rem;
+}
+
+.new-company-card::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #fde68a 22%, #fb7185 55%, #c4b5fd 82%, transparent);
+}
+
+.new-company-card-glow {
+  pointer-events: none;
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 16rem;
+  height: 16rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.12), transparent 68%);
+}
+
+.new-company-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f9a8d4;
+}
+
+.new-company-kicker-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: #fb7185;
+  box-shadow: 0 0 10px rgba(251, 113, 133, 0.8);
+  animation: new-company-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes new-company-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.new-company-title {
+  margin: 0.7rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 2vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+}
+
+.new-company-lead {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #94a3b8;
+}
+
+.new-company-ident {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  margin: 1.25rem 0 1.1rem;
+  padding: 0.85rem 1rem 0.95rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(0, 0, 0, 0.25));
+}
+
+.new-company-ident-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  color: #64748b;
+}
+
+.new-company-ident-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  line-height: 1.15;
+  background: linear-gradient(115deg, #fff8e7 0%, #fde68a 32%, #fff 58%, #f9a8d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.new-company-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #cbd5e1;
+}
+
+.new-company-input {
+  width: 100%;
+  margin-top: 0.45rem;
+  border: 0;
+  border-bottom: 1px solid rgba(253, 230, 138, 0.28);
+  border-radius: 0;
+  background: transparent;
+  padding: 0.65rem 0.1rem 0.7rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #f1f5f9;
+  outline: none;
+}
+
+.new-company-input::placeholder {
+  color: #475569;
+  font-weight: 600;
+}
+
+.new-company-input:focus {
+  border-bottom-color: #fbbf24;
+}
+
+.new-company-hint {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.55rem 0 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.new-company-count {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  color: #94a3b8;
+}
+
+.new-company-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  margin-top: 1.45rem;
+}
+
+.new-company-btn-ghost,
+.new-company-btn-go {
+  cursor: pointer;
+  border-radius: 0.85rem;
+  padding: 0.7rem 1.2rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.new-company-btn-ghost {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.55);
+  color: #cbd5e1;
+}
+
+.new-company-btn-ghost:hover {
+  border-color: rgba(226, 232, 240, 0.35);
+  color: #fff;
+}
+
+.new-company-btn-go {
+  border: 1px solid rgba(253, 224, 71, 0.55);
+  background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+  color: #1c0f05;
+  box-shadow: 0 10px 24px rgba(217, 119, 6, 0.28);
+}
+
+.new-company-btn-go:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.new-company-btn-go:active,
+.new-company-btn-ghost:active {
+  transform: scale(0.97);
+}
+
+.menu-wordmark-rest {
+  display: block;
+  margin-top: 0.28em;
+  padding-bottom: 0.18em;
+  font-size: clamp(0.78rem, 0.55vw + 0.7vh, 1.15rem);
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  text-transform: uppercase;
+  color: #e2e8f0;
+  text-shadow:
+    0 0 12px rgba(244, 114, 182, 0.35),
+    0 2px 10px rgba(0, 0, 0, 0.65);
+  border-bottom: 1px solid transparent;
+  background-image: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.85), rgba(244, 114, 182, 0.7), transparent);
+  background-size: 100% 1px;
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+}
+
 .broadcast-ended-overlay {
   position: fixed;
   inset: 0;

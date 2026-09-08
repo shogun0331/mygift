@@ -179,17 +179,6 @@ export function MainMenuBackgroundSlideshow() {
 
         {/* Fine Scanlines */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.2)_1px,transparent_1px)] bg-[size:100%_4px] opacity-25" />
-
-        {/* ── MINIMALIST GLASS METADATA BADGE (Bottom Left) ── */}
-        <div className="absolute bottom-6 left-8 z-10 flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-slate-950/70 border border-white/10 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-pink-500" />
-          </span>
-          <span className="text-[10px] font-mono font-black tracking-[0.2em] text-slate-300 uppercase">
-            AURA ARCHIVE · MEMORY REEL
-          </span>
-        </div>
       </div>
     </div>
   )

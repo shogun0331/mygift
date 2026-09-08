@@ -786,6 +786,7 @@
   },
   "save": {
     "newGameTitle": "새 회사 시작",
+    "newGameBody": "새롭게 이끌어갈 방송국의 이름을 정하세요.",
     "companyName": "회사 이름",
     "companyNamePlaceholder": "STAR",
     "companyNameHint": "영문/숫자/공백만 입력 가능 · 비우면 STAR",

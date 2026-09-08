@@ -1143,6 +1143,10 @@ ipcMain.handle('open-event-folder', async (event, { eventId }) => {
   }
 })
 
+ipcMain.handle('quit-app', () => {
+  app.quit()
+})
+
 app.on('window-all-closed', () => {
   app.quit()
 })

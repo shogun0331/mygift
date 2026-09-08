@@ -786,6 +786,7 @@
   },
   "save": {
     "newGameTitle": "Start New Company",
+    "newGameBody": "Name the station you will run.",
     "companyName": "Company Name",
     "companyNamePlaceholder": "STAR",
     "companyNameHint": "English letters/numbers/spaces only · blank = STAR",

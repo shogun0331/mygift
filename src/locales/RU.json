@@ -775,6 +775,7 @@
   },
   "save": {
     "newGameTitle": "Новая компания",
+    "newGameBody": "Дайте имя станции, которой вы будете руководить.",
     "companyName": "Название компании",
     "companyNamePlaceholder": "STAR",
     "companyNameHint": "Только латиница/цифры/пробелы · пусто = STAR",

@@ -775,6 +775,7 @@
   },
   "save": {
     "newGameTitle": "Neues Unternehmen",
+    "newGameBody": "Benenne den Sender, den du führen wirst.",
     "companyName": "Firmenname",
     "companyNamePlaceholder": "STAR",
     "companyNameHint": "Nur Buchstaben/Zahlen/Leerzeichen · leer = STAR",

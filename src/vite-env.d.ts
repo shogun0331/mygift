@@ -108,6 +108,7 @@ interface ElectronAPI {
   deleteStaffFolder?: (
     staffId: string
   ) => Promise<{ success: boolean; error?: string }>
+  quitApp?: () => Promise<void>
 }
 
 interface Window {
