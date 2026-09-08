@@ -2,6 +2,7 @@ const { app, BrowserWindow, protocol, Menu, shell, ipcMain, screen } = require('
 const path = require('path')
 const fs = require('fs')
 const { Readable } = require('stream')
+const gamePak = require('./gamePak.cjs')
 
 // 이벤트 대사 파일 키 (src/events/eventLocales.ts 와 동일)
 const EVENT_LOCALES = ['ko', 'en', 'ja', 'zh-cn', 'ru', 'es', 'de']
@@ -123,6 +124,73 @@ function packagedPublicPath(...segments) {
   return joinPublicRoot(roots[roots.length - 1], segments)
 }
 
+let pakState = null
+
+function relKey(...segments) {
+  return splitPublicSegments(segments).join('/')
+}
+
+function overlayFilePath(...segments) {
+  return joinPublicRoot(getOverlayPublicRoot(), segments)
+}
+
+function resolvePackagedAsset(...segments) {
+  const rel = relKey(...segments)
+  if (pakState && pakState.index.has(rel)) {
+    return { kind: 'pak', rel, ...pakState.index.get(rel) }
+  }
+  const loose = packagedPublicPath(...segments)
+  try {
+    if (fs.existsSync(loose) && fs.statSync(loose).isFile()) {
+      return { kind: 'file', filePath: loose, rel }
+    }
+  } catch {
+    // fall through
+  }
+  return null
+}
+
+function resolvePublicAsset(...segments) {
+  const overlay = overlayFilePath(...segments)
+  try {
+    if (fs.existsSync(overlay) && fs.statSync(overlay).isFile()) {
+      return { kind: 'file', filePath: overlay, rel: relKey(...segments) }
+    }
+  } catch {
+    // fall through
+  }
+  return resolvePackagedAsset(...segments)
+}
+
+function readAssetSync(asset) {
+  if (!asset) return null
+  if (asset.kind === 'file') return fs.readFileSync(asset.filePath)
+  return gamePak.readEntrySync(pakState, asset)
+}
+
+function readPublicJson(...segments) {
+  const buf = readAssetSync(resolvePublicAsset(...segments))
+  if (!buf) return null
+  return parseJsonFile(buf)
+}
+
+function readPackagedJson(...segments) {
+  const buf = readAssetSync(resolvePackagedAsset(...segments))
+  if (!buf) return null
+  return parseJsonFile(buf)
+}
+
+function openPackagedPak() {
+  if (!app.isPackaged) return
+  const dat = path.join(process.resourcesPath, 'game.dat')
+  if (!fs.existsSync(dat)) {
+    console.warn('[pak] game.dat missing, falling back to loose public/', dat)
+    return
+  }
+  pakState = gamePak.open(dat)
+  console.log('[pak] loaded', dat, 'entries', pakState.index.size)
+}
+
 /** 읽기: 패키징 후 수정본(userData) 파일이 있으면 그걸, 없으면 패키지 public.
  *  오버레이 디렉터리만 있다고 패키지 폴더 전체를 가리면 events.json 등이 사라진다. */
 function publicPath(...segments) {
@@ -159,12 +227,7 @@ function mediaUrlExists(url) {
   if (rel.startsWith('media://')) rel = rel.slice('media://'.length)
   rel = rel.replace(/^\/+/, '')
   if (!rel) return false
-  const full = publicPath(...rel.split(/[/\\]+/).filter(Boolean))
-  try {
-    return fs.existsSync(full) && fs.statSync(full).isFile()
-  } catch {
-    return false
-  }
+  return Boolean(resolvePublicAsset(...rel.split(/[/\\]+/).filter(Boolean)))
 }
 
 function catalogItemMediaUsable(item) {
@@ -294,23 +357,7 @@ function streamFileResponse(filePath, start, end, status, headers) {
   return new Response(Readable.toWeb(stream), { status, headers })
 }
 
-async function mediaResponseFromFile(filePath, request) {
-  // asar 안 파일은 fs.promises.stat가 간헐적으로 실패할 수 있어 동기 stat 사용
-  let stat
-  try {
-    stat = fs.statSync(filePath)
-  } catch (err) {
-    if (err && err.code === 'ENOENT') {
-      return new Response('Not Found', { status: 404 })
-    }
-    console.error('media stat error:', filePath, err)
-    return new Response('Internal Error', { status: 500 })
-  }
-  if (!stat.isFile()) {
-    return new Response('Not Found', { status: 404 })
-  }
-  const total = stat.size
-  const mime = contentTypeFor(filePath)
+function mediaResponseFromRange(total, mime, request, openStream) {
   const rangeHeader = request.headers.get('Range') || request.headers.get('range')
   const parsed = parseByteRange(rangeHeader, total)
 
@@ -326,11 +373,14 @@ async function mediaResponseFromFile(filePath, request) {
 
   if (parsed) {
     const { start, end } = parsed
-    return streamFileResponse(filePath, start, end, 206, {
-      'Content-Type': mime,
-      'Content-Length': String(end - start + 1),
-      'Content-Range': `bytes ${start}-${end}/${total}`,
-      'Accept-Ranges': 'bytes',
+    return new Response(Readable.toWeb(openStream(start, end)), {
+      status: 206,
+      headers: {
+        'Content-Type': mime,
+        'Content-Length': String(end - start + 1),
+        'Content-Range': `bytes ${start}-${end}/${total}`,
+        'Accept-Ranges': 'bytes',
+      },
     })
   }
 
@@ -345,11 +395,42 @@ async function mediaResponseFromFile(filePath, request) {
     })
   }
 
-  return streamFileResponse(filePath, 0, total - 1, 200, {
-    'Content-Type': mime,
-    'Content-Length': String(total),
-    'Accept-Ranges': 'bytes',
+  return new Response(Readable.toWeb(openStream(0, total - 1)), {
+    status: 200,
+    headers: {
+      'Content-Type': mime,
+      'Content-Length': String(total),
+      'Accept-Ranges': 'bytes',
+    },
   })
+}
+
+async function mediaResponseFromFile(filePath, request) {
+  let stat
+  try {
+    stat = fs.statSync(filePath)
+  } catch (err) {
+    if (err && err.code === 'ENOENT') {
+      return new Response('Not Found', { status: 404 })
+    }
+    console.error('media stat error:', filePath, err)
+    return new Response('Internal Error', { status: 500 })
+  }
+  if (!stat.isFile()) {
+    return new Response('Not Found', { status: 404 })
+  }
+  return mediaResponseFromRange(stat.size, contentTypeFor(filePath), request, (start, end) =>
+    fs.createReadStream(filePath, { start, end }),
+  )
+}
+
+async function mediaResponseFromAsset(asset, request) {
+  if (!asset) return new Response('Not Found', { status: 404 })
+  if (asset.kind === 'file') return mediaResponseFromFile(asset.filePath, request)
+  const mime = contentTypeFor(asset.rel || '')
+  return mediaResponseFromRange(asset.size, mime, request, (start, end) =>
+    gamePak.createEntryStream(pakState, asset, start, end),
+  )
 }
 
 // video range/stream 지원을 위해 ready 이전에 등록해야 함
@@ -409,6 +490,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null)
+  openPackagedPak()
   console.log('[main] isPackaged:', app.isPackaged)
   console.log('[main] appPath:', app.getAppPath())
   console.log('[main] publicRoots:', candidatePublicRoots())
@@ -416,11 +498,14 @@ app.whenReady().then(() => {
   protocol.handle('media', async (request) => {
     try {
       const parsed = new URL(request.url)
-      const filePath = path.normalize(publicPath(parsed.hostname, decodeURIComponent(parsed.pathname)))
-      console.log('[media]', request.url, '=>', filePath, 'exists:', fs.existsSync(filePath))
-
-      // asar 안 파일은 Chromium file:// 로 못 재생함. Node fs로 읽어 프로토콜로 공급.
-      return await mediaResponseFromFile(filePath, request)
+      const asset = resolvePublicAsset(parsed.hostname, decodeURIComponent(parsed.pathname))
+      console.log(
+        '[media]',
+        request.url,
+        '=>',
+        asset ? `${asset.kind}:${asset.rel || asset.filePath}` : 'miss',
+      )
+      return await mediaResponseFromAsset(asset, request)
     } catch (err) {
       if (err && err.code === 'ENOENT') {
         return new Response('Not Found', { status: 404 })
@@ -618,11 +703,11 @@ ipcMain.handle('save-characters-json', async (event, { characters }) => {
 
 ipcMain.handle('load-characters-json', async (event) => {
   try {
-    const packagedChars = readJsonIfExists(packagedPublicPath('characters', 'characters.json'))
+    const packagedChars = readPackagedJson('characters', 'characters.json')
     const overlayChars = app.isPackaged
-      ? readJsonIfExists(joinPublicRoot(getOverlayPublicRoot(), ['characters', 'characters.json']))
+      ? readJsonIfExists(overlayFilePath('characters', 'characters.json'))
       : null
-    const fallbackChars = readJsonIfExists(publicPath('characters', 'characters.json'))
+    const fallbackChars = readPublicJson('characters', 'characters.json')
     const characters = mergeCatalogLists(
       overlayChars || (app.isPackaged ? [] : fallbackChars) || [],
       packagedChars || fallbackChars || [],
@@ -657,11 +742,7 @@ ipcMain.handle('save-common-event-links-json', async (event, { links }) => {
 
 ipcMain.handle('load-common-event-links-json', async (event) => {
   try {
-    const filePath = publicPath('chapter_assets', 'common_event_links.json')
-    if (!fs.existsSync(filePath)) {
-      return { success: true, links: {} }
-    }
-    const links = parseJsonFile(fs.readFileSync(filePath)) || {}
+    const links = readPublicJson('chapter_assets', 'common_event_links.json') || {}
     return { success: true, links }
   } catch (err) {
     return { success: false, error: err.message }
@@ -703,11 +784,7 @@ ipcMain.handle('save-common-sounds-json', async (event, { sounds }) => {
 
 ipcMain.handle('load-common-sounds-json', async (event) => {
   try {
-    const filePath = publicPath('chapter_assets', 'common_sounds.json')
-    if (!fs.existsSync(filePath)) {
-      return { success: true, sounds: [] }
-    }
-    const sounds = parseJsonFile(fs.readFileSync(filePath)) || []
+    const sounds = readPublicJson('chapter_assets', 'common_sounds.json') || []
     return { success: true, sounds: Array.isArray(sounds) ? sounds : [] }
   } catch (err) {
     return { success: false, error: err.message }
@@ -766,11 +843,7 @@ ipcMain.handle('save-bgm-config-json', async (event, { config }) => {
 
 ipcMain.handle('load-bgm-config-json', async (event) => {
   try {
-    const filePath = publicPath('chapter_assets', 'bgm.json')
-    if (!fs.existsSync(filePath)) {
-      return { success: true, config: {} }
-    }
-    const config = parseJsonFile(fs.readFileSync(filePath)) || {}
+    const config = readPublicJson('chapter_assets', 'bgm.json') || {}
     return { success: true, config }
   } catch (err) {
     return { success: false, error: err.message }
@@ -933,11 +1006,7 @@ ipcMain.handle('save-station-grade-config-json', async (event, { config }) => {
 
 ipcMain.handle('load-station-grade-config-json', async (event) => {
   try {
-    const filePath = publicPath('chapter_assets', 'station_grade_config.json')
-    if (!fs.existsSync(filePath)) {
-      return { success: true, config: null }
-    }
-    const config = parseJsonFile(fs.readFileSync(filePath)) || null
+    const config = readPublicJson('chapter_assets', 'station_grade_config.json')
     return { success: true, config }
   } catch (err) {
     return { success: false, error: err.message }
@@ -1027,21 +1096,30 @@ ipcMain.handle('save-events-json', async (event, { events }) => {
   }
 })
 
-function loadEventsFromAssetsDir(assetsDir) {
-  const listFilePath = path.join(assetsDir, 'events.json')
-  const eventsDir = path.join(assetsDir, 'events')
-  if (!fs.existsSync(listFilePath)) return []
+function assembleEventLocalizationFromGet(embedded, getLangJson) {
+  const loc = mergeEventLocalization(embedded)
+  for (const lang of EVENT_LOCALES) {
+    const parsed = getLangJson(lang)
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      loc[lang] = { ...loc[lang], ...parsed }
+    }
+  }
+  return loc
+}
 
-  const metadataList = parseJsonFile(fs.readFileSync(listFilePath)) || []
+function loadEventsFromJsonReader(readJson) {
+  const metadataList = readJson('chapter_assets', 'events.json')
+  if (!Array.isArray(metadataList) || metadataList.length === 0) return []
   const fullEvents = []
 
   for (const meta of metadataList) {
-    const singleFilePath = path.join(eventsDir, `${meta.id}.json`)
-    if (fs.existsSync(singleFilePath)) {
+    if (!meta || !meta.id) continue
+    const singleData = readJson('chapter_assets', 'events', `${meta.id}.json`)
+    if (singleData && typeof singleData === 'object') {
       try {
-        const singleData = parseJsonFile(fs.readFileSync(singleFilePath)) || {}
-        const locDir = path.join(eventsDir, String(meta.id), 'loc')
-        const localization = assembleEventLocalization(singleData.localization, locDir)
+        const localization = assembleEventLocalizationFromGet(singleData.localization, (lang) =>
+          readJson('chapter_assets', 'events', String(meta.id), 'loc', `${lang}.json`),
+        )
         const { localization: _embedded, ...rest } = singleData
         fullEvents.push({
           ...rest,
@@ -1074,6 +1152,13 @@ function loadEventsFromAssetsDir(assetsDir) {
   return fullEvents
 }
 
+function loadEventsFromAssetsDir(assetsDir) {
+  return loadEventsFromJsonReader((...segments) => {
+    const filePath = path.join(assetsDir, ...splitPublicSegments(segments).slice(1))
+    return readJsonIfExists(filePath)
+  })
+}
+
 function mergeEventsById(packagedEvents, overlayEvents) {
   const byId = new Map()
   for (const ev of packagedEvents || []) {
@@ -1088,9 +1173,9 @@ function mergeEventsById(packagedEvents, overlayEvents) {
 ipcMain.handle('load-events-json', async (event) => {
   try {
     if (!app.isPackaged) {
-      return { success: true, events: loadEventsFromAssetsDir(publicPath('chapter_assets')) }
+      return { success: true, events: loadEventsFromJsonReader(readPublicJson) }
     }
-    const packaged = loadEventsFromAssetsDir(packagedPublicPath('chapter_assets'))
+    const packaged = loadEventsFromJsonReader(readPackagedJson)
     const overlay = loadEventsFromAssetsDir(joinPublicRoot(getOverlayPublicRoot(), ['chapter_assets']))
     return { success: true, events: mergeEventsById(packaged, overlay) }
   } catch (err) {
@@ -1162,18 +1247,16 @@ ipcMain.handle('clone-character-file', async (event, { characterId, kind, source
     }
     const folderName = folderMap[kind] || 'assets'
     const dir = publicWritePath('characters', String(characterId), folderName)
-    const sourcePath = publicPath('characters', String(characterId), folderName, sourceFileName)
     const targetPath = path.join(dir, targetFileName)
-
-    if (!fs.existsSync(sourcePath)) {
+    const sourceAsset = resolvePublicAsset('characters', String(characterId), folderName, sourceFileName)
+    const sourceBuf = readAssetSync(sourceAsset)
+    if (!sourceBuf) {
       return { success: false, error: 'source missing' }
     }
-    if (sourcePath !== targetPath) {
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true })
-      }
-      fs.copyFileSync(sourcePath, targetPath)
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
     }
+    fs.writeFileSync(targetPath, sourceBuf)
     return { success: true }
   } catch (err) {
     return { success: false, error: err.message }
@@ -1244,11 +1327,11 @@ ipcMain.handle('save-staff-json', async (event, { staff }) => {
 
 ipcMain.handle('load-staff-json', async () => {
   try {
-    const packagedStaff = readJsonIfExists(packagedPublicPath('staff', 'staff.json'))
+    const packagedStaff = readPackagedJson('staff', 'staff.json')
     const overlayStaff = app.isPackaged
-      ? readJsonIfExists(joinPublicRoot(getOverlayPublicRoot(), ['staff', 'staff.json']))
+      ? readJsonIfExists(overlayFilePath('staff', 'staff.json'))
       : null
-    const fallbackStaff = readJsonIfExists(publicPath('staff', 'staff.json'))
+    const fallbackStaff = readPublicJson('staff', 'staff.json')
     const staff = mergeCatalogLists(
       overlayStaff || (app.isPackaged ? [] : fallbackStaff) || [],
       packagedStaff || fallbackStaff || [],

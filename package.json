@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "concurrently -k --kill-signal SIGTERM -s command-electron -n vite,electron -c cyan,magenta \"vite\" \"wait-on http://localhost:5173 && cross-env ELECTRON_DEV=1 electron .\"",
     "build": "tsc -b && vite build",
-    "build:electron": "tsc -b && vite build && electron-builder --win && (robocopy C:/Users/shogu/AppData/Local/Temp/broadcast-game-dist ./dist-electron /E /NFL /NDL /XD win-unpacked.tmp || exit 0) && (rmdir /s /q ./dist-electron/win-unpacked/resources/app || exit 0)",
+    "build:electron": "tsc -b && vite build && node scripts/pack-public.cjs && electron-builder --win && (robocopy C:/Users/shogu/AppData/Local/Temp/broadcast-game-dist ./dist-electron /E /NFL /NDL /XD win-unpacked.tmp || exit 0) && (rmdir /s /q ./dist-electron/win-unpacked/resources/app || exit 0)",
+    "pack:assets": "node scripts/pack-public.cjs",
     "start": "electron .",
     "lint": "oxlint",
     "preview": "vite preview"
@@ -30,8 +31,8 @@
     ],
     "extraResources": [
       {
-        "from": "public",
-        "to": "public"
+        "from": "build/game.dat",
+        "to": "game.dat"
       }
     ],
     "win": {
