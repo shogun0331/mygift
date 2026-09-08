@@ -684,7 +684,7 @@ function MosaicStrengthSlider() {
   const strength = useMosaicStrength()
   return (
     <div className="mt-auto rounded-xl border border-white/10 bg-black/25 px-3 py-3">
-      <p className="text-[10px] font-bold tracking-wide text-slate-400">블러 강도</p>
+      <p className="text-[10px] font-bold tracking-wide text-slate-400">모자이크 강도</p>
       <p className="mt-0.5 text-[10px] leading-4 text-slate-500">VN · 승급심사 퍼포먼스</p>
       <input
         type="range"

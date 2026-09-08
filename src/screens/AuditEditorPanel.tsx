@@ -661,7 +661,7 @@ function MediaDropBox({
             onClick={() => setIsEditingBlur(true)}
             className="text-[10px] font-bold text-purple-300 hover:text-purple-200 flex items-center gap-1"
           >
-            🔍 블러 ({blurRegions.length})
+            🔍 모자이크 ({blurRegions.length})
           </button>
         ) : null}
       </div>
@@ -702,7 +702,7 @@ function MediaDropBox({
                 className="h-full w-full object-cover"
               />
             )}
-            {blurRegions.length > 0 ? <BlurRegionOverlay regions={blurRegions} /> : null}
+            {blurRegions.length > 0 ? <BlurRegionOverlay regions={blurRegions} src={resolveMediaSrc(url)} kind={isVideo ? 'video' : 'image'} /> : null}
           </>
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center p-3 text-center">

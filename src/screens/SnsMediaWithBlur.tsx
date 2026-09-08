@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { clampBlur, readBlurRegions } from '../events/BlurRegionEditor'
+import { MosaicRegionLayer, readBlurRegions } from '../events/BlurRegionEditor'
 import type { BlurRegion } from '../events/types'
 import { resolveMediaSrc } from '../game/mediaUrl'
-import { useMosaicStrength } from '../game/visualFx'
 import { useTranslation } from '../locales/i18n'
 
 type ObjectFitMode = 'contain' | 'cover' | 'fill'
@@ -52,8 +51,6 @@ export function SnsMediaWithBlur({
   const mediaRef = useRef<HTMLImageElement | HTMLVideoElement | null>(null)
   const [box, setBox] = useState({ w: 0, h: 0 })
   const [natural, setNatural] = useState({ w: 0, h: 0 })
-  const strength = useMosaicStrength()
-  const scale = strength / 50
 
   useEffect(() => {
     const el = boxRef.current
@@ -140,58 +137,14 @@ export function SnsMediaWithBlur({
         />
       )}
       {blurRegions.length > 0 && content.w > 0 && content.h > 0 ? (
-        <div className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
-          {blurRegions.map((region) => {
-            const blurPx = clampBlur(region.blur * scale)
-            if (blurPx <= 0) return null
-            const left = content.x + region.x * content.w
-            const top = content.y + region.y * content.h
-            const width = region.w * content.w
-            const height = region.h * content.h
-            return (
-              <div
-                key={region.id}
-                className="absolute overflow-hidden"
-                style={{ left, top, width, height }}
-              >
-                {kind === 'video' ? (
-                  <video
-                    src={src}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    aria-hidden
-                    className="absolute max-w-none"
-                    style={{
-                      width: content.w,
-                      height: content.h,
-                      left: -region.x * content.w,
-                      top: -region.y * content.h,
-                      objectFit: 'fill',
-                      filter: `blur(${blurPx}px)`,
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={src}
-                    alt=""
-                    aria-hidden
-                    className="absolute max-w-none"
-                    style={{
-                      width: content.w,
-                      height: content.h,
-                      left: -region.x * content.w,
-                      top: -region.y * content.h,
-                      objectFit: 'fill',
-                      filter: `blur(${blurPx}px)`,
-                    }}
-                  />
-                )}
-              </div>
-            )
-          })}
-        </div>
+        <MosaicRegionLayer
+          src={src}
+          kind={kind}
+          regions={blurRegions}
+          box={box}
+          content={content}
+          objectFit="fill"
+        />
       ) : null}
     </div>
   )

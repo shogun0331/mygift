@@ -370,7 +370,7 @@ export function ShortsVnEditorPanel({
                           />
                         )}
                         {beat.blurRegions.length > 0 ? (
-                          <BlurRegionOverlay regions={beat.blurRegions} />
+                          <BlurRegionOverlay regions={beat.blurRegions} src={resolveMediaSrc(beat.mediaUrl)} kind={isVideoUrl(beat.mediaUrl) ? 'video' : 'image'} />
                         ) : null}
                       </div>
 

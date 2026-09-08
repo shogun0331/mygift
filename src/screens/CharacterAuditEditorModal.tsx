@@ -299,7 +299,7 @@ function AuditMediaDropbox({
             ) : (
               <img src={resolveMediaSrc(url)} alt="" className="h-full w-full object-cover" />
             )}
-            {slot.blurRegions.length > 0 ? <BlurRegionOverlay regions={slot.blurRegions} /> : null}
+            {slot.blurRegions.length > 0 ? <BlurRegionOverlay regions={slot.blurRegions} src={resolveMediaSrc(url)} kind={video ? 'video' : 'image'} /> : null}
           </>
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center p-3 text-center">
