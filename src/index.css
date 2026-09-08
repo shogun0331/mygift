@@ -150,7 +150,6 @@ html.theme-on-air .game-stage {
   --line-soft: rgba(255, 42, 116, 0.2);
   --accent: #ff6b9d;
   --accent-strong: #ff2a74;
-  animation: neon-background-pulse 6s ease-in-out infinite;
 }
 
 html.theme-on-air,
@@ -198,26 +197,9 @@ html.theme-on-air .game-panel {
   position: relative;
   overflow: hidden;
   border-width: 1px;
-  animation: neon-border-sparkle 3.5s ease-in-out infinite;
+  border-color: rgba(255, 42, 116, 0.38);
+  box-shadow: 0 0 18px rgba(255, 42, 116, 0.16);
   background: linear-gradient(180deg, rgba(38, 8, 24, 0.8), rgba(8, 2, 8, 0.94));
-}
-
-.game-stage.is-on-air .game-panel::after,
-html.theme-on-air .game-panel::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 40%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.04) 50%,
-    transparent 100%
-  );
-  pointer-events: none;
-  animation: neon-light-sweep 5s ease-in-out infinite;
 }
 
 .game-stage.is-on-air .game-btn-tab.is-active,
@@ -231,15 +213,24 @@ html.theme-on-air .game-btn-tab.is-active {
 html.theme-on-air .stream-on-air.neon-glow-card {
   position: relative;
   overflow: hidden;
-  animation: neon-border-sparkle 3.2s ease-in-out infinite !important;
+  animation: none !important;
+  border-color: rgba(255, 80, 140, 0.55);
+  box-shadow: 0 0 16px rgba(255, 42, 116, 0.28);
   background: #080105 !important;
+}
+
+html.theme-on-air .stream-on-air.neon-glow-card:hover,
+html.theme-on-air .stream-on-air.neon-glow-card:focus-within {
+  animation: neon-border-sparkle 3.2s ease-in-out 1 !important;
 }
 
 .game-stage.is-on-air .live-rank-panel,
 html.theme-on-air .live-rank-panel {
   position: relative;
   overflow: hidden;
-  animation: neon-border-sparkle 3.8s ease-in-out infinite;
+  animation: none;
+  border-color: rgba(255, 42, 116, 0.4);
+  box-shadow: 0 0 16px rgba(255, 42, 116, 0.14);
   background: linear-gradient(180deg, rgba(46, 8, 24, 0.85), rgba(8, 0, 6, 0.96));
 }
 
@@ -1305,7 +1296,7 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   opacity: 0.55;
   mix-blend-mode: overlay;
-  animation: noise-anim 0.05s steps(3) infinite;
+  animation: noise-anim 0.12s steps(3) infinite;
 }
 
 .cctv-gear-fail-tear {
@@ -2125,7 +2116,27 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
 .live-chat-row {
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
+}
+
+.live-chat-row.is-entering {
   will-change: transform, opacity;
+}
+
+.toxic-qte-bar {
+  width: 100%;
+  transform-origin: left center;
+  animation-name: toxic-qte-shrink;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes toxic-qte-shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2134,7 +2145,7 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
   }
 }
 
-/* 방송 중: CCTV 슬롯 무한 애니 절전 (3슬롯 GPU 부하) */
+/* 방송 중: CCTV 슬롯 무한 애니 절전 (6슬롯 GPU 부하) */
 html.theme-on-air .cctv-noise {
   animation: none;
   opacity: 0.03;
@@ -3842,6 +3853,11 @@ html.theme-on-air .audio-bar:nth-child(4) { height: 65%; }
   background-clip: padding-box, border-box;
   background-size: auto, 220% 100%;
   animation: live-rank-gold-shift 3.2s linear infinite;
+}
+
+html.theme-on-air .live-rank-card-inner.is-first {
+  animation: none;
+  background-size: auto, 100% 100%;
 }
 
 .live-rank-gold-ring {

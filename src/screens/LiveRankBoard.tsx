@@ -45,8 +45,14 @@ function RollingMoney({ value, className }: { value: number; className?: string 
     const duration = Math.min(920, 260 + Math.log10(delta + 1) * 220)
     let raf = 0
     let startedAt: number | null = null
+    let lastPaint = 0
     const tick = (now: number) => {
       if (startedAt == null) startedAt = now
+      if (now - lastPaint < 33 && now - startedAt < duration) {
+        raf = requestAnimationFrame(tick)
+        return
+      }
+      lastPaint = now
       const t = Math.min(1, (now - startedAt) / duration)
       const eased = 1 - (1 - t) ** 3
       const next = Math.round(from + (value - from) * eased)
@@ -218,7 +224,7 @@ export function LiveRankBoard({
             return (
               <motion.li
                 key={creator.id}
-                layout
+                layout={Boolean(delta)}
                 initial={false}
                 transition={{ layout: layoutTransition }}
                 className="shrink-0"

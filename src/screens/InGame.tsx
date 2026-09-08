@@ -874,7 +874,10 @@ export function InGame({
   )
   const liveRevenueByCreatorRef = useRef(liveRevenueByCreator)
   liveRevenueByCreatorRef.current = liveRevenueByCreator
-  const [liveWeekProgress, setLiveWeekProgress] = useState(0)
+  const [liveWeekClock, setLiveWeekClock] = useState<{
+    origin: number
+    dayMs: number
+  } | null>(null)
   const [weeklyTrendType, setWeeklyTrendType] = useState<CreatorStatType>(
     () => boot?.weeklyTrendType ?? rollRandomWeeklyTrendType(),
   )
@@ -1768,8 +1771,12 @@ export function InGame({
       return next
     })
   }, [studioSlots])
-  const liveWeekProgressRef = useRef(liveWeekProgress)
-  liveWeekProgressRef.current = liveWeekProgress
+  function currentLiveWeekProgress() {
+    const plan = dayPlanRef.current
+    const startedAt = dayStartedAtRef.current
+    if (!plan || startedAt == null || plan.dayMs <= 0) return 0
+    return Math.max(0, Math.min(1, (performance.now() - startedAt) / plan.dayMs))
+  }
   assetsRef.current = assets
   livePlayVideoByCreatorRef.current = livePlayVideoByCreator
   speedRef.current = speed
@@ -2086,7 +2093,7 @@ export function InGame({
     liveConditionDrainByCreatorIdRef.current = condDrainByCreatorId
     setLiveConditionDrainByCreatorId(condDrainByCreatorId)
     broadcastBlockedSinceRef.current = {}
-    setLiveWeekProgress(0)
+    setLiveWeekClock({ origin: dayStartedAtRef.current, dayMs: weekMs })
     if (monthWeekIndexRef.current === 0) {
       spokenCreatorsThisBroadcastRef.current.clear()
     }
@@ -2373,7 +2380,7 @@ export function InGame({
     const baseGapMs =
       donationBatchRef.current.size > 2 || feedExtraQueueRef.current.length > 4 ? 360 : 520
     // 60FPS 유지를 위한 최대 채팅 속도 상한선 (최소 160ms 이상 간격 유지)
-    const gapMs = Math.max(160, (baseGapMs * viewerSpeedMult) / speedMult)
+    const gapMs = Math.max(200, (baseGapMs * viewerSpeedMult) / speedMult)
     if (lastFeedEmitAtRef.current > 0 && now - lastFeedEmitAtRef.current < gapMs) return
 
     const hasDonation = donationBatchRef.current.size > 0
@@ -3145,7 +3152,7 @@ export function InGame({
     if (broadcastPhaseRef.current !== 'live') return
     setBroadcastPhase('prep')
     setLivePlayVideoByCreator({})
-    setLiveWeekProgress(0)
+    setLiveWeekClock(null)
     setLiveStaminaDrainByCreatorId({})
     dayPlanRef.current = null
     dayStartedAtRef.current = null
@@ -3529,7 +3536,7 @@ export function InGame({
     weekAccumRef.current = createWeekAccumulator(nextMonthNumber)
     setBroadcastPhase('prep')
     setLivePlayVideoByCreator({})
-    setLiveWeekProgress(0)
+    setLiveWeekClock(null)
     setLiveStaminaDrainByCreatorId({})
     dayPlanRef.current = null
     dayStartedAtRef.current = null
@@ -4269,7 +4276,7 @@ export function InGame({
         ? previewLiveConditionScore(
             scoreOf(target),
             liveDrain,
-            liveWeekProgressRef.current,
+            currentLiveWeekProgress(),
           )
         : scoreOf(target)
     if (currentEffectiveScore >= 100) return
@@ -4650,6 +4657,7 @@ export function InGame({
       cursor += 1
     }
     dayEventCursorRef.current = cursor
+    setLiveWeekClock({ origin: dayStartedAtRef.current, dayMs: nextWeekMs })
   }, [speed, broadcastPhase])
 
   // 진상 QTE·VN 오버레이 중 방송 시계 일시정지
@@ -4684,6 +4692,10 @@ export function InGame({
     return () => {
       if (dayStartedAtRef.current != null) {
         dayStartedAtRef.current += performance.now() - pausedAt
+        const plan = dayPlanRef.current
+        if (plan) {
+          setLiveWeekClock({ origin: dayStartedAtRef.current, dayMs: plan.dayMs })
+        }
       }
     }
   }, [liveClockPaused])
@@ -4699,23 +4711,6 @@ export function InGame({
     pendingWeekAdvanceAfterToxicRef.current = false
     advanceBroadcastWeek()
   }, [toxicQteActive, broadcastPhase])
-
-  // CCTV 스테미나: 한 주 동안 소모량을 서서히 반영
-  useEffect(() => {
-    if (broadcastPhase !== 'live') {
-      setLiveWeekProgress(0)
-      return
-    }
-    if (liveClockPaused) return
-    const id = window.setInterval(() => {
-      const plan = dayPlanRef.current
-      const startedAt = dayStartedAtRef.current
-      if (!plan || startedAt == null || plan.dayMs <= 0) return
-      const elapsed = performance.now() - startedAt
-      setLiveWeekProgress(Math.max(0, Math.min(1, elapsed / plan.dayMs)))
-    }, 500)
-    return () => window.clearInterval(id)
-  }, [broadcastPhase, liveClockPaused])
 
   // 주 진행: 실시간 후원 스폰 및 피드 이벤트 동적 공개
   useEffect(() => {
@@ -5453,7 +5448,8 @@ export function InGame({
             livePlayVideoByCreator={livePlayVideoByCreator}
             liveEvents={liveEvents}
             liveRevenueByCreator={liveRevenueByCreator}
-            liveWeekProgress={liveWeekProgress}
+            liveWeekClock={liveWeekClock}
+            liveClockPaused={liveClockPaused}
             liveStaminaDrainByCreatorId={liveStaminaDrainByCreatorId}
             liveConditionDrainByCreatorId={liveConditionDrainByCreatorId}
             weeklyTrendType={weeklyTrendType}

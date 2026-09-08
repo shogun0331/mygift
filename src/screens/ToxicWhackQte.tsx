@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { CONDITION_CRASH_QTE_MS } from '../game/condition'
 import { useTranslation } from '../locales/i18n'
 
@@ -19,21 +19,11 @@ type ToxicWhackQteProps = {
 export function ToxicWhackQte({ item, onResolve }: ToxicWhackQteProps) {
   const { t } = useTranslation()
   const resolvedRef = useRef(false)
-  const [progress, setProgress] = useState(1)
 
   useEffect(() => {
     resolvedRef.current = false
-    setProgress(1)
-    const started = performance.now()
-    const tick = window.setInterval(() => {
-      const left = Math.max(0, 1 - (performance.now() - started) / CONDITION_CRASH_QTE_MS)
-      setProgress(left)
-      if (left <= 0) {
-        window.clearInterval(tick)
-        finish(false)
-      }
-    }, 40)
-    return () => window.clearInterval(tick)
+    const timer = window.setTimeout(() => finish(false), CONDITION_CRASH_QTE_MS)
+    return () => window.clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.id])
 
@@ -56,8 +46,8 @@ export function ToxicWhackQte({ item, onResolve }: ToxicWhackQteProps) {
         aria-hidden
       >
         <div
-          className="h-full bg-rose-400 transition-[width] duration-75 ease-linear"
-          style={{ width: `${progress * 100}%` }}
+          className="toxic-qte-bar h-full bg-rose-400"
+          style={{ animationDuration: `${CONDITION_CRASH_QTE_MS}ms` }}
         />
       </div>
 

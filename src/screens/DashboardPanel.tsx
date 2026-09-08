@@ -78,8 +78,9 @@ type DashboardPanelProps = {
   liveEvents?: DayEvent[]
   /** 방송 월간 누적 실시간 수익 (크리에이터 id → USD) */
   liveRevenueByCreator?: Record<string, number>
-  /** 이번 주 경과 0~1. 스테미나 미리보기용 */
-  liveWeekProgress?: number
+  /** 이번 주 시작 시각(performance.now)과 주 길이 — 카드 내부에서만 진행도 갱신 */
+  liveWeekClock?: { origin: number; dayMs: number } | null
+  liveClockPaused?: boolean
   /** 이번 주 종료 시 깎일 스테미나 (크리에이터 id) */
   liveStaminaDrainByCreatorId?: Record<string, number>
   /** 이번 주 종료 시 깎일 컨디션 (크리에이터 id) */
@@ -124,6 +125,8 @@ type StreamCreatorView = {
   viewers: string
   live: boolean
   preview: string
+  weeklyStaminaDrain?: number
+  weeklyConditionDrain?: number
   tag?: { text: string; tone: 'amber' | 'rose' | 'cyan' | 'violet' }
 }
 
@@ -140,7 +143,6 @@ function toBroadcastSlot(
   broadcastPhase: BroadcastPhase,
   locale: Locale,
   livePlayUrl?: string | null,
-  weekProgress = 0,
   weeklyDrain = 0,
   weeklyConditionDrain = 0,
 ): BroadcastSlotView {
@@ -162,10 +164,7 @@ function toBroadcastSlot(
   const baseStamina = owned
     ? Math.min(staminaMax, owned.stamina)
     : staminaMax
-  const stamina =
-    broadcastPhase === 'live' && weeklyDrain > 0
-      ? previewLiveStamina(baseStamina, staminaMax, weeklyDrain, weekProgress)
-      : baseStamina
+  const stamina = baseStamina
   const idleVideoUrl =
     (owned ? findLevelIdleVideoUrl(owned) : null) ||
     slot.assignment.idleVideoUrl ||
@@ -180,10 +179,7 @@ function toBroadcastSlot(
     findCharacterIconUrl(owned) || slot.assignment.profileImageUrl || null
 
   const baseCondScore = owned ? scoreOf(owned) : 60
-  const conditionScore =
-    broadcastPhase === 'live' && weeklyConditionDrain > 0
-      ? previewLiveConditionScore(baseCondScore, weeklyConditionDrain, weekProgress)
-      : baseCondScore
+  const conditionScore = baseCondScore
   const condition = owned ? conditionFromScore(conditionScore) : 'normal'
 
   return {
@@ -211,6 +207,8 @@ function toBroadcastSlot(
       viewers: '—',
       live: broadcastPhase === 'live',
       preview: visuals.preview,
+      weeklyStaminaDrain: weeklyDrain,
+      weeklyConditionDrain,
     },
   }
 }
@@ -470,6 +468,26 @@ function formatSystemFeedText(
   return text
 }
 
+function useLiveBarProgress(
+  origin: number | null | undefined,
+  dayMs: number | undefined,
+  paused: boolean,
+) {
+  const [progress, setProgress] = useState(0)
+  useEffect(() => {
+    if (origin == null || !dayMs || dayMs <= 0) {
+      setProgress(0)
+      return
+    }
+    const read = () => Math.max(0, Math.min(1, (performance.now() - origin) / dayMs))
+    setProgress(read())
+    if (paused) return
+    const id = window.setInterval(() => setProgress(read()), 250)
+    return () => window.clearInterval(id)
+  }, [origin, dayMs, paused])
+  return progress
+}
+
 /** 스크롤로 전체 피드를 밀어 올림 — 캐릭터 늘어도 줄마다 layout thrash 없음 */
 function LiveChatFeed({
   liveEvents,
@@ -538,16 +556,14 @@ function LiveChatFeed({
               return (
                 <motion.li
                   key={event.id}
-                  layout="position"
                   initial={{ opacity: 0, y: 12, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{
-                    layout: { type: 'spring', stiffness: 480, damping: 32 },
                     opacity: { duration: 0.16 },
                     y: { duration: 0.16, ease: 'easeOut' },
                   }}
-                  className={`live-chat-row relative overflow-hidden rounded-xl text-xs shrink-0 ${tone.card}${
+                  className={`live-chat-row is-entering relative overflow-hidden rounded-xl text-xs shrink-0 ${tone.card}${
                     isSuper ? ' is-super' : ''
                   }`}
                 >
@@ -600,16 +616,14 @@ function LiveChatFeed({
               return (
                 <motion.li
                   key={event.id}
-                  layout="position"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{
-                    layout: { type: 'spring', stiffness: 480, damping: 32 },
                     opacity: { duration: 0.12 },
                     y: { duration: 0.12, ease: 'easeOut' },
                   }}
-                  className="live-chat-row flex shrink-0 items-start gap-1.5 rounded px-2 py-0.5 text-xs transition-colors hover:bg-white/[0.04]"
+                  className="live-chat-row is-entering flex shrink-0 items-start gap-1.5 rounded px-2 py-0.5 text-xs transition-colors hover:bg-white/[0.04]"
                 >
                   {userBadge}
                   <span className={`shrink-0 text-[11px] ${userColorClass}`}>
@@ -625,16 +639,14 @@ function LiveChatFeed({
             return (
               <motion.li
                 key={event.id}
-                layout="position"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{
-                  layout: { type: 'spring', stiffness: 480, damping: 32 },
                   opacity: { duration: 0.12 },
                   y: { duration: 0.12, ease: 'easeOut' },
                 }}
-                className="live-chat-row flex shrink-0 items-center gap-1.5 rounded-lg border border-cyan-500/20 bg-gradient-to-r from-slate-900/90 via-cyan-950/40 to-slate-900/90 px-2.5 py-1 text-xs text-cyan-200 shadow-sm"
+                className="live-chat-row is-entering flex shrink-0 items-center gap-1.5 rounded-lg border border-cyan-500/20 bg-gradient-to-r from-slate-900/90 via-cyan-950/40 to-slate-900/90 px-2.5 py-1 text-xs text-cyan-200 shadow-sm"
               >
                 <span className="rounded bg-cyan-500/20 px-1 py-0.2 text-[9px] font-extrabold text-cyan-300 border border-cyan-400/30">
                   SYSTEM
@@ -651,7 +663,7 @@ function LiveChatFeed({
   )
 }
 
-export function DashboardPanel({
+export const DashboardPanel = memo(function DashboardPanel({
   slots: studioSlots,
   ownedCreators = [],
   registeredStaff = [],
@@ -660,7 +672,8 @@ export function DashboardPanel({
   livePlayVideoByCreator = {},
   liveEvents = [],
   liveRevenueByCreator = {},
-  liveWeekProgress = 0,
+  liveWeekClock = null,
+  liveClockPaused = false,
   liveStaminaDrainByCreatorId = {},
   liveConditionDrainByCreatorId = {},
   assets = 0,
@@ -737,7 +750,6 @@ export function DashboardPanel({
         broadcastPhase,
         locale,
         creatorId ? livePlayVideoByCreator[creatorId] : undefined,
-        liveWeekProgress,
         creatorId ? liveStaminaDrainByCreatorId[creatorId] ?? 0 : 0,
         creatorId ? liveConditionDrainByCreatorId[creatorId] ?? 0 : 0,
       )
@@ -748,10 +760,45 @@ export function DashboardPanel({
     broadcastPhase,
     locale,
     livePlayVideoByCreator,
-    liveWeekProgress,
     liveStaminaDrainByCreatorId,
     liveConditionDrainByCreatorId,
   ])
+
+  const burstsByCreatorId = useMemo(() => {
+    const map: Record<string, RevenueBurst[]> = {}
+    for (const burst of revenueBursts) {
+      const id = burst.creatorId
+      if (!id) continue
+      ;(map[id] ??= []).push(burst)
+    }
+    return map
+  }, [revenueBursts])
+  const crashesByCreatorId = useMemo(() => {
+    const map: Record<string, ConditionCrashFxItem[]> = {}
+    for (const crash of conditionCrashes) {
+      ;(map[crash.creatorId] ??= []).push(crash)
+    }
+    return map
+  }, [conditionCrashes])
+  const qteByCreatorId = useMemo(() => {
+    const map: Record<string, ToxicWhackQteItem> = {}
+    for (const qte of toxicQtes) map[qte.creatorId] = qte
+    return map
+  }, [toxicQtes])
+  const gearBurstsBySlotId = useMemo(() => {
+    const map: Record<string, GearFailBurstItem[]> = {}
+    for (const burst of gearFailBursts) {
+      ;(map[burst.slotId] ??= []).push(burst)
+    }
+    return map
+  }, [gearFailBursts])
+  const staffBySlotId = useMemo(() => {
+    const map: Record<string, StaffActionFxItem[]> = {}
+    for (const action of staffActions) {
+      ;(map[action.slotId] ??= []).push(action)
+    }
+    return map
+  }, [staffActions])
   const assigned = studioSlots.filter(
     (slot) => slot.status === 'assigned' && Boolean(slot.assignment),
   )
@@ -823,24 +870,14 @@ export function DashboardPanel({
             managerState={managerState}
             broadcastPhase={broadcastPhase}
             assets={assets}
-            revenueBursts={
-              slot.creator
-                ? revenueBursts.filter((burst) => burst.creatorId === slot.creator!.id)
-                : []
-            }
-            conditionCrashes={
-              slot.creator
-                ? conditionCrashes.filter((crash) => crash.creatorId === slot.creator!.id)
-                : []
-            }
-            toxicQte={
-              slot.creator
-                ? toxicQtes.find((qte) => qte.creatorId === slot.creator!.id) ?? null
-                : null
-            }
+            liveWeekClock={liveWeekClock}
+            liveClockPaused={liveClockPaused}
+            revenueBursts={slot.creator ? burstsByCreatorId[slot.creator.id] ?? [] : []}
+            conditionCrashes={slot.creator ? crashesByCreatorId[slot.creator.id] ?? [] : []}
+            toxicQte={slot.creator ? qteByCreatorId[slot.creator.id] ?? null : null}
             gearBroken={Boolean(slot.status === 'assigned' && slotGearById[slot.id]?.broken)}
-            gearFailBursts={gearFailBursts.filter((burst) => burst.slotId === slot.id)}
-            staffActions={staffActions.filter((action) => action.slotId === slot.id)}
+            gearFailBursts={gearBurstsBySlotId[slot.id] ?? []}
+            staffActions={staffBySlotId[slot.id] ?? []}
             onBurstDone={dismissBurst}
             onConditionCare={onConditionCare}
             onConditionCrashDone={onConditionCrashDone}
@@ -936,7 +973,7 @@ export function DashboardPanel({
       </aside>
     </div>
   )
-}
+})
 
 const StreamCard = memo(function StreamCard({
   slot,
@@ -958,6 +995,8 @@ const StreamCard = memo(function StreamCard({
   onStaffActionDone,
   onToxicQteResolve,
   onRepairSlot,
+  liveWeekClock = null,
+  liveClockPaused = false,
 }: {
   slot: BroadcastSlotView
   slotId: string
@@ -978,10 +1017,37 @@ const StreamCard = memo(function StreamCard({
   onStaffActionDone?: (id: string) => void
   onToxicQteResolve?: (id: string, success: boolean) => void
   onRepairSlot?: (slotId: string) => void
+  liveWeekClock?: { origin: number; dayMs: number } | null
+  liveClockPaused?: boolean
 }) {
   const { t } = useTranslation()
+  const weekProgress = useLiveBarProgress(
+    liveWeekClock?.origin,
+    liveWeekClock?.dayMs,
+    liveClockPaused,
+  )
   const creator = slot.creator
-  const blocked = Boolean(creator && !creator.canBroadcast)
+  const weeklyDrain = creator?.weeklyStaminaDrain ?? 0
+  const weeklyCondDrain = creator?.weeklyConditionDrain ?? 0
+  const shownStamina =
+    creator && creator.live && weeklyDrain > 0
+      ? previewLiveStamina(creator.stamina, creator.staminaMax, weeklyDrain, weekProgress)
+      : creator?.stamina
+  const shownConditionScore =
+    creator && creator.live && weeklyCondDrain > 0
+      ? previewLiveConditionScore(creator.conditionScore, weeklyCondDrain, weekProgress)
+      : creator?.conditionScore
+  const blocked = Boolean(
+    creator &&
+      !canBroadcastByStamina(shownStamina ?? creator.stamina),
+  )
+  const playVideoUrl = creator?.playVideoUrl || null
+  const mediaRevision = creator?.mediaRevision
+  const playableSrc = playVideoUrl
+    ? resolveMediaSrc(playVideoUrl, mediaRevision ?? playVideoUrl)
+    : null
+  const isLive = Boolean(creator?.live)
+  const feedOff = gearBroken || (isLive && blocked)
   const badge =
     gearBroken
       ? {
@@ -1001,21 +1067,57 @@ const StreamCard = memo(function StreamCard({
           : STATUS_BADGE[slot.status]
   const staminaPct =
     creator && creator.staminaMax > 0
-      ? Math.max(0, Math.min(100, (creator.stamina / creator.staminaMax) * 100))
+      ? Math.max(0, Math.min(100, ((shownStamina ?? creator.stamina) / creator.staminaMax) * 100))
       : 0
   const staminaTone = staminaToneClass(staminaPct, blocked)
-  const conditionFull = Boolean(creator && creator.conditionScore >= 100)
+  const conditionFull = Boolean(creator && (shownConditionScore ?? creator.conditionScore) >= 100)
   const careCost = creator ? calcConditionFullCareCost(creator.grade) : 0
   const canAffordCare = assets >= careCost
   const canCare = Boolean(creator && onConditionCare && !conditionFull && canAffordCare)
   const hasCareManager = Boolean(managerState?.equippedBySlotId[slot.id]?.care)
+  const shownCondition =
+    shownConditionScore != null ? conditionFromScore(shownConditionScore) : creator?.condition
   const [careSpendFlash, setCareSpendFlash] = useState<string | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const videoWrapRef = useRef<HTMLDivElement>(null)
+  const videoInViewRef = useRef(true)
 
   useEffect(() => {
     if (!careSpendFlash) return
     const id = window.setTimeout(() => setCareSpendFlash(null), 1400)
     return () => window.clearTimeout(id)
   }, [careSpendFlash])
+
+  useEffect(() => {
+    const wrap = videoWrapRef.current
+    if (!wrap) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        videoInViewRef.current = Boolean(entry?.isIntersecting)
+        const video = videoRef.current
+        if (!video) return
+        const shouldPlay = !feedOff && !document.hidden && videoInViewRef.current
+        if (shouldPlay) void video.play().catch(() => {})
+        else video.pause()
+      },
+      { threshold: 0.08 },
+    )
+    io.observe(wrap)
+    return () => io.disconnect()
+  }, [feedOff, slot.status, playableSrc])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    const sync = () => {
+      const shouldPlay = !feedOff && !document.hidden && videoInViewRef.current
+      if (shouldPlay) void video.play().catch(() => {})
+      else video.pause()
+    }
+    sync()
+    document.addEventListener('visibilitychange', sync)
+    return () => document.removeEventListener('visibilitychange', sync)
+  }, [feedOff, playableSrc])
 
   if (slot.status === 'locked') {
     return (
@@ -1118,13 +1220,6 @@ const StreamCard = memo(function StreamCard({
     )
   }
 
-  const playVideoUrl = creator?.playVideoUrl || null
-  const mediaRevision = creator?.mediaRevision
-  const playableSrc = playVideoUrl
-    ? resolveMediaSrc(playVideoUrl, mediaRevision ?? playVideoUrl)
-    : null
-  const isLive = Boolean(creator?.live)
-  const feedOff = gearBroken || (isLive && blocked)
   const crashing = conditionCrashes.length > 0
   const staffing = staffActions.length > 0
 
@@ -1141,14 +1236,16 @@ const StreamCard = memo(function StreamCard({
       }`}
     >
       <div
+        ref={videoWrapRef}
         className={`relative aspect-[2/1] w-full shrink-0 overflow-hidden bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
       >
         {playableSrc ? (
           <video
+            ref={videoRef}
             key={playableSrc}
             src={playableSrc}
             className={`absolute inset-0 z-0 h-full w-full object-cover${feedOff ? ' cctv-feed-dead' : ''}`}
-            autoPlay
+            autoPlay={false}
             loop
             muted
             playsInline
@@ -1365,24 +1462,24 @@ const StreamCard = memo(function StreamCard({
           {creator ? (
             <div>
               <div className="mb-0.5 flex items-center justify-between text-[10px]">
-                <span className={`flex items-center gap-1.5 font-bold ${CONDITION_ROW_CLASS[creator.condition]}`}>
+                <span className={`flex items-center gap-1.5 font-bold ${CONDITION_ROW_CLASS[shownCondition ?? creator.condition]}`}>
                   <span
-                    className={`condition-status-dot h-1.5 w-1.5 shrink-0 rounded-full shadow-[0_0_6px_currentColor] ${CONDITION_DOT_CLASS[creator.condition]}`}
+                    className={`condition-status-dot h-1.5 w-1.5 shrink-0 rounded-full shadow-[0_0_6px_currentColor] ${CONDITION_DOT_CLASS[shownCondition ?? creator.condition]}`}
                     aria-hidden
                   />
                   <span className="text-[11px]" aria-hidden>
-                    {CONDITION_ICON[creator.condition]}
+                    {CONDITION_ICON[shownCondition ?? creator.condition]}
                   </span>
-                  <span>{t(CONDITION_LABEL_KEY[creator.condition])}</span>
+                  <span>{t(CONDITION_LABEL_KEY[shownCondition ?? creator.condition])}</span>
                 </span>
                 <span className="font-extrabold tabular-nums text-slate-300 text-[10px]">
-                  {creator.conditionScore}%
+                  {shownConditionScore ?? creator.conditionScore}%
                 </span>
               </div>
               <div className="h-1.5 overflow-hidden rounded-full bg-slate-900 border border-white/10 shadow-inner">
                 <div
-                  className={`h-full rounded-full transition-[width] duration-300 ease-out ${CONDITION_DOT_CLASS[creator.condition]} shadow-[0_0_8px_currentColor]`}
-                  style={{ width: `${creator.conditionScore}%` }}
+                  className={`h-full rounded-full transition-[width] duration-300 ease-out ${CONDITION_DOT_CLASS[shownCondition ?? creator.condition]} shadow-[0_0_8px_currentColor]`}
+                  style={{ width: `${shownConditionScore ?? creator.conditionScore}%` }}
                 />
               </div>
             </div>
@@ -1408,7 +1505,9 @@ const StreamCard = memo(function StreamCard({
               >
                 <span>{blocked ? `🚨 ${t('creator.staminaDepleted')}` : 'Stamina'}</span>
                 <span className="tabular-nums">
-                  {creator ? `${Math.round(creator.stamina)}/${creator.staminaMax}` : '—'}
+                  {creator
+                    ? `${Math.round(shownStamina ?? creator.stamina)}/${creator.staminaMax}`
+                    : '—'}
                 </span>
               </div>
             </div>
