@@ -664,6 +664,15 @@ export function unlockAchievement(id: string): boolean {
   }
 
   enqueueUnlockToast(achDef)
+
+  const unlockName = achDef.characterAction
+    ? `${achDef.characterNameFallback || achDef.characterId || 'character'} ${achDef.characterAction}`
+    : achDef.titleKey
+  void window.electronAPI?.trackAchievementUnlock?.({
+    id,
+    name: unlockName,
+  })
+
   return true
 }
 

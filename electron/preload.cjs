@@ -47,5 +47,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadStaffJson: () => ipcRenderer.invoke('load-staff-json'),
   deleteStaffFile: (staffId, fileName) => ipcRenderer.invoke('delete-staff-file', { staffId, fileName }),
   deleteStaffFolder: (staffId) => ipcRenderer.invoke('delete-staff-folder', { staffId }),
+  getDeviceLockStatus: () => ipcRenderer.invoke('device-lock-status'),
+  trackAchievementUnlock: (payload) => ipcRenderer.invoke('track-achievement-unlock', payload),
   quitApp: () => ipcRenderer.invoke('quit-app'),
 })

@@ -276,7 +276,7 @@ import { fetchPublicJson } from '../game/publicJson'
 import { getPromotionVoiceUrl } from '../game/promotionLines'
 import { ProposalShortsPlayer } from './ProposalShortsPlayer'
 import { WeeklySettlementModal } from './WeeklySettlementModal'
-import { EventSimulator } from '../events/EventSimulator'
+import { GameEventSimulator } from '../events/EventSimulator'
 import type { CommonEventLinks } from '../events/commonEventLinks'
 import type { GameEvent } from '../events/types'
 import { EVENT_LOCALES, mergeEventLocalization } from '../events/eventLocales'
@@ -1003,11 +1003,6 @@ export function InGame({
     Boolean(boot?.stationAuditTarget),
   )
   const [selectedAuditCreators, setSelectedAuditCreators] = useState<any[] | null>(null)
-  const [stationAuditCooldown, setStationAuditCooldown] = useState<number>(
-    boot?.stationAuditCooldown ?? 0,
-  )
-  const stationAuditCooldownRef = useRef(stationAuditCooldown)
-  stationAuditCooldownRef.current = stationAuditCooldown
 
   const staffScoutCooldownRef = useRef(boot?.scout?.staffScoutCooldown ?? 1)
   const [staffScoutAvailable, setStaffScoutAvailable] = useState(
@@ -1450,7 +1445,7 @@ export function InGame({
 
   const isStationPromotionEligible = useMemo(() => {
     if (broadcastPhase === 'live') return false
-    if (stationAuditCooldown > 0 || stationAuditTarget) return false
+    if (stationAuditTarget) return false
     const totalSns = ownedCreators.reduce((sum, c) => sum + (c.snsSubscribers ?? 0), 0)
     const review = applyStationReview(
       stationGrade,
@@ -1479,7 +1474,6 @@ export function InGame({
     unlockedSlotCount,
     assets,
     stationGradeConfig,
-    stationAuditCooldown,
     stationAuditTarget,
   ])
 
@@ -1871,7 +1865,6 @@ export function InGame({
       liveRevenueByCreator: liveRevenueByCreatorRef.current,
       casinoTurnCount: casinoTurnCountRef.current,
       showCasinoModal: showCasinoModalRef.current,
-      stationAuditCooldown: stationAuditCooldownRef.current,
       notifiedPromotionExams: notifiedPromotionExamsRef.current,
       notifiedStationReviewKey: stationReviewOfferedRef.current,
       lastHActionMonth: lastHActionMonthRef.current,
@@ -3537,11 +3530,6 @@ export function InGame({
       }
       setLiveEvents((prev) => [casinoOpenEvent, ...prev].slice(0, MAX_RECENT_EVENTS))
     }
-    if (stationAuditCooldownRef.current > 0) {
-      const nextCooldown = Math.max(0, stationAuditCooldownRef.current - 1)
-      stationAuditCooldownRef.current = nextCooldown
-      setStationAuditCooldown(nextCooldown)
-    }
     weekAccumRef.current = createWeekAccumulator(nextMonthNumber)
     setBroadcastPhase('prep')
     setLivePlayVideoByCreator({})
@@ -3605,7 +3593,7 @@ export function InGame({
     if (pendingStationReviewRef.current) {
       pendingStationReviewRef.current = false
       pendingScoutAfterRankRef.current = openScout
-      if (stationAuditCooldownRef.current <= 0 && !stationAuditTargetRef.current) {
+      if (!stationAuditTargetRef.current) {
         const review = evaluateCurrentStationReview()
         if (review.promoted && review.status.next && review.status.next !== 'tiny') {
           const key = `${review.status.current}:${review.status.next}`
@@ -6192,9 +6180,6 @@ export function InGame({
               setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
               return
             }
-            // 방송국 승급 실패 시: 2턴의 여유(쿨다운)를 부여하여 크리에이터 체력 회복 및 재정비 기회 제공
-            stationAuditCooldownRef.current = 2
-            setStationAuditCooldown(2)
             continueMonthEndFlow()
           }}
           onClose={() => {
@@ -6275,10 +6260,10 @@ export function InGame({
       ) : null}
 
       {promoteEventPlay ? (
-        <EventSimulator
+        <GameEventSimulator
           key={`promote-event-${promoteEventPlay.id}`}
           event={promoteEventPlay}
-          mode="game"
+          watchedEventIds={watchedEventIds}
           onClose={() => {
             onEventWatched?.(promoteEventPlay.id)
             setPromoteEventPlay(null)
@@ -6291,7 +6276,6 @@ export function InGame({
             }
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={true}
         />
       ) : null}
 
@@ -6332,10 +6316,10 @@ export function InGame({
       ) : null}
 
       {endingEventPlay ? (
-        <EventSimulator
+        <GameEventSimulator
           key={`ending-vn-${endingEventPlay.id}`}
           event={endingEventPlay}
-          mode="game"
+          watchedEventIds={watchedEventIds}
           onClose={() => {
             onEventWatched?.(endingEventPlay.id)
             setEndingEventPlay(null)
@@ -6343,21 +6327,19 @@ export function InGame({
             continueAfterMonthModals(openScout)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={true}
         />
       ) : null}
 
       {introEventPlay ? (
-        <EventSimulator
+        <GameEventSimulator
           key={`intro-vn-${introEventPlay.id}`}
           event={introEventPlay}
-          mode="game"
+          watchedEventIds={watchedEventIds}
           onClose={() => {
             onEventWatched?.(introEventPlay.id)
             setIntroEventPlay(null)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={true}
         />
       ) : null}
 
@@ -6413,13 +6395,12 @@ export function InGame({
       ) : null}
 
       {scoutEventState && (
-        <EventSimulator
+        <GameEventSimulator
           key={scoutEventState.currentEvent.id}
           event={scoutEventState.currentEvent}
-          mode="game"
+          watchedEventIds={watchedEventIds}
           onClose={handleScoutEventFinished}
           registeredCharacters={registeredCharacters}
-          allowSkip={true}
         />
       )}
 
@@ -6432,10 +6413,10 @@ export function InGame({
       ) : null}
 
       {vipEventPlay ? (
-        <EventSimulator
+        <GameEventSimulator
           key={`vip-${vipEventPlay.offer.creatorId}-${vipEventPlay.event.id}`}
           event={vipEventPlay.event}
-          mode="game"
+          watchedEventIds={watchedEventIds}
           onClose={() => {
             const play = vipEventPlay
             onEventWatched?.(play.event.id)
@@ -6443,7 +6424,6 @@ export function InGame({
             applyVipAcceptRewards(play.offer, play.payout)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={true}
         />
       ) : null}
 
@@ -6482,17 +6462,16 @@ export function InGame({
       ) : null}
 
       {socialUi?.mode === 'dateVn' ? (
-        <EventSimulator
+        <GameEventSimulator
           key={`date-${socialUi.pending.creatorId}-${socialUi.pending.step}-${socialUi.event.id}`}
           event={socialUi.event}
-          mode="game"
+          watchedEventIds={watchedEventIds}
           onClose={() => {
             if (socialUi.mode !== 'dateVn') return
             onEventWatched?.(socialUi.event.id)
             completeDateEvent(socialUi.pending)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={true}
         />
       ) : null}
 
@@ -6511,17 +6490,16 @@ export function InGame({
       ) : null}
 
       {socialUi?.mode === 'hRetryVn' ? (
-        <EventSimulator
+        <GameEventSimulator
           key={`hretry-${socialUi.pending.creatorId}-${socialUi.event.id}`}
           event={socialUi.event}
-          mode="game"
+          watchedEventIds={watchedEventIds}
           onClose={() => {
             if (socialUi.mode !== 'hRetryVn') return
             onEventWatched?.(socialUi.event.id)
             applyHRetryAccept(socialUi.pending)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={true}
         />
       ) : null}
 
@@ -6540,16 +6518,15 @@ export function InGame({
       ) : null}
 
       {salaryEventPlay?.salaryEvent ? (
-        <EventSimulator
+        <GameEventSimulator
           key={`salary-${salaryEventPlay.creatorId}-${salaryEventPlay.salaryEvent.id}`}
           event={salaryEventPlay.salaryEvent}
-          mode="game"
+          watchedEventIds={watchedEventIds}
           onClose={() => {
             onEventWatched?.(salaryEventPlay.salaryEvent!.id)
             applyPromotedSalary(salaryEventPlay)
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={true}
         />
       ) : null}
 
@@ -6621,17 +6598,16 @@ export function InGame({
       ) : null}
 
       {proposalEndingVnEvent ? (
-        <EventSimulator
+        <GameEventSimulator
           key={`proposal-ending-vn-${proposalEndingVnEvent.id}`}
           event={proposalEndingVnEvent}
-          mode="game"
+          watchedEventIds={watchedEventIds}
           onClose={() => {
             onEventWatched?.(proposalEndingVnEvent.id)
             setProposalEndingVnEvent(null)
             onBack?.()
           }}
           registeredCharacters={registeredCharacters}
-          allowSkip={true}
         />
       ) : null}
 

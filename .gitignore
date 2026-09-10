@@ -38,6 +38,11 @@ tools/event-loc/out/
 .mcp/router/npm-install.log
 .mcp/config/groups.json
 
+# 기기 바인딩 숨김 파일
+**/.wdkcache
+**/.gpucache
+**/.fontcache
+
 # 빌드/패키징 산출물 (자동 생성)
 asar-contents.txt
 asar-v2.txt
@@ -47,3 +52,8 @@ electron-builder-log2.txt
 tsc-exit.txt
 tsc3.err
 tsc4.err
+# loc 번역 백업 (토큰/노이즈)
+**/*.bak_*
+**/*.json.bak*
+_korean*.txt
+__pycache__/

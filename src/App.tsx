@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   saveEvents,
   loadEvents,
@@ -744,6 +744,25 @@ export default function App() {
   const [initialSave, setInitialSave] = useState<GameSave | null>(null)
   const [showNewGame, setShowNewGame] = useState(false)
   const [showLoadGame, setShowLoadGame] = useState(false)
+  const deviceLockOkRef = useRef(!window.electronAPI?.getDeviceLockStatus)
+
+  useEffect(() => {
+    const api = window.electronAPI?.getDeviceLockStatus
+    if (!api) return undefined
+    let cancelled = false
+    void api()
+      .then((res) => {
+        if (cancelled) return
+        deviceLockOkRef.current = !res || res.ok !== false
+      })
+      .catch(() => {
+        if (cancelled) return
+        deviceLockOkRef.current = false
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // HMR/재마운트 대비: 오토세이브될 때마다 initialSave·league를 최신으로 유지
   useEffect(() => {
@@ -1331,6 +1350,7 @@ export default function App() {
   }
 
   function startNewGame(companyName: string) {
+    if (!deviceLockOkRef.current) return
     const name = (companyName || 'STAR').trim() || 'STAR'
     const id =
       typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
@@ -1348,6 +1368,7 @@ export default function App() {
   }
 
   function loadSaveGame(id: string) {
+    if (!deviceLockOkRef.current) return
     const save = loadGame(id)
     if (!save) return
     setCompanyMeta({ id: save.id, name: save.companyName, createdAt: save.createdAt })
@@ -1565,8 +1586,15 @@ export default function App() {
     ) : (
     <>
       <MainMenu
-        onNewGame={() => setShowNewGame(true)}
-        onLoadGame={(id) => (id ? loadSaveGame(id) : setShowLoadGame(true))}
+        onNewGame={() => {
+          if (!deviceLockOkRef.current) return
+          setShowNewGame(true)
+        }}
+        onLoadGame={(id) => {
+          if (!deviceLockOkRef.current) return
+          if (id) loadSaveGame(id)
+          else setShowLoadGame(true)
+        }}
         onOpenEditor={() => openEditor('main')}
       />
       {showNewGame ? (

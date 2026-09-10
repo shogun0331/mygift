@@ -14,6 +14,7 @@ import {
   lookupLocalizedString,
   normalizeEventLocale,
 } from './eventLocales'
+import { shouldShowVnSkip } from './vnSkip'
 
 type EventSimulatorProps = {
   event: GameEvent
@@ -22,8 +23,10 @@ type EventSimulatorProps = {
   returnLabel?: string
   onClose: () => void
   registeredCharacters?: RegisteredCharacter[]
-  /** 인게임에서 이미 1회 시청한 이벤트면 스킵 버튼 표시 */
+  /** true/false면 강제. 생략 시 모드·DEV·alreadyWatched로 결정 */
   allowSkip?: boolean
+  /** 인게임에서 이미 1회 이상 시청했는지 */
+  alreadyWatched?: boolean
 }
 
 type ParsedChoice = {
@@ -348,9 +351,11 @@ export function EventSimulator({
   returnLabel,
   onClose,
   registeredCharacters = [],
-  allowSkip = true,
+  allowSkip,
+  alreadyWatched = false,
 }: EventSimulatorProps) {
   const { t, locale } = useTranslation()
+  const showSkip = shouldShowVnSkip({ mode, alreadyWatched, allowSkip })
   // 모든 노드 추출 및 평탄화
   const flatNodes = useMemo(() => flattenNodes(event.nodes), [event.nodes])
 
@@ -1022,7 +1027,7 @@ export function EventSimulator({
                   <IconVnBack />
                 </button>
                 <div className="vn-chrome-tools">
-                  {allowSkip ? (
+                  {showSkip ? (
                     <button
                       type="button"
                       className="vn-skip"
@@ -1474,3 +1479,24 @@ export function EventSimulator({
   if (typeof document === 'undefined') return shell
   return createPortal(shell, document.body)
 }
+
+type GameEventSimulatorProps = Omit<EventSimulatorProps, 'mode' | 'allowSkip' | 'alreadyWatched'> & {
+  watchedEventIds?: readonly string[]
+}
+
+/** 인게임 VN: 실제 빌드에서는 1회 이상 시청한 이벤트만 스킵 */
+export function GameEventSimulator({
+  watchedEventIds = [],
+  event,
+  ...props
+}: GameEventSimulatorProps) {
+  return (
+    <EventSimulator
+      {...props}
+      event={event}
+      mode="game"
+      alreadyWatched={watchedEventIds.includes(event.id)}
+    />
+  )
+}
+

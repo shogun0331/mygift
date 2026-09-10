@@ -8,6 +8,7 @@ import { SettingsPanel } from './SettingsPanel'
 import { EndingGalleryPanel } from './EndingGalleryPanel'
 import { AchievementsPanel } from './AchievementsPanel'
 import { MainMenuBackgroundSlideshow } from './MainMenuBackgroundSlideshow'
+import { DeviceLockModal } from './DeviceLockModal'
 
 type MenuId =
   | 'continue'
@@ -48,6 +49,10 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
   const latestSave = saves.length > 0 ? saves[0] : null
   const [active, setActive] = useState<MenuId>(latestSave ? 'continue' : 'new')
   const [activeLeftPanel, setActiveLeftPanel] = useState<LeftPanelType>(null)
+  const [deviceLock, setDeviceLock] = useState<'pending' | 'ok' | 'blocked'>(() =>
+    window.electronAPI?.getDeviceLockStatus ? 'pending' : 'ok',
+  )
+  const [showDeviceError, setShowDeviceError] = useState(false)
 
   // If latestSave disappears, switch active from 'continue' to 'new'
   useEffect(() => {
@@ -58,6 +63,30 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
 
   const showEditor = import.meta.env.DEV
   useGameBgm('menu')
+
+  useEffect(() => {
+    let cancelled = false
+    const api = window.electronAPI?.getDeviceLockStatus
+    if (!api) return undefined
+    void api()
+      .then((res) => {
+        if (cancelled) return
+        if (res && res.ok === false) {
+          setDeviceLock('blocked')
+          setShowDeviceError(true)
+          return
+        }
+        setDeviceLock('ok')
+      })
+      .catch(() => {
+        if (cancelled) return
+        setDeviceLock('blocked')
+        setShowDeviceError(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const menuList = useMemo(() => {
     const list: MenuId[] = []
@@ -70,6 +99,17 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
   const handleSelect = useCallback((id: MenuId) => {
     playSfx('ui-click')
     setActive(id)
+    const blocksPlay =
+      id === 'continue' ||
+      id === 'new' ||
+      id === 'load' ||
+      id === 'gallery' ||
+      id === 'achievements' ||
+      id === 'edit'
+    if (deviceLock !== 'ok' && blocksPlay) {
+      if (deviceLock === 'blocked') setShowDeviceError(true)
+      return
+    }
     if (id === 'continue' && latestSave) {
       setActiveLeftPanel(null)
       onLoadGame(latestSave.id)
@@ -108,7 +148,7 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
       }
       window.close()
     }
-  }, [latestSave, onLoadGame, onNewGame, onOpenEditor, t])
+  }, [deviceLock, latestSave, onLoadGame, onNewGame, onOpenEditor, t])
 
   // Keyboard navigation for menu
   useEffect(() => {
@@ -166,6 +206,10 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
         {activeLeftPanel === 'load' && (
           <SaveListPanel
             onLoad={(id) => {
+              if (deviceLock !== 'ok') {
+                if (deviceLock === 'blocked') setShowDeviceError(true)
+                return
+              }
               setActiveLeftPanel(null)
               onLoadGame(id)
             }}
@@ -302,6 +346,10 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
       <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-10 px-8 py-4 text-[11px] font-mono text-slate-500">
         <span className="tracking-widest">v1.0</span>
       </footer>
+
+      {showDeviceError ? (
+        <DeviceLockModal onDismiss={() => setShowDeviceError(false)} />
+      ) : null}
     </main>
   )
 }

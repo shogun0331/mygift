@@ -3,6 +3,8 @@ const path = require('path')
 const fs = require('fs')
 const { Readable } = require('stream')
 const gamePak = require('./gamePak.cjs')
+const deviceLock = require('./deviceLock.cjs')
+const gameAnalytics = require('./gameAnalytics.cjs')
 
 // 이벤트 대사 파일 키 (src/events/eventLocales.ts 와 동일)
 const EVENT_LOCALES = ['ko', 'en', 'ja', 'zh-cn', 'ru', 'es', 'de']
@@ -601,6 +603,11 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: displayWorkArea.width,
     height: displayWorkArea.height,
+    icon: path.join(
+      __dirname,
+      '..',
+      app.isPackaged ? 'dist/icon.png' : 'build/icon.ico',
+    ),
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
@@ -662,6 +669,7 @@ app.whenReady().then(() => {
   })
 
   createWindow()
+  void gameAnalytics.startSession(app)
 
   app.on('activate', () => {
     if (isDev) return
@@ -1614,6 +1622,28 @@ ipcMain.handle('open-event-folder', async (event, { eventId }) => {
   } catch (err) {
     return { success: false, error: err.message }
   }
+})
+
+ipcMain.handle('device-lock-status', () => deviceLock.verifyDeviceLock(app))
+
+ipcMain.handle('track-achievement-unlock', (_event, payload) => {
+  const id = payload && payload.id
+  const name = payload && payload.name
+  void gameAnalytics.trackAchievementUnlock(id, name)
+  return { success: true }
+})
+
+let gaQuitStarted = false
+app.on('before-quit', (event) => {
+  if (gaQuitStarted) return
+  event.preventDefault()
+  gaQuitStarted = true
+  Promise.race([
+    gameAnalytics.endSession(),
+    new Promise((resolve) => setTimeout(resolve, 2500)),
+  ]).finally(() => {
+    app.quit()
+  })
 })
 
 ipcMain.handle('quit-app', () => {

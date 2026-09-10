@@ -116,6 +116,8 @@ interface ElectronAPI {
   deleteStaffFolder?: (
     staffId: string
   ) => Promise<{ success: boolean; error?: string }>
+  getDeviceLockStatus?: () => Promise<{ ok: boolean; reason?: string }>
+  trackAchievementUnlock?: (payload: { id: string; name: string }) => Promise<{ success: boolean }>
   quitApp?: () => Promise<void>
 }
 
