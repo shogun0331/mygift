@@ -442,7 +442,7 @@ export function CasinoSlotMachine({
               VIP CYBER CASINO
             </span>
             <h1 className="text-lg sm:text-2xl font-black tracking-wider bg-gradient-to-r from-yellow-100 via-amber-300 to-amber-200 bg-clip-text text-transparent drop-shadow">
-              골든 슬롯머신
+              GOLDEN SLOT MACHINE
             </h1>
           </div>
         </div>
@@ -551,11 +551,11 @@ export function CasinoSlotMachine({
               {/* SPIN TURN PROGRESS BADGE */}
               <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-400/30 backdrop-blur-sm space-y-1.5 text-center">
                 <span className="text-xs font-black text-amber-300 uppercase tracking-wider block">
-                  🎰 슬롯 도전 진행 상황
+                  🎰 {t('casino.slotChallengeProgress')}
                 </span>
                 <div className="flex items-center justify-center gap-2 font-mono text-sm font-black text-yellow-200">
-                  <span>턴 {currentTurn} / 3</span>
-                  <span className="text-xs text-amber-400 font-bold">(남은 회전: {spinsLeft}회)</span>
+                  <span>{t('casino.turnCount', { currentTurn })}</span>
+                  <span className="text-xs text-amber-400 font-bold">{t('casino.spinsRemaining', { spins: spinsLeft })}</span>
                 </div>
               </div>
             </div>
