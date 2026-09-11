@@ -7,7 +7,7 @@ const os = require('os')
 const path = require('path')
 
 const ROOT = path.resolve(__dirname, '..')
-const PACKAGED_PROFILE_NAMES = ['BroadcastGame', 'broadcast-game', 'com.broadcast.game']
+const PACKAGED_PROFILE_NAMES = ['BroadcastGame', 'broadcast-game', 'com.broadcast.game', 'BroadcastGame-review']
 const CHROMIUM_DIR_NAMES = new Set([
   'Local Storage',
   'IndexedDB',

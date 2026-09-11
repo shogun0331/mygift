@@ -6,7 +6,9 @@ import App from './App.tsx'
 import { I18nProvider } from './locales/i18n'
 import { initUiClickSounds } from './game/uiSfx'
 import { initDisplayMode } from './game/displayMode'
+import { seedReviewBuildProgress } from './game/reviewSeed'
 
+seedReviewBuildProgress()
 initUiClickSounds()
 initDisplayMode()
 

@@ -687,3 +687,143 @@ export function playItemUseSound() {
   }
 }
 
+/** QWAPPY 로고 스플래시 — 귀여운 글자 팝 + 소프트 징글 */
+export function playQwappyLogoSound() {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.72
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+
+    // 1) 부드러운 등장 후쉬
+    {
+      const bufferSize = Math.floor(ctx.sampleRate * 0.35)
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize)
+      }
+      const noise = ctx.createBufferSource()
+      noise.buffer = buffer
+      const filter = ctx.createBiquadFilter()
+      filter.type = 'bandpass'
+      filter.frequency.setValueAtTime(900, now)
+      filter.frequency.exponentialRampToValueAtTime(2200, now + 0.28)
+      filter.Q.value = 0.7
+      const gain = ctx.createGain()
+      gain.gain.setValueAtTime(0, now)
+      gain.gain.linearRampToValueAtTime(vol * 0.12, now + 0.04)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35)
+      noise.connect(filter)
+      filter.connect(gain)
+      gain.connect(ctx.destination)
+      noise.start(now)
+      noise.stop(now + 0.35)
+    }
+
+    // 2) 글자 팝에 맞춘 퐁퐁 플링크 (CSS delay: 80 + i*70ms)
+    const letterFreqs = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5]
+    letterFreqs.forEach((freq, i) => {
+      const start = 0.08 + i * 0.07
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, now + start)
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.04, now + start + 0.08)
+      gain.gain.setValueAtTime(0, now + start)
+      gain.gain.linearRampToValueAtTime(vol * 0.28, now + start + 0.012)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + 0.18)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start(now + start)
+      osc.stop(now + start + 0.2)
+
+      const harm = ctx.createOscillator()
+      const harmGain = ctx.createGain()
+      harm.type = 'triangle'
+      harm.frequency.setValueAtTime(freq * 2, now + start)
+      harmGain.gain.setValueAtTime(0, now + start)
+      harmGain.gain.linearRampToValueAtTime(vol * 0.08, now + start + 0.01)
+      harmGain.gain.exponentialRampToValueAtTime(0.001, now + start + 0.12)
+      harm.connect(harmGain)
+      harmGain.connect(ctx.destination)
+      harm.start(now + start)
+      harm.stop(now + start + 0.14)
+    })
+
+    // 3) 로고 완성 소프트 메이저 징글
+    const resolve = [
+      { freq: 523.25, start: 0.55, duration: 0.35, level: 0.22 },
+      { freq: 659.25, start: 0.55, duration: 0.4, level: 0.2 },
+      { freq: 783.99, start: 0.62, duration: 0.45, level: 0.24 },
+      { freq: 1046.5, start: 0.7, duration: 0.7, level: 0.3 },
+      { freq: 1318.51, start: 0.78, duration: 0.55, level: 0.16 },
+    ]
+    resolve.forEach(({ freq, start, duration, level }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(freq, now + start)
+      gain.gain.setValueAtTime(0, now + start)
+      gain.gain.linearRampToValueAtTime(vol * level, now + start + 0.03)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start(now + start)
+      osc.stop(now + start + duration + 0.02)
+    })
+
+    // 4) 꼬리 스파클
+    ;[1567.98, 1975.53, 2349.32].forEach((freq, i) => {
+      const start = 1.05 + i * 0.07
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, now + start)
+      gain.gain.setValueAtTime(0, now + start)
+      gain.gain.linearRampToValueAtTime(vol * 0.14, now + start + 0.008)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + 0.22)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start(now + start)
+      osc.stop(now + start + 0.24)
+    })
+  } catch {
+    // ignore
+  }
+}
+
+/** 로고 씬 퇴장 — 짧은 소프트 차임 */
+export function playQwappyLogoExitSound() {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.55
+    if (vol <= 0.01) return
+
+    const now = ctx.currentTime
+    const notes = [
+      { freq: 880.0, start: 0, duration: 0.18 },
+      { freq: 659.25, start: 0.06, duration: 0.22 },
+      { freq: 523.25, start: 0.12, duration: 0.28 },
+    ]
+    notes.forEach(({ freq, start, duration }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, now + start)
+      gain.gain.setValueAtTime(0, now + start)
+      gain.gain.linearRampToValueAtTime(vol * 0.18, now + start + 0.015)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start(now + start)
+      osc.stop(now + start + duration)
+    })
+  } catch {
+    // ignore
+  }
+}
+

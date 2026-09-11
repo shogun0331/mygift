@@ -51,9 +51,11 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
   // Synchronous text retrieval - guaranteed non-empty on first render frame
   const text = getDialogueText(tier, locale, index, isLoss)
 
-  const voiceUrl = isLoss
-    ? `/casino/voice/L0${index + 1}.wav`
-    : `/casino/voice/${String((tier - 1) * 5 + index + 1).padStart(2, '0')}.wav`
+  const voiceFile = isLoss
+    ? `L0${index + 1}.wav`
+    : `${String((tier - 1) * 5 + index + 1).padStart(2, '0')}.wav`
+  // Electron 패키지(file:// / game.dat)와 Vite dev 모두에서 동작하도록 media:// 경유
+  const voiceUrl = resolveMediaSrc(`media://casino/voice/${voiceFile}`)
 
   const isVideo =
     dealerMediaType === 'video' ||

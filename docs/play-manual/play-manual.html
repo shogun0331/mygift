@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>STAR BROADCASTING CO. — Play Manual</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 14mm 12mm 14mm 12mm;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #050508;
+      color: #e6e6ea;
+      font-family: "Segoe UI", "Hiragino Sans", "Noto Sans JP", "Malgun Gothic", sans-serif;
+      line-height: 1.65;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page-break { break-before: page; page-break-before: always; }
+    .cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 48px 24px;
+      background:
+        radial-gradient(ellipse at 50% 20%, rgba(168, 85, 247, 0.18), transparent 55%),
+        radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.12), transparent 50%),
+        #050508;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .cover-kicker {
+      letter-spacing: 0.45em;
+      font-size: 11px;
+      color: #c4a6ff;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .cover h1 {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #fff;
+    }
+    .cover h2 {
+      margin: 14px 0 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: #f0a8c8;
+      letter-spacing: 0.2em;
+    }
+    .cover-line {
+      width: 120px;
+      height: 1px;
+      margin: 28px auto;
+      background: linear-gradient(90deg, transparent, #c4a6ff, #f0a8c8, transparent);
+    }
+    .cover-sub {
+      max-width: 520px;
+      font-size: 13px;
+      color: #a1a1aa;
+    }
+    .cover-foot {
+      margin-top: 64px;
+      font-size: 11px;
+      color: #71717a;
+      letter-spacing: 0.06em;
+    }
+    .wrap { padding: 8px 4px 28px; max-width: 860px; margin: 0 auto; }
+    .lang-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border: 1px solid rgba(196,166,255,0.45);
+      border-radius: 999px;
+      color: #d8c4ff;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      margin-bottom: 10px;
+    }
+    h1.sec {
+      font-size: 22px;
+      margin: 0 0 8px;
+      color: #fff;
+      letter-spacing: 0.04em;
+    }
+    h2 {
+      font-size: 15px;
+      margin: 22px 0 8px;
+      color: #f0b4d0;
+      border-left: 3px solid #c084fc;
+      padding-left: 10px;
+    }
+    h3 {
+      font-size: 13px;
+      margin: 16px 0 6px;
+      color: #c4b5fd;
+    }
+    p, li { font-size: 12.2px; color: #d4d4d8; }
+    ul { padding-left: 18px; margin: 6px 0 10px; }
+    li { margin: 3px 0; }
+    .lead {
+      color: #a1a1aa;
+      font-size: 12.5px;
+      margin: 0 0 16px;
+    }
+    .goal-box {
+      background: linear-gradient(135deg, rgba(88,28,135,0.35), rgba(15,15,20,0.9));
+      border: 1px solid rgba(192,132,252,0.35);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin: 12px 0 18px;
+    }
+    .goal-box strong { color: #f5d0fe; }
+    .shot {
+      margin: 14px 0 22px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .shot img {
+      width: 100%;
+      display: block;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.55);
+    }
+    .cap {
+      margin-top: 7px;
+      font-size: 10.5px;
+      color: #a78bfa;
+      letter-spacing: 0.02em;
+    }
+    .cap span { color: #71717a; }
+    .toc {
+      columns: 2;
+      column-gap: 24px;
+      font-size: 12px;
+      color: #d4d4d8;
+    }
+    .toc div { margin: 4px 0; break-inside: avoid; }
+    .num { color: #c084fc; margin-right: 6px; }
+    .footer-note {
+      margin-top: 28px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 10px;
+      color: #52525b;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER -->
+  <section class="cover">
+    <div class="cover-kicker">QWAPPY GAMES</div>
+    <h1>STAR BROADCASTING CO.</h1>
+    <h2>PLAY MANUAL</h2>
+    <div class="cover-line"></div>
+    <p class="cover-sub">
+      美少女アダルト放送局経営シミュレーション<br />
+      Beautiful Girl Adult Broadcast Station Management Sim<br />
+      미소녀 성인 방송국 경영 시뮬레이션
+    </p>
+    <p class="cover-foot">© 2026 Qwappy Games. All rights reserved.<br />JA / EN / KO</p>
+  </section>
+
+  <!-- VISUAL INDEX -->
+  <section class="wrap page-break">
+    <div class="lang-badge">VISUAL GUIDE</div>
+    <h1 class="sec">Screenshots / 画面紹介 / 화면 소개</h1>
+    <p class="lead">本マニュアルで参照する主要画面です。各言語説明は同じ番号を指します。</p>
+
+    <div class="shot">
+      <img src="images/01-broadcast.jpg" alt="Live Broadcast Dashboard" />
+      <div class="cap">Fig.01 — LIVE BROADCAST / 配信中ダッシュボード / 방송 중 대시보드</div>
+    </div>
+    <div class="shot">
+      <img src="images/02-studio.png" alt="Studio Slots" />
+      <div class="cap">Fig.02 — STUDIO SLOTS / スタジオ配置 / 스튜디오 슬롯</div>
+    </div>
+    <div class="shot">
+      <img src="images/03-sns.png" alt="SNS" />
+      <div class="cap">Fig.03 — SNS PROMOTION / SNS投稿 / SNS 홍보</div>
+    </div>
+    <div class="shot">
+      <img src="images/04-ranking.png" alt="Ranking" />
+      <div class="cap">Fig.04 — STATION RANKING / 放送局ランキング / 방송국 등급·랭킹</div>
+    </div>
+    <div class="shot">
+      <img src="images/05-date.jpg" alt="Date VN" />
+      <div class="cap">Fig.05 — DATE / VN EVENT / デートイベント / 데이트 VN</div>
+    </div>
+    <div class="shot">
+      <img src="images/06-exam.png" alt="Promotion Exam" />
+      <div class="cap">Fig.06 — PROMOTION EXAM / 昇格審査 / 승급 심사</div>
+    </div>
+    <div class="shot">
+      <img src="images/07-deck.png" alt="Exam Deck" />
+      <div class="cap">Fig.07 — EXAM DECK / 審査デッキ編成 / 심사 카드 덱</div>
+    </div>
+    <div class="shot">
+      <img src="images/08-staff.png" alt="Staff" />
+      <div class="cap">Fig.08 — STAFF BAY / スタッフ配置 / 스태프 배치</div>
+    </div>
+  </section>
+
+  <!-- ===================== JAPANESE ===================== -->
+  <section class="wrap page-break">
+    <div class="lang-badge">日本語</div>
+    <h1 class="sec">プレイマニュアル</h1>
+    <p class="lead">美少女クリエイターをスカウトし、視聴者を集め、放送局を「一流企業（トップランク）」へ育てる経営シミュレーションです。</p>
+
+    <div class="goal-box">
+      <strong>最終目標：</strong> 個人事業からスタートし、視聴者数を伸ばしてランキングを上げ、最終的に<strong>一流企業（上位ランク）</strong>の美少女アダルト放送局を築くこと。
+    </div>
+
+    <h2>1. 起動方法</h2>
+    <ul>
+      <li>配布されたゲーム実行ファイルを起動します（Windows）。</li>
+      <li>ロゴ画面のあと、メインメニューが表示されます。</li>
+      <li><strong>NEW GAME</strong> で新規開始、<strong>LOAD</strong> でセーブデータを読み込みます。</li>
+      <li>言語は設定から切り替え可能です（日本語 / English / 한국어 ほか）。</li>
+    </ul>
+
+    <h2>2. 基本操作</h2>
+    <ul>
+      <li>操作は主に<strong>マウス（クリック / ドラッグ＆ドロップ）</strong>です。</li>
+      <li>画面下部タブで主要メニューを切り替えます：DASHBOARD / CREATOR / STUDIO / RANKING など。</li>
+      <li>モーダル（SNS・審査・デートなど）は画面上のボタンやクエスト案内から開けます。</li>
+      <li>音量は設定、または各イベント画面のスライダーで調整できます。</li>
+    </ul>
+
+    <h2>3. コア・ループ（進め方）</h2>
+    <ol>
+      <li><strong>スカウト</strong>：美少女クリエイターを獲得する。</li>
+      <li><strong>スタジオ配置</strong>：スロットに配置して配信枠を確保する（Fig.02）。</li>
+      <li><strong>放送運営</strong>：同時配信で視聴者・売上を伸ばす（Fig.01）。</li>
+      <li><strong>育成 / SNS</strong>：コンディション管理とSNS投稿で人気を上げる（Fig.03）。</li>
+      <li><strong>ランク上昇</strong>：視聴者目標を達成し企業ランクを上げる（Fig.04）。</li>
+      <li><strong>昇格審査</strong>：必要時にデッキを組んで審査を突破する（Fig.06–07）。</li>
+      <li>繰り返し成長し、<strong>一流企業</strong>を目指す。</li>
+    </ol>
+
+    <h2>4. システム解説</h2>
+
+    <h3>4.1 配信中ダッシュボード（Fig.01）</h3>
+    <p>最大6枠のチャンネルで美少女たちの生放送を同時運営します。スタミナ・コンディション・スーパーチャット・警備ブロックなどを確認しながら進行します。画面右のライブランキングで収益順も把握できます。</p>
+
+    <h3>4.2 スタジオオ・スロット（Fig.02）</h3>
+    <p>獲得したクリエイターを配置ベイにドラッグして配信枠へ割り当てます。企業ランクが上がるとロックされたスロットが解放され、同時配信数を増やせます。タイプ（セクシー / パフォーマンス / トーク / 上品）も確認しましょう。</p>
+
+    <h3>4.3 SNS（Fig.03）</h3>
+    <p>資金を使って投稿を作成し、フォロワーと注目度を伸ばします。過激グラビアなど投稿タイプがあり、育成・ランクアップの重要な推進力になります。</p>
+
+    <h3>4.4 放送局ランキング（Fig.04）</h3>
+    <p>個人事業 → 零細 → 中小 → 中堅 → 大企業 → 一流企業。視聴者数に応じて順位が変動します。上位ランクほど枠解放や収益ボーナスが強くなります。</p>
+
+    <h3>4.5 デート / VN（Fig.05）</h3>
+    <p>親密度を高めるデートイベント（ビジュアルノベル形式）。選択肢と進行で関係が深まり、育成・ストーリー面の報酬につながります。</p>
+
+    <h3>4.6 昇格審査（Fig.06）</h3>
+    <p>審査員の好み（例：セクシー）に合わせてカードを出し、満足度を満たすターン制チャレンジです。突破すると企業ランク進行に大きく貢献します。</p>
+
+    <h3>4.7 審査デッキ編成（Fig.07）</h3>
+    <p>出場4枠のデッキを編成します。属性バランスを見て配置し、「昇格審査開始」で本番へ進みます。</p>
+
+    <h3>4.8 スタッフ配置（Fig.08）</h3>
+    <p>各スロットに警備 / 管理 / ケア / 制作スタッフを配置し、トラブル対応・コンディション維持・制作効率を支えます。大企業ランク到達で追加枠が開きます。</p>
+
+    <h2>5. UIガイド（よく見る表示）</h2>
+    <ul>
+      <li><strong>視聴者 / 資金 / 順位</strong>：画面上部の経営状況。</li>
+      <li><strong>クエストバー</strong>：次にやるべき育成・SNS・トレーニング案内。</li>
+      <li><strong>スタミナ / コンディション</strong>：無理な連続配置を避け、休息やケアを挟む。</li>
+      <li><strong>LOCKED CHANNEL</strong>：ランク条件を満たすと解放。</li>
+    </ul>
+
+    <div class="footer-note">STAR BROADCASTING CO. Play Manual (JA) — Qwappy Games</div>
+  </section>
+
+  <!-- ===================== ENGLISH ===================== -->
+  <section class="wrap page-break">
+    <div class="lang-badge">ENGLISH</div>
+    <h1 class="sec">Play Manual</h1>
+    <p class="lead">Scout beautiful-girl creators, grow your audience, and build your adult broadcast station into a top-tier company.</p>
+
+    <div class="goal-box">
+      <strong>Ultimate Goal:</strong> Start from a small operation, increase viewers and ranking, and build a <strong>top-tier (first-class)</strong> beautiful-girl adult broadcasting company.
+    </div>
+
+    <h2>1. How to Launch</h2>
+    <ul>
+      <li>Run the distributed Windows game executable.</li>
+      <li>After the logo splash, the main menu appears.</li>
+      <li>Use <strong>NEW GAME</strong> to start fresh, or <strong>LOAD</strong> to continue a save.</li>
+      <li>Language can be changed in Settings (Japanese / English / Korean, etc.).</li>
+    </ul>
+
+    <h2>2. Basic Controls</h2>
+    <ul>
+      <li>Primarily <strong>mouse click / drag &amp; drop</strong>.</li>
+      <li>Bottom tabs switch major screens: DASHBOARD / CREATOR / STUDIO / RANKING, etc.</li>
+      <li>Open SNS, exams, dates, and other systems via buttons or quest prompts.</li>
+      <li>Adjust volume in Settings or on event screens.</li>
+    </ul>
+
+    <h2>3. Core Loop</h2>
+    <ol>
+      <li><strong>Scout</strong> beautiful-girl creators.</li>
+      <li><strong>Assign</strong> them to studio slots (Fig.02).</li>
+      <li><strong>Broadcast</strong> on up to 6 channels to grow viewers and revenue (Fig.01).</li>
+      <li><strong>Train / SNS</strong> to raise popularity (Fig.03).</li>
+      <li><strong>Climb ranks</strong> by hitting viewer targets (Fig.04).</li>
+      <li><strong>Pass promotion exams</strong> with a 4-card deck when required (Fig.06–07).</li>
+      <li>Repeat until you reach a <strong>top-tier company</strong>.</li>
+    </ol>
+
+    <h2>4. Systems</h2>
+
+    <h3>4.1 Live Broadcast Dashboard (Fig.01)</h3>
+    <p>Operate up to six live channels at once. Monitor stamina, condition, super chats, and security blocks. The live ranking panel shows earnings order.</p>
+
+    <h3>4.2 Studio Slots (Fig.02)</h3>
+    <p>Drag creators into placement bays to assign broadcast slots. Higher company ranks unlock locked channels for more simultaneous streams. Check types: Sexy / Performance / Talk / Elegant.</p>
+
+    <h3>4.3 SNS (Fig.03)</h3>
+    <p>Spend funds to create posts and grow followers. Post types (including bold gravure-style content) are a key growth engine for popularity and ranking.</p>
+
+    <h3>4.4 Station Ranking (Fig.04)</h3>
+    <p>Progress: Sole proprietorship → Micro → SME → Mid-size → Large → Top-tier. Viewer count drives rank. Higher tiers unlock slots and stronger revenue bonuses.</p>
+
+    <h3>4.5 Date / VN (Fig.05)</h3>
+    <p>Visual-novel date events deepen relationships with creators and provide story/growth rewards.</p>
+
+    <h3>4.6 Promotion Exam (Fig.06)</h3>
+    <p>A turn-based challenge: play cards matching the examiner’s preference (e.g. Sexy) to fill the satisfaction gauge and advance your company tier.</p>
+
+    <h3>4.7 Exam Deck Setup (Fig.07)</h3>
+    <p>Build a 4-character participation deck, balance attributes, then start the exam.</p>
+
+    <h3>4.8 Staff Bay (Fig.08)</h3>
+    <p>Assign Security / Management / Care / Production staff per slot to handle incidents, condition, and production efficiency. More slots unlock at Large-company rank.</p>
+
+    <h2>5. UI Guide</h2>
+    <ul>
+      <li><strong>Viewers / Funds / Rank</strong>: top-bar business status.</li>
+      <li><strong>Quest bar</strong>: next training / SNS / growth task.</li>
+      <li><strong>Stamina / Condition</strong>: rotate casts and use rest/care.</li>
+      <li><strong>LOCKED CHANNEL</strong>: unlocks when rank requirements are met.</li>
+    </ul>
+
+    <div class="footer-note">STAR BROADCASTING CO. Play Manual (EN) — Qwappy Games</div>
+  </section>
+
+  <!-- ===================== KOREAN ===================== -->
+  <section class="wrap page-break">
+    <div class="lang-badge">한국어</div>
+    <h1 class="sec">플레이 매뉴얼</h1>
+    <p class="lead">미소녀 크리에이터를 스카우트하고 시청자를 모아, 성인 방송국을 일등기업으로 키우는 경영 시뮬레이션입니다.</p>
+
+    <div class="goal-box">
+      <strong>최종 목표:</strong> 개인 사업에서 시작해 시청자와 순위를 끌어올리고, 최종적으로 <strong>일등기업(최고 등급)</strong> 미소녀 성인 방송국을 만드는 것.
+    </div>
+
+    <h2>1. 실행 방법</h2>
+    <ul>
+      <li>배포된 Windows 실행 파일로 게임을 시작합니다.</li>
+      <li>로고 화면 이후 메인 메뉴가 표시됩니다.</li>
+      <li><strong>NEW GAME</strong>으로 새 게임, <strong>LOAD</strong>로 세이브를 불러옵니다.</li>
+      <li>설정에서 언어를 변경할 수 있습니다(日本語 / English / 한국어 등).</li>
+    </ul>
+
+    <h2>2. 기본 조작</h2>
+    <ul>
+      <li>조작은 주로 <strong>마우스 클릭 / 드래그 앤 드롭</strong>입니다.</li>
+      <li>하단 탭으로 화면을 전환합니다: DASHBOARD / CREATOR / STUDIO / RANKING 등.</li>
+      <li>SNS·심사·데이트 등은 버튼 또는 퀘스트 안내로 엽니다.</li>
+      <li>볼륨은 설정 또는 이벤트 화면 슬라이더로 조절합니다.</li>
+    </ul>
+
+    <h2>3. 핵심 진행 루프</h2>
+    <ol>
+      <li><strong>스카우트</strong>: 미소녀 크리에이터 영입</li>
+      <li><strong>스튜디오 배치</strong>: 슬롯에 배치해 방송 프레임 확보 (Fig.02)</li>
+      <li><strong>방송 운영</strong>: 최대 6채널 동시 방송으로 시청자·수익 확대 (Fig.01)</li>
+      <li><strong>육성 / SNS</strong>: 컨디션 관리와 게시로 인기 상승 (Fig.03)</li>
+      <li><strong>랭크 상승</strong>: 시청자 목표 달성으로 기업 등급 상승 (Fig.04)</li>
+      <li><strong>승급 심사</strong>: 필요 시 4인 덱으로 심사 돌파 (Fig.06–07)</li>
+      <li>반복 성장하여 <strong>일등기업</strong>을 목표로 합니다.</li>
+    </ol>
+
+    <h2>4. 시스템 설명</h2>
+
+    <h3>4.1 방송 중 대시보드 (Fig.01)</h3>
+    <p>최대 6개 채널에서 미소녀들의 라이브를 동시에 운영합니다. 스태미나·컨디션·슈퍼챗·경비 블록 등을 확인하며 진행하고, 우측 라이브 랭킹으로 수익 순위를 봅니다.</p>
+
+    <h3>4.2 스튜디오 슬롯 (Fig.02)</h3>
+    <p>보유 크리에이터를 배치 베이로 드래그해 방송 슬롯에 배정합니다. 기업 등급이 오르면 잠긴 채널이 해금되어 동시 방송 수를 늘 수 있습니다. 타입(섹시/퍼포먼스/토크/우아)을 확인하세요.</p>
+
+    <h3>4.3 SNS (Fig.03)</h3>
+    <p>자금을 들여 게시물을 작성하고 팔로워·화제성을 키웁니다. 과감한 그라비아 등 게시 유형이 있으며, 육성과 랭크업의 핵심 동력이 됩니다.</p>
+
+    <h3>4.4 방송국 등급·랭킹 (Fig.04)</h3>
+    <p>개인사업 → 영세 → 중소 → 중견 → 대기업 → 일류기업. 시청자 수에 따라 순위가 변합니다. 상위 등급일수록 슬롯 해금과 수익 보너스가 강해집니다.</p>
+
+    <h3>4.5 데이트 / VN (Fig.05)</h3>
+    <p>비주얼 노벨 형식의 데이트 이벤트로 친밀도를 높이고, 스토리·육성 보상을 얻습니다.</p>
+
+    <h3>4.6 승급 심사 (Fig.06)</h3>
+    <p>심사관의 취향(예: 섹시)에 맞는 카드를 내 만족도를 채우는 턴제 챌린지입니다. 통과 시 기업 등급 진행에 크게 기여합니다.</p>
+
+    <h3>4.7 심사 카드 덱 (Fig.07)</h3>
+    <p>출전 4칸 덱을 구성하고 속성 균형을 맞춘 뒤 「승급 심사 시작」으로 본심사를 진행합니다.</p>
+
+    <h3>4.8 스태프 배치 (Fig.08)</h3>
+    <p>슬롯별로 경비 / 관리 / 케어 / 제작 스태프를 배치해 사고 대응·컨디션·제작 효율을 지원합니다. 대기업 등급에서 추가 슬롯이 열립니다.</p>
+
+    <h2>5. UI 가이드</h2>
+    <ul>
+      <li><strong>시청자 / 자금 / 순위</strong>: 상단 경영 상태</li>
+      <li><strong>퀘스트 바</strong>: 다음 육성·SNS·훈련 안내</li>
+      <li><strong>스태미나 / 컨디션</strong>: 무리한 연속 배치를 피하고 휴식·케어 활용</li>
+      <li><strong>LOCKED CHANNEL</strong>: 등급 조건 충족 시 해금</li>
+    </ul>
+
+    <div class="footer-note">STAR BROADCASTING CO. Play Manual (KO) — Qwappy Games<br />© 2026 Qwappy Games. All rights reserved.</div>
+  </section>
+
+</body>
+</html>

@@ -78,9 +78,27 @@ function parseJsonFile(buffer) {
 }
 
 const isDev = process.env.ELECTRON_DEV === '1'
+
+function readBuildProfile() {
+  try {
+    const pkg = require('../package.json')
+    const profile = pkg && pkg.broadcastBuildProfile
+    if (profile === 'review' || profile === 'release') return profile
+  } catch {
+    // ignore
+  }
+  return 'release'
+}
+
+const buildProfile = readBuildProfile()
+const isReviewBuild = buildProfile === 'review'
+
 if (isDev) {
   // 개발 실행과 패키징본이 같은 AppData 세이브(localStorage)를 쓰지 않게 분리
   app.setPath('userData', path.join(app.getPath('appData'), 'BroadcastGame-dev'))
+} else if (isReviewBuild) {
+  // 심사용 빌드는 정식 세이브와 분리된 프로필 사용
+  app.setPath('userData', path.join(app.getPath('appData'), 'BroadcastGame-review'))
 }
 
 // GPU 가속은 유지하되 GPU 샌드박스를 해제해 GPU 프로세스 access violation(0xC0000005) 크래시 방지
@@ -1648,7 +1666,10 @@ ipcMain.handle('open-event-folder', async (event, { eventId }) => {
   }
 })
 
-ipcMain.handle('device-lock-status', () => deviceLock.verifyDeviceLock(app))
+ipcMain.handle('device-lock-status', () => {
+  if (isReviewBuild) return { ok: true, reason: 'review-build' }
+  return deviceLock.verifyDeviceLock(app)
+})
 
 ipcMain.handle('track-achievement-unlock', (_event, payload) => {
   const id = payload && payload.id

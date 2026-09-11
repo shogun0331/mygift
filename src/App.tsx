@@ -65,6 +65,7 @@ import type { AddCharacterPayload } from './screens/EditorScreen'
 import { EditorScreen } from './screens/EditorScreen'
 import { InGame } from './screens/InGame'
 import { MainMenu } from './screens/MainMenu'
+import { CompanyLogoSplash } from './screens/CompanyLogoSplash'
 import { AchievementToastOverlay } from './components/AchievementToastOverlay'
 import { hydrateOwnedCreator, type GameSave } from './game/save'
 import {
@@ -777,6 +778,8 @@ export default function App() {
   const [initialSave, setInitialSave] = useState<GameSave | null>(null)
   const [showNewGame, setShowNewGame] = useState(false)
   const [showLoadGame, setShowLoadGame] = useState(false)
+  /** 부팅 시 QWAPPY 로고 스플래시 (메인 메뉴 직전 1회) */
+  const [bootSplashDone, setBootSplashDone] = useState(false)
   const deviceLockOkRef = useRef(!window.electronAPI?.getDeviceLockStatus)
 
   useEffect(() => {
@@ -1618,6 +1621,8 @@ export default function App() {
           onStationGradeChange={handleStationGradeChange}
         />
       </>
+    ) : !bootSplashDone ? (
+      <CompanyLogoSplash onDone={() => setBootSplashDone(true)} />
     ) : (
     <>
       <MainMenu

@@ -1,0 +1,33 @@
+{
+  "appId": "com.broadcast.game.review",
+  "productName": "BroadcastGame Review",
+  "extraMetadata": {
+    "broadcastBuildProfile": "review"
+  },
+  "directories": {
+    "output": "C:/Users/shogu/AppData/Local/Temp/broadcast-game-dist-review"
+  },
+  "asar": true,
+  "files": [
+    "dist/**/*",
+    "!dist/characters/**",
+    "!dist/chapter_assets/**",
+    "electron/**/*",
+    "package.json"
+  ],
+  "extraResources": [
+    {
+      "from": "build/game.dat",
+      "to": "game.dat"
+    }
+  ],
+  "win": {
+    "icon": "build/icon.ico",
+    "target": [
+      "portable"
+    ]
+  },
+  "portable": {
+    "splashImage": "public/loading_splash.bmp"
+  }
+}
