@@ -634,8 +634,17 @@ function getDeviceLangHints() {
 }
 
 let lastDisplayMode = 'fullscreen'
-let restoreDisplayAfterBlur = false
 let isQuitting = false
+let windowOp = null
+let displayLockUntil = 0
+
+function lockDisplay(ms) {
+  displayLockUntil = Math.max(displayLockUntil, Date.now() + ms)
+}
+
+function isDisplayLocked() {
+  return windowOp != null || Date.now() < displayLockUntil
+}
 
 function emitWindowLifecycle(win, state) {
   if (!win || win.isDestroyed()) return
@@ -656,64 +665,31 @@ function coverMonitor(win) {
   if (bounds) win.setBounds(bounds)
 }
 
-function pulseAboveTaskbar(win) {
-  if (process.platform !== 'win32' || win.isDestroyed()) return
+function clearAlwaysOnTop(win) {
   try {
-    win.setAlwaysOnTop(true)
-    setTimeout(() => {
-      if (win.isDestroyed() || isQuitting || win.isMinimized()) return
-      win.setAlwaysOnTop(false)
-    }, 280)
+    win.setAlwaysOnTop(false)
   } catch {
     // ignore
   }
 }
 
 function enterExclusiveFullscreen(win) {
-  if (!win || win.isDestroyed() || isQuitting || win.isMinimized()) return
+  if (!win || win.isDestroyed() || isQuitting) return
   win.setResizable(true)
   win.setFullScreenable(true)
   coverMonitor(win)
-  win.setFullScreen(true)
-  pulseAboveTaskbar(win)
+  if (!win.isFullScreen()) win.setFullScreen(true)
   win.setResizable(false)
-}
-
-function reassertExclusiveFullscreen(win) {
-  if (!win || win.isDestroyed() || isQuitting || altTabMinInProgress) return
-  restoreDisplayAfterBlur = true
-  win.setResizable(true)
-  try {
-    win.setAlwaysOnTop(false)
-  } catch {
-    // ignore
-  }
-  if (win.isFullScreen()) win.setFullScreen(false)
-  coverMonitor(win)
-  setTimeout(() => {
-    if (win.isDestroyed() || isQuitting || win.isMinimized() || altTabMinInProgress) {
-      restoreDisplayAfterBlur = false
-      return
-    }
-    enterExclusiveFullscreen(win)
-    setTimeout(() => {
-      restoreDisplayAfterBlur = false
-    }, 350)
-  }, 60)
 }
 
 function applyDisplayMode(win, mode) {
   if (!win || win.isDestroyed()) return { success: false }
   lastDisplayMode = mode === 'borderless' ? 'borderless' : 'fullscreen'
-  win.setResizable(true)
   if (lastDisplayMode === 'fullscreen') {
     enterExclusiveFullscreen(win)
   } else {
-    try {
-      win.setAlwaysOnTop(false)
-    } catch {
-      // ignore
-    }
+    clearAlwaysOnTop(win)
+    win.setResizable(true)
     win.setFullScreen(false)
     win.maximize()
     const primaryDisplay = screen.getPrimaryDisplay()
@@ -726,21 +702,48 @@ function applyDisplayMode(win, mode) {
   return { success: true }
 }
 
-let altTabMinInProgress = false
+function restoreGameWindow(win) {
+  if (!win || win.isDestroyed() || isQuitting) return
+  if (windowOp === 'restoring') return
+  windowOp = 'restoring'
+  lockDisplay(900)
+  clearAlwaysOnTop(win)
 
-function readWinMessageParam(param) {
-  if (typeof param === 'number') return param
-  if (typeof param === 'bigint') return Number(param)
-  if (Buffer.isBuffer(param) && param.length >= 4) return param.readUInt32LE(0)
-  return 1
+  const finish = () => {
+    if (win.isDestroyed() || isQuitting) {
+      windowOp = null
+      return
+    }
+    if (win.isMinimized()) win.restore()
+    win.show()
+    win.focus()
+    setTimeout(() => {
+      if (win.isDestroyed() || isQuitting) {
+        windowOp = null
+        return
+      }
+      if (lastDisplayMode === 'fullscreen') {
+        enterExclusiveFullscreen(win)
+      } else {
+        applyDisplayMode(win, lastDisplayMode)
+      }
+      win.focus()
+      emitWindowLifecycle(win, 'resumed')
+      setTimeout(() => {
+        if (windowOp === 'restoring') windowOp = null
+      }, 450)
+    }, 30)
+  }
+
+  setTimeout(finish, 40)
 }
 
 function attachAltTabMinimize(win) {
   if (process.platform !== 'win32') return
-  let blurMinSeq = 0
+  let minimizeTimer = null
 
   const minimizeForAltTab = () => {
-    if (isQuitting || restoreDisplayAfterBlur) return
+    if (isQuitting || isDisplayLocked()) return
     if (win.isDestroyed() || win.isMinimized()) return
     try {
       if (win.webContents.isDevToolsFocused()) return
@@ -748,35 +751,27 @@ function attachAltTabMinimize(win) {
       return
     }
 
-    altTabMinInProgress = true
-    const seq = ++blurMinSeq
+    windowOp = 'minimizing'
+    lockDisplay(800)
+    clearAlwaysOnTop(win)
+    if (minimizeTimer) {
+      clearTimeout(minimizeTimer)
+      minimizeTimer = null
+    }
+
     const minimizeNow = () => {
-      if (seq !== blurMinSeq || isQuitting) {
-        if (seq === blurMinSeq) altTabMinInProgress = false
+      minimizeTimer = null
+      if (isQuitting || win.isDestroyed()) {
+        windowOp = null
         return
       }
-      if (win.isDestroyed() || win.isMinimized()) {
-        altTabMinInProgress = false
-        return
-      }
-      try {
-        win.setAlwaysOnTop(false)
-      } catch {
-        // ignore
-      }
-      win.minimize()
-      altTabMinInProgress = false
+      if (!win.isMinimized()) win.minimize()
+      if (windowOp === 'minimizing') windowOp = null
     }
 
     if (win.isFullScreen()) {
-      try {
-        win.setAlwaysOnTop(false)
-      } catch {
-        // ignore
-      }
-      win.once('leave-full-screen', minimizeNow)
       win.setFullScreen(false)
-      setTimeout(minimizeNow, 280)
+      minimizeTimer = setTimeout(minimizeNow, 120)
     } else {
       minimizeNow()
     }
@@ -789,154 +784,23 @@ function attachAltTabMinimize(win) {
   try {
     const WM_ACTIVATEAPP = 0x001c
     win.hookWindowMessage(WM_ACTIVATEAPP, (wParam) => {
-      if (readWinMessageParam(wParam) === 0) minimizeForAltTab()
+      const activated = readWinMessageParam(wParam)
+      if (activated === 0) minimizeForAltTab()
     })
   } catch {
     // hook not available
   }
 
   win.on('restore', () => {
-    if (win.isDestroyed() || win.isMinimized() || isQuitting || altTabMinInProgress) return
-    if (lastDisplayMode === 'fullscreen') {
-      reassertExclusiveFullscreen(win)
-      return
-    }
-    restoreDisplayAfterBlur = true
-    applyDisplayMode(win, lastDisplayMode)
-    setTimeout(() => {
-      restoreDisplayAfterBlur = false
-    }, 400)
+    restoreGameWindow(win)
   })
 }
 
-function coverMonitor(win) {
-  const bounds = displayBoundsFor(win)
-  if (bounds) win.setBounds(bounds)
-}
-
-function setFullscreenTopMost(win, enabled) {
-  if (process.platform !== 'win32' || win.isDestroyed()) return
-  try {
-    win.setAlwaysOnTop(enabled, enabled ? 'screen-saver' : 'normal')
-  } catch {
-    try {
-      win.setAlwaysOnTop(enabled)
-    } catch {
-      // ignore
-    }
-  }
-}
-
-function enterExclusiveFullscreen(win) {
-  if (!win || win.isDestroyed() || isQuitting || win.isMinimized()) return
-  win.setResizable(true)
-  win.setFullScreenable(true)
-  coverMonitor(win)
-  win.setFullScreen(true)
-  setFullscreenTopMost(win, true)
-  win.moveTop()
-  win.focus()
-  win.setResizable(false)
-}
-
-function reassertExclusiveFullscreen(win) {
-  if (!win || win.isDestroyed() || isQuitting) return
-  restoreDisplayAfterBlur = true
-  win.setResizable(true)
-  setFullscreenTopMost(win, false)
-  if (win.isFullScreen()) win.setFullScreen(false)
-  coverMonitor(win)
-  const apply = () => {
-    if (win.isDestroyed() || isQuitting || win.isMinimized()) {
-      restoreDisplayAfterBlur = false
-      return
-    }
-    enterExclusiveFullscreen(win)
-    setTimeout(() => {
-      restoreDisplayAfterBlur = false
-    }, 400)
-  }
-  setTimeout(apply, 50)
-  setTimeout(() => {
-    if (win.isDestroyed() || isQuitting || win.isMinimized()) return
-    if (lastDisplayMode !== 'fullscreen') return
-    if (!win.isFullScreen()) enterExclusiveFullscreen(win)
-    else {
-      setFullscreenTopMost(win, true)
-      win.moveTop()
-      win.focus()
-    }
-  }, 220)
-}
-
-function applyDisplayMode(win, mode) {
-  if (!win || win.isDestroyed()) return { success: false }
-  lastDisplayMode = mode === 'borderless' ? 'borderless' : 'fullscreen'
-  win.setResizable(true)
-  if (lastDisplayMode === 'fullscreen') {
-    enterExclusiveFullscreen(win)
-  } else {
-    setFullscreenTopMost(win, false)
-    win.setFullScreen(false)
-    win.maximize()
-    const primaryDisplay = screen.getPrimaryDisplay()
-    if (primaryDisplay && primaryDisplay.workArea) {
-      const { x, y, width, height } = primaryDisplay.workArea
-      win.setBounds({ x, y, width, height })
-    }
-    win.setResizable(false)
-  }
-  return { success: true }
-}
-
-function attachAltTabMinimize(win) {
-  if (process.platform !== 'win32') return
-  let blurMinSeq = 0
-
-  win.on('blur', () => {
-    if (isQuitting || restoreDisplayAfterBlur) return
-    if (win.isDestroyed() || win.isMinimized()) return
-    try {
-      if (win.webContents.isDevToolsFocused()) return
-    } catch {
-      return
-    }
-
-    const seq = ++blurMinSeq
-    const minimizeNow = () => {
-      if (seq !== blurMinSeq || isQuitting) return
-      if (win.isDestroyed() || win.isMinimized() || win.isFocused()) return
-      win.minimize()
-    }
-
-    if (win.isFullScreen()) {
-      setFullscreenTopMost(win, false)
-      win.once('leave-full-screen', minimizeNow)
-      win.setFullScreen(false)
-      setTimeout(minimizeNow, 300)
-    } else {
-      setFullscreenTopMost(win, false)
-      minimizeNow()
-    }
-  })
-
-  win.on('restore', () => {
-    if (win.isDestroyed() || win.isMinimized() || isQuitting) return
-    if (lastDisplayMode === 'fullscreen') {
-      reassertExclusiveFullscreen(win)
-      return
-    }
-    restoreDisplayAfterBlur = true
-    applyDisplayMode(win, lastDisplayMode)
-    setTimeout(() => {
-      restoreDisplayAfterBlur = false
-    }, 400)
-  })
-
-  win.on('focus', () => {
-    if (isQuitting || restoreDisplayAfterBlur || win.isDestroyed() || win.isMinimized()) return
-    if (lastDisplayMode === 'fullscreen') setFullscreenTopMost(win, true)
-  })
+function readWinMessageParam(param) {
+  if (typeof param === 'number') return param
+  if (typeof param === 'bigint') return Number(param)
+  if (Buffer.isBuffer(param) && param.length >= 4) return param.readUInt32LE(0)
+  return 1
 }
 
 function createWindow() {
@@ -972,12 +836,6 @@ function createWindow() {
   mainWindow.setResizable(false)
   attachAltTabMinimize(mainWindow)
   mainWindow.on('minimize', () => emitWindowLifecycle(mainWindow, 'suspended'))
-  mainWindow.on('restore', () => {
-    if (!isQuitting) emitWindowLifecycle(mainWindow, 'resumed')
-  })
-  mainWindow.on('show', () => {
-    if (!isQuitting && !mainWindow.isMinimized()) emitWindowLifecycle(mainWindow, 'resumed')
-  })
 
   if (isDev) {
     // Pipe renderer console messages to main process terminal for easier debugging
