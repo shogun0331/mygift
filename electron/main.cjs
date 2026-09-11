@@ -633,6 +633,69 @@ function getDeviceLangHints() {
   }
 }
 
+let lastDisplayMode = 'fullscreen'
+let restoreDisplayAfterBlur = false
+
+function applyDisplayMode(win, mode) {
+  if (!win || win.isDestroyed()) return { success: false }
+  lastDisplayMode = mode === 'borderless' ? 'borderless' : 'fullscreen'
+  win.setResizable(true)
+  if (lastDisplayMode === 'fullscreen') {
+    win.setFullScreen(true)
+  } else {
+    win.setFullScreen(false)
+    win.maximize()
+    const primaryDisplay = screen.getPrimaryDisplay()
+    if (primaryDisplay && primaryDisplay.workArea) {
+      const { x, y, width, height } = primaryDisplay.workArea
+      win.setBounds({ x, y, width, height })
+    }
+  }
+  win.setResizable(false)
+  return { success: true }
+}
+
+function attachAltTabMinimize(win) {
+  if (process.platform !== 'win32') return
+  let blurMinSeq = 0
+
+  win.on('blur', () => {
+    if (restoreDisplayAfterBlur) return
+    if (win.isDestroyed() || win.isMinimized()) return
+    try {
+      if (win.webContents.isDevToolsFocused()) return
+    } catch {
+      return
+    }
+
+    const seq = ++blurMinSeq
+    const minimizeNow = () => {
+      if (seq !== blurMinSeq) return
+      if (win.isDestroyed() || win.isMinimized() || win.isFocused()) return
+      win.minimize()
+    }
+
+    if (win.isFullScreen()) {
+      win.once('leave-full-screen', minimizeNow)
+      win.setFullScreen(false)
+      setTimeout(minimizeNow, 300)
+    } else {
+      minimizeNow()
+    }
+  })
+
+  const restoreMode = () => {
+    if (win.isDestroyed() || win.isMinimized()) return
+    restoreDisplayAfterBlur = true
+    applyDisplayMode(win, lastDisplayMode)
+    setTimeout(() => {
+      restoreDisplayAfterBlur = false
+    }, 400)
+  }
+
+  win.on('restore', restoreMode)
+}
+
 function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay()
   const displayWorkArea = primaryDisplay ? primaryDisplay.workAreaSize : { width: 1280, height: 800 }
@@ -646,6 +709,8 @@ function createWindow() {
       '..',
       app.isPackaged ? 'dist/icon.png' : 'build/icon.ico',
     ),
+    minimizable: true,
+    skipTaskbar: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
@@ -660,6 +725,7 @@ function createWindow() {
 
   mainWindow.maximize()
   mainWindow.setResizable(false)
+  attachAltTabMinimize(mainWindow)
 
   if (isDev) {
     // Pipe renderer console messages to main process terminal for easier debugging
@@ -725,22 +791,11 @@ app.whenReady().then(() => {
 
 ipcMain.handle('set-display-mode', async (event, { mode }) => {
   try {
-    const win = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0]
+    const win = BrowserWindow.fromWebContents(event.sender)
+      || BrowserWindow.getFocusedWindow()
+      || BrowserWindow.getAllWindows()[0]
     if (!win) return { success: false }
-    win.setResizable(true)
-    if (mode === 'fullscreen') {
-      win.setFullScreen(true)
-    } else {
-      win.setFullScreen(false)
-      win.maximize()
-      const primaryDisplay = screen.getPrimaryDisplay()
-      if (primaryDisplay && primaryDisplay.workArea) {
-        const { x, y, width, height } = primaryDisplay.workArea
-        win.setBounds({ x, y, width, height })
-      }
-    }
-    win.setResizable(false)
-    return { success: true }
+    return applyDisplayMode(win, mode)
   } catch (err) {
     console.error('set-display-mode error:', err)
     return { success: false, error: err.message }
