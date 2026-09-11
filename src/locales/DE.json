@@ -15,6 +15,8 @@
     "schedule": "STUDIO",
     "equipment": "EQUIPMENT",
     "confirmExit": "Spiel wirklich beenden?",
+    "confirmExitYes": "Beenden",
+    "confirmExitNo": "Abbrechen",
     "devOnly": "Nur Entwickler",
     "finalVer": "FINAL VER.",
     "kicker": "Tonight's Broadcast",

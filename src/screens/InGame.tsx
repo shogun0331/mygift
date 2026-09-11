@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
 import { FpsCounter } from '../components/FpsCounter'
 import { getBgmVolumePercent, setBgmVolumePercent, useGameBgm } from '../game/bgm'
+import { useAppSuspended } from '../game/appLifecycle'
 import { getDisplayMode, setDisplayMode, subscribeDisplayMode, type DisplayMode } from '../game/displayMode'
 import { tierViewerCap, type StationTierId, stationTierRank } from '../game/stationGradeConfig'
 import { getSeVolumePercent, playSfx, setSeVolumePercent } from '../game/uiSfx'
@@ -4682,7 +4683,8 @@ export function InGame({
             ? 'live'
             : 'ingame',
   )
-  const liveClockPaused = toxicQteActive || vnOverlayActive
+  const appSuspended = useAppSuspended()
+  const liveClockPaused = toxicQteActive || vnOverlayActive || appSuspended
   useEffect(() => {
     if (!liveClockPaused) return
     const pausedAt = performance.now()

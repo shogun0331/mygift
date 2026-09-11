@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useTranslation } from '../locales/i18n'
-import { useGameBgm } from '../game/bgm'
+import { stopBgm, useGameBgm } from '../game/bgm'
 import { playSfx } from '../game/uiSfx'
+import { setAppSuspended } from '../game/appLifecycle'
 import { listSaveMetas } from '../game/saveService'
 import { SaveListPanel } from './SaveListPanel'
 import { SettingsPanel } from './SettingsPanel'
@@ -53,6 +54,7 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
     window.electronAPI?.getDeviceLockStatus ? 'pending' : 'ok',
   )
   const [showDeviceError, setShowDeviceError] = useState(false)
+  const [exitConfirmOpen, setExitConfirmOpen] = useState(false)
 
   // If latestSave disappears, switch active from 'continue' to 'new'
   useEffect(() => {
@@ -141,18 +143,39 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
       onOpenEditor?.()
       return
     }
-    if (id === 'exit' && window.confirm(t('menu.confirmExit'))) {
-      if (window.electronAPI?.quitApp) {
-        void window.electronAPI.quitApp()
-        return
-      }
-      window.close()
+    if (id === 'exit') {
+      setExitConfirmOpen(true)
     }
   }, [deviceLock, latestSave, onLoadGame, onNewGame, onOpenEditor, t])
+
+  const quitGame = useCallback(() => {
+    playSfx('ui-click')
+    stopBgm()
+    setAppSuspended(true)
+    if (window.electronAPI?.quitApp) {
+      void window.electronAPI.quitApp()
+      return
+    }
+    window.close()
+  }, [])
 
   // Keyboard navigation for menu
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (exitConfirmOpen) {
+        if (e.key === 'Escape') {
+          e.preventDefault()
+          setExitConfirmOpen(false)
+          playSfx('ui-click')
+          return
+        }
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          quitGame()
+        }
+        return
+      }
+
       if (e.key === 'Escape' && activeLeftPanel) {
         setActiveLeftPanel(null)
         playSfx('ui-click')
@@ -179,7 +202,7 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [active, activeLeftPanel, handleSelect, menuList])
+  }, [active, activeLeftPanel, exitConfirmOpen, handleSelect, menuList, quitGame])
 
   return (
     <main className="game-stage relative flex h-full w-full items-stretch justify-between overflow-hidden px-[clamp(1.5rem,4vw,5rem)] py-8 select-none">
@@ -349,6 +372,42 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
 
       {showDeviceError ? (
         <DeviceLockModal onDismiss={() => setShowDeviceError(false)} />
+      ) : null}
+
+      {exitConfirmOpen ? (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="exit-confirm-title"
+        >
+          <div className="game-panel-strong w-full max-w-md overflow-hidden rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.55)]">
+            <div className="border-b border-white/10 px-6 pb-5 pt-6 text-center">
+              <h2 id="exit-confirm-title" className="text-lg font-bold tracking-tight text-slate-100">
+                {t('menu.confirmExit')}
+              </h2>
+            </div>
+            <div className="flex justify-center gap-3 px-6 py-5">
+              <button
+                type="button"
+                className="game-btn min-w-[120px] px-6 py-2.5 text-sm"
+                onClick={() => {
+                  playSfx('ui-click')
+                  setExitConfirmOpen(false)
+                }}
+              >
+                {t('menu.confirmExitNo')}
+              </button>
+              <button
+                type="button"
+                className="game-btn game-btn-primary min-w-[120px] px-6 py-2.5 text-sm"
+                onClick={quitGame}
+              >
+                {t('menu.confirmExitYes')}
+              </button>
+            </div>
+          </div>
+        </div>
       ) : null}
     </main>
   )

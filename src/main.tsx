@@ -6,11 +6,13 @@ import App from './App.tsx'
 import { I18nProvider } from './locales/i18n'
 import { initUiClickSounds } from './game/uiSfx'
 import { initDisplayMode } from './game/displayMode'
+import { initAppLifecycle } from './game/appLifecycle'
 import { seedReviewBuildProgress } from './game/reviewSeed'
 
 seedReviewBuildProgress()
 initUiClickSounds()
 initDisplayMode()
+initAppLifecycle()
 
 window.onerror = function (message, source, lineno, colno, error) {
   alert(`[전역 런타임 에러 감지]\n메시지: ${message}\n위치: ${source}:${lineno}:${colno}\n스택: ${error?.stack}`)

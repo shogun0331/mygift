@@ -18,6 +18,8 @@
     "ranking": "RANKING",
     "equipment": "EQUIPMENT",
     "confirmExit": "게임을 종료할까요?",
+    "confirmExitYes": "종료",
+    "confirmExitNo": "취소",
     "devOnly": "개발자 전용",
     "finalVer": "FINAL VER.",
     "kicker": "Tonight's Broadcast",

@@ -72,4 +72,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getDeviceLockStatus: () => ipcRenderer.invoke('device-lock-status'),
   trackAchievementUnlock: (payload) => ipcRenderer.invoke('track-achievement-unlock', payload),
   quitApp: () => ipcRenderer.invoke('quit-app'),
+  onWindowLifecycle: (cb) => {
+    ipcRenderer.on('window-lifecycle', (_event, state) => {
+      if (state === 'suspended' || state === 'resumed') cb(state)
+    })
+  },
 })

@@ -78,6 +78,7 @@ type BgmRuntime = {
   library: GameBgmConfig
   desiredTrack: BgmTrack | null
   silenceLocks: number
+  suspended: boolean
   audio: HTMLAudioElement | null
   volume: number
   persistTimer: ReturnType<typeof setTimeout> | null
@@ -108,6 +109,7 @@ const runtime: BgmRuntime = (() => {
     library: emptyBgmConfig(),
     desiredTrack: null,
     silenceLocks: 0,
+    suspended: false,
     audio: null,
     volume: loadBgmVolume(),
     persistTimer: null,
@@ -165,6 +167,7 @@ function ensureAudio() {
   const el = new Audio()
   el.loop = true
   el.preload = 'auto'
+  el.dataset.broadcastBgm = '1'
   runtime.audio = el
   applyBgmVolume()
   return el
@@ -188,11 +191,25 @@ function startTrack(track: BgmTrack, force = false) {
 }
 
 function syncPlayback(force = false) {
+  if (runtime.suspended) {
+    runtime.audio?.pause()
+    return
+  }
   if (runtime.silenceLocks > 0 || !runtime.desiredTrack) {
     stopBgmAudio()
     return
   }
   startTrack(runtime.desiredTrack, force)
+}
+
+/** 창 최소화·종료 대기 중 BGM만 일시정지 (트랙은 유지) */
+export function setBgmSuspended(next: boolean) {
+  runtime.suspended = next
+  if (next) {
+    runtime.audio?.pause()
+    return
+  }
+  syncPlayback()
 }
 
 /** 게임 BGM 즉시 정지 */

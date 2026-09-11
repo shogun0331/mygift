@@ -49,6 +49,7 @@ const pools = new Map<SfxId, HTMLAudioElement[]>()
 const poolIndex = new Map<SfxId, number>()
 const loops = new Map<SfxId, HTMLAudioElement>()
 let listening = false
+let sfxSuspended = false
 
 function clamp01(value: number) {
   if (Number.isNaN(value)) return 0
@@ -100,7 +101,29 @@ const DEFAULT_SFX_GAIN: Partial<Record<SfxId, number>> = {
   'live-viewers': 0.3,
 }
 
+export function setSfxSuspended(next: boolean) {
+  if (sfxSuspended === next) return
+  sfxSuspended = next
+  if (next) {
+    for (const audio of loops.values()) audio.pause()
+    for (const list of pools.values()) {
+      for (const audio of list) audio.pause()
+    }
+    if (sharedAudioCtx && sharedAudioCtx.state === 'running') {
+      void sharedAudioCtx.suspend()
+    }
+    return
+  }
+  for (const audio of loops.values()) {
+    void audio.play().catch(() => {})
+  }
+  if (sharedAudioCtx && sharedAudioCtx.state === 'suspended') {
+    void sharedAudioCtx.resume()
+  }
+}
+
 export function playSfx(id: SfxId, options?: { loop?: boolean; gain?: number }) {
+  if (sfxSuspended) return
   const defaultGain = DEFAULT_SFX_GAIN[id] ?? 1
   const gain = clamp01(options?.gain ?? defaultGain)
   const level = volume * gain
@@ -162,13 +185,14 @@ export function initUiClickSounds() {
 let sharedAudioCtx: AudioContext | null = null
 
 function getSharedAudioContext(): AudioContext | null {
+  if (sfxSuspended) return null
   if (typeof window === 'undefined') return null
   const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
   if (!AudioCtx) return null
   if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
     sharedAudioCtx = new AudioCtx()
   }
-  if (sharedAudioCtx.state === 'suspended') {
+  if (sharedAudioCtx.state === 'suspended' && !sfxSuspended) {
     void sharedAudioCtx.resume()
   }
   return sharedAudioCtx

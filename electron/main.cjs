@@ -635,14 +635,85 @@ function getDeviceLangHints() {
 
 let lastDisplayMode = 'fullscreen'
 let restoreDisplayAfterBlur = false
+let isQuitting = false
+
+function emitWindowLifecycle(win, state) {
+  if (!win || win.isDestroyed()) return
+  try {
+    win.webContents.send('window-lifecycle', state)
+  } catch {
+    // ignore
+  }
+}
+
+function displayBoundsFor(win) {
+  const nearest = screen.getDisplayMatching(win.getBounds()) || screen.getPrimaryDisplay()
+  return nearest && nearest.bounds ? nearest.bounds : null
+}
+
+function coverMonitor(win) {
+  const bounds = displayBoundsFor(win)
+  if (bounds) win.setBounds(bounds)
+}
+
+function pulseAboveTaskbar(win) {
+  if (process.platform !== 'win32' || win.isDestroyed()) return
+  try {
+    win.setAlwaysOnTop(true)
+    setTimeout(() => {
+      if (win.isDestroyed() || isQuitting || win.isMinimized()) return
+      win.setAlwaysOnTop(false)
+    }, 280)
+  } catch {
+    // ignore
+  }
+}
+
+function enterExclusiveFullscreen(win) {
+  if (!win || win.isDestroyed() || isQuitting || win.isMinimized()) return
+  win.setResizable(true)
+  win.setFullScreenable(true)
+  coverMonitor(win)
+  win.setFullScreen(true)
+  pulseAboveTaskbar(win)
+  win.setResizable(false)
+}
+
+function reassertExclusiveFullscreen(win) {
+  if (!win || win.isDestroyed() || isQuitting || altTabMinInProgress) return
+  restoreDisplayAfterBlur = true
+  win.setResizable(true)
+  try {
+    win.setAlwaysOnTop(false)
+  } catch {
+    // ignore
+  }
+  if (win.isFullScreen()) win.setFullScreen(false)
+  coverMonitor(win)
+  setTimeout(() => {
+    if (win.isDestroyed() || isQuitting || win.isMinimized() || altTabMinInProgress) {
+      restoreDisplayAfterBlur = false
+      return
+    }
+    enterExclusiveFullscreen(win)
+    setTimeout(() => {
+      restoreDisplayAfterBlur = false
+    }, 350)
+  }, 60)
+}
 
 function applyDisplayMode(win, mode) {
   if (!win || win.isDestroyed()) return { success: false }
   lastDisplayMode = mode === 'borderless' ? 'borderless' : 'fullscreen'
   win.setResizable(true)
   if (lastDisplayMode === 'fullscreen') {
-    win.setFullScreen(true)
+    enterExclusiveFullscreen(win)
   } else {
+    try {
+      win.setAlwaysOnTop(false)
+    } catch {
+      // ignore
+    }
     win.setFullScreen(false)
     win.maximize()
     const primaryDisplay = screen.getPrimaryDisplay()
@@ -650,8 +721,171 @@ function applyDisplayMode(win, mode) {
       const { x, y, width, height } = primaryDisplay.workArea
       win.setBounds({ x, y, width, height })
     }
+    win.setResizable(false)
   }
+  return { success: true }
+}
+
+let altTabMinInProgress = false
+
+function readWinMessageParam(param) {
+  if (typeof param === 'number') return param
+  if (typeof param === 'bigint') return Number(param)
+  if (Buffer.isBuffer(param) && param.length >= 4) return param.readUInt32LE(0)
+  return 1
+}
+
+function attachAltTabMinimize(win) {
+  if (process.platform !== 'win32') return
+  let blurMinSeq = 0
+
+  const minimizeForAltTab = () => {
+    if (isQuitting || restoreDisplayAfterBlur) return
+    if (win.isDestroyed() || win.isMinimized()) return
+    try {
+      if (win.webContents.isDevToolsFocused()) return
+    } catch {
+      return
+    }
+
+    altTabMinInProgress = true
+    const seq = ++blurMinSeq
+    const minimizeNow = () => {
+      if (seq !== blurMinSeq || isQuitting) {
+        if (seq === blurMinSeq) altTabMinInProgress = false
+        return
+      }
+      if (win.isDestroyed() || win.isMinimized()) {
+        altTabMinInProgress = false
+        return
+      }
+      try {
+        win.setAlwaysOnTop(false)
+      } catch {
+        // ignore
+      }
+      win.minimize()
+      altTabMinInProgress = false
+    }
+
+    if (win.isFullScreen()) {
+      try {
+        win.setAlwaysOnTop(false)
+      } catch {
+        // ignore
+      }
+      win.once('leave-full-screen', minimizeNow)
+      win.setFullScreen(false)
+      setTimeout(minimizeNow, 280)
+    } else {
+      minimizeNow()
+    }
+  }
+
+  win.on('blur', () => {
+    minimizeForAltTab()
+  })
+
+  try {
+    const WM_ACTIVATEAPP = 0x001c
+    win.hookWindowMessage(WM_ACTIVATEAPP, (wParam) => {
+      if (readWinMessageParam(wParam) === 0) minimizeForAltTab()
+    })
+  } catch {
+    // hook not available
+  }
+
+  win.on('restore', () => {
+    if (win.isDestroyed() || win.isMinimized() || isQuitting || altTabMinInProgress) return
+    if (lastDisplayMode === 'fullscreen') {
+      reassertExclusiveFullscreen(win)
+      return
+    }
+    restoreDisplayAfterBlur = true
+    applyDisplayMode(win, lastDisplayMode)
+    setTimeout(() => {
+      restoreDisplayAfterBlur = false
+    }, 400)
+  })
+}
+
+function coverMonitor(win) {
+  const bounds = displayBoundsFor(win)
+  if (bounds) win.setBounds(bounds)
+}
+
+function setFullscreenTopMost(win, enabled) {
+  if (process.platform !== 'win32' || win.isDestroyed()) return
+  try {
+    win.setAlwaysOnTop(enabled, enabled ? 'screen-saver' : 'normal')
+  } catch {
+    try {
+      win.setAlwaysOnTop(enabled)
+    } catch {
+      // ignore
+    }
+  }
+}
+
+function enterExclusiveFullscreen(win) {
+  if (!win || win.isDestroyed() || isQuitting || win.isMinimized()) return
+  win.setResizable(true)
+  win.setFullScreenable(true)
+  coverMonitor(win)
+  win.setFullScreen(true)
+  setFullscreenTopMost(win, true)
+  win.moveTop()
+  win.focus()
   win.setResizable(false)
+}
+
+function reassertExclusiveFullscreen(win) {
+  if (!win || win.isDestroyed() || isQuitting) return
+  restoreDisplayAfterBlur = true
+  win.setResizable(true)
+  setFullscreenTopMost(win, false)
+  if (win.isFullScreen()) win.setFullScreen(false)
+  coverMonitor(win)
+  const apply = () => {
+    if (win.isDestroyed() || isQuitting || win.isMinimized()) {
+      restoreDisplayAfterBlur = false
+      return
+    }
+    enterExclusiveFullscreen(win)
+    setTimeout(() => {
+      restoreDisplayAfterBlur = false
+    }, 400)
+  }
+  setTimeout(apply, 50)
+  setTimeout(() => {
+    if (win.isDestroyed() || isQuitting || win.isMinimized()) return
+    if (lastDisplayMode !== 'fullscreen') return
+    if (!win.isFullScreen()) enterExclusiveFullscreen(win)
+    else {
+      setFullscreenTopMost(win, true)
+      win.moveTop()
+      win.focus()
+    }
+  }, 220)
+}
+
+function applyDisplayMode(win, mode) {
+  if (!win || win.isDestroyed()) return { success: false }
+  lastDisplayMode = mode === 'borderless' ? 'borderless' : 'fullscreen'
+  win.setResizable(true)
+  if (lastDisplayMode === 'fullscreen') {
+    enterExclusiveFullscreen(win)
+  } else {
+    setFullscreenTopMost(win, false)
+    win.setFullScreen(false)
+    win.maximize()
+    const primaryDisplay = screen.getPrimaryDisplay()
+    if (primaryDisplay && primaryDisplay.workArea) {
+      const { x, y, width, height } = primaryDisplay.workArea
+      win.setBounds({ x, y, width, height })
+    }
+    win.setResizable(false)
+  }
   return { success: true }
 }
 
@@ -660,7 +894,7 @@ function attachAltTabMinimize(win) {
   let blurMinSeq = 0
 
   win.on('blur', () => {
-    if (restoreDisplayAfterBlur) return
+    if (isQuitting || restoreDisplayAfterBlur) return
     if (win.isDestroyed() || win.isMinimized()) return
     try {
       if (win.webContents.isDevToolsFocused()) return
@@ -670,30 +904,39 @@ function attachAltTabMinimize(win) {
 
     const seq = ++blurMinSeq
     const minimizeNow = () => {
-      if (seq !== blurMinSeq) return
+      if (seq !== blurMinSeq || isQuitting) return
       if (win.isDestroyed() || win.isMinimized() || win.isFocused()) return
       win.minimize()
     }
 
     if (win.isFullScreen()) {
+      setFullscreenTopMost(win, false)
       win.once('leave-full-screen', minimizeNow)
       win.setFullScreen(false)
       setTimeout(minimizeNow, 300)
     } else {
+      setFullscreenTopMost(win, false)
       minimizeNow()
     }
   })
 
-  const restoreMode = () => {
-    if (win.isDestroyed() || win.isMinimized()) return
+  win.on('restore', () => {
+    if (win.isDestroyed() || win.isMinimized() || isQuitting) return
+    if (lastDisplayMode === 'fullscreen') {
+      reassertExclusiveFullscreen(win)
+      return
+    }
     restoreDisplayAfterBlur = true
     applyDisplayMode(win, lastDisplayMode)
     setTimeout(() => {
       restoreDisplayAfterBlur = false
     }, 400)
-  }
+  })
 
-  win.on('restore', restoreMode)
+  win.on('focus', () => {
+    if (isQuitting || restoreDisplayAfterBlur || win.isDestroyed() || win.isMinimized()) return
+    if (lastDisplayMode === 'fullscreen') setFullscreenTopMost(win, true)
+  })
 }
 
 function createWindow() {
@@ -710,6 +953,8 @@ function createWindow() {
       app.isPackaged ? 'dist/icon.png' : 'build/icon.ico',
     ),
     minimizable: true,
+    fullscreenable: true,
+    autoHideMenuBar: true,
     skipTaskbar: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
@@ -726,6 +971,13 @@ function createWindow() {
   mainWindow.maximize()
   mainWindow.setResizable(false)
   attachAltTabMinimize(mainWindow)
+  mainWindow.on('minimize', () => emitWindowLifecycle(mainWindow, 'suspended'))
+  mainWindow.on('restore', () => {
+    if (!isQuitting) emitWindowLifecycle(mainWindow, 'resumed')
+  })
+  mainWindow.on('show', () => {
+    if (!isQuitting && !mainWindow.isMinimized()) emitWindowLifecycle(mainWindow, 'resumed')
+  })
 
   if (isDev) {
     // Pipe renderer console messages to main process terminal for easier debugging
@@ -1733,23 +1985,33 @@ ipcMain.handle('track-achievement-unlock', (_event, payload) => {
   return { success: true }
 })
 
-let gaQuitStarted = false
-app.on('before-quit', (event) => {
-  if (gaQuitStarted) return
-  event.preventDefault()
-  gaQuitStarted = true
+function requestAppQuit() {
+  if (isQuitting) return
+  isQuitting = true
+  for (const win of BrowserWindow.getAllWindows()) {
+    emitWindowLifecycle(win, 'suspended')
+  }
   Promise.race([
     gameAnalytics.endSession(),
-    new Promise((resolve) => setTimeout(resolve, 2500)),
+    new Promise((resolve) => setTimeout(resolve, 1500)),
   ]).finally(() => {
-    app.quit()
+    for (const win of BrowserWindow.getAllWindows()) {
+      if (!win.isDestroyed()) win.destroy()
+    }
+    app.exit(0)
   })
+}
+
+app.on('before-quit', (event) => {
+  if (isQuitting) return
+  event.preventDefault()
+  requestAppQuit()
 })
 
 ipcMain.handle('quit-app', () => {
-  app.quit()
+  requestAppQuit()
 })
 
 app.on('window-all-closed', () => {
-  app.quit()
+  requestAppQuit()
 })

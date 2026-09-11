@@ -18,6 +18,8 @@
     "ranking": "RANKING",
     "equipment": "EQUIPMENT",
     "confirmExit": "Are you sure you want to exit?",
+    "confirmExitYes": "Exit",
+    "confirmExitNo": "Cancel",
     "devOnly": "DEV ONLY",
     "finalVer": "FINAL VER.",
     "kicker": "Tonight's Broadcast",

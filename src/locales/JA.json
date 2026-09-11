@@ -15,6 +15,8 @@
     "schedule": "STUDIO",
     "equipment": "EQUIPMENT",
     "confirmExit": "ゲームを終了しますか？",
+    "confirmExitYes": "終了",
+    "confirmExitNo": "キャンセル",
     "devOnly": "開発者専用",
     "finalVer": "FINAL VER.",
     "kicker": "Tonight's Broadcast",

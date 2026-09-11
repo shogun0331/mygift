@@ -132,6 +132,7 @@ interface ElectronAPI {
   getDeviceLockStatus?: () => Promise<{ ok: boolean; reason?: string }>
   trackAchievementUnlock?: (payload: { id: string; name: string }) => Promise<{ success: boolean }>
   quitApp?: () => Promise<void>
+  onWindowLifecycle?: (cb: (state: 'suspended' | 'resumed') => void) => void
 }
 
 interface DeviceLangHints {
