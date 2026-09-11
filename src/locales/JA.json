@@ -26,7 +26,8 @@
     "ranking": "RANKING",
     "ariaMainMenu": "メインメニュー",
     "ariaGameMenu": "インゲームメニュー",
-    "casino": "CASINO"
+    "casino": "CASINO",
+    "continueSub": "最新セーブの自動ロード"
   },
   "hud": {
     "dateTime": "年月日",
@@ -388,13 +389,14 @@
     "noRegisteredDesc": "エディターでキャラクターを追加するとスカウト候補に登場します。",
     "staffPass": "辞退（次の候補を待つ）",
     "staminaDepleted": "スタミナ (枯渇)",
-    "recoveryNeeded": "回復ケアが必要です！"
+    "recoveryNeeded": "回復ケアが必要です！",
+    "expectedRevenue": "予想売上"
   },
   "sns": {
     "action": "SNS",
     "title": "SNS",
     "empty": "まだ投稿がありません。",
-"subscribers": "SNS購読者",
+    "subscribers": "SNS購読者",
     "publishProgress": "SNS投稿進捗",
     "postProgressFormat": "{published} / {total}枚",
     "compose": "新規投稿を作成",
@@ -545,7 +547,8 @@
     "challengePrompt": "昇格審査に挑戦しますか？",
     "challengeAccept": "挑戦",
     "challengeDecline": "拒否（2ターン猶予）",
-    "confirm": "確認"
+    "confirm": "確認",
+    "rewardAssets": "資産 +{amount}"
   },
   "vip": {
     "offerTitle": "VIPイベント発生！",
@@ -553,8 +556,9 @@
     "gradeLabel": "{grade}等級",
     "acceptHeader": "受諾時",
     "acceptSp": "SP {range} (ランダム)",
-    "acceptStamina": "スタミナ最大値 -{n}",
-    "acceptStaminaHint": "次のターンから最大スタミナが {n} 減少します。",
+    "acceptPayout": "放送局 {rank}位の報酬 {range}",
+    "acceptStamina": "対象キャラクターのスタミナをすべて消費",
+    "acceptStaminaHint": "受諾するとスタミナが0になり、休憩が必要です。",
     "rejectHeader": "拒否時",
     "rejectViewers": "視聴者 -{range}人",
     "accept": "受諾",
@@ -564,7 +568,8 @@
     "resultRejectTitle": "VIP面会拒否",
     "resultRejectBody": "VIPの要請を拒否しました。",
     "resultSp": "SP +{n} (獲得)",
-    "resultStamina": "スタミナ最大値 -{n} (適用済み)",
+    "resultPayout": "資産 +{amount}",
+    "resultStamina": "スタミナをすべて消費（適用済み）",
     "resultViewers": "視聴者 -{n}人",
     "confirm": "確認",
     "departTitle": "{name} VIP出発",
@@ -591,7 +596,7 @@
     "offerBody": "{name}が再び面会を求めています。",
     "acceptHeader": "受諾時",
     "acceptSp": "SP +{n}",
-    "acceptStamina": "スタミナ -{n}",
+    "acceptStamina": "体力＆コンディション100%全回復！",
     "rejectHeader": "拒否時",
     "rejectCondition": "コンディション -5 〜 -10",
     "accept": "受諾",
@@ -601,7 +606,7 @@
     "resultRejectTitle": "面会を拒否しました",
     "resultRejectBody": "{name}のコンディションが下がりました。",
     "resultSp": "SP +{n} (獲得)",
-    "resultStamina": "スタミナ -{n}",
+    "resultStamina": "体力＆コンディション100%全回復！",
     "resultCondition": "コンディション -{n}",
     "confirm": "確認"
   },
@@ -697,7 +702,8 @@
       "slots": "開放スロット {n}枠",
       "assets": "資産 ${n}",
       "creators": "{grade}+ランク {n}人",
-      "none": "条件なし"
+      "none": "条件なし",
+      "snsSubscribers": "SNSフォロワー {n}"
     }
   },
   "common": {
@@ -812,7 +818,7 @@
   },
   "casino": {
     "title": "ゴールデンスロット",
-"slotChallengeProgress": "🎰 スロットチャレンジ進捗",
+    "slotChallengeProgress": "🎰 スロットチャレンジ進捗",
     "turnCount": "{currentTurn}ターン / 3",
     "spinsRemaining": "(残り回転: {spins}回)",
     "paytable": "配当表",
@@ -1168,5 +1174,40 @@
     "casinoHighLow9Desc": "ハイ＆ローで9連勝を達成",
     "casinoHighLow12Title": "カジノの覇者",
     "casinoHighLow12Desc": "ハイ＆ローで伝説の12連勝を達成"
+  },
+  "shortsVn": {
+    "editorTitle": "ショートVN",
+    "editorHint": "再視聴VIP/H用に、連携されたVNから映像・セリフを選んで短く再生します。空の場合はフルVNが再生されます。",
+    "save": "ショートVN保存",
+    "noCharacters": "登録されたキャラクターがいません。",
+    "pickCharacter": "キャラクターを選択してください。",
+    "slotVip": "VIP",
+    "slotH": "H",
+    "linkedEvent": "連携VN: {title}",
+    "noLinkedEvent": "連携されたVIP/Hイベントがありません。",
+    "curationHint": "ギャラリーからビートを追加した後、元のVNセリフノードを選んで表示時間を調整してください。順序は↑↓で変更できます。",
+    "addFromGallery": "VNギャラリーから追加",
+    "clearAll": "すべてクリア",
+    "emptyBeats": "登録されたビートがありません。再視聴時はフルVN(+Skip)で再生されます。",
+    "caption": "セリフ",
+    "captionPlaceholder": "下部に表示するセリフ",
+    "duration": "表示時間",
+    "remove": "削除",
+    "galleryTitle": "ショートビート用VNメディア",
+    "galleryHint": "連携されたVIP/Hイベントの映像・画像を選択してください",
+    "playerTitle": "ショートVN",
+    "playerVipTitle": "{name} · VIPショート",
+    "playerHTitle": "{name} · Hショート",
+    "clickNext": "クリックして次へ",
+    "clickFinish": "クリックして終了",
+    "holding": "再生中…",
+    "captionNode": "セリフノード",
+    "captionNone": "(セリフなし)",
+    "captionHint": "連携されたVNのセリフノードIDを選択してください。",
+    "preview": "▶ プレビュー",
+    "previewSlot": "▶ このタブを再生",
+    "simulatorBadge": "ショートVNシミュレーター",
+    "simulatorHint": "映像エリアをクリックすると次のビートへ進みます。",
+    "close": "閉じる ✕"
   }
 }

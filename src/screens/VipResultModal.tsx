@@ -1,3 +1,4 @@
+import { characterDisplayName } from '../game/characterLocales'
 import { formatMoney } from '../game/money'
 import { formatViewers } from '../game/ranking'
 import { useTranslation } from '../locales/i18n'
@@ -5,11 +6,13 @@ import { useTranslation } from '../locales/i18n'
 export type VipResult =
   | {
       kind: 'accept'
+      creatorId: string
       creatorName: string
       payout: number
     }
   | {
       kind: 'reject'
+      creatorId: string
       creatorName: string
       viewerLoss: number
     }
@@ -20,8 +23,12 @@ type VipResultModalProps = {
 }
 
 export function VipResultModal({ result, onConfirm }: VipResultModalProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const accepted = result.kind === 'accept'
+  const displayName = characterDisplayName(
+    { id: result.creatorId, name: result.creatorName },
+    locale,
+  )
 
   return (
     <div
@@ -43,7 +50,7 @@ export function VipResultModal({ result, onConfirm }: VipResultModalProps) {
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-slate-300">
           {accepted
-            ? t('vip.resultAcceptBody').replace('{name}', result.creatorName)
+            ? t('vip.resultAcceptBody').replace('{name}', displayName)
             : t('vip.resultRejectBody')}
         </p>
 

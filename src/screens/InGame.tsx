@@ -3998,6 +3998,7 @@ export function InGame({
     setAssets(nextAssets)
     setVipResult({
       kind: 'accept',
+      creatorId: offer.creatorId,
       creatorName: offer.creatorName,
       payout: Math.max(0, Math.round(payout)),
     })
@@ -4088,6 +4089,7 @@ export function InGame({
     setLeague(nextLeague)
     setVipResult({
       kind: 'reject',
+      creatorId: offer.creatorId,
       creatorName: offer.creatorName,
       viewerLoss,
     })
@@ -4184,7 +4186,7 @@ export function InGame({
     const pending: HRetryPending = {
       kind: 'hRetry',
       creatorId: creator.id,
-      creatorName: creator.name,
+      creatorName: characterDisplayName(creator, locale),
       grade: creator.grade,
     }
     const charDef = registeredCharactersRef.current.find((c) => c.id === creatorId)
@@ -6389,6 +6391,7 @@ export function InGame({
       {socialUi?.mode === 'hRetryResult' ? (
         <HRetryResultModal
           accepted={socialUi.accepted}
+          creatorId={socialUi.pending.creatorId}
           creatorName={socialUi.pending.creatorName}
           staminaLoss={socialUi.staminaLoss}
           conditionLoss={socialUi.conditionLoss}

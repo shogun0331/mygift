@@ -10,6 +10,10 @@ import { initAppLifecycle } from './game/appLifecycle'
 import { seedReviewBuildProgress } from './game/reviewSeed'
 
 seedReviewBuildProgress()
+if (import.meta.env.DEV && import.meta.env.VITE_REVIEW_BUILD !== 'true') {
+  const { seedDevSRankTopSave } = await import('./game/devSaveSeed')
+  seedDevSRankTopSave()
+}
 initUiClickSounds()
 initDisplayMode()
 initAppLifecycle()

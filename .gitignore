@@ -27,6 +27,9 @@ release
 
 # Electron 빌드 산출물 (용량 초과로 GitHub 푸시 거부됨)
 dist-electron
+dist-electron-review
+dist-electron-mac
+dist-electron-mac-review
 /build/game.dat
 /build/game.dat.payload
 
@@ -55,5 +58,10 @@ tsc4.err
 # loc 번역 백업 (토큰/노이즈)
 **/*.bak_*
 **/*.json.bak*
+**/loc_backup_*/
+**/speaker_fix_backup_*/
+_backup_*/
 _korean*.txt
+tts_comparison_*.txt
 __pycache__/
+

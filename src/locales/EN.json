@@ -594,7 +594,7 @@
     "offerBody": "{name} asks to meet again.",
     "acceptHeader": "If accepted",
     "acceptSp": "SP +{n}",
-    "acceptStamina": "Stamina -{n}",
+    "acceptStamina": "Stamina & Condition fully recovered!",
     "rejectHeader": "If declined",
     "rejectCondition": "Condition -5 to -10",
     "accept": "Accept",
@@ -604,7 +604,7 @@
     "resultRejectTitle": "Meeting Declined",
     "resultRejectBody": "{name}'s condition dropped.",
     "resultSp": "SP +{n} gained",
-    "resultStamina": "Stamina -{n}",
+    "resultStamina": "Stamina & Condition fully recovered!",
     "resultCondition": "Condition -{n}",
     "confirm": "OK"
   },

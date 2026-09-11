@@ -3,3 +3,7 @@
 **/__pycache__/
 _korean*.txt
 .mcp/router/node_modules/
+dist-electron/
+dist-electron-review/
+dist-electron-mac/
+dist-electron-mac-review/

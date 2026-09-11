@@ -1,3 +1,4 @@
+import { characterDisplayName } from '../game/characterLocales'
 import { formatMoney } from '../game/money'
 import { formatViewers } from '../game/ranking'
 import {
@@ -15,9 +16,13 @@ type VipOfferModalProps = {
 }
 
 export function VipOfferModal({ offer, stationRank, onAccept, onReject }: VipOfferModalProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const payout = vipAcceptPayoutRange(stationRank)
   const reject = VIP_REJECT_VIEWERS_BY_GRADE[offer.grade]
+  const displayName = characterDisplayName(
+    { id: offer.creatorId, name: offer.creatorName },
+    locale,
+  )
 
   return (
     <div
@@ -32,13 +37,13 @@ export function VipOfferModal({ offer, stationRank, onAccept, onReject }: VipOff
           {t('vip.offerTitle')}
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-slate-300">
-          {t('vip.offerBody').replace('{name}', offer.creatorName)}
+          {t('vip.offerBody').replace('{name}', displayName)}
         </p>
 
         <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-black/30 px-3 py-3">
-          <CreatorFace name={offer.creatorName} imageUrl={offer.profileImageUrl} />
+          <CreatorFace name={displayName} imageUrl={offer.profileImageUrl} />
           <div className="min-w-0">
-            <p className="truncate text-sm font-black text-slate-100">{offer.creatorName}</p>
+            <p className="truncate text-sm font-black text-slate-100">{displayName}</p>
             <p className="text-[11px] font-bold text-amber-300">
               {t('vip.gradeLabel').replace('{grade}', offer.grade)}
             </p>

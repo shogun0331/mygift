@@ -1,4 +1,5 @@
 import { useDateOfferSpeech } from './useDateOfferSpeech'
+import { characterDisplayName } from '../game/characterLocales'
 import { H_RETRY_BY_GRADE, type HRetryPending } from '../game/social'
 import { useTranslation } from '../locales/i18n'
 
@@ -28,11 +29,15 @@ export function HRetryOfferModal({
   onAccept: () => void
   onReject: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const spec = H_RETRY_BY_GRADE[pending.grade]
-  const speech = useDateOfferSpeech(pending.creatorName, pending.creatorId)
+  const displayName = characterDisplayName(
+    { id: pending.creatorId, name: pending.creatorName },
+    locale,
+  )
+  const speech = useDateOfferSpeech(displayName, pending.creatorId)
   const line =
-    speech?.text || t('hRetry.offerBody').replace('{name}', pending.creatorName)
+    speech?.text || t('hRetry.offerBody').replace('{name}', displayName)
 
   return (
     <div
@@ -47,9 +52,9 @@ export function HRetryOfferModal({
           {t('hRetry.offerTitle')}
         </h2>
         <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-black/30 px-3 py-3">
-          <Face name={pending.creatorName} imageUrl={pending.profileImageUrl} />
+          <Face name={displayName} imageUrl={pending.profileImageUrl} />
           <div className="min-w-0">
-            <p className="truncate text-sm font-black text-slate-100">{pending.creatorName}</p>
+            <p className="truncate text-sm font-black text-slate-100">{displayName}</p>
             <p className="text-[11px] font-bold text-amber-300">
               {t('vip.gradeLabel').replace('{grade}', pending.grade)}
             </p>
@@ -93,18 +98,21 @@ export function HRetryOfferModal({
 
 export function HRetryResultModal({
   accepted,
+  creatorId,
   creatorName,
   staminaLoss,
   conditionLoss,
   onConfirm,
 }: {
   accepted: boolean
+  creatorId?: string
   creatorName: string
   staminaLoss: number
   conditionLoss: number
   onConfirm: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
+  const displayName = characterDisplayName({ id: creatorId, name: creatorName }, locale)
   return (
     <div
       className="fixed inset-0 z-[87] flex items-center justify-center bg-black/75 p-4 backdrop-blur-[3px]"
@@ -125,8 +133,8 @@ export function HRetryResultModal({
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-slate-300">
           {accepted
-            ? t('hRetry.resultAcceptBody').replace('{name}', creatorName)
-            : t('hRetry.resultRejectBody').replace('{name}', creatorName)}
+            ? t('hRetry.resultAcceptBody').replace('{name}', displayName)
+            : t('hRetry.resultRejectBody').replace('{name}', displayName)}
         </p>
         <div className="mt-4 space-y-1.5 rounded-xl border border-white/10 bg-black/25 px-3 py-3">
           {accepted ? (

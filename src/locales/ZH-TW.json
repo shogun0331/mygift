@@ -26,7 +26,8 @@
     "ranking": "RANKING",
     "ariaMainMenu": "主菜單",
     "ariaGameMenu": "遊戲內菜單",
-    "casino": "CASINO"
+    "casino": "CASINO",
+    "continueSub": "自動載入最新存檔"
   },
   "hud": {
     "dateTime": "年月日",
@@ -388,7 +389,8 @@
     "noRegisteredDesc": "在編輯器中添加角色後，他們將成為挖角候選人。",
     "staffPass": "拒絕（等待下一位）",
     "staminaDepleted": "體力 (耗盡)",
-    "recoveryNeeded": "需要恢復護理！"
+    "recoveryNeeded": "需要恢復護理！",
+    "expectedRevenue": "預計營收"
   },
   "sns": {
     "action": "SNS",
@@ -592,7 +594,7 @@
     "offerBody": "{name}請求再次見面。",
     "acceptHeader": "接受時",
     "acceptSp": "SP +{n}",
-    "acceptStamina": "體力 -{n}",
+    "acceptStamina": "體力與狀態100%全滿恢復！",
     "rejectHeader": "拒絕時",
     "rejectCondition": "狀態 -5 ~ -10",
     "accept": "接受",
@@ -602,7 +604,7 @@
     "resultRejectTitle": "已拒絕會面",
     "resultRejectBody": "{name}的狀態下降了。",
     "resultSp": "SP +{n}（獲得）",
-    "resultStamina": "體力 -{n}",
+    "resultStamina": "體力與狀態100%全滿恢復！",
     "resultCondition": "狀態 -{n}",
     "confirm": "確認"
   },
@@ -698,7 +700,8 @@
       "slots": "開放槽位 {n}個",
       "assets": "資產 ${n}",
       "creators": "{grade}+級 {n}人",
-      "none": "無條件"
+      "none": "無條件",
+      "snsSubscribers": "SNS粉絲 {n}"
     }
   },
   "common": {

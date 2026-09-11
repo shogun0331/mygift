@@ -1,4 +1,5 @@
 import { useDateOfferSpeech } from './useDateOfferSpeech'
+import { characterDisplayName } from '../game/characterLocales'
 import type { DatePending } from '../game/social'
 import { useTranslation } from '../locales/i18n'
 import { resolveMediaSrc } from '../game/mediaUrl'
@@ -38,10 +39,14 @@ export function DateOfferModal({
   pending: DatePending
   onStart: () => void
 }) {
-  const { t } = useTranslation()
-  const speech = useDateOfferSpeech(pending.creatorName, pending.creatorId)
+  const { t, locale } = useTranslation()
+  const displayName = characterDisplayName(
+    { id: pending.creatorId, name: pending.creatorName },
+    locale,
+  )
+  const speech = useDateOfferSpeech(displayName, pending.creatorId)
   const line =
-    speech?.text || t('date.offerBody').replace('{name}', pending.creatorName)
+    speech?.text || t('date.offerBody').replace('{name}', displayName)
 
   return (
     <div
@@ -68,9 +73,9 @@ export function DateOfferModal({
 
           {/* Character Info Banner */}
           <div className="mt-5 flex items-center gap-4.5 rounded-2xl border border-pink-400/35 bg-gradient-to-r from-pink-950/50 via-purple-950/35 to-black/60 p-4 shadow-inner">
-            <Face name={pending.creatorName} imageUrl={pending.profileImageUrl} />
+            <Face name={displayName} imageUrl={pending.profileImageUrl} />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-lg sm:text-xl font-black text-white">{pending.creatorName}</p>
+              <p className="truncate text-lg sm:text-xl font-black text-white">{displayName}</p>
             </div>
           </div>
 
@@ -103,7 +108,11 @@ export function DateResultModal({
   pending: DatePending
   onConfirm: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
+  const displayName = characterDisplayName(
+    { id: pending.creatorId, name: pending.creatorName },
+    locale,
+  )
   return (
     <div
       className="fixed inset-0 z-[87] flex items-center justify-center bg-black/84 p-4 backdrop-blur-md"
@@ -124,7 +133,7 @@ export function DateResultModal({
             {t('date.resultTitle')}
           </h2>
           <p className="mt-4 text-base font-medium leading-relaxed text-pink-100/90">
-            {t('date.resultBody').replace('{name}', pending.creatorName)}
+            {t('date.resultBody').replace('{name}', displayName)}
           </p>
           {pending.step === 'h' && (
             <div className="mt-5 space-y-2.5">
@@ -137,7 +146,7 @@ export function DateResultModal({
                   <span>{t('social.hUnlockTitle')}</span>
                 </div>
                 <p className="mt-1 text-xs text-pink-100/90 leading-relaxed">
-                  {t('social.hUnlockDesc').replace('{name}', pending.creatorName)}
+                  {t('social.hUnlockDesc').replace('{name}', displayName)}
                 </p>
               </div>
             </div>

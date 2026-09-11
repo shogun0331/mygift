@@ -26,7 +26,8 @@
     "ranking": "RANKING",
     "ariaMainMenu": "主菜单",
     "ariaGameMenu": "游戏内菜单",
-    "casino": "CASINO"
+    "casino": "CASINO",
+    "continueSub": "自动加载最新存档"
   },
   "hud": {
     "dateTime": "年月日",
@@ -388,12 +389,13 @@
     "noRegisteredDesc": "在编辑器中添加角色后，他们将成为挖角候选人。",
     "staffPass": "拒绝（等待下一位）",
     "staminaDepleted": "体力 (耗尽)",
-    "recoveryNeeded": "需要恢复护理！"
+    "recoveryNeeded": "需要恢复护理！",
+    "expectedRevenue": "预计营收"
   },
   "sns": {
     "action": "SNS",
     "title": "SNS",
-"subscribers": "SNS订阅者",
+    "subscribers": "SNS订阅者",
     "publishProgress": "SNS发布进度",
     "postProgressFormat": "{published} / {total}篇",
     "empty": "还没有发布任何帖子。",
@@ -592,7 +594,7 @@
     "offerBody": "{name}请求再次见面。",
     "acceptHeader": "接受时",
     "acceptSp": "SP +{n}",
-    "acceptStamina": "体力 -{n}",
+    "acceptStamina": "体力与状态100%全满恢复！",
     "rejectHeader": "拒绝时",
     "rejectCondition": "状态 -5 ~ -10",
     "accept": "接受",
@@ -602,7 +604,7 @@
     "resultRejectTitle": "已拒绝会面",
     "resultRejectBody": "{name}的状态下降了。",
     "resultSp": "SP +{n}（获得）",
-    "resultStamina": "体力 -{n}",
+    "resultStamina": "体力与状态100%全满恢复！",
     "resultCondition": "状态 -{n}",
     "confirm": "确认"
   },
@@ -698,7 +700,8 @@
       "slots": "开放槽位 {n}个",
       "assets": "资产 ${n}",
       "creators": "{grade}+级 {n}人",
-      "none": "无条件"
+      "none": "无条件",
+      "snsSubscribers": "SNS粉丝 {n}"
     }
   },
   "common": {
@@ -848,7 +851,7 @@
   },
   "casino": {
     "title": "黄金老虎机",
-"slotChallengeProgress": "🎰 老虎机挑战进度",
+    "slotChallengeProgress": "🎰 老虎机挑战进度",
     "turnCount": "第{currentTurn}次 / 3",
     "spinsRemaining": "(剩余旋转: {spins}次)",
     "paytable": "赔率表",
