@@ -1,13 +1,5 @@
-﻿# Cursor 에이전트 컨텍스트에서 제외 (gitignore 문법)
-# 미디어 바이너리·lockfile 은 Cursor 기본 ignore 에 이미 있음.
-# 이벤트/캐릭터 JSON 은 막지 않음 — 필요하면 경로를 지정해 읽을 수 있게.
-
-# --- 루트 생성 잡/캐시 (이미지·잡 트래킹, 게임 로직 아님) ---
-_*.json
-_*.txt
-이미지*.json
-이미지*.txt
-
-# --- 번역 도구 중간 산출물 ---
-tools/event-loc/out/
-
+**/*.bak_*
+**/*.json.bak*
+**/__pycache__/
+_korean*.txt
+.mcp/router/node_modules/

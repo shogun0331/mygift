@@ -2,13 +2,14 @@ import userChatKo from '../data/chat/userChat.ko.json'
 import userChatEn from '../data/chat/userChat.en.json'
 import userChatJa from '../data/chat/userChat.ja.json'
 import userChatZh from '../data/chat/userChat.zh.json'
+import userChatZhTw from '../data/chat/userChat.zh-tw.json'
 import userChatEs from '../data/chat/userChat.es.json'
 import userChatDe from '../data/chat/userChat.de.json'
 import userChatRu from '../data/chat/userChat.ru.json'
 import userIdRaw from '../data/sns/XUserID.txt?raw'
 import { formatMoney } from './money'
 
-export type ChatCommentLang = 'ko' | 'en' | 'ja' | 'zh' | 'ru' | 'es' | 'de'
+export type ChatCommentLang = 'ko' | 'en' | 'ja' | 'zh' | 'zh-tw' | 'ru' | 'es' | 'de'
 
 const USER_IDS: string[] = userIdRaw
   .split(/\r?\n/)
@@ -20,6 +21,7 @@ const CHAT_DICTIONARY: Record<ChatCommentLang, string[]> = {
   en: userChatEn,
   ja: userChatJa,
   zh: userChatZh,
+  'zh-tw': userChatZhTw,
   es: userChatEs,
   de: userChatDe,
   ru: userChatRu,
@@ -27,6 +29,7 @@ const CHAT_DICTIONARY: Record<ChatCommentLang, string[]> = {
 
 export function chatLangOf(locale: string | null | undefined): ChatCommentLang {
   const n = String(locale ?? '').toLowerCase()
+  if (n.includes('tw') || n.includes('hant') || n.includes('hk') || n.includes('mo')) return 'zh-tw'
   if (n.startsWith('zh')) return 'zh'
   if (n.startsWith('ja')) return 'ja'
   if (n.startsWith('en')) return 'en'
@@ -76,6 +79,8 @@ export function formatChatDonationText(
       return `${creatorName}さんに${money}をスパチャしました。`
     case 'zh':
       return `向 ${creatorName} 赞助了 ${money}。`
+    case 'zh-tw':
+      return `向 ${creatorName} 贊助了 ${money}。`
     case 'es':
       return `¡Donó ${money} a ${creatorName}! `
     case 'de':

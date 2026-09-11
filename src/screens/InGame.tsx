@@ -3195,7 +3195,7 @@ export function InGame({
     ).length
     const payroll = nextOwned.map((creator) => ({
       id: creator.id,
-      name: creator.name,
+      name: characterDisplayName(creator, locale),
       salary: creator.salary,
     }))
     const nextDate = monthToCalendarDate(GAME_EPOCH, nextMonth)
@@ -4923,7 +4923,7 @@ export function InGame({
   const [questKind, setQuestKind] = useState<QuestKind | null>(null)
   const [questDone, setQuestDone] = useState(false)
   const [questReward, setQuestReward] = useState(0)
-  const [questTarget, setQuestTarget] = useState('')
+  const [questTargetId, setQuestTargetId] = useState('')
   const [questTargetImg, setQuestTargetImg] = useState('')
   const [questFx, setQuestFx] = useState(false)
   const [questReaction, setQuestReaction] = useState('')
@@ -4957,7 +4957,7 @@ export function InGame({
     questAgeRef.current = 1
     questLifespanRef.current = 2 + Math.floor(Math.random() * 2) // 2~3턴
     setQuestDone(false)
-    setQuestTarget('')
+    setQuestTargetId('')
     setQuestTargetImg('')
     const owned = ownedCreatorsRef.current
     const statVal = (
@@ -5017,12 +5017,11 @@ export function InGame({
     const tgt = chosen
       ? {
           id: chosen.id,
-          name: characterDisplayName(chosen, locale),
           img: chosen.profileImageUrl ?? '',
         }
       : null
     questTargetIdRef.current = tgt ? tgt.id : ''
-    setQuestTarget(tgt ? tgt.name : '')
+    setQuestTargetId(tgt ? tgt.id : '')
     setQuestTargetImg(tgt ? tgt.img : '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameMonth])
@@ -5262,7 +5261,9 @@ export function InGame({
                       {questKind
                         ? t(
                             QUEST_DEFS[questKind].textKey,
-                            questTarget ? { name: questTarget } : undefined,
+                            questTargetId
+                              ? { name: creatorNameOf(questTargetId) }
+                              : undefined,
                           )
                         : '—'}
                     </p>
@@ -5674,6 +5675,7 @@ export function InGame({
                     <option value="EN">English (EN)</option>
                     <option value="JA">日本語 (JA)</option>
                     <option value="ZH-CN">简体中文 (ZH-CN)</option>
+                    <option value="ZH-TW">繁體中文 (ZH-TW)</option>
                     <option value="RU">Русский (RU)</option>
                     <option value="ES">Español (ES)</option>
                     <option value="DE">Deutsch (DE)</option>
@@ -6024,6 +6026,7 @@ export function InGame({
           statement={weeklyStatement}
           assetsAfter={settlementAssetsAfter}
           portraitByCreatorId={settlementPortraits}
+          creators={ownedCreators}
           onConfirm={() => {
             setWeeklyStatement(null)
             finishWeeklyStatementFollowup()

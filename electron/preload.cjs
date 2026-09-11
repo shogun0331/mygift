@@ -2,6 +2,28 @@ const { contextBridge } = require('electron')
 
 const { ipcRenderer } = require('electron')
 
+function readArg(name) {
+  const prefix = `--${name}=`
+  const found = process.argv.find((arg) => typeof arg === 'string' && arg.startsWith(prefix))
+  return found ? found.slice(prefix.length) : ''
+}
+
+function readDeviceLangHints() {
+  const systemLocale = readArg('broadcast-system-locale')
+  let preferredLanguages = []
+  try {
+    const parsed = JSON.parse(decodeURIComponent(readArg('broadcast-preferred-langs') || '') || '[]')
+    if (Array.isArray(parsed)) {
+      preferredLanguages = parsed.map((lang) => String(lang || '')).filter(Boolean)
+    }
+  } catch {
+    preferredLanguages = []
+  }
+  return { systemLocale, preferredLanguages }
+}
+
+contextBridge.exposeInMainWorld('deviceLangHints', readDeviceLangHints())
+
 contextBridge.exposeInMainWorld('electronAPI', {
   platform: process.platform,
   setDisplayMode: (mode) => ipcRenderer.invoke('set-display-mode', { mode }),

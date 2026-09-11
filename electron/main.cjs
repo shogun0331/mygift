@@ -7,22 +7,24 @@ const deviceLock = require('./deviceLock.cjs')
 const gameAnalytics = require('./gameAnalytics.cjs')
 
 // 이벤트 대사 파일 키 (src/events/eventLocales.ts 와 동일)
-const EVENT_LOCALES = ['ko', 'en', 'ja', 'zh-cn', 'ru', 'es', 'de']
+const EVENT_LOCALES = ['ko', 'en', 'ja', 'zh-cn', 'zh-tw', 'ru', 'es', 'de']
 const EVENT_DEFAULT_LOCALE = 'ko'
 
 function canonicalEventLocale(lang) {
   const raw = String(lang || '').trim()
   if (!raw) return null
-  const upper = raw.toUpperCase()
+  const upper = raw.toUpperCase().replace(/_/g, '-')
   if (upper === 'KO') return 'ko'
   if (upper === 'EN') return 'en'
   if (upper === 'JA') return 'ja'
-  if (upper === 'ZH-CN' || upper === 'ZH' || upper === 'ZH_CN') return 'zh-cn'
+  if (upper === 'ZH-TW' || upper === 'ZHTW') return 'zh-tw'
+  if (upper === 'ZH-CN' || upper === 'ZHCN' || upper === 'ZH') return 'zh-cn'
   if (upper === 'RU') return 'ru'
   if (upper === 'ES') return 'es'
   if (upper === 'DE') return 'de'
   const lower = raw.toLowerCase().replace(/_/g, '-')
-  if (lower === 'zh' || lower === 'zh-hans') return 'zh-cn'
+  if (lower === 'zh-hant' || lower === 'zh-tw' || lower === 'zh-hk' || lower === 'zh-mo') return 'zh-tw'
+  if (lower === 'zh' || lower === 'zh-hans' || lower === 'zh-cn') return 'zh-cn'
   if (EVENT_LOCALES.includes(lower)) return lower
   return null
 }
@@ -76,6 +78,10 @@ function parseJsonFile(buffer) {
 }
 
 const isDev = process.env.ELECTRON_DEV === '1'
+if (isDev) {
+  // 개발 실행과 패키징본이 같은 AppData 세이브(localStorage)를 쓰지 않게 분리
+  app.setPath('userData', path.join(app.getPath('appData'), 'BroadcastGame-dev'))
+}
 
 // GPU 가속은 유지하되 GPU 샌드박스를 해제해 GPU 프로세스 access violation(0xC0000005) 크래시 방지
 // (하이브리드 GPU 노트북에서 흔한 원인. 성능 영향 없음)
@@ -596,9 +602,23 @@ protocol.registerSchemesAsPrivileged([
   },
 ])
 
+function getDeviceLangHints() {
+  const systemLocale =
+    typeof app.getSystemLocale === 'function' ? app.getSystemLocale() : app.getLocale()
+  const preferredLanguages =
+    typeof app.getPreferredSystemLanguages === 'function' ? app.getPreferredSystemLanguages() : []
+  return {
+    systemLocale: String(systemLocale || ''),
+    preferredLanguages: Array.isArray(preferredLanguages)
+      ? preferredLanguages.map((lang) => String(lang || '')).filter(Boolean)
+      : [],
+  }
+}
+
 function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay()
   const displayWorkArea = primaryDisplay ? primaryDisplay.workAreaSize : { width: 1280, height: 800 }
+  const deviceLangHints = getDeviceLangHints()
 
   const mainWindow = new BrowserWindow({
     width: displayWorkArea.width,
@@ -613,6 +633,10 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
+      additionalArguments: [
+        `--broadcast-system-locale=${deviceLangHints.systemLocale}`,
+        `--broadcast-preferred-langs=${encodeURIComponent(JSON.stringify(deviceLangHints.preferredLanguages))}`,
+      ],
     },
   })
 

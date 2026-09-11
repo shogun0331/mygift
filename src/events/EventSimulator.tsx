@@ -145,6 +145,7 @@ function getCharacterName(
       const charDef = event.characters?.find((c) => c.id === charId)
       if (charDef) {
         if (charDef.names?.[locale]) return charDef.names[locale]
+        if (locale === 'zh-tw' && charDef.names?.['zh-cn']) return charDef.names['zh-cn']
         if (charDef.names?.[lang]) return charDef.names[lang]
         if (charDef.name) return charDef.name
       }
@@ -175,6 +176,7 @@ function getCharacterName(
     const charDef = event.characters?.find((c) => c.id === charId)
     if (charDef) {
       if (charDef.names?.[locale]) return charDef.names[locale]
+      if (locale === 'zh-tw' && charDef.names?.['zh-cn']) return charDef.names['zh-cn']
       if (charDef.names?.[lang]) return charDef.names[lang]
       if (charDef.name) return charDef.name
       const named = lookupLocalizedString(event.localization, locale, [charDef.nameKey, charId])

@@ -1,3 +1,5 @@
+import { s2tw } from './s2tw'
+
 export type SupportedLocale = 'ko' | 'en' | 'ja' | 'zh' | 'es' | 'th' | 'vi'
 
 // 🔴 저만족도 (0~29%) 멘트 5개 (7개국어)
@@ -305,6 +307,11 @@ export const AUDIT_DOC_PASS_NOTICE: Record<
 }
 
 // 지원되는 언어 안전 매핑 헬퍼
+function isTraditionalZh(locale: string): boolean {
+  const loc = (locale || '').toLowerCase()
+  return loc.includes('tw') || loc.includes('hant') || loc.includes('hk') || loc.includes('mo')
+}
+
 export function normalizeLocale(locale: string): SupportedLocale {
   const loc = (locale || 'ko').toLowerCase()
   if (loc.startsWith('en')) return 'en'
@@ -316,7 +323,10 @@ export function normalizeLocale(locale: string): SupportedLocale {
   return 'ko'
 }
 
-// 만족도 %에 따른 랜덤 멘트 추출 헬퍼
+function maybeTw(text: string, localeStr: string): string {
+  return isTraditionalZh(localeStr) ? s2tw(text) : text
+}
+
 export function getJudgeReactionDialogue(pct: number, localeStr: string): string {
   const loc = normalizeLocale(localeStr)
   let pool: string[]
@@ -328,50 +338,50 @@ export function getJudgeReactionDialogue(pct: number, localeStr: string): string
     pool = LOW_SATISFACTION_DIALOGUES[loc]
   }
   const idx = Math.floor(Math.random() * pool.length)
-  return pool[idx] || pool[0]
+  return maybeTw(pool[idx] || pool[0], localeStr)
 }
 
-// 심사관 공격 시 랜덤 멘트 추출 헬퍼
 export function getJudgeAttackDialogue(localeStr: string): string {
   const loc = normalizeLocale(localeStr)
   const pool = JUDGE_ATTACK_DIALOGUES[loc]
   const idx = Math.floor(Math.random() * pool.length)
-  return pool[idx] || pool[0]
+  return maybeTw(pool[idx] || pool[0], localeStr)
 }
 
-// 승급 성공 타이틀 획득
 export function getAuditPassTitle(localeStr: string): string {
   const loc = normalizeLocale(localeStr)
-  return AUDIT_PASS_TITLE[loc] || AUDIT_PASS_TITLE.ko
+  return maybeTw(AUDIT_PASS_TITLE[loc] || AUDIT_PASS_TITLE.ko, localeStr)
 }
 
-// 승급 실패 타이틀 획득
 export function getAuditFailTitle(localeStr: string): string {
   const loc = normalizeLocale(localeStr)
-  return AUDIT_FAIL_TITLE[loc] || AUDIT_FAIL_TITLE.ko
+  return maybeTw(AUDIT_FAIL_TITLE[loc] || AUDIT_FAIL_TITLE.ko, localeStr)
 }
 
-// 승급 서류 통과 안내 획득
 export function getAuditDocPassNotice(localeStr: string, tierName: string) {
   const loc = normalizeLocale(localeStr)
   const fn = AUDIT_DOC_PASS_NOTICE[loc] || AUDIT_DOC_PASS_NOTICE.ko
-  return fn(tierName)
+  const notice = fn(tierName)
+  if (!isTraditionalZh(localeStr)) return notice
+  return {
+    title: s2tw(notice.title),
+    body: s2tw(notice.body),
+    button: s2tw(notice.button),
+  }
 }
 
-// 심사관을 만족시켜라 타이틀 획득
 export function getSatisfyJudgeTitle(localeStr: string): string {
   const loc = normalizeLocale(localeStr)
-  return SATISFY_JUDGE_TITLE[loc] || SATISFY_JUDGE_TITLE.ko
+  return maybeTw(SATISFY_JUDGE_TITLE[loc] || SATISFY_JUDGE_TITLE.ko, localeStr)
 }
 
-// 심사관을 만족시킬 카드를 선택해주세요 안내 획득
 export function getSelectCardPrompt(localeStr: string): string {
   const loc = normalizeLocale(localeStr)
-  return SELECT_CARD_PROMPT[loc] || SELECT_CARD_PROMPT.ko
+  return maybeTw(SELECT_CARD_PROMPT[loc] || SELECT_CARD_PROMPT.ko, localeStr)
 }
 
-// 확인 및 진행 버튼 텍스트 획득
 export function getConfirmProceedBtnText(localeStr: string): string {
   const loc = normalizeLocale(localeStr)
-  return CONFIRM_PROCEED_BTN[loc] || CONFIRM_PROCEED_BTN.ko
+  return maybeTw(CONFIRM_PROCEED_BTN[loc] || CONFIRM_PROCEED_BTN.ko, localeStr)
 }
+

@@ -129,6 +129,7 @@ async function activateGroup(groupName) {
         command,
         args,
         env: { ...process.env, ...(server.env ?? {}) },
+        cwd: server.cwd || undefined,
         stderr: "inherit",
       });
       const client = new Client({ name: `router-backend-${server.name}`, version: "1.0.0" });

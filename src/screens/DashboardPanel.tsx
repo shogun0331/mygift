@@ -353,7 +353,10 @@ function formatSystemFeedText(
         c.name === event.creatorName ||
         (c.names && Object.values(c.names).includes(event.creatorName)),
     )
-  const name = creator ? characterDisplayName(creator, locale) : event.creatorName || ''
+  const name = characterDisplayName(
+    creator ?? { id: event.creatorId, name: event.creatorName },
+    locale,
+  )
 
   if (event.type === 'viewers' && event.amount > 0) {
     const tmpl = t('feed.viewersGained') || '📈 {count} viewers gained! ({name})'
@@ -550,7 +553,10 @@ function LiveChatFeed({
                     c.name === event.creatorName ||
                     (c.names && Object.values(c.names).includes(event.creatorName)),
                 )
-              const creatorName = creator ? characterDisplayName(creator, locale) : (event.creatorName || 'Creator')
+              const creatorName = characterDisplayName(
+                creator ?? { id: event.creatorId, name: event.creatorName },
+                locale,
+              )
               const donationText = formatChatDonationText(creatorName, event.amount, locale)
 
               return (

@@ -3,6 +3,7 @@ import {
   primaryCharacterLocaleText,
   type CharacterLocaleText,
 } from './characterLocales'
+import { s2tw } from './s2tw'
 import {
   createRegisteredStaff,
   type RegisteredStaff,
@@ -30,6 +31,7 @@ function namePack(
     ko,
     en,
     'zh-cn': zh,
+    'zh-tw': s2tw(zh),
     ru,
     es: en,
     de: en,

@@ -1,5 +1,6 @@
 import { findCharacterIconUrl, type CharacterImage } from './characters'
 import { pickCharacterLocaleText, type CharacterLocaleText } from './characterLocales'
+import { s2tw } from './s2tw'
 
 export type AchievementCategory = 'station' | 'broadcast' | 'creator' | 'casino'
 
@@ -188,6 +189,7 @@ export const DEFAULT_CHARACTERS_DATA = [
       en: 'Rina Miyazawa',
       ja: '宮沢 里奈',
       'zh-cn': '宫泽 里奈',
+      'zh-tw': s2tw('宫泽 里奈'),
       ru: 'Рина Миядзава',
       es: 'Rina Miyazawa',
       de: 'Rina Miyazawa',
@@ -202,6 +204,7 @@ export const DEFAULT_CHARACTERS_DATA = [
       en: 'Misaki Tachibana',
       ja: '橘 美咲',
       'zh-cn': '橘 美咲',
+      'zh-tw': s2tw('橘 美咲'),
       ru: 'Мисаки Татибана',
       es: 'Misaki Tachibana',
       de: 'Misaki Tachibana',
@@ -216,6 +219,7 @@ export const DEFAULT_CHARACTERS_DATA = [
       en: 'Megumi Sato',
       ja: '佐藤 恵',
       'zh-cn': '佐藤 惠',
+      'zh-tw': s2tw('佐藤 惠'),
       ru: 'Мэгуми Сато',
       es: 'Megumi Sato',
       de: 'Megumi Sato',
@@ -230,6 +234,7 @@ export const DEFAULT_CHARACTERS_DATA = [
       en: 'Miho Akiyama',
       ja: '秋山 美穂',
       'zh-cn': '秋山 美穗',
+      'zh-tw': s2tw('秋山 美穗'),
       ru: 'Михо Акияма',
       es: 'Miho Akiyama',
       de: 'Miho Akiyama',
@@ -244,6 +249,7 @@ export const DEFAULT_CHARACTERS_DATA = [
       en: 'Aya Shirakawa',
       ja: '白川 彩',
       'zh-cn': '白川 彩',
+      'zh-tw': s2tw('白川 彩'),
       ru: 'Ая Сиракава',
       es: 'Aya Shirakawa',
       de: 'Aya Shirakawa',
@@ -258,6 +264,7 @@ export const DEFAULT_CHARACTERS_DATA = [
       en: 'Rina Senno',
       ja: '千野 里奈',
       'zh-cn': '千野 里奈',
+      'zh-tw': s2tw('千野 里奈'),
       ru: 'Рина Сэнно',
       es: 'Rina Senno',
       de: 'Rina Senno',
@@ -272,6 +279,7 @@ export const DEFAULT_CHARACTERS_DATA = [
       en: 'Luisa',
       ja: 'ルイーザ',
       'zh-cn': '路易莎',
+      'zh-tw': s2tw('路易莎'),
       ru: 'Луиза',
       es: 'Luisa',
       de: 'Luisa',
@@ -286,6 +294,7 @@ export const DEFAULT_CHARACTERS_DATA = [
       en: 'Mai Sakuragi',
       ja: '桜木 舞',
       'zh-cn': '樱木 舞',
+      'zh-tw': s2tw('樱木 舞'),
       ru: 'Май Сакураги',
       es: 'Mai Sakuragi',
       de: 'Mai Sakuragi',
@@ -300,6 +309,7 @@ export const DEFAULT_CHARACTERS_DATA = [
       en: 'Li Mei',
       ja: '李美',
       'zh-cn': '李美',
+      'zh-tw': s2tw('李美'),
       ru: 'Ли Мэй',
       es: 'Li Mei',
       de: 'Li Mei',

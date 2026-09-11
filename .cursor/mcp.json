@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "mcp-router": {
+      "command": "node",
+      "args": ["F:/Broadcast/broadcast-game/.mcp/router/index.mjs"]
+    },
+    "godmode": {
+      "command": "npx",
+      "args": ["-y", "godmode-mcp@0.1.0"],
+      "env": {
+        "GODMODE_MCP_TOKEN": ""
+      }
+    }
+  }
+}

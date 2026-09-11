@@ -69,6 +69,12 @@ html[data-locale='ZH-CN'] {
   --font-stat: Inter, 'Noto Sans SC', sans-serif;
 }
 
+html[data-locale='ZH-TW'] {
+  --font-display: 'Noto Sans TC', Inter, sans-serif;
+  --font-ui: 'Noto Sans TC', Inter, sans-serif;
+  --font-stat: Inter, 'Noto Sans TC', sans-serif;
+}
+
 input,
 textarea,
 [contenteditable="true"] {

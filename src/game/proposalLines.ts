@@ -1,3 +1,5 @@
+import { s2tw } from './s2tw'
+
 export type ProposalDialogue = {
   ko: string
   ja: string
@@ -122,10 +124,10 @@ export const PROPOSAL_DATA: ProposalItem[] = [
       ko: '나랑 결혼해. 앞으로의 인생은 내가 책임질게.',
       ja: '俺と結婚しろ。これから先の人生、俺が責任取る。',
       en: 'Marry me. I will take responsibility for the rest of your life.',
-      zh: '和我结婚吧。今后的人生的由我负责。',
+      zh: '和我结婚吧。今后的人生由我负责。',
       es: 'Cásate conmigo. Asumiré la responsabilidad de tu vida a partir de ahora.',
       de: 'Heirate mich. Ich werde für den Rest deines Lebens die Verantwortung übernehmen.',
-      ru: 'Выходи за меня. Я возьму ответственность за твоя дальнейшую жизнь.',
+      ru: 'Выходи за меня. Я возьму ответственность за твою дальнейшую жизнь.',
     },
   },
   {
@@ -167,6 +169,9 @@ export function getProposalDialogueText(name: string, locale: string = 'ko'): st
   const loc = (locale || 'ko').toLowerCase()
   if (loc.startsWith('ja')) return item.dialogue.ja
   if (loc.startsWith('en')) return item.dialogue.en
+  if (loc.includes('tw') || loc.includes('hant') || loc.includes('hk') || loc.includes('mo')) {
+    return s2tw(item.dialogue.zh)
+  }
   if (loc.startsWith('zh')) return item.dialogue.zh
   if (loc.startsWith('es')) return item.dialogue.es
   if (loc.startsWith('de')) return item.dialogue.de

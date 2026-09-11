@@ -327,6 +327,7 @@
     "title": "SNS",
     "subscribers": "SNS 구독자",
     "publishProgress": "SNS 발행 진행률",
+"postProgressFormat": "{published} / {total}장",
     "empty": "아직 올린 게시물이 없습니다.",
     "compose": "새 게시물 작성하기",
     "composeTitle": "콘셉트 선택",
@@ -462,6 +463,7 @@
     "issued": "발행일",
     "monthSuffix": "월차",
     "station": "방송국명",
+    "defaultStationName": "스타라이트 방송국",
     "revenueSection": "수익 내역",
     "colRank": "#",
     "colCreator": "크리에이터",
@@ -838,7 +840,7 @@
     "close": "닫기 ✕"
   },
   "proposal": {
-    "kicker": "SPECIAL CONFESSION EVENT",
+    "kicker": "스페셜 고백 이벤트",
     "title": "{name}의 고백",
     "badge": "PROPOSE!",
     "replayVoice": "클릭하여 대사 음성 다시 듣기",
@@ -847,6 +849,9 @@
   },
   "casino": {
     "title": "골든 슬롯머신",
+"slotChallengeProgress": "🎰 슬롯 도전 진행 상황",
+    "turnCount": "턴 {currentTurn} / 3",
+    "spinsRemaining": "(남은 회전: {spins}회)",
     "paytable": "배당표",
     "userAssets": "보유 자산",
     "exit": "나가기",

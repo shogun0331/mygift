@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { useTranslation } from '../locales/i18n'
 import type { RegisteredCharacter } from '../game/characters'
 import { normalizeCreatorStatType } from '../game/characters'
-import { STATION_TIER_LABEL, type StationTierId } from '../game/stationGradeConfig'
-import { CREATOR_TYPE_LABEL } from '../game/auditEngine'
+import { type StationTierId } from '../game/stationGradeConfig'
+import { CREATOR_TYPE_LABEL, getCreatorTypeDisplayName } from '../game/auditEngine'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import { characterDisplayName } from '../game/characterLocales'
+import { companyTierLabelKey } from '../game/ranking'
 
 type Props = {
   tierKey: Exclude<StationTierId, 'black' | 'tiny'>
@@ -37,7 +39,7 @@ export function AuditSimulatorDeckModal({
   onStartSimulation,
   onClose,
 }: Props) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   // 시뮬레이터일 때만 S등급 보정, 인게임 정식 심사 덱 배치 시에는 보유 캐릭터의 실제 능력치 유지
   const boostedCharacters: any[] = registeredCharacters.map((c) => ({
     ...c,
@@ -138,7 +140,7 @@ export function AuditSimulatorDeckModal({
           <div className="flex items-center gap-3">
             <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-950/80 px-3.5 py-1 text-xs font-black text-cyan-300 uppercase tracking-wider shadow-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping" />
-              <span>{STATION_TIER_LABEL[tierKey]} {t('audit.deckModalTitle')}</span>
+              <span>{t(companyTierLabelKey(tierKey))} {t('audit.deckModalTitle')}</span>
             </div>
             <h3 className="text-base sm:text-lg font-extrabold text-slate-200">
               {t('audit.deckModalSubtitle')}
@@ -198,7 +200,7 @@ export function AuditSimulatorDeckModal({
                         {char.profileImageUrl ? (
                           <img
                             src={resolveMediaSrc(char.profileImageUrl)}
-                            alt={char.name}
+                            alt={characterDisplayName(char, locale)}
                             className="absolute inset-0 h-full w-full object-cover"
                           />
                         ) : (
@@ -225,10 +227,10 @@ export function AuditSimulatorDeckModal({
                               <>
                                 <div className="flex items-center justify-between gap-1">
                                   <span className="truncate text-sm sm:text-base font-black text-white drop-shadow">
-                                    {char.name}
+                                    {characterDisplayName(char, locale)}
                                   </span>
                                   <span className={`rounded-md border px-2 py-0.5 text-xs font-black ${typeInfo.tone}`}>
-                                    {typeInfo.label || cType.toUpperCase()}
+                                    {getCreatorTypeDisplayName(cType, t)}
                                   </span>
                                 </div>
 
@@ -332,7 +334,7 @@ export function AuditSimulatorDeckModal({
                               {character.profileImageUrl ? (
                                 <img
                                   src={resolveMediaSrc(character.profileImageUrl)}
-                                  alt={character.name}
+                                  alt={characterDisplayName(character, locale)}
                                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
                               ) : (
@@ -347,14 +349,14 @@ export function AuditSimulatorDeckModal({
                                   {character.grade || 'S'}
                                 </span>
                                 <span className={`rounded border px-1 py-0.2 text-[10px] font-black ${typeInfo.tone}`}>
-                                  {typeInfo.label || cType.toUpperCase()}
+                                  {getCreatorTypeDisplayName(cType, t)}
                                 </span>
                               </div>
 
                               {/* 하단 프로필 이름 & 스테미나 게이지 바 */}
                               <div className="relative z-10 p-1.5 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent pt-2.5 space-y-0.5">
                                 <h5 className="truncate text-[11px] font-black text-white text-center drop-shadow">
-                                  {character.name}
+                                  {characterDisplayName(character, locale)}
                                 </h5>
                                 <div className="flex flex-col space-y-0.5 border-t border-white/10 pt-0.5">
                                   <div className="flex items-center justify-between text-[7.5px] font-black text-amber-300 px-0.5">

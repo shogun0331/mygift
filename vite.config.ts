@@ -146,21 +146,23 @@ function charactersMediaPlugin(): Plugin {
 }
 
 // https://vite.dev/config/
-const EVENT_LOCALES = ['ko', 'en', 'ja', 'zh-cn', 'ru', 'es', 'de']
+const EVENT_LOCALES = ['ko', 'en', 'ja', 'zh-cn', 'zh-tw', 'ru', 'es', 'de']
 
 function canonicalEventLocale(lang: string) {
   const raw = String(lang || '').trim()
   if (!raw) return null
-  const upper = raw.toUpperCase()
+  const upper = raw.toUpperCase().replace(/_/g, '-')
   if (upper === 'KO') return 'ko'
   if (upper === 'EN') return 'en'
   if (upper === 'JA') return 'ja'
-  if (upper === 'ZH-CN' || upper === 'ZH' || upper === 'ZH_CN') return 'zh-cn'
+  if (upper === 'ZH-TW' || upper === 'ZHTW') return 'zh-tw'
+  if (upper === 'ZH-CN' || upper === 'ZHCN' || upper === 'ZH') return 'zh-cn'
   if (upper === 'RU') return 'ru'
   if (upper === 'ES') return 'es'
   if (upper === 'DE') return 'de'
   const lower = raw.toLowerCase().replace(/_/g, '-')
-  if (lower === 'zh' || lower === 'zh-hans') return 'zh-cn'
+  if (lower === 'zh-hant' || lower === 'zh-tw' || lower === 'zh-hk' || lower === 'zh-mo') return 'zh-tw'
+  if (lower === 'zh' || lower === 'zh-hans' || lower === 'zh-cn') return 'zh-cn'
   if (EVENT_LOCALES.includes(lower)) return lower
   return null
 }

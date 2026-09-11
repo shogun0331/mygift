@@ -312,7 +312,7 @@ export type RegisteredCharacter = {
   id: string
   /** 기본(ko) 닉네임 — 검색·슬롯 스냅샷·폴백용 */
   name: string
-  /** 언어별 닉네임 (ko/en/ja/zh-cn/ru/es/de) */
+  /** 언어별 닉네임 (ko/en/ja/zh-cn/zh-tw/ru/es/de) */
   names: CharacterLocaleText
   age: string
   /** 기본(ko) 직업 — concept 폴백용 */

@@ -4,6 +4,7 @@ import { formatStatementWon } from '../game/weeklyReport'
 import { formatViewers } from '../game/ranking'
 import { formatMoneySigned } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import { characterDisplayName, type CharacterNamedFields } from '../game/characterLocales'
 import { useTranslation } from '../locales/i18n'
 import { KIND_TONE, StaffKindIcon } from './StaffManagerUi'
 
@@ -43,6 +44,7 @@ type WeeklySettlementModalProps = {
   statement: WeeklyStatement
   assetsAfter: number
   portraitByCreatorId?: Record<string, string>
+  creators?: CharacterNamedFields[]
   onConfirm: () => void
 }
 
@@ -72,9 +74,17 @@ export function WeeklySettlementModal({
   statement,
   assetsAfter,
   portraitByCreatorId,
+  creators,
   onConfirm,
 }: WeeklySettlementModalProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
+  const creatorById = new Map(
+    (creators ?? []).filter((c) => c.id).map((c) => [c.id as string, c]),
+  )
+  const creatorNameOf = (creatorId: string, fallback: string) => {
+    const creator = creatorById.get(creatorId)
+    return characterDisplayName(creator ?? { id: creatorId, name: fallback }, locale)
+  }
   const change = statement.profitChangePct
   const changeLabel =
     change == null
@@ -119,7 +129,7 @@ export function WeeklySettlementModal({
                 {t('settlement.title')}
               </h2>
               <p className="mt-2 text-xs text-slate-400">
-                {statement.stationName}
+                {t('settlement.defaultStationName')}
                 <span className="mx-1.5 text-slate-600">·</span>
                 {statement.issuedDate}
                 <span className="mx-1.5 text-slate-600">·</span>
@@ -298,11 +308,11 @@ export function WeeklySettlementModal({
                               />
                             ) : (
                               <span className="statement-portrait-fallback" aria-hidden>
-                                {creatorInitial(line.name)}
+                                {creatorInitial(creatorNameOf(line.creatorId, line.name))}
                               </span>
                             )}
                             <span className="truncate font-medium text-slate-100">
-                              {line.name}
+                              {creatorNameOf(line.creatorId, line.name)}
                             </span>
                           </div>
                         </td>

@@ -4,7 +4,9 @@ import { formatMoney } from '../game/money'
 import { formatPlaytime, type SaveMeta } from '../game/save'
 import { deleteGame, listSaveMetas } from '../game/saveService'
 import { playSfx } from '../game/uiSfx'
-import { STATION_TIER_LABEL, type StationGrade } from '../game/station'
+import type { StationGrade } from '../game/station'
+import { companyTierLabelKey } from '../game/ranking'
+import { characterDisplayName } from '../game/characterLocales'
 
 type SaveListPanelProps = {
   onLoad: (id: string) => void
@@ -12,9 +14,8 @@ type SaveListPanelProps = {
   onSavesChange?: () => void
 }
 
-function stationGradeBadge(grade?: StationGrade) {
+function stationGradeBadge(grade: StationGrade | undefined, label: string) {
   if (!grade) return null
-  const label = STATION_TIER_LABEL[grade] || grade
   const icon =
     grade === 'top'
       ? '👑'
@@ -34,7 +35,7 @@ function stationGradeBadge(grade?: StationGrade) {
 }
 
 export function SaveListPanel({ onLoad, onClose, onSavesChange }: SaveListPanelProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const [saves, setSaves] = useState<SaveMeta[]>(() => listSaveMetas())
   const [pendingDelete, setPendingDelete] = useState<string | null>(null)
 
@@ -89,6 +90,7 @@ export function SaveListPanel({ onLoad, onClose, onSavesChange }: SaveListPanelP
         ) : (
           saves.map((save) => {
             const topChar = save.topCharacter
+            const topCharName = topChar ? characterDisplayName(topChar, locale) : ''
             return (
               <div
                 key={save.id}
@@ -108,7 +110,7 @@ export function SaveListPanel({ onLoad, onClose, onSavesChange }: SaveListPanelP
                     {topChar?.imageUrl ? (
                       <img
                         src={topChar.imageUrl}
-                        alt={topChar.name}
+                        alt={topCharName}
                         className="h-full w-full object-cover"
                       />
                     ) : (
@@ -130,10 +132,15 @@ export function SaveListPanel({ onLoad, onClose, onSavesChange }: SaveListPanelP
                       <h3 className="truncate text-base font-bold text-white group-hover:text-slate-200">
                         {save.companyName}
                       </h3>
-                      {stationGradeBadge(save.stationGrade)}
+                      {save.stationGrade
+                        ? stationGradeBadge(
+                            save.stationGrade,
+                            t(companyTierLabelKey(save.stationGrade)),
+                          )
+                        : null}
                       {topChar ? (
                         <span className="inline-flex items-center gap-1 rounded-md border border-slate-700/60 bg-slate-800/40 px-2 py-0.5 text-xs text-slate-400">
-                          ★ {topChar.name}
+                          ★ {topCharName}
                         </span>
                       ) : null}
                     </div>

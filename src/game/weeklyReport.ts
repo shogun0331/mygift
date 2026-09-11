@@ -1,9 +1,14 @@
 import type { DayEvent } from './economy'
 import { formatMoney } from './money'
 import type { StaffKind } from './staff'
-import { getCurrentLocale, translate } from '../locales/i18n'
+import { getCurrentLocale, translate, type Locale } from '../locales/i18n'
 
+/** 내부 식별용 기본명 (KO). UI 표시는 defaultStationName() 사용 */
 export const STATION_NAME = '스타라이트 방송국'
+
+export function defaultStationName(locale?: Locale | string | null): string {
+  return translate((locale || getCurrentLocale()) as Locale, 'settlement.defaultStationName')
+}
 /** 방송 1주 환산 시간 (기존 일×6시간 × 7일) */
 export const HOURS_PER_BROADCAST_WEEK = 42
 
@@ -407,7 +412,7 @@ export function buildWeeklyStatement(opts: {
   return {
     monthNumber: week.monthNumber,
     issuedDate,
-    stationName: opts.stationName ?? STATION_NAME,
+    stationName: opts.stationName ?? defaultStationName(),
     lines,
     staffLines,
     expenses,

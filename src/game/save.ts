@@ -1,5 +1,6 @@
 import type { Grade, OwnedCreator, RegisteredCharacter } from './characters'
 import { findCharacterIconUrl } from './characters'
+import { normalizeCharacterNamedFields, type CharacterLocaleText } from './characterLocales'
 import type { ScoutOffer, ScoutSystemState } from './scout'
 import type { WeeklyCreatorAccum, WeekAccumulator } from './weeklyReport'
 import type { LeagueState } from './ranking'
@@ -81,8 +82,6 @@ export type GameSave = {
   /** 카지노 쿨다운 턴 카운트 (0~3) 및 모달 상태 */
   casinoTurnCount?: number
   showCasinoModal?: boolean
-  /** 방송국 승급 심사 실패 후 재도전 쿨다운 (턴 단위) */
-  stationAuditCooldown?: number
   /** 이미 팝업으로 안내한 크리에이터 승급심사 키 목록 (creatorId:targetGrade) */
   notifiedPromotionExams?: string[]
   /** 이미 안내한 방송국 승급심사 팝업 키 (currentGrade:nextGrade) — 해당 구간 1회만 */
@@ -97,6 +96,7 @@ export type GameSave = {
 
 export type TopCharacterMeta = {
   name: string
+  names?: CharacterLocaleText
   grade: Grade
   imageUrl: string | null
   avatarTone?: string
@@ -248,11 +248,13 @@ export function getTopCreatorMeta(save: GameSave): TopCharacterMeta | null {
   if (!top) return null
 
   const hydrated = hydrateOwnedCreator(top)
+  const named = normalizeCharacterNamedFields(hydrated)
   const rawUrl = findCharacterIconUrl(hydrated) || hydrated.profileImageUrl
   const imageUrl = rawUrl ? resolveMediaSrc(rawUrl) : null
 
   return {
-    name: top.name,
+    name: named.name,
+    names: named.names,
     grade: top.grade,
     imageUrl,
     avatarTone: top.avatarTone,

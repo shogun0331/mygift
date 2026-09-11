@@ -3,6 +3,7 @@ import {
   pickCharacterLocaleText,
   type CharacterLocaleText,
 } from './characterLocales'
+import { s2tw } from './s2tw'
 import type { Locale } from '../locales/i18n'
 
 export type DonationLineVariant = {
@@ -26,7 +27,7 @@ function line(
 ): DonationLineVariant {
   return {
     voiceFileName,
-    lines: { ja, ko, en, 'zh-cn': zh, ru, es, de },
+    lines: { ja, ko, en, 'zh-cn': zh, 'zh-tw': s2tw(zh), ru, es, de },
   }
 }
 

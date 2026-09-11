@@ -1,4 +1,4 @@
-export const EVENT_LOCALES = ['ko', 'en', 'ja', 'zh-cn', 'ru', 'es', 'de'] as const
+export const EVENT_LOCALES = ['ko', 'en', 'ja', 'zh-cn', 'zh-tw', 'ru', 'es', 'de'] as const
 
 export type EventLocale = (typeof EVENT_LOCALES)[number]
 
@@ -9,6 +9,7 @@ const UI_LOCALE_TO_EVENT: Record<string, EventLocale> = {
   EN: 'en',
   JA: 'ja',
   'ZH-CN': 'zh-cn',
+  'ZH-TW': 'zh-tw',
   RU: 'ru',
   ES: 'es',
   DE: 'de',
@@ -20,6 +21,7 @@ export function emptyEventLocalization(): Record<EventLocale, Record<string, str
     en: {},
     ja: {},
     'zh-cn': {},
+    'zh-tw': {},
     ru: {},
     es: {},
     de: {},
@@ -30,8 +32,12 @@ export function canonicalEventLocale(lang: string | undefined | null): EventLoca
   const raw = String(lang || '').trim()
   if (!raw) return null
   if (UI_LOCALE_TO_EVENT[raw]) return UI_LOCALE_TO_EVENT[raw]
+  const upper = raw.toUpperCase().replace(/_/g, '-')
+  if (upper === 'ZH-TW' || upper === 'ZHTW') return 'zh-tw'
+  if (upper === 'ZH-CN' || upper === 'ZHCN' || upper === 'ZH') return 'zh-cn'
   const lower = raw.toLowerCase().replace(/_/g, '-')
-  if (lower === 'zh' || lower === 'zh-hans') return 'zh-cn'
+  if (lower === 'zh-hant' || lower === 'zh-tw' || lower === 'zh-hk' || lower === 'zh-mo') return 'zh-tw'
+  if (lower === 'zh' || lower === 'zh-hans' || lower === 'zh-cn') return 'zh-cn'
   if ((EVENT_LOCALES as readonly string[]).includes(lower)) return lower as EventLocale
   return null
 }
@@ -62,7 +68,12 @@ export function lookupLocalizedString(
   lang: string,
   keys: Array<string | undefined | null>,
 ): string {
-  const order = [normalizeEventLocale(lang), EVENT_DEFAULT_LOCALE]
+  const requested = normalizeEventLocale(lang)
+  const order: EventLocale[] = [
+    requested,
+    ...(requested === 'zh-tw' ? (['zh-cn'] as const) : []),
+    EVENT_DEFAULT_LOCALE,
+  ]
   const seen = new Set<string>()
   for (const locale of order) {
     if (seen.has(locale)) continue

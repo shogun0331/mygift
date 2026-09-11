@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useMosaicBlockPx } from '../game/visualFx'
 import type { BlurRegion, EventMediaAsset } from './types'
@@ -85,42 +85,196 @@ export function MosaicRegionLayer({
         const rw = region.w * rect.w
         const rh = region.h * rect.h
         if (rw <= 0 || rh <= 0) return null
-        const mediaStyle: CSSProperties = {
-          position: 'absolute',
-          left: rect.x - rx,
-          top: rect.y - ry,
-          width: rect.w / block,
-          height: rect.h / block,
-          transform: `scale(${block})`,
-          transformOrigin: '0 0',
-          imageRendering: 'pixelated',
-          maxWidth: 'none',
-          objectFit,
-        }
         return (
-          <div
+          <MosaicTile
             key={region.id}
-            className="absolute overflow-hidden"
-            style={{ left: rx, top: ry, width: rw, height: rh }}
-          >
-            {kind === 'video' ? (
-              <video
-                src={src}
-                autoPlay
-                loop
-                muted
-                playsInline
-                aria-hidden
-                style={mediaStyle}
-              />
-            ) : (
-              <img src={src} alt="" aria-hidden style={mediaStyle} />
-            )}
-          </div>
+            src={src}
+            kind={kind}
+            block={block}
+            rect={rect}
+            regionRect={{ x: rx, y: ry, w: rw, h: rh }}
+            objectFit={objectFit}
+          />
         )
       })}
     </div>
   )
+}
+
+/**
+ * Canvas 기반 모자이크 타일.
+ * 미디어를 작은 캔버스에 축소해서 그린 뒤, CSS imageRendering: pixelated 로
+ * 다시 확대하여 픽셀화(모자이크) 효과를 만든다.
+ * CSS transform: scale() 방식과 달리 실제 해상도가 낮아지므로 모자이크가 확실히 보인다.
+ */
+function MosaicTile({
+  src,
+  kind,
+  block,
+  rect,
+  regionRect,
+  objectFit,
+}: {
+  src: string
+  kind: 'image' | 'video'
+  block: number
+  rect: { x: number; y: number; w: number; h: number }
+  regionRect: { x: number; y: number; w: number; h: number }
+  objectFit: 'cover' | 'fill' | 'contain'
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const mediaRef = useRef<HTMLImageElement | HTMLVideoElement | null>(null)
+  const [ready, setReady] = useState(false)
+
+  // 모자이크 축소 해상도: region 크기를 block 단위로 나눔
+  const smallW = Math.max(1, Math.round(regionRect.w / block))
+  const smallH = Math.max(1, Math.round(regionRect.h / block))
+
+  // 캔버스에 모자이크 프레임 그리기
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current
+    const media = mediaRef.current
+    if (!canvas || !media) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    canvas.width = smallW
+    canvas.height = smallH
+    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = 'low'
+    ctx.clearRect(0, 0, smallW, smallH)
+
+    // 미디어 원본 크기
+    const nw = kind === 'video' ? (media as HTMLVideoElement).videoWidth : (media as HTMLImageElement).naturalWidth
+    const nh = kind === 'video' ? (media as HTMLVideoElement).videoHeight : (media as HTMLImageElement).naturalHeight
+    if (!nw || !nh) return
+
+    // objectFit 에 따라 미디어 원본에서 contentRect 에 표시되는 영역(crop) 계산
+    const crop = computeCrop(nw, nh, rect.w, rect.h, objectFit)
+    if (!crop) return
+
+    // region이 contentRect 내에서 차지하는 비율만큼 crop 좌표 이동
+    const sxRatio = (regionRect.x - rect.x) / rect.w
+    const syRatio = (regionRect.y - rect.y) / rect.h
+    const swRatio = regionRect.w / rect.w
+    const shRatio = regionRect.h / rect.h
+
+    const sx = crop.x + sxRatio * crop.w
+    const sy = crop.y + syRatio * crop.h
+    const sw = crop.w * swRatio
+    const sh = crop.h * shRatio
+
+    if (sw > 0 && sh > 0) {
+      ctx.drawImage(media, sx, sy, sw, sh, 0, 0, smallW, smallH)
+    }
+  }, [smallW, smallH, regionRect.x, regionRect.y, regionRect.w, regionRect.h, rect.x, rect.y, rect.w, rect.h, objectFit, kind])
+
+  // 비디오/이미지 로드 & 프레임 갱신
+  useEffect(() => {
+    const onMediaReady = () => {
+      setReady(true)
+      draw()
+    }
+    const media = mediaRef.current
+    if (!media) return
+
+    if (kind === 'video') {
+      const v = media as HTMLVideoElement
+      if (v.readyState >= 2) onMediaReady()
+      v.addEventListener('loadeddata', onMediaReady)
+      v.addEventListener('seeked', onMediaReady)
+      let rafId = 0
+      const raf = () => {
+        draw()
+        rafId = requestAnimationFrame(raf)
+      }
+      rafId = requestAnimationFrame(raf)
+      return () => {
+        cancelAnimationFrame(rafId)
+        v.removeEventListener('loadeddata', onMediaReady)
+        v.removeEventListener('seeked', onMediaReady)
+      }
+    } else {
+      const img = media as HTMLImageElement
+      if (img.complete && img.naturalWidth > 0) onMediaReady()
+      else img.addEventListener('load', onMediaReady)
+      return () => {
+        img.removeEventListener('load', onMediaReady)
+      }
+    }
+  }, [kind, draw])
+
+  // ready 변경 시 다시 그림
+  useEffect(() => {
+    draw()
+  }, [ready, draw])
+
+  return (
+    <div
+      className="absolute overflow-hidden"
+      style={{ left: regionRect.x, top: regionRect.y, width: regionRect.w, height: regionRect.h }}
+    >
+      {/* 숨김 처리된 원본 미디어 — Canvas 드로잉 소스로만 사용 */}
+      {kind === 'video' ? (
+        <video
+          ref={(el) => { mediaRef.current = el }}
+          src={src}
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-hidden
+          style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
+        />
+      ) : (
+        <img
+          ref={(el) => { mediaRef.current = el }}
+          src={src}
+          alt=""
+          aria-hidden
+          style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
+        />
+      )}
+      <canvas
+        ref={canvasRef}
+        style={{
+          width: regionRect.w,
+          height: regionRect.h,
+          imageRendering: 'pixelated',
+        }}
+      />
+    </div>
+  )
+}
+
+type Crop = { x: number; y: number; w: number; h: number }
+
+/**
+ * objectFit 에 따라 미디어 원본에서 잘라낼 영역(sx, sy, sw, sh)을 계산.
+ * nw/nh: 미디어 원본 해상도, dw/dh: 표시 영역 크기.
+ */
+function computeCrop(nw: number, nh: number, dw: number, dh: number, fit: 'cover' | 'fill' | 'contain'): Crop | null {
+  if (!nw || !nh || !dw || !dh) return null
+  if (fit === 'fill') return { x: 0, y: 0, w: nw, h: nh }
+
+  const mediaAR = nw / nh
+  const dispAR = dw / dh
+
+  if (fit === 'cover') {
+    if (mediaAR > dispAR) {
+      // 미디어가 더 넓음 → 좌우 잘라냄
+      const sh = nh
+      const sw = nh * dispAR
+      return { x: (nw - sw) / 2, y: 0, w: sw, h: sh }
+    } else {
+      // 미디어가 더 좁음(높이가 큼) → 상하 잘라냄
+      const sw = nw
+      const sh = nw / dispAR
+      return { x: 0, y: (nh - sh) / 2, w: sw, h: sh }
+    }
+  }
+  // contain: 전체 미디어가 들어가도록 → 여백 없이 원본 전체를 사용
+  return { x: 0, y: 0, w: nw, h: nh }
 }
 
 export function BlurRegionOverlay({

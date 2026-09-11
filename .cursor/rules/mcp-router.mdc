@@ -1,0 +1,27 @@
+---
+description: MCP 라우터로 스킬·서버를 지연 로드해 토큰을 절약한다
+alwaysApply: true
+---
+
+# MCP 지연 로딩 (토큰 절약)
+
+이 워크스페이스는 `user-mcp-router`만 상시 사용한다. 다른 스킬/MCP는 필요할 때만 연다.
+
+## 기본 흐름
+1. 작업에 외부 도구·도메인 스킬이 필요하면 `mcp_list_groups`로 그룹을 확인한다.
+2. 백엔드 서버가 있는 그룹만 `mcp_activate_group`한다.
+3. 스킬은 `mcp_read_skill`로 **해당 그룹·해당 스킬만** 읽는다. SKILL.md를 세션 시작 때 통째로 읽지 않는다.
+4. 끝나면 `mcp_deactivate_group`한다.
+
+## 그룹 매핑
+- 게임 구조/컨벤션: `project-context` → `broadcast-game`
+- 이미지·영상 생성: `image-gen`
+- Godot: `game-dev`
+- Pinokio: `pinokio`
+- Paperclip: `coordination`
+- 진단 루프: `diagnostics`
+
+## 하지 말 것
+- `broadcast-game`, Paperclip, Pinokio, H3, 진단 스킬을 “관련 있으니까” 자동으로 전부 읽기
+- 브라우저 MCP 도구 스키마를 작업과 무관하게 탐색하기 (UI 검증이 필요할 때만)
+- loc 백업(`*.bak_*`)·번역 캐시 파일을 읽거나 검색 범위에 넣기

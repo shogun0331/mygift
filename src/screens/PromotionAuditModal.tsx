@@ -7,7 +7,7 @@ import {
   submitTurnPerformance,
   type AuditSession,
 } from '../game/auditEngine'
-import { pickCharacterLocaleText } from '../game/characterLocales'
+import { characterDisplayName, pickCharacterLocaleText } from '../game/characterLocales'
 import { auditMediaSlotUrl, type RegisteredCharacter as RegisteredCreator } from '../game/characters'
 import { readBlurRegions } from '../events/BlurRegionEditor'
 import type { BlurRegion, GameEvent } from '../events/types'
@@ -648,7 +648,7 @@ export function PromotionAuditModal({
         <div className="flex shrink-0 items-center justify-between border-b border-purple-500/20 bg-purple-950/40 px-5 py-3">
           <div className="flex items-center gap-3">
             <span className="rounded-xl border border-purple-400/40 bg-purple-900/60 px-3 py-1 text-xs font-black tracking-widest text-purple-200 uppercase">
-              {stationGradeLabel(tier)} {t('audit.judgeHeader')}
+              {stationGradeLabel(tier, locale)} {t('audit.judgeHeader')}
             </span>
             <h2 className="text-base font-black text-slate-100">{judgeName}</h2>
           </div>
@@ -736,7 +736,7 @@ export function PromotionAuditModal({
                       {getSatisfyJudgeTitle(locale)}
                     </h1>
                     <p className="mt-3 rounded-full border border-amber-400/40 bg-amber-950/80 px-4 py-1 text-xs font-bold text-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.4)]">
-                      {stationGradeLabel(tier)} PERFORMANCE AUDIT
+                      {stationGradeLabel(tier, locale)} PERFORMANCE AUDIT
                     </p>
                   </div>
                 </div>
@@ -978,13 +978,13 @@ export function PromotionAuditModal({
                   {profileUrl ? (
                     <img
                       src={resolveMediaSrc(profileUrl)}
-                      alt={creator.name}
+                      alt={characterDisplayName(creator, locale)}
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 text-xl font-bold text-purple-300">
                       <span>👤</span>
-                      <span className="text-[10px]">{creator.name.slice(0, 2)}</span>
+                      <span className="text-[10px]">{characterDisplayName(creator, locale).slice(0, 2)}</span>
                     </div>
                   )}
 
@@ -1028,12 +1028,13 @@ export function PromotionAuditModal({
                   {/* 하단 캐릭터 프로필 & 타입 아이콘 & 스테미나 비주얼 게이지 바 */}
                   <div className="relative z-10 flex flex-col justify-end p-2 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent pt-5 space-y-1">
                     <div className="flex items-center justify-between gap-1">
-                      <h4 className="truncate text-xs font-black text-white drop-shadow-md">{creator.name}</h4>
+                      <h4 className="truncate text-xs font-black text-white drop-shadow-md">{characterDisplayName(creator, locale)}</h4>
                       <span
                         className={`flex items-center justify-center rounded border px-1.5 py-0.5 text-xs font-black shadow-md ${typeInfo.tone}`}
                         title={getCreatorTypeDisplayName(cType, t)}
                       >
                         <span>{typeInfo.icon}</span>
+                        <span className="ml-0.5 hidden sm:inline">{getCreatorTypeDisplayName(cType, t)}</span>
                       </span>
                     </div>
 
@@ -1137,7 +1138,7 @@ export function PromotionAuditModal({
                   <div className="flex items-center justify-between text-xs border-b border-white/10 pb-2">
                     <span className="text-slate-400 font-bold">🏆 {t('audit.promotedGradeHeader')}</span>
                     <span className="font-black text-amber-300">
-                      {stationGradeLabel(session.tier)}
+                      {stationGradeLabel(session.tier, locale)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs border-b border-white/10 pb-2">
@@ -1154,7 +1155,7 @@ export function PromotionAuditModal({
 
                 <p className="mt-4 max-w-md text-xs sm:text-sm font-bold text-slate-300 leading-relaxed drop-shadow">
                   {session.isSuccess
-                    ? t('audit.passSuccessDesc', { judgeName, tier: stationGradeLabel(session.tier) })
+                    ? t('audit.passSuccessDesc', { judgeName, tier: stationGradeLabel(session.tier, locale) })
                     : session.failReason === 'no_cards'
                     ? t('audit.failNoCardsDesc')
                     : t('audit.failDefaultDesc')}

@@ -10,6 +10,9 @@ import s3Ja from '../data/sns/S3.ja.txt?raw'
 import s1Zh from '../data/sns/S1.zh.txt?raw'
 import s2Zh from '../data/sns/S2.zh.txt?raw'
 import s3Zh from '../data/sns/S3.zh.txt?raw'
+import s1ZhTw from '../data/sns/S1.zh-tw.txt?raw'
+import s2ZhTw from '../data/sns/S2.zh-tw.txt?raw'
+import s3ZhTw from '../data/sns/S3.zh-tw.txt?raw'
 import s1Ru from '../data/sns/S1.ru.txt?raw'
 import s2Ru from '../data/sns/S2.ru.txt?raw'
 import s3Ru from '../data/sns/S3.ru.txt?raw'
@@ -21,7 +24,7 @@ import s2De from '../data/sns/S2.de.txt?raw'
 import s3De from '../data/sns/S3.de.txt?raw'
 import userIdRaw from '../data/sns/XUserID.txt?raw'
 
-export type SnsCommentLang = 'ko' | 'en' | 'ja' | 'zh' | 'ru' | 'es' | 'de'
+export type SnsCommentLang = 'ko' | 'en' | 'ja' | 'zh' | 'zh-tw' | 'ru' | 'es' | 'de'
 
 export type SnsComment = {
   userId: string
@@ -46,6 +49,7 @@ const COMMENTS: Record<SnsCommentLang, Record<1 | 2 | 3, string[]>> = {
   en: pack(s1En, s2En, s3En),
   ja: pack(s1Ja, s2Ja, s3Ja),
   zh: pack(s1Zh, s2Zh, s3Zh),
+  'zh-tw': pack(s1ZhTw, s2ZhTw, s3ZhTw),
   ru: pack(s1Ru, s2Ru, s3Ru),
   es: pack(s1Es, s2Es, s3Es),
   de: pack(s1De, s2De, s3De),
@@ -67,6 +71,7 @@ function takeRandom<T>(pool: T[], count: number): T[] {
 
 export function commentLangOf(locale: string | null | undefined): SnsCommentLang {
   const n = String(locale ?? '').toLowerCase()
+  if (n.includes('tw') || n.includes('hant') || n.includes('hk') || n.includes('mo')) return 'zh-tw'
   if (n.startsWith('zh')) return 'zh'
   if (n.startsWith('ja')) return 'ja'
   if (n.startsWith('en')) return 'en'

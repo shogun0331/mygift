@@ -121,6 +121,12 @@ interface ElectronAPI {
   quitApp?: () => Promise<void>
 }
 
+interface DeviceLangHints {
+  systemLocale: string
+  preferredLanguages: string[]
+}
+
 interface Window {
   electronAPI?: ElectronAPI
+  deviceLangHints?: DeviceLangHints
 }

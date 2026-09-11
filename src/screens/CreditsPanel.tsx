@@ -66,7 +66,7 @@ export function CreditsPanel({ onClose }: CreditsPanelProps) {
           </div>
           <div className="text-slate-100 font-bold text-sm">GLOBAL BROADCAST NETWORK</div>
           <p className="text-xs text-slate-400">
-            Multilingual Support (KO, EN, JA, ZH-CN, RU, ES, DE) & Audio Dynamics
+            Multilingual Support (KO, EN, JA, ZH-CN, ZH-TW, RU, ES, DE) & Audio Dynamics
           </p>
         </div>
 

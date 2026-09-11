@@ -7,7 +7,7 @@ import {
 } from '../events/eventLocales'
 import type { Locale } from '../locales/i18n'
 
-/** 캐릭터 닉네임·직업 번역 키 — 이벤트 자막과 동일 7개국 */
+/** 캐릭터 닉네임·직업 번역 키 — 이벤트 자막과 동일 로케일 */
 export const CHARACTER_LOCALES = EVENT_LOCALES
 export type CharacterLocale = EventLocale
 export const CHARACTER_DEFAULT_LOCALE = EVENT_DEFAULT_LOCALE
@@ -17,6 +17,7 @@ export const CHARACTER_LOCALE_LABELS: Record<CharacterLocale, string> = {
   en: 'English',
   ja: '日本語',
   'zh-cn': '简体中文',
+  'zh-tw': '繁體中文',
   ru: 'Русский',
   es: 'Español',
   de: 'Deutsch',
@@ -30,6 +31,7 @@ export function emptyCharacterLocaleText(): CharacterLocaleText {
     en: '',
     ja: '',
     'zh-cn': '',
+    'zh-tw': '',
     ru: '',
     es: '',
     de: '',
@@ -60,6 +62,87 @@ export function mergeCharacterLocaleText(
   return next
 }
 
+/** overlay의 채워진 로케일을 primary 위에 덮어쓴다 */
+export function overlayCharacterLocaleText(
+  primary: Partial<Record<string, string>> | undefined | null,
+  overlay: Partial<Record<string, string>> | undefined | null,
+  fallback = '',
+): CharacterLocaleText {
+  const next = mergeCharacterLocaleText(primary, fallback)
+  const extra = mergeCharacterLocaleText(overlay, '')
+  for (const lang of CHARACTER_LOCALES) {
+    if (extra[lang].trim()) next[lang] = extra[lang]
+  }
+  return next
+}
+
+type CharacterLocaleCatalogEntry = CharacterNamedFields & { id?: string }
+
+const catalogById = new Map<string, CharacterLocaleCatalogEntry>()
+const catalogByLabel = new Map<string, CharacterLocaleCatalogEntry>()
+
+function indexCatalogLabels(entry: CharacterLocaleCatalogEntry) {
+  const labels = new Set<string>()
+  if (entry.name?.trim()) labels.add(entry.name.trim())
+  if (entry.names) {
+    for (const value of Object.values(entry.names)) {
+      if (value?.trim()) labels.add(value.trim())
+    }
+  }
+  for (const label of labels) catalogByLabel.set(label, entry)
+}
+
+/** 번들/등록 캐릭터의 이름·직업 번역을 표시용 카탈로그에 올린다 */
+export function registerCharacterLocaleCatalog(
+  list: Array<CharacterNamedFields & { id?: string }>,
+): void {
+  for (const raw of list) {
+    if (!raw || typeof raw !== 'object') continue
+    const prev = (raw.id && catalogById.get(raw.id)) || undefined
+    const entry: CharacterLocaleCatalogEntry = {
+      id: raw.id,
+      name: raw.name || prev?.name,
+      names: overlayCharacterLocaleText(prev?.names, raw.names, raw.name || prev?.name || ''),
+      job: raw.job || prev?.job,
+      jobs: overlayCharacterLocaleText(prev?.jobs, raw.jobs, raw.job || prev?.job || ''),
+      concept: raw.concept || prev?.concept,
+    }
+    if (entry.id) catalogById.set(entry.id, entry)
+    indexCatalogLabels(entry)
+    if (prev) indexCatalogLabels(prev)
+  }
+}
+
+function lookupCharacterLocaleCatalog(
+  character: CharacterNamedFields & { id?: string },
+): CharacterLocaleCatalogEntry | null {
+  if (character.id && catalogById.has(character.id)) return catalogById.get(character.id) ?? null
+  const labels: string[] = []
+  if (character.name?.trim()) labels.push(character.name.trim())
+  if (character.names) {
+    for (const value of Object.values(character.names)) {
+      if (value?.trim()) labels.push(value.trim())
+    }
+  }
+  for (const label of labels) {
+    const hit = catalogByLabel.get(label)
+    if (hit) return hit
+  }
+  return null
+}
+
+function pickRequestedLocale(
+  map: Partial<Record<string, string>> | undefined | null,
+  locale: Locale | string | null | undefined,
+): string {
+  const requested = characterLocaleFromUi(locale)
+  const merged = mergeCharacterLocaleText(map, '')
+  const direct = merged[requested]?.trim()
+  if (direct) return direct
+  if (requested === 'zh-tw') return merged['zh-cn']?.trim() || ''
+  return ''
+}
+
 /** 현재 언어 → 없으면 ko → 있으면 아무 채워진 값 */
 export function pickCharacterLocaleText(
   map: Partial<Record<string, string>> | undefined | null,
@@ -67,8 +150,10 @@ export function pickCharacterLocaleText(
   legacyFallback = '',
 ): string {
   const merged = mergeCharacterLocaleText(map, legacyFallback)
+  const requested = characterLocaleFromUi(locale)
   const order: CharacterLocale[] = [
-    characterLocaleFromUi(locale),
+    requested,
+    ...(requested === 'zh-tw' ? (['zh-cn'] as const) : []),
     CHARACTER_DEFAULT_LOCALE,
     ...CHARACTER_LOCALES,
   ]
@@ -87,6 +172,7 @@ export function primaryCharacterLocaleText(map: CharacterLocaleText): string {
 }
 
 export type CharacterNamedFields = {
+  id?: string
   name?: string
   names?: Partial<Record<string, string>> | null
   job?: string
@@ -119,12 +205,30 @@ export function characterDisplayName(
   character: CharacterNamedFields,
   locale: Locale | string | null | undefined,
 ): string {
-  return pickCharacterLocaleText(character.names, locale, character.name ?? '')
+  const catalog = lookupCharacterLocaleCatalog(character)
+  const requested =
+    pickRequestedLocale(character.names, locale) ||
+    pickRequestedLocale(catalog?.names, locale)
+  if (requested) return requested
+  return pickCharacterLocaleText(
+    overlayCharacterLocaleText(character.names, catalog?.names, character.name ?? ''),
+    locale,
+    character.name || catalog?.name || '',
+  )
 }
 
 export function characterDisplayJob(
   character: CharacterNamedFields,
   locale: Locale | string | null | undefined,
 ): string {
-  return pickCharacterLocaleText(character.jobs, locale, character.job ?? character.concept ?? '')
+  const catalog = lookupCharacterLocaleCatalog(character)
+  const requested =
+    pickRequestedLocale(character.jobs, locale) ||
+    pickRequestedLocale(catalog?.jobs, locale)
+  if (requested) return requested
+  return pickCharacterLocaleText(
+    overlayCharacterLocaleText(character.jobs, catalog?.jobs, character.job ?? character.concept ?? ''),
+    locale,
+    character.job || character.concept || catalog?.job || '',
+  )
 }

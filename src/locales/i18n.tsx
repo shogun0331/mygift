@@ -4,17 +4,23 @@ import KO from './KO.json'
 import EN from './EN.json'
 import JA from './JA.json'
 import ZH_CN from './ZH-CN.json'
+import ZH_TW from './ZH-TW.json'
 import RU from './RU.json'
 import ES from './ES.json'
 import DE from './DE.json'
 
-export type Locale = 'KO' | 'EN' | 'JA' | 'ZH-CN' | 'RU' | 'ES' | 'DE'
+export type Locale = 'KO' | 'EN' | 'JA' | 'ZH-CN' | 'ZH-TW' | 'RU' | 'ES' | 'DE'
+
+export const SUPPORTED_LOCALES: readonly Locale[] = ['KO', 'EN', 'JA', 'ZH-CN', 'ZH-TW', 'RU', 'ES', 'DE']
+
+const DEFAULT_LOCALE: Locale = 'EN'
 
 const HTML_LANG: Record<Locale, string> = {
   KO: 'ko',
   EN: 'en',
   JA: 'ja',
   'ZH-CN': 'zh-CN',
+  'ZH-TW': 'zh-TW',
   RU: 'ru',
   ES: 'es',
   DE: 'de',
@@ -25,39 +31,63 @@ const RESOURCES: Record<Locale, any> = {
   EN,
   JA,
   'ZH-CN': ZH_CN,
+  'ZH-TW': ZH_TW,
   RU,
   ES,
   DE,
 }
 
-/**
- * 디바이스/브라우저 시스템 언어를 감지하여 지원하는 7개 언어 중 하나로 매핑.
- * 일치하는 언어가 없으면 기본값 'EN'(영어)으로 설정.
- */
-export function detectDeviceLocale(): Locale {
-  try {
-    const navLangs: readonly string[] =
-      typeof navigator !== 'undefined'
-        ? navigator.languages && navigator.languages.length > 0
-          ? navigator.languages
-          : [navigator.language || '']
-        : []
+export function isSupportedLocale(value: string | null | undefined): value is Locale {
+  return !!value && (SUPPORTED_LOCALES as readonly string[]).includes(value)
+}
 
-    for (const rawLang of navLangs) {
-      if (!rawLang) continue
-      const lang = rawLang.toLowerCase()
-      if (lang.startsWith('ko')) return 'KO'
-      if (lang.startsWith('ja')) return 'JA'
-      if (lang.startsWith('zh')) return 'ZH-CN'
-      if (lang.startsWith('ru')) return 'RU'
-      if (lang.startsWith('es')) return 'ES'
-      if (lang.startsWith('de')) return 'DE'
-      if (lang.startsWith('en')) return 'EN'
+/**
+ * BCP-47 태그 하나를 지원 로케일로 매핑. 미지원이면 null.
+ * `ko` / `ko-KR`처럼 언어 코드 + 리전만 인정하고, `navigator.languages` 후보는 쓰지 않는다.
+ */
+export function mapLangTagToLocale(raw: string | null | undefined): Locale | null {
+  if (!raw) return null
+  const lang = String(raw).trim().toLowerCase().replace(/_/g, '-')
+  if (!lang) return null
+
+  const primary = lang.split('-')[0] || ''
+  if (primary === 'ko') return 'KO'
+  if (primary === 'ja') return 'JA'
+  if (primary === 'zh') {
+    if (lang.includes('hant') || lang.includes('tw') || lang.includes('hk') || lang.includes('mo')) {
+      return 'ZH-TW'
+    }
+    return 'ZH-CN'
+  }
+  if (primary === 'ru') return 'RU'
+  if (primary === 'es') return 'ES'
+  if (primary === 'de') return 'DE'
+  if (primary === 'en') return 'EN'
+  return null
+}
+
+function primaryDeviceLangTag(): string {
+  try {
+    const hints = typeof window !== 'undefined' ? window.deviceLangHints : undefined
+    const fromElectron =
+      hints?.preferredLanguages?.[0] || hints?.systemLocale || ''
+    if (fromElectron) return String(fromElectron)
+
+    if (typeof navigator !== 'undefined' && navigator.language) {
+      return navigator.language
     }
   } catch {
     // ignore
   }
-  return 'EN'
+  return ''
+}
+
+/**
+ * 첫 실행(저장된 언어 없음) 시 디바이스 주 언어를 사용.
+ * 지원 목록에 없으면 영어(EN). 후보 목록을 훑지 않는다.
+ */
+export function detectDeviceLocale(): Locale {
+  return mapLangTagToLocale(primaryDeviceLangTag()) ?? DEFAULT_LOCALE
 }
 
 /**
@@ -119,8 +149,8 @@ export function translate(locale: Locale, key: string, params?: Record<string, s
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
     try {
-      const saved = localStorage.getItem('locale') as Locale | null
-      const next = saved && RESOURCES[saved] ? saved : detectDeviceLocale()
+      const saved = localStorage.getItem('locale')
+      const next = isSupportedLocale(saved) ? saved : detectDeviceLocale()
       currentLocale = next
       applyLocaleToDocument(next)
       return next

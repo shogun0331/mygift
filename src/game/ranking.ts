@@ -9,7 +9,7 @@ import {
   type StationGrade,
 } from './station'
 import { getViewerBalance } from './viewerBalance'
-import { STATION_NAME } from './weeklyReport'
+import { defaultStationName } from './weeklyReport'
 
 export type CreatorGrade = Grade
 export type RankMilestone = 50 | 30 | 20 | 10 | 5 | 1
@@ -800,7 +800,7 @@ export function assembleLeaderboard(opts: {
 }): { entries: RankEntry[]; npcs: NpcStation[]; playerRank: number } {
   const playerRow = {
     id: 'player',
-    stationName: STATION_NAME,
+    stationName: defaultStationName(),
     aceCreatorName: opts.playerAceName,
     aceCreatorGrade: opts.playerAceGrade,
     viewers: opts.playerViewers,

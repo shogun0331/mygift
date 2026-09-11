@@ -120,6 +120,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
               <option value="EN">English (EN)</option>
               <option value="JA">日本語 (JA)</option>
               <option value="ZH-CN">简体中文 (ZH-CN)</option>
+              <option value="ZH-TW">繁體中文 (ZH-TW)</option>
               <option value="RU">Русский (RU)</option>
               <option value="ES">Español (ES)</option>
               <option value="DE">Deutsch (DE)</option>

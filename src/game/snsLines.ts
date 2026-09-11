@@ -2,6 +2,7 @@ import lineKo from '../data/sns/line.txt?raw'
 import lineEn from '../data/sns/line.en.txt?raw'
 import lineJa from '../data/sns/line.ja.txt?raw'
 import lineZh from '../data/sns/line.zh.txt?raw'
+import lineZhTw from '../data/sns/line.zh-tw.txt?raw'
 import lineRu from '../data/sns/line.ru.txt?raw'
 import lineEs from '../data/sns/line.es.txt?raw'
 import lineDe from '../data/sns/line.de.txt?raw'
@@ -19,6 +20,7 @@ const LINES: Record<SnsCommentLang, string[]> = {
   en: linesOf(lineEn),
   ja: linesOf(lineJa),
   zh: linesOf(lineZh),
+  'zh-tw': linesOf(lineZhTw),
   ru: linesOf(lineRu),
   es: linesOf(lineEs),
   de: linesOf(lineDe),

@@ -39,8 +39,12 @@ import {
   type RegisteredCharacter,
   type CharacterVideo,
 } from './game/characters'
-import { unlockAchievement, registerCharacterAchievements } from './game/achievements'
+import { unlockAchievement, registerCharacterAchievements, DEFAULT_CHARACTERS_DATA } from './game/achievements'
 import { fetchPublicJson } from './game/publicJson'
+import {
+  overlayCharacterLocaleText,
+  registerCharacterLocaleCatalog,
+} from './game/characterLocales'
 import { resolveMediaSrc } from './game/mediaUrl'
 import { createInitialStudioSlots, type StudioSlot } from './game/studioSlots'
 import {
@@ -284,6 +288,7 @@ async function saveStaffMediaToProject(staffId: string, payload: AddStaffPayload
 
 async function loadRegisteredCharactersFromDisk(): Promise<RegisteredCharacter[]> {
   let source: any[] = []
+  registerCharacterLocaleCatalog(DEFAULT_CHARACTERS_DATA)
 
   try {
     const res = await window.electronAPI?.loadCharactersJson?.()
@@ -303,6 +308,30 @@ async function loadRegisteredCharactersFromDisk(): Promise<RegisteredCharacter[]
     } catch (err) {
       console.warn('Failed to load characters.json from public folder:', err)
     }
+  }
+
+  try {
+    const bundled = await fetchPublicJson<any[]>('/characters/characters.json')
+    if (Array.isArray(bundled) && bundled.length > 0) {
+      registerCharacterLocaleCatalog(bundled)
+      if (source.length > 0) {
+        const byId = new Map(bundled.map((row) => [row.id, row]))
+        const byName = new Map(bundled.map((row) => [row.name, row]))
+        source = source.map((row) => {
+          const pack = byId.get(row.id) || byName.get(row.name)
+          if (!pack) return row
+          return {
+            ...row,
+            names: overlayCharacterLocaleText(row.names, pack.names, pack.name || row.name || ''),
+            jobs: overlayCharacterLocaleText(row.jobs, pack.jobs, pack.job || row.job || ''),
+          }
+        })
+      } else {
+        source = bundled
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to overlay character locale packs:', err)
   }
 
   if (source.length === 0) {
@@ -352,6 +381,11 @@ function syncOwnedWithRegistered(
     }
     const source = registered.find((item) => item.id === creator.id)
     if (!source) return normalized
+    const names = overlayCharacterLocaleText(normalized.names, source.names, source.name)
+    const jobs = overlayCharacterLocaleText(normalized.jobs, source.jobs, source.job)
+    const localeDrift =
+      JSON.stringify(names) !== JSON.stringify(normalized.names) ||
+      JSON.stringify(jobs) !== JSON.stringify(normalized.jobs)
     if (
       source.videos === creator.videos &&
       source.images === creator.images &&
@@ -361,10 +395,9 @@ function syncOwnedWithRegistered(
       source.specialVacation === creator.specialVacation &&
       source.profileImageUrl === creator.profileImageUrl &&
       source.name === creator.name &&
-      source.names === creator.names &&
       source.job === creator.job &&
-      source.jobs === creator.jobs &&
       source.mediaRevision === creator.mediaRevision &&
+      !localeDrift &&
       !changed
     ) {
       return normalized
@@ -373,10 +406,10 @@ function syncOwnedWithRegistered(
     return normalizeOwnedCreator({
       ...normalized,
       name: source.name,
-      names: source.names,
+      names,
       age: source.age,
       job: source.job,
-      jobs: source.jobs,
+      jobs,
       bust: source.bust,
       weight: source.weight,
       concept: source.concept,
@@ -992,6 +1025,7 @@ export default function App() {
               en: '',
               ja: '',
               'zh-cn': '',
+              'zh-tw': '',
               ru: '',
               es: '',
               de: '',
@@ -1023,6 +1057,7 @@ export default function App() {
   useEffect(() => {
     if (!isLoaded) return
     registerCharacterAchievements(registeredCharacters)
+    registerCharacterLocaleCatalog(registeredCharacters)
     setOwnedCreators((prev) => syncOwnedWithRegistered(prev, registeredCharacters))
   }, [registeredCharacters, isLoaded])
 

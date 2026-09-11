@@ -1,5 +1,6 @@
 import type { Grade } from './characters'
 import { type CharacterLocaleText } from './characterLocales'
+import { s2tw } from './s2tw'
 import { companyTierOf, type CompanyTierId } from './ranking'
 import { DEFAULT_VIEWER_BALANCE, type ViewerBalance } from './viewerBalance'
 
@@ -423,6 +424,7 @@ export const FIXED_JUDGES_LOCALES: Record<
       en: 'Kenji Sato',
       ja: '佐藤 健二',
       'zh-cn': '佐藤健二',
+      'zh-tw': s2tw('佐藤健二'),
       ru: 'Кэндзи Сато',
       es: 'Kenji Sato',
       de: 'Kenji Sato',
@@ -432,6 +434,7 @@ export const FIXED_JUDGES_LOCALES: Record<
       en: 'Senior evaluator who strictly assesses tradition, elegance, and formality.',
       ja: '伝統と気品、格式を厳格に審査する主任審査員。',
       'zh-cn': '严格审查传统、高雅与礼仪的首席审查员。',
+      'zh-tw': s2tw('严格审查传统、高雅与礼仪的首席审查员。'),
       ru: 'Старший эксперт, строго оценивающий традиции, элегантность и формальности.',
       es: 'Evaluador principal que juzga strictly la tradición, la elegancia y la formalidad.',
       de: 'Chefprüfer, der Tradition, Eleganz und Formstrengheit bewertet.',
@@ -443,6 +446,7 @@ export const FIXED_JUDGES_LOCALES: Record<
       en: 'Ren Tanaka',
       ja: '田中 蓮',
       'zh-cn': '田中莲',
+      'zh-tw': s2tw('田中莲'),
       ru: 'Рэн Танака',
       es: 'Ren Tanaka',
       de: 'Ren Tanaka',
@@ -452,6 +456,7 @@ export const FIXED_JUDGES_LOCALES: Record<
       en: 'Evaluator who focuses on overwhelming skills and dynamic stage performance.',
       ja: '圧倒的なスキルと華やかなステージパフォーマンスを重視する審査員。',
       'zh-cn': '重视压倒性技巧与华丽舞台表演的审查员。',
+      'zh-tw': s2tw('重视压倒性技巧与华丽舞台表演的审查员。'),
       ru: 'Эксперт, уделяющий внимание выдающимся навыкам и ярким выступлениям.',
       es: 'Evaluador que se enfoca en habilidades deslumbrantes y espectáculo escénico.',
       de: 'Prüfer, der den Fokus auf überragendes Können und Bühnenperformance legt.',
@@ -463,6 +468,7 @@ export const FIXED_JUDGES_LOCALES: Record<
       en: 'Ryusei Yamamoto',
       ja: '山本 龍星',
       'zh-cn': '山本龙星',
+      'zh-tw': s2tw('山本龙星'),
       ru: 'Рюсэй Яма모토',
       es: 'Ryusei Yamamoto',
       de: 'Ryusei Yamamoto',
@@ -472,6 +478,7 @@ export const FIXED_JUDGES_LOCALES: Record<
       en: 'Evaluator who prioritizes authentic communication and viewer empathy.',
       ja: '視聴者との真心ある対話と共感を最優先に評価する審査員。',
       'zh-cn': '将与观众的真诚沟通与共鸣放在首位的审查员。',
+      'zh-tw': s2tw('将与观众的真诚沟通与共鸣放在首位的审查员。'),
       ru: 'Эксперт, ставящий во главу угла искреннее общение и эмпатию со зрителями.',
       es: 'Evaluador que prioriza la comunicación authentic y la empatía con la audiencia.',
       de: 'Prüfer, der authentische Kommunikation und Empathie mit dem Publikum schätzt.',
@@ -483,6 +490,7 @@ export const FIXED_JUDGES_LOCALES: Record<
       en: 'Daichi Kawamura',
       ja: '川村 大地',
       'zh-cn': '川村大地',
+      'zh-tw': s2tw('川村大地'),
       ru: 'Дайти Кава무ра',
       es: 'Daichi Kawamura',
       de: 'Daichi Kawamura',
@@ -492,6 +500,7 @@ export const FIXED_JUDGES_LOCALES: Record<
       en: 'Evaluator who assesses unique aura and irresistible charismatic attraction.',
       ja: '独創的なオーラと致命的なカリスマ性を評価する審査員。',
       'zh-cn': '评估独一无二的气场与致命魅力风采的审查员。',
+      'zh-tw': s2tw('评估独一无二的气场与致命魅力风采的审查员。'),
       ru: 'Эксперт, оценивающий уникальную ауру и неотразимую харизму.',
       es: 'Evaluador que juzga el aura única y el atractivo carismático irresistible.',
       de: 'Prüfer, der die einzigartige Ausstrahlung und unwiderstehliche Aura bewertet.',

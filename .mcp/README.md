@@ -30,10 +30,10 @@ MCP 서버·스킬이 전부 상시 로드되어 토큰 소모가 과다한 문�
 ## 그룹
 | 그룹 | 내용 |
 |---|---|
-| `image-gen` | fooocus-local, simpligen, h3-prompt-writing |
+| `image-gen` | fooocus-local, simpligen, h3-prompt-writing, simpligen-anima |
 | `game-dev` | godot |
 | `pinokio` | gepeto, pinokio |
-| `coordination` | paperclip |
+| `coordination` | paperclip, paperclip-dev, create-agent/plugin, converting-plans |
 | `project-context` | broadcast-game, para-memory-files |
 | `diagnostics` | diagnose-why-work-stopped, terminal-bench-loop |
 
@@ -52,18 +52,14 @@ Windows 참고: `.cmd`/`.bat` 명령은 라우터가 자동으로 `cmd.exe /c`�
 `npx`는 `npx.cmd`로 지정하세요.
 
 ## Cursor 연결
-`C:\Users\shogu\.cursor\mcp.json`에 라우터 1개만 등록합니다:
-```json
-{
-  "mcpServers": {
-    "mcp-router": {
-      "command": "node",
-      "args": ["F:/Broadcast/broadcast-game/.mcp/router/index.mjs"]
-    }
-  }
-}
-```
+프로젝트 `.cursor/mcp.json`과 사용자 `C:\Users\shogu\.cursor\mcp.json`에 **라우터 1개만** 등록합니다.
 기존 개별 서버(fooocus/simpligen/godot)는 그룹 내부로 이동했으므로 전역 등록에서 제거합니다.
+
+토큰이 줄어들려면:
+1. 에이전트가 스킬을 상시 읽지 않도록, 라우터에 올린 스킬은 `disable-model-invocation: true`를 둔다.
+2. 프로젝트 규칙 `.cursor/rules/mcp-router.mdc`가 지연 로딩을 강제한다.
+3. Cursor Settings → MCP에서 **Browser** 등 내장 서버는 UI 검증할 때만 켠다. 스키마가 커서 매 턴 토큰을 먹는다.
+4. 설정 반영 후 Cursor 창을 Reload 한다.
 
 ## 보안
 `config/groups.json`에는 `SIMPLIGEN_TOKEN` 등 시크릿이 포함되므로 `.gitignore`에 등록되어

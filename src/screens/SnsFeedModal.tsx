@@ -201,7 +201,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
                 <div className="mt-3 rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-2.5">
                   <div className="flex items-center justify-between text-[11px] font-bold text-cyan-200">
                     <span>📱 {t('sns.publishProgress')}</span>
-                    <span>{ratioPercent}% ({publishedIds.length} / {posts.length}장)</span>
+                    <span>{ratioPercent}% {t('sns.postProgressFormat', { published: publishedIds.length, total: posts.length })}</span>
                   </div>
                   <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-black/40">
                     <div

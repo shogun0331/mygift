@@ -42,7 +42,7 @@ export function MosaicMediaFrame({ src, kind, regions, className }: MosaicMediaF
       ) : (
         <img src={src} alt="" className="h-full w-full object-cover" />
       )}
-      {blurRegions.length > 0 && box.w > 0 ? (
+      {blurRegions.length > 0 && box.w > 0 && box.h > 0 ? (
         <MosaicRegionLayer src={src} kind={kind} regions={blurRegions} box={box} objectFit="cover" />
       ) : null}
     </div>
