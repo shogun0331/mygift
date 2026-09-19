@@ -40,8 +40,9 @@ import { HighLowEditorPanel } from '../minigames/highlow/HighLowEditorPanel'
 import { SlotEditorPanel } from '../minigames/slot/SlotEditorPanel'
 import { BgmEditorPanel } from './BgmEditorPanel'
 import { useGameBgm, type BgmTrack, type GameBgmConfig } from '../game/bgm'
-import { MOSAIC_BLOCK_PRESETS, setMosaicBlockPx, useMosaicBlockPx } from '../game/visualFx'
+import { MOSAIC_BLOCK_PRESETS, mosaicBlockLabel, setMosaicBlockPx, useMosaicBlockPx } from '../game/visualFx'
 import { resetAchievements } from '../game/achievements'
+import { ReviewMosaicExportButton } from './ReviewMosaicExportButton'
 
 type EditorTab =
   | 'character'
@@ -209,7 +210,7 @@ export function EditorScreen({
       )}
 
       <div className="grid min-h-0 grid-cols-[240px_1fr]">
-        <aside className="game-dock z-10 flex min-h-0 flex-col gap-2 border-r border-indigo-500/15 px-3 py-4">
+        <aside className="game-dock z-10 flex min-h-0 flex-col gap-2 overflow-y-auto border-r border-indigo-500/15 px-3 py-4">
           <p className="game-stat-label px-2 mb-1">메뉴</p>
           <button
             type="button"
@@ -313,7 +314,15 @@ export function EditorScreen({
           >
             🎰 카지노 슬롯
           </button>
-          <MosaicBlockPicker />
+          <div className="mt-auto flex flex-col gap-2">
+            <MosaicBlockPicker />
+            <ReviewMosaicExportButton
+              events={events}
+              characters={registeredCharacters}
+              commonEventLinks={commonEventLinks}
+              stationGradeConfig={stationGradeConfig}
+            />
+          </div>
         </aside>
 
         <section className="relative z-10 min-h-0 overflow-auto p-6">
@@ -683,9 +692,11 @@ export function EditorScreen({
 function MosaicBlockPicker() {
   const block = useMosaicBlockPx()
   return (
-    <div className="mt-auto rounded-xl border border-white/10 bg-black/25 px-3 py-3">
+    <div className="rounded-xl border border-white/10 bg-black/25 px-3 py-3">
       <p className="text-[10px] font-bold tracking-wide text-slate-400">모자이크 블록 크기</p>
-      <p className="mt-0.5 text-[10px] leading-4 text-slate-500">VN · 승급심사 퍼포먼스</p>
+      <p className="mt-0.5 text-[10px] leading-4 text-slate-500">
+        각 이미지 긴 변÷100 (최소 4px). 1920이면 약 19px. 없음은 에디터 미리보기만.
+      </p>
       <div className="mt-2 flex flex-wrap gap-1.5">
         {MOSAIC_BLOCK_PRESETS.map((px) => (
           <button
@@ -698,7 +709,7 @@ function MosaicBlockPicker() {
                 : 'border-white/10 text-slate-400 hover:text-slate-200'
             }`}
           >
-            {px === 0 ? '없음' : `${px}px`}
+            {mosaicBlockLabel(px)}
           </button>
         ))}
       </div>

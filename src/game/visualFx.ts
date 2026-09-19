@@ -2,24 +2,17 @@ import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'broadcast-mosaic-block-px'
 const LEGACY_STRENGTH_KEY = 'broadcast-mosaic-strength'
-export const MOSAIC_BLOCK_PRESETS: readonly number[] = [0, 4, 6, 8, 12, 16, 20, 24]
-const DEFAULT_BLOCK_PX = 8
+/** 음수 = DLsite 긴 변 기준 자동 셀 */
+export const MOSAIC_ADAPTIVE = -1
+export const MOSAIC_BLOCK_PRESETS: readonly number[] = [MOSAIC_ADAPTIVE, 0]
+const DEFAULT_BLOCK_PX = MOSAIC_ADAPTIVE
 
 let blockPx = loadBlockPx()
 const listeners = new Set<() => void>()
 
 function snapToPreset(px: number): number {
-  if (px <= 0) return 0
-  let best = DEFAULT_BLOCK_PX
-  let bestDist = Number.POSITIVE_INFINITY
-  for (const p of MOSAIC_BLOCK_PRESETS) {
-    const d = Math.abs(p - px)
-    if (d < bestDist) {
-      bestDist = d
-      best = p
-    }
-  }
-  return best
+  if (px === 0) return 0
+  return MOSAIC_ADAPTIVE
 }
 
 function loadBlockPx(): number {
@@ -29,7 +22,6 @@ function loadBlockPx(): number {
       const n = Number(raw)
       if (Number.isFinite(n)) return snapToPreset(n)
     }
-    // 이전 통합 강도(0~100) 저장값이 있으면 블록 px로 마이그레이션
     const legacy = localStorage.getItem(LEGACY_STRENGTH_KEY)
     if (legacy != null) {
       const n = Number(legacy)
@@ -39,7 +31,7 @@ function loadBlockPx(): number {
         } catch {
           // ignore
         }
-        return snapToPreset(Math.round(n * 0.5))
+        return MOSAIC_ADAPTIVE
       }
     }
     return DEFAULT_BLOCK_PX
@@ -54,6 +46,20 @@ function emit() {
 
 export function getMosaicBlockPx() {
   return blockPx
+}
+
+/** 플레이·굽기: 0(없음)도 적응형으로 본다. 에디터 미리보기만 0을 허용. */
+export function getPlaybackMosaicBlockPx() {
+  return blockPx <= 0 ? MOSAIC_ADAPTIVE : blockPx
+}
+
+export function isMosaicAdaptive(px: number) {
+  return px < 0
+}
+
+export function mosaicBlockLabel(px: number) {
+  if (px === 0) return '없음'
+  return 'DLsite 자동'
 }
 
 export function setMosaicBlockPx(next: number) {

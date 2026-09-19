@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { MosaicRegionLayer, readBlurRegions } from '../events/BlurRegionEditor'
+import { mediaContentBox } from '../events/mosaicMath'
 import type { BlurRegion } from '../events/types'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { useTranslation } from '../locales/i18n'
@@ -16,24 +17,6 @@ type SnsMediaWithBlurProps = {
   /** SNS 모자이크는 에디터 fit(원본 비율) 기준. cover면 크롭 좌표계로 맞춤 */
   objectFit?: ObjectFitMode
   onClick?: () => void
-}
-
-function contentBox(
-  elW: number,
-  elH: number,
-  natW: number,
-  natH: number,
-  fit: ObjectFitMode,
-): { x: number; y: number; w: number; h: number } {
-  if (elW <= 0 || elH <= 0) return { x: 0, y: 0, w: 0, h: 0 }
-  if (fit === 'fill' || natW <= 0 || natH <= 0) {
-    return { x: 0, y: 0, w: elW, h: elH }
-  }
-  const scale =
-    fit === 'contain' ? Math.min(elW / natW, elH / natH) : Math.max(elW / natW, elH / natH)
-  const w = natW * scale
-  const h = natH * scale
-  return { x: (elW - w) / 2, y: (elH - h) / 2, w, h }
 }
 
 export function SnsMediaWithBlur({
@@ -91,7 +74,7 @@ export function SnsMediaWithBlur({
     syncNatural()
   }, [src, box.w, box.h])
 
-  const content = contentBox(box.w, box.h, natural.w, natural.h, objectFit)
+  const content = mediaContentBox(box.w, box.h, natural.w, natural.h, objectFit)
 
   return (
     <div

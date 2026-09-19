@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useMosaicBlockPx } from '../game/visualFx'
+import { getPlaybackMosaicBlockPx, useMosaicBlockPx } from '../game/visualFx'
+import {
+  dlsiteBlockPx,
+  expandSourceRect,
+  inflateMosaicRegion,
+  mediaContentBox,
+  mosaicCellCount,
+  regionToSourcePixels,
+  sourceRectToDisplay,
+} from './mosaicMath'
 import type { BlurRegion, EventMediaAsset } from './types'
 
 export const BLUR_MIN = 0
@@ -63,6 +72,7 @@ export function MosaicRegionLayer({
   box,
   content,
   objectFit = 'cover',
+  allowOff = false,
 }: {
   src: string
   kind: 'image' | 'video'
@@ -71,32 +81,27 @@ export function MosaicRegionLayer({
   /** 미디어가 실제 표시되는 사각형(px). 생략 시 박스 전체. objectFit=cover/fill에 맞춰 넘겨줄 것. */
   content?: { x: number; y: number; w: number; h: number }
   objectFit?: 'cover' | 'fill' | 'contain'
+  /** true면 에디터 '없음' 설정을 존중한다. 플레이/심사는 항상 모자이크. */
+  allowOff?: boolean
 }) {
-  const block = useMosaicBlockPx()
-  const rect = content ?? { x: 0, y: 0, w: box.w, h: box.h }
-  if (box.w <= 0 || box.h <= 0 || rect.w <= 0 || rect.h <= 0 || regions.length === 0) return null
+  const stored = useMosaicBlockPx()
+  const block = allowOff ? stored : getPlaybackMosaicBlockPx()
+  if (box.w <= 0 || box.h <= 0 || regions.length === 0) return null
+  if (allowOff && block <= 0) return null
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {regions.map((region) => {
-        if (block <= 0) return null
-        const rx = rect.x + region.x * rect.w
-        const ry = rect.y + region.y * rect.h
-        const rw = region.w * rect.w
-        const rh = region.h * rect.h
-        if (rw <= 0 || rh <= 0) return null
-        return (
-          <MosaicTile
-            key={region.id}
-            src={src}
-            kind={kind}
-            block={block}
-            rect={rect}
-            regionRect={{ x: rx, y: ry, w: rw, h: rh }}
-            objectFit={objectFit}
-          />
-        )
-      })}
+      {regions.map((region) => (
+        <MosaicTile
+          key={region.id}
+          src={src}
+          kind={kind}
+          region={inflateMosaicRegion(region)}
+          box={box}
+          content={content}
+          objectFit={objectFit}
+        />
+      ))}
     </div>
   )
 }
@@ -110,27 +115,23 @@ export function MosaicRegionLayer({
 function MosaicTile({
   src,
   kind,
-  block,
-  rect,
-  regionRect,
+  region,
+  box,
+  content,
   objectFit,
 }: {
   src: string
   kind: 'image' | 'video'
-  block: number
-  rect: { x: number; y: number; w: number; h: number }
-  regionRect: { x: number; y: number; w: number; h: number }
+  region: BlurRegion
+  box: { w: number; h: number }
+  content?: { x: number; y: number; w: number; h: number }
   objectFit: 'cover' | 'fill' | 'contain'
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mediaRef = useRef<HTMLImageElement | HTMLVideoElement | null>(null)
   const [ready, setReady] = useState(false)
+  const [disp, setDisp] = useState({ x: 0, y: 0, w: 0, h: 0 })
 
-  // 모자이크 축소 해상도: region 크기를 block 단위로 나눔
-  const smallW = Math.max(1, Math.round(regionRect.w / block))
-  const smallH = Math.max(1, Math.round(regionRect.h / block))
-
-  // 캔버스에 모자이크 프레임 그리기
   const draw = useCallback(() => {
     const canvas = canvasRef.current
     const media = mediaRef.current
@@ -138,36 +139,38 @@ function MosaicTile({
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    canvas.width = smallW
-    canvas.height = smallH
-    ctx.imageSmoothingEnabled = true
-    ctx.imageSmoothingQuality = 'low'
-    ctx.clearRect(0, 0, smallW, smallH)
-
-    // 미디어 원본 크기
     const nw = kind === 'video' ? (media as HTMLVideoElement).videoWidth : (media as HTMLImageElement).naturalWidth
     const nh = kind === 'video' ? (media as HTMLVideoElement).videoHeight : (media as HTMLImageElement).naturalHeight
     if (!nw || !nh) return
 
-    // objectFit 에 따라 미디어 원본에서 contentRect 에 표시되는 영역(crop) 계산
-    const crop = computeCrop(nw, nh, rect.w, rect.h, objectFit)
-    if (!crop) return
+    const space = objectFit === 'cover' ? 'cover' : 'media'
+    const block = dlsiteBlockPx(nw, nh)
+    let srcRect = regionToSourcePixels(region, nw, nh, space)
+    srcRect = expandSourceRect(srcRect, block, nw, nh)
+    if (srcRect.w < 1 || srcRect.h < 1) return
 
-    // region이 contentRect 내에서 차지하는 비율만큼 crop 좌표 이동
-    const sxRatio = (regionRect.x - rect.x) / rect.w
-    const syRatio = (regionRect.y - rect.y) / rect.h
-    const swRatio = regionRect.w / rect.w
-    const shRatio = regionRect.h / rect.h
-
-    const sx = crop.x + sxRatio * crop.w
-    const sy = crop.y + syRatio * crop.h
-    const sw = crop.w * swRatio
-    const sh = crop.h * shRatio
-
-    if (sw > 0 && sh > 0) {
-      ctx.drawImage(media, sx, sy, sw, sh, 0, 0, smallW, smallH)
+    const contentRect = content ?? mediaContentBox(box.w, box.h, nw, nh, objectFit)
+    if (contentRect.w <= 0 || contentRect.h <= 0) return
+    const mapped = sourceRectToDisplay(srcRect, nw, nh, contentRect)
+    const next = {
+      x: Math.round(mapped.x) - 1,
+      y: Math.round(mapped.y) - 1,
+      w: Math.round(mapped.w) + 2,
+      h: Math.round(mapped.h) + 2,
     }
-  }, [smallW, smallH, regionRect.x, regionRect.y, regionRect.w, regionRect.h, rect.x, rect.y, rect.w, rect.h, objectFit, kind])
+    setDisp((prev) =>
+      prev.x === next.x && prev.y === next.y && prev.w === next.w && prev.h === next.h ? prev : next,
+    )
+
+    const cells = mosaicCellCount(srcRect.w, srcRect.h, block)
+    canvas.width = cells.w
+    canvas.height = cells.h
+    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = 'low'
+    ctx.fillStyle = '#111111'
+    ctx.fillRect(0, 0, cells.w, cells.h)
+    ctx.drawImage(media, srcRect.x, srcRect.y, srcRect.w, srcRect.h, 0, 0, cells.w, cells.h)
+  }, [region.x, region.y, region.w, region.h, box.w, box.h, content?.x, content?.y, content?.w, content?.h, objectFit, kind])
 
   // 비디오/이미지 로드 & 프레임 갱신
   useEffect(() => {
@@ -212,9 +215,8 @@ function MosaicTile({
   return (
     <div
       className="absolute overflow-hidden"
-      style={{ left: regionRect.x, top: regionRect.y, width: regionRect.w, height: regionRect.h }}
+      style={{ left: disp.x, top: disp.y, width: disp.w, height: disp.h }}
     >
-      {/* 숨김 처리된 원본 미디어 — Canvas 드로잉 소스로만 사용 */}
       {kind === 'video' ? (
         <video
           ref={(el) => { mediaRef.current = el }}
@@ -237,44 +239,14 @@ function MosaicTile({
       )}
       <canvas
         ref={canvasRef}
+        className="block h-full w-full"
         style={{
-          width: regionRect.w,
-          height: regionRect.h,
           imageRendering: 'pixelated',
+          background: '#111',
         }}
       />
     </div>
   )
-}
-
-type Crop = { x: number; y: number; w: number; h: number }
-
-/**
- * objectFit 에 따라 미디어 원본에서 잘라낼 영역(sx, sy, sw, sh)을 계산.
- * nw/nh: 미디어 원본 해상도, dw/dh: 표시 영역 크기.
- */
-function computeCrop(nw: number, nh: number, dw: number, dh: number, fit: 'cover' | 'fill' | 'contain'): Crop | null {
-  if (!nw || !nh || !dw || !dh) return null
-  if (fit === 'fill') return { x: 0, y: 0, w: nw, h: nh }
-
-  const mediaAR = nw / nh
-  const dispAR = dw / dh
-
-  if (fit === 'cover') {
-    if (mediaAR > dispAR) {
-      // 미디어가 더 넓음 → 좌우 잘라냄
-      const sh = nh
-      const sw = nh * dispAR
-      return { x: (nw - sw) / 2, y: 0, w: sw, h: sh }
-    } else {
-      // 미디어가 더 좁음(높이가 큼) → 상하 잘라냄
-      const sw = nw
-      const sh = nw / dispAR
-      return { x: 0, y: (nh - sh) / 2, w: sw, h: sh }
-    }
-  }
-  // contain: 전체 미디어가 들어가도록 → 여백 없이 원본 전체를 사용
-  return { x: 0, y: 0, w: nw, h: nh }
 }
 
 export function BlurRegionOverlay({
@@ -284,6 +256,7 @@ export function BlurRegionOverlay({
   draft,
   src,
   kind,
+  allowOff = false,
 }: {
   regions: BlurRegion[]
   selectedId?: string | null
@@ -291,6 +264,7 @@ export function BlurRegionOverlay({
   draft?: { x: number; y: number; w: number; h: number } | null
   src?: string | null
   kind?: 'image' | 'video'
+  allowOff?: boolean
 }) {
   const boxRef = useRef<HTMLDivElement>(null)
   const [box, setBox] = useState({ w: 0, h: 0 })
@@ -316,7 +290,14 @@ export function BlurRegionOverlay({
       className="event-mosaic-layer pointer-events-none absolute inset-0 z-[5] overflow-hidden"
     >
       {hasMedia ? (
-        <MosaicRegionLayer src={src!} kind={kind!} regions={regions} box={box} objectFit="cover" />
+        <MosaicRegionLayer
+          src={src!}
+          kind={kind!}
+          regions={regions}
+          box={box}
+          objectFit="cover"
+          allowOff={allowOff}
+        />
       ) : (
         regions.map((region) => (
           <div
@@ -639,6 +620,7 @@ export function BlurRegionEditor({
                 draft={draft}
                 src={asset?.url}
                 kind={asset?.kind as 'image' | 'video' | undefined}
+                allowOff
               />
             </div>
           </div>
