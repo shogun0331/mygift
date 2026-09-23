@@ -182,6 +182,7 @@ export function EndingGalleryPanel({ onClose }: EndingGalleryPanelProps) {
     }> = []
 
     for (const slot of CHARACTER_EVENT_SLOTS) {
+      if (slot.key === 'date1') continue
       const evId = selectedChar.eventLinks[slot.key]
       if (!evId) continue
       const event = events.find((e) => e.id === evId)
@@ -282,6 +283,7 @@ export function EndingGalleryPanel({ onClose }: EndingGalleryPanelProps) {
                 let eventCount = 0
                 if (c.eventLinks) {
                   for (const slot of CHARACTER_EVENT_SLOTS) {
+                    if (slot.key === 'date1') continue
                     if (c.eventLinks[slot.key]) eventCount++
                   }
                 }

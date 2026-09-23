@@ -328,19 +328,6 @@ export function createCharacterAchievements(char: {
   const profileUrl = char.profileImageUrl ?? null
   return [
     {
-      id: `char_${char.id}_date1`,
-      category: 'creator',
-      titleKey: 'achievements.charDate1Title',
-      descKey: 'achievements.charDate1Desc',
-      icon: '☕',
-      rarity: 'bronze',
-      characterId: char.id,
-      characterAction: 'date1',
-      characterNames: names,
-      characterNameFallback: char.name,
-      characterProfileUrl: profileUrl,
-    },
-    {
       id: `char_${char.id}_date2`,
       category: 'creator',
       titleKey: 'achievements.charDate2Title',

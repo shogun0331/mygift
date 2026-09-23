@@ -1431,9 +1431,6 @@ export default function App() {
     setWatchedEventIds((prev) => (prev.includes(eventId) ? prev : [...prev, eventId]))
     for (const char of registeredCharacters) {
       if (!char.eventLinks) continue
-      if (char.eventLinks.date1 && char.eventLinks.date1 === eventId) {
-        unlockAchievement(`char_${char.id}_date1`)
-      }
       if (char.eventLinks.date2 && char.eventLinks.date2 === eventId) {
         unlockAchievement(`char_${char.id}_date2`)
       }
