@@ -66,14 +66,6 @@
       "sound": "node_1787111769609_5_eg92.wav"
     },
     {
-      "id": "graphic_08e8e28c_4",
-      "type": "graphic",
-      "image": "2026-08-28_00062_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787111769609_6_idf3",
       "type": "text",
       "speakerType": "player",
@@ -170,14 +162,6 @@
       "text_key": "node_1787111769609_16_660u"
     },
     {
-      "id": "graphic_08e8e28c_5",
-      "type": "graphic",
-      "image": "2026-08-28_00063_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787111769609_17_vp03",
       "type": "text",
       "speakerType": "character",
@@ -244,14 +228,6 @@
       "speaker": "",
       "text": "공원 한쪽. 타치바나 씨가 고민 끝에 얼굴을 든다.",
       "text_key": "node_1787111769609_23_r5te"
-    },
-    {
-      "id": "graphic_08e8e28c_7",
-      "type": "graphic",
-      "image": "2026-08-28_00065_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787111769609_24_uygc",
@@ -515,36 +491,12 @@
       "id": "media_image_mtjbsmbd_l0cm09i"
     },
     {
-      "fileName": "2026-08-28_00062_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00062_.webp",
-      "url": "media://chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00062_.webp",
-      "size": 116360,
-      "id": "media_image_mtjbsmbd_vecrciy"
-    },
-    {
-      "fileName": "2026-08-28_00063_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00063_.webp",
-      "url": "media://chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00063_.webp",
-      "size": 91668,
-      "id": "media_image_mtjbsmbd_v44xt86"
-    },
-    {
       "fileName": "2026-08-28_00064_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00064_.webp",
       "url": "media://chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00064_.webp",
       "size": 94696,
       "id": "media_image_mtjbsmbd_bunhijr"
-    },
-    {
-      "fileName": "2026-08-28_00065_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00065_.webp",
-      "url": "media://chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00065_.webp",
-      "size": 123788,
-      "id": "media_image_mtjbsmbd_vcjmi47"
     },
     {
       "fileName": "2026-08-28_00066_.webp",

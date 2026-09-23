@@ -230,14 +230,6 @@
       "text_key": "node_1787118693734_23_ehsf"
     },
     {
-      "id": "graphic_9e811e32_3",
-      "type": "graphic",
-      "image": "2026-08-28_00471_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787118693734_24_zie0",
       "type": "text",
       "speakerType": "player",
@@ -810,14 +802,6 @@
       "url": "media://chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/images/2026-08-28_00470_.webp",
       "size": 195028,
       "id": "media_image_mtjbsmbe_p1gupvj"
-    },
-    {
-      "fileName": "2026-08-28_00471_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/images/2026-08-28_00471_.webp",
-      "url": "media://chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/images/2026-08-28_00471_.webp",
-      "size": 206572,
-      "id": "media_image_mtjbsmbe_pej63su"
     },
     {
       "fileName": "2026-08-28_00472_.webp",

@@ -42,14 +42,6 @@
       "text_key": "node_1786858470286_3_g4p4"
     },
     {
-      "id": "graphic_881535cc_2",
-      "type": "graphic",
-      "image": "2026-08-28_00150_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1786858470286_4_8oxh",
       "type": "text",
       "speakerType": "character",
@@ -869,14 +861,6 @@
       "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00149_.webp",
       "size": 123480,
       "id": "media_image_mtjbsmbh_so103k1"
-    },
-    {
-      "fileName": "2026-08-28_00150_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00150_.webp",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00150_.webp",
-      "size": 131766,
-      "id": "media_image_mtjbsmbh_ih6jiku"
     },
     {
       "fileName": "2026-08-28_00151_.webp",

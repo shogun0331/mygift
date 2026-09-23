@@ -52,19 +52,6 @@
     "ownerCharacterId": "1786792656193-i7isvfo"
   },
   {
-    "id": "a",
-    "projectId": "custom",
-    "projectTitle": "직접 생성",
-    "chapterId": 1,
-    "titleKey": "a",
-    "title": "데이트1",
-    "startNode": "node_1787096693202_1_l561",
-    "defaultLanguage": "ko",
-    "sourceZipName": "직접 생성",
-    "createdAt": "2026-08-16T01:18:10.753Z",
-    "ownerCharacterId": "1786792656193-i7isvfo"
-  },
-  {
     "id": "a1",
     "projectId": "custom",
     "projectTitle": "직접 생성",
@@ -127,19 +114,6 @@
     "defaultLanguage": "ko",
     "sourceZipName": "직접 생성",
     "createdAt": "2026-08-16T01:38:11.208Z",
-    "ownerCharacterId": "1786833964287-iflkqh2"
-  },
-  {
-    "id": "527c3f8b-f496-4c25-9fd1-91096ec45330",
-    "projectId": "custom",
-    "projectTitle": "직접 생성",
-    "chapterId": 1,
-    "titleKey": "527c3f8b-f496-4c25-9fd1-91096ec45330",
-    "title": "데이트1",
-    "startNode": "node_1787112506729_0_ucct",
-    "defaultLanguage": "ko",
-    "sourceZipName": "직접 생성",
-    "createdAt": "2026-08-16T01:38:53.275Z",
     "ownerCharacterId": "1786833964287-iflkqh2"
   },
   {
@@ -208,19 +182,6 @@
     "ownerCharacterId": "1786849140255-p0lxz2i"
   },
   {
-    "id": "ec8564e5-caab-4f3a-bd26-62ebe2e2df34",
-    "projectId": "custom",
-    "projectTitle": "직접 생성",
-    "chapterId": 1,
-    "titleKey": "ec8564e5-caab-4f3a-bd26-62ebe2e2df34",
-    "title": "데이트1",
-    "startNode": "node_1787118174859_1_lbdo",
-    "defaultLanguage": "ko",
-    "sourceZipName": "직접 생성",
-    "createdAt": "2026-08-16T03:13:46.653Z",
-    "ownerCharacterId": "1786849140255-p0lxz2i"
-  },
-  {
     "id": "9e811e32-fbde-4478-a0de-4e6ac4e3f8fd",
     "projectId": "custom",
     "projectTitle": "직접 생성",
@@ -283,19 +244,6 @@
     "defaultLanguage": "ko",
     "sourceZipName": "직접 생성",
     "createdAt": "2026-08-16T03:45:17.741Z",
-    "ownerCharacterId": "1786851291899-dqn64g6"
-  },
-  {
-    "id": "b3dd121c-2f6c-4a20-9245-01cfcf2ef89d",
-    "projectId": "custom",
-    "projectTitle": "직접 생성",
-    "chapterId": 1,
-    "titleKey": "b3dd121c-2f6c-4a20-9245-01cfcf2ef89d",
-    "title": "데이트1",
-    "startNode": "node_1787177840810_1_5fzl",
-    "defaultLanguage": "ko",
-    "sourceZipName": "직접 생성",
-    "createdAt": "2026-08-16T03:45:46.477Z",
     "ownerCharacterId": "1786851291899-dqn64g6"
   },
   {
@@ -364,19 +312,6 @@
     "ownerCharacterId": "1786850998437-g6olmc9"
   },
   {
-    "id": "2f849f77-ce82-4aa3-889f-94d1b2fad381",
-    "projectId": "custom",
-    "projectTitle": "직접 생성",
-    "chapterId": 1,
-    "titleKey": "2f849f77-ce82-4aa3-889f-94d1b2fad381",
-    "title": "데이트1",
-    "startNode": "node_1787136140417_0_tx6q",
-    "defaultLanguage": "ko",
-    "sourceZipName": "직접 생성",
-    "createdAt": "2026-08-16T05:33:27.467Z",
-    "ownerCharacterId": "1786850998437-g6olmc9"
-  },
-  {
     "id": "e80cb0f4-8839-45a6-97ca-42f2ed18c988",
     "projectId": "custom",
     "projectTitle": "직접 생성",
@@ -439,19 +374,6 @@
     "defaultLanguage": "ko",
     "sourceZipName": "직접 생성",
     "createdAt": "2026-08-16T05:43:58.207Z",
-    "ownerCharacterId": "1786851057540-5sup19s"
-  },
-  {
-    "id": "932322e9-444a-4498-a767-c26cab3ed63d",
-    "projectId": "custom",
-    "projectTitle": "직접 생성",
-    "chapterId": 1,
-    "titleKey": "932322e9-444a-4498-a767-c26cab3ed63d",
-    "title": "데이트1",
-    "startNode": "node_1787031770896_0_9ay6",
-    "defaultLanguage": "ko",
-    "sourceZipName": "직접 생성",
-    "createdAt": "2026-08-16T05:44:19.993Z",
     "ownerCharacterId": "1786851057540-5sup19s"
   },
   {
@@ -520,19 +442,6 @@
     "ownerCharacterId": "1786851153987-tb6qhg5"
   },
   {
-    "id": "66eace05-3678-4976-aebf-ee86b096de74",
-    "projectId": "custom",
-    "projectTitle": "직접 생성",
-    "chapterId": 1,
-    "titleKey": "66eace05-3678-4976-aebf-ee86b096de74",
-    "title": "데이트1",
-    "startNode": "node_1787180802637_1_cuxi",
-    "defaultLanguage": "ko",
-    "sourceZipName": "직접 생성",
-    "createdAt": "2026-08-16T05:47:37.566Z",
-    "ownerCharacterId": "1786851153987-tb6qhg5"
-  },
-  {
     "id": "00848db6-5fb0-44ca-ab30-787e4f14c14d",
     "projectId": "custom",
     "projectTitle": "직접 생성",
@@ -598,19 +507,6 @@
     "ownerCharacterId": "1786851109772-o2n3dj3"
   },
   {
-    "id": "d52a372b-52cc-445e-b192-ec7e38458ce5",
-    "projectId": "custom",
-    "projectTitle": "직접 생성",
-    "chapterId": 1,
-    "titleKey": "d52a372b-52cc-445e-b192-ec7e38458ce5",
-    "title": "데이트1",
-    "startNode": "node_1787131986609_0_9z25",
-    "defaultLanguage": "ko",
-    "sourceZipName": "직접 생성",
-    "createdAt": "2026-08-16T06:05:58.254Z",
-    "ownerCharacterId": "1786851109772-o2n3dj3"
-  },
-  {
     "id": "55a714c6-13aa-41bf-a4f4-a511956c6079",
     "projectId": "custom",
     "projectTitle": "직접 생성",
@@ -673,19 +569,6 @@
     "defaultLanguage": "ko",
     "sourceZipName": "직접 생성",
     "createdAt": "2026-08-16T06:07:33.979Z",
-    "ownerCharacterId": "1786851211019-59swl59"
-  },
-  {
-    "id": "d5b67b9f-773d-40d5-b020-de06ce45e6cb",
-    "projectId": "custom",
-    "projectTitle": "직접 생성",
-    "chapterId": 1,
-    "titleKey": "d5b67b9f-773d-40d5-b020-de06ce45e6cb",
-    "title": "데이트1",
-    "startNode": "node_1787139086931_1_3u5x",
-    "defaultLanguage": "ko",
-    "sourceZipName": "직접 생성",
-    "createdAt": "2026-08-16T06:07:48.408Z",
     "ownerCharacterId": "1786851211019-59swl59"
   },
   {

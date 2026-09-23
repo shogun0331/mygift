@@ -468,23 +468,6 @@
       "text_key": "node_1786843238702_47_rb4a"
     },
     {
-      "id": "graphic_a5_7",
-      "type": "graphic",
-      "image": "2026-08-28_00047_.webp",
-      "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407567413_gfvr",
-          "x": 0.4283854166666667,
-          "y": 0.7309027777777778,
-          "w": 0.12890624999999994,
-          "h": 0.2690972222222222,
-          "blur": 2.5
-        }
-      ],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1786843238702_48_twlw",
       "type": "text",
       "speakerType": "character",
@@ -745,14 +728,6 @@
       "url": "media://chapter_assets/events/a5/images/2026-08-28_00046_.webp",
       "size": 131654,
       "id": "media_image_mtjbsmbd_m15vcp3"
-    },
-    {
-      "fileName": "2026-08-28_00047_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00047_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-08-28_00047_.webp",
-      "size": 133658,
-      "id": "media_image_mtjbsmbd_yco9uuf"
     },
     {
       "fileName": "2026-08-28_00048_.webp",

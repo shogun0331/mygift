@@ -40,15 +40,6 @@
       "text_key": "node_1787180305450_3_6t5e"
     },
     {
-      "id": "graphic_4c007732_3",
-      "type": "graphic",
-      "image": "2026-08-28_00257_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787180305450_4_hyn0",
       "type": "text",
       "speakerType": "player",
@@ -101,15 +92,6 @@
       "text_key": "node_1787180305450_9_3djv",
       "voice": "node_1787180305450_9_3djv.wav",
       "sound": "node_1787180305450_9_3djv.wav"
-    },
-    {
-      "id": "graphic_4c007732_4",
-      "type": "graphic",
-      "image": "2026-08-28_00258_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
     },
     {
       "id": "node_1787180305450_10_e4l6",
@@ -201,15 +183,6 @@
       "text_key": "node_1787180305450_18_grgv"
     },
     {
-      "id": "graphic_4c007732_6",
-      "type": "graphic",
-      "image": "2026-08-28_00260_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787180305450_19_y2nq",
       "type": "text",
       "speakerType": "player",
@@ -226,15 +199,6 @@
       "text_key": "node_1787180305450_20_j82g",
       "voice": "node_1787180305450_20_j82g.wav",
       "sound": "node_1787180305450_20_j82g.wav"
-    },
-    {
-      "id": "graphic_4c007732_7",
-      "type": "graphic",
-      "image": "2026-08-28_00261_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
     },
     {
       "id": "node_1787180305450_21_ilji",
@@ -281,15 +245,6 @@
       "text_key": "node_1787180305450_25_v0b6",
       "voice": "node_1787180305450_25_v0b6.wav",
       "sound": "node_1787180305450_25_v0b6.wav"
-    },
-    {
-      "id": "graphic_4c007732_8",
-      "type": "graphic",
-      "image": "2026-08-28_00262_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
     },
     {
       "id": "node_1787180305450_26_2ies",
@@ -492,52 +447,12 @@
       "id": "media_image_mtjbsmbi_vracjeb"
     },
     {
-      "fileName": "2026-08-28_00257_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00257_.webp",
-      "url": "media://chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00257_.webp",
-      "size": 156326,
-      "id": "media_image_mtjbsmbi_k5owfyw"
-    },
-    {
-      "fileName": "2026-08-28_00258_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00258_.webp",
-      "url": "media://chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00258_.webp",
-      "size": 151388,
-      "id": "media_image_mtjbsmbi_x5l7u6s"
-    },
-    {
       "fileName": "2026-08-28_00259_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00259_.webp",
       "url": "media://chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00259_.webp",
       "size": 144676,
       "id": "media_image_mtjbsmbi_8oisi7k"
-    },
-    {
-      "fileName": "2026-08-28_00260_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00260_.webp",
-      "url": "media://chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00260_.webp",
-      "size": 146072,
-      "id": "media_image_mtjbsmbi_551u09t"
-    },
-    {
-      "fileName": "2026-08-28_00261_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00261_.webp",
-      "url": "media://chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00261_.webp",
-      "size": 146658,
-      "id": "media_image_mtjbsmbi_evu2w17"
-    },
-    {
-      "fileName": "2026-08-28_00262_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00262_.webp",
-      "url": "media://chapter_assets/events/4c007732-5e08-4914-9b25-b1a221c9bd74/images/2026-08-28_00262_.webp",
-      "size": 146760,
-      "id": "media_image_mtjbsmbi_tstvpdo"
     },
     {
       "fileName": "2026-08-28_00263_.webp",

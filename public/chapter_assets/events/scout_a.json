@@ -86,15 +86,6 @@
       "sound": "node_1787102874671_7_7akn.wav"
     },
     {
-      "id": "graphic_scout_a_4",
-      "type": "graphic",
-      "image": "2026-08-28_00004_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787102874671_8_zifq",
       "type": "text",
       "speakerType": "player",
@@ -119,15 +110,6 @@
       "speaker": "",
       "text": "가까이서 보니 더하다. 목 스카프 아래 쇄골, 가슴에 팽팽하게 당겨진 블라우스 단추. 저 단정한 얼굴이 방송에서 웃으면 생각만 해도 자지가 반응한다.",
       "text_key": "node_1787102874671_10_ydsk"
-    },
-    {
-      "id": "graphic_scout_a_2",
-      "type": "graphic",
-      "image": "2026-08-28_00021_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
     },
     {
       "id": "node_1787102874671_11_7b93",
@@ -199,15 +181,6 @@
       "text_key": "node_1787102874671_17_vpdg"
     },
     {
-      "id": "graphic_scout_a_6",
-      "type": "graphic",
-      "image": "2026-08-28_00006_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787102874671_18_q4lm",
       "type": "text",
       "speakerType": "character",
@@ -242,29 +215,12 @@
       "text_key": "node_1787102874671_21_62ha"
     },
     {
-      "id": "graphic_scout_a_7",
-      "type": "graphic",
-      "image": "2026-08-28_00019_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787102874671_22_4ikr",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "라운지 한쪽. 미야자와 씨가 고민 끝에 얼굴을 든다.",
       "text_key": "node_1787102874671_22_4ikr"
-    },
-    {
-      "id": "graphic_scout_a_8",
-      "type": "graphic",
-      "image": "2026-08-28_00011_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787102874671_23_48qy",
@@ -511,36 +467,12 @@
       "id": "media_image_mtjbsmba_0k8zy2f"
     },
     {
-      "fileName": "2026-08-28_00004_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00004_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00004_.webp",
-      "size": 125294,
-      "id": "media_image_mtjbsmba_08setcb"
-    },
-    {
       "fileName": "2026-08-28_00005_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00005_.webp",
       "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00005_.webp",
       "size": 137976,
       "id": "media_image_mtjbsmba_94bxzum"
-    },
-    {
-      "fileName": "2026-08-28_00006_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00006_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00006_.webp",
-      "size": 129408,
-      "id": "media_image_mtjbsmba_x0pelgj"
-    },
-    {
-      "fileName": "2026-08-28_00011_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00011_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00011_.webp",
-      "size": 139832,
-      "id": "media_image_mtjbsmba_in8zd7f"
     },
     {
       "fileName": "2026-08-28_00012_.webp",
@@ -567,28 +499,12 @@
       "id": "media_image_mtjbsmba_79bkz63"
     },
     {
-      "fileName": "2026-08-28_00019_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00019_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00019_.webp",
-      "size": 132236,
-      "id": "media_image_mtjbsmba_eid963u"
-    },
-    {
       "fileName": "2026-08-28_00020_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00020_.webp",
       "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00020_.webp",
       "size": 139306,
       "id": "media_image_mtjbsmba_itfm9ah"
-    },
-    {
-      "fileName": "2026-08-28_00021_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00021_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00021_.webp",
-      "size": 125296,
-      "id": "media_image_mtjbsmba_4uedkiz"
     }
   ],
   "sourceZipName": "직접 생성",

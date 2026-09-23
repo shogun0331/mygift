@@ -223,15 +223,6 @@
       "text_key": "node_1787133586562_22_gijl"
     },
     {
-      "id": "graphic_89ab7df5_3",
-      "type": "graphic",
-      "image": "7d4faf48-ca3e-48c2-9838-78c6bcf04e7a.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787133586562_23_qfwn",
       "type": "text",
       "speakerType": "character",
@@ -899,14 +890,6 @@
       "sourcePath": "chapter_assets/events/89ab7df5-6c22-43bb-83d3-0d4df5d67843/images/6cfe6b7d-3402-4e79-93b8-1b29562b2e5a.webp",
       "url": "media://chapter_assets/events/89ab7df5-6c22-43bb-83d3-0d4df5d67843/images/6cfe6b7d-3402-4e79-93b8-1b29562b2e5a.webp",
       "size": 41522
-    },
-    {
-      "id": "1788312083192-p7gsg85",
-      "fileName": "7d4faf48-ca3e-48c2-9838-78c6bcf04e7a.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/89ab7df5-6c22-43bb-83d3-0d4df5d67843/images/7d4faf48-ca3e-48c2-9838-78c6bcf04e7a.webp",
-      "url": "media://chapter_assets/events/89ab7df5-6c22-43bb-83d3-0d4df5d67843/images/7d4faf48-ca3e-48c2-9838-78c6bcf04e7a.webp",
-      "size": 47800
     },
     {
       "id": "1788312088256-hzurgfd",
