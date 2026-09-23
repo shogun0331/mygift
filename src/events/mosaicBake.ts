@@ -1,3 +1,4 @@
+import { IS_MOSAIC_DISABLED } from '../game/mosaicBuild'
 import { readBlurRegions } from './BlurRegionEditor'
 import {
   dlsiteBlockPx,
@@ -31,7 +32,7 @@ export function applyMosaicToContext(
 ) {
   ctx.imageSmoothingEnabled = true
   ctx.drawImage(media, 0, 0, mediaW, mediaH)
-  if (regions.length === 0 || mediaW <= 0 || mediaH <= 0) return
+  if (IS_MOSAIC_DISABLED || regions.length === 0 || mediaW <= 0 || mediaH <= 0) return
 
   const fit: MosaicFit = options?.fit ?? 'fill'
   const space = fit === 'cover' ? 'cover' : 'media'
@@ -123,6 +124,7 @@ export type BakedMedia = {
 }
 
 function shouldBake(regions: BlurRegion[]) {
+  if (IS_MOSAIC_DISABLED) return false
   return readBlurRegions({ blurRegions: regions }).length > 0
 }
 

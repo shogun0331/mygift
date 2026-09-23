@@ -40,6 +40,7 @@ import { HighLowEditorPanel } from '../minigames/highlow/HighLowEditorPanel'
 import { SlotEditorPanel } from '../minigames/slot/SlotEditorPanel'
 import { BgmEditorPanel } from './BgmEditorPanel'
 import { useGameBgm, type BgmTrack, type GameBgmConfig } from '../game/bgm'
+import { IS_MOSAIC_DISABLED } from '../game/mosaicBuild'
 import { MOSAIC_BLOCK_PRESETS, mosaicBlockLabel, setMosaicBlockPx, useMosaicBlockPx } from '../game/visualFx'
 import { resetAchievements } from '../game/achievements'
 import { ReviewMosaicExportButton } from './ReviewMosaicExportButton'
@@ -691,6 +692,14 @@ export function EditorScreen({
 
 function MosaicBlockPicker() {
   const block = useMosaicBlockPx()
+  if (IS_MOSAIC_DISABLED) {
+    return (
+      <div className="rounded-xl border border-white/10 bg-black/25 px-3 py-3">
+        <p className="text-[10px] font-bold tracking-wide text-slate-400">모자이크</p>
+        <p className="mt-0.5 text-[10px] leading-4 text-amber-200/80">이 빌드는 모자이크를 그리지 않습니다.</p>
+      </div>
+    )
+  }
   return (
     <div className="rounded-xl border border-white/10 bg-black/25 px-3 py-3">
       <p className="text-[10px] font-bold tracking-wide text-slate-400">모자이크 블록 크기</p>

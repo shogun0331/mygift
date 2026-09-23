@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { IS_MOSAIC_DISABLED } from '../game/mosaicBuild'
 import { getPlaybackMosaicBlockPx, useMosaicBlockPx } from '../game/visualFx'
 import {
   dlsiteBlockPx,
@@ -86,6 +87,7 @@ export function MosaicRegionLayer({
 }) {
   const stored = useMosaicBlockPx()
   const block = allowOff ? stored : getPlaybackMosaicBlockPx()
+  if (IS_MOSAIC_DISABLED) return null
   if (box.w <= 0 || box.h <= 0 || regions.length === 0) return null
   if (allowOff && block <= 0) return null
 
@@ -283,13 +285,14 @@ export function BlurRegionOverlay({
   }, [])
 
   const hasMedia = Boolean(src && kind && box.w > 0 && box.h > 0)
+  const showMosaic = !IS_MOSAIC_DISABLED
 
   return (
     <div
       ref={boxRef}
       className="event-mosaic-layer pointer-events-none absolute inset-0 z-[5] overflow-hidden"
     >
-      {hasMedia ? (
+      {showMosaic && hasMedia ? (
         <MosaicRegionLayer
           src={src!}
           kind={kind!}
@@ -298,7 +301,7 @@ export function BlurRegionOverlay({
           objectFit="cover"
           allowOff={allowOff}
         />
-      ) : (
+      ) : showMosaic ? (
         regions.map((region) => (
           <div
             key={region.id}
@@ -312,7 +315,7 @@ export function BlurRegionOverlay({
             }}
           />
         ))
-      )}
+      ) : null}
 
       {/* 선택/핸들 아웃라인 (모자이크 위에 그림) */}
       {regions.map((region) => (

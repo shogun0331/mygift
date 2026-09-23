@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_REVIEW_BUILD?: string
+  readonly VITE_DISABLE_MOSAIC?: string
 }
 
 interface ImportMeta {
