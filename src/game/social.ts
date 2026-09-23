@@ -72,8 +72,8 @@ export function normalizeDateArcStep(raw: unknown): DateArcStep {
 }
 
 export function nextDateStep(arc: DateArcStep): DateStepKey | null {
-  if (arc <= 0) return 'date1'
-  if (arc === 1) return 'date2'
+  // DLSite 버전: 데이트 1차를 건너뛰고 데이트 2차 -> H씬으로 진행
+  if (arc <= 1) return 'date2'
   if (arc === 2) return 'h'
   return null
 }
