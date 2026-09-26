@@ -9,13 +9,13 @@ export type MosaicFit = 'cover' | 'fill' | 'contain'
 
 export type MosaicCrop = { x: number; y: number; w: number; h: number }
 
-/** DLsite: 셀 최소 4px, 긴 변 400px 이상이면 긴 변 × 1/100 */
-export const MOSAIC_MIN_BLOCK_PX = 4
+/** DLsite 최소는 긴 변×1/100. 은폐는 그보다 큰 칸(×1/50)을 쓴다. */
+export const MOSAIC_MIN_BLOCK_PX = 8
 export const MOSAIC_LONG_SIDE_THRESHOLD = 400
-export const MOSAIC_LONG_SIDE_DIVISOR = 100
+export const MOSAIC_LONG_SIDE_DIVISOR = 50
 /** 정규화 좌표: 짧은 변의 12% */
 export const MOSAIC_INFLATE_SHORT_RATIO = 0.12
-/** 정규화 좌표: 이미지 한 변의 1.5% 상한 */
+/** 정규화 좌표: 이미지 한 변의 1.5% (윤곽용, 짧은 변 비율과 큰 쪽) */
 export const MOSAIC_INFLATE_IMAGE_CAP = 0.015
 /** 검수 ZIP·VN 스테이지와 맞출 때 쓰는 표시 비율 */
 export const MOSAIC_COVER_ASPECT = { w: 16, h: 9 }
@@ -27,8 +27,7 @@ function clamp(n: number, min: number, max: number) {
 /** 파일/프레임 원본 해상도의 긴 변으로 DLsite 셀 크기를 계산한다. */
 export function dlsiteBlockPx(mediaW: number, mediaH: number): number {
   const longSide = Math.max(mediaW, mediaH)
-  if (!(longSide > 0)) return MOSAIC_MIN_BLOCK_PX
-  if (longSide < MOSAIC_LONG_SIDE_THRESHOLD) return MOSAIC_MIN_BLOCK_PX
+  if (!(longSide > 0) || longSide < MOSAIC_LONG_SIDE_THRESHOLD) return MOSAIC_MIN_BLOCK_PX
   return Math.max(MOSAIC_MIN_BLOCK_PX, Math.round(longSide / MOSAIC_LONG_SIDE_DIVISOR))
 }
 
@@ -36,13 +35,13 @@ export function adaptiveBlockPx(mediaW: number, mediaH: number): number {
   return dlsiteBlockPx(mediaW, mediaH)
 }
 
-/** 플레이·굽기는 항상 이미지 긴 변 기준. stored 고정 px는 쓰지 않는다. */
+/** 플레이·굽기는 이미지 긴 변 기준. stored 고정 px는 쓰지 않는다. */
 export function resolveMosaicBlockPx(_stored: number, mediaW: number, mediaH: number): number {
   return dlsiteBlockPx(mediaW, mediaH)
 }
 
 export function inflateMosaicRegion<T extends MosaicNormRect>(region: T): T {
-  const pad = Math.min(
+  const pad = Math.max(
     Math.min(region.w, region.h) * MOSAIC_INFLATE_SHORT_RATIO,
     MOSAIC_INFLATE_IMAGE_CAP,
   )
@@ -93,8 +92,8 @@ export function computeMediaCrop(
 export function mosaicCellCount(sourceW: number, sourceH: number, blockPx: number): { w: number; h: number } {
   const block = Math.max(1, blockPx)
   return {
-    w: Math.max(1, Math.round(sourceW / block)),
-    h: Math.max(1, Math.round(sourceH / block)),
+    w: Math.max(1, Math.floor(sourceW / block)),
+    h: Math.max(1, Math.floor(sourceH / block)),
   }
 }
 

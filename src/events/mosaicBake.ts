@@ -8,6 +8,7 @@ import {
   regionToSourcePixels,
   type MosaicFit,
 } from './mosaicMath'
+import { fillMosaicCells } from './mosaicDraw'
 import type { BlurRegion } from './types'
 import { resolveMediaSrc } from '../game/mediaUrl'
 
@@ -52,11 +53,8 @@ export function applyMosaicToContext(
     const cells = mosaicCellCount(srcRect.w, srcRect.h, block)
     tmp.width = cells.w
     tmp.height = cells.h
-    tctx.imageSmoothingEnabled = true
-    tctx.imageSmoothingQuality = 'low'
-    tctx.fillStyle = '#111111'
-    tctx.fillRect(0, 0, cells.w, cells.h)
-    tctx.drawImage(media, srcRect.x, srcRect.y, srcRect.w, srcRect.h, 0, 0, cells.w, cells.h)
+    fillMosaicCells(tctx, media, srcRect, cells.w, cells.h)
+    ctx.globalCompositeOperation = 'source-over'
     ctx.imageSmoothingEnabled = false
     ctx.drawImage(tmp, 0, 0, cells.w, cells.h, srcRect.x, srcRect.y, srcRect.w, srcRect.h)
   }

@@ -69,7 +69,7 @@ export function ReviewMosaicExportButton({
       <div className="rounded-xl border border-amber-500/25 bg-amber-950/20 px-3 py-3">
         <p className="text-[10px] font-bold tracking-wide text-amber-200/80">심사용 ZIP</p>
         <p className="mt-0.5 text-[10px] leading-4 text-slate-500">
-          플레이·ZIP은 이미지 긴 변 기준 DLsite 자동
+          플레이·ZIP은 같은 칸(긴 변÷50, DLsite 최소보다 큼), 윤곽 여백
           {block === 0 ? ' (에디터 없음은 무시)' : ''}
         </p>
         <button

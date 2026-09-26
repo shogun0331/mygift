@@ -401,7 +401,7 @@ export async function buildReviewMosaicZip(
     baked: bakedCount.value,
     copiedOriginal: copiedCount.value,
     failures,
-    note: '모자이크 셀은 파일 긴 변÷100(최소 4px)입니다. VN/심사는 16:9 cover 좌표를 사용합니다. 모자이크가 있는 영상은 무음 WebM으로 다시 인코딩됩니다.',
+    note: '모자이크 셀은 캔버스 긴 변÷50(반올림, 최소 8px)입니다. DLsite 최소(÷100)보다 큽니다. 윤곽 여백. VN/심사는 16:9 cover 좌표를 사용합니다. 모자이크가 있는 영상은 무음 WebM으로 다시 인코딩됩니다.',
   }
   zip.file('manifest.json', JSON.stringify(manifest, null, 2))
 

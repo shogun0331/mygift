@@ -11,6 +11,7 @@ import {
   regionToSourcePixels,
   sourceRectToDisplay,
 } from './mosaicMath'
+import { fillMosaicCells } from './mosaicDraw'
 import type { BlurRegion, EventMediaAsset } from './types'
 
 export const BLUR_MIN = 0
@@ -138,7 +139,7 @@ function MosaicTile({
     const canvas = canvasRef.current
     const media = mediaRef.current
     if (!canvas || !media) return
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', { alpha: false })
     if (!ctx) return
 
     const nw = kind === 'video' ? (media as HTMLVideoElement).videoWidth : (media as HTMLImageElement).naturalWidth
@@ -147,8 +148,7 @@ function MosaicTile({
 
     const space = objectFit === 'cover' ? 'cover' : 'media'
     const block = dlsiteBlockPx(nw, nh)
-    let srcRect = regionToSourcePixels(region, nw, nh, space)
-    srcRect = expandSourceRect(srcRect, block, nw, nh)
+    const srcRect = expandSourceRect(regionToSourcePixels(region, nw, nh, space), block, nw, nh)
     if (srcRect.w < 1 || srcRect.h < 1) return
 
     const contentRect = content ?? mediaContentBox(box.w, box.h, nw, nh, objectFit)
@@ -167,11 +167,7 @@ function MosaicTile({
     const cells = mosaicCellCount(srcRect.w, srcRect.h, block)
     canvas.width = cells.w
     canvas.height = cells.h
-    ctx.imageSmoothingEnabled = true
-    ctx.imageSmoothingQuality = 'low'
-    ctx.fillStyle = '#111111'
-    ctx.fillRect(0, 0, cells.w, cells.h)
-    ctx.drawImage(media, srcRect.x, srcRect.y, srcRect.w, srcRect.h, 0, 0, cells.w, cells.h)
+    fillMosaicCells(ctx, media, srcRect, cells.w, cells.h)
   }, [region.x, region.y, region.w, region.h, box.w, box.h, content?.x, content?.y, content?.w, content?.h, objectFit, kind])
 
   // 비디오/이미지 로드 & 프레임 갱신
@@ -245,6 +241,7 @@ function MosaicTile({
         style={{
           imageRendering: 'pixelated',
           background: '#111',
+          opacity: 1,
         }}
       />
     </div>

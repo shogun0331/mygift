@@ -704,7 +704,7 @@ function MosaicBlockPicker() {
     <div className="rounded-xl border border-white/10 bg-black/25 px-3 py-3">
       <p className="text-[10px] font-bold tracking-wide text-slate-400">모자이크 블록 크기</p>
       <p className="mt-0.5 text-[10px] leading-4 text-slate-500">
-        각 이미지 긴 변÷100 (최소 4px). 1920이면 약 19px. 없음은 에디터 미리보기만.
+        캔버스 긴 변÷50(반올림, 최소 8px). DLsite 최소(÷100)보다 큰 칸. 없음은 에디터 미리보기만.
       </p>
       <div className="mt-2 flex flex-wrap gap-1.5">
         {MOSAIC_BLOCK_PRESETS.map((px) => (
