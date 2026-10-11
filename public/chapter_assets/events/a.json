@@ -9,11 +9,11 @@
   "nodes": [
     {
       "id": "node_1787096693202_1_l561",
-      "type": "graphic",
-      "image": "2026-08-28_00017_.webp",
+      "type": "vn",
+      "background": "2026-10-08_00058__upscaled_00001_.webp",
+      "character": "2026-10-08_00008_alpha.webm",
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787096693202_2_hm1d",
@@ -176,14 +176,6 @@
       "text_key": "node_1787096693202_19_60q6"
     },
     {
-      "id": "graphic_a_3",
-      "type": "graphic",
-      "image": "2026-08-28_00009_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787096693202_20_mqf7",
       "type": "text",
       "speakerType": "character",
@@ -192,14 +184,6 @@
       "text_key": "node_1787096693202_20_mqf7",
       "voice": "node_1787096693202_20_mqf7.wav",
       "sound": "node_1787096693202_20_mqf7.wav"
-    },
-    {
-      "id": "graphic_a_4",
-      "type": "graphic",
-      "image": "2026-08-28_00007_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787096693202_21_1ijo",
@@ -211,11 +195,11 @@
     },
     {
       "id": "node_1787096693202_22_5o82",
-      "type": "graphic",
-      "image": "speed_1_75x_e3c524a0e19a4938a6a29ebe5892a0af.mp4",
+      "type": "vn",
+      "background": "2026-10-08_00058__upscaled_00001_.webp",
+      "character": "2026-10-08_00007_alpha (1).webm",
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787096693202_23_rucx",
@@ -234,14 +218,6 @@
       "speaker": "",
       "text": "내 손을 잡아 가슴 위에 얹는다. 손끝에 맨살이 닿는다.",
       "text_key": "node_1787096693202_24_cu3e"
-    },
-    {
-      "id": "graphic_a_6",
-      "type": "graphic",
-      "image": "2026-08-31_00002.mp4",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787096693202_25_xf7t",
@@ -280,12 +256,12 @@
       "text_key": "node_1787096693202_28_f5nf"
     },
     {
-      "id": "graphic_a_7",
-      "type": "graphic",
-      "image": "2026-08-28_00008_.webp",
+      "id": "node_1791446295134_8pk2",
+      "type": "vn",
+      "background": "2026-10-08_00058__upscaled_00001_.webp",
+      "character": "2026-10-08_00008_alpha.webm",
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787096693202_29_2ma2",
@@ -296,14 +272,6 @@
       "text_key": "node_1787096693202_29_2ma2",
       "voice": "node_1787096693202_29_2ma2.wav",
       "sound": "node_1787096693202_29_2ma2.wav"
-    },
-    {
-      "id": "node_1787096693202_30_b0zt",
-      "type": "graphic",
-      "image": "2026-08-28_00018_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787096693202_31_nmlh",
@@ -456,14 +424,6 @@
       "text_key": "node_1787096693202_47_o1hp"
     },
     {
-      "id": "graphic_a_9",
-      "type": "graphic",
-      "image": "2026-08-28_00013_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787096693202_48_7mbc",
       "type": "text",
       "speakerType": "character",
@@ -502,8 +462,8 @@
     {
       "id": "node_1787096693202_52_ntng",
       "type": "text",
-      "speakerType": "character",
-      "speaker": "플레이어(속마음)",
+      "speakerType": "player",
+      "speaker": "player",
       "text": "결국 아무 일도 없었다. 그런데 왜, 가슴 한구석이 이렇게 텅 비는 걸까. 저 원피스 아래, 방금 내 손에 있던 온기가. 아, 정말로 아쉽다.",
       "text_key": "node_1787096693202_52_ntng"
     }
@@ -688,68 +648,28 @@
       "id": "media_sound_mtjbsmbc_62k5vfj"
     },
     {
-      "fileName": "2026-08-28_00007_.webp",
+      "id": "1791528329469-4sfjfem",
+      "fileName": "2026-10-08_00058__upscaled_00001_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/a/images/2026-08-28_00007_.webp",
-      "url": "media://chapter_assets/events/a/images/2026-08-28_00007_.webp",
-      "size": 160168,
-      "id": "media_image_mtjbsmbc_7u61da2"
+      "sourcePath": "chapter_assets/events/a/images/2026-10-08_00058__upscaled_00001_.webp",
+      "url": "media://chapter_assets/events/a/images/2026-10-08_00058__upscaled_00001_.webp",
+      "size": 678784
     },
     {
-      "fileName": "2026-08-28_00008_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a/images/2026-08-28_00008_.webp",
-      "url": "media://chapter_assets/events/a/images/2026-08-28_00008_.webp",
-      "size": 249578,
-      "id": "media_image_mtjbsmbc_umt4jwh"
-    },
-    {
-      "fileName": "2026-08-28_00009_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a/images/2026-08-28_00009_.webp",
-      "url": "media://chapter_assets/events/a/images/2026-08-28_00009_.webp",
-      "size": 161594,
-      "id": "media_image_mtjbsmbc_8n8rqel"
-    },
-    {
-      "fileName": "2026-08-28_00013_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a/images/2026-08-28_00013_.webp",
-      "url": "media://chapter_assets/events/a/images/2026-08-28_00013_.webp",
-      "size": 119208,
-      "id": "media_image_mtjbsmbc_rvjjtz7"
-    },
-    {
-      "fileName": "2026-08-28_00017_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a/images/2026-08-28_00017_.webp",
-      "url": "media://chapter_assets/events/a/images/2026-08-28_00017_.webp",
-      "size": 159236,
-      "id": "media_image_mtjbsmbc_i18h15r"
-    },
-    {
-      "fileName": "2026-08-28_00018_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a/images/2026-08-28_00018_.webp",
-      "url": "media://chapter_assets/events/a/images/2026-08-28_00018_.webp",
-      "size": 140404,
-      "id": "media_image_mtjbsmbc_3e9po48"
-    },
-    {
-      "id": "1788305949235-6m8php9",
-      "fileName": "2026-08-31_00002.mp4",
+      "id": "1791528345974-ckzf4pr",
+      "fileName": "2026-10-08_00008_alpha.webm",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/a/videos/2026-08-31_00002.mp4",
-      "url": "media://chapter_assets/events/a/videos/2026-08-31_00002.mp4",
-      "size": 15201754
+      "sourcePath": "chapter_assets/events/a/videos/2026-10-08_00008_alpha.webm",
+      "url": "media://chapter_assets/events/a/videos/2026-10-08_00008_alpha.webm",
+      "size": 3755824
     },
     {
-      "id": "1788305956403-s3ppxmp",
-      "fileName": "speed_1_75x_e3c524a0e19a4938a6a29ebe5892a0af.mp4",
+      "id": "1791528361961-2gb1kkn",
+      "fileName": "2026-10-08_00007_alpha (1).webm",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/a/videos/speed_1_75x_e3c524a0e19a4938a6a29ebe5892a0af.mp4",
-      "url": "media://chapter_assets/events/a/videos/speed_1_75x_e3c524a0e19a4938a6a29ebe5892a0af.mp4",
-      "size": 8565189
+      "sourcePath": "chapter_assets/events/a/videos/2026-10-08_00007_alpha (1).webm",
+      "url": "media://chapter_assets/events/a/videos/2026-10-08_00007_alpha (1).webm",
+      "size": 4959379
     }
   ],
   "sourceZipName": "직접 생성",

@@ -39,7 +39,7 @@ export function getShortsNodeDialogueText(
   localization: Record<string, Record<string, string>> | undefined,
   lang: string,
 ): string {
-  if (!node || node.type === 'graphic' || node.type === 'fade' || node.type === 'sound') {
+  if (!node || node.type === 'graphic' || node.type === 'vn' || node.type === 'fade' || node.type === 'sound') {
     return ''
   }
   const locale = normalizeEventLocale(lang)
@@ -71,7 +71,7 @@ export function getShortsNodeDialogueText(
 }
 
 export function resolveShortsNodeVoiceFileName(node: any, lang?: string): string | null {
-  if (!node || node.type === 'graphic' || node.type === 'fade' || node.type === 'sound') {
+  if (!node || node.type === 'graphic' || node.type === 'vn' || node.type === 'fade' || node.type === 'sound') {
     return null
   }
   if (typeof node.voice === 'string' && node.voice.trim()) {

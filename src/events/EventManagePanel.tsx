@@ -28,6 +28,13 @@ import {
 } from './eventLocales'
 import { loadCommonSounds, persistCommonSoundFiles, removeCommonSoundFile, saveCommonSounds } from './db'
 import { commonSoundMediaPath, resolveMediaSrc } from '../game/mediaUrl'
+import {
+  buildTranslationScript,
+  dialogueTextKey,
+  parseTranslationScript,
+  TRANSLATION_TARGET_LOCALES,
+  translationApplySummary,
+} from './translationScript'
 
 export async function handleOpenEventFolder(eventId?: string) {
   try {
@@ -91,14 +98,36 @@ const kindLabel: Record<EventMediaKind, string> = {
   sound: '사운드',
 }
 
-type EditorNodeType = 'text' | 'graphic' | 'fade' | 'sound'
+type EditorNodeType = 'text' | 'graphic' | 'vn' | 'fade' | 'sound'
 
 const NODE_TYPE_OPTIONS: Array<{ value: EditorNodeType; label: string }> = [
   { value: 'text', label: '텍스트' },
   { value: 'graphic', label: '그래픽' },
+  { value: 'vn', label: 'VN' },
   { value: 'fade', label: '페이드' },
   { value: 'sound', label: '사운드' },
 ]
+
+function fileExtName(name: string): string {
+  const match = /\.([a-z0-9]+)$/i.exec(name.trim())
+  return match ? match[1].toLowerCase() : ''
+}
+
+function isWebpMediaName(name: string): boolean {
+  return fileExtName(name) === 'webp'
+}
+
+function isWebmMediaName(name: string): boolean {
+  return fileExtName(name) === 'webm'
+}
+
+function isWebpFile(file: File): boolean {
+  return file.type === 'image/webp' || isWebpMediaName(file.name)
+}
+
+function isWebmFile(file: File): boolean {
+  return file.type === 'video/webm' || isWebmMediaName(file.name)
+}
 
 function makeNodeId() {
   return `node_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
@@ -107,6 +136,16 @@ function makeNodeId() {
 function createEmptyNode(type: EditorNodeType, id = makeNodeId()) {
   if (type === 'graphic') {
     return { id, type: 'graphic' as const, image: '', delay: 2.0, ignoreDelay: false, speed: 1.0, blurRegions: [], blurDefault: BLUR_DEFAULT }
+  }
+  if (type === 'vn') {
+    return {
+      id,
+      type: 'vn' as const,
+      background: '',
+      character: '',
+      delay: 2.0,
+      ignoreDelay: false,
+    }
   }
   if (type === 'fade') {
     return { id, type: 'fade' as const, fade: 'out' as const, duration: 1.2, color: '#000000' }
@@ -130,6 +169,7 @@ function createEmptyNode(type: EditorNodeType, id = makeNodeId()) {
     voice: '',
     stopVoice: true,
     stopBgm: false,
+    dimCharacter: false,
   }
 }
 
@@ -151,20 +191,50 @@ function convertNodeToType(prev: Record<string, any>, type: EditorNodeType) {
       voice: voiceFromPrev,
       stopVoice: prev.stopVoice !== false,
       stopBgm: Boolean(prev.stopBgm),
+      dimCharacter: Boolean(prev.dimCharacter),
       ...(prev.text_key ? { text_key: prev.text_key } : {}),
     }
   }
   if (type === 'graphic') {
     const rawSpeed = Number(prev.speed)
+    const image =
+      typeof prev.image === 'string' && prev.image
+        ? prev.image
+        : typeof prev.background === 'string'
+          ? prev.background
+          : ''
     return {
       id,
       type: 'graphic',
-      image: prev.image || '',
+      image,
       delay: prev.delay ?? 2.0,
       ignoreDelay: Boolean(prev.ignoreDelay),
       speed: Number.isFinite(rawSpeed) && rawSpeed > 0 ? Math.min(4, Math.max(0.5, rawSpeed)) : 1.0,
       blurRegions: Array.isArray(prev.blurRegions) ? prev.blurRegions : [],
       blurDefault: Number.isFinite(Number(prev.blurDefault)) ? clampBlur(prev.blurDefault) : BLUR_DEFAULT,
+    }
+  }
+  if (type === 'vn') {
+    const imageName = typeof prev.image === 'string' ? prev.image : ''
+    const background =
+      typeof prev.background === 'string' && prev.background
+        ? prev.background
+        : isWebpMediaName(imageName)
+          ? imageName
+          : ''
+    const character =
+      typeof prev.character === 'string' && prev.character
+        ? prev.character
+        : isWebmMediaName(imageName)
+          ? imageName
+          : ''
+    return {
+      id,
+      type: 'vn',
+      background,
+      character,
+      delay: prev.delay ?? 2.0,
+      ignoreDelay: Boolean(prev.ignoreDelay),
     }
   }
   if (type === 'sound') {
@@ -274,7 +344,7 @@ export function EventManagePanel({
             return {
               fileName: asset.fileName,
               kind: asset.kind,
-              buffer: Array.from(new Uint8Array(buffer)),
+              buffer,
             }
           }),
         )
@@ -294,7 +364,14 @@ export function EventManagePanel({
         const httpRes = await fetch('/api/save-event-assets', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ eventId: event.id, assets: assetsPayload }),
+          body: JSON.stringify({
+          eventId: event.id,
+          assets: assetsPayload.map((asset) => ({
+            fileName: asset.fileName,
+            kind: asset.kind,
+            buffer: Array.from(new Uint8Array(asset.buffer)),
+          })),
+        }),
         })
         if (httpRes.ok) {
           const json = await httpRes.json()
@@ -837,6 +914,22 @@ async function readScriptTextFile(file: File): Promise<string> {
   return new TextDecoder('utf-8').decode(bytes.subarray(start))
 }
 
+function downloadTextFiles(files: Array<{ fileName: string; body: string }>) {
+  files.forEach((file, index) => {
+    window.setTimeout(() => {
+      const blob = new Blob([file.body], { type: 'text/plain;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = file.fileName
+      document.body.appendChild(anchor)
+      anchor.click()
+      anchor.remove()
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+    }, index * 200)
+  })
+}
+
 function EventDetail({
   event,
   onSimulate,
@@ -857,6 +950,11 @@ function EventDetail({
   const [showScriptModal, setShowScriptModal] = useState(false)
   const [scriptText, setScriptText] = useState('')
   const [scriptFileName, setScriptFileName] = useState('')
+  const [showTranslationModal, setShowTranslationModal] = useState(false)
+  const [translationText, setTranslationText] = useState('')
+  const [translationFileName, setTranslationFileName] = useState('')
+  const [translationMessage, setTranslationMessage] = useState('')
+  const [translationLang, setTranslationLang] = useState<(typeof TRANSLATION_TARGET_LOCALES)[number]>('en')
   const [scriptTxtOver, setScriptTxtOver] = useState(false)
   const scriptFileInputRef = useRef<HTMLInputElement>(null)
   const [importMode, setImportMode] = useState<'append' | 'replace'>('append')
@@ -870,6 +968,8 @@ function EventDetail({
   const [showCommonSoundModal, setShowCommonSoundModal] = useState(false)
   const [commonSoundAssignNodeIndex, setCommonSoundAssignNodeIndex] = useState<number | null>(null)
   const [mediaPickerNodeIndex, setMediaPickerNodeIndex] = useState<number | null>(null)
+  const [vnMediaPicker, setVnMediaPicker] = useState<{ index: number; field: 'background' | 'character' } | null>(null)
+  const [vnDropSlot, setVnDropSlot] = useState<{ index: number; field: 'background' | 'character' } | null>(null)
   const [soundPickerNodeIndex, setSoundPickerNodeIndex] = useState<number | null>(null)
 
   useEffect(() => {
@@ -1142,6 +1242,48 @@ function EventDetail({
     setShowScriptModal(false)
   }
 
+  const handleExportTranslation = () => {
+    const file = buildTranslationScript(event, registeredCharacters)
+    downloadTextFiles([file])
+    setTranslationMessage(`한국어 대본 ${file.fileName} 을 저장했습니다.`)
+    setShowTranslationModal(true)
+  }
+
+  const handleApplyTranslation = (e: React.FormEvent) => {
+    e.preventDefault()
+    const parsed = parseTranslationScript(translationText, event, translationLang)
+    setTranslationMessage(translationApplySummary(parsed))
+    if (parsed.error || !parsed.targetLang || parsed.applied === 0) return
+
+    const lang = parsed.targetLang
+    const localization = mergeEventLocalization(event.localization)
+    localization[lang] = { ...localization[lang], ...parsed.updates }
+    const defaultLang = normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE)
+    const nodes =
+      lang === defaultLang
+        ? (event.nodes || []).map((node) => {
+            if (!node || typeof node !== 'object') return node
+            const record = node as Record<string, unknown>
+            const key = dialogueTextKey(record)
+            if (!key || !(key in parsed.updates)) return node
+            return { ...record, text: parsed.updates[key] }
+          })
+        : event.nodes
+
+    onUpdateEvent({ ...event, localization, nodes })
+    setContentLang(lang)
+  }
+
+  const applyTranslationFile = async (file: File) => {
+    if (!isScriptTextFile(file)) return false
+    const text = await readScriptTextFile(file)
+    setTranslationText(text)
+    setTranslationFileName(file.name)
+    setTranslationMessage('')
+    setShowTranslationModal(true)
+    return true
+  }
+
   const applyScriptFile = async (file: File) => {
     if (!isScriptTextFile(file)) return false
     const text = await readScriptTextFile(file)
@@ -1157,20 +1299,29 @@ function EventDetail({
     if (!event.id || !asset || !asset.blob) return
     try {
       const buffer = await asset.blob.arrayBuffer()
-      const payload = [
-        {
-          fileName: asset.fileName,
-          kind: asset.kind,
-          buffer: Array.from(new Uint8Array(buffer)),
-        },
-      ]
       if (window.electronAPI?.saveEventAssets) {
-        await window.electronAPI.saveEventAssets(event.id, payload)
-      } else if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
+        const res = await window.electronAPI.saveEventAssets(event.id, [
+          { fileName: asset.fileName, kind: asset.kind, buffer },
+        ])
+        if (!res?.success) {
+          console.error('Failed to auto save media asset to disk:', res?.error)
+        }
+        return
+      }
+      if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
         await fetch('/api/save-event-assets', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ eventId: event.id, assets: payload }),
+          body: JSON.stringify({
+            eventId: event.id,
+            assets: [
+              {
+                fileName: asset.fileName,
+                kind: asset.kind,
+                buffer: Array.from(new Uint8Array(buffer)),
+              },
+            ],
+          }),
         })
       }
     } catch (err) {
@@ -1178,37 +1329,71 @@ function EventDetail({
     }
   }
 
-  const applyDroppedFileToNode = (file: File, targetNodeIndex: number): boolean => {
+  const applyDroppedFileToNode = (
+    file: File,
+    targetNodeIndex: number,
+    vnField?: 'background' | 'character',
+  ): boolean => {
     const nodes = (event.nodes || []) as any[]
     const rawType = String(nodes[targetNodeIndex]?.type || 'text')
     const nodeType: EditorNodeType =
-      rawType === 'fade' ? 'fade' : rawType === 'graphic' ? 'graphic' : rawType === 'sound' ? 'sound' : 'text'
+      rawType === 'fade'
+        ? 'fade'
+        : rawType === 'graphic'
+          ? 'graphic'
+          : rawType === 'vn'
+            ? 'vn'
+            : rawType === 'sound'
+              ? 'sound'
+              : 'text'
 
-    const kind = mediaKindOfFile(file)
+    let kind = mediaKindOfFile(file)
+    let bindField: 'image' | 'voice' | 'sound' | 'background' | 'character' =
+      nodeType === 'sound' ? 'sound' : nodeType === 'text' ? 'voice' : 'image'
 
-    // 노드 타입별 수용 규칙: 사운드=오디오 / 텍스트=음성 오디오 / 그래픽=이미지·영상
-    const acceptedKinds: EventMediaKind[] =
-      nodeType === 'graphic' ? ['image', 'video'] : nodeType === 'fade' ? [] : ['sound']
-
-    if (!kind || !acceptedKinds.includes(kind)) {
-      if (nodeType === 'fade') {
-        alert(
-          '페이드 노드에는 파일을 연결할 수 없습니다.\n그래픽 노드에는 이미지·영상을, 사운드·대사 노드에는 오디오를 드롭하세요.',
-        )
+    if (nodeType === 'vn') {
+      const targetField =
+        vnField ?? (isWebpFile(file) ? 'background' : isWebmFile(file) ? 'character' : null)
+      if (targetField === 'background' && isWebpFile(file)) {
+        kind = 'image'
+        bindField = 'background'
+      } else if (targetField === 'character' && isWebmFile(file)) {
+        kind = 'video'
+        bindField = 'character'
+      } else if (targetField === 'background') {
+        alert('배경 칸에는 WebP만 드롭할 수 있습니다.\n(받은 파일: ' + file.name + ')')
+        return true
+      } else if (targetField === 'character') {
+        alert('캐릭터 칸에는 WebM만 드롭할 수 있습니다.\n(받은 파일: ' + file.name + ')')
+        return true
       } else {
-        const expected =
-          nodeType === 'graphic'
-            ? '이미지 또는 영상'
-            : nodeType === 'text'
-              ? '오디오(음성) '
-              : '오디오(배경음·효과음)'
-        alert(`이 노드에는 ${expected}파일만 드롭할 수 있습니다.\n(받은 파일: ${file.name})`)
+        alert('VN 노드에는 WebP(배경) 또는 WebM(캐릭터)만 드롭할 수 있습니다.\n(받은 파일: ' + file.name + ')')
+        return true
       }
-      return true
+    } else {
+      // 노드 타입별 수용 규칙: 사운드=오디오 / 텍스트=음성 오디오 / 그래픽=이미지·영상
+      const acceptedKinds: EventMediaKind[] =
+        nodeType === 'graphic' ? ['image', 'video'] : nodeType === 'fade' ? [] : ['sound']
+
+      if (!kind || !acceptedKinds.includes(kind)) {
+        if (nodeType === 'fade') {
+          alert(
+            '페이드 노드에는 파일을 연결할 수 없습니다.\n그래픽 노드에는 이미지·영상을, VN 노드에는 WebP·WebM을, 사운드·대사 노드에는 오디오를 드롭하세요.',
+          )
+        } else {
+          const expected =
+            nodeType === 'graphic'
+              ? '이미지 또는 영상'
+              : nodeType === 'text'
+                ? '오디오(음성) '
+                : '오디오(배경음·효과음)'
+          alert(`이 노드에는 ${expected}파일만 드롭할 수 있습니다.\n(받은 파일: ${file.name})`)
+        }
+        return true
+      }
     }
 
-    const bindField: 'image' | 'voice' | 'sound' =
-      nodeType === 'sound' ? 'sound' : nodeType === 'text' ? 'voice' : 'image'
+    if (!kind) return true
 
     const url = URL.createObjectURL(file)
     const newAsset: EventMediaAsset = {
@@ -1355,10 +1540,21 @@ function EventDetail({
   const handleUploadMedia = (
     e: React.ChangeEvent<HTMLInputElement>,
     targetNodeIndex?: number,
-    bindField?: 'image' | 'voice' | 'sound',
+    bindField?: 'image' | 'voice' | 'sound' | 'background' | 'character',
   ) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    if (bindField === 'background' && !isWebpFile(file)) {
+      alert('VN 배경은 WebP만 등록할 수 있습니다.')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+    if (bindField === 'character' && !isWebmFile(file)) {
+      alert('VN 캐릭터는 WebM만 등록할 수 있습니다.')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
 
     const kind = mediaKindOfFile(file) ?? 'image'
 
@@ -1432,6 +1628,8 @@ function EventDetail({
       const n = node as Record<string, unknown>
 
       if (n.image) addVal(n.image)
+      if (n.background) addVal(n.background)
+      if (n.character) addVal(n.character)
       if (n.voice) addVal(n.voice)
       if (n.sound) addVal(n.sound)
       if (n.video) addVal(n.video)
@@ -1490,6 +1688,8 @@ function EventDetail({
       if (!n || typeof n !== 'object') return n
       const next = { ...n }
       if (isMatch(next.image)) next.image = ''
+      if (isMatch(next.background)) next.background = ''
+      if (isMatch(next.character)) next.character = ''
       if (isMatch(next.sound)) next.sound = ''
       if (isMatch(next.video)) next.video = ''
       if (isMatch(next.media)) next.media = ''
@@ -1750,6 +1950,16 @@ function EventDetail({
               </button>
               <button
                 type="button"
+                onClick={() => {
+                  setTranslationMessage('')
+                  setShowTranslationModal(true)
+                }}
+                className="rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 px-3 py-1.5 text-xs text-emerald-300 font-medium transition"
+              >
+                번역 대본
+              </button>
+              <button
+                type="button"
                 onClick={() => insertNode('text')}
                 className="rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-3 py-1.5 text-xs text-indigo-300 font-medium transition"
               >
@@ -1761,6 +1971,13 @@ function EventDetail({
                 className="rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-3 py-1.5 text-xs text-indigo-300 font-medium transition"
               >
                 ＋ 그래픽 노드
+              </button>
+              <button
+                type="button"
+                onClick={() => insertNode('vn')}
+                className="rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 px-3 py-1.5 text-xs text-indigo-300 font-medium transition"
+              >
+                ＋ VN 노드
               </button>
               <button
                 type="button"
@@ -1791,16 +2008,19 @@ function EventDetail({
               (event.nodes as any[]).map((node, index) => {
                 const isFade = node.type === 'fade'
                 const isGraphic = node.type === 'graphic'
+                const isVn = node.type === 'vn'
                 const isSound = node.type === 'sound'
-                const isText = !isFade && !isGraphic && !isSound
+                const isText = !isFade && !isGraphic && !isVn && !isSound
                 const speakerType = node.speakerType || 'character'
                 const editorType: EditorNodeType = isFade
                   ? 'fade'
                   : isGraphic
                     ? 'graphic'
-                    : isSound
-                      ? 'sound'
-                      : 'text'
+                    : isVn
+                      ? 'vn'
+                      : isSound
+                        ? 'sound'
+                        : 'text'
                 const isFocused = focusNodeId && node.id === focusNodeId
                 const soundAssets = (event.media || []).filter((m) => m.kind === 'sound')
                 const eventSoundNames = new Set(soundAssets.map((s) => s.fileName))
@@ -2068,6 +2288,15 @@ function EventDetail({
                               />
                               이 줄에서 배경음 끄기
                             </label>
+                            <label className="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(node.dimCharacter)}
+                                onChange={(e) => handleNodeChange(index, { dimCharacter: e.target.checked })}
+                                className="accent-indigo-500"
+                              />
+                              캐릭터 어둡게
+                            </label>
                           </div>
                           <p className="text-[10px] text-slate-500">
                             보이스 끄기는 기본 켜짐입니다. 이전 줄 음성이 이 대사와 겹치지 않습니다.
@@ -2301,6 +2530,206 @@ function EventDetail({
                         <p className="text-[10px] text-slate-500">
                           페이드 아웃 다음에는 장면(그래픽/대사)을 두고, 다시 페이드 인으로 밝히면 자연스럽습니다.
                         </p>
+                      </div>
+                    ) : isVn ? (
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="space-y-3">
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <label className="text-[11px] font-semibold text-slate-400">배경 WebP</label>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setVnMediaPicker({ index, field: 'background' })}
+                                  className="text-[10px] text-amber-300 hover:text-amber-200 font-bold bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded transition"
+                                >
+                                  갤러리
+                                </button>
+                                <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
+                                  파일 추가
+                                  <input
+                                    type="file"
+                                    accept="image/webp"
+                                    className="hidden"
+                                    onChange={(e) => handleUploadMedia(e, index, 'background')}
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                            <div
+                              className={`relative rounded-lg border transition ${
+                                vnDropSlot?.index === index && vnDropSlot.field === 'background'
+                                  ? 'border-emerald-400 bg-emerald-500/10'
+                                  : 'border-white/10 bg-black/40'
+                              }`}
+                              onDragOver={(e) => {
+                                if (![...(e.dataTransfer.types ?? [])].includes('Files')) return
+                                e.preventDefault()
+                                e.stopPropagation()
+                                e.dataTransfer.dropEffect = 'copy'
+                                if (vnDropSlot?.index !== index || vnDropSlot.field !== 'background') {
+                                  setVnDropSlot({ index, field: 'background' })
+                                }
+                              }}
+                              onDragLeave={(e) => {
+                                if (e.currentTarget.contains(e.relatedTarget as Node)) return
+                                setVnDropSlot((current) =>
+                                  current?.index === index && current.field === 'background' ? null : current,
+                                )
+                              }}
+                              onDrop={(e) => {
+                                if (![...(e.dataTransfer.types ?? [])].includes('Files')) return
+                                e.preventDefault()
+                                e.stopPropagation()
+                                setVnDropSlot(null)
+                                setFileDragOverIndex(null)
+                                const file = e.dataTransfer.files?.[0]
+                                if (file) applyDroppedFileToNode(file, index, 'background')
+                              }}
+                            >
+                              <select
+                                value={node.background || ''}
+                                onChange={(e) => handleNodeChange(index, { background: e.target.value })}
+                                className="w-full bg-transparent px-2 py-1.5 text-xs text-slate-200 outline-none cursor-pointer"
+                              >
+                                <option value="" className="bg-slate-900">-- 배경 없음 --</option>
+                                {event.media
+                                  .filter((m) => m.kind === 'image' && isWebpMediaName(m.fileName))
+                                  .map((asset, idx) => (
+                                    <option key={asset.id || `vn-bg-${idx}`} value={asset.fileName} className="bg-slate-900">
+                                      {asset.fileName}
+                                    </option>
+                                  ))}
+                              </select>
+                              {vnDropSlot?.index === index && vnDropSlot.field === 'background' ? (
+                                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-emerald-600/90 text-[11px] font-bold text-white pointer-events-none">
+                                  WebP 배경을 여기에 드롭
+                                </div>
+                              ) : null}
+                            </div>
+                            <p className="text-[10px] text-slate-500">WebP 파일을 이 칸에 끌어다 놓을 수 있습니다.</p>
+                            {node.background ? (
+                              <VnMediaPreview
+                                asset={event.media.find((m) => m.fileName === node.background) ?? null}
+                                fileName={node.background}
+                              />
+                            ) : null}
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <label className="text-[11px] font-semibold text-slate-400">캐릭터 WebM</label>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setVnMediaPicker({ index, field: 'character' })}
+                                  className="text-[10px] text-amber-300 hover:text-amber-200 font-bold bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded transition"
+                                >
+                                  갤러리
+                                </button>
+                                <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
+                                  파일 추가
+                                  <input
+                                    type="file"
+                                    accept="video/webm"
+                                    className="hidden"
+                                    onChange={(e) => handleUploadMedia(e, index, 'character')}
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                            <div
+                              className={`relative rounded-lg border transition ${
+                                vnDropSlot?.index === index && vnDropSlot.field === 'character'
+                                  ? 'border-emerald-400 bg-emerald-500/10'
+                                  : 'border-white/10 bg-black/40'
+                              }`}
+                              onDragOver={(e) => {
+                                if (![...(e.dataTransfer.types ?? [])].includes('Files')) return
+                                e.preventDefault()
+                                e.stopPropagation()
+                                e.dataTransfer.dropEffect = 'copy'
+                                if (vnDropSlot?.index !== index || vnDropSlot.field !== 'character') {
+                                  setVnDropSlot({ index, field: 'character' })
+                                }
+                              }}
+                              onDragLeave={(e) => {
+                                if (e.currentTarget.contains(e.relatedTarget as Node)) return
+                                setVnDropSlot((current) =>
+                                  current?.index === index && current.field === 'character' ? null : current,
+                                )
+                              }}
+                              onDrop={(e) => {
+                                if (![...(e.dataTransfer.types ?? [])].includes('Files')) return
+                                e.preventDefault()
+                                e.stopPropagation()
+                                setVnDropSlot(null)
+                                setFileDragOverIndex(null)
+                                const file = e.dataTransfer.files?.[0]
+                                if (file) applyDroppedFileToNode(file, index, 'character')
+                              }}
+                            >
+                              <select
+                                value={node.character || ''}
+                                onChange={(e) => handleNodeChange(index, { character: e.target.value })}
+                                className="w-full bg-transparent px-2 py-1.5 text-xs text-slate-200 outline-none cursor-pointer"
+                              >
+                                <option value="" className="bg-slate-900">-- 캐릭터 없음 --</option>
+                                {event.media
+                                  .filter((m) => m.kind === 'video' && isWebmMediaName(m.fileName))
+                                  .map((asset, idx) => (
+                                    <option key={asset.id || `vn-ch-${idx}`} value={asset.fileName} className="bg-slate-900">
+                                      {asset.fileName}
+                                    </option>
+                                  ))}
+                              </select>
+                              {vnDropSlot?.index === index && vnDropSlot.field === 'character' ? (
+                                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-emerald-600/90 text-[11px] font-bold text-white pointer-events-none">
+                                  WebM 캐릭터를 여기에 드롭
+                                </div>
+                              ) : null}
+                            </div>
+                            <p className="text-[10px] text-slate-500">
+                              WebM 하나를 이 칸에 끌어다 놓습니다. 재생 시 가로 중앙, 발끝이 화면 하단에 붙습니다.
+                            </p>
+                            {node.character ? (
+                              <VnMediaPreview
+                                asset={event.media.find((m) => m.fileName === node.character) ?? null}
+                                fileName={node.character}
+                              />
+                            ) : null}
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <label className="text-[11px] font-semibold text-slate-400">화면 노출 시간 (초)</label>
+                              <label className="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(node.ignoreDelay)}
+                                  onChange={(e) => handleNodeChange(index, { ignoreDelay: e.target.checked })}
+                                  className="rounded border-white/20 bg-black/40 text-amber-500 focus:ring-amber-500/40"
+                                />
+                                노출시간 무시
+                              </label>
+                            </div>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.5"
+                              disabled={Boolean(node.ignoreDelay)}
+                              value={node.delay !== undefined ? node.delay : 2.0}
+                              onChange={(e) =>
+                                handleNodeChange(index, {
+                                  delay: Math.max(0, parseFloat(e.target.value) || 0),
+                                })
+                              }
+                              className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500/50 disabled:opacity-40"
+                            />
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       /* Graphic Node Fields */
@@ -2837,6 +3266,113 @@ function EventDetail({
         document.body,
       )}
 
+      {showTranslationModal &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl border border-emerald-500/25 bg-slate-900 p-6 shadow-2xl animate-fade-in"
+            >
+              <h3 className="text-base font-semibold text-slate-100">번역 대본</h3>
+              <p className="mt-1 text-xs text-slate-400">
+                한국어 대본 txt 하나만 저장합니다. 언어별로 번역한 뒤, 넣을 언어를 고르고 그 파일만 반영하세요.
+              </p>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleExportTranslation}
+                  className="rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-2 text-xs font-semibold text-emerald-100 transition hover:bg-emerald-500/25"
+                >
+                  한국어 txt 내보내기
+                </button>
+              </div>
+
+              <form onSubmit={handleApplyTranslation} className="mt-4 flex min-h-0 flex-1 flex-col space-y-3">
+                <label className="flex items-center gap-2 text-xs text-slate-300">
+                  넣을 언어
+                  <select
+                    value={translationLang}
+                    onChange={(e) =>
+                      setTranslationLang(e.target.value as (typeof TRANSLATION_TARGET_LOCALES)[number])
+                    }
+                    className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-xs text-slate-200 outline-none focus:border-emerald-500/50"
+                  >
+                    {TRANSLATION_TARGET_LOCALES.map((lang) => (
+                      <option key={lang} value={lang}>
+                        {lang}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="flex min-h-0 flex-1 flex-col">
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="block text-xs font-semibold text-slate-400">번역된 txt</label>
+                    <div className="flex items-center gap-2">
+                      {translationFileName ? (
+                        <span className="max-w-[160px] truncate font-mono text-[10px] text-emerald-300" title={translationFileName}>
+                          {translationFileName}
+                        </span>
+                      ) : null}
+                      <label className="cursor-pointer text-[10px] font-semibold text-emerald-400 hover:text-emerald-300">
+                        txt 열기
+                        <input
+                          type="file"
+                          accept=".txt,text/plain"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) void applyTranslationFile(file)
+                            e.target.value = ''
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                  <textarea
+                    required
+                    rows={12}
+                    placeholder={'[#hm1d][미야자와 리나] 번역문\n위에서 넣을 언어를 고른 뒤 반영합니다.'}
+                    value={translationText}
+                    onChange={(e) => {
+                      setTranslationText(e.target.value)
+                      if (translationFileName) setTranslationFileName('')
+                      if (translationMessage) setTranslationMessage('')
+                    }}
+                    className="mt-1.5 min-h-0 w-full flex-1 resize-none overflow-y-auto rounded-xl border border-white/10 bg-black/40 p-3 font-mono text-xs text-slate-200 outline-none placeholder:text-slate-600 focus:border-emerald-500/50"
+                  />
+                </div>
+                {translationMessage ? (
+                  <p className="rounded-lg border border-white/10 bg-black/30 p-3 text-[11px] text-slate-300">
+                    {translationMessage}
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-slate-500">
+                    [#표식]은 그대로 두세요. 노드 순서를 바꿔도 표식이 같으면 같은 대사에 들어갑니다.
+                  </p>
+                )}
+                <div className="flex shrink-0 justify-end gap-2 border-t border-white/5 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowTranslationModal(false)}
+                    className="rounded-xl border border-white/10 px-4 py-2 text-xs font-semibold text-slate-300 transition hover:bg-white/5"
+                  >
+                    닫기
+                  </button>
+                  <button
+                    type="submit"
+                    className="game-btn-primary rounded-xl px-4 py-2 text-xs font-semibold text-white transition"
+                  >
+                    이 언어로 반영
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>,
+          document.body,
+        )}
+
       {blurEditorIndex !== null && event.nodes?.[blurEditorIndex] ? (
         <BlurRegionEditor
           asset={
@@ -2866,6 +3402,28 @@ function EventDetail({
             handleUploadMedia({ target: { files } } as any, mediaPickerNodeIndex)
           }}
           onClose={() => setMediaPickerNodeIndex(null)}
+        />
+      ) : null}
+
+      {vnMediaPicker !== null && event.nodes?.[vnMediaPicker.index] ? (
+        <MediaGalleryPickerModal
+          media={event.media}
+          selectedFileName={String((event.nodes[vnMediaPicker.index] as any)[vnMediaPicker.field] || '')}
+          acceptExt={vnMediaPicker.field === 'background' ? 'webp' : 'webm'}
+          uploadAccept={vnMediaPicker.field === 'background' ? 'image/webp,.webp' : 'video/webm,.webm'}
+          title={vnMediaPicker.field === 'background' ? 'VN 배경 WebP' : 'VN 캐릭터 WebM'}
+          hint={
+            vnMediaPicker.field === 'background'
+              ? '배경으로 쓸 WebP를 고릅니다.'
+              : '스탠딩으로 쓸 WebM 하나를 고릅니다.'
+          }
+          onSelect={(fileName) => {
+            handleNodeChange(vnMediaPicker.index, { [vnMediaPicker.field]: fileName })
+          }}
+          onUploadMedia={(files) => {
+            handleUploadMedia({ target: { files } } as any, vnMediaPicker.index, vnMediaPicker.field)
+          }}
+          onClose={() => setVnMediaPicker(null)}
         />
       ) : null}
 
@@ -2916,6 +3474,26 @@ function EventDetail({
   )
 }
 
+function VnMediaPreview({ asset, fileName }: { asset: EventMediaAsset | null; fileName: string }) {
+  if (!asset) {
+    return <p className="text-[10px] text-rose-400/80">연결됨: {fileName} (물리 에셋 없음)</p>
+  }
+  return (
+    <div className="mt-1 flex items-center gap-2 bg-black/20 p-1.5 rounded-lg border border-white/5 w-fit">
+      <div className="relative h-16 w-24 overflow-hidden rounded border border-white/10 bg-black/40">
+        {asset.kind === 'video' ? (
+          <video src={asset.url} muted playsInline autoPlay loop className="h-full w-full object-contain object-bottom" />
+        ) : (
+          <img src={asset.url} alt="" className="h-full w-full object-cover" />
+        )}
+      </div>
+      <p className="max-w-[140px] truncate text-[10px] text-slate-300" title={asset.fileName}>
+        {asset.fileName}
+      </p>
+    </div>
+  )
+}
+
 function MediaThumb({ asset }: { asset: EventMediaAsset }) {
   const [hasError, setHasError] = useState(false)
 
@@ -2960,6 +3538,9 @@ export type MediaGalleryPickerModalProps = {
   onClose: () => void
   title?: string
   hint?: string
+  /** 확장자만 보여 줍니다. 예: webp, webm */
+  acceptExt?: string
+  uploadAccept?: string
 }
 
 export function MediaGalleryPickerModal({
@@ -2970,6 +3551,8 @@ export function MediaGalleryPickerModal({
   onClose,
   title,
   hint,
+  acceptExt,
+  uploadAccept,
 }: MediaGalleryPickerModalProps) {
   const [filterKind, setFilterKind] = useState<'all' | 'image' | 'video'>('all')
   const [search, setSearch] = useState('')
@@ -2978,7 +3561,8 @@ export function MediaGalleryPickerModal({
 
   const items = media.filter((m) => {
     if (m.kind !== 'image' && m.kind !== 'video') return false
-    if (filterKind !== 'all' && m.kind !== filterKind) return false
+    if (acceptExt && fileExtName(m.fileName) !== acceptExt.toLowerCase()) return false
+    if (!acceptExt && filterKind !== 'all' && m.kind !== filterKind) return false
     if (search.trim()) {
       return m.fileName.toLowerCase().includes(search.toLowerCase().trim())
     }
@@ -3013,7 +3597,12 @@ export function MediaGalleryPickerModal({
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-3 bg-black/20">
           <div className="flex items-center gap-1.5">
-            {(['all', 'image', 'video'] as const).map((k) => (
+            {acceptExt ? (
+              <span className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white">
+                .{acceptExt} ({items.length})
+              </span>
+            ) : (
+              (['all', 'image', 'video'] as const).map((k) => (
               <button
                 key={k}
                 type="button"
@@ -3030,7 +3619,8 @@ export function MediaGalleryPickerModal({
                     ? `이미지 (${media.filter((m) => m.kind === 'image').length})`
                     : `영상 (${media.filter((m) => m.kind === 'video').length})`}
               </button>
-            ))}
+            ))
+            )}
           </div>
 
           <div className="flex items-center gap-3">
@@ -3053,7 +3643,7 @@ export function MediaGalleryPickerModal({
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*,video/*"
+                  accept={uploadAccept || 'image/*,video/*'}
                   multiple
                   className="hidden"
                   onChange={(e) => {

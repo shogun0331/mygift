@@ -744,6 +744,7 @@ function attachAltTabMinimize(win) {
 
   const minimizeForAltTab = () => {
     if (isQuitting || isDisplayLocked()) return
+    if (lastDisplayMode !== 'fullscreen') return
     if (win.isDestroyed() || win.isMinimized()) return
     try {
       if (win.webContents.isDevToolsFocused()) return
@@ -912,16 +913,33 @@ ipcMain.handle('set-display-mode', async (event, { mode }) => {
   }
 })
 
+function decodeAssetBuffer(buffer, fileName) {
+  if (Buffer.isBuffer(buffer)) return buffer
+  if (buffer instanceof ArrayBuffer) return Buffer.from(buffer)
+  if (ArrayBuffer.isView(buffer)) {
+    return Buffer.from(buffer.buffer, buffer.byteOffset, buffer.byteLength)
+  }
+  if (buffer && typeof buffer === 'object' && buffer.type === 'Buffer' && Array.isArray(buffer.data)) {
+    return Buffer.from(buffer.data)
+  }
+  if (Array.isArray(buffer)) return Buffer.from(buffer)
+  throw new Error(`에셋 버퍼를 읽을 수 없습니다: ${fileName || ''}`)
+}
+
 ipcMain.handle('save-event-assets', async (event, { eventId, assets }) => {
   try {
-    const baseDir = publicWritePath('chapter_assets', 'events', String(eventId))
+    const safeId = path.basename(String(eventId || '')).replace(/[<>:"|?*]/g, '')
+    if (!safeId) return { success: false, error: 'invalid event id' }
+    const baseDir = publicWritePath('chapter_assets', 'events', safeId)
     const folderMap = {
       image: 'images',
       video: 'videos',
       sound: 'sounds',
     }
 
-    for (const asset of assets) {
+    for (const asset of assets || []) {
+      const safeName = path.basename(String(asset?.fileName || ''))
+      if (!safeName) continue
       const folderName = folderMap[asset.kind] || 'assets'
       const targetDir = path.join(baseDir, folderName)
 
@@ -929,12 +947,16 @@ ipcMain.handle('save-event-assets', async (event, { eventId, assets }) => {
         fs.mkdirSync(targetDir, { recursive: true })
       }
 
-      const filePath = path.join(targetDir, asset.fileName)
-      fs.writeFileSync(filePath, Buffer.from(asset.buffer))
+      const rawBuffer = decodeAssetBuffer(asset.buffer, safeName)
+      if (!rawBuffer.length) {
+        throw new Error(`빈 파일입니다: ${safeName}`)
+      }
+      fs.writeFileSync(path.join(targetDir, safeName), rawBuffer)
     }
 
     return { success: true, path: baseDir }
   } catch (err) {
+    console.error('save-event-assets error:', err)
     return { success: false, error: err.message }
   }
 })

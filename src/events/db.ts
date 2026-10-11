@@ -75,7 +75,46 @@ function sanitizeEventsForSave(events: GameEvent[]): GameEvent[] {
     }))
 }
 
+async function persistEventMediaFiles(events: GameEvent[]): Promise<void> {
+  for (const event of events) {
+    if (!event?.id || !Array.isArray(event.media)) continue
+    const pending: Array<{ fileName: string; kind: string; buffer: ArrayBuffer }> = []
+    for (const asset of event.media) {
+      if (!asset?.blob || !asset.fileName || !asset.kind) continue
+      pending.push({
+        fileName: asset.fileName,
+        kind: asset.kind,
+        buffer: await asset.blob.arrayBuffer(),
+      })
+    }
+    if (pending.length === 0) continue
+    if (window.electronAPI?.saveEventAssets) {
+      const res = await window.electronAPI.saveEventAssets(event.id, pending)
+      if (!res.success) throw new Error(res.error || `${event.id} 에셋 저장 실패`)
+      continue
+    }
+    if (typeof window !== 'undefined' && window.location.protocol.startsWith('http')) {
+      const res = await fetch('/api/save-event-assets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventId: event.id,
+          assets: pending.map((asset) => ({
+            fileName: asset.fileName,
+            kind: asset.kind,
+            buffer: Array.from(new Uint8Array(asset.buffer)),
+          })),
+        }),
+      })
+      if (!res.ok) throw new Error(`${event.id} 에셋 저장 실패`)
+      const json = await res.json()
+      if (!json.success) throw new Error(json.error || `${event.id} 에셋 저장 실패`)
+    }
+  }
+}
+
 export async function saveEvents(events: GameEvent[]): Promise<void> {
+  await persistEventMediaFiles(events)
   const cleanedEvents = sanitizeEventsForSave(events)
 
   if (window.electronAPI?.saveEventsJson) {

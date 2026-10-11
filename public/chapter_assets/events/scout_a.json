@@ -5,8 +5,18 @@
   "chapterId": 1,
   "titleKey": "scout_a",
   "title": "스카웃_승무원",
-  "startNode": "node_1787102874671_0_xe9k",
+  "startNode": "node_1791423135046_yky9",
   "nodes": [
+    {
+      "id": "node_1791423135046_yky9",
+      "type": "graphic",
+      "image": "2026-10-08_00001__upscaled_00001_.webp",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
     {
       "id": "node_1787102874671_0_xe9k",
       "type": "text",
@@ -24,12 +34,11 @@
       "text_key": "node_1787102874671_1_gk7d"
     },
     {
-      "id": "node_1787102874671_2_vayg",
-      "type": "graphic",
-      "image": "2026-08-28_00016_.webp",
+      "id": "node_1791423167706_ywae",
+      "type": "vn",
+      "background": "2026-10-08_00001__upscaled_00001_.webp",
+      "character": "2026-10-08_00002_alpha.webm",
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
       "ignoreDelay": false
     },
     {
@@ -38,7 +47,8 @@
       "speakerType": "narrator",
       "speaker": "",
       "text": "라운지 한쪽. 잠시 자리를 비운 틈에 다가가 말을 건다.",
-      "text_key": "node_1787102874671_3_5392"
+      "text_key": "node_1787102874671_3_5392",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_4_te8j",
@@ -46,7 +56,8 @@
       "speakerType": "player",
       "speaker": "player",
       "text": "실례합니다, 잠시 괜찮을까요.",
-      "text_key": "node_1787102874671_4_te8j"
+      "text_key": "node_1787102874671_4_te8j",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_5_ki2w",
@@ -59,21 +70,13 @@
       "sound": "node_1787102874671_5_ki2w.wav"
     },
     {
-      "id": "graphic_scout_a_3",
-      "type": "graphic",
-      "image": "2026-08-28_00002_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787102874671_6_546u",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "제가 방송국을 운영하는 사람인데요. 미야자와 씨께 꼭 드릴 제안이 있어서요.",
-      "text_key": "node_1787102874671_6_546u"
+      "text_key": "node_1787102874671_6_546u",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_7_7akn",
@@ -86,21 +89,13 @@
       "sound": "node_1787102874671_7_7akn.wav"
     },
     {
-      "id": "graphic_scout_a_4",
-      "type": "graphic",
-      "image": "2026-08-28_00004_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787102874671_8_zifq",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
       "text": "우리 방송국에서 크리에이터로 활동해 보시지 않겠습니까.",
-      "text_key": "node_1787102874671_8_zifq"
+      "text_key": "node_1787102874671_8_zifq",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_9_eamt",
@@ -118,16 +113,8 @@
       "speakerType": "narrator",
       "speaker": "",
       "text": "가까이서 보니 더하다. 목 스카프 아래 쇄골, 가슴에 팽팽하게 당겨진 블라우스 단추. 저 단정한 얼굴이 방송에서 웃으면 생각만 해도 자지가 반응한다.",
-      "text_key": "node_1787102874671_10_ydsk"
-    },
-    {
-      "id": "graphic_scout_a_2",
-      "type": "graphic",
-      "image": "2026-08-28_00021_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
+      "text_key": "node_1787102874671_10_ydsk",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_11_7b93",
@@ -135,7 +122,8 @@
       "speakerType": "player",
       "speaker": "player",
       "text": "승무원으로서의 단정함과 프로 의식, 그게 저희 방송에선 최고의 무기가 됩니다.",
-      "text_key": "node_1787102874671_11_7b93"
+      "text_key": "node_1787102874671_11_7b93",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_12_l5kv",
@@ -156,6 +144,14 @@
       "text_key": "node_1787102874671_13_2zol"
     },
     {
+      "id": "node_1791423380592_bp89",
+      "type": "vn",
+      "background": "2026-10-08_00001__upscaled_00001_.webp",
+      "character": "2026-10-08_00003_alpha.webm",
+      "delay": 2,
+      "ignoreDelay": false
+    },
+    {
       "id": "node_1787102874671_14_xa4w",
       "type": "text",
       "speakerType": "character",
@@ -164,21 +160,13 @@
       "text_key": "node_1787102874671_14_xa4w"
     },
     {
-      "id": "graphic_scout_a_5",
-      "type": "graphic",
-      "image": "2026-08-28_00012_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787102874671_15_nalt",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "놀란 표정도 예쁘다. 하지만 지금은 참아야 한다. 첫인상이 전부니까.",
-      "text_key": "node_1787102874671_15_nalt"
+      "text_key": "node_1787102874671_15_nalt",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_16_dmiu",
@@ -196,16 +184,8 @@
       "speakerType": "player",
       "speaker": "player",
       "text": "미야자와 씨 같은 사람이니까요. (단호히)",
-      "text_key": "node_1787102874671_17_vpdg"
-    },
-    {
-      "id": "graphic_scout_a_6",
-      "type": "graphic",
-      "image": "2026-08-28_00006_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
+      "text_key": "node_1787102874671_17_vpdg",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_18_q4lm",
@@ -221,7 +201,8 @@
       "speakerType": "player",
       "speaker": "player",
       "text": "갑자기 이런 말씀 드려 죄송합니다. 다만, 미야자와 씨의 그 단정한 모습을 보자마자 확신했어요.",
-      "text_key": "node_1787102874671_19_t3v0"
+      "text_key": "node_1787102874671_19_t3v0",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_20_pfgd",
@@ -239,16 +220,8 @@
       "speakerType": "narrator",
       "speaker": "",
       "text": "고민하고 있다. 저 긴장한 손끝, 스커트를 살짝 움켜쥔 손. 그녀의 엉덩이가 스커트 안에서 조용히 떨리는 게 보인다. 아니, 내가 미쳐가고 있는 건가.",
-      "text_key": "node_1787102874671_21_62ha"
-    },
-    {
-      "id": "graphic_scout_a_7",
-      "type": "graphic",
-      "image": "2026-08-28_00019_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
+      "text_key": "node_1787102874671_21_62ha",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_22_4ikr",
@@ -257,14 +230,6 @@
       "speaker": "",
       "text": "라운지 한쪽. 미야자와 씨가 고민 끝에 얼굴을 든다.",
       "text_key": "node_1787102874671_22_4ikr"
-    },
-    {
-      "id": "graphic_scout_a_8",
-      "type": "graphic",
-      "image": "2026-08-28_00011_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787102874671_23_48qy",
@@ -282,7 +247,8 @@
       "speakerType": "player",
       "speaker": "player",
       "text": "할 수 있어요. 미야자와 씨가 아니면 안 됩니다. (또박또박)",
-      "text_key": "node_1787102874671_24_g7ik"
+      "text_key": "node_1787102874671_24_g7ik",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_25_ij4k",
@@ -300,7 +266,8 @@
       "speakerType": "player",
       "speaker": "player",
       "text": "그럼, 승낙으로 받아들여도 되겠습니까.",
-      "text_key": "node_1787102874671_26_d6z7"
+      "text_key": "node_1787102874671_26_d6z7",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_27_ubxu",
@@ -314,11 +281,10 @@
     },
     {
       "id": "graphic_scout_a_9",
-      "type": "graphic",
-      "image": "2026-08-28_00015_.webp",
+      "type": "vn",
+      "background": "2026-10-08_00001__upscaled_00001_.webp",
+      "character": "2026-10-08_00004_alpha.webm",
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
       "ignoreDelay": true
     },
     {
@@ -327,7 +293,8 @@
       "speakerType": "player",
       "speaker": "player",
       "text": "물론입니다. 미야자와 씨에게 불리한 조건은 절대 없어요.",
-      "text_key": "node_1787102874671_28_u14m"
+      "text_key": "node_1787102874671_28_u14m",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_29_2754",
@@ -340,21 +307,13 @@
       "sound": "node_1787102874671_29_2754.wav"
     },
     {
-      "id": "graphic_scout_a_10",
-      "type": "graphic",
-      "image": "2026-08-28_00020_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787102874671_30_vq5e",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "성공했다. 저 단정한 승무원이, 이제 내 방송국의 크리에이터다. 오늘은 여기까지. 첫만남은, 여기까지가 정답이다.",
-      "text_key": "node_1787102874671_30_vq5e"
+      "text_key": "node_1787102874671_30_vq5e",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_31_0fjg",
@@ -380,7 +339,8 @@
       "speakerType": "player",
       "speaker": "player",
       "text": "사장, 이라고 불러 주세요. 앞으로 그렇게 될 테니까요.",
-      "text_key": "node_1787102874671_33_mzuw"
+      "text_key": "node_1787102874671_33_mzuw",
+      "dimCharacter": true
     },
     {
       "id": "node_1787102874671_34_0v2l",
@@ -399,14 +359,6 @@
       "speaker": "",
       "text": "그녀가 다시 라운지 업무로 돌아간다. 나는 그 뒷모습을 바라보며, 다음 만남을 기약한다.",
       "text_key": "node_1787102874671_35_evwx"
-    },
-    {
-      "id": "graphic_scout_a_11",
-      "type": "graphic",
-      "image": "2026-08-28_00005_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     }
   ],
   "defaultLanguage": "ko",
@@ -503,92 +455,36 @@
       "id": "media_sound_mtjbsmba_c6wghtu"
     },
     {
-      "fileName": "2026-08-28_00002_.webp",
+      "id": "1791423153066-7rwg6xg",
+      "fileName": "2026-10-08_00001__upscaled_00001_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00002_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00002_.webp",
-      "size": 126030,
-      "id": "media_image_mtjbsmba_0k8zy2f"
+      "sourcePath": "chapter_assets/events/scout_a/images/2026-10-08_00001__upscaled_00001_.webp",
+      "url": "media://chapter_assets/events/scout_a/images/2026-10-08_00001__upscaled_00001_.webp",
+      "size": 389798
     },
     {
-      "fileName": "2026-08-28_00004_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00004_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00004_.webp",
-      "size": 125294,
-      "id": "media_image_mtjbsmba_08setcb"
+      "id": "1791528071834-0g4u7wi",
+      "fileName": "2026-10-08_00002_alpha.webm",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/scout_a/videos/2026-10-08_00002_alpha.webm",
+      "url": "media://chapter_assets/events/scout_a/videos/2026-10-08_00002_alpha.webm",
+      "size": 3828295
     },
     {
-      "fileName": "2026-08-28_00005_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00005_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00005_.webp",
-      "size": 137976,
-      "id": "media_image_mtjbsmba_94bxzum"
+      "id": "1791528094802-jxg3ghb",
+      "fileName": "2026-10-08_00003_alpha.webm",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/scout_a/videos/2026-10-08_00003_alpha.webm",
+      "url": "media://chapter_assets/events/scout_a/videos/2026-10-08_00003_alpha.webm",
+      "size": 3557366
     },
     {
-      "fileName": "2026-08-28_00006_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00006_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00006_.webp",
-      "size": 129408,
-      "id": "media_image_mtjbsmba_x0pelgj"
-    },
-    {
-      "fileName": "2026-08-28_00011_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00011_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00011_.webp",
-      "size": 139832,
-      "id": "media_image_mtjbsmba_in8zd7f"
-    },
-    {
-      "fileName": "2026-08-28_00012_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00012_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00012_.webp",
-      "size": 133234,
-      "id": "media_image_mtjbsmba_fzun34w"
-    },
-    {
-      "fileName": "2026-08-28_00015_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00015_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00015_.webp",
-      "size": 133596,
-      "id": "media_image_mtjbsmba_wfzj3m3"
-    },
-    {
-      "fileName": "2026-08-28_00016_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00016_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00016_.webp",
-      "size": 111474,
-      "id": "media_image_mtjbsmba_79bkz63"
-    },
-    {
-      "fileName": "2026-08-28_00019_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00019_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00019_.webp",
-      "size": 132236,
-      "id": "media_image_mtjbsmba_eid963u"
-    },
-    {
-      "fileName": "2026-08-28_00020_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00020_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00020_.webp",
-      "size": 139306,
-      "id": "media_image_mtjbsmba_itfm9ah"
-    },
-    {
-      "fileName": "2026-08-28_00021_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-08-28_00021_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-08-28_00021_.webp",
-      "size": 125296,
-      "id": "media_image_mtjbsmba_4uedkiz"
+      "id": "1791528105910-qz1cpla",
+      "fileName": "2026-10-08_00004_alpha.webm",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/scout_a/videos/2026-10-08_00004_alpha.webm",
+      "url": "media://chapter_assets/events/scout_a/videos/2026-10-08_00004_alpha.webm",
+      "size": 4183360
     }
   ],
   "sourceZipName": "직접 생성",

@@ -5,8 +5,16 @@
   "chapterId": 1,
   "titleKey": "a1",
   "title": "데이트2",
-  "startNode": "node_1787097515369_1_k392",
+  "startNode": "node_1787097515369_0_s6at",
   "nodes": [
+    {
+      "id": "node_1787097515369_0_s6at",
+      "type": "vn",
+      "background": "2026-10-08_00080_.webp",
+      "character": "2026-10-08_00018_alpha.webm",
+      "delay": 2,
+      "ignoreDelay": false
+    },
     {
       "id": "node_1787097515369_1_k392",
       "type": "text",
@@ -14,14 +22,6 @@
       "speaker": "",
       "text": "고급 호텔 프라이빗 수영장. 미야자와 리나가 먼저 도착해 기다리고 있다.",
       "text_key": "node_1787097515369_1_k392"
-    },
-    {
-      "id": "node_1787097515369_0_s6at",
-      "type": "graphic",
-      "image": "2026-08-28_00022_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787097515369_2_fyxg",
@@ -158,14 +158,6 @@
       "text_key": "node_1787097515369_16_tf6w"
     },
     {
-      "id": "graphic_a1_2",
-      "type": "graphic",
-      "image": "2026-08-28_00023_.webp",
-      "delay": 1,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787097515369_17_cyod",
       "type": "text",
       "speakerType": "character",
@@ -200,14 +192,6 @@
       "speaker": "",
       "text": "또박또박. 내 쪽으로 다가온다.",
       "text_key": "node_1787097515369_20_3wio"
-    },
-    {
-      "id": "graphic_a1_3",
-      "type": "graphic",
-      "image": "2026-08-28_00024_.webp",
-      "delay": 1,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787097515369_21_br0m",
@@ -255,11 +239,11 @@
     },
     {
       "id": "node_1787097594290_0gze",
-      "type": "graphic",
-      "image": "speed_1_50x_414b7640f3344f5e8dac94e97ccd7521.mp4",
+      "type": "vn",
+      "background": "2026-10-08_00080_.webp",
+      "character": "2026-10-08_00014_alpha.webm",
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787097515369_26_8lyi",
@@ -360,14 +344,6 @@
       "text_key": "node_1787097515369_38_wghv"
     },
     {
-      "id": "graphic_a1_6",
-      "type": "graphic",
-      "image": "2026-08-28_00027_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787097515369_40_nwzl",
       "type": "text",
       "speakerType": "character",
@@ -414,18 +390,11 @@
     {
       "id": "node_1787097515369_45_0lqo",
       "type": "graphic",
-      "image": "speed_4_30x_569f492a6c3f483fa22ec57a9fa67227.mp4",
+      "image": "2026-10-08_00017 (1).mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407353417_p55a",
-          "x": 0.2760416666666667,
-          "y": 0.3038194444444444,
-          "w": 0.11328125,
-          "h": 0.23900462962962965,
-          "blur": 2
-        }
-      ],
+      "ignoreDelay": false,
+      "speed": 1.3,
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -473,6 +442,16 @@
       "text_key": "node_1787097515369_50_nouz"
     },
     {
+      "id": "node_1791502127193_lslq",
+      "type": "graphic",
+      "image": "fast_m_3.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 0.7,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1787097515369_51_3nnx",
       "type": "text",
       "speakerType": "character",
@@ -516,20 +495,11 @@
     },
     {
       "id": "node_1787097515369_56_ujf7",
-      "type": "graphic",
-      "image": "2026-08-28_00029_.webp",
+      "type": "vn",
+      "background": "2026-10-08_00080_.webp",
+      "character": "2026-10-08_00015_alpha.webm",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407413088_xkrj",
-          "x": 0.13020833333333334,
-          "y": 0.3142361111111111,
-          "w": 0.15364583333333334,
-          "h": 0.5740740740740742,
-          "blur": 1.5
-        }
-      ],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787097515369_57_ra49",
@@ -558,20 +528,20 @@
       "text_key": "node_1787097515369_58_muqs"
     },
     {
-      "id": "node_1787097515369_59_skin",
-      "type": "graphic",
-      "image": "2026-08-28_00030_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787097515369_60_wbky",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "수영장 옆 선베드. 미야자와 리나는 비키니 상의를 다시 입고, 나는 옷을 정리하고 있다. 평온한 표정.",
       "text_key": "node_1787097515369_60_wbky"
+    },
+    {
+      "id": "node_1791502340812_t2we",
+      "type": "vn",
+      "background": "2026-10-08_00080_.webp",
+      "character": "2026-10-08_00018_alpha.webm",
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787097515369_61_00j8",
@@ -586,8 +556,8 @@
     {
       "id": "node_1787097515369_62_06gb",
       "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
+      "speakerType": "player",
+      "speaker": "player",
       "text": "저도요. …솔직히, 이렇게 될 줄은 몰랐지만요.",
       "text_key": "node_1787097515369_62_06gb"
     },
@@ -604,8 +574,8 @@
     {
       "id": "node_1787097515369_64_7ti5",
       "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
+      "speakerType": "player",
+      "speaker": "player",
       "text": "없어요.",
       "text_key": "node_1787097515369_64_7ti5"
     },
@@ -630,8 +600,8 @@
     {
       "id": "node_1787097515369_67_abt7",
       "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
+      "speakerType": "player",
+      "speaker": "player",
       "text": "그렇네요.",
       "text_key": "node_1787097515369_67_abt7"
     },
@@ -648,8 +618,8 @@
     {
       "id": "node_1787097515369_69_hv85",
       "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
+      "speakerType": "player",
+      "speaker": "player",
       "text": "그래요. 평소처럼.",
       "text_key": "node_1787097515369_69_hv85"
     },
@@ -674,8 +644,8 @@
     {
       "id": "node_1787097515369_72_5msi",
       "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
+      "speakerType": "player",
+      "speaker": "player",
       "text": "배웅해 드릴까요?",
       "text_key": "node_1787097515369_72_5msi"
     },
@@ -710,8 +680,8 @@
     {
       "id": "node_1787097515369_76_dqzp",
       "type": "text",
-      "speakerType": "character",
-      "speaker": "사장",
+      "speakerType": "player",
+      "speaker": "player",
       "text": "…나중에 생각해 볼게요.",
       "text_key": "node_1787097515369_76_dqzp"
     },
@@ -736,8 +706,8 @@
     {
       "id": "node_1787097515369_79_foer",
       "type": "text",
-      "speakerType": "character",
-      "speaker": "사장(속마음)",
+      "speakerType": "player",
+      "speaker": "player",
       "text": "결국, 그녀는 나를 모셨다. 저 빨간 비키니가, 방금 내 앞에서 흔들리던 맨가슴이. 아, 정말로 아쉽다.",
       "text_key": "node_1787097515369_79_foer"
     }
@@ -971,76 +941,52 @@
       "id": "media_sound_mtjbsmbc_mvxclxk"
     },
     {
-      "fileName": "2026-08-28_00022_.webp",
+      "id": "1791502001528-kctnmri",
+      "fileName": "2026-10-08_00080_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/a1/images/2026-08-28_00022_.webp",
-      "url": "media://chapter_assets/events/a1/images/2026-08-28_00022_.webp",
-      "size": 168810,
-      "id": "media_image_mtjbsmbc_j8igz7x"
+      "sourcePath": "chapter_assets/events/a1/images/2026-10-08_00080_.webp",
+      "url": "media://chapter_assets/events/a1/images/2026-10-08_00080_.webp",
+      "size": 129738
     },
     {
-      "fileName": "2026-08-28_00023_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a1/images/2026-08-28_00023_.webp",
-      "url": "media://chapter_assets/events/a1/images/2026-08-28_00023_.webp",
-      "size": 207748,
-      "id": "media_image_mtjbsmbc_4qnazwd"
-    },
-    {
-      "fileName": "2026-08-28_00024_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a1/images/2026-08-28_00024_.webp",
-      "url": "media://chapter_assets/events/a1/images/2026-08-28_00024_.webp",
-      "size": 200184,
-      "id": "media_image_mtjbsmbc_1a8ifts"
-    },
-    {
-      "fileName": "2026-08-28_00027_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a1/images/2026-08-28_00027_.webp",
-      "url": "media://chapter_assets/events/a1/images/2026-08-28_00027_.webp",
-      "size": 152760,
-      "id": "media_image_mtjbsmbc_vm0941y"
-    },
-    {
-      "fileName": "2026-08-28_00029_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a1/images/2026-08-28_00029_.webp",
-      "url": "media://chapter_assets/events/a1/images/2026-08-28_00029_.webp",
-      "size": 178564,
-      "id": "media_image_mtjbsmbc_gv3fzyo"
-    },
-    {
-      "fileName": "2026-08-28_00030_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a1/images/2026-08-28_00030_.webp",
-      "url": "media://chapter_assets/events/a1/images/2026-08-28_00030_.webp",
-      "size": 180946,
-      "id": "media_image_mtjbsmbc_6djuy4d"
-    },
-    {
-      "id": "1787961778665-q8lolsv",
-      "fileName": "790437__emily_wan__asian-whore-sucking (1).m4a",
-      "kind": "sound",
-      "sourcePath": "chapter_assets/events/a1/sounds/790437__emily_wan__asian-whore-sucking (1).m4a",
-      "url": "media://chapter_assets/events/a1/sounds/790437__emily_wan__asian-whore-sucking (1).m4a",
-      "size": 613481
-    },
-    {
-      "id": "1788156413780-egvf3x2",
-      "fileName": "speed_1_50x_414b7640f3344f5e8dac94e97ccd7521.mp4",
+      "id": "1791502019811-7octuwj",
+      "fileName": "2026-10-08_00018_alpha.webm",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/a1/videos/speed_1_50x_414b7640f3344f5e8dac94e97ccd7521.mp4",
-      "url": "media://chapter_assets/events/a1/videos/speed_1_50x_414b7640f3344f5e8dac94e97ccd7521.mp4",
-      "size": 3656649
+      "sourcePath": "chapter_assets/events/a1/videos/2026-10-08_00018_alpha.webm",
+      "url": "media://chapter_assets/events/a1/videos/2026-10-08_00018_alpha.webm",
+      "size": 4193148
     },
     {
-      "id": "1788307074406-ow6moit",
-      "fileName": "speed_4_30x_569f492a6c3f483fa22ec57a9fa67227.mp4",
+      "id": "1791502061750-hk2q584",
+      "fileName": "2026-10-08_00014_alpha.webm",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/a1/videos/speed_4_30x_569f492a6c3f483fa22ec57a9fa67227.mp4",
-      "url": "media://chapter_assets/events/a1/videos/speed_4_30x_569f492a6c3f483fa22ec57a9fa67227.mp4",
-      "size": 1680837
+      "sourcePath": "chapter_assets/events/a1/videos/2026-10-08_00014_alpha.webm",
+      "url": "media://chapter_assets/events/a1/videos/2026-10-08_00014_alpha.webm",
+      "size": 3723726
+    },
+    {
+      "id": "1791502105137-s1h3pz8",
+      "fileName": "2026-10-08_00017 (1).mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a1/videos/2026-10-08_00017 (1).mp4",
+      "url": "media://chapter_assets/events/a1/videos/2026-10-08_00017 (1).mp4",
+      "size": 8759606
+    },
+    {
+      "id": "1791502147171-3x6a59t",
+      "fileName": "fast_m_3.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a1/videos/fast_m_3.mp4",
+      "url": "media://chapter_assets/events/a1/videos/fast_m_3.mp4",
+      "size": 496438
+    },
+    {
+      "id": "1791502184796-za8vds9",
+      "fileName": "2026-10-08_00015_alpha.webm",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a1/videos/2026-10-08_00015_alpha.webm",
+      "url": "media://chapter_assets/events/a1/videos/2026-10-08_00015_alpha.webm",
+      "size": 4560075
     }
   ],
   "sourceZipName": "직접 생성",

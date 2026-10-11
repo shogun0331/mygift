@@ -90,7 +90,7 @@ function findNodeSound(node: any): string | null {
 
 // 4. 다국어 매핑 및 대사 텍스트 추출
 function getLocalizedText(node: any, localization: Record<string, Record<string, string>>, lang: string): string {
-  if (!node || node.type === 'graphic' || node.type === 'fade' || node.type === 'sound') {
+  if (!node || node.type === 'graphic' || node.type === 'vn' || node.type === 'fade' || node.type === 'sound') {
     return ''
   }
   const keys = [
@@ -251,10 +251,12 @@ const PersistentEventVideo = memo(function PersistentEventVideo({
   src,
   fileName,
   playbackRate,
+  className = 'event-stage-video h-full w-full object-cover pointer-events-none',
 }: {
   src: string
   fileName: string
   playbackRate: number
+  className?: string
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const loadedFileRef = useRef('')
@@ -288,8 +290,208 @@ const PersistentEventVideo = memo(function PersistentEventVideo({
       preload="auto"
       disablePictureInPicture
       disableRemotePlayback
-      className="event-stage-video h-full w-full object-cover pointer-events-none"
+      className={className}
     />
+  )
+})
+
+const standingVideoClass =
+  'event-stage-video pointer-events-none absolute inset-0 h-full w-full object-contain object-bottom bg-transparent'
+
+type VnPlateSlot = { id: string; bgSrc: string; charSrc: string }
+
+function waitForImage(img: HTMLImageElement, src: string) {
+  if (!src) return Promise.resolve()
+  const ready = () => img.decode().catch(() => undefined)
+  if (img.complete && img.naturalWidth > 0) return ready()
+  return new Promise<void>((resolve) => {
+    const done = () => {
+      ready().finally(() => resolve())
+    }
+    img.addEventListener('load', done, { once: true })
+    img.addEventListener('error', () => resolve(), { once: true })
+  })
+}
+
+function waitForStableVideo(video: HTMLVideoElement, src: string) {
+  if (!src) return Promise.resolve()
+  return new Promise<void>((resolve) => {
+    let settled = false
+    const finish = () => {
+      if (settled) return
+      settled = true
+      video.removeEventListener('loadeddata', onData)
+      window.clearTimeout(timer)
+      resolve()
+    }
+    const matches = () => {
+      if (video.getAttribute('src') === src) return true
+      if (video.currentSrc === src) return true
+      try {
+        return video.currentSrc === new URL(src, window.location.href).href
+      } catch {
+        return false
+      }
+    }
+    const afterFrames = () => {
+      void video.play().catch(() => {})
+      const withFrame = video as HTMLVideoElement & {
+        requestVideoFrameCallback?: (cb: () => void) => number
+      }
+      if (typeof withFrame.requestVideoFrameCallback !== 'function') {
+        finish()
+        return
+      }
+      let left = 3
+      const step = () => {
+        if (settled) return
+        left -= 1
+        if (left <= 0) finish()
+        else withFrame.requestVideoFrameCallback?.(() => step())
+      }
+      withFrame.requestVideoFrameCallback(() => step())
+    }
+    const onData = () => {
+      if (!matches()) return
+      afterFrames()
+    }
+    video.addEventListener('loadeddata', onData)
+    if (matches() && video.readyState >= 2) afterFrames()
+    const timer = window.setTimeout(finish, 700)
+  })
+}
+
+const VnPlate = memo(function VnPlate({
+  slot,
+  covered,
+  brightness,
+  onReady,
+}: {
+  slot: VnPlateSlot
+  covered: boolean
+  brightness: number
+  onReady?: (id: string) => void
+}) {
+  const imgRef = useRef<HTMLImageElement | null>(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const onReadyRef = useRef(onReady)
+  onReadyRef.current = onReady
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    if (covered) video.pause()
+    else void video.play().catch(() => {})
+  }, [covered, slot.charSrc])
+
+  useEffect(() => {
+    if (!slot.id || !onReadyRef.current) return
+    let cancelled = false
+    const img = imgRef.current
+    const video = videoRef.current
+    Promise.all([
+      img ? waitForImage(img, slot.bgSrc) : Promise.resolve(),
+      video ? waitForStableVideo(video, slot.charSrc) : Promise.resolve(),
+    ]).then(() => {
+      if (!cancelled) onReadyRef.current?.(slot.id)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [slot.id, slot.bgSrc, slot.charSrc])
+
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{
+        zIndex: covered ? 1 : 2,
+      }}
+    >
+      {slot.bgSrc ? (
+        <img
+          ref={imgRef}
+          src={slot.bgSrc}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : null}
+      {slot.charSrc ? (
+        <video
+          ref={videoRef}
+          src={slot.charSrc}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+          disableRemotePlayback
+          className={standingVideoClass}
+          style={brightness < 0.999 ? { filter: `brightness(${brightness})` } : undefined}
+        />
+      ) : null}
+    </div>
+  )
+})
+
+const VnStageLayer = memo(function VnStageLayer({
+  background,
+  character,
+  brightness,
+}: {
+  background: EventMediaAsset | null
+  character: EventMediaAsset | null
+  brightness: number
+}) {
+  const bgSrc = background ? resolveMediaSrc(background.url) : ''
+  const charSrc = character ? resolveMediaSrc(character.url) : ''
+  const id = `${background?.fileName || ''}|${character?.fileName || ''}`
+  const [slots, setSlots] = useState<[VnPlateSlot, VnPlateSlot]>(() => [
+    { id, bgSrc, charSrc },
+    { id: '', bgSrc: '', charSrc: '' },
+  ])
+  const [front, setFront] = useState(0)
+  const frontIdRef = useRef(id)
+  const slotsRef = useRef(slots)
+  slotsRef.current = slots
+
+  useEffect(() => {
+    if (!id || id === frontIdRef.current) return
+    const hidden = front === 0 ? 1 : 0
+    // 첫 장면과 같은 VN으로 돌아오면 숨겨 둔 칸이 이미 그 장면이다. 다시 앞으로 올린다.
+    if (slotsRef.current[hidden].id === id) {
+      frontIdRef.current = id
+      setFront(hidden)
+      return
+    }
+    setSlots((prev) => {
+      if (prev[hidden].id === id) return prev
+      const next: [VnPlateSlot, VnPlateSlot] = [...prev]
+      next[hidden] = { id, bgSrc, charSrc }
+      return next
+    })
+  }, [id, bgSrc, charSrc, front])
+
+  return (
+    <div className="absolute inset-0 z-0 bg-black">
+      {slots.map((slot, index) => (
+        <VnPlate
+          key={index}
+          slot={slot}
+          covered={index !== front}
+          brightness={brightness}
+          onReady={
+            slot.id && slot.id !== frontIdRef.current
+              ? (readyId) => {
+                  if (readyId !== id) return
+                  frontIdRef.current = readyId
+                  setFront(index)
+                }
+              : undefined
+          }
+        />
+      ))}
+    </div>
   )
 })
 
@@ -517,13 +719,19 @@ export function EventSimulator({
     ? getCharacterName(currentNode, event, lang, registeredCharacters)
     : ''
   const dialogueText =
-    currentNode && currentNode.type !== 'graphic' && currentNode.type !== 'fade' && currentNode.type !== 'sound'
+    currentNode &&
+    currentNode.type !== 'graphic' &&
+    currentNode.type !== 'vn' &&
+    currentNode.type !== 'fade' &&
+    currentNode.type !== 'sound'
       ? getLocalizedText(currentNode, event.localization, lang)
       : ''
   const choices = currentNode ? parseNodeChoices(currentNode, event.localization, lang) : []
   const isImageNode = currentNode?.type === 'graphic'
+  const isVnNode = currentNode?.type === 'vn'
   const isFadeNode = currentNode?.type === 'fade'
   const isSoundNode = currentNode?.type === 'sound'
+  const hideDialogueBox = isImageNode || isVnNode || isFadeNode || isSoundNode
 
   useEffect(() => {
     if (typingTimerRef.current) {
@@ -601,41 +809,49 @@ export function EventSimulator({
     return null
   }, [speakerCharacter])
 
-  // 현재 노드 및 이전 노드들에서 가장 최근에 설정된 미디어 탐색 (미디어가 없는 노드는 이전 미디어를 유지)
-  const activeMedia = useMemo(() => {
+  // 가장 최근 그래픽 또는 VN이 무대를 교체한다. 그 사이 텍스트는 그 무대를 유지한다.
+  const activeStage = useMemo(() => {
     if (!currentNode) return null
-
-    // 1. 현재 노드에 미디어가 있는지 확인
-    const currentImgName = findNodeImage(currentNode)
-    if (currentImgName) {
-      return findMediaAsset(currentImgName, event.media)
-    }
-
-    // 2. 현재 노드에 없다면, flatNodes 상의 이전 노드들을 역순으로 탐색하여 가장 최근 미디어를 상속
-    const currentIndex = flatNodes.findIndex((n) => n.id === currentNodeId || n.key === currentNodeId)
-    if (currentIndex > 0) {
-      for (let i = currentIndex - 1; i >= 0; i--) {
-        const prevNode = flatNodes[i]
-        const imgName = findNodeImage(prevNode)
-        if (imgName) {
-          return findMediaAsset(imgName, event.media)
-        }
-      }
-    }
-
-    return null
-  }, [flatNodes, currentNodeId, currentNode, event.media])
-
-  const graphicSourceNode = useMemo(() => {
-    if (!currentNode) return null
-    if (currentNode.type === 'graphic') return currentNode
     const currentIndex = flatNodes.findIndex((n) => n.id === currentNodeId || n.key === currentNodeId)
     if (currentIndex < 0) return null
     for (let i = currentIndex; i >= 0; i--) {
-      if (flatNodes[i]?.type === 'graphic') return flatNodes[i]
+      const node = flatNodes[i]
+      if (!node) continue
+      if (node.type === 'vn') {
+        const backgroundName = typeof node.background === 'string' ? node.background.trim() : ''
+        const characterName = typeof node.character === 'string' ? node.character.trim() : ''
+        return {
+          kind: 'vn' as const,
+          node,
+          background: backgroundName ? findMediaAsset(backgroundName, event.media) : null,
+          character: characterName ? findMediaAsset(characterName, event.media) : null,
+        }
+      }
+      if (node.type === 'graphic') {
+        const imgName = findNodeImage(node)
+        return {
+          kind: 'graphic' as const,
+          node,
+          media: imgName ? findMediaAsset(imgName, event.media) : null,
+        }
+      }
+      if (node.type === 'fade' || node.type === 'sound') continue
+      const legacyName = findNodeImage(node)
+      if (legacyName) {
+        return {
+          kind: 'graphic' as const,
+          node,
+          media: findMediaAsset(legacyName, event.media),
+        }
+      }
     }
     return null
-  }, [flatNodes, currentNode, currentNodeId])
+  }, [flatNodes, currentNodeId, currentNode, event.media])
+
+  const activeMedia = activeStage?.kind === 'graphic' ? activeStage.media : null
+  const graphicSourceNode = activeStage?.kind === 'graphic' ? activeStage.node : null
+
+  const standingBrightness = activeStage?.kind === 'vn' && Boolean(currentNode?.dimCharacter) ? 0.45 : 1
 
   const activeVideoSpeed = useMemo(() => {
     if (!graphicSourceNode) return 1.0
@@ -666,7 +882,7 @@ export function EventSimulator({
       return
     }
 
-    if (currentNode.type === 'graphic' || currentNode.type === 'fade') return
+    if (currentNode.type === 'graphic' || currentNode.type === 'vn' || currentNode.type === 'fade') return
 
     if (currentNode.stopVoice !== false) {
       stopChannel('voice')
@@ -786,7 +1002,7 @@ export function EventSimulator({
     // 다음으로 진행할 노드가 정말로 실질적인 데이터를 담고 있는지 체크하는 헬퍼
     const hasRealisticContent = (node: any) => {
       if (!node) return false
-      if (node.type === 'fade' || node.type === 'graphic' || node.type === 'sound') return true
+      if (node.type === 'fade' || node.type === 'graphic' || node.type === 'vn' || node.type === 'sound') return true
       // 1. 대사 또는 화자가 있는지 확인
       const text = getLocalizedText(node, event.localization, lang)
       if (text && text.trim()) return true
@@ -891,11 +1107,12 @@ export function EventSimulator({
     if (choices.length > 0) return
     if (isTyping) return
 
-    const ignoreDelay = currentNode.type === 'graphic' && Boolean(currentNode.ignoreDelay)
+    const isTimedStage = currentNode.type === 'graphic' || currentNode.type === 'vn'
+    const ignoreDelay = isTimedStage && Boolean(currentNode.ignoreDelay)
     const delaySec = Number(currentNode.delay)
     const shouldHold =
       !ignoreDelay &&
-      currentNode.type === 'graphic' &&
+      isTimedStage &&
       Number.isFinite(delaySec) &&
       delaySec > 0
 
@@ -1045,7 +1262,13 @@ export function EventSimulator({
                 </div>
               </div>
             {/* 1. 미디어 화면 (배경) — 대사 타이핑 리렌더와 분리. 모자이크(BlurRegion)는 유지 */}
-            {activeMedia ? (
+            {activeStage?.kind === 'vn' ? (
+              <VnStageLayer
+                background={activeStage.background}
+                character={activeStage.character}
+                brightness={standingBrightness}
+              />
+            ) : activeMedia ? (
               <EventStageLayer
                 media={activeMedia}
                 playbackRate={activeVideoSpeed}
@@ -1074,7 +1297,7 @@ export function EventSimulator({
               </div>
             ) : null}
 
-            {(!isImageNode && !isFadeNode && !isSoundNode) || playbackFinished ? (
+            {(!hideDialogueBox) || playbackFinished ? (
             <div
               className={
                 isGame
@@ -1152,7 +1375,7 @@ export function EventSimulator({
                 </div>
               )}
 
-              {!playbackFinished && !isImageNode && !isFadeNode && !isSoundNode && (
+              {!playbackFinished && !hideDialogueBox && (
                 isGame ? (
                   <>
                     {characterName ? (
@@ -1328,7 +1551,7 @@ export function EventSimulator({
                     {filteredNodes.map((n, index) => {
                       const nid = n.id || n.key || ''
                       const isActive = nid === currentNodeId
-                      const isStageNode = n.type === 'graphic' || n.type === 'fade' || n.type === 'sound'
+                      const isStageNode = n.type === 'graphic' || n.type === 'vn' || n.type === 'fade' || n.type === 'sound'
                       const nodeChar = isStageNode ? '' : getCharacterName(n, event, lang, registeredCharacters)
                       const nodeText = isStageNode ? '' : getLocalizedText(n, event.localization, lang)
                       const nodeImg = findNodeImage(n)
@@ -1369,6 +1592,10 @@ export function EventSimulator({
                           ) : n.type === 'graphic' ? (
                             <p className="mt-1 text-[10px] text-slate-400">
                               그래픽 · {n.image || '파일 없음'}
+                            </p>
+                          ) : n.type === 'vn' ? (
+                            <p className="mt-1 text-[10px] text-slate-400">
+                              VN · {n.background || '배경 없음'} / {n.character || '캐릭터 없음'}
                             </p>
                           ) : n.type === 'sound' ? (
                             <p className="mt-1 text-[10px] text-slate-400">
