@@ -218,6 +218,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
                 <div className="py-14 text-center">
                   <p className="text-sm font-bold text-slate-100">{t('sns.empty')}</p>
                   <p className="mt-2 text-[12px] leading-5 text-slate-500">{t('sns.composeHint')}</p>
+                  <p className="mt-2 text-[12px] leading-5 text-slate-400">{t('guide.snsExplain')}</p>
                 </div>
               ) : (
                 feedItems.map((item) => {

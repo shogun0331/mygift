@@ -269,7 +269,7 @@ export function CasinoSlotMachine({
         setDealerDialoguePlay({
           tier: turnTier,
           index: dialogueIdx,
-          dealerName: dealerConfig.dealerName || '전설의 딜러',
+          dealerName: dealerConfig.dealerName || t('guide.legendaryDealer'),
           dealerMediaUrl: spinDealerMedia?.url || dealerConfig.dealerMediaUrl,
           dealerMediaType: spinDealerMedia?.type || dealerConfig.dealerMediaType,
         })
@@ -387,7 +387,7 @@ export function CasinoSlotMachine({
         setDealerDialoguePlay({
           tier: 1,
           index: defeatIdx,
-          dealerName: dealerConfig.dealerName || '전설의 딜러',
+          dealerName: dealerConfig.dealerName || t('guide.legendaryDealer'),
           dealerMediaUrl: defeatDealerMedia?.url || dealerConfig.dealerMediaUrl,
           dealerMediaType: defeatDealerMedia?.type || dealerConfig.dealerMediaType,
           isLoss: true,

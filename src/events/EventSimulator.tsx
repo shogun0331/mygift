@@ -1262,21 +1262,23 @@ export function EventSimulator({
                 </div>
               </div>
             {/* 1. 미디어 화면 (배경) — 대사 타이핑 리렌더와 분리. 모자이크(BlurRegion)는 유지 */}
-            {activeStage?.kind === 'vn' ? (
-              <VnStageLayer
-                background={activeStage.background}
-                character={activeStage.character}
-                brightness={standingBrightness}
-              />
-            ) : activeMedia ? (
-              <EventStageLayer
-                media={activeMedia}
-                playbackRate={activeVideoSpeed}
-                blurRegions={activeBlurRegions}
-              />
-            ) : (
-              <div className="absolute inset-0 z-0 bg-black" />
-            )}
+            <div className="absolute inset-0 vn-media-stage">
+              {activeStage?.kind === 'vn' ? (
+                <VnStageLayer
+                  background={activeStage.background}
+                  character={activeStage.character}
+                  brightness={standingBrightness}
+                />
+              ) : activeMedia ? (
+                <EventStageLayer
+                  media={activeMedia}
+                  playbackRate={activeVideoSpeed}
+                  blurRegions={activeBlurRegions}
+                />
+              ) : (
+                <div className="absolute inset-0 z-0 bg-black" />
+              )}
+            </div>
 
             {/* 장면 페이드 (페이드 노드) */}
             <div

@@ -8,6 +8,7 @@ import { SnsMediaLightbox, SnsMediaWithBlur } from './SnsMediaWithBlur'
 
 type SnsBulkPostRevealModalProps = {
   entries: BulkSnsRevealEntry[]
+  skipLines?: string[]
   onDone: () => void
 }
 
@@ -39,7 +40,7 @@ function Face({
   )
 }
 
-export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealModalProps) {
+export function SnsBulkPostRevealModal({ entries, skipLines = [], onDone }: SnsBulkPostRevealModalProps) {
   const { t } = useTranslation()
   const [visibleCount, setVisibleCount] = useState(0)
   const [finished, setFinished] = useState(false)
@@ -251,6 +252,13 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
           </div>
 
           <footer className="shrink-0 border-t border-white/8 bg-[#080c16] px-3 py-2.5">
+            {finished && skipLines.length > 0 ? (
+              <ul className="mb-2 max-h-24 space-y-1 overflow-auto text-[11px] text-slate-400">
+                {skipLines.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            ) : null}
             {finished ? (
               <button
                 type="button"

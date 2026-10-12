@@ -744,7 +744,7 @@ function attachAltTabMinimize(win) {
 
   const minimizeForAltTab = () => {
     if (isQuitting || isDisplayLocked()) return
-    if (lastDisplayMode !== 'fullscreen') return
+    if (!win.isFullScreen()) return
     if (win.isDestroyed() || win.isMinimized()) return
     try {
       if (win.webContents.isDevToolsFocused()) return

@@ -97,7 +97,7 @@ export function StaffSlotIcons({
         return (
           <div
             key={kind}
-            title={staff ? staffDisplayName(staff, locale) : t(STAFF_KIND_LABEL_KEY[kind])}
+            title={`${staff ? staffDisplayName(staff, locale) : t(STAFF_KIND_LABEL_KEY[kind])} — ${t(`studio.managerFx.${kind}`)}`}
             className={`flex items-center justify-center overflow-hidden rounded-md border ${box} ${
               bonus.equipped ? KIND_TONE[kind] : KIND_EMPTY
             }`}
@@ -171,8 +171,12 @@ export function ManagerEquipPopup({
             return (
               <section key={kind} className="rounded-xl border border-white/8 bg-black/20 p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm font-semibold text-slate-100">{t(STAFF_KIND_LABEL_KEY[kind])}</p>
-                  <p className="text-[10px] text-slate-500">{t(`studio.managerFx.${kind}`)}</p>
+                  <p className="text-sm font-semibold text-slate-100" title={t(`studio.managerFx.${kind}`)}>
+                    {t(STAFF_KIND_LABEL_KEY[kind])}
+                  </p>
+                  <p className="text-[10px] text-slate-500" title={t(`studio.managerFx.${kind}`)}>
+                    {t(`studio.managerFx.${kind}`)}
+                  </p>
                 </div>
                 {ofKind.length === 0 && unhired.length === 0 ? (
                   <p className="mt-3 text-xs text-slate-500">{t('studio.managersEmptyKind')}</p>

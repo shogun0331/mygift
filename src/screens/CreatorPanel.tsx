@@ -13,10 +13,12 @@ import {
   type ScoutSystemState,
 } from '../game/scout'
 import {
+  calcBroadcastStaminaCost,
   calcConditionFullCareCost,
   calcVacationCost,
   canBroadcastByStamina,
   isStaminaDepleted,
+  STAMINA_REST_GAIN,
   CONDITION_ICON,
   CONDITION_LABEL_KEY,
   conditionFromScore,
@@ -24,7 +26,7 @@ import {
 } from '../game/condition'
 import { formatMoney, formatMoneySigned } from '../game/money'
 import { calcMonthRevenueWon } from '../game/economy'
-import { isPromotionExamReady } from '../game/promotionExam'
+import { isPromotionExamReady, PROMOTION_SUCCESS_RATE } from '../game/promotionExam'
 import {
   TRAINING_MAIN_GAIN,
   TRAINING_OFF_GAIN,
@@ -39,7 +41,7 @@ import {
   characterDisplayJob,
   characterDisplayName,
 } from '../game/characterLocales'
-import { isHUnlocked } from '../game/social'
+import { isHUnlocked, normalizeDateArcStep } from '../game/social'
 import { vipAcceptPayoutRange } from '../game/vip'
 import { useTranslation } from '../locales/i18n'
 import {
@@ -51,7 +53,7 @@ import { SnsFeedModal } from './SnsFeedModal'
 import { RedDot } from './RedDot'
 import { SnsBulkComposeModal } from './SnsBulkComposeModal'
 import { SnsBulkPostRevealModal } from './SnsBulkPostRevealModal'
-import { previewBulkSnsCompose, canComposeSnsCreator, canAffordBulkSnsCompose, type BulkSnsRevealEntry, type SnsHeat } from '../game/sns'
+import { previewBulkSnsCompose, canComposeSnsCreator, canAffordBulkSnsCompose, type BulkSnsComposePlan, type BulkSnsRevealEntry, type SnsHeat } from '../game/sns'
 import type { RegisteredStaff, StaffKind } from '../game/staff'
 import { staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
@@ -86,7 +88,7 @@ type CreatorPanelProps = {
   onVacation: (creatorId: string) => void
   onProductionTraining: (creatorId: string) => void
   onSnsCompose: (creatorId: string) => SnsHeat | null
-  onBulkSnsCompose: () => BulkSnsRevealEntry[]
+  onBulkSnsCompose: (plan: BulkSnsComposePlan) => BulkSnsRevealEntry[]
   registeredStaff: RegisteredStaff[]
   managerState: SlotManagerState
   onHireStaff: (staffId: string, hireCost: number, salary: number) => boolean
@@ -97,6 +99,8 @@ type CreatorPanelProps = {
   scoutedStaffCandidate: ScoutedStaffCandidate | null
   onScoutStaff: () => void
   creatorScoutAvailable: boolean
+  creatorScoutCooldown?: number
+  creatorScoutFirstDone?: boolean
   onScoutCreator: () => void
   studioSlots: StudioSlot[]
   onAssignStaffPlacement: (staffId: string) => void
@@ -201,6 +205,8 @@ export function CreatorPanel({
   scoutedStaffCandidate,
   onScoutStaff,
   creatorScoutAvailable,
+  creatorScoutCooldown = 0,
+  creatorScoutFirstDone = false,
   onScoutCreator,
   studioSlots,
   onAssignStaffPlacement,
@@ -228,6 +234,7 @@ export function CreatorPanel({
   const [snsCreatorId, setSnsCreatorId] = useState<string | null>(null)
   const [bulkSnsOpen, setBulkSnsOpen] = useState(false)
   const [bulkRevealEntries, setBulkRevealEntries] = useState<BulkSnsRevealEntry[] | null>(null)
+  const [bulkSkipLines, setBulkSkipLines] = useState<string[]>([])
 
   const bulkSnsEligible = useMemo(
     () => previewBulkSnsCompose(ownedCreators).eligibleIds.length > 0,
@@ -441,9 +448,15 @@ export function CreatorPanel({
               <button
                 type="button"
                 disabled
+                title={t('guide.scoutRoster')
+                  .replace('{current}', String(sortedBySalary.length))
+                  .replace('{max}', String(maxScout))}
                 className="game-btn rounded-lg px-3 py-1 text-xs opacity-50 cursor-not-allowed border border-white/10 text-slate-400 font-semibold"
               >
-                🔒 {t('creator.scout')} ({sortedBySalary.length}/{maxScout}명)
+                🔒 {t('creator.scout')}{' '}
+                {t('guide.scoutRoster')
+                  .replace('{current}', String(sortedBySalary.length))
+                  .replace('{max}', String(maxScout))}
               </button>
             ) : (
               <button
@@ -462,6 +475,13 @@ export function CreatorPanel({
                 ) : null}
               </button>
             )}
+            {canScoutMore && !scoutState.activeOffer && !creatorScoutAvailable ? (
+              <span className="max-w-[14rem] text-[10px] leading-4 text-slate-500">
+                {creatorScoutFirstDone
+                  ? t('guide.scoutCooldown').replace('{turns}', String(Math.max(1, creatorScoutCooldown)))
+                  : t('guide.scoutCooldownFirst')}
+              </span>
+            ) : null}
             <span className="game-chip text-[10px]">
               {t('common.countUnit').replace('{count}', String(sortedBySalary.length))}
             </span>
@@ -863,7 +883,10 @@ export function CreatorPanel({
                             </div>
                           </td>
                           <td className="px-3 py-2.5">
-                            <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-slate-300">
+                            <span
+                              className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-slate-300"
+                              title={t(`studio.managerFx.${staff.kind}`)}
+                            >
                               {t(STAFF_KIND_LABEL_KEY[staff.kind])}
                             </span>
                           </td>
@@ -915,10 +938,11 @@ export function CreatorPanel({
           creators={ownedCreators}
           assets={assets}
           onClose={() => setBulkSnsOpen(false)}
-          onCompose={() => {
-            const posted = onBulkSnsCompose()
+          onCompose={(plan, skipLines) => {
+            const posted = onBulkSnsCompose(plan)
             if (posted.length > 0) {
               setBulkSnsOpen(false)
+              setBulkSkipLines(skipLines)
               setBulkRevealEntries(posted)
             }
             return posted
@@ -928,7 +952,11 @@ export function CreatorPanel({
       {bulkRevealEntries && bulkRevealEntries.length > 0 ? (
         <SnsBulkPostRevealModal
           entries={bulkRevealEntries}
-          onDone={() => setBulkRevealEntries(null)}
+          skipLines={bulkSkipLines}
+          onDone={() => {
+            setBulkRevealEntries(null)
+            setBulkSkipLines([])
+          }}
         />
       ) : null}
     </div>
@@ -1283,6 +1311,9 @@ function CreatorDetailView({
 
         <section className="game-panel flex min-h-0 flex-col overflow-auto rounded-2xl p-4 sm:p-5">
           <h3 className="text-sm font-semibold tracking-wide text-slate-100">{t('creator.statsTitle')}</h3>
+          <p className="mt-1 text-[10px] leading-4 text-slate-500">
+            {t('guide.statSpecialty')} {mainStatLabel}
+          </p>
 
           {broadcastBlocked ? (
             <p className="mt-3 rounded-xl border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-300">
@@ -1360,6 +1391,15 @@ function CreatorDetailView({
                   </span>
                 </button>
 
+                <p className="text-[10px] leading-4 text-slate-400">
+                  {normalizeDateArcStep(creator.dateArcStep) <= 0
+                    ? t('guide.relDate1')
+                    : normalizeDateArcStep(creator.dateArcStep) === 1
+                      ? t('guide.relDate2')
+                      : normalizeDateArcStep(creator.dateArcStep) === 2
+                        ? t('guide.relH')
+                        : t('guide.relDone')}
+                </p>
                 <button
                   type="button"
                   disabled={!canVacation}
@@ -1541,9 +1581,23 @@ function CreatorDetailView({
                       off: String(TRAINING_OFF_GAIN.min),
                     })}
                   </p>
+                  <p className="mt-1 text-[10px] leading-4 text-slate-400">{t('guide.trainingPaid')}</p>
+                  <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                    {t('guide.restPreview')
+                      .replace('{drain}', String(calcBroadcastStaminaCost(creator.statElegance)))
+                      .replace('{gain}', String(STAMINA_REST_GAIN))}
+                  </p>
                   {examReady ? (
-                    <p className="mt-1.5 text-[10px] font-bold text-amber-300">
-                      🏆 {t('creator.promotionPendingTooltip')}
+                    <p className="mt-1.5 text-[10px] font-bold leading-4 text-amber-300">
+                      🏆 {t('creator.promotionPendingTooltip')}{' '}
+                      {t('guide.examRates').replace(
+                        '{rate}',
+                        String(
+                          Math.round(
+                            (PROMOTION_SUCCESS_RATE[nextBreak?.grade ?? 'B'] ?? 0) * 100,
+                          ),
+                        ),
+                      )}
                     </p>
                   ) : (
                     <p className="mt-1.5 text-[10px] leading-4 text-slate-400">
@@ -1625,16 +1679,23 @@ function TrainingBurstFx() {
 }
 
 const PERSONALITY_STAT_BARS = [
-  { key: 'statSexy', labelKey: 'creator.statSexy', barClass: 'from-rose-500 to-pink-300' },
+  { key: 'statSexy', labelKey: 'creator.statSexy', hintKey: 'guide.statSexy', barClass: 'from-rose-500 to-pink-300' },
   {
     key: 'statCommunication',
     labelKey: 'creator.statCommunication',
+    hintKey: 'guide.statCommunication',
     barClass: 'from-sky-400 to-cyan-300',
   },
-  { key: 'statElegance', labelKey: 'creator.statElegance', barClass: 'from-violet-300 to-slate-200' },
+  {
+    key: 'statElegance',
+    labelKey: 'creator.statElegance',
+    hintKey: 'guide.statElegance',
+    barClass: 'from-violet-300 to-slate-200',
+  },
   {
     key: 'statPerformance',
     labelKey: 'creator.statPerformance',
+    hintKey: 'guide.statPerformance',
     barClass: 'from-amber-400 to-orange-300',
   },
 ] as const
@@ -1659,6 +1720,7 @@ function PersonalityStatBars({
           <StatBar
             key={row.key}
             label={t(row.labelKey)}
+            hint={t(row.hintKey)}
             valueLabel={`${value}`}
             percent={value}
             barClass={row.barClass}
@@ -1671,12 +1733,14 @@ function PersonalityStatBars({
 
 function StatBar({
   label,
+  hint,
   valueLabel,
   note,
   percent,
   barClass,
 }: {
   label: string
+  hint?: string
   valueLabel: string
   note?: string
   percent: number
@@ -1684,7 +1748,7 @@ function StatBar({
 }) {
   const width = Math.max(0, Math.min(100, percent))
   return (
-    <div>
+    <div title={hint}>
       <div className="mb-1 flex items-end justify-between gap-2">
         <p className="text-[11px] font-semibold tracking-wide text-slate-400">{label}</p>
         <p className="text-xs font-bold tabular-nums text-slate-200">{valueLabel}</p>
@@ -1770,7 +1834,10 @@ function StaffScoutView({
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
             <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-              <span className="rounded border border-indigo-400/40 bg-indigo-500/15 text-indigo-300 px-2 py-0.5 text-xs font-bold">
+              <span
+                className="rounded border border-indigo-400/40 bg-indigo-500/15 text-indigo-300 px-2 py-0.5 text-xs font-bold"
+                title={t(`studio.managerFx.${candidate.kind}`)}
+              >
                 {t(STAFF_KIND_LABEL_KEY[candidate.kind])}
               </span>
               <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-xs font-bold text-slate-200">
@@ -1800,7 +1867,7 @@ function StaffScoutView({
               <div className="rounded-xl border border-white/8 bg-black/20 p-3">
                 <p className="text-[10px] font-semibold tracking-wide text-slate-500">{t('creator.requiredSalary')}</p>
                 <p className="mt-0.5 text-lg font-black tabular-nums text-amber-400">
-                  ${candidate.proposedSalary.toLocaleString()}/yr
+                  {t('guide.perYear').replace('{amount}', `$${candidate.proposedSalary.toLocaleString()}`)}
                 </p>
               </div>
             </div>

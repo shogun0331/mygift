@@ -2,14 +2,15 @@ import { useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import type { OwnedCreator } from '../game/characters'
 import { formatMoney } from '../game/money'
-import { planBulkSnsCompose, type BulkSnsRevealEntry } from '../game/sns'
+import { characterDisplayName } from '../game/characterLocales'
+import { planBulkSnsCompose, type BulkSnsComposePlan, type BulkSnsRevealEntry } from '../game/sns'
 import { useTranslation } from '../locales/i18n'
 
 type SnsBulkComposeModalProps = {
   creators: OwnedCreator[]
   assets: number
   onClose: () => void
-  onCompose: () => BulkSnsRevealEntry[]
+  onCompose: (plan: BulkSnsComposePlan, skipLines: string[]) => BulkSnsRevealEntry[]
 }
 
 export function SnsBulkComposeModal({
@@ -18,7 +19,7 @@ export function SnsBulkComposeModal({
   onClose,
   onCompose,
 }: SnsBulkComposeModalProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   const plan = useMemo(() => planBulkSnsCompose(creators, assets), [creators, assets])
 
@@ -32,9 +33,24 @@ export function SnsBulkComposeModal({
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  function skipLine(id: string, reason: 'pending' | 'nostock' | 'funds') {
+    const creator = creators.find((item) => item.id === id)
+    const name = creator ? characterDisplayName(creator, locale) : id
+    const key =
+      reason === 'pending'
+        ? 'guide.bulkSkipPending'
+        : reason === 'nostock'
+          ? 'guide.bulkSkipNoStock'
+          : 'guide.bulkSkipNoFunds'
+    return t(key).replace('{name}', name)
+  }
+
   function submit() {
     if (!canSubmit) return
-    const posted = onCompose()
+    const posted = onCompose(
+      plan,
+      plan.skipped.map((row) => skipLine(row.id, row.reason)),
+    )
     if (posted.length > 0) onClose()
   }
 
@@ -63,6 +79,7 @@ export function SnsBulkComposeModal({
 
         <div className="min-h-0 flex-1 overflow-auto px-4 py-4">
           <p className="text-[12px] leading-5 text-slate-400">{t('sns.bulkComposeHint')}</p>
+          <p className="mt-2 text-[12px] leading-5 text-slate-500">{t('guide.snsExplain')}</p>
 
           <div className="mt-4 rounded-xl border border-white/8 bg-black/25 px-3 py-3 text-[12px] leading-5 text-slate-300">
             {plan.skippedNoFunds > 0 && plan.affordableIds.length > 0 ? (
@@ -90,6 +107,13 @@ export function SnsBulkComposeModal({
               <p className="mt-1 text-rose-300/90">
                 {t('sns.bulkComposeSkippedNoFunds').replace('{count}', String(plan.skippedNoFunds))}
               </p>
+            ) : null}
+            {plan.skipped.length > 0 ? (
+              <ul className="mt-2 space-y-1 text-[11px] text-slate-400">
+                {plan.skipped.map((row) => (
+                  <li key={`${row.id}-${row.reason}`}>{skipLine(row.id, row.reason)}</li>
+                ))}
+              </ul>
             ) : null}
             <p className="mt-2 flex items-baseline justify-between gap-2 border-t border-white/8 pt-2">
               <span className="text-slate-400">{t('sns.bulkComposeTotalCost')}</span>

@@ -176,6 +176,14 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
         return
       }
 
+      const focus = e.target
+      if (focus instanceof HTMLElement) {
+        const tag = focus.tagName
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || focus.isContentEditable) {
+          return
+        }
+      }
+
       if (e.key === 'Escape' && activeLeftPanel) {
         setActiveLeftPanel(null)
         playSfx('ui-click')

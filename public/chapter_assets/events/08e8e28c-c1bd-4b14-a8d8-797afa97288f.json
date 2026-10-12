@@ -18,7 +18,7 @@
     {
       "id": "graphic_08e8e28c_2",
       "type": "graphic",
-      "image": "2026-08-28_00060_.webp",
+      "image": "2026-10-10_00078_.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -569,6 +569,14 @@
       "url": "media://chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/images/2026-08-28_00068_.webp",
       "size": 131198,
       "id": "media_image_mtjbsmbd_ufkvbqz"
+    },
+    {
+      "id": "1791780802774-bbj8z1n",
+      "fileName": "2026-10-10_00078_.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/08e8e28c-c1bd-4b14-a8d8-797afa97288f/videos/2026-10-10_00078_.mp4",
+      "url": "blob:http://localhost:5173/bbf95126-cd4c-4e32-96a9-7e20da022d69",
+      "size": 598847
     }
   ],
   "sourceZipName": "직접 생성",

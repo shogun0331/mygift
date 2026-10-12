@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { getSeVolumePercent } from '../../game/uiSfx'
 import { resolveMediaSrc } from '../../game/mediaUrl'
 import type { Locale } from '../../locales/i18n'
+import { useTranslation } from '../../locales/i18n'
 
 // Vite eager import for synchronous dialogue loading (zero fetch lag / zero 404 errors)
 const dialogueModules = import.meta.glob<string[]>('./dialogues/*.json', {
@@ -39,11 +40,12 @@ type Props = {
 }
 
 export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
+  const { t } = useTranslation()
   const { tier, index, dealerName, dealerMediaUrl, dealerMediaType, isLoss } = play
   const displayDealerName =
     dealerName && !dealerName.includes('룸') && !dealerName.includes('Room')
       ? dealerName
-      : '딜러'
+      : t('guide.dealerName')
   const [visible, setVisible] = useState(false)
   const voiceRef = useRef<HTMLAudioElement | null>(null)
   const closingRef = useRef(false)
@@ -177,7 +179,7 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
           </p>
 
           <p className="mt-1.5 text-[10px] text-slate-400 font-mono">
-            (클릭하여 대사 닫기)
+            {t('guide.clickToCloseLine')}
           </p>
         </div>
       </div>

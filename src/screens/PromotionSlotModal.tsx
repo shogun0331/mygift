@@ -220,7 +220,7 @@ export function PromotionSlotModal({
                     <div
                       onClick={playVoice}
                       className="mt-3 px-4 py-2.5 rounded-2xl bg-slate-950/90 border-2 border-amber-400/80 text-amber-200 text-xs sm:text-sm font-medium shadow-[0_4px_20px_rgba(0,0,0,0.8),0_0_15px_rgba(245,158,11,0.4)] flex items-center gap-2 cursor-pointer hover:border-yellow-200 transition-all max-w-md w-full text-left group z-30"
-                      title="클릭하여 대사 음성 다시 듣기"
+                      title={t('proposal.replayVoice')}
                     >
                       <span className="text-lg shrink-0 text-amber-400 group-hover:scale-125 transition-transform">
                         🔊

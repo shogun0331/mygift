@@ -10,7 +10,7 @@
     {
       "id": "node_1786858470286_0_m5mj",
       "type": "graphic",
-      "image": "2026-08-28_00149_.webp",
+      "image": "2026-10-10_00162__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -40,14 +40,6 @@
       "speaker": "player",
       "text": "왔어요. …예쁘네요. 정말.",
       "text_key": "node_1786858470286_3_g4p4"
-    },
-    {
-      "id": "graphic_881535cc_2",
-      "type": "graphic",
-      "image": "2026-08-28_00150_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1786858470286_4_8oxh",
@@ -178,18 +170,9 @@
     {
       "id": "node_1786858470286_18_wo7q",
       "type": "graphic",
-      "image": "2026-08-28_00151_.webp",
+      "image": "2026-10-10_00163__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408189774_3lol",
-          "x": 0.03125,
-          "y": 0.28414351851851855,
-          "w": 0.3098958333333333,
-          "h": 0.32175925925925924,
-          "blur": 2
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -237,6 +220,16 @@
       "text_key": "node_1786858470286_23_74tl"
     },
     {
+      "id": "node_1791778671713_hxuj",
+      "type": "graphic",
+      "image": "2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1786858470286_24_l7j8",
       "type": "text",
       "speakerType": "player",
@@ -271,6 +264,16 @@
       "text_key": "node_1786858470286_27_xlpi"
     },
     {
+      "id": "node_1791778686441_wr5m",
+      "type": "graphic",
+      "image": "2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1.5,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1786858470286_28_s4n9",
       "type": "text",
       "speakerType": "narrator",
@@ -289,6 +292,16 @@
       "sound": "node_1786858470286_29_ol0e.wav"
     },
     {
+      "id": "node_1791778705257_x4yj",
+      "type": "graphic",
+      "image": "2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1786858470286_30_qx96",
       "type": "text",
       "speakerType": "player",
@@ -303,6 +316,16 @@
       "speaker": "player",
       "text": "아… 나온다…! (허리가 떨리며 정액을 쏟아낸다)",
       "text_key": "node_1786858470286_31_y8q0"
+    },
+    {
+      "id": "node_1791778716057_jn18",
+      "type": "graphic",
+      "image": "2026-10-10_00165__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1786858470286_32_bo2v",
@@ -325,7 +348,7 @@
     {
       "id": "node_1786858470286_34_b0wf",
       "type": "graphic",
-      "image": "2026-08-28_00152_.webp",
+      "image": "2026-10-10_00167__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -367,19 +390,11 @@
     {
       "id": "graphic_881535cc_5",
       "type": "graphic",
-      "image": "2026-08-28_00153_.webp",
+      "image": "2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408204270_oi78",
-          "x": 0.4635416666666667,
-          "y": 0.7957175925925926,
-          "w": 0.09765624999999994,
-          "h": 0.20428240740740744,
-          "blur": 2
-        }
-      ],
-      "blurDefault": 4
+      "blurRegions": [],
+      "blurDefault": 4,
+      "speed": 1
     },
     {
       "id": "node_1786858470286_39_q5kj",
@@ -408,6 +423,16 @@
       "text_key": "node_1786858470286_41_kjqs"
     },
     {
+      "id": "node_1791778777353_j15s",
+      "type": "graphic",
+      "image": "2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1.5,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1786858470286_42_he8n",
       "type": "text",
       "speakerType": "character",
@@ -424,6 +449,16 @@
       "speaker": "",
       "text": "그녀의 안이 내 자지를 뜨겁게 조인다. 웨딩드레스가 출렁이고, 화이트 베일이 흔들린다. 이대로 안에 쏟아내면, 이 여자는 완전히 내 것이 된다.",
       "text_key": "node_1786858470286_43_dah3"
+    },
+    {
+      "id": "node_1791778793097_dafw",
+      "type": "graphic",
+      "image": "2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1786858470286_44_8b50",
@@ -450,6 +485,16 @@
       "speaker": "player",
       "text": "아…… 나온다……! (허리가 떨리며 정액을 쏟아낸다)",
       "text_key": "node_1786858470286_46_krii"
+    },
+    {
+      "id": "node_1791778809961_ipxh",
+      "type": "graphic",
+      "image": "2026-10-10_00168__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1786858470286_47_kg5f",
@@ -490,7 +535,7 @@
     {
       "id": "node_1786858470286_51_7r0d",
       "type": "graphic",
-      "image": "2026-08-28_00154_.webp",
+      "image": "2026-10-10_00169__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -578,7 +623,7 @@
     {
       "id": "node_1786858470286_61_5sma",
       "type": "graphic",
-      "image": "2026-08-28_00155_.webp",
+      "image": "2026-10-10_00170__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -863,60 +908,76 @@
       "id": "media_sound_mtjbsmbh_2f9gp5v"
     },
     {
-      "fileName": "2026-08-28_00149_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00149_.webp",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00149_.webp",
-      "size": 123480,
-      "id": "media_image_mtjbsmbh_so103k1"
+      "id": "1791778619049-ti86apa",
+      "fileName": "2026-10-10_00162__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00162__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00162__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "size": 1950856
     },
     {
-      "fileName": "2026-08-28_00150_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00150_.webp",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00150_.webp",
-      "size": 131766,
-      "id": "media_image_mtjbsmbh_ih6jiku"
+      "id": "1791778655758-46wwxwa",
+      "fileName": "2026-10-10_00163__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00163__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00163__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "size": 1736260
     },
     {
-      "fileName": "2026-08-28_00151_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00151_.webp",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00151_.webp",
-      "size": 138564,
-      "id": "media_image_mtjbsmbh_uxjlrpr"
+      "id": "1791778680319-nmbo9yy",
+      "fileName": "2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "size": 2770049
     },
     {
-      "fileName": "2026-08-28_00152_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00152_.webp",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00152_.webp",
-      "size": 95348,
-      "id": "media_image_mtjbsmbh_ca9oeh0"
+      "id": "1791778723246-9prgmep",
+      "fileName": "2026-10-10_00165__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00165__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00165__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "size": 2062053
     },
     {
-      "fileName": "2026-08-28_00153_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00153_.webp",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00153_.webp",
-      "size": 117894,
-      "id": "media_image_mtjbsmbh_xz2ou8z"
+      "id": "1791778745071-4ltybpt",
+      "fileName": "2026-10-10_00167__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00167__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00167__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "size": 2393297
     },
     {
-      "fileName": "2026-08-28_00154_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00154_.webp",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00154_.webp",
-      "size": 115166,
-      "id": "media_image_mtjbsmbh_pco7n65"
+      "id": "1791778759705-jg64dtg",
+      "fileName": "2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "size": 2980303
     },
     {
-      "fileName": "2026-08-28_00155_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00155_.webp",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-08-28_00155_.webp",
-      "size": 82672,
-      "id": "media_image_mtjbsmbh_y5h1eg3"
+      "id": "1791778816941-pf69gle",
+      "fileName": "2026-10-10_00168__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00168__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00168__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "size": 2041939
+    },
+    {
+      "id": "1791778824495-apm9k7o",
+      "fileName": "2026-10-10_00169__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00169__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00169__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "size": 2870038
+    },
+    {
+      "id": "1791778835936-gr43ox1",
+      "fileName": "2026-10-10_00170__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00170__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00170__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "size": 2250501
     }
   ],
   "sourceZipName": "직접 생성",

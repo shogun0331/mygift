@@ -2865,13 +2865,30 @@ html.theme-on-air .audio-bar:nth-child(4) { height: 65%; }
   container-name: vn;
 }
 
+.vn-media-stage {
+  /* 미세 서브픽셀 블러 + 디퓨전 글로우로 선화 끊김과 아티팩트를 빛 번짐으로 커버 */
+  filter: blur(0.35px) drop-shadow(0 0 1.2px rgba(255, 130, 180, 0.45)) saturate(1.22) contrast(1.08) brightness(1.04);
+  image-rendering: auto;
+  transform: translateZ(0);
+}
+
 .vn-frame::after {
   content: '';
   pointer-events: none;
   position: absolute;
   inset: 0;
   z-index: 8;
-  background: radial-gradient(ellipse 80% 70% at 50% 35%, transparent 45%, rgba(0, 0, 0, 0.28) 100%);
+  /* 강화된 스캔라인(선명한 수평 주사선으로 계단현상 강력 커버) + 필름 그레인 + 블룸 */
+  background-image:
+    /* 절반으로 부드럽게 낮춘 스캔라인 텍스처 (농도 7.5%, 3px 주기) */
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.075) 0px, rgba(0, 0, 0, 0.075) 1px, transparent 1px, transparent 3px),
+    /* 미세 필름 그레인 */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
+    /* 소프트 핑크 블룸 */
+    radial-gradient(ellipse 70% 60% at 50% 40%, rgba(255, 182, 193, 0.16) 0%, rgba(255, 105, 180, 0.07) 55%, transparent 75%),
+    /* 비네팅 */
+    radial-gradient(ellipse 80% 70% at 50% 35%, transparent 45%, rgba(0, 0, 0, 0.32) 100%);
+  mix-blend-mode: soft-light;
 }
 
 .vn-chrome {

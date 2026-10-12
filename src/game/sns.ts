@@ -287,11 +287,26 @@ export function canComposeSnsCreator(
   return assets >= calcSnsPostCost(posts.length, rolled.heat)
 }
 
+export type BulkSkipReason = 'pending' | 'nostock' | 'funds'
+
+export type BulkSnsSkip = {
+  id: string
+  reason: BulkSkipReason
+}
+
+export type BulkSnsPlannedPost = {
+  id: string
+  roll: SnsComposeRoll
+  cost: number
+}
+
 export type BulkSnsComposePlan = {
   eligibleIds: string[]
   affordableIds: string[]
+  planned: BulkSnsPlannedPost[]
   totalCost: number
   fullCost: number
+  skipped: BulkSnsSkip[]
   skippedPending: number
   skippedNoStock: number
   skippedNoFunds: number
@@ -301,39 +316,48 @@ export function planBulkSnsCompose(
   creators: readonly SnsComposeCandidate[],
   assets: number,
 ): BulkSnsComposePlan {
-  const preview = previewBulkSnsCompose(creators)
-  const byId = new Map(creators.map((creator) => [creator.id, creator]))
+  const eligibleIds: string[] = []
+  const planned: BulkSnsPlannedPost[] = []
+  const skipped: BulkSnsSkip[] = []
   const affordableIds: string[] = []
   let remaining = assets
   let totalCost = 0
   let fullCost = 0
-  let skippedNoFunds = 0
 
-  for (const id of preview.eligibleIds) {
-    const creator = byId.get(id)
-    if (!creator) continue
+  for (const creator of creators) {
+    if (creator.snsPending) {
+      skipped.push({ id: creator.id, reason: 'pending' })
+      continue
+    }
     const posts = creator.snsPosts ?? []
     const rolled = rollSnsCompose(posts, creator.snsPublishedIds ?? [], creator.snsHeat3Pity ?? 0)
-    const heat = rolled?.heat ?? 2
-    const cost = calcSnsPostCost(posts.length, heat)
+    if (!rolled) {
+      skipped.push({ id: creator.id, reason: 'nostock' })
+      continue
+    }
+    eligibleIds.push(creator.id)
+    const cost = calcSnsPostCost(posts.length, rolled.heat)
     fullCost += cost
     if (remaining >= cost) {
       remaining -= cost
       totalCost += cost
-      affordableIds.push(id)
+      affordableIds.push(creator.id)
+      planned.push({ id: creator.id, roll: rolled, cost })
     } else {
-      skippedNoFunds += 1
+      skipped.push({ id: creator.id, reason: 'funds' })
     }
   }
 
   return {
-    eligibleIds: preview.eligibleIds,
+    eligibleIds,
     affordableIds,
+    planned,
     totalCost,
     fullCost,
-    skippedPending: preview.skippedPending,
-    skippedNoStock: preview.skippedNoStock,
-    skippedNoFunds,
+    skipped,
+    skippedPending: skipped.filter((row) => row.reason === 'pending').length,
+    skippedNoStock: skipped.filter((row) => row.reason === 'nostock').length,
+    skippedNoFunds: skipped.filter((row) => row.reason === 'funds').length,
   }
 }
 

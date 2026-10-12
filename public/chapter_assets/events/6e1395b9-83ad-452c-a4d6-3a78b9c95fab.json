@@ -18,10 +18,11 @@
     {
       "id": "node_1787137637171_lm94",
       "type": "graphic",
-      "image": "2026-09-01_00098_.webp",
+      "image": "2026-10-10_00155_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "speed": 1.5
     },
     {
       "id": "node_1787137422986_1_91pw",
@@ -224,10 +225,11 @@
     {
       "id": "node_1787137422986_23_w12m",
       "type": "graphic",
-      "image": "2026-09-01_00101_.webp",
+      "image": "2026-10-11_00061_1_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "speed": 1
     },
     {
       "id": "node_1787137422986_24_7vzc",
@@ -302,18 +304,9 @@
     {
       "id": "node_1787137422986_31_skhq",
       "type": "graphic",
-      "image": "speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
+      "image": "2026-10-10_00157_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408114943_siu9",
-          "x": 0.2890625,
-          "y": 0.2621527777777778,
-          "w": 0.12369791666666669,
-          "h": 0.2233796296296296,
-          "blur": 2
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -349,6 +342,16 @@
       "speaker": "",
       "text": "그녀가 눈을 감고, 내 자지를 깊이 받아들인다.",
       "text_key": "node_1787137422986_35_0ntv"
+    },
+    {
+      "id": "node_1791778212476_rv8g",
+      "type": "graphic",
+      "image": "2026-10-10_00157_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787137422986_36_rzle",
@@ -395,18 +398,9 @@
     {
       "id": "node_1787137422986_40_v3j9",
       "type": "graphic",
-      "image": "2026-09-01_00114_.webp",
+      "image": "2026-10-10_00158_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408128071_0a94",
-          "x": 0.2838541666666667,
-          "y": 0.2309027777777778,
-          "w": 0.13802083333333331,
-          "h": 0.22685185185185186,
-          "blur": 2
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -440,18 +434,9 @@
     {
       "id": "node_1787137422986_44_akxt",
       "type": "graphic",
-      "image": "2026-09-01_00109_.webp",
+      "image": "2026-10-10_00160_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408136951_l4hn",
-          "x": 0.29296875,
-          "y": 0.7667824074074074,
-          "w": 0.055989583333333315,
-          "h": 0.18981481481481477,
-          "blur": 2
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -503,18 +488,9 @@
     {
       "id": "node_1787137422986_49_o71f",
       "type": "graphic",
-      "image": "speed_3_10x_e5b73205365f429c8133b3fda40049f9.mp4",
+      "image": "2026-10-10_00159_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408146655_1dvh",
-          "x": 0.5390625,
-          "y": 0.390625,
-          "w": 0.3046875,
-          "h": 0.4837962962962963,
-          "blur": 2
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -562,6 +538,16 @@
       "text_key": "node_1787137422986_54_9pww"
     },
     {
+      "id": "node_1791778275828_7801",
+      "type": "graphic",
+      "image": "2026-10-10_00159_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1.3,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1787137422986_55_r2v7",
       "type": "text",
       "speakerType": "character",
@@ -588,6 +574,16 @@
       "text_key": "node_1787137422986_57_rx5z",
       "voice": "node_1787137422986_57_rx5z.wav",
       "sound": "node_1787137422986_57_rx5z.wav"
+    },
+    {
+      "id": "node_1791778288539_jg2p",
+      "type": "graphic",
+      "image": "2026-10-10_00159_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1.5,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787137422986_58_5eqj",
@@ -636,18 +632,9 @@
     {
       "id": "node_1787137422986_62_hn5s",
       "type": "graphic",
-      "image": "2026-09-01_00110_.webp",
+      "image": "2026-10-10_00161_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408155798_e3ct",
-          "x": 0.6354166666666666,
-          "y": 0.6429398148148148,
-          "w": 0.140625,
-          "h": 0.35706018518518523,
-          "blur": 1.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -908,60 +895,60 @@
       "id": "media_sound_mtjbsmbg_62f9eoe"
     },
     {
-      "id": "1788310497488-jrewt3j",
-      "fileName": "2026-09-01_00098_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00098_.webp",
-      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00098_.webp",
-      "size": 44596
-    },
-    {
-      "id": "1788310511954-cgu1o2d",
-      "fileName": "2026-09-01_00101_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00101_.webp",
-      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00101_.webp",
-      "size": 41374
-    },
-    {
-      "id": "1788310765813-m8dzjst",
-      "fileName": "speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
+      "id": "1791778177230-atk9zu5",
+      "fileName": "2026-10-10_00155_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
-      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/speed_3_90x_4494de205c25448588925ea4c895139c.mp4",
-      "size": 910887
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00155_compressed.mp4",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00155_compressed.mp4",
+      "size": 1858885
     },
     {
-      "id": "1788310856558-askn8xi",
-      "fileName": "2026-09-01_00114_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00114_.webp",
-      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00114_.webp",
-      "size": 54926
-    },
-    {
-      "id": "1788310876749-ogok4tl",
-      "fileName": "2026-09-01_00109_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00109_.webp",
-      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00109_.webp",
-      "size": 70656
-    },
-    {
-      "id": "1788310891947-xe4frh8",
-      "fileName": "speed_3_10x_e5b73205365f429c8133b3fda40049f9.mp4",
+      "id": "1791778195367-j2l0us0",
+      "fileName": "2026-10-11_00061_1_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/speed_3_10x_e5b73205365f429c8133b3fda40049f9.mp4",
-      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/speed_3_10x_e5b73205365f429c8133b3fda40049f9.mp4",
-      "size": 1111150
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-11_00061_1_compressed.mp4",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-11_00061_1_compressed.mp4",
+      "size": 2786397
     },
     {
-      "id": "1788310918402-4yqc8qm",
-      "fileName": "2026-09-01_00110_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00110_.webp",
-      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/images/2026-09-01_00110_.webp",
-      "size": 34800
+      "id": "1791778203719-0ztuzv9",
+      "fileName": "2026-10-10_00157_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00157_compressed.mp4",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00157_compressed.mp4",
+      "size": 2479884
+    },
+    {
+      "id": "1791778229880-d2yocdj",
+      "fileName": "2026-10-10_00158_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00158_compressed.mp4",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00158_compressed.mp4",
+      "size": 1729628
+    },
+    {
+      "id": "1791778249488-i1lkoes",
+      "fileName": "2026-10-10_00160_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00160_compressed.mp4",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00160_compressed.mp4",
+      "size": 2083219
+    },
+    {
+      "id": "1791778255088-jb2fq42",
+      "fileName": "2026-10-10_00159_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00159_compressed.mp4",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00159_compressed.mp4",
+      "size": 3471292
+    },
+    {
+      "id": "1791778356040-y1m5d54",
+      "fileName": "2026-10-10_00161_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00161_compressed.mp4",
+      "url": "media://chapter_assets/events/6e1395b9-83ad-452c-a4d6-3a78b9c95fab/videos/2026-10-10_00161_compressed.mp4",
+      "size": 2990217
     }
   ],
   "sourceZipName": "직접 생성",

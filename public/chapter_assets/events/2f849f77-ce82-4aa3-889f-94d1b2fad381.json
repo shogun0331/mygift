@@ -10,10 +10,11 @@
     {
       "id": "node_1787136140417_0_tx6q",
       "type": "graphic",
-      "image": "2026-09-01_00060_.webp",
+      "image": "2026-10-10_00149_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "speed": 1.5
     },
     {
       "id": "node_1787136140417_1_xgof",
@@ -32,14 +33,6 @@
       "text_key": "node_1787136140417_2_6f6y",
       "voice": "node_1787136140417_2_6f6y.wav",
       "sound": "node_1787136140417_2_6f6y.wav"
-    },
-    {
-      "id": "graphic_2f849f77_2",
-      "type": "graphic",
-      "image": "2026-09-01_00059_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787136140417_3_bb9z",
@@ -256,14 +249,6 @@
       "text_key": "node_1787136140417_26_ba3f"
     },
     {
-      "id": "graphic_2f849f77_3",
-      "type": "graphic",
-      "image": "2026-09-01_00061_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787136140417_27_dinn",
       "type": "text",
       "speakerType": "character",
@@ -348,10 +333,11 @@
     {
       "id": "graphic_2f849f77_5",
       "type": "graphic",
-      "image": "2026-09-01_00005.mp4",
+      "image": "2026-10-10_00150_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "speed": 1.5
     },
     {
       "id": "node_1787136140417_36_id7c",
@@ -464,7 +450,7 @@
     {
       "id": "node_1787136140417_49_ddw5",
       "type": "graphic",
-      "image": "2026-09-01_00061_.webp",
+      "image": "2026-10-10_00149_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -476,14 +462,6 @@
       "speaker": "",
       "text": "테이블. 미호는 셔츠를 정리하고, 나는 넥타이를 고쳐 매고 있다. 펍은 여전히 조용하다.",
       "text_key": "node_1787136140417_50_527m"
-    },
-    {
-      "id": "graphic_2f849f77_8",
-      "type": "graphic",
-      "image": "2026-09-01_00066_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787136140417_51_mcs4",
@@ -874,60 +852,20 @@
       "id": "media_sound_mtjbsmbg_qm1d1hr"
     },
     {
-      "id": "1788310002953-ditctj7",
-      "fileName": "2026-09-01_00060_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00060_.webp",
-      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00060_.webp",
-      "size": 47166
-    },
-    {
-      "id": "1788310007717-b80991b",
-      "fileName": "2026-09-01_00059_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00059_.webp",
-      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00059_.webp",
-      "size": 58836
-    },
-    {
-      "id": "1788310025615-aq1j3mq",
-      "fileName": "2026-09-01_00061_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00061_.webp",
-      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00061_.webp",
-      "size": 44072
-    },
-    {
-      "id": "1788310178471-i7hxeeb",
-      "fileName": "2026-09-01_00005.mp4",
+      "id": "1791777666865-9pcfhee",
+      "fileName": "2026-10-10_00149_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-09-01_00005.mp4",
-      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-09-01_00005.mp4",
-      "size": 8535568
+      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-10-10_00149_compressed.mp4",
+      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-10-10_00149_compressed.mp4",
+      "size": 2589737
     },
     {
-      "id": "1788310227327-5egpcpb",
-      "fileName": "2026-09-01_00066_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00066_.webp",
-      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00066_.webp",
-      "size": 46340
-    },
-    {
-      "id": "1788310244648-wmwibiz",
-      "fileName": "2026-09-01_00061_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00061_.webp",
-      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00061_.webp",
-      "size": 44072
-    },
-    {
-      "id": "1788310248838-9cux5t5",
-      "fileName": "2026-09-01_00066_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00066_.webp",
-      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-09-01_00066_.webp",
-      "size": 46340
+      "id": "1791777685881-7sd6vtw",
+      "fileName": "2026-10-10_00150_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-10-10_00150_compressed.mp4",
+      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-10-10_00150_compressed.mp4",
+      "size": 2312515
     }
   ],
   "sourceZipName": "직접 생성",
