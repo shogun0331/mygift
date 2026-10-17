@@ -51,15 +51,8 @@ export function NewGameModal({ onConfirm, onCancel }: NewGameModalProps) {
           value={name}
           onChange={(e) => setName(sanitizeEnglishInput(e.target.value))}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              e.stopPropagation()
-              confirm()
-            }
-            if (e.key === 'Escape') {
-              e.stopPropagation()
-              onCancel()
-            }
+            if (e.key === 'Enter') confirm()
+            if (e.key === 'Escape') onCancel()
           }}
           placeholder={t('save.companyNamePlaceholder')}
           maxLength={30}

@@ -751,7 +751,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
     if (totalWinnings > 0) {
       const updatedChips = currentChips + totalWinnings
       onUpdateChips(selectedRoomId, updatedChips)
-      addLog(t('guide.hlLogClaim').replace('{amount}', `$${totalWinnings.toLocaleString()}`), 'win')
+      addLog(`💰 누적 당첨금 100% (+$${totalWinnings.toLocaleString()}) 수령 완료!`, 'win')
       setTotalWinnings(0)
       setConsecutiveWins(0)
     }
@@ -765,7 +765,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   useEffect(() => {
     if (!hasAutoStartedRef.current) {
       hasAutoStartedRef.current = true
-      addLog(t('guide.hlLogEnter').replace('{ante}', `$${effectiveAnte.toLocaleString()}`), 'info')
+      addLog(`=== [하이로우 카지노] 테이블에 입장하셨습니다 (기본 판돈: $${effectiveAnte.toLocaleString()}). ===`, 'info')
       startNewGameLoop(initialRoomId)
     }
   }, [initialRoomId])
@@ -786,16 +786,16 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
     const currentBet = totalWinnings > 0 ? totalWinnings : (customAnte ?? conf.ante)
 
     if (totalWinnings > 0) {
-      addLog(t('guide.hlLogAllIn').replace('{bet}', `$${currentBet.toLocaleString()}`), 'info')
+      addLog(`🔥 누적 당첨금 $${currentBet.toLocaleString()} 전액 배팅! 라운드가 시작됩니다.`, 'info')
     } else {
-      addLog(t('guide.hlLogFreeAnte').replace('{bet}', `$${currentBet.toLocaleString()}`), 'info')
+      addLog(`무료 기본 판돈 $${currentBet.toLocaleString()} (자산 차감 없음). 라운드가 시작됩니다.`, 'info')
     }
 
     // 라운드 보상 아이템 가챠 세팅 (개별 아이템 등장 확률 적용, 스탭 소진 시 스탭 카드 제외)
     const rewardItem = rollRewardItem(conf)
     setCurrentRewardItem(rewardItem)
     if (rewardItem) {
-      addLog(t('guide.hlLogDrop').replace('{name}', rewardItem.name), 'info')
+      addLog(`🎁 이번 라운드 드롭 보상 아이템 [${rewardItem.name}] 등장! (승리 시 수령)`, 'info')
     }
 
     setPeekHintText(null)
@@ -831,13 +831,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
       setTimeout(() => {
         setIsDealerRevealing(false)
         setIsDealerFaceUp(true)
-        addLog(
-          t('guide.hlLogDealer').replace(
-            '{card}',
-            `${getCardDisplayValue(drawnDealer.value)} ${SUIT_SYMBOLS[drawnDealer.suit]}`,
-          ),
-          'info',
-        )
+        addLog(`딜러가 카드 [${getCardDisplayValue(drawnDealer.value)} ${SUIT_SYMBOLS[drawnDealer.suit]}] 를 공개했습니다.`, 'info')
 
         setTimeout(() => {
           setPhase('WAITING_CHOICE')
@@ -860,10 +854,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
     setUserChoice(choice)
     const payout = calculatePayout(dealerCard.value, choice, currentConfig.houseEdge)
-    addLog(
-      t('guide.hlLogChoice').replace('{choice}', choice).replace('{payout}', String(payout)),
-      'info',
-    )
+    addLog(`유저가 [${choice}] (배당률 ${payout}x) 를 선택했습니다.`, 'info')
 
     // 플레이어 카드가 혹시 없으면 드로
     if (!playerCard) {
@@ -889,15 +880,15 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
     // 1. 버프형 아이템 한 턴 중복 사용 금지 체크
     if (itemType === 'peek_card' && activeBuffs.peekCard) {
-      addLog(t('guide.hlLogPeekActive'), 'draw')
+      addLog(`⚠️ 이미 이번 라운드에 [카드 엿보기] 센서가 가동 중입니다. (한 턴 중복 사용 불가)`, 'draw')
       return
     }
     if (itemType === 'double_payout' && activeBuffs.doublePayout) {
-      addLog(t('guide.hlLogBoostActive'), 'draw')
+      addLog(`⚠️ 이미 이번 라운드에 [배당 2배] 부스터가 적용 중입니다. (한 턴 중복 사용 불가)`, 'draw')
       return
     }
     if (itemType === 'loss_shield' && activeBuffs.lossShield) {
-      addLog(t('guide.hlLogShieldActive'), 'draw')
+      addLog(`⚠️ 이미 이번 라운드에 [패배 쉴드]가 발동 중입니다. (한 턴 중복 사용 불가)`, 'draw')
       return
     }
 
@@ -920,15 +911,15 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         const pVal = playerCard.value
         const suitSym = SUIT_SYMBOLS[playerCard.suit]
         const displayV = getCardDisplayValue(pVal)
-        setPeekHintText(t('guide.hlPeek').replace('{card}', `${displayV} ${suitSym}`))
+        setPeekHintText(`👁️ X-RAY 엿보기 작동: [ ${displayV} ${suitSym} ] 카드 투시 중!`)
       }
-      addLog(t('guide.hlLogPeek'), 'info')
+      addLog(`👁️ [카드 엿보기] 아이템 사용! 플레이어 카드가 엑스레이 투명 모드로 전환됩니다. (아이템 1개 소모)`, 'info')
     } else if (itemType === 'double_payout') {
       setActiveBuffs((b) => ({ ...b, doublePayout: true }))
-      addLog(t('guide.hlLogBoost'), 'info')
+      addLog(`⚡ [배당 2배] 사용! 승리 수령금 2배 증폭 적용! (아이템 1개 소모)`, 'info')
     } else if (itemType === 'loss_shield') {
       setActiveBuffs((b) => ({ ...b, lossShield: true }))
-      addLog(t('guide.hlLogShield'), 'info')
+      addLog(`🛡️ [패배 쉴드] 사용! 패배해도 퇴장하지 않고 라운드를 이어갑니다. (아이템 1개 소모)`, 'info')
     }
   }
 
@@ -984,9 +975,9 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         setConsecutiveWins((prev) => {
           const nextWins = prev + 1
           if (nextWins === 3) {
-            addLog(t('guide.hlLogStreak2'), 'win')
+            addLog(`🔥 3연승 달성! 딜러 수위 2 미디어가 해금됩니다!`, 'win')
           } else if (nextWins === 6) {
-            addLog(t('guide.hlLogStreak3'), 'win')
+            addLog(`🔥 6연승 달성! 딜러 수위 3 미디어가 해금됩니다!`, 'win')
           }
 
           // 업적 트리거 (3, 6, 9, 12연승)
@@ -1011,7 +1002,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
             setDealerDialoguePlay({
               tier,
               index: randIdx,
-              dealerName: currentConfig.dealerName || currentConfig.name || t('guide.dealerName'),
+              dealerName: currentConfig.dealerName || currentConfig.name || '딜러',
               dealerMediaUrl: activeMedia?.url || currentConfig.dealerMediaUrl,
               dealerMediaType: activeMedia?.type || currentConfig.dealerMediaType,
             })
@@ -1022,38 +1013,24 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
         if (currentRewardItem) {
           updateInventory((inv) => {
-            addLog(t('guide.hlLogReward').replace('{name}', currentRewardItem.name), 'win')
+            addLog(`🎁 라운드 보상 획득! [${currentRewardItem.name}] 아이템 수령 완료!`, 'win')
             return [...inv, currentRewardItem]
           })
         }
 
-        addLog(
-          t('guide.hlLogWin')
-            .replace('{player}', getCardDisplayValue(pVal))
-            .replace('{dealer}', getCardDisplayValue(dVal))
-            .replace('{amount}', `$${grossReward.toLocaleString()}`),
-          'win',
-        )
+        addLog(`🎉 승리! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 누적 당첨금 $${grossReward.toLocaleString()} 달성!`, 'win')
       } else if (outcome === 'DRAW') {
         setRewardAmount(totalWinnings)
         setStats((s) => ({ ...s, draws: s.draws + 1 }))
         playHighLowDrawSound()
-        addLog(
-          t('guide.hlLogDraw')
-            .replace('{card}', getCardDisplayValue(pVal))
-            .replace('{amount}', `$${totalWinnings.toLocaleString()}`),
-          'draw',
-        )
+        addLog(`🤝 무승부(DRAW)! 딜러와 동일한 카드 [${getCardDisplayValue(pVal)}] -> 누적 당첨금($${totalWinnings.toLocaleString()}) 보존`, 'draw')
       } else {
         if (activeBuffs.lossShield) {
           setGameResult('DRAW')
           setRewardAmount(totalWinnings)
           setStats((s) => ({ ...s, draws: s.draws + 1 }))
           playHighLowDrawSound()
-          addLog(
-            t('guide.hlLogShieldSave').replace('{amount}', `$${totalWinnings.toLocaleString()}`),
-            'win',
-          )
+          addLog(`🛡️ 패배 무효화 쉴드 발동! 누적 당첨금($${totalWinnings.toLocaleString()}) 보존`, 'win')
         } else {
           setGameResult('LOSS')
           setStats((s) => ({ ...s, losses: s.losses + 1 }))
@@ -1066,17 +1043,12 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
           if (takeHome > 0) {
             addLog(
-              t('guide.hlLogLoseTake')
-                .replace('{player}', getCardDisplayValue(pVal))
-                .replace('{dealer}', getCardDisplayValue(dVal))
-                .replace('{amount}', `$${takeHome.toLocaleString()}`),
+              `💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 누적 당첨금 $${takeHome.toLocaleString()}을 수령하고 테이블에서 퇴장합니다.`,
               'loss',
             )
           } else {
             addLog(
-              t('guide.hlLogLoseZero')
-                .replace('{player}', getCardDisplayValue(pVal))
-                .replace('{dealer}', getCardDisplayValue(dVal)),
+              `💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 당첨금 없이 테이블에서 퇴장합니다.`,
               'loss',
             )
           }
@@ -1087,7 +1059,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           setDealerDialoguePlay({
             tier: 1,
             index: randIdx,
-            dealerName: currentConfig.dealerName || currentConfig.name || t('guide.dealerName'),
+            dealerName: currentConfig.dealerName || currentConfig.name || '딜러',
             dealerMediaUrl: activeMedia?.url || currentConfig.dealerMediaUrl,
             dealerMediaType: activeMedia?.type || currentConfig.dealerMediaType,
             isLoss: true,
@@ -1140,7 +1112,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
               onClick={onClose}
               className="px-3.5 py-1.5 rounded-xl border border-slate-700 bg-slate-900/80 text-xs font-semibold text-slate-300 hover:text-white hover:border-slate-500 transition-all"
             >
-              ✕ {t('guide.highlowClose')}
+              ✕ 닫기
             </button>
           )}
         </div>
@@ -1181,15 +1153,15 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
                   <div className="mt-4 p-3 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1.5 text-xs font-mono">
                     <div className="flex justify-between">
-                      <span className="text-slate-400">{t('guide.highlowAnteLabel')}:</span>
+                      <span className="text-slate-400">기본 배팅 (ANTE):</span>
                       <span className="text-pink-400 font-bold">${conf.ante.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">{t('guide.highlowStartChips')}:</span>
+                      <span className="text-slate-400">초기 증정 칩:</span>
                       <span className="text-cyan-400">${conf.startChips.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">{t('guide.highlowDealer')}:</span>
+                      <span className="text-slate-400">담당 딜러:</span>
                       <span className="text-slate-200">{conf.dealerName}</span>
                     </div>
                   </div>
@@ -1202,7 +1174,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                   }}
                   className="mt-5 w-full py-2.5 rounded-xl font-bold text-sm tracking-wider uppercase transition-all duration-200 shadow-lg bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white shadow-pink-600/30 hover:shadow-pink-500/50 active:scale-[0.98]"
                 >
-                  {t('guide.highlowEnter')}
+                  입장하기
                 </button>
               </div>
             )
@@ -1440,7 +1412,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                       {t('casino.highlow.shieldActive')}
                     </span>
                   )}
-                  <p className="max-w-md text-[11px] leading-4 text-amber-100/80">{t('guide.casinoAce')}</p>
                 </div>
 
                 <div className="flex flex-col gap-3 w-full pt-1">
@@ -1508,7 +1479,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
               <div className="h-12 flex items-center justify-center font-mono text-xs text-amber-300/80 font-bold">
                 {phase === 'DEALING_DEALER' && t('casino.highlow.dealersTurn')}
                 {phase === 'DEALING_PLAYER' && t('casino.highlow.playersTurn')}
-                {phase === 'SHOWDOWN_RESULT' && t('guide.hlResolving')}
+                {phase === 'SHOWDOWN_RESULT' && '🎲 결과 확인 중...'}
               </div>
             )}
           </div>
@@ -1579,7 +1550,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                         {gameResult === 'LOSS' && (
                           <span className="inline-block px-2.5 py-1 rounded-full text-xs font-black text-white bg-gradient-to-r from-rose-600 to-pink-600 shadow-[0_0_20px_rgba(225,29,72,0.9)] animate-red-cash-drain">
                             {totalWinnings > 0
-                              ? t('guide.highlowLeaveWin').replace('{amount}', `$${totalWinnings.toLocaleString()}`)
+                              ? `+$${totalWinnings.toLocaleString()} 퇴장`
                               : t('casino.highlow.exitGameBtn', { defaultValue: '퇴장' })}
                           </span>
                         )}

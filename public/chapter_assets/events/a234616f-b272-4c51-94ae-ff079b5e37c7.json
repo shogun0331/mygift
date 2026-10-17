@@ -9,11 +9,18 @@
   "nodes": [
     {
       "id": "node_1787112976972_0_jdjq",
-      "type": "graphic",
-      "image": "2026-08-28_00077_.webp",
+      "type": "vn",
+      "background": "2026-10-16_00142__.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786833964287-iflkqh2",
+          "imageId": "1792112620864-3e28w8u",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787112976972_1_0sj2",
@@ -168,14 +175,6 @@
       "text_key": "node_1787112976972_17_zzjb"
     },
     {
-      "id": "graphic_a234616f_2",
-      "type": "graphic",
-      "image": "2026-08-28_00078_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787112976972_18_ueug",
       "type": "text",
       "speakerType": "character",
@@ -210,14 +209,6 @@
       "speaker": "",
       "text": "미사키가 내 허리와 등을 손으로 짚어준다. 몸이 가까워질 때마다 레깅스에 감싸인 몸이 눈에 들어온다.",
       "text_key": "node_1787112976972_21_v6n5"
-    },
-    {
-      "id": "graphic_a234616f_3",
-      "type": "graphic",
-      "image": "2026-08-28_00079_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787112976972_22_pote",
@@ -256,14 +247,6 @@
       "text_key": "node_1787112976972_25_j156"
     },
     {
-      "id": "graphic_a234616f_4",
-      "type": "graphic",
-      "image": "2026-08-28_00080_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787112976972_26_chsu",
       "type": "text",
       "speakerType": "character",
@@ -293,11 +276,18 @@
     },
     {
       "id": "graphic_a234616f_6",
-      "type": "graphic",
-      "image": "2026-08-28_00082_.webp",
+      "type": "vn",
+      "background": "2026-10-16_00142__.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786833964287-iflkqh2",
+          "imageId": "1792112620863-sg8xowu",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787112976972_29_of00",
@@ -306,14 +296,6 @@
       "speaker": "",
       "text": "미사키가 크롭탑을 천천히 벗어 올린다.",
       "text_key": "node_1787112976972_29_of00"
-    },
-    {
-      "id": "node_1787112976972_30_z4pe",
-      "type": "graphic",
-      "image": "2026-08-28_00081_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787112976972_31_kn5p",
@@ -442,18 +424,9 @@
     {
       "id": "node_1787112976972_44_53ud",
       "type": "graphic",
-      "image": "speed_3_20x_ea765c831f1543f281540ed3153671ec.mp4",
+      "image": "2026-10-16_00001_ _waifu2x_2x_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407704156_6ubh",
-          "x": 0.11328125,
-          "y": 0.27835648148148145,
-          "w": 0.09895833333333334,
-          "h": 0.17476851851851855,
-          "blur": 1.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -535,19 +508,11 @@
     {
       "id": "node_1788308402813_6ze2",
       "type": "graphic",
-      "image": "2026-08-31_002200_.webp",
+      "image": "2026-10-15_00005__waifu2x_2x_compressed.mp4",
       "delay": 2,
+      "ignoreDelay": false,
       "speed": 1,
-      "blurRegions": [
-        {
-          "id": "blur_1788407721396_ch26",
-          "x": 0.37109375,
-          "y": 0.04456018518518518,
-          "w": 0.078125,
-          "h": 0.14236111111111113,
-          "blur": 1.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -810,6 +775,30 @@
       "sourcePath": "chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/images/2026-08-31_002200_.webp",
       "url": "media://chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/images/2026-08-31_002200_.webp",
       "size": 34620
+    },
+    {
+      "id": "1792128962281-n1wysz4",
+      "fileName": "2026-10-16_00142__.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/images/2026-10-16_00142__.webp",
+      "url": "media://chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/images/2026-10-16_00142__.webp",
+      "size": 230990
+    },
+    {
+      "id": "1792133028194-6srsi6s",
+      "fileName": "2026-10-16_00001_ _waifu2x_2x_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/videos/2026-10-16_00001_ _waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/videos/2026-10-16_00001_ _waifu2x_2x_compressed.mp4",
+      "size": 2522375
+    },
+    {
+      "id": "1792133043277-uswupg6",
+      "fileName": "2026-10-15_00005__waifu2x_2x_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/videos/2026-10-15_00005__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/a234616f-b272-4c51-94ae-ff079b5e37c7/videos/2026-10-15_00005__waifu2x_2x_compressed.mp4",
+      "size": 1999208
     }
   ],
   "sourceZipName": "직접 생성",

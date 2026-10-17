@@ -69,7 +69,7 @@ export function StaffSalaryRaiseModal({
                 {t('salaryRaise.currentSalary')}
               </span>
               <span className="mt-0.5 block text-sm font-extrabold text-slate-300 font-mono tabular-nums">
-                {t('guide.perYear').replace('{amount}', `$${currentSalary.toLocaleString()}`)}
+                ${currentSalary.toLocaleString()}/yr
               </span>
             </div>
 
@@ -78,7 +78,7 @@ export function StaffSalaryRaiseModal({
                 {t('salaryRaise.requiredSalary')}
               </span>
               <span className="mt-0.5 block text-base font-black text-emerald-300 font-mono tabular-nums drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]">
-                {t('guide.perYear').replace('{amount}', `$${requestedSalary.toLocaleString()}`)}
+                ${requestedSalary.toLocaleString()}/yr
               </span>
             </div>
           </div>

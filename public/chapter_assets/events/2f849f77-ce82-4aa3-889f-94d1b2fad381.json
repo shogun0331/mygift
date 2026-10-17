@@ -9,12 +9,18 @@
   "nodes": [
     {
       "id": "node_1787136140417_0_tx6q",
-      "type": "graphic",
-      "image": "2026-10-10_00149_compressed.mp4",
+      "type": "vn",
+      "background": "2026-10-16_00179_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786850998437-g6olmc9",
+          "imageId": "1792116614097-7a2007c",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "speed": 1.5
+      "ignoreDelay": false
     },
     {
       "id": "node_1787136140417_1_xgof",
@@ -333,7 +339,7 @@
     {
       "id": "graphic_2f849f77_5",
       "type": "graphic",
-      "image": "2026-10-10_00150_compressed.mp4",
+      "image": "2026-10-16_00015__waifu2x_2x_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4,
@@ -449,11 +455,18 @@
     },
     {
       "id": "node_1787136140417_49_ddw5",
-      "type": "graphic",
-      "image": "2026-10-10_00149_compressed.mp4",
+      "type": "vn",
+      "background": "2026-10-16_00179_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786850998437-g6olmc9",
+          "imageId": "1792116614097-7a2007c",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787136140417_50_527m",
@@ -852,20 +865,20 @@
       "id": "media_sound_mtjbsmbg_qm1d1hr"
     },
     {
-      "id": "1791777666865-9pcfhee",
-      "fileName": "2026-10-10_00149_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-10-10_00149_compressed.mp4",
-      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-10-10_00149_compressed.mp4",
-      "size": 2589737
+      "id": "1792141488825-qwiptp2",
+      "fileName": "2026-10-16_00179_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-10-16_00179_.webp",
+      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/images/2026-10-16_00179_.webp",
+      "size": 256238
     },
     {
-      "id": "1791777685881-7sd6vtw",
-      "fileName": "2026-10-10_00150_compressed.mp4",
+      "id": "1792143227432-z4bm7ge",
+      "fileName": "2026-10-16_00015__waifu2x_2x_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-10-10_00150_compressed.mp4",
-      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-10-10_00150_compressed.mp4",
-      "size": 2312515
+      "sourcePath": "chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-10-16_00015__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/2f849f77-ce82-4aa3-889f-94d1b2fad381/videos/2026-10-16_00015__waifu2x_2x_compressed.mp4",
+      "size": 1534162
     }
   ],
   "sourceZipName": "직접 생성",

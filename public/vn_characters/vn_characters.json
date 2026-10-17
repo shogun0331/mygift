@@ -1,0 +1,65 @@
+[
+  {
+    "id": "player",
+    "name": "플레이어",
+    "names": {
+      "ko": "플레이어",
+      "en": "Player",
+      "ja": "プレイヤー",
+      "zh-cn": "玩家",
+      "zh-tw": "玩家",
+      "ru": "Игрок",
+      "es": "Jugador",
+      "de": "Spieler"
+    },
+    "mediaRevision": 1792024146203,
+    "vnImages": [
+      {
+        "id": "1792024139946-catowyp",
+        "fileName": "1792024139946-catowyp__2026-10-14_00006.webp",
+        "fileSize": 204036,
+        "url": "media://vn_characters/player/images/1792024139946-catowyp__2026-10-14_00006.webp"
+      },
+      {
+        "id": "1792024139949-al2v72c",
+        "fileName": "1792024139949-al2v72c__2026-10-14_00005.webp",
+        "fileSize": 229230,
+        "url": "media://vn_characters/player/images/1792024139949-al2v72c__2026-10-14_00005.webp"
+      },
+      {
+        "id": "1792024139950-cs543nx",
+        "fileName": "1792024139950-cs543nx__2026-10-14_00004.webp",
+        "fileSize": 204176,
+        "url": "media://vn_characters/player/images/1792024139950-cs543nx__2026-10-14_00004.webp"
+      },
+      {
+        "id": "1792024139950-v39a6qd",
+        "fileName": "1792024139950-v39a6qd__2026-10-14_00018.webp",
+        "fileSize": 225234,
+        "url": "media://vn_characters/player/images/1792024139950-v39a6qd__2026-10-14_00018.webp"
+      },
+      {
+        "id": "1792024139951-0psjip8",
+        "fileName": "1792024139951-0psjip8__2026-10-14_00007.webp",
+        "fileSize": 212948,
+        "url": "media://vn_characters/player/images/1792024139951-0psjip8__2026-10-14_00007.webp"
+      }
+    ]
+  },
+  {
+    "id": "1792024710119-vrz46i7",
+    "name": "VIP",
+    "names": {
+      "ko": "VIP",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "zh-tw": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "mediaRevision": 1792024710122,
+    "vnImages": []
+  }
+]

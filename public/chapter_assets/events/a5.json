@@ -9,11 +9,18 @@
   "nodes": [
     {
       "id": "node_1786843238702_0_kbdm",
-      "type": "graphic",
-      "image": "2026-08-28_00040_.webp",
+      "type": "vn",
+      "background": "2026-10-09_00025__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792024099690-vcma317",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786843238702_1_u9ni",
@@ -43,11 +50,18 @@
     },
     {
       "id": "graphic_a5_2",
-      "type": "graphic",
-      "image": "2026-08-28_00042_.webp",
+      "type": "vn",
+      "background": "2026-10-09_00025__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792024099690-6nrk3te",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786843238702_4_c5ev",
@@ -177,20 +191,18 @@
     },
     {
       "id": "node_1786843238702_18_5oi7",
-      "type": "graphic",
-      "image": "2026-08-28_00043_.webp",
-      "delay": 2,
-      "blurRegions": [
+      "type": "vn",
+      "background": "2026-10-09_00025__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
         {
-          "id": "blur_1788407541478_95l1",
-          "x": 0.3333333333333333,
-          "y": 0.1880787037037037,
-          "w": 0.11458333333333337,
-          "h": 0.2557870370370371,
-          "blur": 2
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792024099690-m8mukoc",
+          "position": "center"
         }
       ],
-      "blurDefault": 4
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1786843238702_19_oh0r",
@@ -227,6 +239,16 @@
       "text_key": "node_1786843238702_22_nxjt",
       "voice": "node_1786843238702_22_nxjt.wav",
       "sound": "node_1786843238702_22_nxjt.wav"
+    },
+    {
+      "id": "node_1792110938806_ehnh",
+      "type": "graphic",
+      "image": "2026-10-14_00041__waifu2x_2x_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1786843238702_23_qai7",
@@ -269,6 +291,16 @@
       "speaker": "player",
       "text": "아…… 미야자와 씨…",
       "text_key": "node_1786843238702_27_zfsa"
+    },
+    {
+      "id": "node_1792110963141_prnh",
+      "type": "graphic",
+      "image": "2026-10-14_00041__waifu2x_2x_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1786843238702_28_98j3",
@@ -314,11 +346,18 @@
     },
     {
       "id": "graphic_a5_4",
-      "type": "graphic",
-      "image": "2026-08-28_00044_.webp",
+      "type": "vn",
+      "background": "2026-10-09_00025__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792024099689-aby0pvx",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786843238702_33_v5sn",
@@ -329,14 +368,6 @@
       "text_key": "node_1786843238702_33_v5sn",
       "voice": "node_1786843238702_33_v5sn.wav",
       "sound": "node_1786843238702_33_v5sn.wav"
-    },
-    {
-      "id": "node_1786843238702_34_ilc3",
-      "type": "graphic",
-      "image": "2026-08-28_00045_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1786843238702_35_bjip",
@@ -357,6 +388,14 @@
       "sound": "node_1786843238702_36_7nis.wav"
     },
     {
+      "id": "node_1786843238702_34_ilc3",
+      "type": "graphic",
+      "image": "2026-10-14_00044__waifu2x_2x_compressed.mp4",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1786843238702_37_seco",
       "type": "text",
       "speakerType": "player",
@@ -371,23 +410,6 @@
       "speaker": "",
       "text": "웨딩드레스 치마가 걷어 올려지고, 드러난 엉덩이와 젖은 그곳이 보인다. 신부의 몸을, 예식 직전에, 이렇게 가지다니… 나는 이제 돌이킬 수 없다.",
       "text_key": "node_1786843238702_38_b2z3"
-    },
-    {
-      "id": "graphic_a5_6",
-      "type": "graphic",
-      "image": "2026-08-28_00046_.webp",
-      "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407556463_gkiv",
-          "x": 0.43359375,
-          "y": 0.7332175925925926,
-          "w": 0.13151041666666663,
-          "h": 0.26678240740740744,
-          "blur": 1.5
-        }
-      ],
-      "blurDefault": 4
     },
     {
       "id": "node_1786843238702_39_fsy7",
@@ -470,18 +492,9 @@
     {
       "id": "graphic_a5_7",
       "type": "graphic",
-      "image": "2026-08-28_00047_.webp",
+      "image": "2026-10-15_00001__waifu2x_2x_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407567413_gfvr",
-          "x": 0.4283854166666667,
-          "y": 0.7309027777777778,
-          "w": 0.12890624999999994,
-          "h": 0.2690972222222222,
-          "blur": 2.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -514,11 +527,18 @@
     },
     {
       "id": "node_1786843238702_51_2pbt",
-      "type": "graphic",
-      "image": "2026-08-28_00048_.webp",
+      "type": "vn",
+      "background": "2026-10-09_00026__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792024099690-ci18g50",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786843238702_52_xgx5",
@@ -601,20 +621,27 @@
       "text_key": "node_1786843238702_60_zv18"
     },
     {
-      "id": "node_1786843238702_61_0nu9",
-      "type": "graphic",
-      "image": "2026-08-28_00049_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1786843238702_62_pejh",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "시간이 흘러, 어느 날. 미야자와 씨가 일반복을 입고, 배가 불러 있다.",
       "text_key": "node_1786843238702_62_pejh"
+    },
+    {
+      "id": "node_1786843238702_61_0nu9",
+      "type": "vn",
+      "background": "2026-10-09_00027__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792024099687-ao6zgnu",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1786843238702_63_bz4w",
@@ -698,78 +725,6 @@
   ],
   "points": [],
   "media": [
-    {
-      "fileName": "2026-08-28_00040_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00040_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-08-28_00040_.webp",
-      "size": 92186,
-      "id": "media_image_mtjbsmbd_osz9jov"
-    },
-    {
-      "fileName": "2026-08-28_00042_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00042_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-08-28_00042_.webp",
-      "size": 108376,
-      "id": "media_image_mtjbsmbd_s40f95j"
-    },
-    {
-      "fileName": "2026-08-28_00043_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00043_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-08-28_00043_.webp",
-      "size": 188478,
-      "id": "media_image_mtjbsmbd_bpd2com"
-    },
-    {
-      "fileName": "2026-08-28_00044_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00044_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-08-28_00044_.webp",
-      "size": 101296,
-      "id": "media_image_mtjbsmbd_wbw25sd"
-    },
-    {
-      "fileName": "2026-08-28_00045_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00045_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-08-28_00045_.webp",
-      "size": 97260,
-      "id": "media_image_mtjbsmbd_3scd5sr"
-    },
-    {
-      "fileName": "2026-08-28_00046_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00046_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-08-28_00046_.webp",
-      "size": 131654,
-      "id": "media_image_mtjbsmbd_m15vcp3"
-    },
-    {
-      "fileName": "2026-08-28_00047_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00047_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-08-28_00047_.webp",
-      "size": 133658,
-      "id": "media_image_mtjbsmbd_yco9uuf"
-    },
-    {
-      "fileName": "2026-08-28_00048_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00048_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-08-28_00048_.webp",
-      "size": 90238,
-      "id": "media_image_mtjbsmbd_57xgvwe"
-    },
-    {
-      "fileName": "2026-08-28_00049_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-08-28_00049_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-08-28_00049_.webp",
-      "size": 86674,
-      "id": "media_image_mtjbsmbd_2ckcscz"
-    },
     {
       "fileName": "node_1786843238702_2_2x02.wav",
       "kind": "sound",
@@ -958,6 +913,54 @@
       "sourcePath": "chapter_assets/events/a5/sounds/node_1786843238702_70_g96t.wav",
       "url": "media://chapter_assets/events/a5/sounds/node_1786843238702_70_g96t.wav",
       "id": "media_sound_cuttbd85_uxrg09a"
+    },
+    {
+      "id": "1792110572878-pp8fijo",
+      "fileName": "2026-10-09_00025__upscaled_00001_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-10-09_00025__upscaled_00001_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-10-09_00025__upscaled_00001_.webp",
+      "size": 413632
+    },
+    {
+      "id": "1792110951590-b6plox3",
+      "fileName": "2026-10-14_00041__waifu2x_2x_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a5/videos/2026-10-14_00041__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/a5/videos/2026-10-14_00041__waifu2x_2x_compressed.mp4",
+      "size": 2755729
+    },
+    {
+      "id": "1792111051455-opyyofr",
+      "fileName": "2026-10-14_00044__waifu2x_2x_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a5/videos/2026-10-14_00044__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/a5/videos/2026-10-14_00044__waifu2x_2x_compressed.mp4",
+      "size": 4057900
+    },
+    {
+      "id": "1792111064657-5ejbn4f",
+      "fileName": "2026-10-15_00001__waifu2x_2x_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a5/videos/2026-10-15_00001__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/a5/videos/2026-10-15_00001__waifu2x_2x_compressed.mp4",
+      "size": 1667221
+    },
+    {
+      "id": "1792111110719-tdc0t5s",
+      "fileName": "2026-10-09_00026__upscaled_00001_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-10-09_00026__upscaled_00001_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-10-09_00026__upscaled_00001_.webp",
+      "size": 490030
+    },
+    {
+      "id": "1792111147686-58mqmdo",
+      "fileName": "2026-10-09_00027__upscaled_00001_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a5/images/2026-10-09_00027__upscaled_00001_.webp",
+      "url": "media://chapter_assets/events/a5/images/2026-10-09_00027__upscaled_00001_.webp",
+      "size": 276756
     }
   ],
   "sourceZipName": "직접 생성",

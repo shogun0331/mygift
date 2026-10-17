@@ -5,8 +5,23 @@
   "chapterId": 1,
   "titleKey": "9c23fc50-241f-457c-b53d-4c8eea480462",
   "title": "VIP",
-  "startNode": "node_1787115692563_2_peqc",
+  "startNode": "node_1787115692563_0_jqad",
   "nodes": [
+    {
+      "id": "node_1787115692563_0_jqad",
+      "type": "vn",
+      "background": "2026-10-09_00049__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786833964287-iflkqh2",
+          "imageId": "1792112620864-3e28w8u",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
     {
       "id": "node_1787115692563_2_peqc",
       "type": "text",
@@ -14,14 +29,6 @@
       "speaker": "",
       "text": "고급 호텔룸. 문이 열리고, 요가복 차림의 미사키가 들어온다. 개인 만남을 수락한 것이다.",
       "text_key": "node_1787115692563_2_peqc"
-    },
-    {
-      "id": "node_1787115692563_0_jqad",
-      "type": "graphic",
-      "image": "2026-08-28_00101_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787115692563_3_6713",
@@ -32,14 +39,6 @@
       "text_key": "node_1787115692563_3_6713",
       "voice": "node_1787115692563_3_6713.wav",
       "sound": "node_1787115692563_3_6713.wav"
-    },
-    {
-      "id": "graphic_9c23fc50_2",
-      "type": "graphic",
-      "image": "2026-08-28_00102_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787115692563_4_dk3k",
@@ -123,11 +122,18 @@
     },
     {
       "id": "node_1787115692563_13_4gjb",
-      "type": "graphic",
-      "image": "2026-08-28_00103_.webp",
+      "type": "vn",
+      "background": "2026-10-09_00049__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786833964287-iflkqh2",
+          "imageId": "1792112620863-sg8xowu",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787115692563_14_7ktl",
@@ -146,23 +152,6 @@
       "speaker": "",
       "text": "그녀가 침대에 네 발로 엎드린다.",
       "text_key": "node_1787115692563_15_pdbz"
-    },
-    {
-      "id": "node_1787115692563_16_tsda",
-      "type": "graphic",
-      "image": "2026-08-28_00112_.webp",
-      "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407866210_fkrk",
-          "x": 0.625,
-          "y": 0.8188657407407407,
-          "w": 0.07942708333333337,
-          "h": 0.17708333333333337,
-          "blur": 2
-        }
-      ],
-      "blurDefault": 4
     },
     {
       "id": "node_1788398592159_lyil",
@@ -195,18 +184,9 @@
     {
       "id": "node_1787115692563_20_4637",
       "type": "graphic",
-      "image": "speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
+      "image": "2026-10-15_00019__waifu2x_2x_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407873522_x0u0",
-          "x": 0.8059895833333334,
-          "y": 0.39641203703703703,
-          "w": 0.13020833333333326,
-          "h": 0.21875000000000006,
-          "blur": 2
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -316,18 +296,9 @@
     {
       "id": "node_1787115692563_31_rx3r",
       "type": "graphic",
-      "image": "2026-08-31_00116_.png",
+      "image": "2026-10-15_00011__waifu2x_2x_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407883330_p3nf",
-          "x": 0.73046875,
-          "y": 0.203125,
-          "w": 0.14713541666666663,
-          "h": 0.32291666666666663,
-          "blur": 2
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -373,14 +344,6 @@
       "speaker": "",
       "text": "다음 만남을 약속하는 그 미소가, 나를 다시 방송으로 이끈다.",
       "text_key": "node_1787115692563_36_9mwx"
-    },
-    {
-      "id": "graphic_9c23fc50_7",
-      "type": "graphic",
-      "image": "2026-08-28_00107_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     }
   ],
   "defaultLanguage": "ko",
@@ -503,60 +466,28 @@
       "id": "media_sound_mtjbsmbe_1m3qn6c"
     },
     {
-      "fileName": "2026-08-28_00101_.webp",
+      "id": "1792133642259-doy4w66",
+      "fileName": "2026-10-09_00049__upscaled_00001_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00101_.webp",
-      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00101_.webp",
-      "size": 81106,
-      "id": "media_image_mtjbsmbe_k2t4i0h"
+      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-10-09_00049__upscaled_00001_.webp",
+      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-10-09_00049__upscaled_00001_.webp",
+      "size": 511652
     },
     {
-      "fileName": "2026-08-28_00102_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00102_.webp",
-      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00102_.webp",
-      "size": 104206,
-      "id": "media_image_mtjbsmbe_tugrmlz"
-    },
-    {
-      "fileName": "2026-08-28_00103_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00103_.webp",
-      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00103_.webp",
-      "size": 88978,
-      "id": "media_image_mtjbsmbe_0sadly2"
-    },
-    {
-      "fileName": "2026-08-28_00107_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00107_.webp",
-      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00107_.webp",
-      "size": 101362,
-      "id": "media_image_mtjbsmbe_gzlaj57"
-    },
-    {
-      "fileName": "2026-08-28_00112_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00112_.webp",
-      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-28_00112_.webp",
-      "size": 140550,
-      "id": "media_image_mtjbsmbe_0d63x9j"
-    },
-    {
-      "id": "1788398666183-fd4swiv",
-      "fileName": "speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
+      "id": "1792133689143-px53b7h",
+      "fileName": "2026-10-15_00019__waifu2x_2x_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/videos/speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
-      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/videos/speed_4_30x_55e68a46906c4ff9ae8463f8c3e7f8b5.mp4",
-      "size": 1091315
+      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/videos/2026-10-15_00019__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/videos/2026-10-15_00019__waifu2x_2x_compressed.mp4",
+      "size": 3736027
     },
     {
-      "id": "1788398697999-gpo3t7t",
-      "fileName": "2026-08-31_00116_.png",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-31_00116_.png",
-      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/images/2026-08-31_00116_.png",
-      "size": 827479
+      "id": "1792133709368-0uvz4dd",
+      "fileName": "2026-10-15_00011__waifu2x_2x_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/videos/2026-10-15_00011__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/9c23fc50-241f-457c-b53d-4c8eea480462/videos/2026-10-15_00011__waifu2x_2x_compressed.mp4",
+      "size": 2138191
     }
   ],
   "sourceZipName": "직접 생성",

@@ -28,9 +28,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   platform: process.platform,
   setDisplayMode: (mode) => ipcRenderer.invoke('set-display-mode', { mode }),
   saveEventAssets: (eventId, assets) => ipcRenderer.invoke('save-event-assets', { eventId, assets }),
-  saveCharacterAssets: (characterId, assets) => ipcRenderer.invoke('save-character-assets', { characterId, assets }),
+  saveCharacterAssets: (characterId, assets, root) =>
+    ipcRenderer.invoke('save-character-assets', { characterId, assets, root }),
   saveCharactersJson: (characters) => ipcRenderer.invoke('save-characters-json', { characters }),
   loadCharactersJson: () => ipcRenderer.invoke('load-characters-json'),
+  saveVnCharactersJson: (characters) => ipcRenderer.invoke('save-vn-characters-json', { characters }),
+  loadVnCharactersJson: () => ipcRenderer.invoke('load-vn-characters-json'),
   saveEventsJson: (events) => ipcRenderer.invoke('save-events-json', { events }),
   loadEventsJson: () => ipcRenderer.invoke('load-events-json'),
   saveCommonEventLinksJson: (links) => ipcRenderer.invoke('save-common-event-links-json', { links }),
@@ -54,8 +57,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('delete-event-file', { eventId, kind, fileName }),
   deleteEventFolder: (eventId) => ipcRenderer.invoke('delete-event-folder', { eventId }),
   openEventFolder: (eventId) => ipcRenderer.invoke('open-event-folder', { eventId }),
-  deleteCharacterFile: (characterId, kind, fileName) => ipcRenderer.invoke('delete-character-file', { characterId, kind, fileName }),
-  pruneCharacterFiles: (characterId, keep) => ipcRenderer.invoke('prune-character-files', { characterId, keep }),
+  deleteCharacterFile: (characterId, kind, fileName, root) =>
+    ipcRenderer.invoke('delete-character-file', { characterId, kind, fileName, root }),
+  pruneCharacterFiles: (characterId, keep, root) =>
+    ipcRenderer.invoke('prune-character-files', { characterId, keep, root }),
   deleteCharacterFolder: (characterId) => ipcRenderer.invoke('delete-character-folder', { characterId }),
   cloneCharacterFile: (characterId, kind, sourceFileName, targetFileName) =>
     ipcRenderer.invoke('clone-character-file', {

@@ -39,6 +39,11 @@ import {
   type RegisteredCharacter,
   type CharacterVideo,
 } from './game/characters'
+import {
+  loadVnCharactersFromDisk,
+  serializeVnCharacters,
+  type VnCharacter,
+} from './game/vnCharacters'
 import { unlockAchievement, registerCharacterAchievements, DEFAULT_CHARACTERS_DATA } from './game/achievements'
 import { fetchPublicJson } from './game/publicJson'
 import {
@@ -111,8 +116,13 @@ function buildSafeFileName(mediaId: string, originalName: string) {
   return `${mediaId}__${base}${ext}`
 }
 
-function mediaUrl(characterId: string, kind: 'image' | 'video', fileName: string, cacheKey?: string | number) {
-  const folder = kind === 'image' ? 'images' : 'videos'
+function mediaUrl(
+  characterId: string,
+  kind: 'image' | 'video' | 'vn',
+  fileName: string,
+  cacheKey?: string | number,
+) {
+  const folder = kind === 'image' ? 'images' : kind === 'vn' ? 'vn' : 'videos'
   return resolveMediaSrc(`media://characters/${characterId}/${folder}/${fileName}`, cacheKey ?? fileName)
 }
 
@@ -133,6 +143,14 @@ function hydrateRegisteredCharacter(c: any): RegisteredCharacter {
         : img.file
           ? URL.createObjectURL(img.file)
           : '',
+  }))
+  const vnImages = (c.vnImages ?? []).map((img: any) => ({
+    ...img,
+    url: img.fileName
+      ? mediaUrl(c.id, 'vn', img.fileName, img.fileSize)
+      : img.url
+        ? resolveMediaSrc(img.url, img.fileSize)
+        : '',
   }))
   const videos = (c.videos ?? []).map((vid: any) => ({
     ...vid,
@@ -169,6 +187,7 @@ function hydrateRegisteredCharacter(c: any): RegisteredCharacter {
     ...c,
     images,
     videos,
+    vnImages,
     specialVacation,
     profileImageUrl:
       profileImg?.url ||
@@ -390,6 +409,7 @@ function syncOwnedWithRegistered(
     if (
       source.videos === creator.videos &&
       source.images === creator.images &&
+      source.vnImages === creator.vnImages &&
       source.snsPosts === creator.snsPosts &&
       source.auditMedia === creator.auditMedia &&
       source.shortsVn === creator.shortsVn &&
@@ -423,6 +443,7 @@ function syncOwnedWithRegistered(
       profileVideoId: source.profileVideoId,
       images: source.images,
       videos: source.videos,
+      vnImages: source.vnImages,
       snsPosts: source.snsPosts,
       auditMedia: source.auditMedia,
       shortsVn: source.shortsVn,
@@ -487,10 +508,10 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
   const assetsToSave: Array<{
     id: string
     fileName: string
-    kind: 'image' | 'video' | 'sound'
+    kind: 'image' | 'video' | 'sound' | 'vn'
     buffer: ArrayBuffer
   }> = []
-  const obsoleteNames: Array<{ kind: 'image' | 'video' | 'sound'; fileName: string }> = []
+  const obsoleteNames: Array<{ kind: 'image' | 'video' | 'sound' | 'vn'; fileName: string }> = []
 
   const images = await Promise.all(
     payload.images.map(async (img) => {
@@ -580,6 +601,41 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
     }),
   )
 
+  const vnImages = payload.vnImages
+    ? await Promise.all(
+        payload.vnImages.map(async (img) => {
+          if (!img.file) {
+            if (img.fileName) {
+              return {
+                ...img,
+                file: undefined,
+                url: mediaUrl(characterId, 'vn', img.fileName, img.fileSize),
+              }
+            }
+            return { ...img, file: undefined }
+          }
+          const buffer = await img.file.arrayBuffer()
+          const safeName = buildSafeFileName(img.id, img.file.name)
+          if (img.fileName && img.fileName !== safeName) {
+            obsoleteNames.push({ kind: 'vn', fileName: img.fileName })
+          }
+          assetsToSave.push({
+            id: img.id,
+            fileName: safeName,
+            kind: 'vn',
+            buffer,
+          })
+          return {
+            id: img.id,
+            fileName: safeName,
+            fileSize: img.file.size,
+            url: mediaUrl(characterId, 'vn', safeName, img.file.size),
+            file: undefined,
+          }
+        }),
+      )
+    : payload.vnImages
+
   let specialVacation = payload.specialVacation
   const specialVoice = specialVacation?.voice
   const voiceFile = specialVoice?.file
@@ -628,6 +684,10 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
   }
 
   const keptRefs = collectFileNameRefs(images, videos)
+  for (const image of vnImages ?? []) {
+    if (!image.fileName) continue
+    keptRefs.set(image.fileName, (keptRefs.get(image.fileName) || 0) + 1)
+  }
   if (specialVacation?.voice?.fileName) {
     keptRefs.set(
       specialVacation.voice.fileName,
@@ -645,6 +705,7 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
     ...payload,
     images,
     videos,
+    vnImages,
     specialVacation,
   }
 }
@@ -741,6 +802,8 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>('main')
   /** 에디터에 등록된 캐릭터 (스카우트 풀) */
   const [registeredCharacters, setRegisteredCharacters] = useState<RegisteredCharacter[]>([])
+  const [vnCharacters, setVnCharacters] = useState<VnCharacter[]>([])
+  const [isVnCharactersLoaded, setIsVnCharactersLoaded] = useState(false)
   /** 인게임 보유 크리에이터 — 새 게임 시작 시 비움 */
   const [ownedCreators, setOwnedCreators] = useState<OwnedCreator[]>([])
   /** 스튜디오 배치 — 메인/에디터를 오가도 유지 */
@@ -853,6 +916,16 @@ export default function App() {
       .catch((err) => {
         console.error('Failed to load characters:', err)
         setIsLoaded(true)
+      })
+
+    loadVnCharactersFromDisk()
+      .then((chars) => {
+        setVnCharacters(chars)
+        setIsVnCharactersLoaded(true)
+      })
+      .catch((err) => {
+        console.error('Failed to load VN characters:', err)
+        setIsVnCharactersLoaded(true)
       })
 
     loadCommonEventLinks()
@@ -977,6 +1050,12 @@ export default function App() {
           mediaRevision: c.mediaRevision,
           images: cleanImages,
           videos: cleanVideos,
+          vnImages: (c.vnImages ?? []).map((img) => ({
+            id: img.id,
+            fileName: img.fileName,
+            fileSize: img.fileSize,
+            url: img.fileName ? `media://characters/${c.id}/vn/${img.fileName}` : img.url,
+          })),
           snsPosts: (c.snsPosts ?? []).map((post) => ({
             id: post.id,
             heat: post.heat,
@@ -1055,6 +1134,14 @@ export default function App() {
       saveCharacters(records).catch((err) => console.error('Failed to save characters:', err))
     }
   }, [registeredCharacters, isLoaded])
+
+  useEffect(() => {
+    if (!isVnCharactersLoaded) return
+    if (!window.electronAPI?.saveVnCharactersJson) return
+    window.electronAPI
+      .saveVnCharactersJson(serializeVnCharacters(vnCharacters))
+      .catch((err) => console.error('Failed to save VN characters JSON:', err))
+  }, [vnCharacters, isVnCharactersLoaded])
 
   // 에디터에서 캐릭터를 수정하면 보유 크리에이터·스튜디오 배치에 즉시 반영
   useEffect(() => {
@@ -1212,6 +1299,7 @@ export default function App() {
           profileVideoId: savedPayload.profileVideoId,
           images: savedPayload.images,
           videos: savedPayload.videos as CharacterVideo[],
+          vnImages: savedPayload.vnImages,
           snsPosts: savedPayload.snsPosts,
           auditMedia: savedPayload.auditMedia,
           shortsVn: savedPayload.shortsVn,
@@ -1275,6 +1363,13 @@ export default function App() {
           sound: savedPayload.specialVacation?.voice?.fileName
             ? [savedPayload.specialVacation.voice.fileName]
             : [],
+          ...(savedPayload.vnImages
+            ? {
+                vn: savedPayload.vnImages
+                  .map((image) => image.fileName)
+                  .filter((name): name is string => Boolean(name)),
+              }
+            : {}),
         })
       }
 
@@ -1303,6 +1398,7 @@ export default function App() {
         profileVideoId: savedPayload.profileVideoId,
         images: savedPayload.images,
         videos: savedPayload.videos as CharacterVideo[],
+        vnImages: savedPayload.vnImages ?? oldChar?.vnImages,
         snsPosts: savedPayload.snsPosts ?? oldChar?.snsPosts ?? [],
         auditMedia: savedPayload.auditMedia ?? oldChar?.auditMedia,
         shortsVn: savedPayload.shortsVn ?? oldChar?.shortsVn,
@@ -1565,6 +1661,8 @@ export default function App() {
       <>
         <EditorScreen
           registeredCharacters={registeredCharacters}
+          vnCharacters={vnCharacters}
+          onVnCharactersChange={setVnCharacters}
           onRegisterCharacter={handleRegisterCharacter}
           onUpdateCharacter={handleUpdateCharacter}
           onDeleteCharacter={handleDeleteCharacter}

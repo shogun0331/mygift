@@ -9,11 +9,18 @@
   "nodes": [
     {
       "id": "node_1787093989219_0_vw0s",
-      "type": "graphic",
-      "image": "2026-08-28_00424_.webp",
+      "type": "vn",
+      "background": "2026-10-14_00114_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851057540-5sup19s",
+          "imageId": "1792126117351-we60h3j",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787093989219_1_7a7m",
@@ -52,14 +59,6 @@
       "sound": "node_1787093989219_4_qv6e.wav"
     },
     {
-      "id": "graphic_c64be57a_2",
-      "type": "graphic",
-      "image": "2026-08-28_00425_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787093989219_5_lxi8",
       "type": "text",
       "speakerType": "character",
@@ -88,14 +87,6 @@
       "sound": "node_1787093989219_7_x10n.wav"
     },
     {
-      "id": "graphic_c64be57a_3",
-      "type": "graphic",
-      "image": "2026-08-28_00426_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787093989219_9_vx7u",
       "type": "text",
       "speakerType": "narrator",
@@ -105,11 +96,18 @@
     },
     {
       "id": "node_1787093989219_8_mukz",
-      "type": "graphic",
-      "image": "2026-08-28_00427_.webp",
+      "type": "vn",
+      "background": "2026-10-14_00114_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851057540-5sup19s",
+          "imageId": "1792126117350-qtyeej9",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787093989219_11_fv7v",
@@ -168,18 +166,9 @@
     {
       "id": "node_1787093989219_14_gahr",
       "type": "graphic",
-      "image": "speed_2_75x_09bda57304bb4d2cb16a7453a4eaf117.mp4",
+      "image": "2026-10-16_00029__waifu2x_2x_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408285109_a71r",
-          "x": 0.4596354166666667,
-          "y": 0.15104166666666666,
-          "w": 0.13671874999999994,
-          "h": 0.21412037037037038,
-          "blur": 2
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -208,20 +197,18 @@
     },
     {
       "id": "node_1787093989219_19_8s0h",
-      "type": "graphic",
-      "image": "084a212f-9b13-49b9-b40e-8c2c28e7e28e.webp",
-      "delay": 2,
-      "blurRegions": [
+      "type": "vn",
+      "background": "2026-10-14_00114_.webp",
+      "character": "",
+      "stageSlots": [
         {
-          "id": "blur_1788408293317_y8if",
-          "x": 0.4583333333333333,
-          "y": 0.02025462962962963,
-          "w": 0.12239583333333331,
-          "h": 0.4212962962962963,
-          "blur": 2
+          "characterId": "1786851057540-5sup19s",
+          "imageId": "1792126117350-qx8wzta",
+          "position": "center"
         }
       ],
-      "blurDefault": 4
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787093989219_20_0pxq",
@@ -308,18 +295,9 @@
     {
       "id": "node_1787093989219_29_rxvm",
       "type": "graphic",
-      "image": "speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
+      "image": "2026-10-16_00030__waifu2x_2x_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408302293_j29k",
-          "x": 0.7734375,
-          "y": 0.3559027777777778,
-          "w": 0.19791666666666663,
-          "h": 0.28240740740740744,
-          "blur": 2.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -347,6 +325,16 @@
       "speaker": "player",
       "text": "아…… 시라카와 씨… 나… 이제… (허리가 격렬해진다)",
       "text_key": "node_1787093989219_32_aat8"
+    },
+    {
+      "id": "node_1792146086474_ietv",
+      "type": "graphic",
+      "image": "2026-10-16_00031__waifu2x_2x_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1.4,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787093989219_33_8neu",
@@ -387,18 +375,9 @@
     {
       "id": "node_1787094227185_o64j",
       "type": "graphic",
-      "image": "7da84875-f242-430f-ab42-33a9156d1801.webp",
+      "image": "2026-10-16_00032__waifu2x_2x_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408311637_ud96",
-          "x": 0.7395833333333334,
-          "y": 0.43344907407407407,
-          "w": 0.06640625,
-          "h": 0.16782407407407407,
-          "blur": 1.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -567,68 +546,44 @@
       "id": "media_sound_mtjbsmbi_i65qzmq"
     },
     {
-      "fileName": "2026-08-28_00424_.webp",
+      "id": "1792144726598-f0dtbv9",
+      "fileName": "2026-10-14_00114_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-28_00424_.webp",
-      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-28_00424_.webp",
-      "size": 118628,
-      "id": "media_image_mtjbsmbi_0dvzbeu"
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-10-14_00114_.webp",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-10-14_00114_.webp",
+      "size": 148868
     },
     {
-      "fileName": "2026-08-28_00425_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-28_00425_.webp",
-      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-28_00425_.webp",
-      "size": 140580,
-      "id": "media_image_mtjbsmbi_k6odxgg"
-    },
-    {
-      "fileName": "2026-08-28_00426_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-28_00426_.webp",
-      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-28_00426_.webp",
-      "size": 140386,
-      "id": "media_image_mtjbsmbi_ljx06c5"
-    },
-    {
-      "fileName": "2026-08-28_00427_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-28_00427_.webp",
-      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/2026-08-28_00427_.webp",
-      "size": 116586,
-      "id": "media_image_mtjbsmbi_nmwe1sj"
-    },
-    {
-      "id": "1788311423316-mcix3by",
-      "fileName": "084a212f-9b13-49b9-b40e-8c2c28e7e28e.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/084a212f-9b13-49b9-b40e-8c2c28e7e28e.webp",
-      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/084a212f-9b13-49b9-b40e-8c2c28e7e28e.webp",
-      "size": 75016
-    },
-    {
-      "id": "1788311439987-27sv77u",
-      "fileName": "7da84875-f242-430f-ab42-33a9156d1801.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/7da84875-f242-430f-ab42-33a9156d1801.webp",
-      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/images/7da84875-f242-430f-ab42-33a9156d1801.webp",
-      "size": 80444
-    },
-    {
-      "id": "1788311492993-uavool1",
-      "fileName": "speed_2_75x_09bda57304bb4d2cb16a7453a4eaf117.mp4",
+      "id": "1792146066942-1cyb5rd",
+      "fileName": "2026-10-16_00029__waifu2x_2x_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_75x_09bda57304bb4d2cb16a7453a4eaf117.mp4",
-      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_75x_09bda57304bb4d2cb16a7453a4eaf117.mp4",
-      "size": 1582173
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/2026-10-16_00029__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/2026-10-16_00029__waifu2x_2x_compressed.mp4",
+      "size": 3267123
     },
     {
-      "id": "1788311545788-0w365wz",
-      "fileName": "speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
+      "id": "1792146075964-isatlgu",
+      "fileName": "2026-10-16_00030__waifu2x_2x_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
-      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/speed_2_30x_dcf00763804e44f6b0e2264700c4a5fc.mp4",
-      "size": 1998394
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/2026-10-16_00030__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/2026-10-16_00030__waifu2x_2x_compressed.mp4",
+      "size": 3232982
+    },
+    {
+      "id": "1792146094832-vwa2vq3",
+      "fileName": "2026-10-16_00031__waifu2x_2x_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/2026-10-16_00031__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/2026-10-16_00031__waifu2x_2x_compressed.mp4",
+      "size": 2412561
+    },
+    {
+      "id": "1792146123299-b97bo3s",
+      "fileName": "2026-10-16_00032__waifu2x_2x_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/2026-10-16_00032__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/c64be57a-0bee-4ab4-a2c6-49a46f72e231/videos/2026-10-16_00032__waifu2x_2x_compressed.mp4",
+      "size": 2104140
     }
   ],
   "sourceZipName": "직접 생성",

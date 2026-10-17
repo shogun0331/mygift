@@ -15,6 +15,7 @@ import {
 } from './condition'
 import { estimateDefaultSalaryForGrade } from './salary'
 import { characterMediaUrl } from './mediaUrl'
+import { normalizeVnImages, type VnStandingImage } from './vnCharacters'
 import {
   normalizeSnsPosts,
   normalizeSnsPublishedPosts,
@@ -337,6 +338,8 @@ export type RegisteredCharacter = {
   profileVideoId?: string | null
   images?: CharacterImage[]
   videos?: CharacterVideo[]
+  /** VN 스탠딩 이미지. 프로필 이미지와 분리해 characters/{id}/vn 에 저장 */
+  vnImages?: VnStandingImage[]
   /** 에디터 SNS 피드. 수위별 순차 오픈 */
   snsPosts?: SnsPostDef[]
   /** 승급심사 3단계 퍼포먼스 미디어 (A: 80%↑, B: 30~79%, C: 0~29%) */
@@ -407,6 +410,7 @@ export type CharacterDraft = {
   profileVideoId?: string | null
   images?: CharacterImage[]
   videos?: CharacterVideo[]
+  vnImages?: VnStandingImage[]
   snsPosts?: SnsPostDef[]
   auditMedia?: CharacterAuditMedia
   shortsVn?: CharacterShortsVn
@@ -462,6 +466,7 @@ export function normalizeRegisteredCharacter(
     profileVideoId: raw.profileVideoId ?? null,
     images: raw.images ?? [],
     videos: (raw.videos ?? []).map((video) => ({ ...video, level: 1 })),
+    vnImages: normalizeVnImages(raw.vnImages),
     snsPosts: normalizeSnsPosts(raw.snsPosts),
     auditMedia: normalizeAuditMedia(raw.auditMedia),
     shortsVn: normalizeShortsVn(raw.shortsVn),
@@ -494,6 +499,7 @@ export function createRegisteredCharacter(draft: CharacterDraft): RegisteredChar
     profileVideoId: draft.profileVideoId ?? null,
     images: draft.images ?? [],
     videos: draft.videos ?? [],
+    vnImages: normalizeVnImages(draft.vnImages),
     snsPosts: normalizeSnsPosts(draft.snsPosts),
     auditMedia: normalizeAuditMedia(draft.auditMedia),
     shortsVn: normalizeShortsVn(draft.shortsVn),

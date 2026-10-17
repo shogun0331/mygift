@@ -19,6 +19,18 @@ import {
 } from './BlurRegionEditor'
 import type { RegisteredCharacter } from '../game/characters'
 import {
+  firstFreeVnPosition,
+  normalizeVnStageSlots,
+  PLAYER_VN_CHARACTER_ID,
+  VN_STAGE_POSITION_LABEL,
+  VN_STAGE_POSITIONS,
+  vnStandingMediaUrl,
+  type VnCharacter,
+  type VnStandingImage,
+  type VnStagePosition,
+  type VnStageSlot,
+} from '../game/vnCharacters'
+import {
   EVENT_DEFAULT_LOCALE,
   EVENT_LOCALES,
   emptyEventLocalization,
@@ -61,6 +73,7 @@ type EventManagePanelProps = {
   events: GameEvent[]
   onEventsChange: (events: GameEvent[]) => void
   registeredCharacters: RegisteredCharacter[]
+  vnCharacters?: VnCharacter[]
   onSaveEventsManual?: () => void
 }
 
@@ -233,6 +246,7 @@ function convertNodeToType(prev: Record<string, any>, type: EditorNodeType) {
       type: 'vn',
       background,
       character,
+      stageSlots: normalizeVnStageSlots(prev.stageSlots),
       delay: prev.delay ?? 2.0,
       ignoreDelay: Boolean(prev.ignoreDelay),
     }
@@ -298,6 +312,7 @@ export function EventManagePanel({
   events,
   onEventsChange,
   registeredCharacters,
+  vnCharacters = [],
   onSaveEventsManual,
 }: EventManagePanelProps) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -336,11 +351,20 @@ export function EventManagePanel({
       const assetsPayload = (
         await Promise.all(
           event.media.map(async (asset) => {
-            const source =
-              asset.blob ||
-              (asset.url ? await fetch(asset.url).then((res) => (res.ok ? res.blob() : null)) : null)
-            if (!source) return null
-            const buffer = await source.arrayBuffer()
+            const readBlob = async (blob: Blob) => {
+              try {
+                return await blob.arrayBuffer()
+              } catch (err) {
+                console.warn('event asset blob unreadable', asset.fileName, err)
+                return null
+              }
+            }
+            let buffer = asset.blob ? await readBlob(asset.blob) : null
+            if (!buffer && asset.url && !asset.url.startsWith('blob:')) {
+              const res = await fetch(asset.url)
+              if (res.ok) buffer = await res.arrayBuffer()
+            }
+            if (!buffer) return null
             return {
               fileName: asset.fileName,
               kind: asset.kind,
@@ -772,6 +796,7 @@ export function EventManagePanel({
               onSave={() => void handleSaveAssets(selected)}
               isSaving={savingEventId === selected.id}
               registeredCharacters={registeredCharacters}
+              vnCharacters={vnCharacters}
               onUpdateEvent={updateEvent}
             />
           ) : (
@@ -791,6 +816,7 @@ export function EventManagePanel({
           returnLabel="에디터로 돌아가기"
           onClose={() => setShowSimulator(false)}
           registeredCharacters={registeredCharacters}
+          vnCharacters={vnCharacters}
         />
       )}
 
@@ -873,6 +899,7 @@ type EventDetailProps = {
   onSave: () => void
   isSaving: boolean
   registeredCharacters: RegisteredCharacter[]
+  vnCharacters?: VnCharacter[]
   onUpdateEvent: (updated: GameEvent) => void
 }
 
@@ -930,12 +957,273 @@ function downloadTextFiles(files: Array<{ fileName: string; body: string }>) {
   })
 }
 
+function standingOptionsFor(
+  characterId: string,
+  registeredCharacters: RegisteredCharacter[],
+  vnCharacters: VnCharacter[],
+) {
+  const registered = registeredCharacters.find((character) => character.id === characterId)
+  if (registered) {
+    return {
+      root: 'characters' as const,
+      images: registered.vnImages ?? [],
+    }
+  }
+  const vn = vnCharacters.find((character) => character.id === characterId)
+  return {
+    root: 'vn_characters' as const,
+    images: vn?.vnImages ?? [],
+  }
+}
+
+function VnStandingPickerModal({
+  title,
+  images,
+  ownerId,
+  root,
+  selectedId,
+  onSelect,
+  onClose,
+}: {
+  title: string
+  images: VnStandingImage[]
+  ownerId: string
+  root: 'characters' | 'vn_characters'
+  selectedId: string
+  onSelect: (imageId: string) => void
+  onClose: () => void
+}) {
+  return createPortal(
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+      <div className="flex max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-white/10 bg-slate-950/60 px-5 py-4">
+          <div>
+            <h3 className="text-base font-bold text-slate-100">{title} 스탠딩</h3>
+            <p className="text-xs text-slate-400">그림을 보고 고릅니다.</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-slate-200"
+          >
+            닫기
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-5">
+          {images.length === 0 ? (
+            <p className="py-16 text-center text-sm text-slate-500">등록된 스탠딩 이미지가 없습니다.</p>
+          ) : (
+            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {images.map((image) => {
+                const src = resolveMediaSrc(vnStandingMediaUrl(ownerId, image, root))
+                const selected = image.id === selectedId
+                return (
+                  <li key={image.id}>
+                    <button
+                      type="button"
+                      onClick={() => onSelect(image.id)}
+                      className={`flex w-full flex-col overflow-hidden rounded-xl border bg-black text-left ${
+                        selected ? 'border-indigo-400 ring-2 ring-indigo-400/40' : 'border-white/10 hover:border-white/30'
+                      }`}
+                    >
+                      <img src={src} alt="" className="h-48 w-full object-contain object-bottom" />
+                      <span className="truncate px-2 py-1.5 text-[10px] text-slate-400">
+                        {image.fileName || image.id}
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
+function VnNodeCharacterFields({
+  node,
+  registeredCharacters,
+  vnCharacters,
+  onChange,
+}: {
+  node: Record<string, any>
+  registeredCharacters: RegisteredCharacter[]
+  vnCharacters: VnCharacter[]
+  onChange: (stageSlots: VnStageSlot[]) => void
+}) {
+  const slots = normalizeVnStageSlots(node.stageSlots)
+  const padded: Array<VnStageSlot | null> = [slots[0] ?? null, slots[1] ?? null]
+  const [pickerSlot, setPickerSlot] = useState<number | null>(null)
+
+  function commit(next: Array<VnStageSlot | null>) {
+    onChange(next.filter((slot): slot is VnStageSlot => Boolean(slot)))
+  }
+
+  function writeSlot(slotIndex: number, slot: VnStageSlot | null) {
+    const next = [...padded]
+    if (slot) {
+      const other = next[slotIndex === 0 ? 1 : 0]
+      if (other && other.position === slot.position) {
+        slot = { ...slot, position: firstFreeVnPosition([other.position]) }
+      }
+    }
+    next[slotIndex] = slot
+    commit(next)
+  }
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <p className="text-[11px] font-semibold text-slate-400">캐릭터 이미지</p>
+        <p className="mt-1 text-[10px] text-slate-500">
+          최대 2명. 좌, 중앙, 우 중 서로 다른 위치에 세웁니다. 한 명만 중앙이면 화면 가운데에 붙습니다.
+        </p>
+      </div>
+      {padded.map((slot, slotIndex) => {
+        const otherPosition = padded[slotIndex === 0 ? 1 : 0]?.position
+        const options = slot ? standingOptionsFor(slot.characterId, registeredCharacters, vnCharacters) : null
+        const preview = options?.images.find((image) => image.id === slot?.imageId)
+        const previewUrl =
+          slot && preview
+            ? vnStandingMediaUrl(slot.characterId, preview, options?.root ?? 'characters')
+            : ''
+        return (
+          <div key={slotIndex} className="space-y-1.5 rounded-lg border border-white/10 bg-black/20 p-2">
+            <p className="text-[10px] font-semibold text-slate-500">슬롯 {slotIndex + 1}</p>
+            <select
+              value={slot?.characterId ?? ''}
+              onChange={(event) => {
+                const characterId = event.target.value
+                if (!characterId) {
+                  writeSlot(slotIndex, null)
+                  return
+                }
+                const { images } = standingOptionsFor(characterId, registeredCharacters, vnCharacters)
+                writeSlot(slotIndex, {
+                  characterId,
+                  imageId: images[0]?.id ?? '',
+                  position: slot?.position ?? firstFreeVnPosition([otherPosition]),
+                })
+              }}
+              className="w-full rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-xs text-slate-200 outline-none"
+            >
+              <option value="">-- 캐릭터 없음 --</option>
+              <optgroup label="게임 캐릭터">
+                {registeredCharacters.map((character) => (
+                  <option key={character.id} value={character.id}>
+                    {character.name}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="VN 캐릭터">
+                {vnCharacters.map((character) => (
+                  <option key={character.id} value={character.id}>
+                    {character.name}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
+            <button
+              type="button"
+              disabled={!slot}
+              onClick={() => setPickerSlot(slotIndex)}
+              className="w-full rounded-lg border border-amber-500/30 bg-amber-500/15 px-2 py-1.5 text-[11px] font-bold text-amber-200 hover:bg-amber-500/25 disabled:opacity-40"
+            >
+              스탠딩 갤러리
+            </button>
+            <div className="flex gap-1">
+              {VN_STAGE_POSITIONS.map((position) => {
+                const taken = otherPosition === position
+                const active = slot?.position === position
+                return (
+                  <button
+                    key={position}
+                    type="button"
+                    disabled={!slot || taken}
+                    onClick={() => {
+                      if (!slot) return
+                      writeSlot(slotIndex, { ...slot, position })
+                    }}
+                    className={`rounded-md border px-2 py-1 text-[10px] font-semibold ${
+                      active
+                        ? 'border-indigo-400/50 bg-indigo-500/20 text-indigo-100'
+                        : 'border-white/10 text-slate-400 disabled:opacity-30'
+                    }`}
+                  >
+                    {VN_STAGE_POSITION_LABEL[position as VnStagePosition]}
+                  </button>
+                )
+              })}
+            </div>
+            <div className="relative h-56 overflow-hidden rounded-lg bg-black">
+              {previewUrl && slot ? (
+                <img
+                  src={resolveMediaSrc(previewUrl)}
+                  alt=""
+                  className={`pointer-events-none absolute bottom-0 h-[94%] object-contain ${
+                    slot.position === 'left'
+                      ? 'left-2 w-[42%]'
+                      : slot.position === 'right'
+                        ? 'right-2 w-[42%]'
+                        : 'left-1/2 w-[42%] -translate-x-1/2'
+                  }`}
+                  style={{
+                    objectPosition:
+                      slot.position === 'left'
+                        ? 'left bottom'
+                        : slot.position === 'right'
+                          ? 'right bottom'
+                          : 'center bottom',
+                  }}
+                />
+              ) : (
+                <p className="absolute inset-0 flex items-center justify-center text-[10px] text-slate-600">
+                  스탠딩 미리보기
+                </p>
+              )}
+            </div>
+          </div>
+        )
+      })}
+      {pickerSlot != null && padded[pickerSlot] ? (
+        <VnStandingPickerModal
+          title={
+            registeredCharacters.find((character) => character.id === padded[pickerSlot]?.characterId)?.name ||
+            vnCharacters.find((character) => character.id === padded[pickerSlot]?.characterId)?.name ||
+            '캐릭터'
+          }
+          images={standingOptionsFor(padded[pickerSlot]!.characterId, registeredCharacters, vnCharacters).images}
+          ownerId={padded[pickerSlot]!.characterId}
+          root={standingOptionsFor(padded[pickerSlot]!.characterId, registeredCharacters, vnCharacters).root}
+          selectedId={padded[pickerSlot]!.imageId}
+          onSelect={(imageId) => {
+            const current = padded[pickerSlot]
+            if (!current) return
+            writeSlot(pickerSlot, { ...current, imageId })
+            setPickerSlot(null)
+          }}
+          onClose={() => setPickerSlot(null)}
+        />
+      ) : null}
+      {typeof node.character === 'string' && node.character && slots.length === 0 ? (
+        <p className="text-[10px] text-amber-200/80">
+          이전에 넣은 WebM({node.character})은 슬롯을 비워 두면 중앙에서 그대로 재생됩니다.
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
 function EventDetail({
   event,
   onSimulate,
   onSave,
   isSaving,
   registeredCharacters,
+  vnCharacters = [],
   onUpdateEvent,
 }: EventDetailProps) {
   const [activeTab, setActiveTab] = useState<'nodes' | 'media'>('nodes')
@@ -1194,7 +1482,11 @@ function EventDetail({
           speakerType = 'narrator'
           speaker = ''
         } else {
-          const char = registeredCharacters.find((c) => c.name === speakerName)
+          const char =
+            registeredCharacters.find((c) => c.name === speakerName) ||
+            vnCharacters.find(
+              (c) => c.id !== PLAYER_VN_CHARACTER_ID && c.name === speakerName,
+            )
           if (char) {
             speaker = char.id
             ensureCharacter(char.id, char.name)
@@ -1453,7 +1745,9 @@ function EventDetail({
     const speakerId = typeof fields.speaker === 'string' ? fields.speaker : targetNode.speaker
     const speakerType = fields.speakerType ?? targetNode.speakerType
     if (speakerType === 'character' && speakerId) {
-      const charInfo = registeredCharacters.find((c) => c.id === speakerId)
+      const charInfo =
+        registeredCharacters.find((c) => c.id === speakerId) ||
+        vnCharacters.find((c) => c.id === speakerId && c.id !== PLAYER_VN_CHARACTER_ID)
       if (charInfo) {
         nextCharacters = [...nextCharacters]
         const existIdx = nextCharacters.findIndex((c) => c.id === charInfo.id)
@@ -2185,6 +2479,13 @@ function EventDetail({
                                   {char.name} ({char.job})
                                 </option>
                               ))}
+                              {vnCharacters
+                                .filter((char) => char.id !== PLAYER_VN_CHARACTER_ID)
+                                .map((char) => (
+                                  <option key={char.id} value={char.id}>
+                                    {char.name} (VN)
+                                  </option>
+                                ))}
                             </select>
                           </div>
                         )}
@@ -2616,89 +2917,12 @@ function EventDetail({
                             ) : null}
                           </div>
 
-                          <div className="space-y-1.5">
-                            <div className="flex items-center justify-between gap-2">
-                              <label className="text-[11px] font-semibold text-slate-400">캐릭터 WebM</label>
-                              <div className="flex items-center gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => setVnMediaPicker({ index, field: 'character' })}
-                                  className="text-[10px] text-amber-300 hover:text-amber-200 font-bold bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded transition"
-                                >
-                                  갤러리
-                                </button>
-                                <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
-                                  파일 추가
-                                  <input
-                                    type="file"
-                                    accept="video/webm"
-                                    className="hidden"
-                                    onChange={(e) => handleUploadMedia(e, index, 'character')}
-                                  />
-                                </label>
-                              </div>
-                            </div>
-                            <div
-                              className={`relative rounded-lg border transition ${
-                                vnDropSlot?.index === index && vnDropSlot.field === 'character'
-                                  ? 'border-emerald-400 bg-emerald-500/10'
-                                  : 'border-white/10 bg-black/40'
-                              }`}
-                              onDragOver={(e) => {
-                                if (![...(e.dataTransfer.types ?? [])].includes('Files')) return
-                                e.preventDefault()
-                                e.stopPropagation()
-                                e.dataTransfer.dropEffect = 'copy'
-                                if (vnDropSlot?.index !== index || vnDropSlot.field !== 'character') {
-                                  setVnDropSlot({ index, field: 'character' })
-                                }
-                              }}
-                              onDragLeave={(e) => {
-                                if (e.currentTarget.contains(e.relatedTarget as Node)) return
-                                setVnDropSlot((current) =>
-                                  current?.index === index && current.field === 'character' ? null : current,
-                                )
-                              }}
-                              onDrop={(e) => {
-                                if (![...(e.dataTransfer.types ?? [])].includes('Files')) return
-                                e.preventDefault()
-                                e.stopPropagation()
-                                setVnDropSlot(null)
-                                setFileDragOverIndex(null)
-                                const file = e.dataTransfer.files?.[0]
-                                if (file) applyDroppedFileToNode(file, index, 'character')
-                              }}
-                            >
-                              <select
-                                value={node.character || ''}
-                                onChange={(e) => handleNodeChange(index, { character: e.target.value })}
-                                className="w-full bg-transparent px-2 py-1.5 text-xs text-slate-200 outline-none cursor-pointer"
-                              >
-                                <option value="" className="bg-slate-900">-- 캐릭터 없음 --</option>
-                                {event.media
-                                  .filter((m) => m.kind === 'video' && isWebmMediaName(m.fileName))
-                                  .map((asset, idx) => (
-                                    <option key={asset.id || `vn-ch-${idx}`} value={asset.fileName} className="bg-slate-900">
-                                      {asset.fileName}
-                                    </option>
-                                  ))}
-                              </select>
-                              {vnDropSlot?.index === index && vnDropSlot.field === 'character' ? (
-                                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-emerald-600/90 text-[11px] font-bold text-white pointer-events-none">
-                                  WebM 캐릭터를 여기에 드롭
-                                </div>
-                              ) : null}
-                            </div>
-                            <p className="text-[10px] text-slate-500">
-                              WebM 하나를 이 칸에 끌어다 놓습니다. 재생 시 가로 중앙, 발끝이 화면 하단에 붙습니다.
-                            </p>
-                            {node.character ? (
-                              <VnMediaPreview
-                                asset={event.media.find((m) => m.fileName === node.character) ?? null}
-                                fileName={node.character}
-                              />
-                            ) : null}
-                          </div>
+                          <VnNodeCharacterFields
+                            node={node}
+                            registeredCharacters={registeredCharacters}
+                            vnCharacters={vnCharacters}
+                            onChange={(stageSlots) => handleNodeChange(index, { stageSlots })}
+                          />
                         </div>
 
                         <div className="space-y-3">

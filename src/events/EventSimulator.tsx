@@ -2,6 +2,14 @@ import { memo, useEffect, useRef, useState, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { characterDisplayName } from '../game/characterLocales'
 import type { RegisteredCharacter } from '../game/characters'
+import {
+  loadVnCharactersFromDisk,
+  PLAYER_VN_CHARACTER_ID,
+  resolveVnImageStandings,
+  vnStandingMediaUrl,
+  type VnCharacter,
+  type VnStagePosition,
+} from '../game/vnCharacters'
 import { useTranslation } from '../locales/i18n'
 import type { GameEvent, EventMediaAsset } from './types'
 import { loadCommonSounds } from './db'
@@ -23,6 +31,8 @@ type EventSimulatorProps = {
   returnLabel?: string
   onClose: () => void
   registeredCharacters?: RegisteredCharacter[]
+  /** 생략하면 디스크의 VN 캐릭터 목록을 읽는다 */
+  vnCharacters?: VnCharacter[]
   /** true/false면 강제. 생략 시 모드·DEV·alreadyWatched로 결정 */
   allowSkip?: boolean
   /** 인게임에서 이미 1회 이상 시청했는지 */
@@ -126,6 +136,7 @@ function getCharacterName(
   event: GameEvent,
   lang: string,
   registeredCharacters: RegisteredCharacter[] = [],
+  vnCharacters: VnCharacter[] = [],
 ): string {
   const locale = normalizeEventLocale(lang)
 
@@ -171,6 +182,11 @@ function getCharacterName(
       registeredCharacters.find((c) => c.name === charId)
     if (registered) {
       return characterDisplayName(registered, locale) || registered.name || charId
+    }
+
+    const vnCharacter = vnCharacters.find((character) => character.id === charId)
+    if (vnCharacter && vnCharacter.id !== PLAYER_VN_CHARACTER_ID) {
+      return characterDisplayName(vnCharacter, locale) || vnCharacter.name || charId
     }
 
     const charDef = event.characters?.find((c) => c.id === charId)
@@ -295,10 +311,35 @@ const PersistentEventVideo = memo(function PersistentEventVideo({
   )
 })
 
-const standingVideoClass =
-  'event-stage-video pointer-events-none absolute inset-0 h-full w-full object-contain object-bottom bg-transparent'
+type VnPlateStanding = {
+  key: string
+  src: string
+  position: VnStagePosition
+  media: 'image' | 'video'
+  characterId?: string
+}
 
-type VnPlateSlot = { id: string; bgSrc: string; charSrc: string }
+type VnPlateSlot = { id: string; bgSrc: string; standings: VnPlateStanding[] }
+
+function standingLayoutClass(position: VnStagePosition, aloneCenter: boolean) {
+  const base = 'pointer-events-none absolute bottom-0 h-[84%]'
+  if (aloneCenter) return `${base} left-1/2 w-[48%] -translate-x-1/2`
+  if (position === 'left') return `${base} left-[2%] w-[40%]`
+  if (position === 'right') return `${base} right-[2%] w-[40%]`
+  return `${base} left-1/2 w-[40%] -translate-x-1/2`
+}
+
+function standingBreatheDelay(position: VnStagePosition) {
+  if (position === 'left') return '0s'
+  if (position === 'right') return '1.1s'
+  return '0.55s'
+}
+
+function standingObjectPosition(position: VnStagePosition, aloneCenter: boolean) {
+  if (aloneCenter || position === 'center') return 'center bottom'
+  if (position === 'left') return 'left bottom'
+  return 'right bottom'
+}
 
 function waitForImage(img: HTMLImageElement, src: string) {
   if (!src) return Promise.resolve()
@@ -364,44 +405,68 @@ function waitForStableVideo(video: HTMLVideoElement, src: string) {
 const VnPlate = memo(function VnPlate({
   slot,
   covered,
-  brightness,
+  dimAll,
+  focusCharacterId,
   onReady,
 }: {
   slot: VnPlateSlot
   covered: boolean
-  brightness: number
+  dimAll: boolean
+  focusCharacterId: string | null
   onReady?: (id: string) => void
 }) {
-  const imgRef = useRef<HTMLImageElement | null>(null)
-  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const plateRef = useRef<HTMLDivElement | null>(null)
   const onReadyRef = useRef(onReady)
   onReadyRef.current = onReady
+  const standingSig = slot.standings.map((standing) => standing.key).join('|')
+  const aloneCenter = slot.standings.length === 1 && slot.standings[0]?.position === 'center'
 
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
-    if (covered) video.pause()
-    else void video.play().catch(() => {})
-  }, [covered, slot.charSrc])
+    const root = plateRef.current
+    if (!root) return
+    for (const video of root.querySelectorAll('video')) {
+      if (covered) video.pause()
+      else void video.play().catch(() => {})
+    }
+  }, [covered, standingSig])
 
   useEffect(() => {
     if (!slot.id || !onReadyRef.current) return
+    const root = plateRef.current
+    if (!root) return
     let cancelled = false
-    const img = imgRef.current
-    const video = videoRef.current
+    const imgs = Array.from(root.querySelectorAll('img'))
+    const videos = Array.from(root.querySelectorAll('video'))
+    const bg = slot.bgSrc ? imgs[0] : null
+    const standingImgs = slot.bgSrc ? imgs.slice(1) : imgs
+    const imageStandings = slot.standings.filter((standing) => standing.media === 'image')
+    const videoStandings = slot.standings.filter((standing) => standing.media === 'video')
     Promise.all([
-      img ? waitForImage(img, slot.bgSrc) : Promise.resolve(),
-      video ? waitForStableVideo(video, slot.charSrc) : Promise.resolve(),
+      bg ? waitForImage(bg, slot.bgSrc) : Promise.resolve(),
+      ...standingImgs.map((img, index) => waitForImage(img, imageStandings[index]?.src || '')),
+      ...videos.map((video, index) => waitForStableVideo(video, videoStandings[index]?.src || '')),
     ]).then(() => {
       if (!cancelled) onReadyRef.current?.(slot.id)
     })
     return () => {
       cancelled = true
     }
-  }, [slot.id, slot.bgSrc, slot.charSrc])
+  }, [slot.id, slot.bgSrc, standingSig])
+
+  const standingStyle = (standing: VnPlateStanding) => {
+    const dimmed = focusCharacterId
+      ? standing.characterId !== focusCharacterId
+      : dimAll
+    return {
+      objectPosition: standingObjectPosition(standing.position, aloneCenter),
+      filter: dimmed ? 'brightness(0.45)' : 'brightness(1)',
+      transition: 'filter 180ms ease',
+    }
+  }
 
   return (
     <div
+      ref={plateRef}
       className="absolute inset-0 pointer-events-none"
       style={{
         zIndex: covered ? 1 : 2,
@@ -409,46 +474,60 @@ const VnPlate = memo(function VnPlate({
     >
       {slot.bgSrc ? (
         <img
-          ref={imgRef}
           src={slot.bgSrc}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />
       ) : null}
-      {slot.charSrc ? (
-        <video
-          ref={videoRef}
-          src={slot.charSrc}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          disablePictureInPicture
-          disableRemotePlayback
-          className={standingVideoClass}
-          style={brightness < 0.999 ? { filter: `brightness(${brightness})` } : undefined}
-        />
-      ) : null}
+      {slot.standings.map((standing) => {
+        const frameClass = standingLayoutClass(standing.position, aloneCenter)
+        const mediaClass = 'vn-standing-live h-full w-full bg-transparent object-contain'
+        const mediaStyle = {
+          ...standingStyle(standing),
+          animationDelay: standingBreatheDelay(standing.position),
+        }
+        return (
+          <div key={standing.key} className={frameClass}>
+            {standing.media === 'video' ? (
+              <video
+                src={standing.src}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                disablePictureInPicture
+                disableRemotePlayback
+                className={mediaClass}
+                style={mediaStyle}
+              />
+            ) : (
+              <img src={standing.src} alt="" className={mediaClass} style={mediaStyle} />
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 })
 
 const VnStageLayer = memo(function VnStageLayer({
   background,
-  character,
-  brightness,
+  standings,
+  dimAll,
+  focusCharacterId,
 }: {
   background: EventMediaAsset | null
-  character: EventMediaAsset | null
-  brightness: number
+  standings: VnPlateStanding[]
+  dimAll: boolean
+  focusCharacterId: string | null
 }) {
   const bgSrc = background ? resolveMediaSrc(background.url) : ''
-  const charSrc = character ? resolveMediaSrc(character.url) : ''
-  const id = `${background?.fileName || ''}|${character?.fileName || ''}`
+  const standingSig = standings.map((standing) => `${standing.position}:${standing.key}`).join('|')
+  const id = `${background?.fileName || ''}|${standingSig}`
   const [slots, setSlots] = useState<[VnPlateSlot, VnPlateSlot]>(() => [
-    { id, bgSrc, charSrc },
-    { id: '', bgSrc: '', charSrc: '' },
+    { id, bgSrc, standings },
+    { id: '', bgSrc: '', standings: [] },
   ])
   const [front, setFront] = useState(0)
   const frontIdRef = useRef(id)
@@ -467,10 +546,10 @@ const VnStageLayer = memo(function VnStageLayer({
     setSlots((prev) => {
       if (prev[hidden].id === id) return prev
       const next: [VnPlateSlot, VnPlateSlot] = [...prev]
-      next[hidden] = { id, bgSrc, charSrc }
+      next[hidden] = { id, bgSrc, standings }
       return next
     })
-  }, [id, bgSrc, charSrc, front])
+  }, [id, bgSrc, standingSig, standings, front])
 
   return (
     <div className="absolute inset-0 z-0 bg-black">
@@ -479,7 +558,8 @@ const VnStageLayer = memo(function VnStageLayer({
           key={index}
           slot={slot}
           covered={index !== front}
-          brightness={brightness}
+          dimAll={dimAll}
+          focusCharacterId={focusCharacterId}
           onReady={
             slot.id && slot.id !== frontIdRef.current
               ? (readyId) => {
@@ -555,6 +635,7 @@ export function EventSimulator({
   returnLabel,
   onClose,
   registeredCharacters = [],
+  vnCharacters: vnCharactersProp,
   allowSkip,
   alreadyWatched = false,
 }: EventSimulatorProps) {
@@ -572,6 +653,20 @@ export function EventSimulator({
     return normalizeEventLocale(event.defaultLanguage || EVENT_DEFAULT_LOCALE)
   })
   const [commonSounds, setCommonSounds] = useState<EventMediaAsset[]>([])
+  const [loadedVnCharacters, setLoadedVnCharacters] = useState<VnCharacter[]>([])
+
+  useEffect(() => {
+    if (vnCharactersProp) return
+    let cancelled = false
+    void loadVnCharactersFromDisk().then((list) => {
+      if (!cancelled) setLoadedVnCharacters(list)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [vnCharactersProp])
+
+  const vnCharacters = vnCharactersProp ?? loadedVnCharacters
 
   useEffect(() => {
     if (mode !== 'game') return
@@ -716,7 +811,7 @@ export function EventSimulator({
 
   // 현재 노드 파싱 정보
   const characterName = currentNode
-    ? getCharacterName(currentNode, event, lang, registeredCharacters)
+    ? getCharacterName(currentNode, event, lang, registeredCharacters, vnCharacters)
     : ''
   const dialogueText =
     currentNode &&
@@ -809,6 +904,17 @@ export function EventSimulator({
     return null
   }, [speakerCharacter])
 
+  const vnSpeakerPortrait = useMemo(() => {
+    if (speakerProfileUrl || !currentNode || currentNode.speakerType !== 'character') return null
+    const found = vnCharacters.find(
+      (character) =>
+        character.id === currentNode.speaker && character.id !== PLAYER_VN_CHARACTER_ID,
+    )
+    const image = found?.vnImages[0]
+    if (!found || !image) return null
+    return resolveMediaSrc(vnStandingMediaUrl(found.id, image, 'vn_characters'))
+  }, [speakerProfileUrl, currentNode, vnCharacters])
+
   // 가장 최근 그래픽 또는 VN이 무대를 교체한다. 그 사이 텍스트는 그 무대를 유지한다.
   const activeStage = useMemo(() => {
     if (!currentNode) return null
@@ -819,12 +925,30 @@ export function EventSimulator({
       if (!node) continue
       if (node.type === 'vn') {
         const backgroundName = typeof node.background === 'string' ? node.background.trim() : ''
-        const characterName = typeof node.character === 'string' ? node.character.trim() : ''
+        const imageStandings = resolveVnImageStandings(node, registeredCharacters, vnCharacters)
+        const legacyName = typeof node.character === 'string' ? node.character.trim() : ''
+        const legacyAsset =
+          imageStandings == null && legacyName ? findMediaAsset(legacyName, event.media) : null
+        const standings: VnPlateStanding[] = imageStandings
+          ? imageStandings.map((standing) => ({
+              ...standing,
+              src: resolveMediaSrc(standing.src),
+            }))
+          : legacyAsset?.url
+            ? [
+                {
+                  key: legacyAsset.fileName || legacyName,
+                  src: resolveMediaSrc(legacyAsset.url),
+                  position: 'center',
+                  media: 'video',
+                },
+              ]
+            : []
         return {
           kind: 'vn' as const,
           node,
           background: backgroundName ? findMediaAsset(backgroundName, event.media) : null,
-          character: characterName ? findMediaAsset(characterName, event.media) : null,
+          standings,
         }
       }
       if (node.type === 'graphic') {
@@ -846,12 +970,33 @@ export function EventSimulator({
       }
     }
     return null
-  }, [flatNodes, currentNodeId, currentNode, event.media])
+  }, [flatNodes, currentNodeId, currentNode, event.media, registeredCharacters, vnCharacters])
 
   const activeMedia = activeStage?.kind === 'graphic' ? activeStage.media : null
   const graphicSourceNode = activeStage?.kind === 'graphic' ? activeStage.node : null
 
-  const standingBrightness = activeStage?.kind === 'vn' && Boolean(currentNode?.dimCharacter) ? 0.45 : 1
+  const standingBrightness = activeStage?.kind === 'vn' && Boolean(currentNode?.dimCharacter)
+  const focusCharacterId = useMemo(() => {
+    if (activeStage?.kind !== 'vn' || !currentNode) return null
+    if (
+      currentNode.type === 'vn' ||
+      currentNode.type === 'graphic' ||
+      currentNode.type === 'fade' ||
+      currentNode.type === 'sound'
+    ) {
+      return null
+    }
+    const speakerType = currentNode.speakerType || 'character'
+    const onStage = (id: string) =>
+      activeStage.standings.some((standing) => standing.characterId === id)
+    if (speakerType === 'player' || currentNode.speaker === 'player') {
+      return onStage(PLAYER_VN_CHARACTER_ID) ? PLAYER_VN_CHARACTER_ID : null
+    }
+    if (speakerType !== 'character') return null
+    const speakerId = typeof currentNode.speaker === 'string' ? currentNode.speaker.trim() : ''
+    if (!speakerId || !registeredCharacters.some((character) => character.id === speakerId)) return null
+    return onStage(speakerId) ? speakerId : null
+  }, [activeStage, currentNode, registeredCharacters])
 
   const activeVideoSpeed = useMemo(() => {
     if (!graphicSourceNode) return 1.0
@@ -1163,10 +1308,10 @@ export function EventSimulator({
     return flatNodes.filter((n) => {
       const id = String(n.id || n.key || '').toLowerCase()
       const text = getLocalizedText(n, event.localization, lang).toLowerCase()
-      const charName = getCharacterName(n, event, lang, registeredCharacters).toLowerCase()
+      const charName = getCharacterName(n, event, lang, registeredCharacters, vnCharacters).toLowerCase()
       return id.includes(q) || text.includes(q) || charName.includes(q)
     })
-  }, [flatNodes, searchQuery, lang, event])
+  }, [flatNodes, searchQuery, lang, event, registeredCharacters, vnCharacters])
 
   const isGame = mode === 'game'
   const exitLabel = returnLabel ?? (mode === 'debug' ? '에디터로 돌아가기' : t('hud.exitEvent'))
@@ -1266,8 +1411,9 @@ export function EventSimulator({
               {activeStage?.kind === 'vn' ? (
                 <VnStageLayer
                   background={activeStage.background}
-                  character={activeStage.character}
-                  brightness={standingBrightness}
+                  standings={activeStage.standings}
+                  dimAll={standingBrightness}
+                  focusCharacterId={focusCharacterId}
                 />
               ) : activeMedia ? (
                 <EventStageLayer
@@ -1382,9 +1528,9 @@ export function EventSimulator({
                   <>
                     {characterName ? (
                       <div className="vn-nameplate inline-flex items-center gap-2">
-                        {speakerProfileUrl ? (
+                        {speakerProfileUrl || vnSpeakerPortrait ? (
                           <img
-                            src={speakerProfileUrl}
+                            src={speakerProfileUrl || vnSpeakerPortrait || ''}
                             alt={characterName}
                             className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-cyan-300/80 shadow-md shrink-0"
                           />
@@ -1416,9 +1562,9 @@ export function EventSimulator({
                     choices.length === 0 ? 'cursor-pointer hover:border-indigo-400/50' : ''
                   }`}
                 >
-                  {speakerProfileUrl ? (
+                  {speakerProfileUrl || vnSpeakerPortrait ? (
                     <img
-                      src={speakerProfileUrl}
+                      src={speakerProfileUrl || vnSpeakerPortrait || ''}
                       alt={characterName}
                       className="w-20 h-20 md:w-24 md:h-24 rounded-2xl border border-white/15 object-cover bg-slate-900 shadow-md shrink-0 transition-transform duration-300 hover:scale-105"
                     />
@@ -1554,7 +1700,7 @@ export function EventSimulator({
                       const nid = n.id || n.key || ''
                       const isActive = nid === currentNodeId
                       const isStageNode = n.type === 'graphic' || n.type === 'vn' || n.type === 'fade' || n.type === 'sound'
-                      const nodeChar = isStageNode ? '' : getCharacterName(n, event, lang, registeredCharacters)
+                      const nodeChar = isStageNode ? '' : getCharacterName(n, event, lang, registeredCharacters, vnCharacters)
                       const nodeText = isStageNode ? '' : getLocalizedText(n, event.localization, lang)
                       const nodeImg = findNodeImage(n)
                       const nodeSnd = findNodeSound(n)

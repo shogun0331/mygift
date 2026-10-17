@@ -75,16 +75,57 @@ function sanitizeEventsForSave(events: GameEvent[]): GameEvent[] {
     }))
 }
 
-async function persistEventMediaFiles(events: GameEvent[]): Promise<void> {
+function eventMediaFolder(kind: string | undefined): string {
+  if (kind === 'image') return 'images'
+  if (kind === 'video') return 'videos'
+  if (kind === 'sound') return 'sounds'
+  return 'assets'
+}
+
+async function eventMediaExistsOnDisk(eventId: string, kind: string | undefined, fileName: string): Promise<boolean> {
+  const folder = eventMediaFolder(kind)
+  const id = encodeURIComponent(eventId)
+  const file = encodeURIComponent(fileName)
+  const urls = [
+    `media://chapter_assets/events/${id}/${folder}/${file}`,
+    `/chapter_assets/events/${id}/${folder}/${file}`,
+  ]
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { headers: { Range: 'bytes=0-0' } })
+      if (res.ok || res.status === 206) {
+        await res.body?.cancel()?.catch(() => undefined)
+        return true
+      }
+    } catch {
+      // 다음 후보 경로
+    }
+  }
+  return false
+}
+
+async function persistEventMediaFiles(events: GameEvent[]): Promise<string[]> {
+  const missing: string[] = []
   for (const event of events) {
     if (!event?.id || !Array.isArray(event.media)) continue
     const pending: Array<{ fileName: string; kind: string; buffer: ArrayBuffer }> = []
     for (const asset of event.media) {
       if (!asset?.blob || !asset.fileName || !asset.kind) continue
+      let buffer: ArrayBuffer
+      try {
+        buffer = await asset.blob.arrayBuffer()
+      } catch (err) {
+        // 드롭한 원본이 옮겨지거나 지워지면 File 읽기가 NotFoundError로 실패한다.
+        // 이벤트 폴더에 이미 복사돼 있으면 JSON 저장은 계속한다.
+        if (await eventMediaExistsOnDisk(event.id, asset.kind, asset.fileName)) continue
+        console.warn('event media blob unreadable', event.id, asset.fileName, err)
+        missing.push(`${event.id} / ${asset.fileName}`)
+        continue
+      }
       pending.push({
         fileName: asset.fileName,
         kind: asset.kind,
-        buffer: await asset.blob.arrayBuffer(),
+        buffer,
       })
     }
     if (pending.length === 0) continue
@@ -111,18 +152,30 @@ async function persistEventMediaFiles(events: GameEvent[]): Promise<void> {
       if (!json.success) throw new Error(json.error || `${event.id} 에셋 저장 실패`)
     }
   }
+  return missing
+}
+
+function throwIfEventMediaMissing(missing: string[]) {
+  if (missing.length === 0) return
+  throw new Error(
+    `이벤트 내용은 저장했습니다.\n아래 파일은 원본이 없어 복사하지 못했습니다. 다시 넣어 주세요.\n${missing.join('\n')}`,
+  )
 }
 
 export async function saveEvents(events: GameEvent[]): Promise<void> {
-  await persistEventMediaFiles(events)
+  const missingMedia = await persistEventMediaFiles(events)
   const cleanedEvents = sanitizeEventsForSave(events)
 
   if (window.electronAPI?.saveEventsJson) {
     try {
       const res = await window.electronAPI.saveEventsJson(cleanedEvents)
       if (!res.success) throw new Error(res.error || 'Failed to save events JSON')
+      throwIfEventMediaMissing(missingMedia)
       return
     } catch (ipcErr) {
+      if (missingMedia.length > 0 && ipcErr instanceof Error && ipcErr.message.startsWith('이벤트 내용은 저장했습니다.')) {
+        throw ipcErr
+      }
       const canFallback = typeof window !== 'undefined' && window.location.protocol.startsWith('http')
       if (!canFallback) throw ipcErr
       console.warn('Electron save-events-json failed, falling back to Vite API:', ipcErr)
@@ -139,10 +192,16 @@ export async function saveEvents(events: GameEvent[]): Promise<void> {
       })
       if (res.ok) {
         const json = await res.json()
-        if (json.success) return
+        if (json.success) {
+          throwIfEventMediaMissing(missingMedia)
+          return
+        }
         throw new Error(json.error || 'Server responded with error')
       }
     } catch (apiErr) {
+      if (missingMedia.length > 0 && apiErr instanceof Error && apiErr.message.startsWith('이벤트 내용은 저장했습니다.')) {
+        throw apiErr
+      }
       console.warn('Failed to save events to Vite dev API, falling back to IndexedDB:', apiErr)
     }
   }
@@ -160,7 +219,17 @@ export async function saveEvents(events: GameEvent[]): Promise<void> {
       }
     }
 
-    tx.oncomplete = () => resolve()
+    tx.oncomplete = () => {
+      if (missingMedia.length > 0) {
+        reject(
+          new Error(
+            `이벤트 내용은 저장했습니다.\n아래 파일은 원본이 없어 복사하지 못했습니다. 다시 넣어 주세요.\n${missingMedia.join('\n')}`,
+          ),
+        )
+        return
+      }
+      resolve()
+    }
     tx.onerror = () => reject(tx.error)
   })
 }

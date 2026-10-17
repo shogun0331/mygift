@@ -5,8 +5,23 @@
   "chapterId": 1,
   "titleKey": "ab9b304b-a998-47b0-95b3-99bed4369624",
   "title": "섹스",
-  "startNode": "node_1787120009569_1_6kxz",
+  "startNode": "node_1787120009569_0_6vel",
   "nodes": [
+    {
+      "id": "node_1787120009569_0_6vel",
+      "type": "vn",
+      "background": "2026-10-14_00114_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786849140255-p0lxz2i",
+          "imageId": "1792114260170-xuvlpgx",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
     {
       "id": "node_1787120009569_1_6kxz",
       "type": "text",
@@ -14,14 +29,6 @@
       "speaker": "",
       "text": "사토 메구미의 아늑한 집. 낮. 초인종을 누르자 문이 열리고, 메구미가 흰색 레이스 속옷 차림으로 나를 맞이한다.",
       "text_key": "node_1787120009569_1_6kxz"
-    },
-    {
-      "id": "node_1787120009569_0_6vel",
-      "type": "graphic",
-      "image": "2026-09-01_00024_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787120009569_2_udoy",
@@ -50,14 +57,6 @@
       "text_key": "node_1787120009569_4_8i59",
       "voice": "node_1787120009569_4_8i59.wav",
       "sound": "node_1787120009569_4_8i59.wav"
-    },
-    {
-      "id": "graphic_ab9b304b_2",
-      "type": "graphic",
-      "image": "2026-09-01_00027_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787120009569_5_2ft7",
@@ -222,14 +221,6 @@
       "text_key": "node_1787120009569_22_lp5f"
     },
     {
-      "id": "graphic_ab9b304b_3",
-      "type": "graphic",
-      "image": "2026-08-28_00480_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787120009569_23_gg86",
       "type": "text",
       "speakerType": "character",
@@ -248,14 +239,6 @@
       "text_key": "node_1787120009569_24_k3ti"
     },
     {
-      "id": "node_1787120009569_25_r5aq",
-      "type": "graphic",
-      "image": "2026-08-28_00481_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787120009569_26_m9gl",
       "type": "text",
       "speakerType": "character",
@@ -264,6 +247,21 @@
       "text_key": "node_1787120009569_26_m9gl",
       "voice": "node_1787120009569_26_m9gl.wav",
       "sound": "node_1787120009569_26_m9gl.wav"
+    },
+    {
+      "id": "node_1792135375852_d4me",
+      "type": "vn",
+      "background": "2026-10-14_00114_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786849140255-p0lxz2i",
+          "imageId": "1792114260170-5lsuaak",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787120009569_27_icmx",
@@ -328,18 +326,9 @@
     {
       "id": "node_1787120009569_33_m65a",
       "type": "graphic",
-      "image": "speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
+      "image": "2026-10-16_00008__waifu2x_2x_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407951161_wiof",
-          "x": 0.41796875,
-          "y": 0.22280092592592593,
-          "w": 0.10286458333333337,
-          "h": 0.16782407407407407,
-          "blur": 1.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -420,20 +409,18 @@
     },
     {
       "id": "node_1787120009569_42_krz2",
-      "type": "graphic",
-      "image": "2026-09-01_00040_.webp",
-      "delay": 2,
-      "blurRegions": [
+      "type": "vn",
+      "background": "2026-10-14_00114_.webp",
+      "character": "",
+      "stageSlots": [
         {
-          "id": "blur_1788407962681_zxt6",
-          "x": 0.4270833333333333,
-          "y": 0.10011574074074074,
-          "w": 0.08854166666666669,
-          "h": 0.20370370370370366,
-          "blur": 2.5
+          "characterId": "1786849140255-p0lxz2i",
+          "imageId": "1792114260170-3vkidf8",
+          "position": "center"
         }
       ],
-      "blurDefault": 4
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787120009569_43_wjvm",
@@ -462,23 +449,6 @@
       "speaker": "",
       "text": "메구미가 침대에 눕고, 다리를 벌린다. 완전히 벗은 맨몸이다.",
       "text_key": "node_1787120009569_45_gpj6"
-    },
-    {
-      "id": "node_1787120009569_46_r042",
-      "type": "graphic",
-      "image": "2026-09-01_00037_.webp",
-      "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407969241_opig",
-          "x": 0.65234375,
-          "y": 0.4878472222222222,
-          "w": 0.07291666666666663,
-          "h": 0.2835648148148149,
-          "blur": 2
-        }
-      ],
-      "blurDefault": 4
     },
     {
       "id": "node_1787120009569_47_5tly",
@@ -529,18 +499,9 @@
     {
       "id": "node_1787120009569_51_w8jn",
       "type": "graphic",
-      "image": "speed_2_95x_90f8bf95c09a487fac8cb88b6a672924.mp4",
+      "image": "2026-10-16_00009__waifu2x_2x_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407978089_ajx9",
-          "x": 0.6627604166666666,
-          "y": 0.46122685185185186,
-          "w": 0.21223958333333337,
-          "h": 0.37615740740740744,
-          "blur": 1.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -616,6 +577,16 @@
       "sound": "node_1787120009569_59_arka.wav"
     },
     {
+      "id": "node_1792140223155_dj8n",
+      "type": "graphic",
+      "image": "2026-10-16_00010__waifu2x_2x_compressed.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1.9,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1787120009569_60_ugky",
       "type": "text",
       "speakerType": "player",
@@ -662,18 +633,9 @@
     {
       "id": "node_1787120009569_64_clbf",
       "type": "graphic",
-      "image": "2026-09-01_00044_.webp",
+      "image": "2026-10-16_00011__waifu2x_2x_compressed.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788407989200_b6jt",
-          "x": 0.4505208333333333,
-          "y": 0.5619212962962963,
-          "w": 0.11197916666666669,
-          "h": 0.33912037037037035,
-          "blur": 2.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -941,76 +903,44 @@
       "id": "media_sound_mtjbsmbf_cwhikhq"
     },
     {
-      "fileName": "2026-08-28_00480_.webp",
+      "id": "1792135351201-tx6t82u",
+      "fileName": "2026-10-14_00114_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-08-28_00480_.webp",
-      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-08-28_00480_.webp",
-      "size": 142030,
-      "id": "media_image_mtjbsmbf_pplt451"
+      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-10-14_00114_.webp",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-10-14_00114_.webp",
+      "size": 148868
     },
     {
-      "fileName": "2026-08-28_00481_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-08-28_00481_.webp",
-      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-08-28_00481_.webp",
-      "size": 145518,
-      "id": "media_image_mtjbsmbf_l2y3yu4"
-    },
-    {
-      "id": "1788309529874-a1ua1ui",
-      "fileName": "2026-09-01_00024_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00024_.webp",
-      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00024_.webp",
-      "size": 63194
-    },
-    {
-      "id": "1788309536949-yn342i0",
-      "fileName": "2026-09-01_00027_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00027_.webp",
-      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00027_.webp",
-      "size": 65586
-    },
-    {
-      "id": "1788309624435-vex4wun",
-      "fileName": "speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
+      "id": "1792140192744-hdf9llj",
+      "fileName": "2026-10-16_00008__waifu2x_2x_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
-      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/speed_3_20x_bcce0dddf1ae49599eb7e9b921f78017.mp4",
-      "size": 1236123
+      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/2026-10-16_00008__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/2026-10-16_00008__waifu2x_2x_compressed.mp4",
+      "size": 2984070
     },
     {
-      "id": "1788309646819-tktrpck",
-      "fileName": "2026-09-01_00040_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00040_.webp",
-      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00040_.webp",
-      "size": 28978
-    },
-    {
-      "id": "1788309695770-0ovp7jf",
-      "fileName": "2026-09-01_00037_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00037_.webp",
-      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00037_.webp",
-      "size": 35600
-    },
-    {
-      "id": "1788309786465-5a4i2z7",
-      "fileName": "speed_2_95x_90f8bf95c09a487fac8cb88b6a672924.mp4",
+      "id": "1792140214093-v0ljrd7",
+      "fileName": "2026-10-16_00009__waifu2x_2x_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/speed_2_95x_90f8bf95c09a487fac8cb88b6a672924.mp4",
-      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/speed_2_95x_90f8bf95c09a487fac8cb88b6a672924.mp4",
-      "size": 1504142
+      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/2026-10-16_00009__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/2026-10-16_00009__waifu2x_2x_compressed.mp4",
+      "size": 2098015
     },
     {
-      "id": "1788309811218-pii0sha",
-      "fileName": "2026-09-01_00044_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00044_.webp",
-      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/images/2026-09-01_00044_.webp",
-      "size": 80932
+      "id": "1792140230891-9yut34k",
+      "fileName": "2026-10-16_00010__waifu2x_2x_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/2026-10-16_00010__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/2026-10-16_00010__waifu2x_2x_compressed.mp4",
+      "size": 2768993
+    },
+    {
+      "id": "1792140248565-d9jobmo",
+      "fileName": "2026-10-16_00011__waifu2x_2x_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/2026-10-16_00011__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/ab9b304b-a998-47b0-95b3-99bed4369624/videos/2026-10-16_00011__waifu2x_2x_compressed.mp4",
+      "size": 1928404
     }
   ],
   "sourceZipName": "직접 생성",

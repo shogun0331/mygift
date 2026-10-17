@@ -27,6 +27,7 @@ import {
   characterDisplayName,
 } from '../game/characterLocales'
 import {
+  chatLangOf,
   formatChatDonationText,
   translateUserChatLine,
 } from '../game/chatComments'
@@ -98,7 +99,6 @@ type DashboardPanelProps = {
   isPromotionReady?: boolean
   onStartPromotionAudit?: () => void
   onStartBroadcast: () => void
-  onRestMonth?: () => void
   onConditionCare?: (creatorId: string) => void
   onConditionCrashDone?: (id: string) => void
   onGearFailBurstDone?: (id: string) => void
@@ -371,11 +371,24 @@ function formatSystemFeedText(
     else if (event.text.includes('퍼포먼스') || event.id.includes('performance')) typeName = t('creator.typePerformance') || 'Performance'
     else typeName = 'Popular'
 
-    return t('guide.trendChanged').replace('{type}', typeName)
-  }
-
-  if (event.id.startsWith('casino-open-')) {
-    return t('guide.casinoOpened')
+    const lang = chatLangOf(locale)
+    switch (lang) {
+      case 'ko':
+        return `🔥 주간 대세 트렌드가 [${typeName}] 타입으로 변경되었습니다! (+35% 수익 보너스)`
+      case 'ja':
+        return `🔥 今週のトレンドが [${typeName}] タイプに変更されました! (+35% 収益ボーナス)`
+      case 'zh':
+        return `🔥 本周热门趋势已更新为 [${typeName}] 类型！(+35% 收益加成)`
+      case 'es':
+        return `🔥 ¡La tendencia semanal cambió al tipo [${typeName}]! (+35% bonificación)`
+      case 'de':
+        return `🔥 Wöchentlicher Trend geändert auf [${typeName}]! (+35% Einnahmenbonus)`
+      case 'ru':
+        return `🔥 Тренды недели сменились на тип [${typeName}]! (+35% бонус доходности)`
+      case 'en':
+      default:
+        return `🔥 Weekly trend updated to [${typeName}] type! (+35% revenue bonus)`
+    }
   }
 
   if (event.id.startsWith('toxic-block-') || event.text.includes('진상 차단') || event.text.includes('blocked the toxic')) {
@@ -391,7 +404,24 @@ function formatSystemFeedText(
 
   if (event.type === 'toxic' || event.text.includes('방송 피로 급증') || event.text.includes('fatigue') || event.text.includes('진상')) {
     const drop = event.amount > 0 ? String(event.amount) : event.text.match(/\d+/)?.[0] || '20'
-    return t('guide.fatigueSpike').replace('{name}', name).replace('{drop}', drop)
+    const lang = chatLangOf(locale)
+    switch (lang) {
+      case 'ko':
+        return `${name} 방송 피로 급증! 컨디션 -${drop} 급락!`
+      case 'ja':
+        return `${name} 配信疲労急増！コンディション -${drop} 急降下!`
+      case 'zh':
+        return `${name} 直播疲劳暴增！状态 -${drop}！`
+      case 'es':
+        return `¡Fatiga de transmisión de ${name}! ¡Condición -${drop}! `
+      case 'de':
+        return `Streaming-Ermüdung bei ${name}! Kondition -${drop}!`
+      case 'ru':
+        return `Усталость стрима у ${name}! Состояние -${drop}!`
+      case 'en':
+      default:
+        return `${name} broadcast fatigue spike! Condition -${drop}!`
+    }
   }
 
   if (event.type === 'gear' || event.id.startsWith('gear-fail-') || event.text.includes('장비 고장') || event.text.includes('equipment failure')) {
@@ -663,7 +693,6 @@ export const DashboardPanel = memo(function DashboardPanel({
   isPromotionReady = false,
   onStartPromotionAudit,
   onStartBroadcast,
-  onRestMonth,
   onConditionCare,
   onConditionCrashDone,
   onGearFailBurstDone,
@@ -935,18 +964,6 @@ export const DashboardPanel = memo(function DashboardPanel({
             className="w-full shrink-0 rounded-2xl py-3 px-4 text-sm font-black tracking-wide border-2 border-yellow-200 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.65)] hover:scale-[1.02] active:scale-95 hover:brightness-110 animate-pulse transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
           >
             {t('dashboard.promotionAudit')}
-          </button>
-        ) : null}
-
-        {!isLive && onRestMonth ? (
-          <button
-            type="button"
-            onClick={onRestMonth}
-            disabled={startBroadcastLocked}
-            title={t('guide.restMonthHint')}
-            className="w-full shrink-0 rounded-2xl border border-white/15 bg-black/30 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {t('guide.restMonth')}
           </button>
         ) : null}
 

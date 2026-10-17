@@ -10,10 +10,17 @@
     {
       "id": "node_1787096693202_1_l561",
       "type": "vn",
-      "background": "2026-10-08_00058__upscaled_00001_.webp",
-      "character": "2026-10-08_00008_alpha.webm",
+      "background": "bg_00122.webp",
+      "character": "",
       "delay": 2,
-      "ignoreDelay": false
+      "ignoreDelay": false,
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792221593695-x425vx7",
+          "position": "center"
+        }
+      ]
     },
     {
       "id": "node_1787096693202_2_hm1d",
@@ -124,6 +131,21 @@
       "sound": "node_1787096693202_13_vn25.wav"
     },
     {
+      "id": "node_1792051733100_m3m3",
+      "type": "vn",
+      "background": "bg_00122.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792221593695-x425vx7",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
+    {
       "id": "node_1787096693202_14_cd3h",
       "type": "text",
       "speakerType": "narrator",
@@ -196,8 +218,15 @@
     {
       "id": "node_1787096693202_22_5o82",
       "type": "vn",
-      "background": "2026-10-08_00058__upscaled_00001_.webp",
-      "character": "2026-10-08_00007_alpha (1).webm",
+      "background": "bg_00122.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792221593694-pi49me8",
+          "position": "center"
+        }
+      ],
       "delay": 2,
       "ignoreDelay": false
     },
@@ -256,12 +285,19 @@
       "text_key": "node_1787096693202_28_f5nf"
     },
     {
-      "id": "node_1791446295134_8pk2",
+      "id": "node_1792053442145_nbvm",
       "type": "vn",
-      "background": "2026-10-08_00058__upscaled_00001_.webp",
-      "character": "2026-10-08_00008_alpha.webm",
+      "background": "bg_park_evening.webp",
+      "character": "",
       "delay": 2,
-      "ignoreDelay": false
+      "ignoreDelay": false,
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792221593695-x425vx7",
+          "position": "center"
+        }
+      ]
     },
     {
       "id": "node_1787096693202_29_2ma2",
@@ -472,7 +508,17 @@
   "characters": [
     {
       "id": "1786792656193-i7isvfo",
-      "name": "미야자와 리나"
+      "name": "미야자와 리나",
+      "names": {
+        "ko": "미야자와 리나",
+        "en": "Rina Miyazawa",
+        "ja": "宮沢 里奈",
+        "zh-cn": "宫泽 里奈",
+        "zh-tw": "",
+        "ru": "Рина Миядзава",
+        "es": "Rina Miyazawa",
+        "de": "Rina Miyazawa"
+      }
     },
     {
       "id": "사장",
@@ -648,28 +694,20 @@
       "id": "media_sound_mtjbsmbc_62k5vfj"
     },
     {
-      "id": "1791528329469-4sfjfem",
-      "fileName": "2026-10-08_00058__upscaled_00001_.webp",
+      "id": "1792222776263-49r8vo6",
+      "fileName": "bg_00122.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/a/images/2026-10-08_00058__upscaled_00001_.webp",
-      "url": "media://chapter_assets/events/a/images/2026-10-08_00058__upscaled_00001_.webp",
-      "size": 678784
+      "sourcePath": "chapter_assets/events/a/images/bg_00122.webp",
+      "url": "media://chapter_assets/events/a/images/bg_00122.webp",
+      "size": 501016
     },
     {
-      "id": "1791528345974-ckzf4pr",
-      "fileName": "2026-10-08_00008_alpha.webm",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/a/videos/2026-10-08_00008_alpha.webm",
-      "url": "media://chapter_assets/events/a/videos/2026-10-08_00008_alpha.webm",
-      "size": 3755824
-    },
-    {
-      "id": "1791528361961-2gb1kkn",
-      "fileName": "2026-10-08_00007_alpha (1).webm",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/a/videos/2026-10-08_00007_alpha (1).webm",
-      "url": "media://chapter_assets/events/a/videos/2026-10-08_00007_alpha (1).webm",
-      "size": 4959379
+      "id": "1792222926300-0pv8016",
+      "fileName": "bg_park_evening.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/a/images/bg_park_evening.webp",
+      "url": "media://chapter_assets/events/a/images/bg_park_evening.webp",
+      "size": 548226
     }
   ],
   "sourceZipName": "직접 생성",

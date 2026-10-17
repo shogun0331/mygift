@@ -9,13 +9,18 @@
   "nodes": [
     {
       "id": "node_1791423135046_yky9",
-      "type": "graphic",
-      "image": "2026-10-08_00001__upscaled_00001_.webp",
+      "type": "vn",
+      "background": "bg_00119.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792221593688-kqaxldm",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "ignoreDelay": false,
-      "speed": 1,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787102874671_0_xe9k",
@@ -36,10 +41,17 @@
     {
       "id": "node_1791423167706_ywae",
       "type": "vn",
-      "background": "2026-10-08_00001__upscaled_00001_.webp",
-      "character": "2026-10-08_00002_alpha.webm",
+      "background": "bg_00119.webp",
+      "character": "",
       "delay": 2,
-      "ignoreDelay": false
+      "ignoreDelay": false,
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792221593688-kqaxldm",
+          "position": "center"
+        }
+      ]
     },
     {
       "id": "node_1787102874671_3_5392",
@@ -146,10 +158,17 @@
     {
       "id": "node_1791423380592_bp89",
       "type": "vn",
-      "background": "2026-10-08_00001__upscaled_00001_.webp",
-      "character": "2026-10-08_00003_alpha.webm",
+      "background": "bg_00119.webp",
+      "character": "",
       "delay": 2,
-      "ignoreDelay": false
+      "ignoreDelay": false,
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792221593695-a4le9c3",
+          "position": "center"
+        }
+      ]
     },
     {
       "id": "node_1787102874671_14_xa4w",
@@ -282,10 +301,17 @@
     {
       "id": "graphic_scout_a_9",
       "type": "vn",
-      "background": "2026-10-08_00001__upscaled_00001_.webp",
-      "character": "2026-10-08_00004_alpha.webm",
+      "background": "bg_00119.webp",
+      "character": "",
       "delay": 2,
-      "ignoreDelay": true
+      "ignoreDelay": true,
+      "stageSlots": [
+        {
+          "characterId": "1786792656193-i7isvfo",
+          "imageId": "1792221593688-kqaxldm",
+          "position": "center"
+        }
+      ]
     },
     {
       "id": "node_1787102874671_28_u14m",
@@ -455,36 +481,12 @@
       "id": "media_sound_mtjbsmba_c6wghtu"
     },
     {
-      "id": "1791423153066-7rwg6xg",
-      "fileName": "2026-10-08_00001__upscaled_00001_.webp",
+      "id": "1792222675475-5tea7l7",
+      "fileName": "bg_00119.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/scout_a/images/2026-10-08_00001__upscaled_00001_.webp",
-      "url": "media://chapter_assets/events/scout_a/images/2026-10-08_00001__upscaled_00001_.webp",
-      "size": 389798
-    },
-    {
-      "id": "1791528071834-0g4u7wi",
-      "fileName": "2026-10-08_00002_alpha.webm",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/scout_a/videos/2026-10-08_00002_alpha.webm",
-      "url": "media://chapter_assets/events/scout_a/videos/2026-10-08_00002_alpha.webm",
-      "size": 3828295
-    },
-    {
-      "id": "1791528094802-jxg3ghb",
-      "fileName": "2026-10-08_00003_alpha.webm",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/scout_a/videos/2026-10-08_00003_alpha.webm",
-      "url": "media://chapter_assets/events/scout_a/videos/2026-10-08_00003_alpha.webm",
-      "size": 3557366
-    },
-    {
-      "id": "1791528105910-qz1cpla",
-      "fileName": "2026-10-08_00004_alpha.webm",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/scout_a/videos/2026-10-08_00004_alpha.webm",
-      "url": "media://chapter_assets/events/scout_a/videos/2026-10-08_00004_alpha.webm",
-      "size": 4183360
+      "sourcePath": "chapter_assets/events/scout_a/images/bg_00119.webp",
+      "url": "media://chapter_assets/events/scout_a/images/bg_00119.webp",
+      "size": 322254
     }
   ],
   "sourceZipName": "직접 생성",

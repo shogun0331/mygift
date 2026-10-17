@@ -32,6 +32,8 @@ import {
   type CharacterLocaleText,
 } from '../game/characterLocales'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import type { VnCharacter, VnStandingImage } from '../game/vnCharacters'
+import { VnCharacterEditorPanel, VnStandingRegister } from './VnCharacterEditorPanel'
 import type { AddStaffPayload, RegisteredStaff } from '../game/staff'
 import { AuditEditorPanel } from './AuditEditorPanel'
 import { StaffEditorPanel } from './StaffEditorPanel'
@@ -47,6 +49,7 @@ import { ReviewMosaicExportButton } from './ReviewMosaicExportButton'
 
 type EditorTab =
   | 'character'
+  | 'vnCharacter'
   | 'notification'
   | 'event'
   | 'commonEvent'
@@ -61,6 +64,8 @@ type CharacterView = 'list' | 'add' | 'edit' | 'sns' | 'specialVacation'
 
 type EditorScreenProps = {
   registeredCharacters: RegisteredCharacter[]
+  vnCharacters: VnCharacter[]
+  onVnCharactersChange: (characters: VnCharacter[]) => void
   onRegisterCharacter: (payload: AddCharacterPayload) => void | Promise<void>
   onUpdateCharacter: (id: string, payload: AddCharacterPayload) => void | Promise<void>
   onDeleteCharacter: (id: string) => void
@@ -117,6 +122,8 @@ function formatFileSize(bytes: number) {
 
 export function EditorScreen({
   registeredCharacters,
+  vnCharacters,
+  onVnCharactersChange,
   onRegisterCharacter,
   onUpdateCharacter,
   onDeleteCharacter,
@@ -224,6 +231,15 @@ export function EditorScreen({
             }`}
           >
             캐릭터 관리
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('vnCharacter')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'vnCharacter' ? 'is-active' : ''
+            }`}
+          >
+            VN 캐릭터
           </button>
           <button
             type="button"
@@ -518,6 +534,8 @@ export function EditorScreen({
                 onSimulateLinkedEvent={handleSimulateLinkedEvent}
               />
             )
+          ) : tab === 'vnCharacter' ? (
+            <VnCharacterEditorPanel characters={vnCharacters} onChange={onVnCharactersChange} />
           ) : tab === 'notification' ? (
             <div className="game-panel rounded-2xl p-6">
               <div className="flex items-start justify-between gap-4">
@@ -542,6 +560,7 @@ export function EditorScreen({
               events={events}
               onEventsChange={onEventsChange}
               registeredCharacters={registeredCharacters}
+              vnCharacters={vnCharacters}
               onSaveEventsManual={onSaveEventsManual}
             />
           ) : tab === 'commonEvent' ? (
@@ -609,6 +628,7 @@ export function EditorScreen({
             setSelectedSimulatorEvent(null)
           }}
           registeredCharacters={registeredCharacters}
+          vnCharacters={vnCharacters}
         />
       )}
       {auditMediaCharacter && (
@@ -776,6 +796,7 @@ export type AddCharacterPayload = {
   auditMedia?: import('../game/characters').CharacterAuditMedia
   shortsVn?: import('../game/characters').CharacterShortsVn
   specialVacation?: import('../game/characters').CharacterSpecialVacation
+  vnImages?: VnStandingImage[]
 }
 
 type AddCharacterPanelProps = {
@@ -870,6 +891,8 @@ function AddCharacterPanel({
   )
   const [videoDragging, setVideoDragging] = useState(false)
   const [videoError, setVideoError] = useState<string | null>(null)
+  const [vnImages, setVnImages] = useState<VnStandingImage[]>(() => initialCharacter?.vnImages ?? [])
+  const [vnImageError, setVnImageError] = useState<string | null>(null)
 
   // Drop links to events that were deleted from event management
   useEffect(() => {
@@ -1099,6 +1122,7 @@ function AddCharacterPanel({
         auditMedia: initialCharacter?.auditMedia,
         shortsVn: initialCharacter?.shortsVn,
         specialVacation: initialCharacter?.specialVacation,
+        vnImages,
       })
     } finally {
       setSaving(false)
@@ -1325,6 +1349,35 @@ function AddCharacterPanel({
               className="h-28 w-full rounded-xl bg-black object-cover sm:w-44"
             />
           )}
+        />
+
+        <VnStandingRegister
+          images={vnImages}
+          error={vnImageError}
+          onAddFiles={(files) => {
+            if (files.length === 0) {
+              setVnImageError('이미지 파일만 등록할 수 있습니다.')
+              return
+            }
+            setVnImageError(null)
+            setVnImages((prev) => [
+              ...prev,
+              ...files.map((file) => ({
+                id: createId(),
+                file,
+                fileName: file.name,
+                fileSize: file.size,
+                url: trackObjectUrl(URL.createObjectURL(file)),
+              })),
+            ])
+          }}
+          onRemove={(id) => {
+            setVnImages((prev) => {
+              const target = prev.find((image) => image.id === id)
+              revokeTrackedUrl(target?.url)
+              return prev.filter((image) => image.id !== id)
+            })
+          }}
         />
 
         <div className="space-y-4">

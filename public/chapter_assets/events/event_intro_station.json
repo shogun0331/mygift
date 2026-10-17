@@ -10,7 +10,7 @@
     {
       "id": "graphic_01",
       "type": "graphic",
-      "image": "intro_01_building_rain.webp",
+      "image": "2026-10-14_00068_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -50,7 +50,7 @@
     {
       "id": "graphic_02",
       "type": "graphic",
-      "image": "intro_02_reception_hallway.webp",
+      "image": "2026-10-14_00069_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -82,7 +82,7 @@
     {
       "id": "graphic_03",
       "type": "graphic",
-      "image": "intro_03_owner_lady_office.webp",
+      "image": "2026-10-14_00017_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -144,14 +144,6 @@
       "text_key": "node_14_pl"
     },
     {
-      "id": "graphic_04",
-      "type": "graphic",
-      "image": "intro_04_studio_posters.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_15_bg",
       "type": "text",
       "speakerType": "narrator",
@@ -190,14 +182,6 @@
       "speaker": "player",
       "text": "(당황하며) 성인... 방송국이라고요?",
       "text_key": "node_19_pl"
-    },
-    {
-      "id": "graphic_05",
-      "type": "graphic",
-      "image": "intro_05_pc_past_broadcasts.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_20_bg",
@@ -248,14 +232,6 @@
       "text_key": "node_25_pl"
     },
     {
-      "id": "graphic_06",
-      "type": "graphic",
-      "image": "intro_06_sign_contract_stamp.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_26_bg",
       "type": "text",
       "speakerType": "narrator",
@@ -290,7 +266,7 @@
     {
       "id": "graphic_07",
       "type": "graphic",
-      "image": "intro_07_office_sunrise_alone.webp",
+      "image": "2026-10-14_00074_.png",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -356,60 +332,36 @@
   "points": [],
   "media": [
     {
-      "id": "media_intro_01_building_rain",
-      "fileName": "intro_01_building_rain.webp",
+      "id": "1791959466227-n0wavuo",
+      "fileName": "2026-10-14_00068_.png",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/event_intro_station/images/intro_01_building_rain.webp",
-      "url": "media://chapter_assets/events/event_intro_station/images/intro_01_building_rain.webp",
-      "size": 109552
+      "sourcePath": "chapter_assets/events/event_intro_station/images/2026-10-14_00068_.png",
+      "url": "media://chapter_assets/events/event_intro_station/images/2026-10-14_00068_.png",
+      "size": 2922428
     },
     {
-      "id": "media_intro_02_reception_hallway",
-      "fileName": "intro_02_reception_hallway.webp",
+      "id": "1791959471194-9nilxfc",
+      "fileName": "2026-10-14_00069_.png",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/event_intro_station/images/intro_02_reception_hallway.webp",
-      "url": "media://chapter_assets/events/event_intro_station/images/intro_02_reception_hallway.webp",
-      "size": 20788
+      "sourcePath": "chapter_assets/events/event_intro_station/images/2026-10-14_00069_.png",
+      "url": "media://chapter_assets/events/event_intro_station/images/2026-10-14_00069_.png",
+      "size": 2507210
     },
     {
-      "id": "media_intro_03_owner_lady_office",
-      "fileName": "intro_03_owner_lady_office.webp",
+      "id": "1791959486569-ejeg9ui",
+      "fileName": "2026-10-14_00074_.png",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/event_intro_station/images/intro_03_owner_lady_office.webp",
-      "url": "media://chapter_assets/events/event_intro_station/images/intro_03_owner_lady_office.webp",
-      "size": 98974
+      "sourcePath": "chapter_assets/events/event_intro_station/images/2026-10-14_00074_.png",
+      "url": "media://chapter_assets/events/event_intro_station/images/2026-10-14_00074_.png",
+      "size": 2585843
     },
     {
-      "id": "media_intro_04_studio_posters",
-      "fileName": "intro_04_studio_posters.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/event_intro_station/images/intro_04_studio_posters.webp",
-      "url": "media://chapter_assets/events/event_intro_station/images/intro_04_studio_posters.webp",
-      "size": 103838
-    },
-    {
-      "id": "media_intro_05_pc_past_broadcasts",
-      "fileName": "intro_05_pc_past_broadcasts.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/event_intro_station/images/intro_05_pc_past_broadcasts.webp",
-      "url": "media://chapter_assets/events/event_intro_station/images/intro_05_pc_past_broadcasts.webp",
-      "size": 95176
-    },
-    {
-      "id": "media_intro_06_sign_contract_stamp",
-      "fileName": "intro_06_sign_contract_stamp.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/event_intro_station/images/intro_06_sign_contract_stamp.webp",
-      "url": "media://chapter_assets/events/event_intro_station/images/intro_06_sign_contract_stamp.webp",
-      "size": 50458
-    },
-    {
-      "id": "media_intro_07_office_sunrise_alone",
-      "fileName": "intro_07_office_sunrise_alone.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/event_intro_station/images/intro_07_office_sunrise_alone.webp",
-      "url": "media://chapter_assets/events/event_intro_station/images/intro_07_office_sunrise_alone.webp",
-      "size": 32234
+      "id": "1791959728159-dbfvnkt",
+      "fileName": "2026-10-14_00017_compressed.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/event_intro_station/videos/2026-10-14_00017_compressed.mp4",
+      "url": "media://chapter_assets/events/event_intro_station/videos/2026-10-14_00017_compressed.mp4",
+      "size": 2571602
     }
   ],
   "sourceZipName": "직접 생성",

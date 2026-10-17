@@ -744,7 +744,7 @@ function attachAltTabMinimize(win) {
 
   const minimizeForAltTab = () => {
     if (isQuitting || isDisplayLocked()) return
-    if (!win.isFullScreen()) return
+    if (lastDisplayMode !== 'fullscreen') return
     if (win.isDestroyed() || win.isMinimized()) return
     try {
       if (win.webContents.isDevToolsFocused()) return
@@ -1004,13 +1004,15 @@ ipcMain.handle('delete-event-folder', async (event, { eventId }) => {
   }
 })
 
-ipcMain.handle('save-character-assets', async (event, { characterId, assets }) => {
+ipcMain.handle('save-character-assets', async (event, { characterId, assets, root }) => {
   try {
-    const baseDir = publicWritePath('characters', String(characterId))
+    const assetRoot = root === 'vn_characters' ? 'vn_characters' : 'characters'
+    const baseDir = publicWritePath(assetRoot, String(characterId))
     const folderMap = {
       image: 'images',
       video: 'videos',
       sound: 'sounds',
+      vn: 'vn',
     }
 
     for (const asset of assets) {
@@ -1079,6 +1081,34 @@ ipcMain.handle('save-characters-json', async (event, { characters }) => {
 
     writeJson(filePath, nextCharacters)
     return { success: true, characters: nextCharacters }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('save-vn-characters-json', async (event, { characters }) => {
+  try {
+    const dir = publicWritePath('vn_characters')
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    writeJson(path.join(dir, 'vn_characters.json'), Array.isArray(characters) ? characters : [])
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('load-vn-characters-json', async () => {
+  try {
+    const overlayPath = app.isPackaged
+      ? overlayFilePath('vn_characters', 'vn_characters.json')
+      : publicWritePath('vn_characters', 'vn_characters.json')
+    const fromDisk = readJsonIfExists(overlayPath)
+    const packaged = readPackagedJson('vn_characters', 'vn_characters.json')
+    const fallback = readPublicJson('vn_characters', 'vn_characters.json')
+    const characters = mergeCatalogLists(fromDisk || [], packaged || fallback || [])
+    return { success: true, characters: Array.isArray(characters) ? characters : [] }
   } catch (err) {
     return { success: false, error: err.message }
   }
@@ -1644,17 +1674,19 @@ function safeCharacterFileName(fileName) {
   return base
 }
 
-ipcMain.handle('delete-character-file', async (event, { characterId, kind, fileName }) => {
+ipcMain.handle('delete-character-file', async (event, { characterId, kind, fileName, root }) => {
   try {
+    const assetRoot = root === 'vn_characters' ? 'vn_characters' : 'characters'
     const folderMap = {
       image: 'images',
       video: 'videos',
       sound: 'sounds',
+      vn: 'vn',
     }
     const safeName = safeCharacterFileName(fileName)
     if (!safeName) return { success: true }
     const folderName = folderMap[kind] || 'assets'
-    const filePath = publicWritePath('characters', String(characterId), folderName, safeName)
+    const filePath = publicWritePath(assetRoot, String(characterId), folderName, safeName)
 
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath)
@@ -1665,15 +1697,20 @@ ipcMain.handle('delete-character-file', async (event, { characterId, kind, fileN
   }
 })
 
-ipcMain.handle('prune-character-files', async (event, { characterId, keep }) => {
+ipcMain.handle('prune-character-files', async (event, { characterId, keep, root }) => {
   try {
-    const folders = [
-      { kind: 'image', dirName: 'images', keep: keep?.image ?? [] },
-      { kind: 'video', dirName: 'videos', keep: keep?.video ?? [] },
-      { kind: 'sound', dirName: 'sounds', keep: keep?.sound ?? [] },
-    ]
+    const assetRoot = root === 'vn_characters' ? 'vn_characters' : 'characters'
+    const folders = assetRoot === 'vn_characters'
+      ? [{ dirName: 'images', keep: keep?.image ?? [] }]
+      : [
+          { dirName: 'images', keep: keep?.image ?? [] },
+          { dirName: 'videos', keep: keep?.video ?? [] },
+          { dirName: 'sounds', keep: keep?.sound ?? [] },
+          { dirName: 'vn', keep: keep?.vn },
+        ]
     for (const folder of folders) {
-      const dir = publicWritePath('characters', String(characterId), folder.dirName)
+      if (folder.keep == null) continue
+      const dir = publicWritePath(assetRoot, String(characterId), folder.dirName)
       if (!fs.existsSync(dir)) continue
       const keepSet = new Set(
         (Array.isArray(folder.keep) ? folder.keep : [])

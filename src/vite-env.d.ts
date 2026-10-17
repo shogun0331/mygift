@@ -27,12 +27,18 @@ interface ElectronAPI {
   ) => Promise<{ success: boolean; path?: string; error?: string }>
   saveCharacterAssets?: (
     characterId: string,
-    assets: Array<{ id: string; fileName: string; kind: string; buffer: ArrayBuffer }>
+    assets: Array<{ id: string; fileName: string; kind: string; buffer: ArrayBuffer }>,
+    root?: 'characters' | 'vn_characters',
   ) => Promise<{ success: boolean; path?: string; error?: string }>
   saveCharactersJson?: (
     characters: any[]
   ) => Promise<{ success: boolean; characters?: any[]; error?: string }>
   loadCharactersJson?: (
+  ) => Promise<{ success: boolean; characters?: any[]; error?: string }>
+  saveVnCharactersJson?: (
+    characters: any[]
+  ) => Promise<{ success: boolean; error?: string }>
+  loadVnCharactersJson?: (
   ) => Promise<{ success: boolean; characters?: any[]; error?: string }>
   saveEventsJson?: (
     events: any[]
@@ -98,12 +104,14 @@ interface ElectronAPI {
   ) => Promise<{ success: boolean; error?: string }>
   deleteCharacterFile?: (
     characterId: string,
-    kind: 'image' | 'video' | 'sound',
-    fileName: string
+    kind: 'image' | 'video' | 'sound' | 'vn',
+    fileName: string,
+    root?: 'characters' | 'vn_characters',
   ) => Promise<{ success: boolean; error?: string }>
   pruneCharacterFiles?: (
     characterId: string,
-    keep: { image: string[]; video: string[]; sound?: string[] }
+    keep: { image: string[]; video: string[]; sound?: string[]; vn?: string[] },
+    root?: 'characters' | 'vn_characters',
   ) => Promise<{ success: boolean; error?: string }>
   deleteCharacterFolder?: (
     characterId: string

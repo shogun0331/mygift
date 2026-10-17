@@ -33,10 +33,10 @@ export function resolveMediaSrc(url: string | null | undefined, cacheKey?: strin
 
 export function characterMediaUrl(
   characterId: string,
-  kind: 'image' | 'video',
+  kind: 'image' | 'video' | 'vn',
   fileName: string,
 ): string {
-  const folder = kind === 'image' ? 'images' : 'videos'
+  const folder = kind === 'image' ? 'images' : kind === 'vn' ? 'vn' : 'videos'
   return resolveMediaSrc(`media://characters/${characterId}/${folder}/${fileName}`)
 }
 

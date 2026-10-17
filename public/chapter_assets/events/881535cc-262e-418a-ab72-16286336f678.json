@@ -9,11 +9,18 @@
   "nodes": [
     {
       "id": "node_1786858470286_0_m5mj",
-      "type": "graphic",
-      "image": "2026-10-10_00162__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "type": "vn",
+      "background": "2026-10-09_00025__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786850998437-g6olmc9",
+          "imageId": "1792116614095-y2j5fbs",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786858470286_1_6ao8",
@@ -169,11 +176,18 @@
     },
     {
       "id": "node_1786858470286_18_wo7q",
-      "type": "graphic",
-      "image": "2026-10-10_00163__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "type": "vn",
+      "background": "2026-10-09_00025__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786850998437-g6olmc9",
+          "imageId": "1792116614095-ijrguyx",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786858470286_19_lg6r",
@@ -222,7 +236,7 @@
     {
       "id": "node_1791778671713_hxuj",
       "type": "graphic",
-      "image": "2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "image": "2026-10-16_00021__waifu2x_2x_compressed.mp4",
       "delay": 2,
       "ignoreDelay": false,
       "speed": 1,
@@ -266,7 +280,7 @@
     {
       "id": "node_1791778686441_wr5m",
       "type": "graphic",
-      "image": "2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "image": "2026-10-16_00021__waifu2x_2x_compressed.mp4",
       "delay": 2,
       "ignoreDelay": false,
       "speed": 1.5,
@@ -292,16 +306,6 @@
       "sound": "node_1786858470286_29_ol0e.wav"
     },
     {
-      "id": "node_1791778705257_x4yj",
-      "type": "graphic",
-      "image": "2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "delay": 2,
-      "ignoreDelay": false,
-      "speed": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1786858470286_30_qx96",
       "type": "text",
       "speakerType": "player",
@@ -319,13 +323,18 @@
     },
     {
       "id": "node_1791778716057_jn18",
-      "type": "graphic",
-      "image": "2026-10-10_00165__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "type": "vn",
+      "background": "2026-10-09_00025__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786850998437-g6olmc9",
+          "imageId": "1792116614094-g074ti6",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "ignoreDelay": false,
-      "speed": 1,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786858470286_32_bo2v",
@@ -344,14 +353,6 @@
       "text_key": "node_1786858470286_33_g5sl",
       "voice": "node_1786858470286_33_g5sl.wav",
       "sound": "node_1786858470286_33_g5sl.wav"
-    },
-    {
-      "id": "node_1786858470286_34_b0wf",
-      "type": "graphic",
-      "image": "2026-10-10_00167__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1786858470286_35_zfzv",
@@ -390,11 +391,11 @@
     {
       "id": "graphic_881535cc_5",
       "type": "graphic",
-      "image": "2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "image": "2026-10-16_00022__waifu2x_2x_compressed.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4,
-      "speed": 1
+      "speed": 1.2
     },
     {
       "id": "node_1786858470286_39_q5kj",
@@ -425,10 +426,10 @@
     {
       "id": "node_1791778777353_j15s",
       "type": "graphic",
-      "image": "2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "image": "2026-10-16_00022__waifu2x_2x_compressed.mp4",
       "delay": 2,
       "ignoreDelay": false,
-      "speed": 1.5,
+      "speed": 1.8,
       "blurRegions": [],
       "blurDefault": 4
     },
@@ -449,16 +450,6 @@
       "speaker": "",
       "text": "그녀의 안이 내 자지를 뜨겁게 조인다. 웨딩드레스가 출렁이고, 화이트 베일이 흔들린다. 이대로 안에 쏟아내면, 이 여자는 완전히 내 것이 된다.",
       "text_key": "node_1786858470286_43_dah3"
-    },
-    {
-      "id": "node_1791778793097_dafw",
-      "type": "graphic",
-      "image": "2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "delay": 2,
-      "ignoreDelay": false,
-      "speed": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1786858470286_44_8b50",
@@ -489,7 +480,7 @@
     {
       "id": "node_1791778809961_ipxh",
       "type": "graphic",
-      "image": "2026-10-10_00168__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "image": "2026-10-16_00023__waifu2x_2x_compressed.mp4",
       "delay": 2,
       "ignoreDelay": false,
       "speed": 1,
@@ -534,11 +525,18 @@
     },
     {
       "id": "node_1786858470286_51_7r0d",
-      "type": "graphic",
-      "image": "2026-10-10_00169__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "type": "vn",
+      "background": "2026-10-09_00026__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786850998437-g6olmc9",
+          "imageId": "1792116614094-dejp8lx",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786858470286_52_z1lx",
@@ -622,11 +620,18 @@
     },
     {
       "id": "node_1786858470286_61_5sma",
-      "type": "graphic",
-      "image": "2026-10-10_00170__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "type": "vn",
+      "background": "2026-10-09_00027__upscaled_00001_.webp",
+      "character": "",
+      "stageSlots": [
+        {
+          "characterId": "1786850998437-g6olmc9",
+          "imageId": "1792116614093-fovb6r6",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786858470286_62_7z1y",
@@ -908,76 +913,52 @@
       "id": "media_sound_mtjbsmbh_2f9gp5v"
     },
     {
-      "id": "1791778619049-ti86apa",
-      "fileName": "2026-10-10_00162__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00162__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00162__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 1950856
+      "id": "1792143578061-7nipnwh",
+      "fileName": "2026-10-09_00025__upscaled_00001_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-10-09_00025__upscaled_00001_.webp",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-10-09_00025__upscaled_00001_.webp",
+      "size": 413632
     },
     {
-      "id": "1791778655758-46wwxwa",
-      "fileName": "2026-10-10_00163__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "id": "1792143624079-nfa2fgx",
+      "fileName": "2026-10-16_00021__waifu2x_2x_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00163__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00163__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 1736260
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-16_00021__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-16_00021__waifu2x_2x_compressed.mp4",
+      "size": 3058989
     },
     {
-      "id": "1791778680319-nmbo9yy",
-      "fileName": "2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "id": "1792143667279-1oor96o",
+      "fileName": "2026-10-16_00022__waifu2x_2x_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00164__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 2770049
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-16_00022__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-16_00022__waifu2x_2x_compressed.mp4",
+      "size": 3613097
     },
     {
-      "id": "1791778723246-9prgmep",
-      "fileName": "2026-10-10_00165__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
+      "id": "1792143691463-cnp6eyo",
+      "fileName": "2026-10-16_00023__waifu2x_2x_compressed.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00165__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00165__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 2062053
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-16_00023__waifu2x_2x_compressed.mp4",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-16_00023__waifu2x_2x_compressed.mp4",
+      "size": 2518141
     },
     {
-      "id": "1791778745071-4ltybpt",
-      "fileName": "2026-10-10_00167__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00167__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00167__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 2393297
+      "id": "1792143713255-36wu4bn",
+      "fileName": "2026-10-09_00026__upscaled_00001_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-10-09_00026__upscaled_00001_.webp",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-10-09_00026__upscaled_00001_.webp",
+      "size": 490030
     },
     {
-      "id": "1791778759705-jg64dtg",
-      "fileName": "2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-11_00064__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 2980303
-    },
-    {
-      "id": "1791778816941-pf69gle",
-      "fileName": "2026-10-10_00168__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00168__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00168__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 2041939
-    },
-    {
-      "id": "1791778824495-apm9k7o",
-      "fileName": "2026-10-10_00169__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00169__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00169__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 2870038
-    },
-    {
-      "id": "1791778835936-gr43ox1",
-      "fileName": "2026-10-10_00170__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00170__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/videos/2026-10-10_00170__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 2250501
+      "id": "1792143732725-9t6job4",
+      "fileName": "2026-10-09_00027__upscaled_00001_.webp",
+      "kind": "image",
+      "sourcePath": "chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-10-09_00027__upscaled_00001_.webp",
+      "url": "media://chapter_assets/events/881535cc-262e-418a-ab72-16286336f678/images/2026-10-09_00027__upscaled_00001_.webp",
+      "size": 276756
     }
   ],
   "sourceZipName": "직접 생성",

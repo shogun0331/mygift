@@ -150,18 +150,17 @@ import {
   applyProductionTraining,
   calcPromotionExamCost,
   calcTrainingCost,
-  mainStatValueOf,
   nextGradeBreak,
 } from '../game/training'
 import {
   calcSnsPostCost,
   calcSnsSubscribersGain,
   MAX_CREATOR_SNS_SUBSCRIBERS,
+  planBulkSnsCompose,
   resolveSnsPending,
   rollSnsCompose,
   snsCaptionOf,
   snsPostMedia,
-  type BulkSnsComposePlan,
   type BulkSnsRevealEntry,
   type SnsHeat,
   type SnsResult,
@@ -1012,7 +1011,7 @@ export function InGame({
   )
   const staffScoutAvailableRef = useRef(staffScoutAvailable)
   staffScoutAvailableRef.current = staffScoutAvailable
-  const [creatorScoutCooldown, setCreatorScoutCooldown] = useState(0)
+  const [, setCreatorScoutCooldown] = useState(0)
   const [creatorScoutAvailable, setCreatorScoutAvailable] = useState(
     boot?.scout?.creatorScoutAvailable ?? false,
   )
@@ -1483,15 +1482,6 @@ export function InGame({
   // 영세기업(tiny) -> 중소기업(sme)부터는 승급심사(미니게임) 필수
   useEffect(() => {
     if (stationGrade !== 'black' || broadcastPhase === 'live') return
-    if (
-      weeklyStatement ||
-      broadcastEndedNotice ||
-      rankSettlement ||
-      startBroadcastLocked ||
-      stationReview
-    ) {
-      return
-    }
     const review = applyStationReview(
       stationGrade,
       league.viewers,
@@ -1534,11 +1524,6 @@ export function InGame({
     league.viewers,
     ownedCreators,
     unlockedSlotCount,
-    weeklyStatement,
-    broadcastEndedNotice,
-    rankSettlement,
-    startBroadcastLocked,
-    stationReview,
   ])
 
   // 목표 시청자·승급 조건 충족 시 서류 팝업 — 현재 등급→다음 등급 구간당 1회만
@@ -1746,11 +1731,6 @@ export function InGame({
   const liveConditionDrainByCreatorIdRef = useRef<Record<string, number>>({})
   const pendingWeekAdvanceAfterToxicRef = useRef(false)
   const statementDelayTimerRef = useRef<number | null>(null)
-  const pendingStatementRef = useRef<{
-    statement: WeeklyStatement
-    assetsAfter: number
-    portraits: Record<string, string>
-  } | null>(null)
   const leagueRef = useRef(league)
   const monthStartViewersRef = useRef(league.viewers)
   const pendingScoutAfterRankRef = useRef(false)
@@ -3139,13 +3119,19 @@ export function InGame({
     setWeeklyTrendType(nextTrend)
     weeklyTrendTypeRef.current = nextTrend
 
+    const trendNameMap: Record<CreatorStatType, string> = {
+      sexy: '섹시',
+      elegance: '기품',
+      communication: '소통',
+      performance: '퍼포먼스',
+    }
     const trendEvent: DayEvent = {
       id: `trend-evt-${nextTrend}-${Math.round(performance.now())}`,
       creatorId: '',
       creatorName: '',
       type: 'viewers',
       amount: 0,
-      text: '',
+      text: `🔥 주간 대세 트렌드가 [${trendNameMap[nextTrend]}] 타입으로 변경되었습니다! (+35% 수익 보너스)`,
       atMs: 0,
       tone: 'bg-pink-500',
     }
@@ -3177,7 +3163,7 @@ export function InGame({
     monthWeekIndexRef.current = 0
   }
 
-  function finishBroadcastMonth(opts?: { skipTraining?: boolean; skipEndedNotice?: boolean }) {
+  function finishBroadcastMonth() {
     // Strict Mode / 중복 틱 방어: 한 달(턴) 종료는 1회만
     if (weekFinishedRef.current) {
       recoverStuckLiveBroadcast()
@@ -3520,30 +3506,10 @@ export function InGame({
     broadcastMonthNumberRef.current = nextMonthNumber
     setBroadcastMonthNumber(nextMonthNumber)
 
-    if (!opts?.skipTraining) {
-      const beforeTraining = ownedCreatorsRef.current
-      const nextOwnedWithTraining = beforeTraining.map(applyBroadcastTrainingTick)
-      const trainedNames = beforeTraining
-        .filter((creator, index) => mainStatValueOf(nextOwnedWithTraining[index]!) > mainStatValueOf(creator))
-        .map((creator) => characterDisplayName(creator, locale))
-      ownedCreatorsRef.current = nextOwnedWithTraining
-      onOwnedCreatorsChangeRef.current(nextOwnedWithTraining)
-      if (trainedNames.length > 0) {
-        const toast: DayEvent = {
-          id: `train-auto-${nextMonthNumber}-${Math.round(performance.now())}`,
-          creatorId: '',
-          creatorName: '',
-          type: 'viewers',
-          amount: 0,
-          text: trainedNames
-            .map((name) => t('guide.trainingAutoToast').replace('{name}', name))
-            .join(' '),
-          atMs: 0,
-          tone: 'bg-amber-400',
-        }
-        setLiveEvents((prev) => [toast, ...prev].slice(0, MAX_RECENT_EVENTS))
-      }
-    }
+    // 방송 종료 시 등급별 턴을 누적하고, 필요 턴이 차면 조용히 자동 트레이닝
+    const nextOwnedWithTraining = ownedCreatorsRef.current.map(applyBroadcastTrainingTick)
+    ownedCreatorsRef.current = nextOwnedWithTraining
+    onOwnedCreatorsChangeRef.current(nextOwnedWithTraining)
 
     const reqCasinoTurns = getCasinoRequiredTurns(stationGradeRef.current)
     const isUnlocked = isCasinoGradeUnlocked
@@ -3559,7 +3525,7 @@ export function InGame({
         creatorName: '',
         type: 'viewers',
         amount: 0,
-        text: '',
+        text: `🎰 ✨ [골든 베가스 카지노] 라운지가 오픈되었습니다! (하단 CASINO 탭)`,
         atMs: 0,
         tone: 'bg-amber-500',
       }
@@ -3574,43 +3540,23 @@ export function InGame({
     dayStartedAtRef.current = null
     setStartBroadcastLocked(true)
 
-    pendingStatementRef.current = { statement, assetsAfter, portraits }
-    if (opts?.skipEndedNotice) {
-      revealPendingStatement()
-    } else {
-      setBroadcastEndedNotice(true)
+    // 중앙에 '방송 종료'를 먼저 띄운 뒤 명세서 팝업
+    setBroadcastEndedNotice(true)
+    if (statementDelayTimerRef.current != null) {
+      window.clearTimeout(statementDelayTimerRef.current)
     }
+    statementDelayTimerRef.current = window.setTimeout(() => {
+      statementDelayTimerRef.current = null
+      setBroadcastEndedNotice(false)
+      setSettlementAssetsAfter(assetsAfter)
+      setSettlementPortraits(portraits)
+      setWeeklyStatement(statement)
+      if (!tutorialDoneRef.current) {
+        setTutorialStep('statement_confirm')
+      }
+    }, 1800)
     // 방송 턴 마무리 → 즉시 저장
     flushAutoSave()
-  }
-
-  function revealPendingStatement() {
-    const pending = pendingStatementRef.current
-    pendingStatementRef.current = null
-    setBroadcastEndedNotice(false)
-    if (!pending) return
-    setSettlementAssetsAfter(pending.assetsAfter)
-    setSettlementPortraits(pending.portraits)
-    setWeeklyStatement(pending.statement)
-    if (!tutorialDoneRef.current) {
-      setTutorialStep('statement_confirm')
-    }
-  }
-
-  function handleRestMonth() {
-    if (broadcastPhaseRef.current !== 'prep' || startBroadcastLocked) return
-    weekFinishedRef.current = false
-    const rested = applyWeeklyStaminaAndCondition(
-      ownedCreatorsRef.current,
-      new Set(),
-      {},
-      new Set(),
-      new Set(),
-      new Set(),
-    )
-    ownedCreatorsRef.current = rested.creators
-    onOwnedCreatorsChangeRef.current(rested.creators)
-    finishBroadcastMonth({ skipTraining: true, skipEndedNotice: true })
   }
 
   function evaluateCurrentStationReview() {
@@ -3666,8 +3612,7 @@ export function InGame({
     pendingRankResultRef.current = null
     if (pendingRank) {
       pendingScoutAfterRankRef.current = openScout
-      setStartBroadcastLocked(true)
-      setRankSettlement(pendingRank)
+      continueAfterMonthModals(openScout)
       return
     }
     continueAfterMonthModals(openScout)
@@ -3727,12 +3672,10 @@ export function InGame({
   function handleAcceptStaffSalaryRaise() {
     if (!staffSalaryRaiseRequest) return
     const { staffId, requestedSalary } = staffSalaryRaiseRequest
-    const nextSalaries = {
-      ...hiredStaffSalariesRef.current,
+    setHiredStaffSalaries((prev) => ({
+      ...prev,
       [staffId]: requestedSalary,
-    }
-    hiredStaffSalariesRef.current = nextSalaries
-    setHiredStaffSalaries(nextSalaries)
+    }))
     setHiredStaffLastRaiseMonths((prev) => ({
       ...prev,
       [staffId]: gameMonthRef.current,
@@ -4494,16 +4437,21 @@ export function InGame({
     return rolled.heat
   }
 
-  function handleBulkSnsCompose(plan: BulkSnsComposePlan): BulkSnsRevealEntry[] {
-    if (plan.planned.length === 0 || !spendAssets(plan.totalCost)) return []
+  function handleBulkSnsCompose(): BulkSnsRevealEntry[] {
+    const plan = planBulkSnsCompose(ownedCreatorsRef.current, assetsRef.current)
+    if (plan.affordableIds.length === 0 || !spendAssets(plan.totalCost)) return []
 
-    const plannedById = new Map(plan.planned.map((row) => [row.id, row]))
+    const affordableSet = new Set(plan.affordableIds)
 
     const posted: BulkSnsRevealEntry[] = []
     const nextOwned = ownedCreatorsRef.current.map((creator) => {
-      const planned = plannedById.get(creator.id)
-      if (!planned) return creator
-      const rolled = planned.roll
+      if (!affordableSet.has(creator.id)) return creator
+      const rolled = rollSnsCompose(
+        creator.snsPosts ?? [],
+        creator.snsPublishedIds ?? [],
+        creator.snsHeat3Pity ?? 0,
+      )
+      if (!rolled) return creator
       const media = snsPostMedia(creator.snsPosts ?? [], creator.images, creator.videos, rolled.post.id)
       posted.push({
         creatorId: creator.id,
@@ -5517,7 +5465,6 @@ export function InGame({
             isPromotionReady={isStationPromotionEligible}
             onStartPromotionAudit={handleStartPromotionAudit}
             onStartBroadcast={handleStartBroadcast}
-            onRestMonth={handleRestMonth}
             onConditionCare={handleConditionCare}
             onRepairSlot={repairBrokenSlot}
             onConditionCrashDone={(id) =>
@@ -5573,8 +5520,6 @@ export function InGame({
             scoutedStaffCandidate={scoutedStaffCandidate}
             onScoutStaff={handleScoutStaff}
             creatorScoutAvailable={creatorScoutAvailable}
-            creatorScoutCooldown={creatorScoutCooldown}
-            creatorScoutFirstDone={creatorScoutFirstDone}
             onScoutCreator={handleScoutCreator}
             studioSlots={studioSlots}
             onAssignStaffPlacement={handleAssignStaffPlacement}
@@ -5899,7 +5844,7 @@ export function InGame({
                     ? t('creator.staffScoutNewArrival')
                     : t('menu.creator')
                 : item.id === 'schedule' && alert
-                  ? t('guide.slotUnlockAlert')
+                  ? '신규 방송 슬롯 해금 가능!'
                   : undefined
 
             const isCasinoOpen = isCasino && isCasinoAvailable
@@ -5919,14 +5864,6 @@ export function InGame({
                       : undefined
                 }
                 disabled={isDisabledCasino}
-                title={
-                  isCasino
-                    ? t('guide.casinoOpenCycle').replace(
-                        '{turns}',
-                        String(getCasinoRequiredTurns(stationGrade)),
-                      )
-                    : undefined
-                }
                 onClick={() => {
                   if (isCasino) {
                     if (!isCasinoGradeUnlocked) {
@@ -5968,7 +5905,7 @@ export function InGame({
                 </span>
                 {isCasino && !isCasinoGradeUnlocked ? (
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-slate-900 border border-slate-700 text-slate-400 rounded-full shadow">
-                    {t('guide.casinoNeedSme')}
+                    중소기업 필요
                   </span>
                 ) : isCasino && isCasinoAvailable ? (
                   <span className="absolute -top-2.5 -right-2.5 px-2 py-0.5 text-[10px] font-black font-mono bg-gradient-to-r from-amber-400 via-pink-500 to-rose-600 text-white rounded-full animate-bounce shadow-[0_0_14px_rgba(244,63,94,0.95)] border border-amber-200 flex items-center gap-1 z-10">
@@ -6055,15 +5992,8 @@ export function InGame({
       )}
 
       {broadcastEndedNotice ? (
-        <div className="broadcast-ended-overlay" role="dialog" aria-modal="true">
+        <div className="broadcast-ended-overlay" role="status" aria-live="polite">
           <p className="broadcast-ended-title">{t('dashboard.broadcastEnded')}</p>
-          <button
-            type="button"
-            onClick={revealPendingStatement}
-            className="game-btn game-btn-primary mt-4 px-6 py-2.5 text-sm"
-          >
-            {t('guide.broadcastEndedConfirm')}
-          </button>
         </div>
       ) : null}
 
@@ -6158,7 +6088,7 @@ export function InGame({
               {/* 상단 헤더 뱃지 */}
               <div className="mx-auto mb-3 inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 px-3.5 py-1 text-[11px] font-black tracking-widest text-amber-300 uppercase shadow-sm">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping" />
-                <span>{t('guide.auditDocPassed')}</span>
+                <span>STAGE 1 ・ DOCUMENT PASSED</span>
               </div>
 
               {/* 타이틀 */}
