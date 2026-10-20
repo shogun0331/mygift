@@ -1,7 +1,12 @@
-﻿import type { EventMediaAsset, GameEvent } from '../events/types'
+import type { EventMediaAsset, GameEvent } from '../events/types'
 import { lookupLocalizedString, normalizeEventLocale } from '../events/eventLocales'
 import { commonSoundMediaPath, resolveMediaSrc } from './mediaUrl'
-import type { ShortsVnBeat } from './characters'
+import type { RegisteredCharacter, ShortsVnBeat, ShortsVnStanding } from './characters'
+import {
+  resolveVnImageStandings,
+  type VnCharacter,
+  type VnStagePosition,
+} from './vnCharacters'
 import { getCurrentLocale } from '../locales/i18n'
 
 export type ShortsDialogueOption = {
@@ -132,9 +137,16 @@ export function findEventNodeById(event: GameEvent | null | undefined, nodeId: s
   return flattenEventNodes(event.nodes ?? []).find((node) => nodeIdentity(node) === id) ?? null
 }
 
+function isVideoFileName(name: string | null | undefined): boolean {
+  if (!name) return false
+  const clean = name.split('?')[0].toLowerCase()
+  return /\.(mp4|webm|ogv|ogg|mov|mkv|m4v)$/.test(clean) || clean.startsWith('data:video')
+}
+
 export function listShortsDialogueOptions(
   event: GameEvent | null | undefined,
   lang: string = normalizeEventLocale(getCurrentLocale()),
+  includeVnNodes: boolean = true,
 ): ShortsDialogueOption[] {
   if (!event) return []
   const localization = event.localization ?? {}
@@ -143,7 +155,15 @@ export function listShortsDialogueOptions(
   for (const node of flattenEventNodes(event.nodes ?? [])) {
     const id = nodeIdentity(node)
     if (!id || seen.has(id)) continue
-    const preview = getShortsNodeDialogueText(node, localization, lang).trim()
+    let preview = getShortsNodeDialogueText(node, localization, lang).trim()
+    if (!preview && includeVnNodes && node.type === 'vn') {
+      const parts = [
+        node.background ? `배경: ${baseFileName(node.background)}` : '',
+        node.character ? `캐릭터: ${baseFileName(node.character)}` : '',
+        node.characterPlate ? `플레이트: ${baseFileName(node.characterPlate)}` : '',
+      ].filter(Boolean)
+      preview = `[VN 무대] ${parts.join(' · ') || id}`
+    }
     if (!preview) continue
     seen.add(id)
     out.push({
@@ -154,6 +174,304 @@ export function listShortsDialogueOptions(
     })
   }
   return out
+}
+
+export function standingLayoutClass(position?: VnStagePosition, aloneCenter?: boolean): string {
+  const base = 'pointer-events-none absolute bottom-0 h-[84%]'
+  if (aloneCenter || position === 'center' || !position) {
+    return `${base} left-1/2 w-[48%] -translate-x-1/2`
+  }
+  if (position === 'left') return `${base} left-[2%] w-[40%]`
+  if (position === 'right') return `${base} right-[2%] w-[40%]`
+  return `${base} left-1/2 w-[40%] -translate-x-1/2`
+}
+
+export type ShortsVnNodeOption = {
+  id: string
+  backgroundName: string | null
+  characterName: string | null
+  plateName: string | null
+  backgroundUrl: string | null
+  characterUrl: string | null
+  plateUrl: string | null
+  standings: ShortsVnStanding[]
+  isCharacterVideo: boolean
+  nextDialogueNodeId: string | null
+  dialoguePreview: string
+  hasVoice: boolean
+  rawNode: any
+}
+
+export function listShortsVnNodes(
+  event: GameEvent | null | undefined,
+  lang: string = normalizeEventLocale(getCurrentLocale()),
+  registeredCharacters?: RegisteredCharacter[],
+  vnCharacters?: VnCharacter[],
+): ShortsVnNodeOption[] {
+  if (!event) return []
+  const allNodes = flattenEventNodes(event.nodes ?? [])
+  const localization = event.localization ?? {}
+  const media = event.media ?? []
+  const out: ShortsVnNodeOption[] = []
+  const seen = new Set<string>()
+
+  for (let i = 0; i < allNodes.length; i++) {
+    const node = allNodes[i]
+    if (!node || node.type !== 'vn') continue
+    const id = nodeIdentity(node)
+    if (!id || seen.has(id)) continue
+    seen.add(id)
+
+    const backgroundName =
+      typeof node.background === 'string' && node.background.trim()
+        ? node.background.trim()
+        : null
+    const plateName =
+      typeof node.characterPlate === 'string' && node.characterPlate.trim()
+        ? node.characterPlate.trim()
+        : null
+    const legacyCharName =
+      typeof node.character === 'string' && node.character.trim()
+        ? node.character.trim()
+        : null
+
+    const bgAsset = backgroundName ? findMediaAsset(backgroundName, media) : null
+    const plateAsset = plateName ? findMediaAsset(plateName, media) : null
+    const legacyAsset = !plateAsset && legacyCharName ? findMediaAsset(legacyCharName, media) : null
+
+    // 1. Resolve image standings from modern stageSlots (preferred)
+    const imageStandings = plateAsset
+      ? []
+      : resolveVnImageStandings(node, registeredCharacters ?? [], vnCharacters ?? [])
+
+    let standings: ShortsVnStanding[] = []
+    let characterUrl: string | null = null
+    let isCharacterVideo = false
+    let resolvedCharName: string | null = null
+
+    if (imageStandings && imageStandings.length > 0) {
+      standings = imageStandings.map((standing) => ({
+        key: standing.key,
+        src: standing.src,
+        position: standing.position,
+        media: 'image' as const,
+        characterId: standing.characterId,
+      }))
+      characterUrl = standings[0]?.src ?? null
+      const names = imageStandings
+        .map((s) => {
+          const reg = registeredCharacters?.find((c) => c.id === s.characterId)
+          if (reg) return reg.name
+          const vn = vnCharacters?.find((c) => c.id === s.characterId)
+          return vn?.name || s.characterId
+        })
+        .filter(Boolean)
+      resolvedCharName = names.length > 0 ? names.join(', ') : null
+    } else if (legacyAsset?.url) {
+      isCharacterVideo = isVideoFileName(legacyAsset.fileName) || isVideoFileName(legacyAsset.url)
+      characterUrl = legacyAsset.url
+      resolvedCharName = legacyAsset.fileName || legacyCharName
+      standings = [
+        {
+          key: legacyAsset.fileName || legacyCharName || 'legacy-char',
+          src: legacyAsset.url,
+          position: 'center',
+          media: isCharacterVideo ? 'video' : 'image',
+        },
+      ]
+    } else if (plateAsset?.url) {
+      resolvedCharName = plateAsset.fileName || plateName
+    }
+
+    let nextDialogueNodeId: string | null = null
+    let dialoguePreview = ''
+    let hasVoice = false
+    for (let j = i + 1; j < allNodes.length; j++) {
+      const nextNode = allNodes[j]
+      if (!nextNode) continue
+      if (nextNode.type === 'vn' || nextNode.type === 'graphic') break
+      const text = getShortsNodeDialogueText(nextNode, localization, lang).trim()
+      if (text) {
+        nextDialogueNodeId = nodeIdentity(nextNode)
+        dialoguePreview = text
+        hasVoice = Boolean(resolveShortsNodeVoiceFileName(nextNode, lang))
+        break
+      }
+    }
+
+    out.push({
+      id,
+      backgroundName,
+      characterName: resolvedCharName,
+      plateName,
+      backgroundUrl: bgAsset?.url ?? null,
+      characterUrl,
+      plateUrl: plateAsset?.url ?? null,
+      standings,
+      isCharacterVideo,
+      nextDialogueNodeId,
+      dialoguePreview,
+      hasVoice,
+      rawNode: node,
+    })
+  }
+  return out
+}
+
+export type ResolvedShortsVnStage = {
+  isVn: boolean
+  backgroundSrc: string
+  characterSrc: string | null
+  plateSrc: string | null
+  standings: ShortsVnStanding[]
+  isCharacterVideo: boolean
+  nodeId: string | null
+  backgroundName: string | null
+  characterName: string | null
+  plateName: string | null
+}
+
+export function resolveShortsBeatVnStage(
+  beat: ShortsVnBeat | null | undefined,
+  event: GameEvent | null | undefined,
+  registeredCharacters?: RegisteredCharacter[],
+  vnCharacters?: VnCharacter[],
+): ResolvedShortsVnStage {
+  if (!beat) {
+    return {
+      isVn: false,
+      backgroundSrc: '',
+      characterSrc: null,
+      plateSrc: null,
+      standings: [],
+      isCharacterVideo: false,
+      nodeId: null,
+      backgroundName: null,
+      characterName: null,
+      plateName: null,
+    }
+  }
+
+  const media = event?.media ?? []
+  let foundVnNode: any = null
+  if (beat.sourceNodeId && event) {
+    const node = findEventNodeById(event, beat.sourceNodeId)
+    if (node && node.type === 'vn') {
+      foundVnNode = node
+    }
+  }
+
+  const hasExplicitVnAssets = Boolean(
+    beat.characterUrl || beat.plateUrl || (beat.standings && beat.standings.length > 0),
+  )
+
+  if (!foundVnNode && !hasExplicitVnAssets) {
+    return {
+      isVn: false,
+      backgroundSrc: resolveMediaSrc(beat.mediaUrl),
+      characterSrc: null,
+      plateSrc: null,
+      standings: [],
+      isCharacterVideo: false,
+      nodeId: beat.sourceNodeId ?? null,
+      backgroundName: null,
+      characterName: null,
+      plateName: null,
+    }
+  }
+
+  const bgName =
+    typeof foundVnNode?.background === 'string' && foundVnNode.background.trim()
+      ? foundVnNode.background.trim()
+      : null
+  const plateName =
+    typeof foundVnNode?.characterPlate === 'string' && foundVnNode.characterPlate.trim()
+      ? foundVnNode.characterPlate.trim()
+      : null
+  const legacyCharName =
+    typeof foundVnNode?.character === 'string' && foundVnNode.character.trim()
+      ? foundVnNode.character.trim()
+      : null
+
+  const bgAsset = bgName ? findMediaAsset(bgName, media) : null
+  const plateAsset = plateName ? findMediaAsset(plateName, media) : null
+  const legacyAsset = !plateAsset && legacyCharName ? findMediaAsset(legacyCharName, media) : null
+
+  // 1. Resolve image standings from modern stageSlots first
+  let standings: ShortsVnStanding[] = []
+  if (foundVnNode) {
+    const imageStandings = plateAsset
+      ? []
+      : resolveVnImageStandings(foundVnNode, registeredCharacters ?? [], vnCharacters ?? [])
+    if (imageStandings && imageStandings.length > 0) {
+      standings = imageStandings.map((st) => ({
+        key: st.key,
+        src: resolveMediaSrc(st.src),
+        position: st.position,
+        media: 'image' as const,
+        characterId: st.characterId,
+      }))
+    } else if (legacyAsset?.url) {
+      const isVideo = isVideoFileName(legacyAsset.fileName) || isVideoFileName(legacyAsset.url)
+      standings = [
+        {
+          key: legacyAsset.fileName || legacyCharName || 'legacy-char',
+          src: resolveMediaSrc(legacyAsset.url),
+          position: 'center',
+          media: isVideo ? 'video' : 'image',
+        },
+      ]
+    }
+  }
+
+  // 2. Fallback to beat's stored standings or characterUrl
+  if (standings.length === 0) {
+    if (beat.standings && beat.standings.length > 0) {
+      standings = beat.standings.map((st) => ({
+        ...st,
+        src: resolveMediaSrc(st.src),
+      }))
+    } else if (beat.characterUrl) {
+      const isVideo = isVideoFileName(beat.characterUrl)
+      standings = [
+        {
+          key: beat.characterUrl,
+          src: resolveMediaSrc(beat.characterUrl),
+          position: 'center',
+          media: isVideo ? 'video' : 'image',
+        },
+      ]
+    }
+  }
+
+  const bgUrl = bgAsset?.url || beat.mediaUrl
+  const plateUrl = beat.plateUrl || plateAsset?.url || null
+  const characterSrc = standings[0]?.src || (beat.characterUrl ? resolveMediaSrc(beat.characterUrl) : null)
+  const isCharVideo =
+    standings[0]?.media === 'video' ||
+    isVideoFileName(legacyCharName) ||
+    isVideoFileName(beat.characterUrl)
+
+  // Character name label
+  let charName = legacyCharName
+  if (standings.length > 0 && standings[0].characterId) {
+    const reg = registeredCharacters?.find((c) => c.id === standings[0].characterId)
+    const vn = vnCharacters?.find((c) => c.id === standings[0].characterId)
+    charName = reg?.name || vn?.name || standings[0].characterId
+  }
+
+  return {
+    isVn: true,
+    backgroundSrc: bgUrl ? resolveMediaSrc(bgUrl) : '',
+    characterSrc,
+    plateSrc: plateUrl ? resolveMediaSrc(plateUrl) : null,
+    standings,
+    isCharacterVideo: isCharVideo,
+    nodeId: nodeIdentity(foundVnNode) ?? beat.sourceNodeId ?? null,
+    backgroundName: bgName,
+    characterName: charName,
+    plateName,
+  }
 }
 
 export function resolveShortsBeatCaption(
@@ -168,6 +486,14 @@ export function resolveShortsBeatCaption(
     if (node) {
       const text = getShortsNodeDialogueText(node, event.localization, locale).trim()
       if (text) return text
+      if (node.type === 'vn') {
+        const parts = [
+          node.background ? `배경: ${baseFileName(node.background)}` : '',
+          node.character ? `캐릭터: ${baseFileName(node.character)}` : '',
+          node.characterPlate ? `플레이트: ${baseFileName(node.characterPlate)}` : '',
+        ].filter(Boolean)
+        return parts.length > 0 ? parts.join(' · ') : ''
+      }
     }
   }
   return typeof beat.caption === 'string' ? beat.caption.trim() : ''

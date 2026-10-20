@@ -598,6 +598,7 @@ export function EditorScreen({
               registeredCharacters={registeredCharacters}
               events={events}
               onUpdateCharacter={onUpdateCharacter}
+              vnCharacters={vnCharacters}
             />
           ) : tab === 'highlow' ? (
             <HighLowEditorPanel

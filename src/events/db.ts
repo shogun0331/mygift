@@ -58,6 +58,17 @@ function isBinaryLike(value: unknown): boolean {
   return false
 }
 
+function eventMediaFolderName(kind: string | undefined): string {
+  if (kind === 'image') return 'images'
+  if (kind === 'video') return 'videos'
+  if (kind === 'sound') return 'sounds'
+  return 'assets'
+}
+
+function eventMediaDiskUrl(eventId: string, kind: string | undefined, fileName: string): string {
+  return `media://chapter_assets/events/${eventId}/${eventMediaFolderName(kind)}/${fileName}`
+}
+
 function sanitizeEventsForSave(events: GameEvent[]): GameEvent[] {
   const json = JSON.stringify(events ?? [], (key, value) => {
     if (key === 'blob' || isBinaryLike(value)) return undefined
@@ -71,19 +82,24 @@ function sanitizeEventsForSave(events: GameEvent[]): GameEvent[] {
     .filter((ev) => ev && typeof ev === 'object' && typeof ev.id === 'string' && ev.id.trim())
     .map((ev) => ({
       ...ev,
-      media: Array.isArray(ev.media) ? ev.media.filter((m) => m && typeof m === 'object') : [],
+      media: Array.isArray(ev.media)
+        ? ev.media
+            .filter((m) => m && typeof m === 'object')
+            .map((m) => ({
+              ...m,
+              url:
+                m.fileName && m.kind
+                  ? eventMediaDiskUrl(ev.id, m.kind, m.fileName)
+                  : typeof m.url === 'string' && !m.url.startsWith('blob:')
+                    ? m.url
+                    : '',
+            }))
+        : [],
     }))
 }
 
-function eventMediaFolder(kind: string | undefined): string {
-  if (kind === 'image') return 'images'
-  if (kind === 'video') return 'videos'
-  if (kind === 'sound') return 'sounds'
-  return 'assets'
-}
-
 async function eventMediaExistsOnDisk(eventId: string, kind: string | undefined, fileName: string): Promise<boolean> {
-  const folder = eventMediaFolder(kind)
+  const folder = eventMediaFolderName(kind)
   const id = encodeURIComponent(eventId)
   const file = encodeURIComponent(fileName)
   const urls = [
@@ -301,10 +317,9 @@ export async function loadEvents(): Promise<GameEvent[]> {
 
     // 디스크 에셋은 media:// 로만 연결한다. 전체를 blob으로 올리면 큰 영상에서 메인 프로세스가 멈춘다.
     for (const event of loadedEvents) {
-      for (const asset of event.media) {
-        const folderMap = { image: 'images', video: 'videos', sound: 'sounds' }
-        const folderName = folderMap[asset.kind] || 'assets'
-        asset.url = `media://chapter_assets/events/${event.id}/${folderName}/${asset.fileName}`
+      for (const asset of event.media || []) {
+        if (!asset?.fileName) continue
+        asset.url = eventMediaDiskUrl(event.id, asset.kind, asset.fileName)
       }
     }
     return withOwner(loadedEvents)

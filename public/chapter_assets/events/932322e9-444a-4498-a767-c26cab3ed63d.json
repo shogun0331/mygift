@@ -15,7 +15,7 @@
       "stageSlots": [
         {
           "characterId": "1786851057540-5sup19s",
-          "imageId": "1792126117352-ai92wgr",
+          "imageId": "1792301673713-p1thvac",
           "position": "center"
         }
       ],
@@ -218,7 +218,7 @@
       "stageSlots": [
         {
           "characterId": "1786851057540-5sup19s",
-          "imageId": "1792126117352-ai92wgr",
+          "imageId": "1792301673716-8hjw9ia",
           "position": "center"
         }
       ],
@@ -273,11 +273,19 @@
     },
     {
       "id": "node_1787031862647_5d95",
-      "type": "graphic",
-      "image": "2026-10-16_00027__waifu2x_2x_compressed.mp4",
+      "type": "vn",
+      "background": "2026-10-16_00202_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851057540-5sup19s",
+          "imageId": "1792301673716-twkfvqy",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787031770896_28_wiue",
@@ -419,7 +427,7 @@
       "stageSlots": [
         {
           "characterId": "1786851057540-5sup19s",
-          "imageId": "1792126117352-ai92wgr",
+          "imageId": "1792301673713-p1thvac",
           "position": "center"
         }
       ],
@@ -734,14 +742,6 @@
       "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-10-16_00202_.webp",
       "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/images/2026-10-16_00202_.webp",
       "size": 205754
-    },
-    {
-      "id": "1792145962741-hdqsqca",
-      "fileName": "2026-10-16_00027__waifu2x_2x_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/videos/2026-10-16_00027__waifu2x_2x_compressed.mp4",
-      "url": "media://chapter_assets/events/932322e9-444a-4498-a767-c26cab3ed63d/videos/2026-10-16_00027__waifu2x_2x_compressed.mp4",
-      "size": 2384323
     }
   ],
   "sourceZipName": "직접 생성",

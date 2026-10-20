@@ -15,7 +15,7 @@
       "stageSlots": [
         {
           "characterId": "1786849140255-p0lxz2i",
-          "imageId": "1792114260173-u94xjc6",
+          "imageId": "1792299698257-aevtjro",
           "position": "center"
         }
       ],
@@ -356,11 +356,19 @@
     },
     {
       "id": "node_1787118174859_38_ctf2",
-      "type": "graphic",
-      "image": "2026-10-16_00006__waifu2x_2x_compressed.mp4",
+      "type": "vn",
+      "background": "2026-10-16_00162_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786849140255-p0lxz2i",
+          "imageId": "1792299698260-m03xu7i",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787118174859_39_9l7d",
@@ -460,7 +468,7 @@
       "stageSlots": [
         {
           "characterId": "1786849140255-p0lxz2i",
-          "imageId": "1792114260173-u94xjc6",
+          "imageId": "1792299698257-aevtjro",
           "position": "center"
         }
       ],
@@ -864,116 +872,12 @@
       "id": "media_sound_mtjbsmbe_x9hkvgh"
     },
     {
-      "id": "1788309144909-ezsaenm",
-      "fileName": "2026-09-01_00007_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00007_.webp",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00007_.webp",
-      "size": 100772
-    },
-    {
-      "id": "1788309150324-q6k3xpk",
-      "fileName": "2026-09-01_00008_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00008_.webp",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00008_.webp",
-      "size": 94488
-    },
-    {
-      "id": "1788309216175-heyqafj",
-      "fileName": "2026-09-01_00012_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00012_.webp",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00012_.webp",
-      "size": 94162
-    },
-    {
-      "id": "1788309219299-v7wtlxi",
-      "fileName": "2026-09-01_00009_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00009_.webp",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00009_.webp",
-      "size": 116272
-    },
-    {
-      "id": "1788309238293-kj4m30m",
-      "fileName": "2026-09-01_00011_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00011_.webp",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00011_.webp",
-      "size": 96892
-    },
-    {
-      "id": "1788309247806-2dv5zn2",
-      "fileName": "2026-09-01_00012_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00012_.webp",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00012_.webp",
-      "size": 94162
-    },
-    {
-      "id": "1788309260823-zntjs7a",
-      "fileName": "2026-09-01_00013_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00013_.webp",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00013_.webp",
-      "size": 101358
-    },
-    {
-      "id": "1788309269510-b91nkww",
-      "fileName": "2026-09-01_00014_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00014_.webp",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00014_.webp",
-      "size": 116226
-    },
-    {
-      "id": "1788309280486-9lhhna2",
-      "fileName": "2026-09-01_00012_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00012_.webp",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00012_.webp",
-      "size": 94162
-    },
-    {
-      "id": "1788309290348-1f81nth",
-      "fileName": "2026-09-01_00016_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00016_.webp",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-09-01_00016_.webp",
-      "size": 76710
-    },
-    {
-      "id": "1791784340438-6fzkpj8",
-      "fileName": "2026-10-10_00105__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/videos/2026-10-10_00105__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/videos/2026-10-10_00105__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 1746471
-    },
-    {
-      "id": "1791784364086-zqx226r",
-      "fileName": "2026-10-10_00106__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/videos/2026-10-10_00106__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/videos/2026-10-10_00106__RealESR_Gx4_InputR-100_OutputR-50_Sharpening-Low_compressed.mp4",
-      "size": 2367564
-    },
-    {
       "id": "1792135131711-bksna99",
       "fileName": "2026-10-16_00162_.webp",
       "kind": "image",
       "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-10-16_00162_.webp",
       "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/images/2026-10-16_00162_.webp",
       "size": 191300
-    },
-    {
-      "id": "1792140027656-4i0j6bl",
-      "fileName": "2026-10-16_00006__waifu2x_2x_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/videos/2026-10-16_00006__waifu2x_2x_compressed.mp4",
-      "url": "media://chapter_assets/events/ec8564e5-caab-4f3a-bd26-62ebe2e2df34/videos/2026-10-16_00006__waifu2x_2x_compressed.mp4",
-      "size": 2454670
     }
   ],
   "sourceZipName": "직접 생성",

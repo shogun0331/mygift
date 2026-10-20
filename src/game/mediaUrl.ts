@@ -1,3 +1,17 @@
+function encodeMediaRel(rel: string): string {
+  return rel
+    .split('/')
+    .filter((part) => part.length > 0)
+    .map((part) => {
+      try {
+        return encodeURIComponent(decodeURIComponent(part))
+      } catch {
+        return encodeURIComponent(part)
+      }
+    })
+    .join('/')
+}
+
 /** media:// 또는 상대경로를 재생 가능한 src로 만들고, 교체 즉시 반영되도록 캐시 키를 붙임 */
 export function resolveMediaSrc(url: string | null | undefined, cacheKey?: string | number | null): string {
   if (!url) return ''
@@ -8,13 +22,14 @@ export function resolveMediaSrc(url: string | null | undefined, cacheKey?: strin
   let resolved = url.split('?')[0] ?? url
 
   if (resolved.startsWith('media://')) {
-    const rel = resolved.slice('media://'.length).replace(/^\/+/, '')
+    const rel = encodeMediaRel(resolved.slice('media://'.length).replace(/^\/+/, ''))
     const isHttpProtocol = typeof window !== 'undefined' && window.location.protocol.startsWith('http')
     const inElectron =
       typeof window !== 'undefined' &&
       (Boolean(window.electronAPI) || /Electron/i.test(navigator.userAgent || ''))
 
     if (isHttpProtocol) {
+      // 개발 서버는 public 파일을 그대로 준다. media:// 는 영상 Range 요청이 깨진다.
       resolved = `/${rel}`
     } else if (inElectron) {
       // 패키징본은 file:// 상대경로(dist)에 캐릭터 미디어가 없음 → media:// 유지

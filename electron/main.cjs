@@ -1,7 +1,8 @@
-const { app, BrowserWindow, protocol, Menu, shell, ipcMain, screen } = require('electron')
+const { app, BrowserWindow, protocol, Menu, shell, ipcMain, screen, net } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const { Readable } = require('stream')
+const { pathToFileURL } = require('url')
 const gamePak = require('./gamePak.cjs')
 const deviceLock = require('./deviceLock.cjs')
 const gameAnalytics = require('./gameAnalytics.cjs')
@@ -578,9 +579,10 @@ function mediaResponseFromRange(total, mime, request, openStream) {
 }
 
 async function mediaResponseFromFile(filePath, request) {
-  let stat
   try {
-    stat = fs.statSync(filePath)
+    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+      return new Response('Not Found', { status: 404 })
+    }
   } catch (err) {
     if (err && err.code === 'ENOENT') {
       return new Response('Not Found', { status: 404 })
@@ -588,12 +590,16 @@ async function mediaResponseFromFile(filePath, request) {
     console.error('media stat error:', filePath, err)
     return new Response('Internal Error', { status: 500 })
   }
-  if (!stat.isFile()) {
-    return new Response('Not Found', { status: 404 })
+  // 파일 프로토콜이 Range를 처리한다. 직접 스트림은 mp4 재생에서 404로 떨어진다.
+  try {
+    const headers = new Headers()
+    const range = request.headers.get('range') || request.headers.get('Range')
+    if (range) headers.set('Range', range)
+    return await net.fetch(pathToFileURL(filePath).href, { headers })
+  } catch (err) {
+    console.error('media fetch error:', filePath, err)
+    return new Response('Internal Error', { status: 500 })
   }
-  return mediaResponseFromRange(stat.size, contentTypeFor(filePath), request, (start, end) =>
-    fs.createReadStream(filePath, { start, end }),
-  )
 }
 
 async function mediaResponseFromAsset(asset, request) {

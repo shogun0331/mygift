@@ -5,8 +5,24 @@
   "chapterId": 1,
   "titleKey": "b3dd121c-2f6c-4a20-9245-01cfcf2ef89d",
   "title": "데이트1",
-  "startNode": "node_1787177840810_1_5fzl",
+  "startNode": "node_1787177840810_0_6f5q",
   "nodes": [
+    {
+      "id": "node_1787177840810_0_6f5q",
+      "type": "vn",
+      "background": "2026-10-18_00005_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851291899-dqn64g6",
+          "imageId": "1792299804208-oih44u0",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
     {
       "id": "node_1787177840810_1_5fzl",
       "type": "text",
@@ -14,14 +30,6 @@
       "speaker": "",
       "text": "야간의 프라이빗 요리 클래스. 조용한 요리 스튜디오. 리메이가 먼저 도착해 조리대 앞에서 재료를 정리하고 있다. 다크 블루 실크 치파오 차림.",
       "text_key": "node_1787177840810_1_5fzl"
-    },
-    {
-      "id": "node_1787177840810_0_6f5q",
-      "type": "graphic",
-      "image": "2026-08-28_00310_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787177840810_2_o4ir",
@@ -32,15 +40,6 @@
       "text_key": "node_1787177840810_2_o4ir",
       "voice": "node_1787177840810_2_o4ir.wav",
       "sound": "node_1787177840810_2_o4ir.wav"
-    },
-    {
-      "id": "graphic_b3dd121c_2",
-      "type": "graphic",
-      "image": "2026-08-28_00311_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
     },
     {
       "id": "node_1787177840810_3_fbpf",
@@ -257,15 +256,6 @@
       "text_key": "node_1787177840810_26_65vz"
     },
     {
-      "id": "graphic_b3dd121c_3",
-      "type": "graphic",
-      "image": "2026-08-28_00312_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787177840810_27_g927",
       "type": "text",
       "speakerType": "player",
@@ -300,15 +290,6 @@
       "text_key": "node_1787177840810_30_fjg4",
       "voice": "node_1787177840810_30_fjg4.wav",
       "sound": "node_1787177840810_30_fjg4.wav"
-    },
-    {
-      "id": "graphic_b3dd121c_4",
-      "type": "graphic",
-      "image": "2026-08-28_00313_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
     },
     {
       "id": "node_1787177840810_31_cu2f",
@@ -348,11 +329,19 @@
     },
     {
       "id": "node_1787177840810_35_8xh2",
-      "type": "graphic",
-      "image": "2026-08-28_00314_.webp",
+      "type": "vn",
+      "background": "2026-10-18_00005_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851291899-dqn64g6",
+          "imageId": "1792299804210-fuz24kn",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787177840810_36_n1b8",
@@ -389,14 +378,6 @@
       "speaker": "",
       "text": "내 손을 잡아 가슴 위에 얹는다. 손끝에 맨살이 닿는다.",
       "text_key": "node_1787177840810_39_zjsl"
-    },
-    {
-      "id": "graphic_b3dd121c_6",
-      "type": "graphic",
-      "image": "speed_1_55x_59a5d2b7042141a9ae4ad8c396c37e3c.mp4",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787177840810_40_iitm",
@@ -462,11 +443,18 @@
     },
     {
       "id": "graphic_b3dd121c_7",
-      "type": "graphic",
-      "image": "2026-08-28_00316_.webp",
+      "type": "vn",
+      "background": "2026-10-18_00005_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851291899-dqn64g6",
+          "imageId": "1792299804208-oih44u0",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
       "ignoreDelay": true
     },
     {
@@ -522,14 +510,6 @@
       "speaker": "",
       "text": "리메이가 요리 스튜디오 출구 쪽으로 걸어간다. 나는 그 뒷모습이 사라질 때까지 서서 바라본다.",
       "text_key": "node_1787177840810_52_hgtf"
-    },
-    {
-      "id": "graphic_b3dd121c_8",
-      "type": "graphic",
-      "image": "2026-08-28_00317_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     }
   ],
   "defaultLanguage": "ko",
@@ -714,68 +694,12 @@
       "id": "media_sound_mtjbsmbf_4gtyf2g"
     },
     {
-      "fileName": "2026-08-28_00310_.webp",
+      "id": "1792309528282-qfa9oh0",
+      "fileName": "2026-10-18_00005_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00310_.webp",
-      "url": "media://chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00310_.webp",
-      "size": 129956,
-      "id": "media_image_mtjbsmbf_y8uqhig"
-    },
-    {
-      "fileName": "2026-08-28_00311_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00311_.webp",
-      "url": "media://chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00311_.webp",
-      "size": 117640,
-      "id": "media_image_mtjbsmbf_7a83fmf"
-    },
-    {
-      "fileName": "2026-08-28_00312_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00312_.webp",
-      "url": "media://chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00312_.webp",
-      "size": 120820,
-      "id": "media_image_mtjbsmbf_7nca3uq"
-    },
-    {
-      "fileName": "2026-08-28_00313_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00313_.webp",
-      "url": "media://chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00313_.webp",
-      "size": 141346,
-      "id": "media_image_mtjbsmbf_uy3hlhi"
-    },
-    {
-      "fileName": "2026-08-28_00314_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00314_.webp",
-      "url": "media://chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00314_.webp",
-      "size": 107256,
-      "id": "media_image_mtjbsmbf_tp6yx24"
-    },
-    {
-      "fileName": "2026-08-28_00316_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00316_.webp",
-      "url": "media://chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00316_.webp",
-      "size": 133602,
-      "id": "media_image_mtjbsmbf_c17ibx7"
-    },
-    {
-      "fileName": "2026-08-28_00317_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00317_.webp",
-      "url": "media://chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-08-28_00317_.webp",
-      "size": 90372,
-      "id": "media_image_mtjbsmbf_7h7btqc"
-    },
-    {
-      "id": "1788313849912-48yqr02",
-      "fileName": "speed_1_55x_59a5d2b7042141a9ae4ad8c396c37e3c.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/videos/speed_1_55x_59a5d2b7042141a9ae4ad8c396c37e3c.mp4",
-      "url": "media://chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/videos/speed_1_55x_59a5d2b7042141a9ae4ad8c396c37e3c.mp4",
-      "size": 2006245
+      "sourcePath": "chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-10-18_00005_.webp",
+      "url": "media://chapter_assets/events/b3dd121c-2f6c-4a20-9245-01cfcf2ef89d/images/2026-10-18_00005_.webp",
+      "size": 192786
     }
   ],
   "sourceZipName": "직접 생성",

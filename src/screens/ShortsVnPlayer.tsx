@@ -1,15 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { ShortsVnBeat } from '../game/characters'
+import type { RegisteredCharacter, ShortsVnBeat } from '../game/characters'
 import type { EventMediaAsset, GameEvent } from '../events/types'
 import { loadCommonSounds } from '../events/db'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import { BlurRegionOverlay } from '../events/BlurRegionEditor'
 import {
   resolveShortsBeatCaption,
   resolveShortsBeatVoiceFileName,
+  resolveShortsBeatVnStage,
   resolveShortsVoiceAsset,
   resolveShortsVoiceSrc,
+  standingLayoutClass,
 } from '../game/shortsVnDialogue'
+import { loadVnCharactersFromDisk, type VnCharacter } from '../game/vnCharacters'
 import { getSeVolumePercent } from '../game/uiSfx'
 import { useBgmSilence } from '../game/bgm'
 import { useTranslation } from '../locales/i18n'
@@ -22,6 +26,8 @@ type Props = {
   /** editor: popup modal / ingame: full overlay */
   presentation?: 'overlay' | 'popup'
   onClose: () => void
+  registeredCharacters?: RegisteredCharacter[]
+  vnCharacters?: VnCharacter[]
 }
 
 function isVideoUrl(url: string) {
@@ -38,14 +44,26 @@ export function ShortsVnPlayer({
   title,
   presentation = 'overlay',
   onClose,
+  registeredCharacters = [],
+  vnCharacters: propVnCharacters,
 }: Props) {
   const { t, locale } = useTranslation()
   const [index, setIndex] = useState(0)
   const [canAdvance, setCanAdvance] = useState(false)
   const [commonSounds, setCommonSounds] = useState<EventMediaAsset[]>([])
+  const [loadedVnChars, setLoadedVnChars] = useState<VnCharacter[]>([])
   const holdRef = useRef<number | null>(null)
   const voiceRef = useRef<HTMLAudioElement | null>(null)
   const isPopup = presentation === 'popup'
+
+  useEffect(() => {
+    if (propVnCharacters && propVnCharacters.length > 0) return
+    void loadVnCharactersFromDisk().then((list) => {
+      if (Array.isArray(list) && list.length > 0) setLoadedVnChars(list)
+    })
+  }, [propVnCharacters])
+
+  const vnCharacters = propVnCharacters ?? loadedVnChars
 
   const beat = beats[index] ?? null
   const isLast = index >= beats.length - 1
@@ -116,6 +134,11 @@ export function ShortsVnPlayer({
 
   if (!beat || typeof document === 'undefined') return null
 
+  const vnStage = useMemo(
+    () => resolveShortsBeatVnStage(beat, event, registeredCharacters, vnCharacters),
+    [beat, event, registeredCharacters, vnCharacters],
+  )
+
   const handleAdvance = () => {
     if (!canAdvance) return
     if (isLast) {
@@ -136,13 +159,109 @@ export function ShortsVnPlayer({
       } ${canAdvance ? 'cursor-pointer' : 'cursor-wait'}`}
       aria-label={title || t('shortsVn.playerTitle')}
     >
-      <MosaicMediaFrame
-        key={beat.id}
-        src={resolveMediaSrc(beat.mediaUrl)}
-        kind={isVideoUrl(beat.mediaUrl) ? 'video' : 'image'}
-        regions={beat.blurRegions}
-        className="pointer-events-none h-full w-full"
-      />
+      {vnStage.isVn ? (
+        <div key={beat.id} className="pointer-events-none relative h-full w-full overflow-hidden bg-black">
+          {/* VN 배경 */}
+          {vnStage.backgroundSrc ? (
+            isVideoUrl(vnStage.backgroundSrc) ? (
+              <video
+                src={vnStage.backgroundSrc}
+                className="h-full w-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+            ) : (
+              <img
+                src={vnStage.backgroundSrc}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            )
+          ) : null}
+
+          {/* VN 캐릭터 플레이트 */}
+          {vnStage.plateSrc ? (
+            <div className="absolute bottom-0 left-1/2 h-[82%] w-[82%] -translate-x-1/2">
+              <img
+                src={vnStage.plateSrc}
+                alt=""
+                className="vn-standing-live h-full w-full object-contain object-bottom"
+              />
+            </div>
+          ) : null}
+
+          {/* VN 캐릭터 스탠딩 / 비디오 */}
+          {vnStage.standings.length > 0 ? (
+            vnStage.standings.map((standing) => {
+              const aloneCenter =
+                vnStage.standings.length === 1 &&
+                (standing.position === 'center' || !standing.position)
+              const frameClass = standingLayoutClass(
+                standing.position || 'center',
+                aloneCenter,
+              )
+              return (
+                <div key={standing.key} className={frameClass}>
+                  {standing.media === 'video' ? (
+                    <video
+                      src={standing.src}
+                      className="vn-standing-live h-full w-full object-contain object-bottom"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={standing.src}
+                      alt=""
+                      className="vn-standing-live h-full w-full object-contain object-bottom"
+                    />
+                  )}
+                </div>
+              )
+            })
+          ) : vnStage.characterSrc ? (
+            <div className="pointer-events-none absolute bottom-0 left-1/2 h-[84%] w-[48%] -translate-x-1/2">
+              {vnStage.isCharacterVideo ? (
+                <video
+                  src={vnStage.characterSrc}
+                  className="vn-standing-live h-full w-full object-contain object-bottom"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              ) : (
+                <img
+                  src={vnStage.characterSrc}
+                  alt=""
+                  className="vn-standing-live h-full w-full object-contain object-bottom"
+                />
+              )}
+            </div>
+          ) : null}
+
+          {/* 모자이크 오버레이 */}
+          {beat.blurRegions.length > 0 ? (
+            <BlurRegionOverlay
+              regions={beat.blurRegions}
+              src={vnStage.backgroundSrc || beat.mediaUrl}
+              kind="image"
+            />
+          ) : null}
+        </div>
+      ) : (
+        <MosaicMediaFrame
+          key={beat.id}
+          src={resolveMediaSrc(beat.mediaUrl)}
+          kind={isVideoUrl(beat.mediaUrl) ? 'video' : 'image'}
+          regions={beat.blurRegions}
+          className="pointer-events-none h-full w-full"
+        />
+      )}
 
       {caption ? (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-5 pb-5 pt-16">

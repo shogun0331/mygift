@@ -6440,6 +6440,7 @@ export function InGame({
           key={`vip-shorts-${vipShortsPlay.offer.creatorId}-${vipShortsPlay.event.id}`}
           beats={vipShortsPlay.beats}
           event={vipShortsPlay.event}
+          registeredCharacters={registeredCharacters}
           title={t('shortsVn.playerVipTitle').replace(
             '{name}',
             vipShortsPlay.offer.creatorName,
@@ -6488,6 +6489,7 @@ export function InGame({
           key={`h-shorts-${socialUi.pending.creatorId}-${socialUi.event.id}`}
           beats={socialUi.beats}
           event={socialUi.event}
+          registeredCharacters={registeredCharacters}
           title={t('shortsVn.playerHTitle').replace('{name}', socialUi.pending.creatorName)}
           onClose={() => {
             if (socialUi.mode !== 'hShorts') return
@@ -6516,6 +6518,7 @@ export function InGame({
           key={`hretry-shorts-${socialUi.pending.creatorId}-${socialUi.event?.id ?? 'noevent'}`}
           beats={socialUi.beats}
           event={socialUi.event}
+          registeredCharacters={registeredCharacters}
           title={t('shortsVn.playerHTitle').replace('{name}', socialUi.pending.creatorName)}
           onClose={() => {
             if (socialUi.mode !== 'hRetryShorts') return

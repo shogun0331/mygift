@@ -15,7 +15,7 @@
       "stageSlots": [
         {
           "characterId": "1786851057540-5sup19s",
-          "imageId": "1792126117352-ai92wgr",
+          "imageId": "1792301673713-p1thvac",
           "position": "center"
         }
       ],
@@ -113,14 +113,6 @@
       "sound": "node_1787032057334_10_1aaq.wav"
     },
     {
-      "id": "node_1787032057334_12_j7ub",
-      "type": "text",
-      "speakerType": "narrator",
-      "speaker": "",
-      "text": "개인 열람실. 아야가 문을 잠그고, 블라우스와 치마를 벗어 팬티만 입은 채가 된다.",
-      "text_key": "node_1787032057334_12_j7ub"
-    },
-    {
       "id": "node_1787032057334_16_va6z",
       "type": "vn",
       "background": "2026-10-16_00203_.webp",
@@ -128,7 +120,7 @@
       "stageSlots": [
         {
           "characterId": "1786851057540-5sup19s",
-          "imageId": "1792126117352-p2o0bve",
+          "imageId": "1792301673716-twkfvqy",
           "position": "center"
         }
       ],
@@ -220,7 +212,7 @@
     {
       "id": "node_1787032057334_21_kdnc",
       "type": "graphic",
-      "image": "2026-10-16_00036__waifu2x_2x_compressed.mp4",
+      "image": "2026-10-18_00033__restored_1080p_nf_comp.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -252,6 +244,16 @@
       "text_key": "node_1787032057334_25_1ky9"
     },
     {
+      "id": "node_1792323782183_g7li",
+      "type": "graphic",
+      "image": "2026-10-18_00009__restored_1080p_nf_comp.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1787032057334_26_9jpq",
       "type": "text",
       "speakerType": "player",
@@ -275,7 +277,7 @@
       "stageSlots": [
         {
           "characterId": "1786851057540-5sup19s",
-          "imageId": "1792126117351-ulfxjrj",
+          "imageId": "1792301673716-kjd1yr0",
           "position": "center"
         }
       ],
@@ -334,7 +336,7 @@
       "stageSlots": [
         {
           "characterId": "1786851057540-5sup19s",
-          "imageId": "1792126117352-ai92wgr",
+          "imageId": "1792301673716-8hjw9ia",
           "position": "center"
         }
       ],
@@ -526,12 +528,20 @@
       "size": 258858
     },
     {
-      "id": "1792146011099-3fes9af",
-      "fileName": "2026-10-16_00036__waifu2x_2x_compressed.mp4",
+      "id": "1792323775992-iizteas",
+      "fileName": "2026-10-18_00033__restored_1080p_nf_comp.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/e1afa3bc-051c-49d7-890d-52556e97ef5e/videos/2026-10-16_00036__waifu2x_2x_compressed.mp4",
-      "url": "media://chapter_assets/events/e1afa3bc-051c-49d7-890d-52556e97ef5e/videos/2026-10-16_00036__waifu2x_2x_compressed.mp4",
-      "size": 3312694
+      "sourcePath": "chapter_assets/events/e1afa3bc-051c-49d7-890d-52556e97ef5e/videos/2026-10-18_00033__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/e1afa3bc-051c-49d7-890d-52556e97ef5e/videos/2026-10-18_00033__restored_1080p_nf_comp.mp4",
+      "size": 2426466
+    },
+    {
+      "id": "1792323786843-1uy868g",
+      "fileName": "2026-10-18_00009__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/e1afa3bc-051c-49d7-890d-52556e97ef5e/videos/2026-10-18_00009__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/e1afa3bc-051c-49d7-890d-52556e97ef5e/videos/2026-10-18_00009__restored_1080p_nf_comp.mp4",
+      "size": 3256950
     }
   ],
   "sourceZipName": "직접 생성",

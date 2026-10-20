@@ -15,7 +15,7 @@
       "stageSlots": [
         {
           "characterId": "1786850998437-g6olmc9",
-          "imageId": "1792116667269-365ysx3",
+          "imageId": "1792299717934-zh21rm5",
           "position": "center"
         }
       ],
@@ -119,6 +119,22 @@
       "text_key": "node_1787135825636_11_r2ln"
     },
     {
+      "id": "node_1792304353634_su2v",
+      "type": "vn",
+      "background": "2026-10-16_00200_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786850998437-g6olmc9",
+          "imageId": "1792299717939-b63ob46",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
+    {
       "id": "node_1787135825636_12_38pu",
       "type": "text",
       "speakerType": "character",
@@ -187,6 +203,22 @@
       "speaker": "player",
       "text": "할 수 있어요. 아니, 아키야마 씨가 아니면 안 됩니다. (또박또박)",
       "text_key": "node_1787135825636_19_wd33"
+    },
+    {
+      "id": "node_1792304387129_p6ys",
+      "type": "vn",
+      "background": "2026-10-16_00200_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786850998437-g6olmc9",
+          "imageId": "1792299717934-zh21rm5",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787135825636_20_hj5w",

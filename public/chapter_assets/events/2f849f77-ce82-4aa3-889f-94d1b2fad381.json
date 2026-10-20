@@ -15,7 +15,7 @@
       "stageSlots": [
         {
           "characterId": "1786850998437-g6olmc9",
-          "imageId": "1792116614097-7a2007c",
+          "imageId": "1792299717940-fu2fjmz",
           "position": "center"
         }
       ],
@@ -338,12 +338,19 @@
     },
     {
       "id": "graphic_2f849f77_5",
-      "type": "graphic",
-      "image": "2026-10-16_00015__waifu2x_2x_compressed.mp4",
+      "type": "vn",
+      "background": "2026-10-16_00179_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786850998437-g6olmc9",
+          "imageId": "1792299717940-wi9rnfe",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "speed": 1.5
+      "ignoreDelay": false
     },
     {
       "id": "node_1787136140417_36_id7c",
@@ -461,7 +468,7 @@
       "stageSlots": [
         {
           "characterId": "1786850998437-g6olmc9",
-          "imageId": "1792116614097-7a2007c",
+          "imageId": "1792299717940-fu2fjmz",
           "position": "center"
         }
       ],

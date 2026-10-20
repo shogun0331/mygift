@@ -61,5 +61,40 @@
     },
     "mediaRevision": 1792024710122,
     "vnImages": []
+  },
+  {
+    "id": "1792369110889-p0l69g7",
+    "name": "Reiko",
+    "names": {
+      "ko": "Reiko",
+      "en": "",
+      "ja": "",
+      "zh-cn": "",
+      "zh-tw": "",
+      "ru": "",
+      "es": "",
+      "de": ""
+    },
+    "mediaRevision": 1792375268328,
+    "vnImages": [
+      {
+        "id": "1792371992890-s675moe",
+        "fileName": "1792371992890-s675moe__2026-10-18_00004.webp",
+        "fileSize": 225954,
+        "url": "media://vn_characters/1792369110889-p0l69g7/images/1792371992890-s675moe__2026-10-18_00004.webp"
+      },
+      {
+        "id": "1792371992892-c1jp4r6",
+        "fileName": "1792371992892-c1jp4r6__2026-10-18_00005.webp",
+        "fileSize": 233964,
+        "url": "media://vn_characters/1792369110889-p0l69g7/images/1792371992892-c1jp4r6__2026-10-18_00005.webp"
+      },
+      {
+        "id": "1792375265395-3tl0dnj",
+        "fileName": "1792375265395-3tl0dnj__2026-10-19_00005.webp",
+        "fileSize": 91140,
+        "url": "media://vn_characters/1792369110889-p0l69g7/images/1792375265395-3tl0dnj__2026-10-19_00005.webp"
+      }
+    ]
   }
 ]

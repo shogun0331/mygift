@@ -246,6 +246,7 @@ function convertNodeToType(prev: Record<string, any>, type: EditorNodeType) {
       type: 'vn',
       background,
       character,
+      characterPlate: typeof prev.characterPlate === 'string' ? prev.characterPlate : '',
       stageSlots: normalizeVnStageSlots(prev.stageSlots),
       delay: prev.delay ?? 2.0,
       ignoreDelay: Boolean(prev.ignoreDelay),
@@ -1047,11 +1048,13 @@ function VnNodeCharacterFields({
   node,
   registeredCharacters,
   vnCharacters,
+  locked = false,
   onChange,
 }: {
   node: Record<string, any>
   registeredCharacters: RegisteredCharacter[]
   vnCharacters: VnCharacter[]
+  locked?: boolean
   onChange: (stageSlots: VnStageSlot[]) => void
 }) {
   const slots = normalizeVnStageSlots(node.stageSlots)
@@ -1075,11 +1078,13 @@ function VnNodeCharacterFields({
   }
 
   return (
-    <div className="space-y-3">
+    <div className={`space-y-3 ${locked ? 'pointer-events-none opacity-40' : ''}`}>
       <div>
         <p className="text-[11px] font-semibold text-slate-400">캐릭터 이미지</p>
         <p className="mt-1 text-[10px] text-slate-500">
-          최대 2명. 좌, 중앙, 우 중 서로 다른 위치에 세웁니다. 한 명만 중앙이면 화면 가운데에 붙습니다.
+          {locked
+            ? '전신 일러스트가 올라와 있어 캐릭터 슬롯을 쓸 수 없습니다.'
+            : '최대 2명. 좌, 중앙, 우 중 서로 다른 위치에 세웁니다. 한 명만 중앙이면 화면 가운데에 붙습니다.'}
         </p>
       </div>
       {padded.map((slot, slotIndex) => {
@@ -1095,6 +1100,7 @@ function VnNodeCharacterFields({
             <p className="text-[10px] font-semibold text-slate-500">슬롯 {slotIndex + 1}</p>
             <select
               value={slot?.characterId ?? ''}
+              disabled={locked}
               onChange={(event) => {
                 const characterId = event.target.value
                 if (!characterId) {
@@ -1128,7 +1134,7 @@ function VnNodeCharacterFields({
             </select>
             <button
               type="button"
-              disabled={!slot}
+              disabled={locked || !slot}
               onClick={() => setPickerSlot(slotIndex)}
               className="w-full rounded-lg border border-amber-500/30 bg-amber-500/15 px-2 py-1.5 text-[11px] font-bold text-amber-200 hover:bg-amber-500/25 disabled:opacity-40"
             >
@@ -1142,7 +1148,7 @@ function VnNodeCharacterFields({
                   <button
                     key={position}
                     type="button"
-                    disabled={!slot || taken}
+                    disabled={locked || !slot || taken}
                     onClick={() => {
                       if (!slot) return
                       writeSlot(slotIndex, { ...slot, position })
@@ -1256,8 +1262,14 @@ function EventDetail({
   const [showCommonSoundModal, setShowCommonSoundModal] = useState(false)
   const [commonSoundAssignNodeIndex, setCommonSoundAssignNodeIndex] = useState<number | null>(null)
   const [mediaPickerNodeIndex, setMediaPickerNodeIndex] = useState<number | null>(null)
-  const [vnMediaPicker, setVnMediaPicker] = useState<{ index: number; field: 'background' | 'character' } | null>(null)
-  const [vnDropSlot, setVnDropSlot] = useState<{ index: number; field: 'background' | 'character' } | null>(null)
+  const [vnMediaPicker, setVnMediaPicker] = useState<{
+    index: number
+    field: 'background' | 'character' | 'characterPlate'
+  } | null>(null)
+  const [vnDropSlot, setVnDropSlot] = useState<{
+    index: number
+    field: 'background' | 'character' | 'characterPlate'
+  } | null>(null)
   const [soundPickerNodeIndex, setSoundPickerNodeIndex] = useState<number | null>(null)
 
   useEffect(() => {
@@ -1624,7 +1636,7 @@ function EventDetail({
   const applyDroppedFileToNode = (
     file: File,
     targetNodeIndex: number,
-    vnField?: 'background' | 'character',
+    vnField?: 'background' | 'character' | 'characterPlate',
   ): boolean => {
     const nodes = (event.nodes || []) as any[]
     const rawType = String(nodes[targetNodeIndex]?.type || 'text')
@@ -1640,18 +1652,24 @@ function EventDetail({
               : 'text'
 
     let kind = mediaKindOfFile(file)
-    let bindField: 'image' | 'voice' | 'sound' | 'background' | 'character' =
+    let bindField: 'image' | 'voice' | 'sound' | 'background' | 'character' | 'characterPlate' =
       nodeType === 'sound' ? 'sound' : nodeType === 'text' ? 'voice' : 'image'
 
     if (nodeType === 'vn') {
       const targetField =
         vnField ?? (isWebpFile(file) ? 'background' : isWebmFile(file) ? 'character' : null)
-      if (targetField === 'background' && isWebpFile(file)) {
+      if (targetField === 'characterPlate' && isWebpFile(file)) {
+        kind = 'image'
+        bindField = 'characterPlate'
+      } else if (targetField === 'background' && isWebpFile(file)) {
         kind = 'image'
         bindField = 'background'
       } else if (targetField === 'character' && isWebmFile(file)) {
         kind = 'video'
         bindField = 'character'
+      } else if (targetField === 'characterPlate') {
+        alert('전신 일러스트 칸에는 WebP만 드롭할 수 있습니다.\n(받은 파일: ' + file.name + ')')
+        return true
       } else if (targetField === 'background') {
         alert('배경 칸에는 WebP만 드롭할 수 있습니다.\n(받은 파일: ' + file.name + ')')
         return true
@@ -1705,6 +1723,10 @@ function EventDetail({
     const updatedNodes = [...nodes]
     const bound = { ...(updatedNodes[targetNodeIndex] as Record<string, any>) }
     bound[bindField] = file.name
+    if (bindField === 'characterPlate') {
+      bound.stageSlots = []
+      bound.character = ''
+    }
     updatedNodes[targetNodeIndex] = bound
 
     onUpdateEvent({
@@ -1834,13 +1856,18 @@ function EventDetail({
   const handleUploadMedia = (
     e: React.ChangeEvent<HTMLInputElement>,
     targetNodeIndex?: number,
-    bindField?: 'image' | 'voice' | 'sound' | 'background' | 'character',
+    bindField?: 'image' | 'voice' | 'sound' | 'background' | 'character' | 'characterPlate',
   ) => {
     const file = e.target.files?.[0]
     if (!file) return
 
     if (bindField === 'background' && !isWebpFile(file)) {
       alert('VN 배경은 WebP만 등록할 수 있습니다.')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+    if (bindField === 'characterPlate' && !isWebpFile(file)) {
+      alert('전신 일러스트는 WebP만 등록할 수 있습니다.')
       if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
@@ -1875,6 +1902,10 @@ function EventDetail({
         bindField ||
         (existing.type === 'sound' ? 'sound' : kind === 'sound' ? 'voice' : 'image')
       existing[field] = file.name
+      if (field === 'characterPlate') {
+        existing.stageSlots = []
+        existing.character = ''
+      }
       updatedNodes[targetNodeIndex] = existing
     }
 
@@ -1924,6 +1955,7 @@ function EventDetail({
       if (n.image) addVal(n.image)
       if (n.background) addVal(n.background)
       if (n.character) addVal(n.character)
+      if (n.characterPlate) addVal(n.characterPlate)
       if (n.voice) addVal(n.voice)
       if (n.sound) addVal(n.sound)
       if (n.video) addVal(n.video)
@@ -1984,6 +2016,7 @@ function EventDetail({
       if (isMatch(next.image)) next.image = ''
       if (isMatch(next.background)) next.background = ''
       if (isMatch(next.character)) next.character = ''
+      if (isMatch(next.characterPlate)) next.characterPlate = ''
       if (isMatch(next.sound)) next.sound = ''
       if (isMatch(next.video)) next.video = ''
       if (isMatch(next.media)) next.media = ''
@@ -2917,10 +2950,103 @@ function EventDetail({
                             ) : null}
                           </div>
 
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <label className="text-[11px] font-semibold text-slate-400">전신 일러스트 WebP</label>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setVnMediaPicker({ index, field: 'characterPlate' })}
+                                  className="text-[10px] text-amber-300 hover:text-amber-200 font-bold bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded transition"
+                                >
+                                  갤러리
+                                </button>
+                                <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">
+                                  파일 추가
+                                  <input
+                                    type="file"
+                                    accept="image/webp,.webp"
+                                    className="hidden"
+                                    onChange={(e) => handleUploadMedia(e, index, 'characterPlate')}
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                            <div
+                              className={`relative rounded-lg border transition ${
+                                vnDropSlot?.index === index && vnDropSlot.field === 'characterPlate'
+                                  ? 'border-emerald-400 bg-emerald-500/10'
+                                  : 'border-white/10 bg-black/40'
+                              }`}
+                              onDragOver={(e) => {
+                                if (![...(e.dataTransfer.types ?? [])].includes('Files')) return
+                                e.preventDefault()
+                                e.stopPropagation()
+                                e.dataTransfer.dropEffect = 'copy'
+                                if (vnDropSlot?.index !== index || vnDropSlot.field !== 'characterPlate') {
+                                  setVnDropSlot({ index, field: 'characterPlate' })
+                                }
+                              }}
+                              onDragLeave={(e) => {
+                                if (e.currentTarget.contains(e.relatedTarget as Node)) return
+                                setVnDropSlot((current) =>
+                                  current?.index === index && current.field === 'characterPlate' ? null : current,
+                                )
+                              }}
+                              onDrop={(e) => {
+                                if (![...(e.dataTransfer.types ?? [])].includes('Files')) return
+                                e.preventDefault()
+                                e.stopPropagation()
+                                setVnDropSlot(null)
+                                setFileDragOverIndex(null)
+                                const file = e.dataTransfer.files?.[0]
+                                if (file) applyDroppedFileToNode(file, index, 'characterPlate')
+                              }}
+                            >
+                              <select
+                                value={node.characterPlate || ''}
+                                onChange={(e) => {
+                                  const fileName = e.target.value
+                                  handleNodeChange(
+                                    index,
+                                    fileName
+                                      ? { characterPlate: fileName, stageSlots: [], character: '' }
+                                      : { characterPlate: '' },
+                                  )
+                                }}
+                                className="w-full bg-transparent px-2 py-1.5 text-xs text-slate-200 outline-none cursor-pointer"
+                              >
+                                <option value="" className="bg-slate-900">-- 전신 일러스트 없음 --</option>
+                                {event.media
+                                  .filter((m) => m.kind === 'image' && isWebpMediaName(m.fileName))
+                                  .map((asset, idx) => (
+                                    <option key={asset.id || `vn-plate-${idx}`} value={asset.fileName} className="bg-slate-900">
+                                      {asset.fileName}
+                                    </option>
+                                  ))}
+                              </select>
+                              {vnDropSlot?.index === index && vnDropSlot.field === 'characterPlate' ? (
+                                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-emerald-600/90 text-[11px] font-bold text-white pointer-events-none">
+                                  16:9 WebP를 여기에 드롭
+                                </div>
+                              ) : null}
+                            </div>
+                            <p className="text-[10px] text-slate-500">
+                              배경과 같은 16:9 알파 WebP를 끌어다 놓습니다. 올리면 캐릭터 슬롯은 잠깁니다.
+                            </p>
+                            {node.characterPlate ? (
+                              <VnMediaPreview
+                                asset={event.media.find((m) => m.fileName === node.characterPlate) ?? null}
+                                fileName={node.characterPlate}
+                              />
+                            ) : null}
+                          </div>
+
                           <VnNodeCharacterFields
                             node={node}
                             registeredCharacters={registeredCharacters}
                             vnCharacters={vnCharacters}
+                            locked={Boolean(node.characterPlate)}
                             onChange={(stageSlots) => handleNodeChange(index, { stageSlots })}
                           />
                         </div>
@@ -3048,7 +3174,7 @@ function EventDetail({
                                 <div className="relative w-24 aspect-video overflow-hidden rounded border border-white/10 bg-black/40">
                                   {asset.kind === 'image' ? (
                                     <img
-                                      src={asset.url}
+                                      src={resolveMediaSrc(asset.url)}
                                       alt="Preview"
                                       className="h-full w-full object-cover"
                                     />
@@ -3057,7 +3183,7 @@ function EventDetail({
                                       ref={(el) => {
                                         if (el) el.playbackRate = Math.min(4, Math.max(0.5, Number(node.speed) || 1.0))
                                       }}
-                                      src={asset.url}
+                                      src={resolveMediaSrc(asset.url)}
                                       muted
                                       playsInline
                                       autoPlay
@@ -3633,15 +3759,32 @@ function EventDetail({
         <MediaGalleryPickerModal
           media={event.media}
           selectedFileName={String((event.nodes[vnMediaPicker.index] as any)[vnMediaPicker.field] || '')}
-          acceptExt={vnMediaPicker.field === 'background' ? 'webp' : 'webm'}
-          uploadAccept={vnMediaPicker.field === 'background' ? 'image/webp,.webp' : 'video/webm,.webm'}
-          title={vnMediaPicker.field === 'background' ? 'VN 배경 WebP' : 'VN 캐릭터 WebM'}
+          acceptExt={vnMediaPicker.field === 'character' ? 'webm' : 'webp'}
+          uploadAccept={vnMediaPicker.field === 'character' ? 'video/webm,.webm' : 'image/webp,.webp'}
+          title={
+            vnMediaPicker.field === 'background'
+              ? 'VN 배경 WebP'
+              : vnMediaPicker.field === 'characterPlate'
+                ? '전신 일러스트 WebP'
+                : 'VN 캐릭터 WebM'
+          }
           hint={
             vnMediaPicker.field === 'background'
               ? '배경으로 쓸 WebP를 고릅니다.'
-              : '스탠딩으로 쓸 WebM 하나를 고릅니다.'
+              : vnMediaPicker.field === 'characterPlate'
+                ? '배경과 같은 16:9 알파 WebP를 고릅니다. 고르면 캐릭터 슬롯은 비워집니다.'
+                : '스탠딩으로 쓸 WebM 하나를 고릅니다.'
           }
           onSelect={(fileName) => {
+            if (vnMediaPicker.field === 'characterPlate') {
+              handleNodeChange(
+                vnMediaPicker.index,
+                fileName
+                  ? { characterPlate: fileName, stageSlots: [], character: '' }
+                  : { characterPlate: '' },
+              )
+              return
+            }
             handleNodeChange(vnMediaPicker.index, { [vnMediaPicker.field]: fileName })
           }}
           onUploadMedia={(files) => {
@@ -3706,9 +3849,9 @@ function VnMediaPreview({ asset, fileName }: { asset: EventMediaAsset | null; fi
     <div className="mt-1 flex items-center gap-2 bg-black/20 p-1.5 rounded-lg border border-white/5 w-fit">
       <div className="relative h-16 w-24 overflow-hidden rounded border border-white/10 bg-black/40">
         {asset.kind === 'video' ? (
-          <video src={asset.url} muted playsInline autoPlay loop className="h-full w-full object-contain object-bottom" />
+          <video src={resolveMediaSrc(asset.url)} muted playsInline autoPlay loop className="h-full w-full object-contain object-bottom" />
         ) : (
-          <img src={asset.url} alt="" className="h-full w-full object-cover" />
+          <img src={resolveMediaSrc(asset.url)} alt="" className="h-full w-full object-cover" />
         )}
       </div>
       <p className="max-w-[140px] truncate text-[10px] text-slate-300" title={asset.fileName}>
@@ -3733,20 +3876,20 @@ function MediaThumb({ asset }: { asset: EventMediaAsset }) {
   if (asset.kind === 'image') {
     return (
       <div className="aspect-video bg-black/40">
-        <img src={asset.url} alt="" onError={() => setHasError(true)} className="h-full w-full object-cover" />
+        <img src={resolveMediaSrc(asset.url)} alt="" onError={() => setHasError(true)} className="h-full w-full object-cover" />
       </div>
     )
   }
   if (asset.kind === 'video') {
     return (
       <div className="aspect-video bg-black/40">
-        <video src={asset.url} muted playsInline onError={() => setHasError(true)} className="h-full w-full object-cover" />
+        <video src={resolveMediaSrc(asset.url)} muted playsInline onError={() => setHasError(true)} className="h-full w-full object-cover" />
       </div>
     )
   }
   return (
     <div className="flex aspect-video items-center justify-center bg-black/40 px-2">
-      <audio src={asset.url} controls preload="metadata" onError={() => setHasError(true)} className="w-full" />
+      <audio src={resolveMediaSrc(asset.url)} controls preload="metadata" onError={() => setHasError(true)} className="w-full" />
     </div>
   )
 }
@@ -3757,7 +3900,7 @@ function MediaThumb({ asset }: { asset: EventMediaAsset }) {
 export type MediaGalleryPickerModalProps = {
   media: EventMediaAsset[]
   selectedFileName: string
-  onSelect: (fileName: string) => void
+  onSelect: (fileName: string, asset?: EventMediaAsset) => void
   onUploadMedia?: (files: FileList) => void
   onClose: () => void
   title?: string
@@ -3779,16 +3922,31 @@ export function MediaGalleryPickerModal({
   uploadAccept,
 }: MediaGalleryPickerModalProps) {
   const [filterKind, setFilterKind] = useState<'all' | 'image' | 'video'>('all')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [search, setSearch] = useState('')
   const [hoverId, setHoverId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const distinctCategories = useMemo(() => {
+    const set = new Set<string>()
+    for (const m of media) {
+      if (m.sourcePath && m.sourcePath.trim()) {
+        set.add(m.sourcePath.trim())
+      }
+    }
+    return Array.from(set)
+  }, [media])
 
   const items = media.filter((m) => {
     if (m.kind !== 'image' && m.kind !== 'video') return false
     if (acceptExt && fileExtName(m.fileName) !== acceptExt.toLowerCase()) return false
     if (!acceptExt && filterKind !== 'all' && m.kind !== filterKind) return false
+    if (selectedCategory !== 'all' && m.sourcePath !== selectedCategory) return false
     if (search.trim()) {
-      return m.fileName.toLowerCase().includes(search.toLowerCase().trim())
+      const q = search.toLowerCase().trim()
+      const matchName = m.fileName.toLowerCase().includes(q)
+      const matchSource = m.sourcePath ? m.sourcePath.toLowerCase().includes(q) : false
+      return matchName || matchSource
     }
     return true
   })
@@ -3847,13 +4005,30 @@ export function MediaGalleryPickerModal({
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {distinctCategories.length > 1 ? (
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500"
+              >
+                <option value="all">📂 모든 출처 ({media.filter((m) => m.kind !== 'sound').length})</option>
+                {distinctCategories.map((cat) => {
+                  const count = media.filter((m) => m.sourcePath === cat).length
+                  return (
+                    <option key={cat} value={cat}>
+                      {cat} ({count})
+                    </option>
+                  )
+                })}
+              </select>
+            ) : null}
             <input
               type="text"
-              placeholder="🔍 미디어 파일명 검색..."
+              placeholder="🔍 미디어 파일명 / 출처 검색..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-48 sm:w-64 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500"
+              className="w-44 sm:w-56 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-indigo-500"
             />
             {onUploadMedia ? (
               <>
@@ -3914,7 +4089,7 @@ export function MediaGalleryPickerModal({
                   <div
                     key={asset.id ? `picker-${asset.id}` : `picker-${asset.fileName}-${idx}`}
                     onClick={() => {
-                      onSelect(asset.fileName)
+                      onSelect(asset.fileName, asset)
                       onClose()
                     }}
                     onMouseEnter={() => setHoverId(asset.id)}
@@ -3929,13 +4104,13 @@ export function MediaGalleryPickerModal({
                     <div className="relative aspect-video w-full overflow-hidden bg-black/60">
                       {asset.kind === 'image' ? (
                         <img
-                          src={asset.url}
+                          src={resolveMediaSrc(asset.url)}
                           alt={asset.fileName}
                           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                         />
                       ) : asset.kind === 'video' ? (
                         <video
-                          src={asset.url}
+                          src={resolveMediaSrc(asset.url)}
                           muted
                           loop
                           playsInline
@@ -3970,9 +4145,17 @@ export function MediaGalleryPickerModal({
                       >
                         {asset.fileName}
                       </p>
-                      <p className="mt-0.5 text-[10px] text-slate-500">
-                        {formatFileSize(asset.size)}
-                      </p>
+                      <div className="mt-1 flex items-center justify-between text-[10px] text-slate-400">
+                        <span>{formatFileSize(asset.size)}</span>
+                        {asset.sourcePath ? (
+                          <span
+                            className="truncate max-w-[130px] rounded bg-white/10 px-1.5 py-0.5 text-[9px] text-slate-300"
+                            title={asset.sourcePath}
+                          >
+                            {asset.sourcePath}
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
                 )

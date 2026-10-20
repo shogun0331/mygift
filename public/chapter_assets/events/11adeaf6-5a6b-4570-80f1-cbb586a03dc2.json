@@ -15,7 +15,7 @@
       "stageSlots": [
         {
           "characterId": "1786851057540-5sup19s",
-          "imageId": "1792126117352-ai92wgr",
+          "imageId": "1792301673713-p1thvac",
           "position": "center"
         }
       ],
@@ -65,6 +65,22 @@
       "speaker": "player",
       "text": "농담 아닙니다. 성인 방송국입니다. 교수님의 지적인 매력과 연륜, 그게 저희 방송에선 최고의 무기가 됩니다.",
       "text_key": "node_1787030522142_6_7hn4"
+    },
+    {
+      "id": "node_1792304813063_17a6",
+      "type": "vn",
+      "background": "2026-10-16_00218_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851057540-5sup19s",
+          "imageId": "1792301673716-8hjw9ia",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787030522142_7_wmjs",
@@ -117,6 +133,22 @@
       "speaker": "player",
       "text": "교수님이 아니면 안 됩니다. 그 분위기를 보자마자 확신했어요.",
       "text_key": "node_1787030522142_12_1vck"
+    },
+    {
+      "id": "node_1792304829186_8alt",
+      "type": "vn",
+      "background": "2026-10-16_00218_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851057540-5sup19s",
+          "imageId": "1792301673713-p1thvac",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787030522142_13_0ibt",

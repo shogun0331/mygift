@@ -15,7 +15,7 @@
       "stageSlots": [
         {
           "characterId": "1786849140255-p0lxz2i",
-          "imageId": "1792114260172-r3w8ng6",
+          "imageId": "1792299698257-kngf68n",
           "position": "center"
         }
       ],
@@ -280,7 +280,7 @@
       "stageSlots": [
         {
           "characterId": "1786849140255-p0lxz2i",
-          "imageId": "1792114260171-qoaibi8",
+          "imageId": "1792299698259-0225y1i",
           "position": "center"
         }
       ],
@@ -450,10 +450,11 @@
     {
       "id": "node_1787118693734_48_l39u",
       "type": "graphic",
-      "image": "2026-10-16_00007__waifu2x_2x_compressed.mp4",
+      "image": "2026-10-18_00029__restored_1080p_nf_comp.mp4",
       "delay": 2,
       "blurRegions": [],
-      "blurDefault": 4
+      "blurDefault": 4,
+      "speed": 1.2
     },
     {
       "id": "node_1787118693734_49_kois",
@@ -496,6 +497,16 @@
       "speaker": "",
       "text": "그녀가 눈을 감고, 내 자지를 깊이 받아들인다.",
       "text_key": "node_1787118693734_52_hk7t"
+    },
+    {
+      "id": "node_1792317425410_g5u7",
+      "type": "graphic",
+      "image": "2026-10-17_00049__restored_1080p_nf_comp.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1.3,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787118693734_53_6fil",
@@ -547,7 +558,7 @@
       "stageSlots": [
         {
           "characterId": "1786849140255-p0lxz2i",
-          "imageId": "1792114260170-vjrpetz",
+          "imageId": "1792299698258-320ujsf",
           "position": "center"
         }
       ],
@@ -767,12 +778,20 @@
       "size": 381242
     },
     {
-      "id": "1792140096435-d9jmhoc",
-      "fileName": "2026-10-16_00007__waifu2x_2x_compressed.mp4",
+      "id": "1792317417734-wf7d22r",
+      "fileName": "2026-10-18_00029__restored_1080p_nf_comp.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/videos/2026-10-16_00007__waifu2x_2x_compressed.mp4",
-      "url": "media://chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/videos/2026-10-16_00007__waifu2x_2x_compressed.mp4",
-      "size": 3404657
+      "sourcePath": "chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/videos/2026-10-18_00029__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/videos/2026-10-18_00029__restored_1080p_nf_comp.mp4",
+      "size": 2352953
+    },
+    {
+      "id": "1792317428840-yqvmyjf",
+      "fileName": "2026-10-17_00049__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/videos/2026-10-17_00049__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/9e811e32-fbde-4478-a0de-4e6ac4e3f8fd/videos/2026-10-17_00049__restored_1080p_nf_comp.mp4",
+      "size": 2814505
     }
   ],
   "sourceZipName": "직접 생성",

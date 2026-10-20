@@ -15,21 +15,21 @@
     "nameKey": "takahashi-aya",
     "gender": "female",
     "kind": "security",
-    "iconImageId": "1787451718541-jqkhqn1",
-    "cardImageId": "1787451720074-fyfpvjl",
-    "mediaRevision": 1787451722676,
+    "iconImageId": "1792384212316-pvvm0mv",
+    "cardImageId": "1792384209103-lizfiho",
+    "mediaRevision": 1792384213744,
     "images": [
       {
-        "id": "1787451718541-jqkhqn1",
-        "fileName": "1787451718541-jqkhqn1__2026-08-23_00001.png",
-        "fileSize": 2199383,
-        "url": "media://staff/staff-security-01/images/1787451718541-jqkhqn1__2026-08-23_00001.png"
+        "id": "1792384209103-lizfiho",
+        "fileName": "1792384209103-lizfiho__security_01_ponytail_woman.webp",
+        "fileSize": 170886,
+        "url": "media://staff/staff-security-01/images/1792384209103-lizfiho__security_01_ponytail_woman.webp"
       },
       {
-        "id": "1787451720074-fyfpvjl",
-        "fileName": "1787451720074-fyfpvjl__2026-08-23_00002.png",
-        "fileSize": 2069609,
-        "url": "media://staff/staff-security-01/images/1787451720074-fyfpvjl__2026-08-23_00002.png"
+        "id": "1792384212316-pvvm0mv",
+        "fileName": "1792384212316-pvvm0mv__security_01_ponytail_woman.webp",
+        "fileSize": 126684,
+        "url": "media://staff/staff-security-01/images/1792384212316-pvvm0mv__security_01_ponytail_woman.webp"
       }
     ]
   },
@@ -49,21 +49,21 @@
     "nameKey": "tanaka-haruto",
     "gender": "male",
     "kind": "security",
-    "iconImageId": "1787451801385-lk9ia74",
-    "cardImageId": "1787451805152-9xdidv8",
-    "mediaRevision": 1787451807106,
+    "iconImageId": "1792384247727-b05rqg9",
+    "cardImageId": "1792384243613-klr8nns",
+    "mediaRevision": 1792384248958,
     "images": [
       {
-        "id": "1787451801385-lk9ia74",
-        "fileName": "1787451801385-lk9ia74__2026-08-23_00009.png",
-        "fileSize": 1997166,
-        "url": "media://staff/staff-security-02/images/1787451801385-lk9ia74__2026-08-23_00009.png"
+        "id": "1792384243613-klr8nns",
+        "fileName": "1792384243613-klr8nns__security_02_big_man.webp",
+        "fileSize": 155174,
+        "url": "media://staff/staff-security-02/images/1792384243613-klr8nns__security_02_big_man.webp"
       },
       {
-        "id": "1787451805152-9xdidv8",
-        "fileName": "1787451805152-9xdidv8__2026-08-23_00010.png",
-        "fileSize": 2033611,
-        "url": "media://staff/staff-security-02/images/1787451805152-9xdidv8__2026-08-23_00010.png"
+        "id": "1792384247727-b05rqg9",
+        "fileName": "1792384247727-b05rqg9__security_02_big_man.webp",
+        "fileSize": 148360,
+        "url": "media://staff/staff-security-02/images/1792384247727-b05rqg9__security_02_big_man.webp"
       }
     ]
   },
@@ -83,21 +83,21 @@
     "nameKey": "suzuki-hana",
     "gender": "female",
     "kind": "security",
-    "iconImageId": "1787451762657-hj3870h",
-    "cardImageId": "1787451764650-2mrm7ik",
-    "mediaRevision": 1787451766507,
+    "iconImageId": "1792384259105-e6x67io",
+    "cardImageId": "1792384256719-1gj4qu6",
+    "mediaRevision": 1792384259915,
     "images": [
       {
-        "id": "1787451762657-hj3870h",
-        "fileName": "1787451762657-hj3870h__2026-08-23_00005.png",
-        "fileSize": 2362484,
-        "url": "media://staff/staff-security-03/images/1787451762657-hj3870h__2026-08-23_00005.png"
+        "id": "1792384256719-1gj4qu6",
+        "fileName": "1792384256719-1gj4qu6__security_05_glasses_woman.webp",
+        "fileSize": 168020,
+        "url": "media://staff/staff-security-03/images/1792384256719-1gj4qu6__security_05_glasses_woman.webp"
       },
       {
-        "id": "1787451764650-2mrm7ik",
-        "fileName": "1787451764650-2mrm7ik__2026-08-23_00006.png",
-        "fileSize": 2004974,
-        "url": "media://staff/staff-security-03/images/1787451764650-2mrm7ik__2026-08-23_00006.png"
+        "id": "1792384259105-e6x67io",
+        "fileName": "1792384259105-e6x67io__security_05_glasses_woman.webp",
+        "fileSize": 152364,
+        "url": "media://staff/staff-security-03/images/1792384259105-e6x67io__security_05_glasses_woman.webp"
       }
     ]
   },
@@ -117,21 +117,21 @@
     "nameKey": "inoue-ren",
     "gender": "male",
     "kind": "security",
-    "iconImageId": "1787451813658-pbpdqte",
-    "cardImageId": "1787451814921-fgmmrop",
-    "mediaRevision": 1787451816472,
+    "iconImageId": "1792384267592-wvl33el",
+    "cardImageId": "1792384265234-cc49d7b",
+    "mediaRevision": 1792384268405,
     "images": [
       {
-        "id": "1787451813658-pbpdqte",
-        "fileName": "1787451813658-pbpdqte__2026-08-23_00011.png",
-        "fileSize": 2072383,
-        "url": "media://staff/staff-security-04/images/1787451813658-pbpdqte__2026-08-23_00011.png"
+        "id": "1792384265234-cc49d7b",
+        "fileName": "1792384265234-cc49d7b__security_04_skinny_young_man.webp",
+        "fileSize": 139584,
+        "url": "media://staff/staff-security-04/images/1792384265234-cc49d7b__security_04_skinny_young_man.webp"
       },
       {
-        "id": "1787451814921-fgmmrop",
-        "fileName": "1787451814921-fgmmrop__2026-08-23_00012.png",
-        "fileSize": 1841672,
-        "url": "media://staff/staff-security-04/images/1787451814921-fgmmrop__2026-08-23_00012.png"
+        "id": "1792384267592-wvl33el",
+        "fileName": "1792384267592-wvl33el__security_04_skinny_young_man.webp",
+        "fileSize": 119304,
+        "url": "media://staff/staff-security-04/images/1792384267592-wvl33el__security_04_skinny_young_man.webp"
       }
     ]
   },
@@ -151,21 +151,21 @@
     "nameKey": "watanabe-rin",
     "gender": "female",
     "kind": "security",
-    "iconImageId": "1787451791379-wg300hx",
-    "cardImageId": "1787451792921-eo0qzmi",
-    "mediaRevision": 1787451795691,
+    "iconImageId": "1792384277265-xrv7p3x",
+    "cardImageId": "1792384274469-n0ec9c3",
+    "mediaRevision": 1792384278185,
     "images": [
       {
-        "id": "1787451791379-wg300hx",
-        "fileName": "1787451791379-wg300hx__2026-08-23_00007.png",
-        "fileSize": 2002514,
-        "url": "media://staff/staff-security-05/images/1787451791379-wg300hx__2026-08-23_00007.png"
+        "id": "1792384274469-n0ec9c3",
+        "fileName": "1792384274469-n0ec9c3__security_03_black_woman.webp",
+        "fileSize": 121982,
+        "url": "media://staff/staff-security-05/images/1792384274469-n0ec9c3__security_03_black_woman.webp"
       },
       {
-        "id": "1787451792921-eo0qzmi",
-        "fileName": "1787451792921-eo0qzmi__2026-08-23_00008.png",
-        "fileSize": 1985218,
-        "url": "media://staff/staff-security-05/images/1787451792921-eo0qzmi__2026-08-23_00008.png"
+        "id": "1792384277265-xrv7p3x",
+        "fileName": "1792384277265-xrv7p3x__security_03_black_woman.webp",
+        "fileSize": 113686,
+        "url": "media://staff/staff-security-05/images/1792384277265-xrv7p3x__security_03_black_woman.webp"
       }
     ]
   },
@@ -185,21 +185,21 @@
     "nameKey": "kimura-sota",
     "gender": "male",
     "kind": "security",
-    "iconImageId": "1787451822939-dgjlrbc",
-    "cardImageId": "1787451824886-jtbpplc",
-    "mediaRevision": 1787451826329,
+    "iconImageId": "1792384287024-9blatqd",
+    "cardImageId": "1792384284189-387m2n9",
+    "mediaRevision": 1792384287975,
     "images": [
       {
-        "id": "1787451822939-dgjlrbc",
-        "fileName": "1787451822939-dgjlrbc__2026-08-23_00013.png",
-        "fileSize": 2184994,
-        "url": "media://staff/staff-security-06/images/1787451822939-dgjlrbc__2026-08-23_00013.png"
+        "id": "1792384284189-387m2n9",
+        "fileName": "1792384284189-387m2n9__security_06_hairy_man.webp",
+        "fileSize": 223632,
+        "url": "media://staff/staff-security-06/images/1792384284189-387m2n9__security_06_hairy_man.webp"
       },
       {
-        "id": "1787451824886-jtbpplc",
-        "fileName": "1787451824886-jtbpplc__2026-08-23_00014.png",
-        "fileSize": 1831094,
-        "url": "media://staff/staff-security-06/images/1787451824886-jtbpplc__2026-08-23_00014.png"
+        "id": "1792384287024-9blatqd",
+        "fileName": "1792384287024-9blatqd__security_06_hairy_man.webp",
+        "fileSize": 202400,
+        "url": "media://staff/staff-security-06/images/1792384287024-9blatqd__security_06_hairy_man.webp"
       }
     ]
   },
@@ -219,21 +219,21 @@
     "nameKey": "hayashi-kaito",
     "gender": "male",
     "kind": "repair",
-    "iconImageId": "1787451840488-md37w41",
-    "cardImageId": "1787451841793-6kiyyex",
-    "mediaRevision": 1787451843881,
+    "iconImageId": "1792384300317-0ezrjjh",
+    "cardImageId": "1792384296975-6geydm6",
+    "mediaRevision": 1792384301288,
     "images": [
       {
-        "id": "1787451840488-md37w41",
-        "fileName": "1787451840488-md37w41__2026-08-23_00025.png",
-        "fileSize": 2106598,
-        "url": "media://staff/staff-repair-01/images/1787451840488-md37w41__2026-08-23_00025.png"
+        "id": "1792384296975-6geydm6",
+        "fileName": "1792384296975-6geydm6__maintenance_06_stocky_man.webp",
+        "fileSize": 169568,
+        "url": "media://staff/staff-repair-01/images/1792384296975-6geydm6__maintenance_06_stocky_man.webp"
       },
       {
-        "id": "1787451841793-6kiyyex",
-        "fileName": "1787451841793-6kiyyex__2026-08-23_00026.png",
-        "fileSize": 2091999,
-        "url": "media://staff/staff-repair-01/images/1787451841793-6kiyyex__2026-08-23_00026.png"
+        "id": "1792384300317-0ezrjjh",
+        "fileName": "1792384300317-0ezrjjh__maintenance_06_stocky_man.webp",
+        "fileSize": 159858,
+        "url": "media://staff/staff-repair-01/images/1792384300317-0ezrjjh__maintenance_06_stocky_man.webp"
       }
     ]
   },
@@ -253,21 +253,21 @@
     "nameKey": "ito-saki",
     "gender": "female",
     "kind": "repair",
-    "iconImageId": "1787451850076-udwrgo9",
-    "cardImageId": "1787451851465-n2qy1ee",
-    "mediaRevision": 1787451853514,
+    "iconImageId": "1792384313817-gazthn7",
+    "cardImageId": "1792384311487-kyv5ysr",
+    "mediaRevision": 1792384314442,
     "images": [
       {
-        "id": "1787451850076-udwrgo9",
-        "fileName": "1787451850076-udwrgo9__2026-08-23_00015.png",
-        "fileSize": 2417724,
-        "url": "media://staff/staff-repair-02/images/1787451850076-udwrgo9__2026-08-23_00015.png"
+        "id": "1792384311487-kyv5ysr",
+        "fileName": "1792384311487-kyv5ysr__maintenance_03_pink_hair_girl.webp",
+        "fileSize": 222196,
+        "url": "media://staff/staff-repair-02/images/1792384311487-kyv5ysr__maintenance_03_pink_hair_girl.webp"
       },
       {
-        "id": "1787451851465-n2qy1ee",
-        "fileName": "1787451851465-n2qy1ee__2026-08-23_00016.png",
-        "fileSize": 2255668,
-        "url": "media://staff/staff-repair-02/images/1787451851465-n2qy1ee__2026-08-23_00016.png"
+        "id": "1792384313817-gazthn7",
+        "fileName": "1792384313817-gazthn7__maintenance_03_pink_hair_girl.webp",
+        "fileSize": 171488,
+        "url": "media://staff/staff-repair-02/images/1792384313817-gazthn7__maintenance_03_pink_hair_girl.webp"
       }
     ]
   },
@@ -287,21 +287,21 @@
     "nameKey": "shimizu-yuto",
     "gender": "male",
     "kind": "repair",
-    "iconImageId": "1787451872784-c577vm0",
-    "cardImageId": "1787451874048-g7lvfzg",
-    "mediaRevision": 1787451875336,
+    "iconImageId": "1792384323596-39hf8f0",
+    "cardImageId": "1792384321261-m0ypwic",
+    "mediaRevision": 1792384324627,
     "images": [
       {
-        "id": "1787451872784-c577vm0",
-        "fileName": "1787451872784-c577vm0__2026-08-23_00021.png",
-        "fileSize": 2281979,
-        "url": "media://staff/staff-repair-03/images/1787451872784-c577vm0__2026-08-23_00021.png"
+        "id": "1792384321261-m0ypwic",
+        "fileName": "1792384321261-m0ypwic__maintenance_04_long_hair_man.webp",
+        "fileSize": 216442,
+        "url": "media://staff/staff-repair-03/images/1792384321261-m0ypwic__maintenance_04_long_hair_man.webp"
       },
       {
-        "id": "1787451874048-g7lvfzg",
-        "fileName": "1787451874048-g7lvfzg__2026-08-23_00022.png",
-        "fileSize": 2161652,
-        "url": "media://staff/staff-repair-03/images/1787451874048-g7lvfzg__2026-08-23_00022.png"
+        "id": "1792384323596-39hf8f0",
+        "fileName": "1792384323596-39hf8f0__maintenance_04_long_hair_man.webp",
+        "fileSize": 172774,
+        "url": "media://staff/staff-repair-03/images/1792384323596-39hf8f0__maintenance_04_long_hair_man.webp"
       }
     ]
   },
@@ -321,21 +321,21 @@
     "nameKey": "yamamoto-yui",
     "gender": "female",
     "kind": "repair",
-    "iconImageId": "1787451860075-fy53w8f",
-    "cardImageId": "1787451861305-cykwwbw",
-    "mediaRevision": 1787451861938,
+    "iconImageId": "1792384334268-3u5xc7t",
+    "cardImageId": "1792384331577-n84rqca",
+    "mediaRevision": 1792384346713,
     "images": [
       {
-        "id": "1787451860075-fy53w8f",
-        "fileName": "1787451860075-fy53w8f__2026-08-23_00017.png",
-        "fileSize": 2208561,
-        "url": "media://staff/staff-repair-04/images/1787451860075-fy53w8f__2026-08-23_00017.png"
+        "id": "1792384331577-n84rqca",
+        "fileName": "1792384331577-n84rqca__maintenance_05_muscular_woman.webp",
+        "fileSize": 203714,
+        "url": "media://staff/staff-repair-04/images/1792384331577-n84rqca__maintenance_05_muscular_woman.webp"
       },
       {
-        "id": "1787451861305-cykwwbw",
-        "fileName": "1787451861305-cykwwbw__2026-08-23_00018.png",
-        "fileSize": 2030917,
-        "url": "media://staff/staff-repair-04/images/1787451861305-cykwwbw__2026-08-23_00018.png"
+        "id": "1792384334268-3u5xc7t",
+        "fileName": "1792384334268-3u5xc7t__maintenance_05_muscular_woman.webp",
+        "fileSize": 170998,
+        "url": "media://staff/staff-repair-04/images/1792384334268-3u5xc7t__maintenance_05_muscular_woman.webp"
       }
     ]
   },
@@ -355,21 +355,21 @@
     "nameKey": "yamaguchi-hiroto",
     "gender": "male",
     "kind": "repair",
-    "iconImageId": "1787451885784-3ftc85o",
-    "cardImageId": "1787451887746-v1woz8u",
-    "mediaRevision": 1787451888668,
+    "iconImageId": "1792384354344-rdvahde",
+    "cardImageId": "1792384352393-qgv9vxe",
+    "mediaRevision": 1792384355127,
     "images": [
       {
-        "id": "1787451885784-3ftc85o",
-        "fileName": "1787451885784-3ftc85o__2026-08-23_00023.png",
-        "fileSize": 2260914,
-        "url": "media://staff/staff-repair-05/images/1787451885784-3ftc85o__2026-08-23_00023.png"
+        "id": "1792384352393-qgv9vxe",
+        "fileName": "1792384352393-qgv9vxe__maintenance_02_fat_man.webp",
+        "fileSize": 216180,
+        "url": "media://staff/staff-repair-05/images/1792384352393-qgv9vxe__maintenance_02_fat_man.webp"
       },
       {
-        "id": "1787451887746-v1woz8u",
-        "fileName": "1787451887746-v1woz8u__2026-08-23_00024.png",
-        "fileSize": 2132243,
-        "url": "media://staff/staff-repair-05/images/1787451887746-v1woz8u__2026-08-23_00024.png"
+        "id": "1792384354344-rdvahde",
+        "fileName": "1792384354344-rdvahde__maintenance_02_fat_man.webp",
+        "fileSize": 182876,
+        "url": "media://staff/staff-repair-05/images/1792384354344-rdvahde__maintenance_02_fat_man.webp"
       }
     ]
   },
@@ -389,21 +389,21 @@
     "nameKey": "nakamura-mei",
     "gender": "female",
     "kind": "repair",
-    "iconImageId": "1787451866683-mxf6etd",
-    "cardImageId": "1787451867968-kc9m0fg",
-    "mediaRevision": 1787451868970,
+    "iconImageId": "1792384370212-h7z3fkb",
+    "cardImageId": "1792384362828-a9g2ilt",
+    "mediaRevision": 1792384371286,
     "images": [
       {
-        "id": "1787451866683-mxf6etd",
-        "fileName": "1787451866683-mxf6etd__2026-08-23_00019.png",
-        "fileSize": 2495643,
-        "url": "media://staff/staff-repair-06/images/1787451866683-mxf6etd__2026-08-23_00019.png"
+        "id": "1792384362828-a9g2ilt",
+        "fileName": "1792384362828-a9g2ilt__maintenance_01_short_brown_hair_woman.webp",
+        "fileSize": 244398,
+        "url": "media://staff/staff-repair-06/images/1792384362828-a9g2ilt__maintenance_01_short_brown_hair_woman.webp"
       },
       {
-        "id": "1787451867968-kc9m0fg",
-        "fileName": "1787451867968-kc9m0fg__2026-08-23_00020.png",
-        "fileSize": 2078175,
-        "url": "media://staff/staff-repair-06/images/1787451867968-kc9m0fg__2026-08-23_00020.png"
+        "id": "1792384370212-h7z3fkb",
+        "fileName": "1792384370212-h7z3fkb__maintenance_01_short_brown_hair_woman.webp",
+        "fileSize": 154274,
+        "url": "media://staff/staff-repair-06/images/1792384370212-h7z3fkb__maintenance_01_short_brown_hair_woman.webp"
       }
     ]
   },
@@ -423,21 +423,21 @@
     "nameKey": "kobayashi-nao",
     "gender": "female",
     "kind": "care",
-    "iconImageId": "1787451943008-sevatf6",
-    "cardImageId": "1787451944815-f68whu2",
-    "mediaRevision": 1787451945941,
+    "iconImageId": "1792384380188-5zzmecf",
+    "cardImageId": "1792384376903-meete7s",
+    "mediaRevision": 1792384380955,
     "images": [
       {
-        "id": "1787451943008-sevatf6",
-        "fileName": "1787451943008-sevatf6__2026-08-23_00029.png",
-        "fileSize": 2298754,
-        "url": "media://staff/staff-care-01/images/1787451943008-sevatf6__2026-08-23_00029.png"
+        "id": "1792384376903-meete7s",
+        "fileName": "1792384376903-meete7s__care_01_gentle_woman.webp",
+        "fileSize": 167364,
+        "url": "media://staff/staff-care-01/images/1792384376903-meete7s__care_01_gentle_woman.webp"
       },
       {
-        "id": "1787451944815-f68whu2",
-        "fileName": "1787451944815-f68whu2__2026-08-23_00030.png",
-        "fileSize": 2022919,
-        "url": "media://staff/staff-care-01/images/1787451944815-f68whu2__2026-08-23_00030.png"
+        "id": "1792384380188-5zzmecf",
+        "fileName": "1792384380188-5zzmecf__care_01_gentle_woman.webp",
+        "fileSize": 132318,
+        "url": "media://staff/staff-care-01/images/1792384380188-5zzmecf__care_01_gentle_woman.webp"
       }
     ]
   },
@@ -457,21 +457,21 @@
     "nameKey": "matsumoto-renya",
     "gender": "male",
     "kind": "care",
-    "iconImageId": "1787452367583-n7c6djq",
-    "cardImageId": "1787452418001-bhhb29h",
-    "mediaRevision": 1787452419313,
+    "iconImageId": "1792384393292-x2sg0zy",
+    "cardImageId": "1792384389377-hufay0e",
+    "mediaRevision": 1792384394095,
     "images": [
       {
-        "id": "1787452367583-n7c6djq",
-        "fileName": "1787452367583-n7c6djq__2026-08-23_00053.png",
-        "fileSize": 2163120,
-        "url": "media://staff/staff-care-02/images/1787452367583-n7c6djq__2026-08-23_00053.png"
+        "id": "1792384389377-hufay0e",
+        "fileName": "1792384389377-hufay0e__care_02_gentle_man.webp",
+        "fileSize": 161862,
+        "url": "media://staff/staff-care-02/images/1792384389377-hufay0e__care_02_gentle_man.webp"
       },
       {
-        "id": "1787452418001-bhhb29h",
-        "fileName": "1787452418001-bhhb29h__2026-08-23_00054.png",
-        "fileSize": 1713569,
-        "url": "media://staff/staff-care-02/images/1787452418001-bhhb29h__2026-08-23_00054.png"
+        "id": "1792384393292-x2sg0zy",
+        "fileName": "1792384393292-x2sg0zy__care_02_gentle_man.webp",
+        "fileSize": 127446,
+        "url": "media://staff/staff-care-02/images/1792384393292-x2sg0zy__care_02_gentle_man.webp"
       }
     ]
   },
@@ -491,21 +491,21 @@
     "nameKey": "kato-rika",
     "gender": "female",
     "kind": "care",
-    "iconImageId": "1787451956655-3cmvd7l",
-    "cardImageId": "1787451953960-6c5eq92",
-    "mediaRevision": 1787451957627,
+    "iconImageId": "1792384404262-oihrb2y",
+    "cardImageId": "1792384398248-wcail7j",
+    "mediaRevision": 1792384405084,
     "images": [
       {
-        "id": "1787451953960-6c5eq92",
-        "fileName": "1787451953960-6c5eq92__2026-08-23_00032.png",
-        "fileSize": 1723869,
-        "url": "media://staff/staff-care-03/images/1787451953960-6c5eq92__2026-08-23_00032.png"
+        "id": "1792384398248-wcail7j",
+        "fileName": "1792384398248-wcail7j__care_05_babyface_girl.webp",
+        "fileSize": 177766,
+        "url": "media://staff/staff-care-03/images/1792384398248-wcail7j__care_05_babyface_girl.webp"
       },
       {
-        "id": "1787451956655-3cmvd7l",
-        "fileName": "1787451956655-3cmvd7l__2026-08-23_00031.png",
-        "fileSize": 2094342,
-        "url": "media://staff/staff-care-03/images/1787451956655-3cmvd7l__2026-08-23_00031.png"
+        "id": "1792384404262-oihrb2y",
+        "fileName": "1792384404262-oihrb2y__care_05_babyface_girl.webp",
+        "fileSize": 136482,
+        "url": "media://staff/staff-care-03/images/1792384404262-oihrb2y__care_05_babyface_girl.webp"
       }
     ]
   },
@@ -525,21 +525,21 @@
     "nameKey": "abe-kento",
     "gender": "male",
     "kind": "care",
-    "iconImageId": "1787453096409-jp1quel",
-    "cardImageId": "1787453106807-wn33g70",
-    "mediaRevision": 1787453107946,
+    "iconImageId": "1792384414330-24000wk",
+    "cardImageId": "1792384412119-g8678xz",
+    "mediaRevision": 1792384415748,
     "images": [
       {
-        "id": "1787453096409-jp1quel",
-        "fileName": "1787453096409-jp1quel__2026-08-23_00051.png",
-        "fileSize": 2160903,
-        "url": "media://staff/staff-care-04/images/1787453096409-jp1quel__2026-08-23_00051.png"
+        "id": "1792384412119-g8678xz",
+        "fileName": "1792384412119-g8678xz__care_04_black_man.webp",
+        "fileSize": 143092,
+        "url": "media://staff/staff-care-04/images/1792384412119-g8678xz__care_04_black_man.webp"
       },
       {
-        "id": "1787453106807-wn33g70",
-        "fileName": "1787453106807-wn33g70__simpligen_00050.png",
-        "fileSize": 862599,
-        "url": "media://staff/staff-care-04/images/1787453106807-wn33g70__simpligen_00050.png"
+        "id": "1792384414330-24000wk",
+        "fileName": "1792384414330-24000wk__care_04_black_man.webp",
+        "fileSize": 115312,
+        "url": "media://staff/staff-care-04/images/1792384414330-24000wk__care_04_black_man.webp"
       }
     ]
   },
@@ -559,21 +559,21 @@
     "nameKey": "yoshida-hina",
     "gender": "female",
     "kind": "care",
-    "iconImageId": "1787451968088-hm0u43p",
-    "cardImageId": "1787451969905-6g3z7kq",
-    "mediaRevision": 1787451971158,
+    "iconImageId": "1792384424690-f0pqwv3",
+    "cardImageId": "1792384422595-v3efpq1",
+    "mediaRevision": 1792384425347,
     "images": [
       {
-        "id": "1787451968088-hm0u43p",
-        "fileName": "1787451968088-hm0u43p__2026-08-23_00037.png",
-        "fileSize": 2123982,
-        "url": "media://staff/staff-care-05/images/1787451968088-hm0u43p__2026-08-23_00037.png"
+        "id": "1792384422595-v3efpq1",
+        "fileName": "1792384422595-v3efpq1__care_03_grandmother.webp",
+        "fileSize": 199088,
+        "url": "media://staff/staff-care-05/images/1792384422595-v3efpq1__care_03_grandmother.webp"
       },
       {
-        "id": "1787451969905-6g3z7kq",
-        "fileName": "1787451969905-6g3z7kq__2026-08-23_00038.png",
-        "fileSize": 1844186,
-        "url": "media://staff/staff-care-05/images/1787451969905-6g3z7kq__2026-08-23_00038.png"
+        "id": "1792384424690-f0pqwv3",
+        "fileName": "1792384424690-f0pqwv3__care_03_grandmother.webp",
+        "fileSize": 176894,
+        "url": "media://staff/staff-care-05/images/1792384424690-f0pqwv3__care_03_grandmother.webp"
       }
     ]
   },
@@ -593,21 +593,21 @@
     "nameKey": "ishida-ryo",
     "gender": "male",
     "kind": "care",
-    "iconImageId": "1787453274657-fyen0a4",
-    "cardImageId": "1787453346154-fw1vhnr",
-    "mediaRevision": 1787453347076,
+    "iconImageId": "1792384431131-0qt8yob",
+    "cardImageId": "1792384429106-akn9v78",
+    "mediaRevision": 1792384432535,
     "images": [
       {
-        "id": "1787453274657-fyen0a4",
-        "fileName": "1787453274657-fyen0a4__2026-08-23_00063.png",
-        "fileSize": 2035417,
-        "url": "media://staff/staff-care-06/images/1787453274657-fyen0a4__2026-08-23_00063.png"
+        "id": "1792384429106-akn9v78",
+        "fileName": "1792384429106-akn9v78__care_06_old_man.webp",
+        "fileSize": 204142,
+        "url": "media://staff/staff-care-06/images/1792384429106-akn9v78__care_06_old_man.webp"
       },
       {
-        "id": "1787453346154-fw1vhnr",
-        "fileName": "1787453346154-fw1vhnr__2026-08-23_00064.png",
-        "fileSize": 1814324,
-        "url": "media://staff/staff-care-06/images/1787453346154-fw1vhnr__2026-08-23_00064.png"
+        "id": "1792384431131-0qt8yob",
+        "fileName": "1792384431131-0qt8yob__care_06_old_man.webp",
+        "fileSize": 167152,
+        "url": "media://staff/staff-care-06/images/1792384431131-0qt8yob__care_06_old_man.webp"
       }
     ]
   },
@@ -627,21 +627,21 @@
     "nameKey": "mori-daichi",
     "gender": "male",
     "kind": "production",
-    "iconImageId": "1787452886796-deaey08",
-    "cardImageId": "1787452893429-yz3tw8t",
-    "mediaRevision": 1787452894598,
+    "iconImageId": "1792384443483-thgvuny",
+    "cardImageId": "1792384440636-2ev2pv3",
+    "mediaRevision": 1792384444251,
     "images": [
       {
-        "id": "1787452886796-deaey08",
-        "fileName": "1787452886796-deaey08__2026-08-23_00059.png",
-        "fileSize": 1966144,
-        "url": "media://staff/staff-production-01/images/1787452886796-deaey08__2026-08-23_00059.png"
+        "id": "1792384440636-2ev2pv3",
+        "fileName": "1792384440636-2ev2pv3__production_04_glasses_man.webp",
+        "fileSize": 131726,
+        "url": "media://staff/staff-production-01/images/1792384440636-2ev2pv3__production_04_glasses_man.webp"
       },
       {
-        "id": "1787452893429-yz3tw8t",
-        "fileName": "1787452893429-yz3tw8t__2026-08-23_00060.png",
-        "fileSize": 1964448,
-        "url": "media://staff/staff-production-01/images/1787452893429-yz3tw8t__2026-08-23_00060.png"
+        "id": "1792384443483-thgvuny",
+        "fileName": "1792384443483-thgvuny__production_04_glasses_man.webp",
+        "fileSize": 118676,
+        "url": "media://staff/staff-production-01/images/1792384443483-thgvuny__production_04_glasses_man.webp"
       }
     ]
   },
@@ -661,21 +661,21 @@
     "nameKey": "yamada-mio",
     "gender": "female",
     "kind": "production",
-    "iconImageId": "1787452112652-erz6ecj",
-    "cardImageId": "1787452114247-ejp8i97",
-    "mediaRevision": 1787452115383,
+    "iconImageId": "1792384451270-tkws9le",
+    "cardImageId": "1792384448831-01u24c4",
+    "mediaRevision": 1792384451884,
     "images": [
       {
-        "id": "1787452112652-erz6ecj",
-        "fileName": "1787452112652-erz6ecj__2026-08-23_00039.png",
-        "fileSize": 2079968,
-        "url": "media://staff/staff-production-02/images/1787452112652-erz6ecj__2026-08-23_00039.png"
+        "id": "1792384448831-01u24c4",
+        "fileName": "1792384448831-01u24c4__production_05_fat_woman.webp",
+        "fileSize": 152676,
+        "url": "media://staff/staff-production-02/images/1792384448831-01u24c4__production_05_fat_woman.webp"
       },
       {
-        "id": "1787452114247-ejp8i97",
-        "fileName": "1787452114247-ejp8i97__2026-08-23_00040.png",
-        "fileSize": 1876482,
-        "url": "media://staff/staff-production-02/images/1787452114247-ejp8i97__2026-08-23_00040.png"
+        "id": "1792384451270-tkws9le",
+        "fileName": "1792384451270-tkws9le__production_05_fat_woman.webp",
+        "fileSize": 124746,
+        "url": "media://staff/staff-production-02/images/1792384451270-tkws9le__production_05_fat_woman.webp"
       }
     ]
   },
@@ -695,21 +695,21 @@
     "nameKey": "ikeda-shota",
     "gender": "male",
     "kind": "production",
-    "iconImageId": "1787453033175-oxo5gy9",
-    "cardImageId": "1787453053316-lwc7ix0",
-    "mediaRevision": 1787453054317,
+    "iconImageId": "1792384459362-wp01dlx",
+    "cardImageId": "1792384456984-04sj18u",
+    "mediaRevision": 1792384460016,
     "images": [
       {
-        "id": "1787453033175-oxo5gy9",
-        "fileName": "1787453033175-oxo5gy9__2026-08-23_00061.png",
-        "fileSize": 2035696,
-        "url": "media://staff/staff-production-03/images/1787453033175-oxo5gy9__2026-08-23_00061.png"
+        "id": "1792384456984-04sj18u",
+        "fileName": "1792384456984-04sj18u__production_06_mustache_man.webp",
+        "fileSize": 131276,
+        "url": "media://staff/staff-production-03/images/1792384456984-04sj18u__production_06_mustache_man.webp"
       },
       {
-        "id": "1787453053316-lwc7ix0",
-        "fileName": "1787453053316-lwc7ix0__2026-08-23_00062.png",
-        "fileSize": 1927508,
-        "url": "media://staff/staff-production-03/images/1787453053316-lwc7ix0__2026-08-23_00062.png"
+        "id": "1792384459362-wp01dlx",
+        "fileName": "1792384459362-wp01dlx__production_06_mustache_man.webp",
+        "fileSize": 131772,
+        "url": "media://staff/staff-production-03/images/1792384459362-wp01dlx__production_06_mustache_man.webp"
       }
     ]
   },
@@ -729,21 +729,21 @@
     "nameKey": "sasaki-kotone",
     "gender": "female",
     "kind": "production",
-    "iconImageId": "1787452124730-z00ksq7",
-    "cardImageId": "1787452126182-k6d08y6",
-    "mediaRevision": 1787452127175,
+    "iconImageId": "1792384506869-06rbe0v",
+    "cardImageId": "1792384519099-a7uyug0",
+    "mediaRevision": 1792384519983,
     "images": [
       {
-        "id": "1787452124730-z00ksq7",
-        "fileName": "1787452124730-z00ksq7__2026-08-23_00041.png",
-        "fileSize": 2330386,
-        "url": "media://staff/staff-production-04/images/1787452124730-z00ksq7__2026-08-23_00041.png"
+        "id": "1792384506869-06rbe0v",
+        "fileName": "1792384506869-06rbe0v__production_03_black_hair_woman.webp",
+        "fileSize": 100326,
+        "url": "media://staff/staff-production-04/images/1792384506869-06rbe0v__production_03_black_hair_woman.webp"
       },
       {
-        "id": "1787452126182-k6d08y6",
-        "fileName": "1787452126182-k6d08y6__2026-08-23_00042.png",
-        "fileSize": 2268134,
-        "url": "media://staff/staff-production-04/images/1787452126182-k6d08y6__2026-08-23_00042.png"
+        "id": "1792384519099-a7uyug0",
+        "fileName": "1792384519099-a7uyug0__production_03_black_hair_woman.webp",
+        "fileSize": 129922,
+        "url": "media://staff/staff-production-04/images/1792384519099-a7uyug0__production_03_black_hair_woman.webp"
       }
     ]
   },
@@ -763,21 +763,21 @@
     "nameKey": "fujita-makoto",
     "gender": "male",
     "kind": "production",
-    "iconImageId": "1787453462090-70h6adw",
-    "cardImageId": "1787453443441-xuzm179",
-    "mediaRevision": 1787453490257,
+    "iconImageId": "1792384481435-sejjbnj",
+    "cardImageId": "1792384479419-g339xk3",
+    "mediaRevision": 1792384482129,
     "images": [
       {
-        "id": "1787453443441-xuzm179",
-        "fileName": "1787453443441-xuzm179__2026-08-23_00065.png",
-        "fileSize": 1846461,
-        "url": "media://staff/staff-production-05/images/1787453443441-xuzm179__2026-08-23_00065.png"
+        "id": "1792384479419-g339xk3",
+        "fileName": "1792384479419-g339xk3__production_02_silver_hair_man.webp",
+        "fileSize": 137128,
+        "url": "media://staff/staff-production-05/images/1792384479419-g339xk3__production_02_silver_hair_man.webp"
       },
       {
-        "id": "1787453462090-70h6adw",
-        "fileName": "1787453462090-70h6adw__2026-08-23_00057.png",
-        "fileSize": 2025577,
-        "url": "media://staff/staff-production-05/images/1787453462090-70h6adw__2026-08-23_00057.png"
+        "id": "1792384481435-sejjbnj",
+        "fileName": "1792384481435-sejjbnj__production_02_silver_hair_man.webp",
+        "fileSize": 131534,
+        "url": "media://staff/staff-production-05/images/1792384481435-sejjbnj__production_02_silver_hair_man.webp"
       }
     ]
   },
@@ -797,21 +797,21 @@
     "nameKey": "sato-miyu",
     "gender": "female",
     "kind": "production",
-    "iconImageId": "1787452132751-lrej1i4",
-    "cardImageId": "1787452134007-kbltwm6",
-    "mediaRevision": 1787452135190,
+    "iconImageId": "1792384497479-lresre3",
+    "cardImageId": "1792384494467-m2773fw",
+    "mediaRevision": 1792384510884,
     "images": [
       {
-        "id": "1787452132751-lrej1i4",
-        "fileName": "1787452132751-lrej1i4__2026-08-23_00043.png",
-        "fileSize": 2046816,
-        "url": "media://staff/staff-production-06/images/1787452132751-lrej1i4__2026-08-23_00043.png"
+        "id": "1792384494467-m2773fw",
+        "fileName": "1792384494467-m2773fw__production_01_black_bob_woman.webp",
+        "fileSize": 144042,
+        "url": "media://staff/staff-production-06/images/1792384494467-m2773fw__production_01_black_bob_woman.webp"
       },
       {
-        "id": "1787452134007-kbltwm6",
-        "fileName": "1787452134007-kbltwm6__2026-08-23_00044.png",
-        "fileSize": 2038270,
-        "url": "media://staff/staff-production-06/images/1787452134007-kbltwm6__2026-08-23_00044.png"
+        "id": "1792384497479-lresre3",
+        "fileName": "1792384497479-lresre3__production_01_black_bob_woman.webp",
+        "fileSize": 115662,
+        "url": "media://staff/staff-production-06/images/1792384497479-lresre3__production_01_black_bob_woman.webp"
       }
     ]
   }

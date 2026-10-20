@@ -5,271 +5,802 @@
   "chapterId": 1,
   "titleKey": "event_promote_tiny",
   "title": "영세기업 승급 (사모님의 방문)",
-  "startNode": "graphic_01",
+  "startNode": "node_1792374408269_ny3i",
   "nodes": [
     {
-      "id": "graphic_01",
-      "type": "graphic",
-      "image": "promote_tiny_01_tidy_office.webp",
+      "id": "node_1792374408269_ny3i",
+      "type": "vn",
+      "background": "2026-10-19_00004_.webp",
+      "character": "",
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false,
+      "stageSlots": [
+        {
+          "characterId": "1792369110889-p0l69g7",
+          "imageId": "1792375265395-3tl0dnj",
+          "position": "center"
+        }
+      ]
     },
     {
-      "id": "node_01_bg",
+      "id": "node_1792374336311_0_v37g",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "배경: 방송국 사무실. 새로운 모니터와 잘 정돈된 책상, 이제 제법 회사다운 분위기가 난다.",
-      "text_key": "node_01_bg"
+      "text": "사무실 문이 열린다. Reiko가 들어온다. 손에 봉투 하나를 들고 있다.",
+      "text_key": "node_1792374336311_0_v37g"
     },
     {
-      "id": "node_02_pl",
+      "id": "node_1792374336311_1_o5nc",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "사장님. 축하할 일이 있어서 왔어요.",
+      "text_key": "node_1792374336311_1_o5nc"
+    },
+    {
+      "id": "node_1792374336311_2_hp8t",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "(혼잣말) 드디어... 영세기업까지 올라왔다.",
-      "text_key": "node_02_pl"
+      "text": "축하요? 뭐요, 또.",
+      "text_key": "node_1792374336311_2_hp8t"
     },
     {
-      "id": "node_03_pl",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "처음엔 망할 줄 알았는데... 생각보다 잘 돌아가네.",
-      "text_key": "node_03_pl"
-    },
-    {
-      "id": "graphic_02",
-      "type": "graphic",
-      "image": "promote_tiny_02_door_lady.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_04_bg",
+      "id": "node_1792374336311_3_gtlf",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "사무실 문이 열리고, 익숙한 실루엣이 모습을 드러낸다.",
-      "text_key": "node_04_bg"
+      "text": "Reiko가 봉투에서 서류를 꺼내 책상 위에 올려놓는다. 등급 심사 결과 통지서다.",
+      "text_key": "node_1792374336311_3_gtlf"
     },
     {
-      "id": "node_05_ld",
+      "id": "node_1792374336311_4_n1f2",
       "type": "text",
       "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(웃으며) 오랜만이에요, 사장님.",
-      "text_key": "node_05_ld"
+      "speaker": "1792369110889-p0l69g7",
+      "text": "영세기업에서 소기업으로. 등급이 올랐어요.",
+      "text_key": "node_1792374336311_4_n1f2"
     },
     {
-      "id": "node_06_pl",
+      "id": "node_1792374336311_5_ihsq",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "(깜짝 놀라며) 사모님?! 어... 어떻게 들어오신 거예요?",
-      "text_key": "node_06_pl"
+      "text": "...진짜요?",
+      "text_key": "node_1792374336311_5_ihsq"
     },
     {
-      "id": "node_07_ld",
+      "id": "node_1792374336311_6_n0d6",
       "type": "text",
       "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(자연스럽게 의자에 앉으며) 저는 이 건물 주인이니까요.",
-      "text_key": "node_07_ld"
+      "speaker": "1792369110889-p0l69g7",
+      "text": "네. 지난 분기 실적이 기준을 넘었어요. 서류에도 그렇게 나와 있고.",
+      "text_key": "node_1792374336311_6_n0d6"
     },
     {
-      "id": "graphic_03",
-      "type": "graphic",
-      "image": "promote_tiny_03_lady_closeup.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_08_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "영세기업... 축하드려요.",
-      "text_key": "node_08_ld"
-    },
-    {
-      "id": "node_09_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "제가 예상한 것보다 훨씬 빠르네요.",
-      "text_key": "node_09_ld"
-    },
-    {
-      "id": "node_10_pl",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "(긴장하며) 감사합니다... 그런데 오늘은 무슨 일로?",
-      "text_key": "node_10_pl"
-    },
-    {
-      "id": "node_11_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(서류 봉투를 꺼내며) 이제 진짜 시작이에요, 사장님.",
-      "text_key": "node_11_ld"
-    },
-    {
-      "id": "graphic_04",
-      "type": "graphic",
-      "image": "promote_tiny_04_audit_documents.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
-      "id": "node_12_bg",
+      "id": "node_1792374336311_7_lg6v",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "서류 봉투 안에서 계약서, 새로운 규정, 그리고 승급 심사 안내서가 나온다.",
-      "text_key": "node_12_bg"
+      "text": "플레이어는 서류를 집어 든다. 몇 번이고 다시 읽는다.",
+      "text_key": "node_1792374336311_7_lg6v"
     },
     {
-      "id": "node_13_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "영세기업까지는 누구나 올라올 수 있어요.",
-      "text_key": "node_13_ld"
-    },
-    {
-      "id": "node_14_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "하지만 그 위는 달라요. 중소기업부터는... 심사가 필요해요.",
-      "text_key": "node_14_ld"
-    },
-    {
-      "id": "node_15_pl",
+      "id": "node_1792374336311_8_i73m",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "심사요?",
-      "text_key": "node_15_pl"
+      "text": "이게... 진짜 올라간 거 맞아요? 안경 같은 건 안 썼는데.",
+      "text_key": "node_1792374336311_8_i73m"
     },
     {
-      "id": "node_16_ld",
+      "id": "node_1792374336311_9_h923",
       "type": "text",
       "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(고개를 끄덕이며) 네, 심사관이 직접 방문해서 평가하는 거예요.",
-      "text_key": "node_16_ld"
+      "speaker": "1792369110889-p0l69g7",
+      "text": "안 썼죠. 근데 이제 안심하긴 일러요.",
+      "text_key": "node_1792374336311_9_h923"
     },
     {
-      "id": "node_17_ld",
+      "id": "node_1792374336311_10_6t3z",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 플레이어의 어깨에 손을 올린다. 가볍게 두드린다.",
+      "text_key": "node_1792374336311_10_6t3z"
+    },
+    {
+      "id": "node_1792374336311_11_thu0",
       "type": "text",
       "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "만족스러운 결과를 내지 못하면... 다시 내려갈 수도 있어요.",
-      "text_key": "node_17_ld"
+      "speaker": "1792369110889-p0l69g7",
+      "text": "그래도... 잘했어요, 사장님. 진짜로.",
+      "text_key": "node_1792374336311_11_thu0"
     },
     {
-      "id": "node_18_pl",
+      "id": "node_1792374336311_12_93hu",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "(긴장하며) 그... 심사는 어떻게 준비해야 하죠?",
-      "text_key": "node_18_pl"
+      "text": "레이코 씨가 칭찬하는 거 처음 듣는데.",
+      "text_key": "node_1792374336311_12_93hu"
     },
     {
-      "id": "graphic_05",
+      "id": "node_1792374336311_13_7rh6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "그럼요. 이 정도면 칭찬받을 만하죠.",
+      "text_key": "node_1792374336311_13_7rh6"
+    },
+    {
+      "id": "node_1792374336311_14_9miu",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 플레이어 앞에 무릎을 꿇고 앉는다. 플레이어가 놀라 몸을 뒤로 뺀다.",
+      "text_key": "node_1792374336311_14_9miu"
+    },
+    {
+      "id": "node_1792374336311_15_xi61",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "자, 잠깐. 레이코 씨, 이게...",
+      "text_key": "node_1792374336311_15_xi61"
+    },
+    {
+      "id": "node_1792374336311_16_vfur",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "가만히 있어요. 상으로 주는 거예요.",
+      "text_key": "node_1792374336311_16_vfur"
+    },
+    {
+      "id": "node_1792374336311_17_ph77",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "상이요? 그런 게 어디 있어요.",
+      "text_key": "node_1792374336311_17_ph77"
+    },
+    {
+      "id": "node_1792374336311_18_nib9",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "원래 잘한 사람한테는 상을 줘야 하는 법이에요. 회사 규칙이에요.",
+      "text_key": "node_1792374336311_18_nib9"
+    },
+    {
+      "id": "node_1792374336311_19_24hl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그런 규칙은 처음 듣는데...",
+      "text_key": "node_1792374336311_19_24hl"
+    },
+    {
+      "id": "node_1792374336311_20_dn8c",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "규칙은 제가 만드는 거예요.",
+      "text_key": "node_1792374336311_20_dn8c"
+    },
+    {
+      "id": "node_1792374336311_21_otne",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko의 손이 플레이어의 벨트로 향한다. 철컥. 지퍼가 내려가고, 바지가 무릎까지 끌어내려진다. 그녀가 속옷을 끌어내리자 그것이 모습을 드러낸다.",
+      "text_key": "node_1792374336311_21_otne"
+    },
+    {
+      "id": "node_1792374336311_22_ex1w",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "...생각보다 크네요.",
+      "text_key": "node_1792374336311_22_ex1w"
+    },
+    {
+      "id": "node_1792374439412_fgtc",
       "type": "graphic",
-      "image": "promote_tiny_05_lady_window.webp",
+      "image": "2026-10-19_00001__restored_1080p_nf_comp.mp4",
       "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_19_bg",
+      "id": "node_1792374336311_23_kd2h",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "사모님이 자리에서 일어나 창밖의 도시 풍경을 바라본다.",
-      "text_key": "node_19_bg"
+      "text": "Reiko가 망설임 없이 입에 물고 깊게 빨아들인다. 플레이어의 허리가 저도 모르게 튀어나간다.",
+      "text_key": "node_1792374336311_23_kd2h"
     },
     {
-      "id": "node_20_ld",
+      "id": "node_1792374336311_24_i1g0",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(뭐, 뭐야... 이 사람, 진짜로...)",
+      "text_key": "node_1792374336311_24_i1g0"
+    },
+    {
+      "id": "node_1792374336311_25_1njb",
       "type": "text",
       "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(돌아보며) 걱정 마세요. 당신은 해낼 수 있어요.",
-      "text_key": "node_20_ld"
+      "speaker": "1792369110889-p0l69g7",
+      "text": "(입을 떼며) 긴장 풀어요. 제대로 못 하잖아요.",
+      "text_key": "node_1792374336311_25_1njb"
     },
     {
-      "id": "node_21_ld",
+      "id": "node_1792374336311_26_m332",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko의 혀가 천천히 움직인다. 끝에서부터 안쪽으로. 입술이 오르내린다.",
+      "text_key": "node_1792374336311_26_m332"
+    },
+    {
+      "id": "node_1792374336311_27_9iqv",
       "type": "text",
       "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "저도 그렇게 믿고 이 방송국을 넘겼으니까.",
-      "text_key": "node_21_ld"
+      "speaker": "1792369110889-p0l69g7",
+      "text": "(숨을 고르며) 사장님은 그냥 앉아 있기만 하면 돼요. 나머지는 제가 할게요.",
+      "text_key": "node_1792374336311_27_9iqv"
     },
     {
-      "id": "node_22_ld",
+      "id": "node_1792374336311_28_81wk",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하... 하아... 이게 무슨...",
+      "text_key": "node_1792374336311_28_81wk"
+    },
+    {
+      "id": "node_1792374336311_29_641j",
       "type": "text",
       "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(서류를 가리키며) 이제 할 일은... 심사에 맞춰 준비하는 거예요.",
-      "text_key": "node_22_ld"
+      "speaker": "1792369110889-p0l69g7",
+      "text": "(다시 고개를 숙이며) 말 대신 반응으로 대답해주세요.",
+      "text_key": "node_1792374336311_29_641j"
     },
     {
-      "id": "node_23_ld",
+      "id": "node_1792374336311_30_0j8v",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "움직임이 느려졌다가 빨라졌다를 반복한다. 플레이어는 의자 팔걸이를 붙잡는다. 손에 힘이 들어간다.",
+      "text_key": "node_1792374336311_30_0j8v"
+    },
+    {
+      "id": "node_1792374336311_31_broy",
       "type": "text",
       "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "첫 번째 심사는... 중소기업 승급 심사예요.",
-      "text_key": "node_23_ld"
+      "speaker": "1792369110889-p0l69g7",
+      "text": "(잠시 멈추고) 숨 참지 마요. 그래야 더 좋아요.",
+      "text_key": "node_1792374336311_31_broy"
     },
     {
-      "id": "node_24_ld",
+      "id": "node_1792374336311_32_gekj",
       "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "그때 봐요, 사장님.",
-      "text_key": "node_24_ld"
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "시간이 흐른다. Reiko의 움직임이 점점 깊어진다. 플레이어의 손가락이 팔걸이를 파고든다. 등이 젖은 느낌이 든다. 사무실 공기가 무겁게 가라앉는다.",
+      "text_key": "node_1792374336311_32_gekj"
     },
     {
-      "id": "graphic_06",
+      "id": "node_1792374336311_33_qxvv",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(이건... 너무해. 이 사람, 대체 뭘 하는 거야.)",
+      "text_key": "node_1792374336311_33_qxvv"
+    },
+    {
+      "id": "node_1792374459550_hnfl",
       "type": "graphic",
-      "image": "promote_tiny_06_reviewing_papers.webp",
+      "image": "2026-10-19_00002__restored_1080p_nf_comp.mp4",
       "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_25_bg",
+      "id": "node_1792374336311_34_dpje",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "사모님이 떠난 후, 남겨진 심사 서류들을 천천히 살펴본다.",
-      "text_key": "node_25_bg"
+      "text": "Reiko가 잠시 고개를 들어 플레이어를 올려다본다. 입가가 젖어 있다.",
+      "text_key": "node_1792374336311_34_dpje"
     },
     {
-      "id": "node_26_pl",
+      "id": "node_1792374336311_35_6clo",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "사장님, 표정이... 점점 좋아지시네요.",
+      "text_key": "node_1792374336311_35_6clo"
+    },
+    {
+      "id": "node_1792374336311_36_w5fk",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "(서류를 넘기며) 중소기업 승급 심사...",
-      "text_key": "node_26_pl"
+      "text": "그, 그런 거 아니야...",
+      "text_key": "node_1792374336311_36_w5fk"
     },
     {
-      "id": "node_27_pl",
+      "id": "node_1792374336311_37_yk2w",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "(다시 고개를 숙이며) 거짓말. 몸은 정직하던데.",
+      "text_key": "node_1792374336311_37_yk2w"
+    },
+    {
+      "id": "node_1792374336311_38_rx3u",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어의 숨이 거칠어진다. 다리에 힘이 풀린다. 뭔가가 차오르는 게 느껴진다.",
+      "text_key": "node_1792374336311_38_rx3u"
+    },
+    {
+      "id": "node_1792374336311_39_tmux",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "...해볼 만하겠네.",
-      "text_key": "node_27_pl"
+      "text": "레, 레이코 씨... 나, 이거... 이제...",
+      "text_key": "node_1792374336311_39_tmux"
+    },
+    {
+      "id": "node_1792374336311_40_6v26",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "(고개를 들지 않고) 괜찮아요. 참지 마세요. 그냥 내보내세요.",
+      "text_key": "node_1792374336311_40_6v26"
+    },
+    {
+      "id": "node_1792374336311_41_es6m",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어의 몸이 굳는다. 등줄기를 따라 뭔가가 몰아친다. 팔걸이를 붙잡은 손가락이 하얗게 질린다.",
+      "text_key": "node_1792374336311_41_es6m"
+    },
+    {
+      "id": "node_1792374336311_42_e3qp",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(안 돼... 이런, 이건...)",
+      "text_key": "node_1792374336311_42_e3qp"
+    },
+    {
+      "id": "node_1792374336311_43_wdyr",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 입술을 더 깊게 밀어 넣는다. 플레이어의 허리가 앞으로 튀어나간다.",
+      "text_key": "node_1792374336311_43_wdyr"
+    },
+    {
+      "id": "node_1792374336311_44_wfv6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "(입 안에서) 음...",
+      "text_key": "node_1792374336311_44_wfv6"
+    },
+    {
+      "id": "node_1792374503087_1iw6",
+      "type": "vn",
+      "background": "2026-10-19_00004_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1792369110889-p0l69g7",
+          "imageId": "1792371992892-c1jp4r6",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
+    {
+      "id": "node_1792374336311_45_4tia",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어가 고개를 뒤로 젖힌다. 천장의 형광등이 흐릿하게 번진다. 몸이 한 차례 크게 떨린다. 뭔가가 터져 나온다. 그리고 서서히 풀린다.",
+      "text_key": "node_1792374336311_45_4tia"
+    },
+    {
+      "id": "node_1792374336311_46_mpah",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하... 하아... 하아...",
+      "text_key": "node_1792374336311_46_mpah"
+    },
+    {
+      "id": "node_1792374336311_47_nf56",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 천천히 고개를 든다. 입가를 손등으로 닦는다. 목울대가 한 번 움직인다. 그리고 만족스러운 표정으로 플레이어를 올려다본다.",
+      "text_key": "node_1792374336311_47_nf56"
+    },
+    {
+      "id": "node_1792374336311_48_t1j4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "...어때요. 상, 마음에 들어요?",
+      "text_key": "node_1792374336311_48_t1j4"
+    },
+    {
+      "id": "node_1792374336311_49_ddqt",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하... 하아... 이게 무슨...",
+      "text_key": "node_1792374336311_49_ddqt"
+    },
+    {
+      "id": "node_1792374336311_50_hhpv",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "반응이 아주 좋았어요. 솔직하게요. 표정이랑 소리, 다.",
+      "text_key": "node_1792374336311_50_hhpv"
+    },
+    {
+      "id": "node_1792374336311_51_dzwd",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(이 사람... 다 보고 있었어.)",
+      "text_key": "node_1792374336311_51_dzwd"
+    },
+    {
+      "id": "node_1792374336311_52_d0t0",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "다음에도 잘하면 또 줘야겠어요.",
+      "text_key": "node_1792374336311_52_d0t0"
+    },
+    {
+      "id": "node_1792374336311_53_93xd",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "다음이 있어요?",
+      "text_key": "node_1792374336311_53_93xd"
+    },
+    {
+      "id": "node_1792374336311_54_2s6w",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "글쎄요. 사장님 하기 나름이죠. 저는 잘한 사람한테는 아낌없이 주는 편이거든요.",
+      "text_key": "node_1792374336311_54_2s6w"
+    },
+    {
+      "id": "node_1792374336311_55_uuck",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 자리에서 일어난다. 아무 일도 없었다는 듯 옷매무새를 정리한다. 플레이어는 급히 바지를 끌어올린다. 손이 떨린다.",
+      "text_key": "node_1792374336311_55_uuck"
+    },
+    {
+      "id": "node_1792374336311_56_tfx7",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(이 사람, 대체 뭐지...)",
+      "text_key": "node_1792374336311_56_tfx7"
+    },
+    {
+      "id": "node_1792375330917_1vx0",
+      "type": "vn",
+      "background": "2026-10-19_00004_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1792369110889-p0l69g7",
+          "imageId": "1792375265395-3tl0dnj",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
+    {
+      "id": "node_1792374336311_57_e6mz",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "그런데 축하만 하고 가긴 그래서요. 하나 더 알려드릴게 있어요.",
+      "text_key": "node_1792374336311_57_e6mz"
+    },
+    {
+      "id": "node_1792374336311_58_r4l8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...아직 뭐가 더 있어요?",
+      "text_key": "node_1792374336311_58_r4l8"
+    },
+    {
+      "id": "node_1792374336311_59_hue7",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "중소기업부터는 승급 심사가 있어요.",
+      "text_key": "node_1792374336311_59_hue7"
+    },
+    {
+      "id": "node_1792374336311_60_ketm",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "승급 심사?",
+      "text_key": "node_1792374336311_60_ketm"
+    },
+    {
+      "id": "node_1792374336311_61_7d5a",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "네. 영세기업까지는 실적만 채우면 됐는데, 중소기업부터는 심사관이 직접 나와서 평가해요.",
+      "text_key": "node_1792374336311_61_7d5a"
+    },
+    {
+      "id": "node_1792374336311_62_e1ks",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "심사관이요? 뭘 평가하는데요.",
+      "text_key": "node_1792374336311_62_e1ks"
+    },
+    {
+      "id": "node_1792374336311_63_2oep",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "회사 운영 전반이요. 방송 품질, 매출 구조, 인력 관리... 그리고.",
+      "text_key": "node_1792374336311_63_2oep"
+    },
+    {
+      "id": "node_1792374336311_64_yhbj",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 말을 잠시 멈춘다. 계산기를 만지작거린다.",
+      "text_key": "node_1792374336311_64_yhbj"
+    },
+    {
+      "id": "node_1792374336311_65_ws7y",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "심사관을 만족시켜야 해요.",
+      "text_key": "node_1792374336311_65_ws7y"
+    },
+    {
+      "id": "node_1792374336311_66_6jdj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "만족시켜야... 그게 무슨.",
+      "text_key": "node_1792374336311_66_6jdj"
+    },
+    {
+      "id": "node_1792374336311_67_gv7n",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "심사관마다 보는 눈이 달라요. 어떤 사람은 숫자를 보고, 어떤 사람은 현장을 보고, 어떤 사람은... 글쎄요.",
+      "text_key": "node_1792374336311_67_gv7n"
+    },
+    {
+      "id": "node_1792374336311_68_pksn",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "뭐요, 그게. 애매하게 말하지 마요.",
+      "text_key": "node_1792374336311_68_pksn"
+    },
+    {
+      "id": "node_1792374336311_69_7azr",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "저도 다는 몰라요. 예전에 삼촌이랑 같이 심사받을 때도, 그때마다 기준이 달랐어요. 삼촌은 그걸 다 맞춰가면서 등급을 올렸고요.",
+      "text_key": "node_1792374336311_69_7azr"
+    },
+    {
+      "id": "node_1792374336311_70_cpmy",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...그러니까, 심사관이 만족할 때까지 뭘 해야 하는지 맞춰가야 한다는 거죠?",
+      "text_key": "node_1792374336311_70_cpmy"
+    },
+    {
+      "id": "node_1792374336311_71_ejou",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "네. 그리고 한 번에 통과 못 하면 재심사까지 시간이 걸려요. 그동안 매출은 그대로고.",
+      "text_key": "node_1792374336311_71_ejou"
+    },
+    {
+      "id": "node_1792374336311_72_4aci",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 서류를 내려놓는다. 머리가 아프다. 그런데 이상하게도 방금 전의 감각이 아직 몸에 남아 있다.",
+      "text_key": "node_1792374336311_72_4aci"
+    },
+    {
+      "id": "node_1792374336311_73_l45o",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하... 영세기업 올라간 것도 겨우인데, 이제 심사까지.",
+      "text_key": "node_1792374336311_73_l45o"
+    },
+    {
+      "id": "node_1792374336311_74_kfw2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "축하하러 왔는데, 축하만 하고 가긴 좀 그래서요.",
+      "text_key": "node_1792374336311_74_kfw2"
+    },
+    {
+      "id": "node_1792374336311_75_113h",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "고마운 건지 원망스러운 건지.",
+      "text_key": "node_1792374336311_75_113h"
+    },
+    {
+      "id": "node_1792374336311_76_kumg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "반반이죠.",
+      "text_key": "node_1792374336311_76_kumg"
+    },
+    {
+      "id": "node_1792374336311_77_eisu",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "또 반반이야.",
+      "text_key": "node_1792374336311_77_eisu"
+    },
+    {
+      "id": "node_1792374336311_78_5rzv",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 가방을 정리한다.",
+      "text_key": "node_1792374336311_78_5rzv"
+    },
+    {
+      "id": "node_1792374336311_79_yuig",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "심사관은 다음 주에 온다고 통지 왔어요. 그때까지 준비하세요.",
+      "text_key": "node_1792374336311_79_yuig"
+    },
+    {
+      "id": "node_1792374336311_80_9hat",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "다음 주? 너무 짧잖아요.",
+      "text_key": "node_1792374336311_80_9hat"
+    },
+    {
+      "id": "node_1792374336311_81_tqik",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "원래 그래요. 통지 오고 일주일.",
+      "text_key": "node_1792374336311_81_tqik"
+    },
+    {
+      "id": "node_1792374336311_82_el26",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...알겠어요. 뭘 준비해야 하는지는요?",
+      "text_key": "node_1792374336311_82_el26"
+    },
+    {
+      "id": "node_1792374336311_83_qf5f",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "그건 심사관이 와봐야 알아요. 그게 문제죠.",
+      "text_key": "node_1792374336311_83_qf5f"
+    },
+    {
+      "id": "node_1792374336311_84_s855",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 문 쪽으로 걸어간다.",
+      "text_key": "node_1792374336311_84_s855"
+    },
+    {
+      "id": "node_1792374336311_85_dc2o",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "준비되면 연락 주세요. 저도 같이 볼게요.",
+      "text_key": "node_1792374336311_85_dc2o"
+    },
+    {
+      "id": "node_1792374336311_86_g4ec",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 나간다. 문이 닫힌다.",
+      "text_key": "node_1792374336311_86_g4ec"
+    },
+    {
+      "id": "node_1792374336311_87_n7ew",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...심사관을 만족시켜야 한다라.",
+      "text_key": "node_1792374336311_87_n7ew"
+    },
+    {
+      "id": "node_1792374336311_88_n176",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "기준도 모르는 채로. 다음 주까지.",
+      "text_key": "node_1792374336311_88_n176"
+    },
+    {
+      "id": "node_1792374336311_89_0rs2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 책상 위 등급 통지서를 다시 본다. 소기업. 방금 올라간 등급이다. 그리고 아직 몸에 남은 감각. 바지를 끌어올리던 손이 아직도 조금 떨린다.",
+      "text_key": "node_1792374336311_89_0rs2"
+    },
+    {
+      "id": "node_1792374336311_90_eabi",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "일단... 뭘 준비할 수 있는지부터 알아보자.",
+      "text_key": "node_1792374336311_90_eabi"
     }
   ],
   "defaultLanguage": "ko",
@@ -287,57 +818,37 @@
         "es": "Ex-propietaria",
         "de": "Ehemalige Besitzerin"
       }
+    },
+    {
+      "id": "1792369110889-p0l69g7",
+      "name": "Reiko"
     }
   ],
   "points": [],
   "media": [
     {
-      "id": "media_promote_tiny_01_tidy_office",
-      "fileName": "promote_tiny_01_tidy_office.webp",
+      "id": "1792374127899-adbu548",
+      "fileName": "2026-10-19_00004_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/event_promote_tiny/images/promote_tiny_01_tidy_office.webp",
-      "url": "media://chapter_assets/events/event_promote_tiny/images/promote_tiny_01_tidy_office.webp",
-      "size": 69718
+      "sourcePath": "chapter_assets/events/event_promote_tiny/images/2026-10-19_00004_.webp",
+      "url": "media://chapter_assets/events/event_promote_tiny/images/2026-10-19_00004_.webp",
+      "size": 225492
     },
     {
-      "id": "media_promote_tiny_02_door_lady",
-      "fileName": "promote_tiny_02_door_lady.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/event_promote_tiny/images/promote_tiny_02_door_lady.webp",
-      "url": "media://chapter_assets/events/event_promote_tiny/images/promote_tiny_02_door_lady.webp",
-      "size": 91010
+      "id": "1792374264105-wh7ktwb",
+      "fileName": "2026-10-19_00001__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/event_promote_tiny/videos/2026-10-19_00001__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/event_promote_tiny/videos/2026-10-19_00001__restored_1080p_nf_comp.mp4",
+      "size": 2306086
     },
     {
-      "id": "media_promote_tiny_03_lady_closeup",
-      "fileName": "promote_tiny_03_lady_closeup.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/event_promote_tiny/images/promote_tiny_03_lady_closeup.webp",
-      "url": "media://chapter_assets/events/event_promote_tiny/images/promote_tiny_03_lady_closeup.webp",
-      "size": 48502
-    },
-    {
-      "id": "media_promote_tiny_04_audit_documents",
-      "fileName": "promote_tiny_04_audit_documents.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/event_promote_tiny/images/promote_tiny_04_audit_documents.webp",
-      "url": "media://chapter_assets/events/event_promote_tiny/images/promote_tiny_04_audit_documents.webp",
-      "size": 160420
-    },
-    {
-      "id": "media_promote_tiny_05_lady_window",
-      "fileName": "promote_tiny_05_lady_window.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/event_promote_tiny/images/promote_tiny_05_lady_window.webp",
-      "url": "media://chapter_assets/events/event_promote_tiny/images/promote_tiny_05_lady_window.webp",
-      "size": 98980
-    },
-    {
-      "id": "media_promote_tiny_06_reviewing_papers",
-      "fileName": "promote_tiny_06_reviewing_papers.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/event_promote_tiny/images/promote_tiny_06_reviewing_papers.webp",
-      "url": "media://chapter_assets/events/event_promote_tiny/images/promote_tiny_06_reviewing_papers.webp",
-      "size": 94276
+      "id": "1792374467309-xzh2dza",
+      "fileName": "2026-10-19_00002__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/event_promote_tiny/videos/2026-10-19_00002__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/event_promote_tiny/videos/2026-10-19_00002__restored_1080p_nf_comp.mp4",
+      "size": 2658376
     }
   ],
   "sourceZipName": "직접 생성",

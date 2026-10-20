@@ -319,7 +319,7 @@ type VnPlateStanding = {
   characterId?: string
 }
 
-type VnPlateSlot = { id: string; bgSrc: string; standings: VnPlateStanding[] }
+type VnPlateSlot = { id: string; bgSrc: string; plateSrc: string; standings: VnPlateStanding[] }
 
 function standingLayoutClass(position: VnStagePosition, aloneCenter: boolean) {
   const base = 'pointer-events-none absolute bottom-0 h-[84%]'
@@ -437,12 +437,14 @@ const VnPlate = memo(function VnPlate({
     let cancelled = false
     const imgs = Array.from(root.querySelectorAll('img'))
     const videos = Array.from(root.querySelectorAll('video'))
-    const bg = slot.bgSrc ? imgs[0] : null
-    const standingImgs = slot.bgSrc ? imgs.slice(1) : imgs
+    const bg = imgs.find((img) => img.dataset.vnLayer === 'bg') ?? null
+    const plate = imgs.find((img) => img.dataset.vnLayer === 'plate') ?? null
+    const standingImgs = imgs.filter((img) => img.dataset.vnLayer === 'standing')
     const imageStandings = slot.standings.filter((standing) => standing.media === 'image')
     const videoStandings = slot.standings.filter((standing) => standing.media === 'video')
     Promise.all([
       bg ? waitForImage(bg, slot.bgSrc) : Promise.resolve(),
+      plate ? waitForImage(plate, slot.plateSrc) : Promise.resolve(),
       ...standingImgs.map((img, index) => waitForImage(img, imageStandings[index]?.src || '')),
       ...videos.map((video, index) => waitForStableVideo(video, videoStandings[index]?.src || '')),
     ]).then(() => {
@@ -451,7 +453,7 @@ const VnPlate = memo(function VnPlate({
     return () => {
       cancelled = true
     }
-  }, [slot.id, slot.bgSrc, standingSig])
+  }, [slot.id, slot.bgSrc, slot.plateSrc, standingSig])
 
   const standingStyle = (standing: VnPlateStanding) => {
     const dimmed = focusCharacterId
@@ -476,8 +478,20 @@ const VnPlate = memo(function VnPlate({
         <img
           src={slot.bgSrc}
           alt=""
+          data-vn-layer="bg"
           className="absolute inset-0 h-full w-full object-cover"
         />
+      ) : null}
+      {slot.plateSrc ? (
+        <div className="pointer-events-none absolute bottom-0 left-1/2 h-[80%] w-[80%] -translate-x-1/2">
+          <img
+            src={slot.plateSrc}
+            alt=""
+            data-vn-layer="plate"
+            className="vn-standing-live h-full w-full object-contain object-bottom"
+            style={{ animationDelay: '0.55s' }}
+          />
+        </div>
       ) : null}
       {slot.standings.map((standing) => {
         const frameClass = standingLayoutClass(standing.position, aloneCenter)
@@ -502,7 +516,7 @@ const VnPlate = memo(function VnPlate({
                 style={mediaStyle}
               />
             ) : (
-              <img src={standing.src} alt="" className={mediaClass} style={mediaStyle} />
+              <img src={standing.src} alt="" data-vn-layer="standing" className={mediaClass} style={mediaStyle} />
             )}
           </div>
         )
@@ -513,21 +527,24 @@ const VnPlate = memo(function VnPlate({
 
 const VnStageLayer = memo(function VnStageLayer({
   background,
+  plate,
   standings,
   dimAll,
   focusCharacterId,
 }: {
   background: EventMediaAsset | null
+  plate: EventMediaAsset | null
   standings: VnPlateStanding[]
   dimAll: boolean
   focusCharacterId: string | null
 }) {
   const bgSrc = background ? resolveMediaSrc(background.url) : ''
+  const plateSrc = plate ? resolveMediaSrc(plate.url) : ''
   const standingSig = standings.map((standing) => `${standing.position}:${standing.key}`).join('|')
-  const id = `${background?.fileName || ''}|${standingSig}`
+  const id = `${background?.fileName || ''}|${plate?.fileName || ''}|${standingSig}`
   const [slots, setSlots] = useState<[VnPlateSlot, VnPlateSlot]>(() => [
-    { id, bgSrc, standings },
-    { id: '', bgSrc: '', standings: [] },
+    { id, bgSrc, plateSrc, standings },
+    { id: '', bgSrc: '', plateSrc: '', standings: [] },
   ])
   const [front, setFront] = useState(0)
   const frontIdRef = useRef(id)
@@ -546,10 +563,10 @@ const VnStageLayer = memo(function VnStageLayer({
     setSlots((prev) => {
       if (prev[hidden].id === id) return prev
       const next: [VnPlateSlot, VnPlateSlot] = [...prev]
-      next[hidden] = { id, bgSrc, standings }
+      next[hidden] = { id, bgSrc, plateSrc, standings }
       return next
     })
-  }, [id, bgSrc, standingSig, standings, front])
+  }, [id, bgSrc, plateSrc, standingSig, standings, front])
 
   return (
     <div className="absolute inset-0 z-0 bg-black">
@@ -925,10 +942,12 @@ export function EventSimulator({
       if (!node) continue
       if (node.type === 'vn') {
         const backgroundName = typeof node.background === 'string' ? node.background.trim() : ''
-        const imageStandings = resolveVnImageStandings(node, registeredCharacters, vnCharacters)
+        const plateName = typeof node.characterPlate === 'string' ? node.characterPlate.trim() : ''
+        const plateAsset = plateName ? findMediaAsset(plateName, event.media) : null
+        const imageStandings = plateAsset ? [] : resolveVnImageStandings(node, registeredCharacters, vnCharacters)
         const legacyName = typeof node.character === 'string' ? node.character.trim() : ''
         const legacyAsset =
-          imageStandings == null && legacyName ? findMediaAsset(legacyName, event.media) : null
+          !plateAsset && imageStandings == null && legacyName ? findMediaAsset(legacyName, event.media) : null
         const standings: VnPlateStanding[] = imageStandings
           ? imageStandings.map((standing) => ({
               ...standing,
@@ -948,6 +967,7 @@ export function EventSimulator({
           kind: 'vn' as const,
           node,
           background: backgroundName ? findMediaAsset(backgroundName, event.media) : null,
+          plate: plateAsset,
           standings,
         }
       }
@@ -1411,6 +1431,7 @@ export function EventSimulator({
               {activeStage?.kind === 'vn' ? (
                 <VnStageLayer
                   background={activeStage.background}
+                  plate={activeStage.plate}
                   standings={activeStage.standings}
                   dimAll={standingBrightness}
                   focusCharacterId={focusCharacterId}

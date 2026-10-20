@@ -9,11 +9,19 @@
   "nodes": [
     {
       "id": "node_1786860403048_0_m76k",
-      "type": "graphic",
-      "image": "2026-08-28_00247_.webp",
+      "type": "vn",
+      "background": "bg_bridal_room.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851211019-59swl59",
+          "imageId": "1792299854575-w3bawod",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786860403048_1_uw7q",
@@ -40,14 +48,6 @@
       "speaker": "player",
       "text": "웃기긴. 누구보다 어울리는데.",
       "text_key": "node_1786860403048_3_vjhs"
-    },
-    {
-      "id": "graphic_58af2eee_2",
-      "type": "graphic",
-      "image": "2026-08-28_00248_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1786860403048_4_elzj",
@@ -184,6 +184,22 @@
       "text_key": "node_1786860403048_19_ozj9"
     },
     {
+      "id": "node_1792310956597_us75",
+      "type": "vn",
+      "background": "bg_bridal_room.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851211019-59swl59",
+          "imageId": "1792299854575-8c4wsyx",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
+    {
       "id": "node_1786860403048_20_4gof",
       "type": "text",
       "speakerType": "character",
@@ -192,6 +208,16 @@
       "text_key": "node_1786860403048_20_4gof",
       "voice": "node_1786860403048_20_4gof.wav",
       "sound": "node_1786860403048_20_4gof.wav"
+    },
+    {
+      "id": "node_1792314832703_hy6j",
+      "type": "graphic",
+      "image": "2026-10-17_00072__restored_1080p_nf_comp.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1786860403048_21_rau8",
@@ -288,6 +314,22 @@
       "text_key": "node_1786860403048_31_uvww"
     },
     {
+      "id": "node_1792311042614_51c4",
+      "type": "vn",
+      "background": "bg_bridal_room.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851211019-59swl59",
+          "imageId": "1792299854575-lwnj0l0",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
+    {
       "id": "node_1786860403048_32_9xhi",
       "type": "text",
       "speakerType": "narrator",
@@ -304,14 +346,6 @@
       "text_key": "node_1786860403048_33_2srd",
       "voice": "node_1786860403048_33_2srd.wav",
       "sound": "node_1786860403048_33_2srd.wav"
-    },
-    {
-      "id": "node_1786860403048_34_vizq",
-      "type": "graphic",
-      "image": "2026-08-28_00250_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1786860403048_35_5v13",
@@ -332,6 +366,14 @@
       "sound": "node_1786860403048_36_q0b1.wav"
     },
     {
+      "id": "graphic_58af2eee_5",
+      "type": "graphic",
+      "image": "2026-10-17_00073__restored_1080p_nf_comp.mp4",
+      "delay": 2,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1786860403048_37_em2j",
       "type": "text",
       "speakerType": "player",
@@ -346,23 +388,6 @@
       "speaker": "",
       "text": "드레스가 허리 위로 말려 올라갔다. 팬티는 이미 축축하게 젖어 있었다. 그녀의 허리가 초조한 듯 살짝 움직였다.",
       "text_key": "node_1786860403048_38_hurs"
-    },
-    {
-      "id": "graphic_58af2eee_5",
-      "type": "graphic",
-      "image": "2026-08-28_00251_.webp",
-      "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408861397_aogo",
-          "x": 0.4518229166666667,
-          "y": 0.8292824074074074,
-          "w": 0.08333333333333331,
-          "h": 0.17071759259259256,
-          "blur": 2
-        }
-      ],
-      "blurDefault": 4
     },
     {
       "id": "node_1786860403048_39_7mq6",
@@ -461,6 +486,16 @@
       "text_key": "node_1786860403048_49_i9zr"
     },
     {
+      "id": "node_1792314981296_cy5u",
+      "type": "graphic",
+      "image": "2026-10-17_00074__restored_1080p_nf_comp.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
+      "blurRegions": [],
+      "blurDefault": 4
+    },
+    {
       "id": "node_1786860403048_50_8y0m",
       "type": "text",
       "speakerType": "character",
@@ -472,11 +507,19 @@
     },
     {
       "id": "node_1786860403048_51_yjtd",
-      "type": "graphic",
-      "image": "2026-08-28_00252_.webp",
+      "type": "vn",
+      "background": "bg_wedding_hall.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851211019-59swl59",
+          "imageId": "1792299854575-2et4s2t",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786860403048_52_xnky",
@@ -560,11 +603,19 @@
     },
     {
       "id": "node_1786860403048_61_0zwm",
-      "type": "graphic",
-      "image": "2026-08-28_00253_.webp",
+      "type": "vn",
+      "background": "bg_luxury_home.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851211019-59swl59",
+          "imageId": "1792299854575-d4vjvu0",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1786860403048_62_qtt6",
@@ -846,60 +897,52 @@
       "id": "media_sound_mtjbsmbl_uppswk0"
     },
     {
-      "fileName": "2026-08-28_00247_.webp",
+      "id": "1792310927524-wh6vyjv",
+      "fileName": "bg_luxury_home.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00247_.webp",
-      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00247_.webp",
-      "size": 119684,
-      "id": "media_image_mtjbsmbl_0r4sigm"
+      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/bg_luxury_home.webp",
+      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/bg_luxury_home.webp",
+      "size": 344728
     },
     {
-      "fileName": "2026-08-28_00248_.webp",
+      "id": "1792310929506-ouc18ve",
+      "fileName": "bg_wedding_hall.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00248_.webp",
-      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00248_.webp",
-      "size": 148314,
-      "id": "media_image_mtjbsmbl_xl55ucs"
+      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/bg_wedding_hall.webp",
+      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/bg_wedding_hall.webp",
+      "size": 442710
     },
     {
-      "fileName": "2026-08-28_00249_.webp",
+      "id": "1792310931207-nzo9g3u",
+      "fileName": "bg_bridal_room.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00249_.webp",
-      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00249_.webp",
-      "size": 177322,
-      "id": "media_image_mtjbsmbl_nk0zg46"
+      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/bg_bridal_room.webp",
+      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/bg_bridal_room.webp",
+      "size": 268440
     },
     {
-      "fileName": "2026-08-28_00250_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00250_.webp",
-      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00250_.webp",
-      "size": 152294,
-      "id": "media_image_mtjbsmbl_p92t3d2"
+      "id": "1792314848786-y3oqqmu",
+      "fileName": "2026-10-17_00072__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/videos/2026-10-17_00072__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/videos/2026-10-17_00072__restored_1080p_nf_comp.mp4",
+      "size": 3882394
     },
     {
-      "fileName": "2026-08-28_00251_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00251_.webp",
-      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00251_.webp",
-      "size": 168408,
-      "id": "media_image_mtjbsmbl_8crfkec"
+      "id": "1792314944145-7sz6ynf",
+      "fileName": "2026-10-17_00073__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/videos/2026-10-17_00073__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/videos/2026-10-17_00073__restored_1080p_nf_comp.mp4",
+      "size": 4606561
     },
     {
-      "fileName": "2026-08-28_00252_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00252_.webp",
-      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00252_.webp",
-      "size": 105340,
-      "id": "media_image_mtjbsmbl_oogg9mq"
-    },
-    {
-      "fileName": "2026-08-28_00253_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00253_.webp",
-      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/images/2026-08-28_00253_.webp",
-      "size": 125366,
-      "id": "media_image_mtjbsmbl_s5r003p"
+      "id": "1792314985981-w70yj3j",
+      "fileName": "2026-10-17_00074__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/videos/2026-10-17_00074__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/58af2eee-c93b-4dc1-81ef-86188b6e8715/videos/2026-10-17_00074__restored_1080p_nf_comp.mp4",
+      "size": 3709483
     }
   ],
   "sourceZipName": "직접 생성",

@@ -5,8 +5,24 @@
   "chapterId": 1,
   "titleKey": "e3ee8c28-6440-4f9b-8ead-3a76db761d65",
   "title": "섹스",
-  "startNode": "node_1787182155513_1_4amb",
+  "startNode": "node_1787182155513_0_1lop",
   "nodes": [
+    {
+      "id": "node_1787182155513_0_1lop",
+      "type": "vn",
+      "background": "bg_bedroom.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851153987-tb6qhg5",
+          "imageId": "1792299765280-f3lgzv6",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
     {
       "id": "node_1787182155513_1_4amb",
       "type": "text",
@@ -14,14 +30,6 @@
       "speaker": "",
       "text": "고급 호텔룸. 야간. 초인종을 누르자 문이 열리고, 루이자가 레드 레이스 속옷 차림으로 나를 맞이한다.",
       "text_key": "node_1787182155513_1_4amb"
-    },
-    {
-      "id": "node_1787182155513_0_1lop",
-      "type": "graphic",
-      "image": "2026-08-28_00280_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787182155513_2_cxcg",
@@ -50,15 +58,6 @@
       "text_key": "node_1787182155513_4_xiz7",
       "voice": "node_1787182155513_4_xiz7.wav",
       "sound": "node_1787182155513_4_xiz7.wav"
-    },
-    {
-      "id": "graphic_e3ee8c28_2",
-      "type": "graphic",
-      "image": "2026-08-28_00281_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
     },
     {
       "id": "node_1787182155513_5_xaey",
@@ -223,15 +222,6 @@
       "text_key": "node_1787182155513_22_w354"
     },
     {
-      "id": "graphic_e3ee8c28_3",
-      "type": "graphic",
-      "image": "2026-08-28_00282_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787182155513_23_yk9g",
       "type": "text",
       "speakerType": "character",
@@ -251,11 +241,19 @@
     },
     {
       "id": "node_1787182155513_25_d0ns",
-      "type": "graphic",
-      "image": "2026-08-28_00283_.webp",
+      "type": "vn",
+      "background": "bg_bedroom.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851153987-tb6qhg5",
+          "imageId": "1792299765282-kqhdahv",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787182155513_26_s4nl",
@@ -330,18 +328,9 @@
     {
       "id": "node_1787182155513_33_si86",
       "type": "graphic",
-      "image": "speed_2_60x_c21c8ae2b7e047d18a4516dd113407aa.mp4",
+      "image": "2026-10-17_00077__restored_1080p_nf_comp.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408631193_47nb",
-          "x": 0.3385416666666667,
-          "y": 0.1244212962962963,
-          "w": 0.07942708333333331,
-          "h": 0.13310185185185186,
-          "blur": 1.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -422,20 +411,19 @@
     },
     {
       "id": "node_1787182155513_42_4l56",
-      "type": "graphic",
-      "image": "6641347d-2870-4fc6-a741-e356dd48b064.webp",
-      "delay": 2,
-      "blurRegions": [
+      "type": "vn",
+      "background": "bg_bedroom.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
         {
-          "id": "blur_1788408641337_e9n4",
-          "x": 0.26171875,
-          "y": 0.08506944444444445,
-          "w": 0.16536458333333331,
-          "h": 0.36689814814814814,
-          "blur": 1.5
+          "characterId": "1786851153987-tb6qhg5",
+          "imageId": "1792299765282-7toxe0x",
+          "position": "center"
         }
       ],
-      "blurDefault": 4
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787182155513_43_y10k",
@@ -472,23 +460,6 @@
       "speaker": "",
       "text": "루이자가 몸을 돌려 침대에 네 발로 엎드린다.",
       "text_key": "node_1787182155513_46_eckj"
-    },
-    {
-      "id": "node_1787182155513_47_fcze",
-      "type": "graphic",
-      "image": "2026-08-28_00286_.webp",
-      "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408653737_2wgt",
-          "x": 0.6692708333333334,
-          "y": 0.5549768518518519,
-          "w": 0.05338541666666663,
-          "h": 0.15162037037037035,
-          "blur": 1.5
-        }
-      ],
-      "blurDefault": 4
     },
     {
       "id": "node_1787182155513_48_8jti",
@@ -529,19 +500,11 @@
     {
       "id": "node_1787182155513_51_rr9d",
       "type": "graphic",
-      "image": "speed_2_85x_242f68c304c842b9b1c6ef3e47228fe0.mp4",
+      "image": "2026-10-18_00023__restored_1080p_nf_comp.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408663368_apor",
-          "x": 0.08854166666666667,
-          "y": 0.1857638888888889,
-          "w": 0.2265625,
-          "h": 0.33796296296296297,
-          "blur": 2
-        }
-      ],
-      "blurDefault": 4
+      "blurRegions": [],
+      "blurDefault": 4,
+      "speed": 1.2
     },
     {
       "id": "node_1787182155513_52_3h29",
@@ -576,6 +539,16 @@
       "speaker": "",
       "text": "그녀의 보지가 내 자지를 꽉 조이고, 애액이 허벅지를 타고 흘러내린다.",
       "text_key": "node_1787182155513_55_1bb6"
+    },
+    {
+      "id": "node_1792307309843_rh8y",
+      "type": "graphic",
+      "image": "2026-10-17_00079__restored_1080p_nf_comp.mp4",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1.5,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787182155513_56_5xxj",
@@ -634,18 +607,9 @@
     {
       "id": "node_1787182155513_61_h0u0",
       "type": "graphic",
-      "image": "8c59e39b-1dfb-42b4-8288-90a530fa8c46.webp",
+      "image": "2026-10-17_00080__restored_1080p_nf_comp.mp4",
       "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408675240_ojd6",
-          "x": 0.24739583333333334,
-          "y": 0.18113425925925927,
-          "w": 0.06901041666666666,
-          "h": 0.3101851851851851,
-          "blur": 2.5
-        }
-      ],
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -888,76 +852,44 @@
       "id": "media_sound_mtjbsmbj_so8g7mr"
     },
     {
-      "fileName": "2026-08-28_00280_.webp",
+      "id": "1792307178494-vjcaj4b",
+      "fileName": "bg_bedroom.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/2026-08-28_00280_.webp",
-      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/2026-08-28_00280_.webp",
-      "size": 146366,
-      "id": "media_image_mtjbsmbj_phniul8"
+      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/bg_bedroom.webp",
+      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/bg_bedroom.webp",
+      "size": 282724
     },
     {
-      "fileName": "2026-08-28_00281_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/2026-08-28_00281_.webp",
-      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/2026-08-28_00281_.webp",
-      "size": 146402,
-      "id": "media_image_mtjbsmbj_qki8ag0"
-    },
-    {
-      "fileName": "2026-08-28_00282_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/2026-08-28_00282_.webp",
-      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/2026-08-28_00282_.webp",
-      "size": 150654,
-      "id": "media_image_mtjbsmbj_mck6www"
-    },
-    {
-      "fileName": "2026-08-28_00283_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/2026-08-28_00283_.webp",
-      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/2026-08-28_00283_.webp",
-      "size": 137414,
-      "id": "media_image_mtjbsmbj_709xchs"
-    },
-    {
-      "fileName": "2026-08-28_00286_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/2026-08-28_00286_.webp",
-      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/2026-08-28_00286_.webp",
-      "size": 162040,
-      "id": "media_image_mtjbsmbj_r1ftpr1"
-    },
-    {
-      "id": "1788312663840-bwtyw9z",
-      "fileName": "6641347d-2870-4fc6-a741-e356dd48b064.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/6641347d-2870-4fc6-a741-e356dd48b064.webp",
-      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/6641347d-2870-4fc6-a741-e356dd48b064.webp",
-      "size": 70036
-    },
-    {
-      "id": "1788312677119-hbm14pe",
-      "fileName": "8c59e39b-1dfb-42b4-8288-90a530fa8c46.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/8c59e39b-1dfb-42b4-8288-90a530fa8c46.webp",
-      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/images/8c59e39b-1dfb-42b4-8288-90a530fa8c46.webp",
-      "size": 77198
-    },
-    {
-      "id": "1788312723941-vsf8ghx",
-      "fileName": "speed_2_60x_c21c8ae2b7e047d18a4516dd113407aa.mp4",
+      "id": "1792307265011-df0sotz",
+      "fileName": "2026-10-17_00077__restored_1080p_nf_comp.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/speed_2_60x_c21c8ae2b7e047d18a4516dd113407aa.mp4",
-      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/speed_2_60x_c21c8ae2b7e047d18a4516dd113407aa.mp4",
-      "size": 1392518
+      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/2026-10-17_00077__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/2026-10-17_00077__restored_1080p_nf_comp.mp4",
+      "size": 3330709
     },
     {
-      "id": "1788312793791-97qsb9b",
-      "fileName": "speed_2_85x_242f68c304c842b9b1c6ef3e47228fe0.mp4",
+      "id": "1792307295173-eoef0xh",
+      "fileName": "2026-10-18_00023__restored_1080p_nf_comp.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/speed_2_85x_242f68c304c842b9b1c6ef3e47228fe0.mp4",
-      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/speed_2_85x_242f68c304c842b9b1c6ef3e47228fe0.mp4",
-      "size": 1800352
+      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/2026-10-18_00023__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/2026-10-18_00023__restored_1080p_nf_comp.mp4",
+      "size": 4607375
+    },
+    {
+      "id": "1792307316329-lh773p6",
+      "fileName": "2026-10-17_00079__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/2026-10-17_00079__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/2026-10-17_00079__restored_1080p_nf_comp.mp4",
+      "size": 2686157
+    },
+    {
+      "id": "1792307330293-my44wtq",
+      "fileName": "2026-10-17_00080__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/2026-10-17_00080__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/e3ee8c28-6440-4f9b-8ead-3a76db761d65/videos/2026-10-17_00080__restored_1080p_nf_comp.mp4",
+      "size": 3106357
     }
   ],
   "sourceZipName": "직접 생성",

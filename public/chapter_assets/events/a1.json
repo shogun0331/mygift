@@ -1004,7 +1004,7 @@
       "fileName": "2026-10-17_00017__restored_1080p_nf_comp.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/a1/videos/2026-10-17_00017__restored_1080p_nf_comp.mp4",
-      "url": "blob:http://localhost:5173/d17e5963-3774-4e85-bf21-01b453aacdf5",
+      "url": "media://chapter_assets/events/a1/videos/2026-10-17_00017__restored_1080p_nf_comp.mp4",
       "size": 2657793
     }
   ],

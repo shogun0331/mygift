@@ -5,311 +5,1175 @@
   "chapterId": 1,
   "titleKey": "event_intro_station",
   "title": "새 게임 인트로 (방송국 인수)",
-  "startNode": "graphic_01",
+  "startNode": "node_1792369565700_9op8",
   "nodes": [
     {
-      "id": "graphic_01",
+      "id": "node_1792369565700_9op8",
       "type": "graphic",
-      "image": "2026-10-14_00068_.png",
+      "image": "2026-10-19_00018_.webp",
       "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_01_bg",
+      "id": "node_1792369450203_0_4593",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "배경: 도시 외곽, 비 오는 밤, 낡은 방송국 건물. 빗물이 흘러내리는 간판, 흔들리는 네온사인 \"스타라이트 방송국\".",
-      "text_key": "node_01_bg"
+      "text": "밤늦은 시간. 비가 내린다. 하늘은 잿빛이다. 가로등 불빛이 젖은 아스팔트 위에서 흐릿하게 번진다.",
+      "text_key": "node_1792369450203_0_4593"
     },
     {
-      "id": "node_02_pl",
+      "id": "node_1792369450203_1_1gj2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "낡은 건물. 딱 봐도 오래된, 허름한 건물이다. 외벽에는 물때가 잔뜩 끼어 있고, 창문들은 먼지로 뿌옇다. 몇 개는 유리도 깨져 테이프로 덕지덕지 붙여 놓았다.",
+      "text_key": "node_1792369450203_1_1gj2"
+    },
+    {
+      "id": "node_1792369450203_2_4bov",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "3층 창문에서만 희미한 불빛이 새어 나온다. 다른 층은 전부 어둡다.",
+      "text_key": "node_1792369450203_2_4bov"
+    },
+    {
+      "id": "node_1792369450203_3_t2jv",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 우산을 들고 건물 앞에 서 있다. 문자로 받은 주소가 여기다. \"3층. 문 앞에서 기다리세요.\"",
+      "text_key": "node_1792369450203_3_t2jv"
+    },
+    {
+      "id": "node_1792369450203_4_w2re",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "...여기였나.",
-      "text_key": "node_02_pl"
+      "text": "여기인가... 많이 허름하네.",
+      "text_key": "node_1792369450203_4_w2re"
     },
     {
-      "id": "node_03_pl",
+      "id": "node_1792369450203_5_khiy",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "우연히 본 채용 공고 하나에 이끌려 왔지만, 딱 봐도 망하기 직전인데...",
-      "text_key": "node_03_pl"
+      "text": "갑자기 연락해서 오라더니. 대체 뭐 하는 곳이지.",
+      "text_key": "node_1792369450203_5_khiy"
     },
     {
-      "id": "node_04_pl",
+      "id": "node_1792369450203_6_sjil",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "내가 뭘 잘못 본 건가?",
-      "text_key": "node_04_pl"
+      "text": "삼촌이랑 연락 끊긴 지 10년인데, 갑자기 문자라니. 뭐, 돈 될 일이라고는 했으니까.",
+      "text_key": "node_1792369450203_6_sjil"
     },
     {
-      "id": "graphic_02",
+      "id": "node_1792369450203_7_vhlr",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "우산을 든 채 건물을 올려다본다. 들어가야 하나, 싶다.",
+      "text_key": "node_1792369450203_7_vhlr"
+    },
+    {
+      "id": "node_1792369450203_8_tmtz",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하... 왔으니까 들어가긴 해야지. 쫓겨나면 그때 나가면 되고.",
+      "text_key": "node_1792369450203_8_tmtz"
+    },
+    {
+      "id": "node_1792369450203_9_z6e2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "한숨을 쉬고, 발을 내딛는다.",
+      "text_key": "node_1792369450203_9_z6e2"
+    },
+    {
+      "id": "node_1792369450203_10_bixk",
       "type": "graphic",
-      "image": "2026-10-14_00069_.png",
+      "image": "2026-10-19_00016_.webp",
       "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_05_bg",
+      "id": "node_1792369450203_11_kgbu",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "건물 내부, 먼지 쌓인 리셉션, 어두운 복도.",
-      "text_key": "node_05_bg"
+      "text": "철제 문을 밀고 들어선다. 계단통은 어둡고 습하다. 곰팡이 냄새와 오래된 먼지 냄새가 뒤섞여 코를 찌른다.",
+      "text_key": "node_1792369450203_11_kgbu"
     },
     {
-      "id": "node_06_pl",
+      "id": "node_1792369450203_12_rh04",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "철제 계단. 발을 디딜 때마다 삐걱거린다. 난간은 녹이 슬어 손을 대면 부스러질 것 같다. 계단 모서리에는 물이 새는지 얼룩이 번져 있다.",
+      "text_key": "node_1792369450203_12_rh04"
+    },
+    {
+      "id": "node_1792369450203_13_856p",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "2층. 복도가 이어진다. 형광등 하나가 꺼진 채 깜빡인다. 지직. 지직. 벽지는 여기저기 들떠 너덜너덜 매달려 있고, 바닥 타일은 군데군데 깨져 시멘트가 드러나 있다.",
+      "text_key": "node_1792369450203_13_856p"
+    },
+    {
+      "id": "node_1792369450203_14_k8x2",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "천장 한쪽이 가라앉아 있다. 물이 스며든 자국이 커다랗게 번져 있고, 언제 무너져도 이상하지 않을 모양새다.",
+      "text_key": "node_1792369450203_14_k8x2"
+    },
+    {
+      "id": "node_1792369450203_15_ucok",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "(기침하며) 여보세요? 계신가요?",
-      "text_key": "node_06_pl"
+      "text": "이게... 사람이 사는 건물인가?",
+      "text_key": "node_1792369450203_15_ucok"
     },
     {
-      "id": "node_07_ld",
+      "id": "node_1792369450203_16_n5zl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "무너지는 거 아니야? 방금 천장에서 뭔가 떨어질 뻔했는데.",
+      "text_key": "node_1792369450203_16_n5zl"
+    },
+    {
+      "id": "node_1792369450203_17_qo38",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "복도 끝. 철제 문 하나가 있다. 옆에 스티커로 'STAR'라고 볼펜으로 쓴 게 붙어 있다. 반쯤 떨어져 있다.",
+      "text_key": "node_1792369450203_17_qo38"
+    },
+    {
+      "id": "node_1792369450203_18_g4ou",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "문 앞에 선다. 안에서 아무 소리도 들리지 않는다. 빗소리만 복도에 울린다.",
+      "text_key": "node_1792369450203_18_g4ou"
+    },
+    {
+      "id": "node_1792369450203_19_lo9f",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...여기 맞나. 'STAR'라고는 써 있네.",
+      "text_key": "node_1792369450203_19_lo9f"
+    },
+    {
+      "id": "node_1792369450203_20_cims",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "노크를 한다. 대답이 없다.",
+      "text_key": "node_1792369450203_20_cims"
+    },
+    {
+      "id": "node_1792369450203_21_92dj",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "세 번 더 노크한다.",
+      "text_key": "node_1792369450203_21_92dj"
+    },
+    {
+      "id": "node_1792369450203_22_hbw1",
       "type": "text",
       "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(안쪽에서) 어머, 드디어 오셨군요!",
-      "text_key": "node_07_ld"
+      "speaker": "1792369110889-p0l69g7",
+      "text": "(문 너머) 열려 있어요. 들어오세요.",
+      "text_key": "node_1792369450203_22_hbw1"
     },
     {
-      "id": "graphic_03",
+      "id": "node_1792369450203_23_5vp9",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "낮고 갈라진 목소리다. 플레이어는 잠시 망설이다가 문고리를 잡는다.",
+      "text_key": "node_1792369450203_23_5vp9"
+    },
+    {
+      "id": "node_1792369450203_24_balw",
       "type": "graphic",
-      "image": "2026-10-14_00017_compressed.mp4",
+      "image": "2026-10-19_00017_.webp",
       "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_08_bg",
+      "id": "node_1792369450203_25_ptqr",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "사무실 안, 책상 위 서류 더미가 가득하고 의자에 앉은 50대 여성이 미소를 짓고 있다.",
-      "text_key": "node_08_bg"
+      "text": "문을 연다. 담배 냄새와 오래된 종이 냄새가 확 끼친다.",
+      "text_key": "node_1792369450203_25_ptqr"
     },
     {
-      "id": "node_09_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "저는 이 방송국의 전 소유주예요.",
-      "text_key": "node_09_ld"
-    },
-    {
-      "id": "node_10_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "이제 이 방송국은 당신 거예요.",
-      "text_key": "node_10_ld"
-    },
-    {
-      "id": "node_11_pl",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "잠깐만요... 전 그냥 지원하러 왔는데요?",
-      "text_key": "node_11_pl"
-    },
-    {
-      "id": "node_12_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(웃으며) 그래요? 그런데 당신이 마음에 들었어요.",
-      "text_key": "node_12_ld"
-    },
-    {
-      "id": "node_13_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "월급 대신... 방송국을 드릴게요.",
-      "text_key": "node_13_ld"
-    },
-    {
-      "id": "node_14_pl",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "네?!",
-      "text_key": "node_14_pl"
-    },
-    {
-      "id": "node_15_bg",
+      "id": "node_1792369450203_26_o6uh",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "낡은 방송 장비, 카메라, 조명, 그리고 벽에 붙은 포스터들... 섹시한 컨셉의 여성들이다.",
-      "text_key": "node_15_bg"
+      "text": "사무실이라기엔 창고에 가깝다. 책상 두 개 — 하나는 다리가 부러져 책으로 받쳐져 있다.",
+      "text_key": "node_1792369450203_26_o6uh"
     },
     {
-      "id": "node_16_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(담배에 불을 붙이며) 이 방송국은... 평범한 방송국이 아니에요.",
-      "text_key": "node_16_ld"
-    },
-    {
-      "id": "node_17_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "성인 방송국이죠. 그래서 직원들이 다 도망갔어요.",
-      "text_key": "node_17_ld"
-    },
-    {
-      "id": "node_18_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "하지만... 이게 돈이 되는 시대예요. 당신도 알잖아요?",
-      "text_key": "node_18_ld"
-    },
-    {
-      "id": "node_19_pl",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "(당황하며) 성인... 방송국이라고요?",
-      "text_key": "node_19_pl"
-    },
-    {
-      "id": "node_20_bg",
+      "id": "node_1792369450203_27_4l3r",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "컴퓨터 화면에는 과거에 방송되었던 자극적인 영상 썸네일들이 띄워져 있다.",
-      "text_key": "node_20_bg"
+      "text": "벽에는 낡은 포스터들이 붙어 있다. 군데군데 찢어지고 색이 바랜 것들. 여성들이 도발적인 포즈를 취한 사진들, 알 수 없는 로고, 손으로 쓴 낙서들. 그 사이로 오래된 화이트보드가 보인다. 지워지지 않은 글씨가 겹겹이 남아 있다.",
+      "text_key": "node_1792369450203_27_4l3r"
     },
     {
-      "id": "node_21_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(서류를 건네며) 걱정 마세요. 지금은 아무도 없지만...",
-      "text_key": "node_21_ld"
-    },
-    {
-      "id": "node_22_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "당신이 직접 크리에이터를 찾아오면 돼요. 스카우트, 아세요?",
-      "text_key": "node_22_ld"
-    },
-    {
-      "id": "node_23_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "당신은 그냥... 그녀들이 편하게 방송할 수 있는 환경만 만들어주면 돼요.",
-      "text_key": "node_23_ld"
-    },
-    {
-      "id": "node_24_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "계약서에 사인하시죠?",
-      "text_key": "node_24_ld"
-    },
-    {
-      "id": "node_25_pl",
-      "type": "text",
-      "speakerType": "player",
-      "speaker": "player",
-      "text": "(잠시 망설이다) ...해볼게요.",
-      "text_key": "node_25_pl"
-    },
-    {
-      "id": "node_26_bg",
+      "id": "node_1792369450203_28_5dl9",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "계약서에 사인을 마치자, 붉은색 인장이 묵직하게 찍힌다.",
-      "text_key": "node_26_bg"
+      "text": "구석에는 허름한 방송 시설이 있다. 모니터 두 대 — 하나는 화면에 금이 가 있다. 카메라 삼각대 하나는 다리 한쪽이 테이프로 감겨 있다. 조명 스탠드는 전선이 피복 벗겨진 채 늘어져 있다.",
+      "text_key": "node_1792369450203_28_5dl9"
     },
     {
-      "id": "node_27_ld",
+      "id": "node_1792369450203_29_x7py",
       "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "(일어서며) 잘 선택하셨어요, 사장님.",
-      "text_key": "node_27_ld"
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "창문은 반쯤 가려져 있고, 형광등이 수명이 다 된 듯 깜빡인다.",
+      "text_key": "node_1792369450203_29_x7py"
     },
     {
-      "id": "node_28_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "방송국은 인수하셨으니... 이제 할 일은 하나예요.",
-      "text_key": "node_28_ld"
-    },
-    {
-      "id": "node_29_ld",
-      "type": "text",
-      "speakerType": "character",
-      "speaker": "owner_lady",
-      "text": "크리에이터를 찾아 나서는 거죠.",
-      "text_key": "node_29_ld"
-    },
-    {
-      "id": "graphic_07",
-      "type": "graphic",
-      "image": "2026-10-14_00074_.png",
+      "id": "node_1792372135557_h18l",
+      "type": "vn",
+      "background": "2026-10-19_00017_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1792369110889-p0l69g7",
+          "imageId": "1792375265395-3tl0dnj",
+          "position": "center"
+        }
+      ],
       "delay": 2,
+      "ignoreDelay": false
+    },
+    {
+      "id": "node_1792369450203_30_5ew6",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "방 한가운데, 책상에 앉아 서류를 정리하던 여성이 고개를 든다.",
+      "text_key": "node_1792369450203_30_5ew6"
+    },
+    {
+      "id": "node_1792369450203_31_t0nv",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "50대 초반으로 보이는 여성. 손에는 계산기. 표정은 지친 사람의 그것이다.",
+      "text_key": "node_1792369450203_31_t0nv"
+    },
+    {
+      "id": "node_1792369450203_32_ewyu",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어의 시선이 잠시 그녀에게 머문다. 흰 피부. 나이에 비해 놀랍도록 매끈하다. 앉은 자세 때문에 목선부터 가슴께로 이어지는 곡선이 고스란히 드러난다. 옷은 단정한데, 그 단정함이 오히려 몸의 윤곽을 더 또렷하게 만든다.",
+      "text_key": "node_1792369450203_32_ewyu"
+    },
+    {
+      "id": "node_1792369450203_33_2qkj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(…뭐야. 이 나이에 저 몸매는 뭐지. 잠깐, 지금 무슨 생각을 하는 거야. 정신 차려.)",
+      "text_key": "node_1792369450203_33_2qkj"
+    },
+    {
+      "id": "node_1792369450203_34_7y90",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 헛기침을 한 번 한다. 시선을 다른 데로 돌린다.",
+      "text_key": "node_1792369450203_34_7y90"
+    },
+    {
+      "id": "node_1792369450203_35_do88",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "왔네요. 맞죠?",
+      "text_key": "node_1792369450203_35_do88"
+    },
+    {
+      "id": "node_1792369450203_36_4wa7",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...네. 문자 받고 왔습니다.",
+      "text_key": "node_1792369450203_36_4wa7"
+    },
+    {
+      "id": "node_1792369450203_37_9kyc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 계산기를 내려놓고 의자 등받이에 기댄다. 플레이어를 위아래로 훑는다. 사람을 평가하는 눈.",
+      "text_key": "node_1792369450203_37_9kyc"
+    },
+    {
+      "id": "node_1792369450203_38_5kna",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "앉아요. 서서 듣기엔 좀 길 거예요.",
+      "text_key": "node_1792369450203_38_5kna"
+    },
+    {
+      "id": "node_1792369450203_39_ruo9",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "부러진 책상 다리 쪽이 아닌, 멀쩡한 의자를 발로 밀어준다. 플레이어가 앉는다.",
+      "text_key": "node_1792369450203_39_ruo9"
+    },
+    {
+      "id": "node_1792369450203_40_lk44",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "앉으면서도 시선이 자꾸 그쪽으로 간다. 가슴께에 걸린 옷자락. 계산기를 쥔 손가락. 플레이어는 고개를 숙인다.",
+      "text_key": "node_1792369450203_40_lk44"
+    },
+    {
+      "id": "node_1792369450203_41_x2au",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(미쳤나. 이런 데서. 진정하자, 진정.)",
+      "text_key": "node_1792369450203_41_x2au"
+    },
+    {
+      "id": "node_1792369450203_42_ila8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저... 여기가 어디죠? 문자에는 주소밖에 없어서. 뭐 하는 곳인지...",
+      "text_key": "node_1792369450203_42_ila8"
+    },
+    {
+      "id": "node_1792369450203_43_y9az",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "방송국이에요.",
+      "text_key": "node_1792369450203_43_y9az"
+    },
+    {
+      "id": "node_1792369450203_44_2g0q",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "방송국이요?",
+      "text_key": "node_1792369450203_44_2g0q"
+    },
+    {
+      "id": "node_1792369450203_45_oevo",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "네. 인터넷 방송국. 성인 방송.",
+      "text_key": "node_1792369450203_45_oevo"
+    },
+    {
+      "id": "node_1792369450203_46_mmkt",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어의 표정이 굳는다. 그러면서도 머릿속 한구석에서 엉뚱한 생각이 스친다.",
+      "text_key": "node_1792369450203_46_mmkt"
+    },
+    {
+      "id": "node_1792369450203_47_5z74",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(성인 방송…? 그럼 이 사람도 혹시… 아니야, 아니야. 지금 그게 중요한 게 아니잖아.)",
+      "text_key": "node_1792369450203_47_5z74"
+    },
+    {
+      "id": "node_1792369450203_48_8e9f",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "아, 놀랄 만하죠. 근데 사실대로 말하는 게 나아요. 어차피 알게 될 거니까.",
+      "text_key": "node_1792369450203_48_8e9f"
+    },
+    {
+      "id": "node_1792369450203_49_lqcj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "잠깐만요. 저, 잘못 온 것 같은데요.",
+      "text_key": "node_1792369450203_49_lqcj"
+    },
+    {
+      "id": "node_1792369450203_50_tdi6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "아니에요. 정확히 맞게 왔어요. 삼촌이 보낸 거니까.",
+      "text_key": "node_1792369450203_50_tdi6"
+    },
+    {
+      "id": "node_1792369450203_51_5mno",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "삼촌이요? 저 삼촌이랑 10년 넘게 연락 안 했는데요.",
+      "text_key": "node_1792369450203_51_5mno"
+    },
+    {
+      "id": "node_1792369450203_52_1jns",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "알아요. 삼촌이 그러더라고요. '조카한테 연락하지 마라. 내가 알아서 할 테니까.'",
+      "text_key": "node_1792369450203_52_1jns"
+    },
+    {
+      "id": "node_1792369450203_53_pnmt",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그게 무슨...",
+      "text_key": "node_1792369450203_53_pnmt"
+    },
+    {
+      "id": "node_1792369450203_54_rtxi",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 몸을 숙여 서류를 꺼낸다. 그 순간 목선 아래로 흰 살갗이 깊게 드러난다. 플레이어는 얼른 시선을 책상 위로 떨어뜨린다.",
+      "text_key": "node_1792369450203_54_rtxi"
+    },
+    {
+      "id": "node_1792369450203_55_l106",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(봤다. 봤어. 아 진짜… 이런 상황에서 이러면 안 되는데.)",
+      "text_key": "node_1792369450203_55_l106"
+    },
+    {
+      "id": "node_1792369450203_56_eu37",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 서류를 하나 꺼내 밀어준다. 운영권 양도 계약서. 양도인: 김철수. 양수인: 플레이어.",
+      "text_key": "node_1792369450203_56_eu37"
+    },
+    {
+      "id": "node_1792369450203_57_0cm4",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "이게 뭐예요? 저는 이런 거 서명한 적 없는데.",
+      "text_key": "node_1792369450203_57_0cm4"
+    },
+    {
+      "id": "node_1792369450203_58_yal2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "삼촌이 그렇게 해놨어요. 법적으로는 좀 애매하지만, 효력은 있어요. 공증까지 받아놨거든요.",
+      "text_key": "node_1792369450203_58_yal2"
+    },
+    {
+      "id": "node_1792369450203_59_jk2u",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "잠적...?",
+      "text_key": "node_1792369450203_59_jk2u"
+    },
+    {
+      "id": "node_1792369450203_60_6rn6",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "네. 3주 전에. 연락 두절. 빚 2억 남기고.",
+      "text_key": "node_1792369450203_60_6rn6"
+    },
+    {
+      "id": "node_1792369450203_61_f4vb",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 서류를 내려놓는다. 머리가 아프다. 그런데 이상하게도 시선은 자꾸 계산기를 만지작거리는 그녀의 손끝으로 간다.",
+      "text_key": "node_1792369450203_61_f4vb"
+    },
+    {
+      "id": "node_1792369450203_62_g0kc",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(집중해. 집중하라고. 빚 2억이라고. 인생이 걸린 문제야.)",
+      "text_key": "node_1792369450203_62_g0kc"
+    },
+    {
+      "id": "node_1792369450203_63_0h4v",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "그리고 저는... 삼촌과 공동 지분을 가진 사람이에요. 투자자고. 5년 동안 여기서 삼촌이랑 같이 이 방송국을 꾸려왔어요.",
+      "text_key": "node_1792369450203_63_0h4v"
+    },
+    {
+      "id": "node_1792369450203_64_80c8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그런데 왜 저한테요? 레이코 씨가 하면 되잖아요.",
+      "text_key": "node_1792369450203_64_80c8"
+    },
+    {
+      "id": "node_1792369450203_65_f4vu",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "저 혼자서는 안 돼요. 채권자가 '공동 운영자'는 인정 안 해요. 새 운영자가 필요해요.",
+      "text_key": "node_1792369450203_65_f4vu"
+    },
+    {
+      "id": "node_1792369450203_66_gegr",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그게... 저라는 거예요?",
+      "text_key": "node_1792369450203_66_gegr"
+    },
+    {
+      "id": "node_1792369450203_67_c9b4",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "네. 그러니까... 방송국을 한번 운영해보시죠.",
+      "text_key": "node_1792369450203_67_c9b4"
+    },
+    {
+      "id": "node_1792369450203_68_cw67",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "잠깐. 방금 뭐라고?",
+      "text_key": "node_1792369450203_68_cw67"
+    },
+    {
+      "id": "node_1792369450203_69_r7dj",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "네? 방송국을... 운영하라고요? 저한테?",
+      "text_key": "node_1792369450203_69_r7dj"
+    },
+    {
+      "id": "node_1792369450203_70_8px7",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "네.",
+      "text_key": "node_1792369450203_70_8px7"
+    },
+    {
+      "id": "node_1792369450203_71_8xrp",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저... 방송국이 뭔지도 몰라요. 성인방송국이잖아요. 그런 거 본 적도 없는데.",
+      "text_key": "node_1792369450203_71_8xrp"
+    },
+    {
+      "id": "node_1792369450203_72_4cmu",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "저도 처음엔 그랬어요. 근데 의외로 할 만해요. 사람들이 원하는 게 뭔지 알면.",
+      "text_key": "node_1792369450203_72_4cmu"
+    },
+    {
+      "id": "node_1792369450203_73_fgsl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "아니, 그게 문제가 아니라...",
+      "text_key": "node_1792369450203_73_fgsl"
+    },
+    {
+      "id": "node_1792369450203_74_zqnv",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 계산기를 다시 집어든다. 탁탁. 숫자를 누른다. 팔을 움직일 때마다 옷자락이 가슴께를 따라 흔들린다. 플레이어는 애써 눈을 내리깐다.",
+      "text_key": "node_1792369450203_74_zqnv"
+    },
+    {
+      "id": "node_1792369450203_75_38h9",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(제발… 제발 좀. 이런 사람 앞에서 이런 생각 하지 말자.)",
+      "text_key": "node_1792369450203_75_38h9"
+    },
+    {
+      "id": "node_1792369450203_76_jh27",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "6개월이에요. 6개월 안에 흑자로 돌려놓으면, 삼촌 빚도 정리되고, 당신 어머니 병원비도 해결돼요.",
+      "text_key": "node_1792369450203_76_jh27"
+    },
+    {
+      "id": "node_1792369450203_77_kwfu",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "어머니 병원비... 그걸 왜 레이코 씨가 알아요?",
+      "text_key": "node_1792369450203_77_kwfu"
+    },
+    {
+      "id": "node_1792369450203_78_ohol",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "(잠시 침묵) ...삼촌이 6개월 동안 내고 있었어요. 당신 몰래.",
+      "text_key": "node_1792369450203_78_ohol"
+    },
+    {
+      "id": "node_1792369450203_79_v8pb",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 의자에 몸을 맡긴다. 머리가 복잡하다. 그 와중에도 시선이 잠시 흰 목덜미에 머문다. 플레이어는 속으로 자신을 탓한다.",
+      "text_key": "node_1792369450203_79_v8pb"
+    },
+    {
+      "id": "node_1792369450203_80_uger",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(지금 어머니 병원비 이야기 하고 있는데… 나 진짜 쓰레기인가.)",
+      "text_key": "node_1792369450203_80_uger"
+    },
+    {
+      "id": "node_1792369450203_81_51a9",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하... 진짜 미친 짓이네. 성인방송국이라니. 나 그런 거 한 번도...",
+      "text_key": "node_1792369450203_81_51a9"
+    },
+    {
+      "id": "node_1792369450203_82_9r15",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "그래서요. 어떻게 할래요?",
+      "text_key": "node_1792369450203_82_9r15"
+    },
+    {
+      "id": "node_1792369450203_83_78oz",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 한참 말이 없다. Reiko는 계산기를 내려놓고 플레이어를 똑바로 본다. 그 눈이 마주치자, 플레이어는 괜히 심장이 한 칸 내려앉는다.",
+      "text_key": "node_1792369450203_83_78oz"
+    },
+    {
+      "id": "node_1792369450203_84_d8dn",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저... 진짜 할 줄 모르는데.",
+      "text_key": "node_1792369450203_84_d8dn"
+    },
+    {
+      "id": "node_1792369450203_85_jiqn",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "저도 처음엔 몰랐어요. 배우면 돼요.",
+      "text_key": "node_1792369450203_85_jiqn"
+    },
+    {
+      "id": "node_1792369450203_86_9ix8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "그런데 왜 하필 저예요? 다른 사람 많을 텐데.",
+      "text_key": "node_1792369450203_86_9ix8"
+    },
+    {
+      "id": "node_1792369450203_87_4dbl",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "음... 솔직히 말할게요.",
+      "text_key": "node_1792369450203_87_4dbl"
+    },
+    {
+      "id": "node_1792369450203_88_jw65",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 손가락을 꼽는다. 그 손가락이 하나씩 펴질 때마다 플레이어의 시선이 따라간다. 플레이어는 고개를 젓는다.",
+      "text_key": "node_1792369450203_88_jw65"
+    },
+    {
+      "id": "node_1792369450203_89_rvu1",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "첫째, 삼촌이 당신을 지목했어요. 이유는 모르겠지만.",
+      "text_key": "node_1792369450203_89_rvu1"
+    },
+    {
+      "id": "node_1792369450203_90_y4z4",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "둘째는?",
+      "text_key": "node_1792369450203_90_y4z4"
+    },
+    {
+      "id": "node_1792369450203_91_w4hj",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "둘째... 저, 채권자한테 '새 운영자 왔다'고 말해야 하는데, 아무나 데려가면 '사기꾼'이라고 의심받거든요. 근데 당신은 삼촌의 진짜 조카잖아요. 혈육이면 의심 안 하니까.",
+      "text_key": "node_1792369450203_91_w4hj"
+    },
+    {
+      "id": "node_1792369450203_92_e83w",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...그게 이유예요?",
+      "text_key": "node_1792369450203_92_e83w"
+    },
+    {
+      "id": "node_1792369450203_93_3tol",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "셋째!",
+      "text_key": "node_1792369450203_93_3tol"
+    },
+    {
+      "id": "node_1792369450203_94_5jnv",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "또 있어요?",
+      "text_key": "node_1792369450203_94_5jnv"
+    },
+    {
+      "id": "node_1792369450203_95_odaq",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "제가 어제 점을 봤는데... 오늘 좋은 사람이 온다고 나왔어요. 당신이 딱 그렇다고요.",
+      "text_key": "node_1792369450203_95_odaq"
+    },
+    {
+      "id": "node_1792369450203_96_lowm",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...점이요?",
+      "text_key": "node_1792369450203_96_lowm"
+    },
+    {
+      "id": "node_1792369450203_97_31da",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "네. 잘 맞는 데예요. 진짜로.",
+      "text_key": "node_1792369450203_97_31da"
+    },
+    {
+      "id": "node_1792369450203_98_ezrp",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 맥없이 웃는다. 이게 꿈인가 싶다. 그러면서도 머릿속 한켠에서는 또 엉뚱한 상상이 스친다.",
+      "text_key": "node_1792369450203_98_ezrp"
+    },
+    {
+      "id": "node_1792369450203_99_e1y8",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(이 사람이랑… 6개월 동안 같이 일한다고? 매일 이 사람 얼굴 보고, 이 사람 옆에서… 아, 진짜.)",
+      "text_key": "node_1792369450203_99_e1y8"
+    },
+    {
+      "id": "node_1792369450203_100_2qvy",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "하... 진짜 어이없네. 성인방송국이라니. 나 그런 거 한 번도 본 적 없는데.",
+      "text_key": "node_1792369450203_100_2qvy"
+    },
+    {
+      "id": "node_1792369450203_101_4pta",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "그럼 오늘부터 보면 되죠.",
+      "text_key": "node_1792369450203_101_4pta"
+    },
+    {
+      "id": "node_1792369450203_102_kqvi",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...",
+      "text_key": "node_1792369450203_102_kqvi"
+    },
+    {
+      "id": "node_1792369450203_103_ew5z",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 한숨을 길게 쉰다. 그리고 중얼거린다.",
+      "text_key": "node_1792369450203_103_ew5z"
+    },
+    {
+      "id": "node_1792369450203_104_kk0k",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "어머니 병원비... 진짜 해결돼요?",
+      "text_key": "node_1792369450203_104_kk0k"
+    },
+    {
+      "id": "node_1792369450203_105_wtq9",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "삼촌이 돌아오면요. 저는 보증은 못 해도, 최선은 다 할게요.",
+      "text_key": "node_1792369450203_105_wtq9"
+    },
+    {
+      "id": "node_1792369450203_106_v7g8",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "긴 침묵. 빗소리만 사무실에 울린다. 침묵 속에서 플레이어의 시선이 다시 한번 그녀의 흰 목선을 스친다. 플레이어는 이를 악물고 고개를 숙인다.",
+      "text_key": "node_1792369450203_106_v7g8"
+    },
+    {
+      "id": "node_1792369450203_107_lhph",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...하아. 알겠어요.",
+      "text_key": "node_1792369450203_107_lhph"
+    },
+    {
+      "id": "node_1792369450203_108_4x85",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "응?",
+      "text_key": "node_1792369450203_108_4x85"
+    },
+    {
+      "id": "node_1792369450203_109_1csp",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "해볼게요. 어차피 지금보다 나빠질 것도 없으니까. 6개월이면... 뭐, 한번 해보죠.",
+      "text_key": "node_1792369450203_109_1csp"
+    },
+    {
+      "id": "node_1792369450203_110_v2yt",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 잠시 놀란 표정을 짓는다. 그러다 입꼬리가 살짝 올라간다.",
+      "text_key": "node_1792369450203_110_v2yt"
+    },
+    {
+      "id": "node_1792369450203_111_rdeg",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "...의외로 빠르네요. 도망갈 줄 알았는데.",
+      "text_key": "node_1792369450203_111_rdeg"
+    },
+    {
+      "id": "node_1792369450203_112_y4ya",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "저도 제가 이럴 줄 몰랐어요.",
+      "text_key": "node_1792369450203_112_y4ya"
+    },
+    {
+      "id": "node_1792369450203_113_ktyp",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "좋아요. 그럼... 잘 부탁해요, 사장님.",
+      "text_key": "node_1792369450203_113_ktyp"
+    },
+    {
+      "id": "node_1792369450203_114_zm8c",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "사장님은 무슨... 아직 결정된 것도 아닌데.",
+      "text_key": "node_1792369450203_114_zm8c"
+    },
+    {
+      "id": "node_1792369450203_115_g7gl",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "계약서에 서명하면 결정되는 거예요.",
+      "text_key": "node_1792369450203_115_g7gl"
+    },
+    {
+      "id": "node_1792369450203_116_fpfp",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 펜을 집어 책상 위에 올려놓는다. 탁. 플레이어는 그 펜을 집어 든다. 손끝이 떨린다. 옆에서 그녀가 지켜보고 있다는 게 온몸으로 느껴진다.",
+      "text_key": "node_1792369450203_116_fpfp"
+    },
+    {
+      "id": "node_1792369450203_117_80zt",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "...진짜 이거 서명하면 되는 거예요?",
+      "text_key": "node_1792369450203_117_80zt"
+    },
+    {
+      "id": "node_1792369450203_118_r54d",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "네. 대신... 6개월 후에 후회해도 저는 모르는 거예요.",
+      "text_key": "node_1792369450203_118_r54d"
+    },
+    {
+      "id": "node_1792369450203_119_hd0d",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "무섭게 말하지 마요.",
+      "text_key": "node_1792369450203_119_hd0d"
+    },
+    {
+      "id": "node_1792369450203_120_agwl",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 펜을 집어 든다. 한참 쳐다본다. 그리고 서명한다.",
+      "text_key": "node_1792369450203_120_agwl"
+    },
+    {
+      "id": "node_1792369450203_121_pghk",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "사각. 사각. 낯선 이름이 종이 위에 남는다.",
+      "text_key": "node_1792369450203_121_pghk"
+    },
+    {
+      "id": "node_1792369450203_122_ykkx",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "...축하해요. 이제 진짜 사장님이네요.",
+      "text_key": "node_1792369450203_122_ykkx"
+    },
+    {
+      "id": "node_1792369450203_123_sjm2",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "축하인지 조롱인지 모르겠네.",
+      "text_key": "node_1792369450203_123_sjm2"
+    },
+    {
+      "id": "node_1792369450203_124_iqij",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "반반이죠.",
+      "text_key": "node_1792369450203_124_iqij"
+    },
+    {
+      "id": "node_1792369450203_125_x1fj",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 서류를 정리해 가방에 넣는다. 몸을 숙였다 일어나기를 반복하는 동안, 플레이어는 애써 시선을 벽에 붙은 포스터에 고정한다. 여성들이 웃고 있는 사진이 보인다. 글씨가 하나도 안 읽힌다.",
+      "text_key": "node_1792369450203_125_x1fj"
+    },
+    {
+      "id": "node_1792369450203_126_egcn",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "(읽혀야 말이지…)",
+      "text_key": "node_1792369450203_126_egcn"
+    },
+    {
+      "id": "node_1792369450203_127_0fa2",
+      "type": "text",
+      "speakerType": "character",
+      "speaker": "1792369110889-p0l69g7",
+      "text": "계약서는 제가 보관할게요. 내일 아침에 다시 올게요. 그때부터... 진짜 시작이에요.",
+      "text_key": "node_1792369450203_127_0fa2"
+    },
+    {
+      "id": "node_1792369450203_128_5imd",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 문 쪽으로 걸어간다. 문고리를 잡고, 잠시 멈춘다.",
+      "text_key": "node_1792369450203_128_5imd"
+    },
+    {
+      "id": "node_1792369450203_129_hys8",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "Reiko가 나간다. 문이 닫힌다.",
+      "text_key": "node_1792369450203_129_hys8"
+    },
+    {
+      "id": "node_1792369450203_130_17o3",
+      "type": "graphic",
+      "image": "2026-10-19_00017_.webp",
+      "delay": 2,
+      "ignoreDelay": false,
+      "speed": 1,
       "blurRegions": [],
       "blurDefault": 4
     },
     {
-      "id": "node_30_bg",
+      "id": "node_1792369450203_131_z5gg",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
-      "text": "사모님이 떠난 후, 홀로 남은 사무실 창문으로 새벽빛이 희미하게 비쳐온다.",
-      "text_key": "node_30_bg"
+      "text": "사무실에 혼자 남는다. 빗소리만 들린다. 플레이어는 한동안 의자에 앉아 천장을 본다.",
+      "text_key": "node_1792369450203_131_z5gg"
     },
     {
-      "id": "node_31_pl",
+      "id": "node_1792369450203_132_bmwu",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "(한숨) 성인방송국이라...",
-      "text_key": "node_31_pl"
+      "text": "...뭐야. 방금 그 사람, 진짜 매력적이잖아.",
+      "text_key": "node_1792369450203_132_bmwu"
     },
     {
-      "id": "node_32_pl",
+      "id": "node_1792369450203_133_9psn",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "(컴퓨터를 켜며) 어쨌든... 이제 내가 사장인 건가.",
-      "text_key": "node_32_pl"
+      "text": "아니, 그게 아니라. 일단 내일부터 어떻게 해야 하지...",
+      "text_key": "node_1792369450203_133_9psn"
     },
     {
-      "id": "node_33_pl",
+      "id": "node_1792369450203_134_pl6p",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 구석의 허름한 방송 시설을 본다. 금 간 모니터. 테이프로 감은 삼각대. 피복 벗겨진 조명 전선.",
+      "text_key": "node_1792369450203_134_pl6p"
+    },
+    {
+      "id": "node_1792369450203_135_wwe8",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "(결심한 듯) 좋아. 크리에이터부터 찾아보자.",
-      "text_key": "node_33_pl"
+      "text": "이걸로 방송을... 사람이 오긴 할까.",
+      "text_key": "node_1792369450203_135_wwe8"
     },
     {
-      "id": "node_34_pl",
+      "id": "node_1792369450203_136_l2oe",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "벽에 붙은 낡은 포스터들이 눈에 들어온다. 바랜 사진 속 여성들이 웃고 있다.",
+      "text_key": "node_1792369450203_136_l2oe"
+    },
+    {
+      "id": "node_1792369450203_137_6ejp",
       "type": "text",
       "speakerType": "player",
       "speaker": "player",
-      "text": "스카웃... 나가야겠네.",
-      "text_key": "node_34_pl"
+      "text": "...그러고 보니.",
+      "text_key": "node_1792369450203_137_6ejp"
+    },
+    {
+      "id": "node_1792369450203_138_u4zn",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "지금 이 방송국에 사람이 없잖아. 방송할 사람이.",
+      "text_key": "node_1792369450203_138_u4zn"
+    },
+    {
+      "id": "node_1792369450203_139_3mtc",
+      "type": "text",
+      "speakerType": "narrator",
+      "speaker": "",
+      "text": "플레이어는 자리에서 일어난다. 창밖을 본다. 비가 계속 내린다.",
+      "text_key": "node_1792369450203_139_3mtc"
+    },
+    {
+      "id": "node_1792369450203_140_blcl",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "우선... 여성이 필요하겠군.",
+      "text_key": "node_1792369450203_140_blcl"
+    },
+    {
+      "id": "node_1792369450203_141_1dxy",
+      "type": "text",
+      "speakerType": "player",
+      "speaker": "player",
+      "text": "스카웃을 나가보자.",
+      "text_key": "node_1792369450203_141_1dxy"
     }
   ],
   "defaultLanguage": "ko",
@@ -327,41 +1191,51 @@
         "es": "Ex-propietaria",
         "de": "Ehemalige Besitzerin"
       }
+    },
+    {
+      "id": "Reiko",
+      "name": "Reiko"
+    },
+    {
+      "id": "1792369110889-p0l69g7",
+      "name": "Reiko",
+      "names": {
+        "ko": "Reiko",
+        "en": "",
+        "ja": "",
+        "zh-cn": "",
+        "zh-tw": "",
+        "ru": "",
+        "es": "",
+        "de": ""
+      }
     }
   ],
   "points": [],
   "media": [
     {
-      "id": "1791959466227-n0wavuo",
-      "fileName": "2026-10-14_00068_.png",
+      "id": "1792372051100-9lh2pz6",
+      "fileName": "2026-10-19_00017_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/event_intro_station/images/2026-10-14_00068_.png",
-      "url": "media://chapter_assets/events/event_intro_station/images/2026-10-14_00068_.png",
-      "size": 2922428
+      "sourcePath": "chapter_assets/events/event_intro_station/images/2026-10-19_00017_.webp",
+      "url": "media://chapter_assets/events/event_intro_station/images/2026-10-19_00017_.webp",
+      "size": 279064
     },
     {
-      "id": "1791959471194-9nilxfc",
-      "fileName": "2026-10-14_00069_.png",
+      "id": "1792372052774-bf66m0u",
+      "fileName": "2026-10-19_00016_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/event_intro_station/images/2026-10-14_00069_.png",
-      "url": "media://chapter_assets/events/event_intro_station/images/2026-10-14_00069_.png",
-      "size": 2507210
+      "sourcePath": "chapter_assets/events/event_intro_station/images/2026-10-19_00016_.webp",
+      "url": "media://chapter_assets/events/event_intro_station/images/2026-10-19_00016_.webp",
+      "size": 239926
     },
     {
-      "id": "1791959486569-ejeg9ui",
-      "fileName": "2026-10-14_00074_.png",
+      "id": "1792372055023-ru09lns",
+      "fileName": "2026-10-19_00018_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/event_intro_station/images/2026-10-14_00074_.png",
-      "url": "media://chapter_assets/events/event_intro_station/images/2026-10-14_00074_.png",
-      "size": 2585843
-    },
-    {
-      "id": "1791959728159-dbfvnkt",
-      "fileName": "2026-10-14_00017_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/event_intro_station/videos/2026-10-14_00017_compressed.mp4",
-      "url": "media://chapter_assets/events/event_intro_station/videos/2026-10-14_00017_compressed.mp4",
-      "size": 2571602
+      "sourcePath": "chapter_assets/events/event_intro_station/images/2026-10-19_00018_.webp",
+      "url": "media://chapter_assets/events/event_intro_station/images/2026-10-19_00018_.webp",
+      "size": 282902
     }
   ],
   "sourceZipName": "직접 생성",

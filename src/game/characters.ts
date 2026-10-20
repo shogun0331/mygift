@@ -15,7 +15,7 @@ import {
 } from './condition'
 import { estimateDefaultSalaryForGrade } from './salary'
 import { characterMediaUrl } from './mediaUrl'
-import { normalizeVnImages, type VnStandingImage } from './vnCharacters'
+import { normalizeVnImages, type VnStagePosition, type VnStandingImage } from './vnCharacters'
 import {
   normalizeSnsPosts,
   normalizeSnsPublishedPosts,
@@ -135,6 +135,14 @@ export function auditMediaSlotUrl(
   return sanitizeAuditMediaUrl(slot.url)
 }
 
+export type ShortsVnStanding = {
+  key: string
+  src: string
+  position?: VnStagePosition
+  media?: 'image' | 'video'
+  characterId?: string
+}
+
 /** 재시청 VIP/H 숏츠 VN 한 컷 (영상·이미지 + 대사 노드) */
 export type ShortsVnBeat = {
   id: string
@@ -147,6 +155,12 @@ export type ShortsVnBeat = {
   sourceNodeId?: string | null
   /** 하단에 표시할 원본 대사 노드 ID */
   captionNodeId?: string | null
+  /** VN 노드 전용: 캐릭터/스탠딩 미디어 URL (선택) */
+  characterUrl?: string | null
+  /** VN 노드 전용: 캐릭터 플레이트 미디어 URL (선택) */
+  plateUrl?: string | null
+  /** VN 노드 전용: 복합 무대 스탠딩 목록 (선택) */
+  standings?: ShortsVnStanding[]
 }
 
 export type CharacterShortsVn = {
@@ -162,6 +176,27 @@ export function emptyShortsVn(): CharacterShortsVn {
 
 function createShortsBeatId() {
   return `shorts-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+}
+
+function normalizeShortsVnStandings(raw: unknown): ShortsVnStanding[] | undefined {
+  if (!Array.isArray(raw)) return undefined
+  const out: ShortsVnStanding[] = []
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue
+    const row = item as Record<string, unknown>
+    const src = typeof row.src === 'string' ? sanitizeAuditMediaUrl(row.src) : ''
+    if (!src) continue
+    const key = typeof row.key === 'string' && row.key.trim() ? row.key.trim() : src
+    const position =
+      row.position === 'left' || row.position === 'right' ? (row.position as VnStagePosition) : 'center'
+    const media = row.media === 'video' ? ('video' as const) : ('image' as const)
+    const characterId =
+      typeof row.characterId === 'string' && row.characterId.trim()
+        ? row.characterId.trim()
+        : undefined
+    out.push({ key, src, position, media, characterId })
+  }
+  return out.length > 0 ? out : undefined
 }
 
 export function normalizeShortsVnBeat(raw: unknown): ShortsVnBeat | null {
@@ -186,6 +221,15 @@ export function normalizeShortsVnBeat(raw: unknown): ShortsVnBeat | null {
       typeof row.captionNodeId === 'string' && row.captionNodeId.trim()
         ? row.captionNodeId.trim()
         : null,
+    characterUrl:
+      typeof row.characterUrl === 'string' && row.characterUrl.trim()
+        ? sanitizeAuditMediaUrl(row.characterUrl.trim())
+        : null,
+    plateUrl:
+      typeof row.plateUrl === 'string' && row.plateUrl.trim()
+        ? sanitizeAuditMediaUrl(row.plateUrl.trim())
+        : null,
+    standings: normalizeShortsVnStandings(row.standings),
   }
 }
 

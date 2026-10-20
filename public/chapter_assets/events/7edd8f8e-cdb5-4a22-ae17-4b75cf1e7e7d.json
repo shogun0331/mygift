@@ -5,8 +5,24 @@
   "chapterId": 1,
   "titleKey": "7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d",
   "title": "VIP",
-  "startNode": "node_1787179099672_2_2y98",
+  "startNode": "node_1787179099672_0_4tk7",
   "nodes": [
+    {
+      "id": "node_1787179099672_0_4tk7",
+      "type": "vn",
+      "background": "2026-10-09_00049__upscaled_00001_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851291899-dqn64g6",
+          "imageId": "1792299804208-oih44u0",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
     {
       "id": "node_1787179099672_2_2y98",
       "type": "text",
@@ -14,14 +30,6 @@
       "speaker": "",
       "text": "고급 호텔룸. 문이 열리고, 치파오 차림의 리메이가 들어온다. 개인 만남을 수락한 것이다.",
       "text_key": "node_1787179099672_2_2y98"
-    },
-    {
-      "id": "node_1787179099672_0_4tk7",
-      "type": "graphic",
-      "image": "2026-08-28_00343_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787179099672_3_umsx",
@@ -106,20 +114,28 @@
       "sound": "node_1787179099672_11_z9fz.wav"
     },
     {
+      "id": "node_1792310358858_rgm9",
+      "type": "vn",
+      "background": "2026-10-09_00049__upscaled_00001_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851291899-dqn64g6",
+          "imageId": "1792299804212-0rhq51o",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
+    {
       "id": "node_1787179099672_12_e9cz",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "리메이가 치파오 상의를 내려 가슴을 드러낸다.",
       "text_key": "node_1787179099672_12_e9cz"
-    },
-    {
-      "id": "node_1787179099672_13_37r8",
-      "type": "graphic",
-      "image": "2026-08-28_00344_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787179099672_14_2oas",
@@ -158,7 +174,7 @@
     {
       "id": "node_1787179099672_17_vli8",
       "type": "graphic",
-      "image": "speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
+      "image": "2026-10-17_00085__restored_1080p_nf_comp.mp4",
       "delay": 2,
       "blurRegions": [
         {
@@ -250,20 +266,19 @@
     },
     {
       "id": "node_1787179099672_26_77nb",
-      "type": "graphic",
-      "image": "fa994ce1-4a0d-452f-833d-08be8f532356.webp",
-      "delay": 2,
-      "blurRegions": [
+      "type": "vn",
+      "background": "2026-10-09_00049__upscaled_00001_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
         {
-          "id": "blur_1788409061044_a2cm",
-          "x": 0.18489583333333334,
-          "y": 0.08159722222222222,
-          "w": 0.19401041666666666,
-          "h": 0.2986111111111111,
-          "blur": 2
+          "characterId": "1786851291899-dqn64g6",
+          "imageId": "1792299804212-ykxzo2w",
+          "position": "center"
         }
       ],
-      "blurDefault": 4
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787179099672_27_1aor",
@@ -390,36 +405,20 @@
       "id": "media_sound_mtjbsmbg_vyek9ch"
     },
     {
-      "fileName": "2026-08-28_00343_.webp",
+      "id": "1792310344004-01b0pvf",
+      "fileName": "2026-10-09_00049__upscaled_00001_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-28_00343_.webp",
-      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-28_00343_.webp",
-      "size": 147872,
-      "id": "media_image_mtjbsmbg_9nglnzi"
+      "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-10-09_00049__upscaled_00001_.webp",
+      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-10-09_00049__upscaled_00001_.webp",
+      "size": 511652
     },
     {
-      "fileName": "2026-08-28_00344_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-28_00344_.webp",
-      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/2026-08-28_00344_.webp",
-      "size": 113584,
-      "id": "media_image_mtjbsmbg_eur2thg"
-    },
-    {
-      "id": "1788314275709-brd6pjz",
-      "fileName": "speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
+      "id": "1792310390621-oo0oscn",
+      "fileName": "2026-10-17_00085__restored_1080p_nf_comp.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/videos/speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
-      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/videos/speed_2_25x_f3cb2068ccd44d599b82cc21d97870f9.mp4",
-      "size": 1192648
-    },
-    {
-      "id": "1788314288336-lujt3ql",
-      "fileName": "fa994ce1-4a0d-452f-833d-08be8f532356.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/fa994ce1-4a0d-452f-833d-08be8f532356.webp",
-      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/images/fa994ce1-4a0d-452f-833d-08be8f532356.webp",
-      "size": 66960
+      "sourcePath": "chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/videos/2026-10-17_00085__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/7edd8f8e-cdb5-4a22-ae17-4b75cf1e7e7d/videos/2026-10-17_00085__restored_1080p_nf_comp.mp4",
+      "size": 3405837
     }
   ],
   "sourceZipName": "직접 생성",

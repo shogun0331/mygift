@@ -5,8 +5,24 @@
   "chapterId": 1,
   "titleKey": "d5b67b9f-773d-40d5-b020-de06ce45e6cb",
   "title": "데이트1",
-  "startNode": "node_1787139086931_1_3u5x",
+  "startNode": "node_1787139086931_0_a6xm",
   "nodes": [
+    {
+      "id": "node_1787139086931_0_a6xm",
+      "type": "vn",
+      "background": "2026-10-18_00002_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851211019-59swl59",
+          "imageId": "1792299854575-v1w4w3n",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
     {
       "id": "node_1787139086931_1_3u5x",
       "type": "text",
@@ -14,14 +30,6 @@
       "speaker": "",
       "text": "야간의 재즈 바. 조용한 분위기에 재즈가 흐른다. 마이가 먼저 도착해 테이블에 앉아 기다리고 있다. 버건디 벨벳 슬립 드레스 차림.",
       "text_key": "node_1787139086931_1_3u5x"
-    },
-    {
-      "id": "node_1787139086931_0_a6xm",
-      "type": "graphic",
-      "image": "2026-08-28_00219_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787139086931_2_1k44",
@@ -32,15 +40,6 @@
       "text_key": "node_1787139086931_2_1k44",
       "voice": "node_1787139086931_2_1k44.wav",
       "sound": "node_1787139086931_2_1k44.wav"
-    },
-    {
-      "id": "graphic_d5b67b9f_2",
-      "type": "graphic",
-      "image": "2026-08-28_00220_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
     },
     {
       "id": "node_1787139086931_3_mcni",
@@ -257,15 +256,6 @@
       "text_key": "node_1787139086931_26_rbsr"
     },
     {
-      "id": "graphic_d5b67b9f_3",
-      "type": "graphic",
-      "image": "2026-08-28_00221_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787139086931_27_vvtb",
       "type": "text",
       "speakerType": "character",
@@ -348,15 +338,6 @@
       "text_key": "node_1787139086931_35_58sy"
     },
     {
-      "id": "graphic_d5b67b9f_4",
-      "type": "graphic",
-      "image": "2026-08-28_00222_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": true
-    },
-    {
       "id": "node_1787139086931_36_8d0e",
       "type": "text",
       "speakerType": "character",
@@ -376,11 +357,19 @@
     },
     {
       "id": "node_1787139501521_xeck",
-      "type": "graphic",
-      "image": "2026-08-28_00223_.webp",
+      "type": "vn",
+      "background": "2026-10-18_00002_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851211019-59swl59",
+          "imageId": "1792299854576-88wetho",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
+      "ignoreDelay": false
     },
     {
       "id": "node_1787139086931_39_2jnk",
@@ -417,14 +406,6 @@
       "speaker": "",
       "text": "내 손을 잡아 가슴 위에 얹는다. 손끝에 맨살이 닿는다.",
       "text_key": "node_1787139086931_42_1wq5"
-    },
-    {
-      "id": "graphic_d5b67b9f_6",
-      "type": "graphic",
-      "image": "2026-09-01_00026.mp4",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787139086931_43_vwvw",
@@ -490,11 +471,18 @@
     },
     {
       "id": "graphic_d5b67b9f_7",
-      "type": "graphic",
-      "image": "2026-08-28_00225_.webp",
+      "type": "vn",
+      "background": "2026-10-18_00002_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851211019-59swl59",
+          "imageId": "1792299854575-v1w4w3n",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
       "ignoreDelay": true
     },
     {
@@ -550,15 +538,6 @@
       "speaker": "",
       "text": "마이가 재즈 바 출구 쪽으로 걸어간다. 나는 그 뒷모습이 사라질 때까지 서서 바라본다.",
       "text_key": "node_1787139086931_55_jumn"
-    },
-    {
-      "id": "node_1787139360810_44ko",
-      "type": "graphic",
-      "image": "2026-08-28_00226_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
-      "ignoreDelay": false
     }
   ],
   "defaultLanguage": "ko",
@@ -761,68 +740,12 @@
       "id": "media_sound_mtjbsmbk_9d8i0po"
     },
     {
-      "fileName": "2026-08-28_00219_.webp",
+      "id": "1792310544421-n7nz4j2",
+      "fileName": "2026-10-18_00002_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00219_.webp",
-      "url": "media://chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00219_.webp",
-      "size": 208914,
-      "id": "media_image_mtjbsmbk_zof6ga2"
-    },
-    {
-      "fileName": "2026-08-28_00220_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00220_.webp",
-      "url": "media://chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00220_.webp",
-      "size": 228196,
-      "id": "media_image_mtjbsmbk_c6tor42"
-    },
-    {
-      "fileName": "2026-08-28_00221_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00221_.webp",
-      "url": "media://chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00221_.webp",
-      "size": 189586,
-      "id": "media_image_mtjbsmbk_qao4mv9"
-    },
-    {
-      "fileName": "2026-08-28_00222_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00222_.webp",
-      "url": "media://chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00222_.webp",
-      "size": 203824,
-      "id": "media_image_mtjbsmbk_shri32d"
-    },
-    {
-      "fileName": "2026-08-28_00223_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00223_.webp",
-      "url": "media://chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00223_.webp",
-      "size": 187148,
-      "id": "media_image_mtjbsmbk_2y7i5u5"
-    },
-    {
-      "fileName": "2026-08-28_00225_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00225_.webp",
-      "url": "media://chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00225_.webp",
-      "size": 216596,
-      "id": "media_image_mtjbsmbk_8y1pclx"
-    },
-    {
-      "fileName": "2026-08-28_00226_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00226_.webp",
-      "url": "media://chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-08-28_00226_.webp",
-      "size": 182542,
-      "id": "media_image_mtjbsmbk_z3d9wgv"
-    },
-    {
-      "id": "1788313190114-de5vbsv",
-      "fileName": "2026-09-01_00026.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/videos/2026-09-01_00026.mp4",
-      "url": "media://chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/videos/2026-09-01_00026.mp4",
-      "size": 16068924
+      "sourcePath": "chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-10-18_00002_.webp",
+      "url": "media://chapter_assets/events/d5b67b9f-773d-40d5-b020-de06ce45e6cb/images/2026-10-18_00002_.webp",
+      "size": 202664
     }
   ],
   "sourceZipName": "직접 생성",

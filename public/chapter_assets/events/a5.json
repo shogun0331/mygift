@@ -10,12 +10,12 @@
     {
       "id": "node_1786843238702_0_kbdm",
       "type": "vn",
-      "background": "2026-10-09_00025__upscaled_00001_.webp",
+      "background": "bg_bridal_room.webp",
       "character": "",
       "stageSlots": [
         {
           "characterId": "1786792656193-i7isvfo",
-          "imageId": "1792024099690-vcma317",
+          "imageId": "1792221593692-73hbsr6",
           "position": "center"
         }
       ],
@@ -47,21 +47,6 @@
       "speaker": "player",
       "text": "왔어요. …예쁘네요. 정말.",
       "text_key": "node_1786843238702_3_84so"
-    },
-    {
-      "id": "graphic_a5_2",
-      "type": "vn",
-      "background": "2026-10-09_00025__upscaled_00001_.webp",
-      "character": "",
-      "stageSlots": [
-        {
-          "characterId": "1786792656193-i7isvfo",
-          "imageId": "1792024099690-6nrk3te",
-          "position": "center"
-        }
-      ],
-      "delay": 2,
-      "ignoreDelay": false
     },
     {
       "id": "node_1786843238702_4_c5ev",
@@ -192,12 +177,12 @@
     {
       "id": "node_1786843238702_18_5oi7",
       "type": "vn",
-      "background": "2026-10-09_00025__upscaled_00001_.webp",
+      "background": "bg_bridal_room.webp",
       "character": "",
       "stageSlots": [
         {
           "characterId": "1786792656193-i7isvfo",
-          "imageId": "1792024099690-m8mukoc",
+          "imageId": "1792221593692-n8xnhmj",
           "position": "center"
         }
       ],
@@ -243,7 +228,7 @@
     {
       "id": "node_1792110938806_ehnh",
       "type": "graphic",
-      "image": "2026-10-14_00041__waifu2x_2x_compressed.mp4",
+      "image": "2026-10-17_00029__restored_1080p_nf_comp.mp4",
       "delay": 2,
       "ignoreDelay": false,
       "speed": 1,
@@ -295,7 +280,7 @@
     {
       "id": "node_1792110963141_prnh",
       "type": "graphic",
-      "image": "2026-10-14_00041__waifu2x_2x_compressed.mp4",
+      "image": "2026-10-17_00029__restored_1080p_nf_comp.mp4",
       "delay": 2,
       "ignoreDelay": false,
       "speed": 2,
@@ -347,12 +332,12 @@
     {
       "id": "graphic_a5_4",
       "type": "vn",
-      "background": "2026-10-09_00025__upscaled_00001_.webp",
+      "background": "bg_bridal_room.webp",
       "character": "",
       "stageSlots": [
         {
           "characterId": "1786792656193-i7isvfo",
-          "imageId": "1792024099689-aby0pvx",
+          "imageId": "1792221593692-t1nycu9",
           "position": "center"
         }
       ],
@@ -390,7 +375,7 @@
     {
       "id": "node_1786843238702_34_ilc3",
       "type": "graphic",
-      "image": "2026-10-14_00044__waifu2x_2x_compressed.mp4",
+      "image": "2026-10-17_00028__restored_1080p_nf_comp.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -492,7 +477,7 @@
     {
       "id": "graphic_a5_7",
       "type": "graphic",
-      "image": "2026-10-15_00001__waifu2x_2x_compressed.mp4",
+      "image": "2026-10-17_00030__restored_1080p_nf_comp.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -528,12 +513,12 @@
     {
       "id": "node_1786843238702_51_2pbt",
       "type": "vn",
-      "background": "2026-10-09_00026__upscaled_00001_.webp",
+      "background": "bg_wedding_hall.webp",
       "character": "",
       "stageSlots": [
         {
           "characterId": "1786792656193-i7isvfo",
-          "imageId": "1792024099690-ci18g50",
+          "imageId": "1792221593691-wbwenqh",
           "position": "center"
         }
       ],
@@ -631,12 +616,12 @@
     {
       "id": "node_1786843238702_61_0nu9",
       "type": "vn",
-      "background": "2026-10-09_00027__upscaled_00001_.webp",
+      "background": "bg_luxury_home.webp",
       "character": "",
       "stageSlots": [
         {
           "characterId": "1786792656193-i7isvfo",
-          "imageId": "1792024099687-ao6zgnu",
+          "imageId": "1792221593691-sfm7ysy",
           "position": "center"
         }
       ],
@@ -915,52 +900,52 @@
       "id": "media_sound_cuttbd85_uxrg09a"
     },
     {
-      "id": "1792110572878-pp8fijo",
-      "fileName": "2026-10-09_00025__upscaled_00001_.webp",
+      "id": "1792230706950-80edo43",
+      "fileName": "bg_bridal_room.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-10-09_00025__upscaled_00001_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-10-09_00025__upscaled_00001_.webp",
-      "size": 413632
+      "sourcePath": "chapter_assets/events/a5/images/bg_bridal_room.webp",
+      "url": "media://chapter_assets/events/a5/images/bg_bridal_room.webp",
+      "size": 268440
     },
     {
-      "id": "1792110951590-b6plox3",
-      "fileName": "2026-10-14_00041__waifu2x_2x_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/a5/videos/2026-10-14_00041__waifu2x_2x_compressed.mp4",
-      "url": "media://chapter_assets/events/a5/videos/2026-10-14_00041__waifu2x_2x_compressed.mp4",
-      "size": 2755729
-    },
-    {
-      "id": "1792111051455-opyyofr",
-      "fileName": "2026-10-14_00044__waifu2x_2x_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/a5/videos/2026-10-14_00044__waifu2x_2x_compressed.mp4",
-      "url": "media://chapter_assets/events/a5/videos/2026-10-14_00044__waifu2x_2x_compressed.mp4",
-      "size": 4057900
-    },
-    {
-      "id": "1792111064657-5ejbn4f",
-      "fileName": "2026-10-15_00001__waifu2x_2x_compressed.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/a5/videos/2026-10-15_00001__waifu2x_2x_compressed.mp4",
-      "url": "media://chapter_assets/events/a5/videos/2026-10-15_00001__waifu2x_2x_compressed.mp4",
-      "size": 1667221
-    },
-    {
-      "id": "1792111110719-tdc0t5s",
-      "fileName": "2026-10-09_00026__upscaled_00001_.webp",
+      "id": "1792230733507-1zl9iqx",
+      "fileName": "bg_wedding_hall.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-10-09_00026__upscaled_00001_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-10-09_00026__upscaled_00001_.webp",
-      "size": 490030
+      "sourcePath": "chapter_assets/events/a5/images/bg_wedding_hall.webp",
+      "url": "media://chapter_assets/events/a5/images/bg_wedding_hall.webp",
+      "size": 442710
     },
     {
-      "id": "1792111147686-58mqmdo",
-      "fileName": "2026-10-09_00027__upscaled_00001_.webp",
+      "id": "1792230740537-yj3v5pn",
+      "fileName": "bg_luxury_home.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/a5/images/2026-10-09_00027__upscaled_00001_.webp",
-      "url": "media://chapter_assets/events/a5/images/2026-10-09_00027__upscaled_00001_.webp",
-      "size": 276756
+      "sourcePath": "chapter_assets/events/a5/images/bg_luxury_home.webp",
+      "url": "media://chapter_assets/events/a5/images/bg_luxury_home.webp",
+      "size": 344728
+    },
+    {
+      "id": "1792327776304-8586igg",
+      "fileName": "2026-10-17_00029__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a5/videos/2026-10-17_00029__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/a5/videos/2026-10-17_00029__restored_1080p_nf_comp.mp4",
+      "size": 3814318
+    },
+    {
+      "id": "1792327789985-5j43bnd",
+      "fileName": "2026-10-17_00028__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a5/videos/2026-10-17_00028__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/a5/videos/2026-10-17_00028__restored_1080p_nf_comp.mp4",
+      "size": 4249686
+    },
+    {
+      "id": "1792327796623-9sfi05p",
+      "fileName": "2026-10-17_00030__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a5/videos/2026-10-17_00030__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/a5/videos/2026-10-17_00030__restored_1080p_nf_comp.mp4",
+      "size": 3332069
     }
   ],
   "sourceZipName": "직접 생성",

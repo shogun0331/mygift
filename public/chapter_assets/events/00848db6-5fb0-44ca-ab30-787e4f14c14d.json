@@ -5,8 +5,24 @@
   "chapterId": 1,
   "titleKey": "00848db6-5fb0-44ca-ab30-787e4f14c14d",
   "title": "데이트2",
-  "startNode": "node_1787181357089_1_l3rw",
+  "startNode": "node_1787181357089_0_hgg3",
   "nodes": [
+    {
+      "id": "node_1787181357089_0_hgg3",
+      "type": "vn",
+      "background": "2026-10-18_00162_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851153987-tb6qhg5",
+          "imageId": "1792299765279-ig61xvx",
+          "position": "center"
+        }
+      ],
+      "delay": 2,
+      "ignoreDelay": false
+    },
     {
       "id": "node_1787181357089_1_l3rw",
       "type": "text",
@@ -14,14 +30,6 @@
       "speaker": "",
       "text": "일본식 프라이빗 온천. 야간의 조용한 분위기. 루이자가 먼저 도착해, 화이트 비키니 차림으로 기다리고 있다.",
       "text_key": "node_1787181357089_1_l3rw"
-    },
-    {
-      "id": "node_1787181357089_0_hgg3",
-      "type": "graphic",
-      "image": "2026-08-28_00272_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787181357089_2_opru",
@@ -150,14 +158,6 @@
       "text_key": "node_1787181357089_15_17lz"
     },
     {
-      "id": "graphic_00848db6_2",
-      "type": "graphic",
-      "image": "2026-08-28_00273_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787181357089_16_47y9",
       "type": "text",
       "speakerType": "character",
@@ -284,14 +284,6 @@
       "text_key": "node_1787181357089_29_2cne"
     },
     {
-      "id": "graphic_00848db6_3",
-      "type": "graphic",
-      "image": "2026-08-28_00274_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
-    },
-    {
       "id": "node_1787181357089_30_r04v",
       "type": "text",
       "speakerType": "player",
@@ -337,11 +329,18 @@
     },
     {
       "id": "graphic_00848db6_4",
-      "type": "graphic",
-      "image": "2026-08-28_00275_.webp",
+      "type": "vn",
+      "background": "2026-10-18_00162_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
+        {
+          "characterId": "1786851153987-tb6qhg5",
+          "imageId": "1792299765279-smzs5pb",
+          "position": "center"
+        }
+      ],
       "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4,
       "ignoreDelay": true
     },
     {
@@ -387,14 +386,6 @@
       "speaker": "",
       "text": "앞을 가린 손을 천천히 내린다.",
       "text_key": "node_1787181357089_39_y1y5"
-    },
-    {
-      "id": "node_1787181357089_40_hezu",
-      "type": "graphic",
-      "image": "2026-08-28_00276_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787181357089_41_udqu",
@@ -523,18 +514,9 @@
     {
       "id": "node_1787181357089_54_y968",
       "type": "graphic",
-      "image": "speed_2_50x_de5fb28e9be3405f8f5df7e9be026f90.mp4",
-      "delay": 2,
-      "blurRegions": [
-        {
-          "id": "blur_1788408592713_5jka",
-          "x": 0.5546875,
-          "y": 0.19270833333333334,
-          "w": 0.08854166666666663,
-          "h": 0.1793981481481481,
-          "blur": 1
-        }
-      ],
+      "image": "2026-10-18_00031__restored_1080p_nf_comp.mp4",
+      "delay": 3,
+      "blurRegions": [],
       "blurDefault": 4
     },
     {
@@ -570,6 +552,16 @@
       "speaker": "",
       "text": "그녀가 눈을 감고, 내 자지를 깊이 받아들인다.",
       "text_key": "node_1787181357089_58_qciv"
+    },
+    {
+      "id": "node_1792306941501_botv",
+      "type": "graphic",
+      "image": "2026-10-17_00075__restored_1080p_nf_comp.mp4",
+      "delay": 4,
+      "ignoreDelay": false,
+      "speed": 1.2,
+      "blurRegions": [],
+      "blurDefault": 4
     },
     {
       "id": "node_1787181357089_59_ak6s",
@@ -615,20 +607,19 @@
     },
     {
       "id": "node_1787181357089_63_qzgv",
-      "type": "graphic",
-      "image": "d6467770-9944-4331-9e63-0408f2a99b28.webp",
-      "delay": 2,
-      "blurRegions": [
+      "type": "vn",
+      "background": "2026-10-18_00162_.webp",
+      "character": "",
+      "characterPlate": "",
+      "stageSlots": [
         {
-          "id": "blur_1788408604713_4414",
-          "x": 0.5651041666666666,
-          "y": 0.043402777777777776,
-          "w": 0.07552083333333337,
-          "h": 0.2789351851851852,
-          "blur": 1.5
+          "characterId": "1786851153987-tb6qhg5",
+          "imageId": "1792299765280-l6pywry",
+          "position": "center"
         }
       ],
-      "blurDefault": 4
+      "delay": 2,
+      "ignoreDelay": false
     },
     {
       "id": "node_1787181357089_64_314y",
@@ -647,14 +638,6 @@
       "text_key": "node_1787181357089_65_hsim",
       "voice": "node_1787181357089_65_hsim.wav",
       "sound": "node_1787181357089_65_hsim.wav"
-    },
-    {
-      "id": "graphic_00848db6_8",
-      "type": "graphic",
-      "image": "2026-08-28_00279_.webp",
-      "delay": 2,
-      "blurRegions": [],
-      "blurDefault": 4
     },
     {
       "id": "node_1787181357089_66_qpib",
@@ -935,68 +918,28 @@
       "id": "media_sound_mtjbsmbi_cea8i03"
     },
     {
-      "fileName": "2026-08-28_00272_.webp",
+      "id": "1792306781214-sjy1tdn",
+      "fileName": "2026-10-18_00162_.webp",
       "kind": "image",
-      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00272_.webp",
-      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00272_.webp",
-      "size": 165616,
-      "id": "media_image_mtjbsmbi_rsfbhha"
+      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-10-18_00162_.webp",
+      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-10-18_00162_.webp",
+      "size": 217594
     },
     {
-      "fileName": "2026-08-28_00273_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00273_.webp",
-      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00273_.webp",
-      "size": 179488,
-      "id": "media_image_mtjbsmbi_7w41wmi"
-    },
-    {
-      "fileName": "2026-08-28_00274_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00274_.webp",
-      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00274_.webp",
-      "size": 197916,
-      "id": "media_image_mtjbsmbi_e9uo0mf"
-    },
-    {
-      "fileName": "2026-08-28_00275_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00275_.webp",
-      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00275_.webp",
-      "size": 199820,
-      "id": "media_image_mtjbsmbi_3q9cjc9"
-    },
-    {
-      "fileName": "2026-08-28_00276_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00276_.webp",
-      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00276_.webp",
-      "size": 187790,
-      "id": "media_image_mtjbsmbi_9a4094n"
-    },
-    {
-      "fileName": "2026-08-28_00279_.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00279_.webp",
-      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/2026-08-28_00279_.webp",
-      "size": 158450,
-      "id": "media_image_mtjbsmbi_1hx5td7"
-    },
-    {
-      "id": "1788312554895-e1qczmf",
-      "fileName": "d6467770-9944-4331-9e63-0408f2a99b28.webp",
-      "kind": "image",
-      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/d6467770-9944-4331-9e63-0408f2a99b28.webp",
-      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/images/d6467770-9944-4331-9e63-0408f2a99b28.webp",
-      "size": 89304
-    },
-    {
-      "id": "1788312597147-ksxan8f",
-      "fileName": "speed_2_50x_de5fb28e9be3405f8f5df7e9be026f90.mp4",
+      "id": "1792306930727-xnko4yx",
+      "fileName": "2026-10-18_00031__restored_1080p_nf_comp.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/videos/speed_2_50x_de5fb28e9be3405f8f5df7e9be026f90.mp4",
-      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/videos/speed_2_50x_de5fb28e9be3405f8f5df7e9be026f90.mp4",
-      "size": 1877102
+      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/videos/2026-10-18_00031__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/videos/2026-10-18_00031__restored_1080p_nf_comp.mp4",
+      "size": 2745015
+    },
+    {
+      "id": "1792306946735-7x6ym5y",
+      "fileName": "2026-10-17_00075__restored_1080p_nf_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/videos/2026-10-17_00075__restored_1080p_nf_comp.mp4",
+      "url": "media://chapter_assets/events/00848db6-5fb0-44ca-ab30-787e4f14c14d/videos/2026-10-17_00075__restored_1080p_nf_comp.mp4",
+      "size": 3659835
     }
   ],
   "sourceZipName": "직접 생성",

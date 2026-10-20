@@ -11,6 +11,7 @@ import {
   regionToSourcePixels,
   sourceRectToDisplay,
 } from './mosaicMath'
+import { resolveMediaSrc } from '../game/mediaUrl'
 import type { BlurRegion, EventMediaAsset } from './types'
 
 export const BLUR_MIN = 0
@@ -597,7 +598,7 @@ export function BlurRegionEditor({
                     ref={(el) => {
                       if (el) el.playbackRate = Math.min(4, Math.max(0.5, Number(speed) || 1.0))
                     }}
-                    src={asset.url}
+                    src={resolveMediaSrc(asset.url)}
                     muted
                     loop
                     playsInline
@@ -606,7 +607,7 @@ export function BlurRegionEditor({
                   />
                 ) : (
                   <img
-                    src={asset.url}
+                    src={resolveMediaSrc(asset.url)}
                     alt=""
                     className={layout === 'fit' ? 'block max-h-[70vh] max-w-full' : 'h-full w-full object-cover'}
                   />
