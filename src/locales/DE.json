@@ -178,9 +178,12 @@
   "settings": {
     "title": "SETTINGS",
     "displayMode": "Anzeigemodus",
-    "displayModeDesc": "Wählen Sie Vollbildmodus oder rahmenlosen Fenstermodus.",
+    "displayModeDesc": "Wählen Sie Vollbild oder Fenstermodus. Im Fenstermodus wählen Sie die Auflösung.",
     "fullscreen": "Vollbildmodus",
-    "borderless": "Rahmenloser Fenstermodus",
+    "borderless": "Fenstermodus",
+    "resolution": "Auflösung",
+    "resolutionDesc": "Fenstergröße auswählen.",
+    "resolutionFull": "Volles Fenster",
     "language": "Sprache",
     "languageDesc": "Sprache für Spiel und Editor auswählen.",
     "audio": "Audioeinstellungen",
@@ -390,7 +393,11 @@
     "staffPass": "Ablehnen (auf nächsten warten)",
     "staminaDepleted": "Ausdauer (Erschöpft)",
     "recoveryNeeded": "Erholungspflege erforderlich!",
-    "expectedRevenue": "Geschätzter Umsatz"
+    "expectedRevenue": "Geschätzter Umsatz",
+    "skinUnlockTitle": "NEW SKIN UNLOCKED!",
+    "skinUnlockBadge": "{grade}-Rang erreicht!",
+    "skinUnlockName": "SKIN{skin} Kostüm freigeschaltet",
+    "skinUnlockDesc": "Ein neues Kostüm wurde freigeschaltet! Rüste es jetzt im Profil aus."
   },
   "sns": {
     "action": "SNS",
@@ -439,6 +446,7 @@
     "bulkRevealDoneTitle": "Hochgeladen",
     "bulkRevealDone": "Gepostet: {count}",
     "bulkRevealSkip": "Überspringen",
+    "bulkRevealSkippedNoFunds": "Unzureichende Mittel. ({count} übersprungen)",
     "resultViral": "SNS ging viral! Stammzuschauer +{viewers}.",
     "comment.h1a": "Der Himmel heute ist echt schön",
     "comment.h1b": "Essensfotos sind schon Therapie",

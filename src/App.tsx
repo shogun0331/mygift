@@ -155,7 +155,7 @@ function hydrateRegisteredCharacter(c: any): RegisteredCharacter {
   const videos = (c.videos ?? []).map((vid: any) => ({
     ...vid,
     stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
-    level: 1,
+    level: Math.max(1, Math.min(3, Math.floor(Number(vid.level ?? 1)) || 1)),
     url: vid.fileName
       ? mediaUrl(c.id, 'video', vid.fileName, vid.fileSize)
       : vid.url
@@ -415,6 +415,7 @@ function syncOwnedWithRegistered(
       source.shortsVn === creator.shortsVn &&
       source.specialVacation === creator.specialVacation &&
       source.profileImageUrl === creator.profileImageUrl &&
+      JSON.stringify(source.levelThumbnailImageIds) === JSON.stringify(creator.levelThumbnailImageIds) &&
       source.name === creator.name &&
       source.job === creator.job &&
       source.mediaRevision === creator.mediaRevision &&
@@ -441,6 +442,7 @@ function syncOwnedWithRegistered(
       characterIllustrationId: source.characterIllustrationId,
       profileImageId: source.profileImageId,
       profileVideoId: source.profileVideoId,
+      levelThumbnailImageIds: source.levelThumbnailImageIds ?? creator.levelThumbnailImageIds,
       images: source.images,
       videos: source.videos,
       vnImages: source.vnImages,
@@ -555,18 +557,22 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
 
   const videos = await Promise.all(
     payload.videos.map(async (vid) => {
+      const targetLevel = Math.max(1, Math.min(3, Math.floor(Number(vid.level ?? 1)) || 1))
+      const targetStage = Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1))
       if (!vid.file) {
         if (vid.fileName) {
           return {
             ...vid,
-            level: 1,
+            level: targetLevel,
+            stage: targetStage,
             file: undefined,
             url: mediaUrl(characterId, 'video', vid.fileName, vid.fileSize),
           }
         }
         return {
           ...vid,
-          level: 1,
+          level: targetLevel,
+          stage: targetStage,
           file: undefined,
           url: vid.url || '',
         }
@@ -587,8 +593,8 @@ async function saveCharacterMediaToProject(characterId: string, payload: AddChar
         return {
           id: vid.id,
           keys: vid.keys,
-          level: 1,
-          stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
+          level: targetLevel,
+          stage: targetStage,
           fileName: safeName,
           fileSize: vid.file.size,
           url: mediaUrl(characterId, 'video', safeName, vid.file.size),
@@ -1020,7 +1026,7 @@ export default function App() {
           fileSize: vid.fileSize,
           url: vid.fileName ? `media://characters/${c.id}/videos/${vid.fileName}` : vid.url,
           keys: vid.keys,
-          level: 1,
+          level: Math.max(1, Math.min(3, Math.floor(Number(vid.level ?? 1)) || 1)),
           stage: Math.max(1, Math.floor(Number(vid.stage ?? 1) || 1)),
         })) ?? []
 
@@ -1047,6 +1053,7 @@ export default function App() {
           characterIllustrationId: c.characterIllustrationId || null,
           profileImageId: c.profileImageId || null,
           profileVideoId: c.profileVideoId || null,
+          levelThumbnailImageIds: c.levelThumbnailImageIds ?? null,
           mediaRevision: c.mediaRevision,
           images: cleanImages,
           videos: cleanVideos,
@@ -1297,6 +1304,7 @@ export default function App() {
           characterIllustrationId: savedPayload.characterIllustrationId,
           profileImageId: savedPayload.profileImageId,
           profileVideoId: savedPayload.profileVideoId,
+          levelThumbnailImageIds: savedPayload.levelThumbnailImageIds,
           images: savedPayload.images,
           videos: savedPayload.videos as CharacterVideo[],
           vnImages: savedPayload.vnImages,
@@ -1396,6 +1404,7 @@ export default function App() {
         characterIllustrationId: savedPayload.characterIllustrationId,
         profileImageId: savedPayload.profileImageId,
         profileVideoId: savedPayload.profileVideoId,
+        levelThumbnailImageIds: savedPayload.levelThumbnailImageIds ?? oldChar?.levelThumbnailImageIds,
         images: savedPayload.images,
         videos: savedPayload.videos as CharacterVideo[],
         vnImages: savedPayload.vnImages ?? oldChar?.vnImages,

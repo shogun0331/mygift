@@ -25,6 +25,7 @@ import {
   normalizeCreatorStatType,
   type CreatorStatType,
   type RegisteredCharacter,
+  type CharacterLevelThumbnails,
 } from '../game/characters'
 import {
   CHARACTER_DEFAULT_LOCALE,
@@ -501,9 +502,10 @@ export function EditorScreen({
                     images: next.images,
                     videos: next.videos.map((video) => ({
                       ...video,
-                      level: 1,
+                      level: Math.max(1, Math.min(3, Math.floor(Number(video.level ?? 1)) || 1)),
                       stage: video.stage ?? 1,
                     })),
+                    levelThumbnailImageIds: editingCharacter.levelThumbnailImageIds,
                     snsPosts: next.snsPosts,
                     auditMedia: editingCharacter.auditMedia,
                     shortsVn: editingCharacter.shortsVn,
@@ -793,6 +795,7 @@ export type AddCharacterPayload = {
     level: number
     stage: number
   }>
+  levelThumbnailImageIds?: CharacterLevelThumbnails
   snsPosts?: import('../game/sns').SnsPostDef[]
   auditMedia?: import('../game/characters').CharacterAuditMedia
   shortsVn?: import('../game/characters').CharacterShortsVn
@@ -868,6 +871,17 @@ function AddCharacterPanel({
   const [imageError, setImageError] = useState<string | null>(null)
   const [imageKeyDrafts, setImageKeyDrafts] = useState<Record<string, string>>({})
 
+  const [selectedVideoLevel, setSelectedVideoLevel] = useState<1 | 2 | 3>(1)
+  const [levelThumbnailIds, setLevelThumbnailIds] = useState<{
+    1: string | null
+    2: string | null
+    3: string | null
+  }>(() => ({
+    1: initialCharacter?.levelThumbnailImageIds?.[1] ?? null,
+    2: initialCharacter?.levelThumbnailImageIds?.[2] ?? null,
+    3: initialCharacter?.levelThumbnailImageIds?.[3] ?? null,
+  }))
+
   const [videos, setVideos] = useState<VideoMediaItem[]>(() =>
     (initialCharacter?.videos ?? []).map((video) => {
       const rawUrl =
@@ -882,7 +896,7 @@ function AddCharacterPanel({
         fileSize: video.fileSize,
         url: resolveMediaSrc(rawUrl),
         keys: video.keys ?? [],
-        level: 1,
+        level: Math.max(1, Math.min(3, Math.floor(Number(video.level ?? 1)) || 1)),
         stage: Math.max(1, Math.floor(Number(video.stage ?? 1) || 1)),
       }
     }),
@@ -958,7 +972,7 @@ function AddCharacterPanel({
     ])
   }
 
-  function addVideos(files: FileList | File[]) {
+  function addVideos(files: FileList | File[], targetLevel: 1 | 2 | 3 = selectedVideoLevel) {
     const list = Array.from(files)
     const videoFiles = list.filter(isVideoFile)
     if (videoFiles.length === 0) {
@@ -969,7 +983,7 @@ function AddCharacterPanel({
       videoFiles.length < list.length ? '영상 파일만 추가되었습니다. (이미지는 제외됨)' : null,
     )
     setVideos((prev) => {
-      const hasIdle = prev.some((vid) => vid.keys.includes('idle'))
+      const hasIdle = prev.some((vid) => (vid.level ?? 1) === targetLevel && vid.keys.includes('idle'))
       const added = videoFiles.map((file, index) => ({
         id: createId(),
         file,
@@ -977,7 +991,7 @@ function AddCharacterPanel({
         fileSize: file.size,
         url: trackObjectUrl(URL.createObjectURL(file)),
         keys: !hasIdle && index === 0 ? (['idle'] as string[]) : ([] as string[]),
-        level: 1,
+        level: targetLevel,
         stage: 1,
       }))
       return [...prev, ...added]
@@ -993,6 +1007,17 @@ function AddCharacterPanel({
     setCharacterIconId((current) => (current === id ? null : current))
     setCharacterIllustrationId((current) => (current === id ? null : current))
     setProfileImageId((current) => (current === id ? null : current))
+    setLevelThumbnailIds((prev) => {
+      let changed = false
+      const next = { ...prev }
+      for (const lvl of [1, 2, 3] as const) {
+        if (next[lvl] === id) {
+          next[lvl] = null
+          changed = true
+        }
+      }
+      return changed ? next : prev
+    })
     setImageKeyDrafts((prev) => {
       const next = { ...prev }
       delete next[id]
@@ -1005,9 +1030,10 @@ function AddCharacterPanel({
       const target = prev.find((item) => item.id === id)
       if (target) revokeTrackedUrl(target.url)
       const next = prev.filter((item) => item.id !== id)
-      // 제거한 영상이 기본 대기였으면 남은 첫 영상을 자동 지정
+      // 제거한 영상이 기본 대기였으면 해당 수위(level)의 남은 첫 영상을 자동 지정
       if (target?.keys.includes('idle')) {
-        const fallback = next[0]
+        const targetLevel = target.level ?? 1
+        const fallback = next.find((item) => (item.level ?? 1) === targetLevel)
         if (fallback) {
           return next.map((item) =>
             item.id === fallback.id
@@ -1025,12 +1051,17 @@ function AddCharacterPanel({
     setVideos((prev) => {
       const target = prev.find((item) => item.id === id)
       if (!target) return prev
+      const targetLevel = target.level ?? 1
       return prev.map((item) => {
-        const keysWithoutIdle = item.keys.filter((key) => key !== 'idle')
-        if (item.id === id) {
-          return { ...item, keys: ['idle', ...keysWithoutIdle], level: 1 }
+        // 동일한 수위 그룹 내에서만 idle 토글
+        if ((item.level ?? 1) === targetLevel) {
+          const keysWithoutIdle = item.keys.filter((key) => key !== 'idle')
+          if (item.id === id) {
+            return { ...item, keys: ['idle', ...keysWithoutIdle] }
+          }
+          return { ...item, keys: keysWithoutIdle }
         }
-        return { ...item, keys: keysWithoutIdle, level: 1 }
+        return item
       })
     })
   }
@@ -1040,6 +1071,56 @@ function AddCharacterPanel({
     setVideos((prev) =>
       prev.map((item) => (item.id === id ? { ...item, stage: nextStage } : item)),
     )
+  }
+
+  function setVideoLevel(id: string, nextLevelRaw: number) {
+    const nextLevel = Math.max(1, Math.min(3, Math.floor(Number(nextLevelRaw)) || 1)) as 1 | 2 | 3
+    setVideos((prev) => {
+      const target = prev.find((item) => item.id === id)
+      if (!target || (target.level ?? 1) === nextLevel) return prev
+      const prevLevel = target.level ?? 1
+      const wasIdle = target.keys.includes('idle')
+
+      let updated = prev.map((item) => {
+        if (item.id === id) {
+          return { ...item, level: nextLevel }
+        }
+        return item
+      })
+
+      // 이전 레벨에서 idle이었다면 이전 레벨의 다른 영상을 새 idle로 지정
+      if (wasIdle) {
+        const fallback = updated.find((item) => (item.level ?? 1) === prevLevel && item.id !== id)
+        if (fallback) {
+          updated = updated.map((item) =>
+            item.id === fallback.id
+              ? { ...item, keys: item.keys.includes('idle') ? item.keys : ['idle', ...item.keys] }
+              : item,
+          )
+        }
+      }
+
+      // 이동한 레벨에 idle이 하나도 없다면 자동으로 idle 부여
+      const hasIdleInNext = updated.some(
+        (item) => (item.level ?? 1) === nextLevel && item.keys.includes('idle'),
+      )
+      if (!hasIdleInNext) {
+        updated = updated.map((item) =>
+          item.id === id
+            ? { ...item, keys: item.keys.includes('idle') ? item.keys : ['idle', ...item.keys] }
+            : item,
+        )
+      }
+
+      return updated
+    })
+  }
+
+  function setLevelThumbnail(level: 1 | 2 | 3, imageId: string | null) {
+    setLevelThumbnailIds((prev) => ({
+      ...prev,
+      [level]: imageId,
+    }))
   }
 
   function addKey(
@@ -1116,9 +1197,10 @@ function AddCharacterPanel({
           fileSize: video.fileSize,
           url: video.url,
           keys: video.keys,
-          level: 1,
+          level: Math.max(1, Math.min(3, Math.floor(Number(video.level ?? 1)) || 1)),
           stage: video.stage,
         })),
+        levelThumbnailImageIds: levelThumbnailIds,
         snsPosts: initialCharacter?.snsPosts ?? [],
         auditMedia: initialCharacter?.auditMedia,
         shortsVn: initialCharacter?.shortsVn,
@@ -1148,6 +1230,7 @@ function AddCharacterPanel({
       images: [],
       videos: [],
       ...(initialCharacter ?? {}),
+      levelThumbnailImageIds: levelThumbnailIds,
       id: initialCharacter?.id ?? 'temp_id',
       name: name.trim(),
       names,
@@ -1391,23 +1474,28 @@ function AddCharacterPanel({
 
           <div className="rounded-2xl border border-white/5 bg-slate-900/40 p-4">
             <div className="mb-3 flex items-center justify-between border-b border-white/5 pb-2">
-              <span className="text-xs font-bold text-slate-200">등록 영상</span>
+              <span className="text-xs font-bold text-slate-200">등록 영상 (수위별 관리)</span>
               <span className="text-[10px] text-slate-500">
-                등록 {videos.length}개 ·{' '}
-                {videos.some((v) => v.keys?.includes('idle'))
-                  ? '✅ 기본 대기 완료'
-                  : '⚠️ 기본 대기 필요'}
+                수위 1: {videos.filter((v) => (v.level ?? 1) === 1).length}개 · 
+                수위 2: {videos.filter((v) => (v.level ?? 1) === 2).length}개 · 
+                수위 3: {videos.filter((v) => (v.level ?? 1) === 3).length}개
               </span>
             </div>
 
             <GradedVideoRegisterSection
               videos={videos}
+              images={images}
+              selectedLevel={selectedVideoLevel}
+              onSelectLevel={setSelectedVideoLevel}
+              levelThumbnailId={levelThumbnailIds[selectedVideoLevel] ?? null}
+              onSelectThumbnail={(id) => setLevelThumbnail(selectedVideoLevel, id)}
               videoDragging={videoDragging}
               setVideoDragging={setVideoDragging}
               videoError={videoError}
               onAddVideos={addVideos}
               onSetIdle={setVideoAsIdle}
               onChangeStage={setVideoStage}
+              onChangeLevel={setVideoLevel}
               onRemove={removeVideo}
             />
           </div>
@@ -1548,14 +1636,20 @@ function ProfilePickPreview({
                 src={resolveMediaSrc(selected.url)}
                 alt={`${label} 미리보기`}
                 className="h-full w-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
               />
             ) : (
               <video
-                src={selected.url}
+                src={resolveMediaSrc(selected.url)}
                 muted
                 playsInline
                 preload="metadata"
                 className="h-full w-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
               />
             )
           ) : (
@@ -1628,17 +1722,23 @@ function ProfilePickPreview({
                             <div className="relative aspect-square bg-black/40">
                               {kind === 'image' ? (
                                 <img
-                                  src={item.url}
+                                  src={resolveMediaSrc(item.url)}
                                   alt={item.file?.name || item.fileName || '미리보기'}
                                   className="h-full w-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none'
+                                  }}
                                 />
                               ) : (
                                 <video
-                                  src={item.url}
+                                  src={resolveMediaSrc(item.url)}
                                   muted
                                   playsInline
                                   preload="metadata"
                                   className="h-full w-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none'
+                                  }}
                                 />
                               )}
                               {isActive ? (
@@ -1948,32 +2048,114 @@ function MediaKeyCard({
   )
 }
 
-/** 수위 영상 등록 (기본 대기 1개 + 방송 클립) */
+/** 수위별(1, 2, 3) 영상 등록 및 썸네일 이미지 설정 */
 type GradedVideoRegisterSectionProps = {
   videos: VideoMediaItem[]
+  images: MediaItem[]
+  selectedLevel: 1 | 2 | 3
+  onSelectLevel: (lvl: 1 | 2 | 3) => void
+  levelThumbnailId: string | null
+  onSelectThumbnail: (id: string | null) => void
   videoDragging: boolean
   setVideoDragging: (d: boolean) => void
   videoError: string | null
-  onAddVideos: (files: FileList | File[]) => void
+  onAddVideos: (files: FileList | File[], targetLevel?: 1 | 2 | 3) => void
   onSetIdle: (id: string) => void
   onChangeStage: (id: string, stage: number) => void
+  onChangeLevel: (id: string, level: number) => void
   onRemove: (id: string) => void
 }
 
 function GradedVideoRegisterSection({
   videos,
+  images,
+  selectedLevel,
+  onSelectLevel,
+  levelThumbnailId,
+  onSelectThumbnail,
   videoDragging,
   setVideoDragging,
   videoError,
   onAddVideos,
   onSetIdle,
   onChangeStage,
+  onChangeLevel,
   onRemove,
 }: GradedVideoRegisterSectionProps) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const currentVideos = videos.filter((v) => (v.level ?? 1) === selectedLevel)
 
   return (
     <div className="space-y-4">
+      {/* 수위 1 / 2 / 3 탭 바 */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-white/10 pb-3">
+        {([1, 2, 3] as const).map((lvl) => {
+          const count = videos.filter((v) => (v.level ?? 1) === lvl).length
+          const hasIdle = videos.some((v) => (v.level ?? 1) === lvl && v.keys.includes('idle'))
+          const isSelected = selectedLevel === lvl
+          return (
+            <button
+              key={lvl}
+              type="button"
+              onClick={() => onSelectLevel(lvl)}
+              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold transition ${
+                isSelected
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                  : 'border border-white/10 bg-black/30 text-slate-400 hover:border-white/20 hover:text-slate-200'
+              }`}
+            >
+              <span>수위 {lvl}{lvl === 1 ? ' (기본)' : ''}</span>
+              <span
+                className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                  isSelected ? 'bg-indigo-800 text-indigo-100' : 'bg-white/10 text-slate-400'
+                }`}
+              >
+                {count}개
+              </span>
+              {count > 0 && (
+                <span className="text-[10px]" title={hasIdle ? '기본 대기 영상 지정됨' : '기본 대기 영상 필요'}>
+                  {hasIdle ? '✅' : '⚠️'}
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* 수위별 대표 썸네일 이미지 설정 카드 */}
+      <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/25 p-3.5 sm:flex-row sm:items-center">
+        <ProfilePickPreview
+          label={`수위 ${selectedLevel} 썸네일`}
+          selectedId={levelThumbnailId}
+          options={images}
+          onSelect={(id) => onSelectThumbnail(id)}
+          kind="image"
+        />
+        <div className="min-w-0 flex-1 space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-200">
+              수위 {selectedLevel} 대표 썸네일 이미지
+            </span>
+            {levelThumbnailId ? (
+              <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300 border border-emerald-500/30">
+                지정 완료
+              </span>
+            ) : (
+              <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-bold text-amber-300 border border-amber-500/30">
+                미설정 (수위 1 또는 프로필 이미지 폴백)
+              </span>
+            )}
+          </div>
+          <p className="text-[11px] text-slate-400">
+            방송 및 갤러리에서 캐릭터가 수위 {selectedLevel}일 때 대표 표지로 사용할 이미지입니다.
+          </p>
+          <p className="text-[10px] text-slate-500">
+            등록된 이미지 목록에서 선택하거나, 좌측 미리보기 카드를 눌러 지정/해제할 수 있습니다.
+          </p>
+        </div>
+      </div>
+
+      {/* 비디오 업로드 드롭존 */}
       <div
         onDragOver={(e) => {
           e.preventDefault()
@@ -1984,7 +2166,7 @@ function GradedVideoRegisterSection({
           e.preventDefault()
           setVideoDragging(false)
           if (e.dataTransfer.files) {
-            onAddVideos(e.dataTransfer.files)
+            onAddVideos(e.dataTransfer.files, selectedLevel)
           }
         }}
         onClick={() => inputRef.current?.click()}
@@ -2002,29 +2184,30 @@ function GradedVideoRegisterSection({
           className="hidden"
           onChange={(e) => {
             if (e.target.files) {
-              onAddVideos(e.target.files)
+              onAddVideos(e.target.files, selectedLevel)
             }
           }}
         />
         <span className="text-xl">🎥</span>
         <p className="mt-1.5 text-xs font-semibold text-slate-300">
-          영상을 드래그 앤 드롭하거나 클릭하여 추가
+          수위 {selectedLevel} 영상을 드래그 앤 드롭하거나 클릭하여 추가
         </p>
         <p className="mt-0.5 text-[10px] text-slate-500">MP4, WEBM, MOV 지원 · 여러 개 가능</p>
       </div>
 
       {videoError && <p className="text-[11px] text-rose-400">{videoError}</p>}
 
-      {videos.length > 0 && (
+      {/* 현재 수위 영상 목록 */}
+      {currentVideos.length > 0 ? (
         <div className="space-y-2">
-          {videos.map((item) => {
+          {currentVideos.map((item) => {
             const hasIdle = item.keys.includes('idle')
             const sizeMB = item.fileSize ? (item.fileSize / (1024 * 1024)).toFixed(1) : '—'
             return (
               <div
                 key={item.id}
-                className={`flex flex-col gap-3 rounded-xl border border-white/5 bg-black/20 p-2.5 sm:flex-row sm:items-center ${
-                  hasIdle ? 'ring-1 ring-indigo-500/30 border-indigo-500/30' : ''
+                className={`flex flex-col gap-3 rounded-xl border bg-black/20 p-2.5 sm:flex-row sm:items-center ${
+                  hasIdle ? 'ring-1 ring-indigo-500/30 border-indigo-500/30' : 'border-white/5'
                 }`}
               >
                 <div className="relative shrink-0 overflow-hidden rounded-lg bg-black">
@@ -2043,26 +2226,44 @@ function GradedVideoRegisterSection({
                   )}
                 </div>
 
-                <div className="min-w-0 flex-1 space-y-2">
+                <div className="min-w-0 flex-1 space-y-1.5">
                   <p className="truncate text-xs font-semibold text-slate-200">
                     {item.file?.name || item.fileName || '동영상'}
                   </p>
                   <p className="text-[10px] text-slate-500">{sizeMB} MB</p>
-                  <label className="flex items-center gap-2">
-                    <span className="shrink-0 text-[10px] font-semibold tracking-wide text-slate-400">
-                      수위 단계
-                    </span>
-                    <input
-                      type="number"
-                      min={1}
-                      step={1}
-                      value={item.stage}
-                      onChange={(e) =>
-                        onChangeStage(item.id, Math.max(1, Math.floor(Number(e.target.value) || 1)))
-                      }
-                      className="w-16 rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] font-semibold text-slate-100 outline-none transition focus:border-indigo-400/40"
-                    />
-                  </label>
+
+                  <div className="flex flex-wrap items-center gap-3 pt-0.5">
+                    <label className="flex items-center gap-1.5">
+                      <span className="shrink-0 text-[10px] font-semibold text-slate-400">
+                        수위
+                      </span>
+                      <select
+                        value={item.level ?? selectedLevel}
+                        onChange={(e) => onChangeLevel(item.id, Number(e.target.value))}
+                        className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] font-semibold text-slate-100 outline-none transition focus:border-indigo-400/40"
+                      >
+                        <option value={1}>수위 1</option>
+                        <option value={2}>수위 2</option>
+                        <option value={3}>수위 3</option>
+                      </select>
+                    </label>
+
+                    <label className="flex items-center gap-1.5">
+                      <span className="shrink-0 text-[10px] font-semibold text-slate-400">
+                        수위 단계
+                      </span>
+                      <input
+                        type="number"
+                        min={1}
+                        step={1}
+                        value={item.stage}
+                        onChange={(e) =>
+                          onChangeStage(item.id, Math.max(1, Math.floor(Number(e.target.value) || 1)))
+                        }
+                        className="w-14 rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] font-semibold text-slate-100 outline-none transition focus:border-indigo-400/40"
+                      />
+                    </label>
+                  </div>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">
@@ -2088,6 +2289,15 @@ function GradedVideoRegisterSection({
               </div>
             )
           })}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/15 py-8 text-center">
+          <p className="text-xs font-semibold text-slate-400">
+            수위 {selectedLevel}에 등록된 영상이 없습니다.
+          </p>
+          <p className="mt-1 text-[10px] text-slate-500">
+            위의 업로드 영역에 영상을 추가하여 수위 {selectedLevel} 전용 영상 및 기본 대기를 등록하세요.
+          </p>
         </div>
       )}
     </div>

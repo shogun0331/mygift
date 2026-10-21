@@ -68,7 +68,7 @@ export function StationReviewModal({ promoted, status, onConfirm, onClose }: Sta
       aria-labelledby="station-review-title"
     >
       <div
-        className={`relative w-full max-w-md overflow-hidden rounded-2xl border bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-900/95 p-6 shadow-2xl transition-all ${
+        className={`relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-900/95 p-6 shadow-2xl transition-all ${
           promoted
             ? 'border-amber-400/40 shadow-[0_0_50px_rgba(245,158,11,0.22)]'
             : 'border-indigo-500/30 shadow-[0_0_40px_rgba(99,102,241,0.18)]'

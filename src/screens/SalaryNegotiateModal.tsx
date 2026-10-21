@@ -32,7 +32,7 @@ export function SalaryNegotiateModal({
       aria-modal="true"
       aria-labelledby="salary-nego-title"
     >
-      <div className="game-panel-strong w-full max-w-sm overflow-hidden rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.55)]">
+      <div className="game-panel-strong max-h-[calc(100dvh-2rem)] w-full max-w-sm overflow-y-auto rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.55)]">
         <div className="border-b border-amber-400/20 bg-gradient-to-br from-amber-500/12 via-transparent to-transparent px-6 pb-5 pt-6 text-center">
           <p className="game-stat-label text-amber-300/80">SALARY REVIEW</p>
           <h2

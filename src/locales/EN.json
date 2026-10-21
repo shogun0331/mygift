@@ -186,9 +186,12 @@
   "settings": {
     "title": "SETTINGS",
     "displayMode": "Display Mode",
-    "displayModeDesc": "Select Fullscreen or Borderless Windowed mode.",
+    "displayModeDesc": "Select fullscreen or windowed mode. Windowed mode uses a chosen resolution.",
     "fullscreen": "Fullscreen",
-    "borderless": "Borderless Windowed",
+    "borderless": "Windowed",
+    "resolution": "Resolution",
+    "resolutionDesc": "Choose the window size.",
+    "resolutionFull": "Full Window",
     "language": "Language Settings",
     "languageDesc": "Select the language for the in-game and editor UI.",
     "audio": "Audio Settings",
@@ -322,7 +325,11 @@
     "noRegisteredDesc": "Add characters in the editor to have them appear as scout candidates.",
     "staffPass": "Decline (wait for next)",
     "staminaDepleted": "Stamina (Depleted)",
-    "recoveryNeeded": "Recovery care required!"
+    "recoveryNeeded": "Recovery care required!",
+    "skinUnlockTitle": "NEW SKIN UNLOCKED!",
+    "skinUnlockBadge": "Reached {grade} Grade!",
+    "skinUnlockName": "SKIN{skin} Costume Unlocked",
+    "skinUnlockDesc": "A new costume has been unlocked! You can now equip it in the Creator Profile."
   },
   "sns": {
     "action": "SNS",
@@ -371,6 +378,7 @@
     "bulkRevealDoneTitle": "Upload complete",
     "bulkRevealDone": "{count} posted",
     "bulkRevealSkip": "Skip",
+    "bulkRevealSkippedNoFunds": "Insufficient funds. ({count} skipped)",
     "resultViral": "The post went viral! Permanent viewers +{viewers}.",
     "comment.h1a": "The sky looks so pretty today",
     "comment.h1b": "Food pics are healing",

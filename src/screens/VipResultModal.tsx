@@ -38,7 +38,7 @@ export function VipResultModal({ result, onConfirm }: VipResultModalProps) {
       aria-labelledby="vip-result-title"
     >
       <div
-        className={`game-panel w-full max-w-md rounded-2xl px-5 py-6 ${
+        className={`game-panel max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl px-5 py-6 ${
           accepted
             ? 'border border-emerald-400/25 shadow-[0_0_40px_rgba(52,211,153,0.14)]'
             : 'border border-rose-400/25 shadow-[0_0_40px_rgba(244,63,94,0.14)]'

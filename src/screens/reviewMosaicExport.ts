@@ -217,7 +217,9 @@ function collectCharacterItems(characters: RegisteredCharacter[]): ReviewExportI
       const url = characterVideoUrl(character, video)
       if (!url) return
       const hint = video.fileName || video.id || `broadcast_${index + 1}`
-      const tag = video.keys?.includes('idle') ? 'idle' : `lv${video.level || 1}_st${video.stage || 1}`
+      const tag = video.keys?.includes('idle')
+        ? `idle_lv${video.level || 1}`
+        : `lv${video.level || 1}_st${video.stage || 1}`
       items.push({
         folder: `${root}/broadcast`,
         nameHint: `${String(index + 1).padStart(2, '0')}_${tag}_${hint}`,

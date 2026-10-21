@@ -178,9 +178,12 @@
   "settings": {
     "title": "SETTINGS",
     "displayMode": "Режим экрана",
-    "displayModeDesc": "Выберите полноэкранный или оконный режим без рамок.",
+    "displayModeDesc": "Выберите полноэкранный или оконный режим. В оконном режиме можно выбрать разрешение.",
     "fullscreen": "Полноэкранный",
-    "borderless": "Оконный без рамок",
+    "borderless": "Оконный режим",
+    "resolution": "Разрешение",
+    "resolutionDesc": "Выберите размер окна.",
+    "resolutionFull": "На весь экран",
     "language": "Язык",
     "languageDesc": "Выберите язык интерфейса игры и редактора.",
     "audio": "Настройки звука",
@@ -390,7 +393,11 @@
     "staffPass": "Отказаться (ждать нового)",
     "staminaDepleted": "Выносливость (Истощена)",
     "recoveryNeeded": "Требуется уход для восстановления!",
-    "expectedRevenue": "Ожидаемый доход"
+    "expectedRevenue": "Ожидаемый доход",
+    "skinUnlockTitle": "NEW SKIN UNLOCKED!",
+    "skinUnlockBadge": "Достигнут ранг {grade}!",
+    "skinUnlockName": "Костюм SKIN{skin} разблокирован",
+    "skinUnlockDesc": "Разблокирован новый костюм! Примерьте его в профиле создателя."
   },
   "sns": {
     "action": "SNS",
@@ -439,6 +446,7 @@
     "bulkRevealDoneTitle": "Загрузка завершена",
     "bulkRevealDone": "Опубликовано: {count}",
     "bulkRevealSkip": "Пропустить",
+    "bulkRevealSkippedNoFunds": "Недостаточно средств. (пропущено: {count})",
     "resultViral": "SNS стало вирусным! Постоянных зрителей +{viewers}.",
     "comment.h1a": "Небо сегодня просто красота",
     "comment.h1b": "Фото еды — уже терапия",

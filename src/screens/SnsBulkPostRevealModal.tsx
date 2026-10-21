@@ -8,6 +8,7 @@ import { SnsMediaLightbox, SnsMediaWithBlur } from './SnsMediaWithBlur'
 
 type SnsBulkPostRevealModalProps = {
   entries: BulkSnsRevealEntry[]
+  skippedNoFunds?: number
   onDone: () => void
 }
 
@@ -39,7 +40,7 @@ function Face({
   )
 }
 
-export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealModalProps) {
+export function SnsBulkPostRevealModal({ entries, skippedNoFunds, onDone }: SnsBulkPostRevealModalProps) {
   const { t } = useTranslation()
   const [visibleCount, setVisibleCount] = useState(0)
   const [finished, setFinished] = useState(false)
@@ -185,6 +186,14 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
             <p className="mt-1.5 text-right text-[10px] tabular-nums text-slate-500">
               {visibleCount}/{entries.length}
             </p>
+            {skippedNoFunds && skippedNoFunds > 0 ? (
+              <div className="mt-2 flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/15 px-2.5 py-1.5 text-[11px] font-semibold text-amber-200">
+                <span className="text-sm leading-none text-amber-400">⚠️</span>
+                <span className="truncate">
+                  {t('sns.bulkRevealSkippedNoFunds').replace('{count}', String(skippedNoFunds))}
+                </span>
+              </div>
+            ) : null}
           </header>
 
           <div ref={scrollRef} className="sns-bulk-reveal-feed relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
@@ -251,6 +260,11 @@ export function SnsBulkPostRevealModal({ entries, onDone }: SnsBulkPostRevealMod
           </div>
 
           <footer className="shrink-0 border-t border-white/8 bg-[#080c16] px-3 py-2.5">
+            {finished && skippedNoFunds && skippedNoFunds > 0 ? (
+              <p className="mb-2 text-center text-[11px] font-semibold text-amber-300">
+                ⚠️ {t('sns.bulkRevealSkippedNoFunds').replace('{count}', String(skippedNoFunds))}
+              </p>
+            ) : null}
             {finished ? (
               <button
                 type="button"

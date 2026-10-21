@@ -1,8 +1,17 @@
 import { useTranslation } from '../locales/i18n'
 import { getBgmVolumePercent, setBgmVolumePercent } from '../game/bgm'
 import { getSeVolumePercent, setSeVolumePercent, playSfx } from '../game/uiSfx'
-import { getDisplayMode, setDisplayMode, type DisplayMode } from '../game/displayMode'
-import { useState } from 'react'
+import {
+  getDisplayMode,
+  getWindowResolution,
+  setDisplayMode,
+  setWindowResolution,
+  subscribeWindowResolution,
+  WINDOW_RESOLUTIONS,
+  type DisplayMode,
+  type WindowResolution,
+} from '../game/displayMode'
+import { useEffect, useState } from 'react'
 import { AchievementsPanel } from './AchievementsPanel'
 
 type SettingsPanelProps = {
@@ -14,7 +23,10 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const [bgmVolume, setBgmVolumeState] = useState(() => getBgmVolumePercent())
   const [seVolume, setSeVolumeState] = useState(() => getSeVolumePercent())
   const [displayModeState, setDisplayModeState] = useState<DisplayMode>(() => getDisplayMode())
+  const [resolution, setResolution] = useState<WindowResolution>(() => getWindowResolution())
   const [showAchievements, setShowAchievements] = useState(false)
+
+  useEffect(() => subscribeWindowResolution(setResolution), [])
 
   return (
     <div className="save-panel-slide-in relative z-20 flex flex-col h-[84vh] max-h-[720px] w-[clamp(440px,48vw,780px)] rounded-3xl border-2 border-indigo-500/40 bg-slate-950/95 backdrop-blur-2xl p-6 sm:p-7 shadow-[0_0_90px_rgba(79,70,229,0.35)] select-none">
@@ -59,7 +71,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                 <span className="text-indigo-400">📺</span> {t('settings.displayMode') || '화면 모드'}
               </h3>
               <p className="text-[11px] text-slate-400 mt-0.5">
-                {t('settings.displayModeDesc') || '전체화면 또는 테두리 없는 창모드를 선택합니다.'}
+                {t('settings.displayModeDesc') || '전체화면 또는 창모드를 선택합니다. 창모드에서는 해상도를 고릅니다.'}
               </p>
             </div>
           </div>
@@ -92,9 +104,44 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                   : 'border-slate-800 bg-slate-950/80 text-slate-400 hover:border-indigo-500/40 hover:text-slate-200'
               }`}
             >
-              🔲 {t('settings.borderless') || '창모드 (전체)'}
+              🔲 {t('settings.borderless') || '창모드'}
             </button>
           </div>
+          {displayModeState === 'borderless' && (
+            <div className="space-y-2 pt-1">
+              <div>
+                <h3 className="text-xs sm:text-sm font-black text-slate-200 tracking-wide uppercase flex items-center gap-2 font-mono">
+                  <span className="text-indigo-400">▣</span> {t('settings.resolution') || '해상도'}
+                </h3>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  {t('settings.resolutionDesc') || '창모드의 크기를 선택합니다.'}
+                </p>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                {WINDOW_RESOLUTIONS.map((item) => {
+                  const selected = resolution === item.id
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        playSfx('ui-click')
+                        setResolution(item.id)
+                        void setWindowResolution(item.id)
+                      }}
+                      className={`flex items-center justify-center py-3 px-1 text-center leading-tight rounded-xl text-xs font-bold border transition-all ${
+                        selected
+                          ? 'border-indigo-400 bg-indigo-600/30 text-indigo-100 shadow-[0_0_16px_rgba(99,102,241,0.35)]'
+                          : 'border-slate-800 bg-slate-950/80 text-slate-400 hover:border-indigo-500/40 hover:text-slate-200'
+                      }`}
+                    >
+                      {item.id === 'full' ? (t('settings.resolutionFull') || '전체 창모드') : `${item.width}×${item.height}`}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Language Selection */}

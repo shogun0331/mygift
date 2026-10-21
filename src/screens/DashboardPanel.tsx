@@ -165,8 +165,9 @@ function toBroadcastSlot(
     ? Math.min(staminaMax, owned.stamina)
     : staminaMax
   const stamina = baseStamina
+  const activeSkin = owned?.selectedSkin || 1
   const idleVideoUrl =
-    (owned ? findLevelIdleVideoUrl(owned) : null) ||
+    (owned ? findLevelIdleVideoUrl(owned, activeSkin) : null) ||
     slot.assignment.idleVideoUrl ||
     null
   const playVideoUrl =

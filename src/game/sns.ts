@@ -254,6 +254,11 @@ export type BulkSnsRevealEntry = {
   blurRegions: BlurRegion[]
 }
 
+export type BulkSnsComposeResult = {
+  entries: BulkSnsRevealEntry[]
+  skippedNoFunds: number
+}
+
 export function previewBulkSnsCompose(
   creators: readonly SnsComposeCandidate[],
 ): BulkSnsComposePreview {

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, useRef, type CSSProperties } from 'react'
 import {
   findCharacterIconUrl,
+  findCharacterLevelThumbnailUrl,
+  findCharacterProfileUrl,
   normalizeCreatorStatType,
   type CreatorStatType,
   type Grade,
@@ -51,7 +53,7 @@ import { SnsFeedModal } from './SnsFeedModal'
 import { RedDot } from './RedDot'
 import { SnsBulkComposeModal } from './SnsBulkComposeModal'
 import { SnsBulkPostRevealModal } from './SnsBulkPostRevealModal'
-import { previewBulkSnsCompose, canComposeSnsCreator, canAffordBulkSnsCompose, type BulkSnsRevealEntry, type SnsHeat } from '../game/sns'
+import { previewBulkSnsCompose, canComposeSnsCreator, canAffordBulkSnsCompose, type BulkSnsRevealEntry, type BulkSnsComposeResult, type SnsHeat } from '../game/sns'
 import type { RegisteredStaff, StaffKind } from '../game/staff'
 import { staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
@@ -86,7 +88,7 @@ type CreatorPanelProps = {
   onVacation: (creatorId: string) => void
   onProductionTraining: (creatorId: string) => void
   onSnsCompose: (creatorId: string) => SnsHeat | null
-  onBulkSnsCompose: () => BulkSnsRevealEntry[]
+  onBulkSnsCompose: () => BulkSnsRevealEntry[] | BulkSnsComposeResult
   registeredStaff: RegisteredStaff[]
   managerState: SlotManagerState
   onHireStaff: (staffId: string, hireCost: number, salary: number) => boolean
@@ -104,6 +106,7 @@ type CreatorPanelProps = {
   onVipDirect?: (creatorId: string) => void
   lastHActionMonth?: number
   lastVipActionMonthByCreator?: Record<string, number>
+  onSelectSkin?: (creatorId: string, skin: 1 | 2 | 3) => void
 }
 
 const GRADE_STYLE: Record<Grade, string> = {
@@ -209,6 +212,7 @@ export function CreatorPanel({
   lastHActionMonth,
   lastVipActionMonthByCreator,
   stationRank = 100,
+  onSelectSkin,
 }: CreatorPanelProps) {
   const { t, locale } = useTranslation()
   const [view, setView] = useState<'roster' | 'scout' | 'staffScout'>('roster')
@@ -227,7 +231,7 @@ export function CreatorPanel({
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [snsCreatorId, setSnsCreatorId] = useState<string | null>(null)
   const [bulkSnsOpen, setBulkSnsOpen] = useState(false)
-  const [bulkRevealEntries, setBulkRevealEntries] = useState<BulkSnsRevealEntry[] | null>(null)
+  const [bulkRevealState, setBulkRevealState] = useState<BulkSnsComposeResult | null>(null)
 
   const bulkSnsEligible = useMemo(
     () => previewBulkSnsCompose(ownedCreators).eligibleIds.length > 0,
@@ -396,6 +400,7 @@ export function CreatorPanel({
         ownedCreators={ownedCreators}
         studioSlots={studioSlots}
         onBack={() => setSelectedId(null)}
+        registeredCharacters={registeredCharacters}
         onConditionCare={onConditionCare}
         onVacation={onVacation}
         onProductionTraining={onProductionTraining}
@@ -403,6 +408,7 @@ export function CreatorPanel({
         onVipDirect={onVipDirect}
         lastHActionMonth={lastHActionMonth}
         lastVipActionMonthByCreator={lastVipActionMonthByCreator}
+        onSelectSkin={onSelectSkin}
       />
     )
   }
@@ -916,19 +922,23 @@ export function CreatorPanel({
           assets={assets}
           onClose={() => setBulkSnsOpen(false)}
           onCompose={() => {
-            const posted = onBulkSnsCompose()
-            if (posted.length > 0) {
+            const raw = onBulkSnsCompose()
+            const result: BulkSnsComposeResult = Array.isArray(raw)
+              ? { entries: raw, skippedNoFunds: 0 }
+              : raw
+            if (result.entries.length > 0) {
               setBulkSnsOpen(false)
-              setBulkRevealEntries(posted)
+              setBulkRevealState(result)
             }
-            return posted
+            return result
           }}
         />
       ) : null}
-      {bulkRevealEntries && bulkRevealEntries.length > 0 ? (
+      {bulkRevealState && bulkRevealState.entries.length > 0 ? (
         <SnsBulkPostRevealModal
-          entries={bulkRevealEntries}
-          onDone={() => setBulkRevealEntries(null)}
+          entries={bulkRevealState.entries}
+          skippedNoFunds={bulkRevealState.skippedNoFunds}
+          onDone={() => setBulkRevealState(null)}
         />
       ) : null}
     </div>
@@ -1112,6 +1122,38 @@ function fillLocale(template: string, vars: Record<string, string>) {
   return Object.entries(vars).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, value), template)
 }
 
+function isSkinUnlocked(grade: Grade, skin: 1 | 2 | 3): boolean {
+  if (skin === 1) return true
+  if (skin === 2) return grade === 'A' || grade === 'S'
+  if (skin === 3) return grade === 'S'
+  return false
+}
+
+function getSkinThumbnailUrl(
+  creator: OwnedCreator,
+  skin: 1 | 2 | 3,
+  registeredCharacters?: RegisteredCharacter[],
+): string | null | undefined {
+  const regChar = registeredCharacters?.find((c) => c.id === creator.id)
+  const mergedLevelThumbnails = creator.levelThumbnailImageIds || regChar?.levelThumbnailImageIds
+  const mergedImages = (creator.images && creator.images.length > 0) ? creator.images : (regChar?.images ?? [])
+  const mergedCreator = {
+    ...creator,
+    levelThumbnailImageIds: mergedLevelThumbnails,
+    images: mergedImages,
+  }
+
+  if (skin === 1) {
+    return creator.profileImageUrl || regChar?.profileImageUrl || findCharacterProfileUrl(mergedCreator)
+  }
+  return (
+    findCharacterLevelThumbnailUrl(mergedCreator, skin) ||
+    creator.profileImageUrl ||
+    regChar?.profileImageUrl ||
+    findCharacterProfileUrl(mergedCreator)
+  )
+}
+
 function CreatorDetailView({
   companyViewers = 0,
   stationRank = 100,
@@ -1128,6 +1170,8 @@ function CreatorDetailView({
   onVipDirect,
   lastHActionMonth,
   lastVipActionMonthByCreator,
+  onSelectSkin,
+  registeredCharacters,
 }: {
   companyViewers?: number
   stationRank?: number
@@ -1136,6 +1180,7 @@ function CreatorDetailView({
   broadcastMonthNumber: number
   ownedCreators?: OwnedCreator[]
   studioSlots?: StudioSlot[]
+  registeredCharacters?: RegisteredCharacter[]
   onBack: () => void
   onConditionCare: (creatorId: string) => void
   onVacation: (creatorId: string) => void
@@ -1144,6 +1189,7 @@ function CreatorDetailView({
   onVipDirect?: (creatorId: string) => void
   lastHActionMonth?: number
   lastVipActionMonthByCreator?: Record<string, number>
+  onSelectSkin?: (creatorId: string, skin: 1 | 2 | 3) => void
 }) {
   const { t, locale } = useTranslation()
   const assignedSlot = studioSlots?.find(
@@ -1198,6 +1244,24 @@ function CreatorDetailView({
   const [trainFxKey, setTrainFxKey] = useState(0)
   const [trainHot, setTrainHot] = useState(false)
 
+  const regChar = registeredCharacters?.find((c) => c.id === creator.id)
+  const mergedLevelThumbnails = creator.levelThumbnailImageIds || regChar?.levelThumbnailImageIds
+  const mergedImages = (creator.images && creator.images.length > 0) ? creator.images : (regChar?.images ?? [])
+  const mergedCreator = useMemo(
+    () => ({
+      ...creator,
+      levelThumbnailImageIds: mergedLevelThumbnails,
+      images: mergedImages,
+    }),
+    [creator, mergedLevelThumbnails, mergedImages],
+  )
+
+  const activeSkin: 1 | 2 | 3 =
+    creator.selectedSkin && isSkinUnlocked(creator.grade, creator.selectedSkin)
+      ? creator.selectedSkin
+      : 1
+  const activeSkinUrl = getSkinThumbnailUrl(mergedCreator, activeSkin, registeredCharacters)
+
   useEffect(() => {
     if (trainFxKey === 0) return
     const timer = window.setTimeout(() => setTrainHot(false), 720)
@@ -1233,30 +1297,36 @@ function CreatorDetailView({
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-auto lg:grid-cols-[auto_minmax(0,1fr)] lg:overflow-hidden">
-        <section className="flex justify-center lg:h-full lg:min-h-0 lg:items-center">
-          <article className="game-card relative aspect-[3/4] w-full max-w-[18rem] overflow-hidden lg:max-h-full lg:w-[min(20rem,34vh)]">
-            {creator.profileImageUrl ? (
-              <img
-                src={resolveMediaSrc(creator.profileImageUrl, creator.mediaRevision)}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-b from-slate-700/80 to-slate-950">
-                <div
-                  className={`mb-16 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br text-2xl font-bold text-slate-950 ${creator.avatarTone}`}
-                >
-                  {creator.name.slice(0, 1)}
-                </div>
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-auto lg:grid-cols-[18rem_minmax(0,1fr)] lg:overflow-hidden">
+        <section className="mx-auto flex w-full max-w-[18rem] min-h-[22rem] flex-col gap-2.5 lg:mx-0 lg:h-full lg:min-h-0">
+          <article className="game-card relative min-h-[16rem] w-full flex-1 overflow-hidden lg:min-h-0">
+            <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-b from-slate-700/80 to-slate-950">
+              <div
+                className={`mb-16 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br text-2xl font-bold text-slate-950 ${creator.avatarTone}`}
+              >
+                {creator.name.slice(0, 1)}
               </div>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+            </div>
+            {activeSkinUrl ? (
+              <img
+                key={`${creator.id}-${activeSkin}`}
+                src={resolveMediaSrc(activeSkinUrl, creator.mediaRevision)}
+                alt=""
+                className="absolute inset-0 h-full w-full object-contain object-bottom transition-all duration-300"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            ) : null}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent pointer-events-none" />
             <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1">
               <span
                 className={`rounded-md border px-2.5 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}
               >
                 {creator.grade}
+              </span>
+              <span className="rounded border border-indigo-400/50 bg-indigo-950/80 px-2 py-0.5 text-xs font-black tracking-wider text-indigo-300 shadow">
+                SKIN{activeSkin}
               </span>
               <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-xs font-bold text-slate-200">
                 {t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(creator.statType)])}
@@ -1279,6 +1349,80 @@ function CreatorDetailView({
               </p>
             </div>
           </article>
+
+          {/* 스킨 셀렉터 카드 (3:4 미니 카드 3장) */}
+          <div className="w-full shrink-0">
+            <div className="grid grid-cols-3 gap-2">
+              {([1, 2, 3] as const).map((skin) => {
+                const unlocked = isSkinUnlocked(creator.grade, skin)
+                const isSelected = activeSkin === skin
+                const thumbUrl = getSkinThumbnailUrl(mergedCreator, skin, registeredCharacters)
+                const lockGrade = skin === 2 ? 'A GRADE' : 'S GRADE'
+
+                return (
+                  <button
+                    key={skin}
+                    type="button"
+                    disabled={!unlocked}
+                    onClick={() => onSelectSkin?.(creator.id, skin)}
+                    className={`group relative flex flex-col items-center overflow-hidden rounded-xl border text-left transition-all ${
+                      isSelected
+                        ? 'border-indigo-400 ring-2 ring-indigo-400/60 shadow-[0_0_14px_rgba(99,102,241,0.65)] scale-[1.03]'
+                        : unlocked
+                          ? 'border-white/15 bg-slate-900/80 hover:border-indigo-400/50 hover:bg-slate-800/80'
+                          : 'cursor-not-allowed border-white/5 bg-slate-950/60 opacity-60'
+                    }`}
+                  >
+                    <div className="relative h-[4.75rem] w-full overflow-hidden bg-slate-900 flex items-center justify-center sm:h-[5.5rem]">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-slate-500">
+                        <span className="text-xs font-black tracking-wider opacity-40">SKIN{skin}</span>
+                      </div>
+                      {thumbUrl ? (
+                        <img
+                          src={resolveMediaSrc(thumbUrl, creator.mediaRevision)}
+                          alt={`SKIN${skin}`}
+                          className={`relative z-[1] h-full w-full object-contain object-bottom transition-transform duration-300 ${
+                            unlocked ? 'group-hover:scale-105' : 'grayscale brightness-50'
+                          }`}
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                          }}
+                        />
+                      ) : null}
+
+                      {!unlocked && (
+                        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/75 p-1 text-center backdrop-blur-[1px]">
+                          <span className="text-base">🔒</span>
+                          <span className="mt-1 text-[9px] font-black tracking-wider text-amber-300">
+                            {lockGrade}
+                          </span>
+                        </div>
+                      )}
+
+                      {isSelected && (
+                        <div className="absolute top-1 right-1 z-10 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-black text-white shadow-md">
+                          ✓
+                        </div>
+                      )}
+
+                      {unlocked && !isSelected && skin > 1 && (
+                        <div className="absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded-full bg-emerald-500/90 border border-emerald-300/80 px-1.5 py-0.5 text-[8px] font-black text-white shadow-md animate-pulse">
+                          <span>🔓</span>
+                          <span>OPEN</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="w-full bg-slate-950/90 py-1 text-center border-t border-white/5">
+                      <span className={`text-[11px] font-black tracking-wider ${isSelected ? 'text-indigo-300' : 'text-slate-300'}`}>
+                        SKIN{skin}
+                      </span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
         </section>
 
         <section className="game-panel flex min-h-0 flex-col overflow-auto rounded-2xl p-4 sm:p-5">

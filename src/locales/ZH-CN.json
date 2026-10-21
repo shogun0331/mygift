@@ -178,9 +178,12 @@
   "settings": {
     "title": "SETTINGS",
     "displayMode": "显示模式",
-    "displayModeDesc": "选择全屏模式或无边框窗口模式。",
+    "displayModeDesc": "选择全屏或窗口模式。窗口模式下可选择分辨率。",
     "fullscreen": "全屏模式",
-    "borderless": "无边框窗口模式",
+    "borderless": "窗口模式",
+    "resolution": "分辨率",
+    "resolutionDesc": "选择窗口大小。",
+    "resolutionFull": "全屏窗口",
     "language": "语言设置",
     "languageDesc": "选择游戏内及编辑器的显示语言。",
     "audio": "音频设置",
@@ -390,7 +393,11 @@
     "staffPass": "拒绝（等待下一位）",
     "staminaDepleted": "体力 (耗尽)",
     "recoveryNeeded": "需要恢复护理！",
-    "expectedRevenue": "预计营收"
+    "expectedRevenue": "预计营收",
+    "skinUnlockTitle": "NEW SKIN UNLOCKED!",
+    "skinUnlockBadge": "达成 {grade} 级别！",
+    "skinUnlockName": "SKIN{skin} 专属服装解锁",
+    "skinUnlockDesc": "全新专属服装已解锁！可在创作者个人资料中立即换装。"
   },
   "sns": {
     "action": "SNS",
@@ -439,6 +446,7 @@
     "bulkRevealDoneTitle": "上传完成",
     "bulkRevealDone": "{count}名发布完成",
     "bulkRevealSkip": "跳过",
+    "bulkRevealSkippedNoFunds": "金额不足。({count}人被跳过)",
     "resultViral": "SNS爆红成功！固定观众增加 +{viewers}名。",
     "comment.h1a": "今天天空真好看",
     "comment.h1b": "看美食照就很治愈",

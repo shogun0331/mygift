@@ -32,9 +32,9 @@ export function SnsResultModal({ result, onConfirm }: SnsResultModalProps) {
   const viral = t('sns.resultViral').replace('{viewers}', result.viewersGained.toLocaleString())
 
   return (
-    <div className="fixed inset-0 z-[87] flex items-center justify-center bg-black/78 p-4 backdrop-blur-[3px]">
-      <div className="game-panel-strong w-full max-w-md overflow-hidden rounded-2xl">
-        <div className="border-b border-white/10 px-5 py-4 text-center">
+    <div className="fixed inset-0 z-[87] flex flex-col items-center justify-center overflow-hidden bg-black/78 p-3 backdrop-blur-[3px] sm:p-4">
+      <div className="game-panel-strong flex max-h-full min-h-0 w-full max-w-md flex-col overflow-hidden rounded-2xl">
+        <div className="shrink-0 border-b border-white/10 px-5 py-3 text-center">
           <p className="text-[10px] font-semibold tracking-wide text-slate-500">SNS</p>
           <h2 className="mt-1 text-lg font-bold text-slate-100">{t('sns.resultTitle')}</h2>
           <p className="mt-1 text-sm text-slate-400">{result.creatorName}</p>
@@ -49,11 +49,12 @@ export function SnsResultModal({ result, onConfirm }: SnsResultModalProps) {
             url={result.imageUrl}
             kind={result.mediaKind}
             regions={result.blurRegions}
-            className="overflow-hidden rounded-2xl"
+            className="shrink-0 overflow-hidden bg-black/40"
+            mediaClassName="mx-auto block max-h-[min(34dvh,280px)] w-full object-contain"
             onClick={() => setLightboxOpen(true)}
           />
         ) : null}
-        <div className="space-y-3 px-5 py-4">
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 py-3">
           {result.caption ? <p className="text-sm text-slate-200">{result.caption}</p> : null}
           <p className="text-2xl font-black tabular-nums text-rose-300">
             ❤️ +{likes.toLocaleString()}
@@ -71,7 +72,7 @@ export function SnsResultModal({ result, onConfirm }: SnsResultModalProps) {
           </ul>
           <p className="text-sm font-semibold text-amber-200">{viral}</p>
         </div>
-        <div className="flex justify-center border-t border-white/10 px-5 py-3">
+        <div className="flex shrink-0 justify-center border-t border-white/10 px-5 py-3">
           <button type="button" className="game-btn game-btn-primary min-w-[140px] py-2.5 text-sm" onClick={onConfirm}>
             {t('sns.close')}
           </button>

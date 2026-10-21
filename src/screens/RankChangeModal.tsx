@@ -47,7 +47,7 @@ export function RankChangeModal({ result, onConfirm }: RankChangeModalProps) {
       aria-modal="true"
       aria-labelledby="rank-change-title"
     >
-      <div className="game-panel w-full max-w-md rounded-2xl border border-amber-400/25 px-5 py-6 shadow-[0_0_40px_rgba(245,158,11,0.18)]">
+      <div className="game-panel max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-amber-400/25 px-5 py-6 shadow-[0_0_40px_rgba(245,158,11,0.18)]">
         <p className="game-stat-label">LEAGUE SETTLEMENT</p>
         <h2 id="rank-change-title" className="mt-1 text-xl font-black text-slate-100">
           {title}

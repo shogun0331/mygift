@@ -178,9 +178,12 @@
   "settings": {
     "title": "SETTINGS",
     "displayMode": "画面モード",
-    "displayModeDesc": "フルスクリーンモードまたはボーダレスウィンドウモードを選択します。",
+    "displayModeDesc": "フルスクリーンまたはウィンドウモードを選択します。ウィンドウモードでは解像度を選べます。",
     "fullscreen": "フルスクリーン",
-    "borderless": "ボーダレスウィンドウ",
+    "borderless": "ウィンドウモード",
+    "resolution": "解像度",
+    "resolutionDesc": "ウィンドウのサイズを選択します。",
+    "resolutionFull": "全画面ウィンドウ",
     "language": "言語設定",
     "languageDesc": "インゲームおよびエディタの言語を選択します。",
     "audio": "オーディオ設定",
@@ -390,7 +393,11 @@
     "staffPass": "辞退（次の候補を待つ）",
     "staminaDepleted": "スタミナ (枯渇)",
     "recoveryNeeded": "回復ケアが必要です！",
-    "expectedRevenue": "予想売上"
+    "expectedRevenue": "予想売上",
+    "skinUnlockTitle": "NEW SKIN UNLOCKED!",
+    "skinUnlockBadge": "{grade}ランク達成！",
+    "skinUnlockName": "SKIN{skin} 衣装アンロック",
+    "skinUnlockDesc": "新しいスキン衣装が解放されました！クリエイタープロフィールで今すぐ着用できます。"
   },
   "sns": {
     "action": "SNS",
@@ -439,6 +446,7 @@
     "bulkRevealDoneTitle": "アップロード完了",
     "bulkRevealDone": "{count}人投稿完了",
     "bulkRevealSkip": "スキップ",
+    "bulkRevealSkippedNoFunds": "資金が不足しています。({count}名除外)",
     "resultViral": "SNSバズ成功！固定視聴者が +{viewers}人増加しました。",
     "comment.h1a": "今日の空ホントきれい",
     "comment.h1b": "ご飯の写真だけで癒される",

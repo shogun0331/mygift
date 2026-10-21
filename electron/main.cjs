@@ -640,6 +640,8 @@ function getDeviceLangHints() {
 }
 
 let lastDisplayMode = 'fullscreen'
+let lastWindowSize = { width: 1920, height: 1080 }
+let windowedApplyToken = 0
 let isQuitting = false
 let windowOp = null
 let displayLockUntil = 0
@@ -688,22 +690,116 @@ function enterExclusiveFullscreen(win) {
   win.setResizable(false)
 }
 
-function applyDisplayMode(win, mode) {
+const WINDOW_SIZE_PRESETS = [
+  { width: 1280, height: 720 },
+  { width: 1920, height: 1080 },
+]
+
+function rememberWindowSize(size) {
+  if (!size) return
+  const width = Number(size.width)
+  const height = Number(size.height)
+  if (size.full || (width === 2560 && height === 1440)) {
+    lastWindowSize = { width: 0, height: 0 }
+    return
+  }
+  const found = WINDOW_SIZE_PRESETS.find((preset) => preset.width === width && preset.height === height)
+  if (found) lastWindowSize = { width: found.width, height: found.height }
+}
+
+function workAreaFor(win) {
+  const nearest = screen.getDisplayMatching(win.getBounds()) || screen.getPrimaryDisplay()
+  return nearest && nearest.workArea ? nearest.workArea : null
+}
+
+function sizeAndCenter(win, width, height, token) {
+  if (token !== windowedApplyToken || !win || win.isDestroyed() || isQuitting) return
+  if (lastDisplayMode !== 'borderless') return
+  const area = workAreaFor(win)
+  if (!area) return
+
+  win.setResizable(true)
+  win.setContentSize(width, height)
+  const [contentWidth, contentHeight] = win.getContentSize()
+  let bounds = win.getBounds()
+  const frameW = Math.max(0, bounds.width - contentWidth)
+  const frameH = Math.max(0, bounds.height - contentHeight)
+
+  const maxW = Math.max(1, area.width - frameW)
+  const maxH = Math.max(1, area.height - frameH)
+  if (width > maxW || height > maxH) {
+    const scale = Math.min(maxW / width, maxH / height)
+    win.setContentSize(Math.max(1, Math.floor(width * scale)), Math.max(1, Math.floor(height * scale)))
+    bounds = win.getBounds()
+  }
+
+  const x = Math.round(area.x + (area.width - bounds.width) / 2)
+  const y = Math.round(area.y + (area.height - bounds.height) / 2)
+  win.setPosition(x, y)
+  win.setResizable(false)
+}
+
+function fillWorkArea(win, token) {
+  if (token !== windowedApplyToken || !win || win.isDestroyed() || isQuitting) return
+  if (lastDisplayMode !== 'borderless') return
+  clearAlwaysOnTop(win)
+  win.setResizable(true)
+  const area = workAreaFor(win)
+  if (area) {
+    win.setBounds({ x: area.x, y: area.y, width: area.width, height: area.height })
+  } else {
+    win.maximize()
+  }
+  win.setResizable(false)
+}
+
+function applyWindowedSize(win, width, height) {
+  const token = ++windowedApplyToken
+  const place = () => {
+    if (width <= 0 || height <= 0) fillWorkArea(win, token)
+    else sizeAndCenter(win, width, height, token)
+  }
+  const run = () => {
+    if (token !== windowedApplyToken || !win || win.isDestroyed() || isQuitting) return
+    if (lastDisplayMode !== 'borderless') return
+    clearAlwaysOnTop(win)
+    if (width > 0 && height > 0 && win.isMaximized()) {
+      let settled = false
+      const done = () => {
+        if (settled) return
+        settled = true
+        setTimeout(place, 20)
+      }
+      win.once('unmaximize', done)
+      win.unmaximize()
+      setTimeout(() => {
+        if (!win.isDestroyed() && !win.isMaximized()) done()
+      }, 80)
+      return
+    }
+    place()
+  }
+
+  if (win.isFullScreen()) {
+    win.setResizable(true)
+    win.once('leave-full-screen', () => {
+      setTimeout(run, 30)
+    })
+    win.setFullScreen(false)
+    return
+  }
+  run()
+}
+
+function applyDisplayMode(win, mode, size) {
   if (!win || win.isDestroyed()) return { success: false }
   lastDisplayMode = mode === 'borderless' ? 'borderless' : 'fullscreen'
+  rememberWindowSize(size)
   if (lastDisplayMode === 'fullscreen') {
+    windowedApplyToken += 1
     enterExclusiveFullscreen(win)
   } else {
-    clearAlwaysOnTop(win)
-    win.setResizable(true)
-    win.setFullScreen(false)
-    win.maximize()
-    const primaryDisplay = screen.getPrimaryDisplay()
-    if (primaryDisplay && primaryDisplay.workArea) {
-      const { x, y, width, height } = primaryDisplay.workArea
-      win.setBounds({ x, y, width, height })
-    }
-    win.setResizable(false)
+    applyWindowedSize(win, lastWindowSize.width, lastWindowSize.height)
   }
   return { success: true }
 }
@@ -906,13 +1002,21 @@ app.whenReady().then(() => {
   console.error('[main] startup failed:', err)
 })
 
-ipcMain.handle('set-display-mode', async (event, { mode }) => {
+function windowFromEvent(event) {
+  return BrowserWindow.fromWebContents(event.sender)
+    || BrowserWindow.getFocusedWindow()
+    || BrowserWindow.getAllWindows()[0]
+}
+
+ipcMain.handle('set-display-mode', async (event, payload) => {
   try {
-    const win = BrowserWindow.fromWebContents(event.sender)
-      || BrowserWindow.getFocusedWindow()
-      || BrowserWindow.getAllWindows()[0]
+    const win = windowFromEvent(event)
     if (!win) return { success: false }
-    return applyDisplayMode(win, mode)
+    const mode = payload && payload.mode
+    const size = payload
+      ? { width: payload.width, height: payload.height, full: payload.full }
+      : undefined
+    return applyDisplayMode(win, mode, size)
   } catch (err) {
     console.error('set-display-mode error:', err)
     return { success: false, error: err.message }

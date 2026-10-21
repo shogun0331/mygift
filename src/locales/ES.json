@@ -178,9 +178,12 @@
   "settings": {
     "title": "SETTINGS",
     "displayMode": "Modo de pantalla",
-    "displayModeDesc": "Selecciona el modo pantalla completa o ventana sin bordes.",
+    "displayModeDesc": "Elige pantalla completa o modo ventana. En modo ventana se elige la resolución.",
     "fullscreen": "Pantalla completa",
-    "borderless": "Ventana sin bordes",
+    "borderless": "Modo ventana",
+    "resolution": "Resolución",
+    "resolutionDesc": "Elige el tamaño de la ventana.",
+    "resolutionFull": "Ventana completa",
     "language": "Idioma",
     "languageDesc": "Selecciona el idioma del juego y del editor.",
     "audio": "Ajustes de audio",
@@ -390,7 +393,11 @@
     "staffPass": "Rechazar (esperar siguiente)",
     "staminaDepleted": "Estamina (Agotada)",
     "recoveryNeeded": "¡Se requiere cuidado de recuperación!",
-    "expectedRevenue": "Ingresos estimados"
+    "expectedRevenue": "Ingresos estimados",
+    "skinUnlockTitle": "NEW SKIN UNLOCKED!",
+    "skinUnlockBadge": "¡Rango {grade} alcanzado!",
+    "skinUnlockName": "Traje SKIN{skin} desbloqueado",
+    "skinUnlockDesc": "¡Se ha desbloqueado un nuevo traje! Puedes equiparlo en el perfil de la creadora."
   },
   "sns": {
     "action": "SNS",
@@ -439,6 +446,7 @@
     "bulkRevealDoneTitle": "Subida completada",
     "bulkRevealDone": "Publicados: {count}",
     "bulkRevealSkip": "Saltar",
+    "bulkRevealSkippedNoFunds": "Fondos insuficientes. ({count} omitidos)",
     "resultViral": "¡SNS se hizo viral! Espectadores fijos +{viewers}.",
     "comment.h1a": "El cielo hoy está precioso",
     "comment.h1b": "Ver fotos de comida ya es terapia",

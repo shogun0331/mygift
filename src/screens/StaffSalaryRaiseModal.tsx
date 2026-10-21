@@ -28,7 +28,7 @@ export function StaffSalaryRaiseModal({
   const { t } = useTranslation()
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md transition-all animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-amber-400/40 bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-900/95 p-6 text-center shadow-[0_0_50px_rgba(245,158,11,0.22)] ring-1 ring-amber-400/20 transition-all animate-in zoom-in-95 duration-200">
+      <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-amber-400/40 bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-900/95 p-6 text-center shadow-[0_0_50px_rgba(245,158,11,0.22)] ring-1 ring-amber-400/20 transition-all animate-in zoom-in-95 duration-200">
         {/* 상단 포인트 조명 네온 바 */}
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]" />
 

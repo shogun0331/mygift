@@ -574,14 +574,14 @@ export function SchedulePanel({
                         )}
                       </div>
 
-                      <div className="relative flex h-full w-full min-h-0 flex-1 flex-col items-center justify-end overflow-hidden rounded-md sm:rounded-lg">
+                      <div className="studio-slot-portrait relative flex h-full w-full min-h-0 flex-1 flex-col items-center justify-end overflow-hidden rounded-md sm:rounded-lg">
                         {filled && slot.assignment?.profileImageUrl && (
                           <>
                             <img
                               src={slot.assignment.profileImageUrl}
                               alt=""
                               draggable={false}
-                              className={`pointer-events-none absolute inset-0 h-full w-full object-cover object-top ${
+                              className={`pointer-events-none absolute inset-0 h-full w-full ${
                                 needsRemove ? 'brightness-75 saturate-50' : ''
                               }`}
                             />
@@ -607,9 +607,7 @@ export function SchedulePanel({
                         ) : null}
 
                         <div
-                          className={`relative z-10 flex w-full flex-col items-center px-1.5 ${
-                            locked ? 'pb-2' : 'pb-8'
-                          } pt-6 ${
+                          className={`relative z-10 flex w-full flex-col items-center px-1.5 pb-1.5 pt-6 ${
                             locked || !slot.assignment?.profileImageUrl
                               ? `h-full bg-gradient-to-b ${
                                   locked
@@ -862,14 +860,14 @@ export function SchedulePanel({
                               : `${typeStyle.card} hover:scale-[1.01]`
                     }`}
                   >
-                    <div className="relative flex h-full w-full flex-col items-center justify-end overflow-hidden rounded-md">
+                    <div className="studio-slot-portrait relative flex h-full w-full flex-col items-center justify-end overflow-hidden rounded-md">
                       {card.profileImageUrl && (
                         <>
                           <img
                             src={card.profileImageUrl}
                             alt=""
                             draggable={false}
-                            className="pointer-events-none absolute inset-0 h-full w-full object-cover object-top"
+                            className="pointer-events-none absolute inset-0 h-full w-full"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
                         </>
@@ -1196,14 +1194,14 @@ function StaffHandCard({
             : 'border-white/10 hover:border-white/25'
       } ${dragging ? 'opacity-40' : ''}`}
     >
-      <div className="relative flex h-full w-full flex-col items-center justify-end overflow-hidden rounded-md">
+      <div className="studio-slot-portrait relative flex h-full w-full flex-col items-center justify-end overflow-hidden rounded-md">
         {card ? (
           <>
             <img
               src={resolveMediaSrc(card, staff.mediaRevision)}
               alt=""
               draggable={false}
-              className={`pointer-events-none absolute inset-0 h-full w-full object-cover object-top ${
+              className={`pointer-events-none absolute inset-0 h-full w-full ${
                 assignedSlotLabel ? 'brightness-[0.55] saturate-[0.7]' : ''
               }`}
             />

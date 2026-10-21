@@ -60,9 +60,15 @@ export type CharacterVideo = {
   fileName?: string        // 물리 저장용 파일명
   fileSize?: number
   url: string              // media:// 또는 blob:
-  level: number            // 수위 영상은 LV.1만 사용
+  level: number            // 수위 단계 (1, 2, 3)
   stage: number            // 해당 레벨 그룹 안의 단계 숫자
   keys: string[]           // 예: ['idle'] — 기본 대기 표시용
+}
+
+export type CharacterLevelThumbnails = {
+  1?: string | null
+  2?: string | null
+  3?: string | null
 }
 
 /** 캐릭터별 승급심사 3단계 퍼포먼스 영상 (A: 고만족도 80%↑, B: 중만족도 30~79%, C: 저만족도 0~29%) */
@@ -380,6 +386,8 @@ export type RegisteredCharacter = {
   characterIllustrationId?: string | null
   profileImageId?: string | null
   profileVideoId?: string | null
+  /** 수위별(1, 2, 3) 대표 썸네일 이미지 ID */
+  levelThumbnailImageIds?: CharacterLevelThumbnails
   images?: CharacterImage[]
   videos?: CharacterVideo[]
   /** VN 스탠딩 이미지. 프로필 이미지와 분리해 characters/{id}/vn 에 저장 */
@@ -429,6 +437,8 @@ export type OwnedCreator = RegisteredCharacter & {
   snsHeat3Pity?: number
   /** 방송 턴 누적 트레이닝 카운트 */
   trainingTurns?: number
+  /** 선택된 코스튬 스킨 (1: SKIN1, 2: SKIN2, 3: SKIN3) */
+  selectedSkin?: 1 | 2 | 3
   /** 상세보기 VIP 만남 — 캐릭터당 1회 */
   vipUsed?: boolean
   /** @deprecated trust 사용. 구 세이브 호환용 */
@@ -452,6 +462,8 @@ export type CharacterDraft = {
   characterIllustrationId?: string | null
   profileImageId?: string | null
   profileVideoId?: string | null
+  /** 수위별(1, 2, 3) 대표 썸네일 이미지 ID */
+  levelThumbnailImageIds?: CharacterLevelThumbnails
   images?: CharacterImage[]
   videos?: CharacterVideo[]
   vnImages?: VnStandingImage[]
@@ -472,6 +484,19 @@ function defaultGradeFromJob(_job: string): Grade {
 
 function defaultSalary(grade: Grade) {
   return estimateDefaultSalaryForGrade(grade)
+}
+
+function normalizeLevelThumbnailImageIds(raw: unknown): CharacterLevelThumbnails | undefined {
+  if (!raw || typeof raw !== 'object') return undefined
+  const obj = raw as Record<string, unknown>
+  const parseId = (val: unknown) => (typeof val === 'string' && val.trim() ? val.trim() : null)
+  const res: CharacterLevelThumbnails = {
+    1: parseId(obj[1] ?? obj['1']),
+    2: parseId(obj[2] ?? obj['2']),
+    3: parseId(obj[3] ?? obj['3']),
+  }
+  if (!res[1] && !res[2] && !res[3]) return undefined
+  return res
 }
 
 /** 로드·세이브 직전 닉네임/직업 로케일 정규화 */
@@ -508,8 +533,13 @@ export function normalizeRegisteredCharacter(
     characterIllustrationId: raw.characterIllustrationId ?? null,
     profileImageId: raw.profileImageId ?? null,
     profileVideoId: raw.profileVideoId ?? null,
+    levelThumbnailImageIds: normalizeLevelThumbnailImageIds(raw.levelThumbnailImageIds),
     images: raw.images ?? [],
-    videos: (raw.videos ?? []).map((video) => ({ ...video, level: 1 })),
+    videos: (raw.videos ?? []).map((video) => ({
+      ...video,
+      level: Math.max(1, Math.min(3, Math.floor(Number(video.level ?? 1)) || 1)),
+      stage: Math.max(1, Math.floor(Number(video.stage ?? 1) || 1)),
+    })),
     vnImages: normalizeVnImages(raw.vnImages),
     snsPosts: normalizeSnsPosts(raw.snsPosts),
     auditMedia: normalizeAuditMedia(raw.auditMedia),
@@ -541,6 +571,7 @@ export function createRegisteredCharacter(draft: CharacterDraft): RegisteredChar
     characterIllustrationId: draft.characterIllustrationId ?? null,
     profileImageId: draft.profileImageId ?? null,
     profileVideoId: draft.profileVideoId ?? null,
+    levelThumbnailImageIds: draft.levelThumbnailImageIds,
     images: draft.images ?? [],
     videos: draft.videos ?? [],
     vnImages: normalizeVnImages(draft.vnImages),
@@ -559,6 +590,7 @@ export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
     ...character,
     contractWeeks: 12,
     nextPayTurns: 4,
+    selectedSkin: 1,
     heat: 1,
     trust: 50,
     stamina: STAMINA_MAX,
@@ -657,6 +689,8 @@ export function normalizeOwnedCreator(
     snsPending: raw.snsPending && typeof raw.snsPending === 'object' ? raw.snsPending : null,
     snsSubscribers: Math.max(0, Math.round(Number(raw.snsSubscribers ?? 0) || 0)),
     snsHeat3Pity: Math.max(0, Math.round(Number(raw.snsHeat3Pity ?? 0) || 0)),
+    selectedSkin: (raw.selectedSkin === 2 ? 2 : raw.selectedSkin === 3 ? 3 : 1) as 1 | 2 | 3,
+    levelThumbnailImageIds: base.levelThumbnailImageIds ?? raw.levelThumbnailImageIds ?? undefined,
     loyalty: undefined,
   }
 }
@@ -704,7 +738,9 @@ export function findCharacterIconUrl(creator?: CharacterMediaOwner | null): stri
   return creator.profileImageUrl || null
 }
 
-export function findCharacterProfileUrl(creator?: CharacterMediaOwner | null): string | null {
+function findCharacterBaseProfileUrl(
+  creator?: (CharacterMediaOwner & { levelThumbnailImageIds?: CharacterLevelThumbnails | null }) | null,
+): string | null {
   if (!creator) return null
   const images = creator.images ?? []
   const profile = images.find((image) => image.id === creator.profileImageId)
@@ -713,21 +749,108 @@ export function findCharacterProfileUrl(creator?: CharacterMediaOwner | null): s
   return creator.profileImageUrl || findCharacterIconUrl(creator)
 }
 
-/** 기본 대기(idle) 영상 URL — 수위 영상은 LV.1만 사용 */
-export function findLevelIdleVideoUrl(
-  creator: { id?: string; videos?: CharacterVideo[] | null },
-  _level = 1,
+export function findCharacterProfileUrl(
+  creator?: (CharacterMediaOwner & { selectedSkin?: number; levelThumbnailImageIds?: CharacterLevelThumbnails | null }) | null,
 ): string | null {
-  const match = (creator.videos ?? []).find((video) => video.keys?.includes('idle'))
-  return resolveCharacterVideoUrl(creator, match)
+  if (!creator) return null
+  const skin = creator.selectedSkin || 1
+  if (skin > 1) {
+    const skinUrl = findCharacterLevelThumbnailUrl(creator, skin, false)
+    if (skinUrl) return skinUrl
+  }
+  return findCharacterBaseProfileUrl(creator)
 }
 
-/** 방송용 클립: idle이 아닌 영상 */
+/** 수위별(1, 2, 3) 대표 썸네일 이미지 URL. 미설정 시 수위 1 썸네일 또는 기본 프로필 이미지로 폴백 */
+export function findCharacterLevelThumbnailUrl(
+  creator?: (CharacterMediaOwner & { levelThumbnailImageIds?: CharacterLevelThumbnails | null }) | null,
+  level = 1,
+  fallbackToBaseProfile = true,
+): string | null {
+  if (!creator) return null
+  const images = creator.images ?? []
+  const targetLevel = Math.max(1, Math.min(3, Math.floor(Number(level)) || 1)) as 1 | 2 | 3
+  const targetId = creator.levelThumbnailImageIds?.[targetLevel]
+  if (targetId) {
+    const match = images.find((img) => img.id === targetId || String(img.id) === String(targetId))
+    const url = resolveCharacterImageUrl(creator, match)
+    if (url) return url
+  }
+  // 1단계 외의 경우, 수위 1의 썸네일로 1차 폴백
+  if (targetLevel !== 1 && creator.levelThumbnailImageIds?.[1]) {
+    const match = images.find((img) => img.id === creator.levelThumbnailImageIds?.[1] || String(img.id) === String(creator.levelThumbnailImageIds?.[1]))
+    const url = resolveCharacterImageUrl(creator, match)
+    if (url) return url
+  }
+  return fallbackToBaseProfile ? findCharacterBaseProfileUrl(creator) : null
+}
+
+/** 기본 대기(idle) 영상 URL — 수위 1/2/3별 기본 대기 영상 검색 및 폴백 */
+export function findLevelIdleVideoUrl(
+  creator: { id?: string; videos?: CharacterVideo[] | null },
+  level = 1,
+): string | null {
+  if (!creator) return null
+  const targetLevel = Math.max(1, Math.min(3, Math.floor(Number(level)) || 1))
+  const videos = creator.videos ?? []
+  // 1. 요청된 level의 idle 탐색
+  const exactMatch = videos.find((v) => (v.level ?? 1) === targetLevel && v.keys?.includes('idle'))
+  if (exactMatch) {
+    const url = resolveCharacterVideoUrl(creator, exactMatch)
+    if (url) return url
+  }
+
+  // 2. 없으면 level 1의 idle로 폴백
+  if (targetLevel !== 1) {
+    const lv1Match = videos.find((v) => (v.level ?? 1) === 1 && v.keys?.includes('idle'))
+    if (lv1Match) {
+      const url = resolveCharacterVideoUrl(creator, lv1Match)
+      if (url) return url
+    }
+  }
+
+  // 3. 마지막 폴백: 아무 idle 영상
+  const anyIdle = videos.find((v) => v.keys?.includes('idle'))
+  if (anyIdle) {
+    const url = resolveCharacterVideoUrl(creator, anyIdle)
+    if (url) return url
+  }
+
+  // 4. idle 영상도 없으면 등록된 첫 번째 영상으로 폴백 (영상 없을 때도 안전)
+  for (const v of videos) {
+    const anyUrl = resolveCharacterVideoUrl(creator, v)
+    if (anyUrl) return anyUrl
+  }
+
+  return null
+}
+
+/** 방송용 클립: 특정 수위의 idle이 아닌 영상 목록 (없으면 수위 1 클립으로 폴백) */
 export function listBroadcastPlayVideos(
   creator: { id?: string; videos?: CharacterVideo[] | null },
-  _level = 1,
+  level = 1,
 ): CharacterVideo[] {
-  return (creator.videos ?? []).filter(
+  const targetLevel = Math.max(1, Math.min(3, Math.floor(Number(level)) || 1))
+  const videos = creator.videos ?? []
+  const exactList = videos.filter(
+    (video) =>
+      (video.level ?? 1) === targetLevel &&
+      !video.keys?.includes('idle') &&
+      Boolean(resolveCharacterVideoUrl(creator, video)),
+  )
+  if (exactList.length > 0) return exactList
+
+  if (targetLevel !== 1) {
+    const lv1List = videos.filter(
+      (video) =>
+        (video.level ?? 1) === 1 &&
+        !video.keys?.includes('idle') &&
+        Boolean(resolveCharacterVideoUrl(creator, video)),
+    )
+    if (lv1List.length > 0) return lv1List
+  }
+
+  return videos.filter(
     (video) => !video.keys?.includes('idle') && Boolean(resolveCharacterVideoUrl(creator, video)),
   )
 }
@@ -767,6 +890,7 @@ export function pickRandomBroadcastVideoUrl(
 }
 
 export function toStudioHandCard(creator: OwnedCreator) {
+  const activeSkin = creator.selectedSkin || 1
   return {
     id: creator.id,
     name: creator.name,
@@ -777,7 +901,7 @@ export function toStudioHandCard(creator: OwnedCreator) {
     conditionScore: scoreOf(creator),
     statType: normalizeCreatorStatType(creator.statType),
     profileImageUrl: findCharacterProfileUrl(creator),
-    idleVideoUrl: findLevelIdleVideoUrl(creator),
+    idleVideoUrl: findLevelIdleVideoUrl(creator, activeSkin),
     mediaRevision: creator.mediaRevision,
   }
 }

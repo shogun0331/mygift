@@ -46,7 +46,7 @@ export function HRetryOfferModal({
       aria-modal="true"
       aria-labelledby="hretry-offer-title"
     >
-      <div className="game-panel w-full max-w-md rounded-2xl border border-rose-400/30 px-5 py-6 shadow-[0_0_40px_rgba(244,63,94,0.16)]">
+      <div className="game-panel max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-rose-400/30 px-5 py-6 shadow-[0_0_40px_rgba(244,63,94,0.16)]">
         <p className="game-stat-label text-rose-300/85">H REQUEST</p>
         <h2 id="hretry-offer-title" className="mt-1 text-xl font-black text-slate-100">
           {t('hRetry.offerTitle')}
@@ -121,7 +121,7 @@ export function HRetryResultModal({
       aria-labelledby="hretry-result-title"
     >
       <div
-        className={`game-panel w-full max-w-md rounded-2xl px-5 py-6 ${
+        className={`game-panel max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl px-5 py-6 ${
           accepted
             ? 'border border-emerald-400/25 shadow-[0_0_40px_rgba(52,211,153,0.14)]'
             : 'border border-rose-400/25 shadow-[0_0_40px_rgba(244,63,94,0.14)]'

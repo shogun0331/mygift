@@ -243,6 +243,7 @@ export function hireScoutOffer(offer: ScoutOffer): OwnedCreator {
     statElegance: stats.statElegance,
     statCommunication: stats.statCommunication,
     statPerformance: stats.statPerformance,
+    selectedSkin: 1,
     contractWeeks: 12,
     nextPayTurns: 4,
     conditionScore,

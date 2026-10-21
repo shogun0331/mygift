@@ -1,18 +1,78 @@
 export type DisplayMode = 'fullscreen' | 'borderless'
 
+export type WindowResolution = '1280x720' | '1920x1080' | 'full'
+
+export const WINDOW_RESOLUTIONS: { id: WindowResolution; width: number; height: number }[] = [
+  { id: '1280x720', width: 1280, height: 720 },
+  { id: '1920x1080', width: 1920, height: 1080 },
+  { id: 'full', width: 0, height: 0 },
+]
+
 const STORAGE_KEY = 'broadcast-display-mode'
+const RESOLUTION_KEY = 'broadcast-window-resolution'
+
+function parseResolution(raw: string | null | undefined): WindowResolution {
+  if (raw === '2560x1440' || raw === 'full') return 'full'
+  if (raw === '1280x720' || raw === '1920x1080') return raw
+  return '1920x1080'
+}
 
 let currentMode: DisplayMode =
   (localStorage.getItem(STORAGE_KEY) as DisplayMode) || 'fullscreen'
 
+let currentResolution: WindowResolution = parseResolution(localStorage.getItem(RESOLUTION_KEY))
+
 const listeners = new Set<(mode: DisplayMode) => void>()
+const resolutionListeners = new Set<(resolution: WindowResolution) => void>()
 
 export function getDisplayMode(): DisplayMode {
   return currentMode
 }
 
+export function getWindowResolution(): WindowResolution {
+  return currentResolution
+}
+
+export function resolutionSize(id: WindowResolution = currentResolution) {
+  return WINDOW_RESOLUTIONS.find((item) => item.id === id) ?? WINDOW_RESOLUTIONS[1]
+}
+
 export function isCurrentlyFullscreen(): boolean {
   return !!document.fullscreenElement
+}
+
+function persistResolution(id: WindowResolution) {
+  currentResolution = id
+  try {
+    localStorage.setItem(RESOLUTION_KEY, id)
+  } catch (e) {
+    console.warn('[DisplayMode] LocalStorage write error:', e)
+  }
+  resolutionListeners.forEach((fn) => fn(currentResolution))
+}
+
+function electronSizePayload() {
+  const size = resolutionSize()
+  if (size.id === 'full') return { full: true as const }
+  return { width: size.width, height: size.height }
+}
+
+async function applyElectronDisplay(): Promise<boolean> {
+  const api = window.electronAPI?.setDisplayMode
+  if (!api) return false
+  try {
+    await api(currentMode, electronSizePayload())
+  } catch (err) {
+    console.warn('[DisplayMode] Electron setDisplayMode error:', err)
+  }
+  return true
+}
+
+export async function setWindowResolution(id: WindowResolution) {
+  persistResolution(parseResolution(id))
+  if (currentMode === 'borderless') {
+    await applyElectronDisplay()
+  }
 }
 
 export async function setDisplayMode(mode: DisplayMode) {
@@ -23,24 +83,15 @@ export async function setDisplayMode(mode: DisplayMode) {
     console.warn('[DisplayMode] LocalStorage write error:', e)
   }
 
-  // 1. Electron IPC Call
-  if (typeof window !== 'undefined' && (window as any).electronAPI?.setDisplayMode) {
-    try {
-      await (window as any).electronAPI.setDisplayMode(mode)
-    } catch (err) {
-      console.warn('[DisplayMode] Electron setDisplayMode error:', err)
-    }
-  } else {
-    // 2. Web Browser Fallback
+  const applied = await applyElectronDisplay()
+  if (!applied) {
     try {
       if (mode === 'fullscreen') {
         if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
           await document.documentElement.requestFullscreen()
         }
-      } else {
-        if (document.fullscreenElement && document.exitFullscreen) {
-          await document.exitFullscreen()
-        }
+      } else if (document.fullscreenElement && document.exitFullscreen) {
+        await document.exitFullscreen()
       }
     } catch (err) {
       console.warn('[DisplayMode] Fullscreen toggle error:', err)
@@ -57,6 +108,13 @@ export function subscribeDisplayMode(listener: (mode: DisplayMode) => void) {
   }
 }
 
+export function subscribeWindowResolution(listener: (resolution: WindowResolution) => void) {
+  resolutionListeners.add(listener)
+  return () => {
+    resolutionListeners.delete(listener)
+  }
+}
+
 function notifyListeners() {
   listeners.forEach((fn) => fn(currentMode))
 }
@@ -67,9 +125,8 @@ export function initDisplayMode() {
   if (initialized) return
   initialized = true
 
-  // Apply display mode to Electron if available
-  if (typeof window !== 'undefined' && (window as any).electronAPI?.setDisplayMode) {
-    ;(window as any).electronAPI.setDisplayMode(currentMode).catch(() => {})
+  if (window.electronAPI?.setDisplayMode) {
+    window.electronAPI.setDisplayMode(currentMode, electronSizePayload()).catch(() => {})
   } else {
     const handleFirstInteraction = () => {
       if (currentMode === 'fullscreen' && !document.fullscreenElement) {

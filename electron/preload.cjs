@@ -26,7 +26,12 @@ contextBridge.exposeInMainWorld('deviceLangHints', readDeviceLangHints())
 
 contextBridge.exposeInMainWorld('electronAPI', {
   platform: process.platform,
-  setDisplayMode: (mode) => ipcRenderer.invoke('set-display-mode', { mode }),
+  setDisplayMode: (mode, size) => ipcRenderer.invoke('set-display-mode', {
+    mode,
+    width: size && size.width,
+    height: size && size.height,
+    full: !!(size && size.full),
+  }),
   saveEventAssets: (eventId, assets) => ipcRenderer.invoke('save-event-assets', { eventId, assets }),
   saveCharacterAssets: (characterId, assets, root) =>
     ipcRenderer.invoke('save-character-assets', { characterId, assets, root }),

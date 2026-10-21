@@ -1,9 +1,18 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
-import { FpsCounter } from '../components/FpsCounter'
 import { getBgmVolumePercent, setBgmVolumePercent, useGameBgm } from '../game/bgm'
 import { useAppSuspended } from '../game/appLifecycle'
-import { getDisplayMode, setDisplayMode, subscribeDisplayMode, type DisplayMode } from '../game/displayMode'
+import {
+  getDisplayMode,
+  getWindowResolution,
+  setDisplayMode,
+  setWindowResolution,
+  subscribeDisplayMode,
+  subscribeWindowResolution,
+  WINDOW_RESOLUTIONS,
+  type DisplayMode,
+  type WindowResolution,
+} from '../game/displayMode'
 import { tierViewerCap, type StationTierId, stationTierRank } from '../game/stationGradeConfig'
 import { getSeVolumePercent, playSfx, setSeVolumePercent } from '../game/uiSfx'
 import {
@@ -162,6 +171,7 @@ import {
   snsCaptionOf,
   snsPostMedia,
   type BulkSnsRevealEntry,
+  type BulkSnsComposeResult,
   type SnsHeat,
   type SnsResult,
 } from '../game/sns'
@@ -835,10 +845,13 @@ export function InGame({
   const [bgmVolume, setBgmVolume] = useState(() => getBgmVolumePercent())
   const [seVolume, setSeVolume] = useState(() => getSeVolumePercent())
   const [displayModeState, setDisplayModeState] = useState<DisplayMode>(() => getDisplayMode())
+  const [resolution, setResolution] = useState<WindowResolution>(() => getWindowResolution())
 
   useEffect(() => {
     return subscribeDisplayMode((m) => setDisplayModeState(m))
   }, [])
+
+  useEffect(() => subscribeWindowResolution(setResolution), [])
   const [scheduleStudioMode, setScheduleStudioMode] = useState<'creator' | 'staff' | undefined>(undefined)
   const [scheduleSelectedStaffId, setScheduleSelectedStaffId] = useState<string | null>(null)
 
@@ -1903,7 +1916,8 @@ export function InGame({
       if (slot.status !== 'assigned' || !slot.assignment) continue
       const owned = ownedCreatorsRef.current.find((c) => c.id === slot.assignment!.creatorId)
       if (!owned) continue
-      const url = pickRandomBroadcastVideoUrl(owned, 1, prev[owned.id])
+      const activeSkin = owned.selectedSkin || 1
+      const url = pickRandomBroadcastVideoUrl(owned, activeSkin, prev[owned.id])
       if (url) next[owned.id] = url
     }
     setLivePlayVideoByCreator(next)
@@ -4267,6 +4281,43 @@ export function InGame({
     flushAutoSave()
   }
 
+  function handleSelectCreatorSkin(creatorId: string, skin: 1 | 2 | 3) {
+    const nextOwned = ownedCreatorsRef.current.map((creator) =>
+      creator.id === creatorId ? { ...creator, selectedSkin: skin } : creator,
+    )
+    ownedCreatorsRef.current = nextOwned
+    onOwnedCreatorsChangeRef.current(nextOwned)
+
+    // 슬롯에 배치되어 있다면 assignment의 idleVideoUrl 및 프로필 실시간 갱신
+    const updatedTarget = nextOwned.find((c) => c.id === creatorId)
+    if (updatedTarget) {
+      const nextSlots = studioSlotsRef.current.map((slot) => {
+        if (slot.status === 'assigned' && slot.assignment?.creatorId === creatorId) {
+          const card = toStudioHandCard(updatedTarget)
+          return {
+            ...slot,
+            assignment: {
+              ...slot.assignment,
+              profileImageUrl: card.profileImageUrl,
+              idleVideoUrl: card.idleVideoUrl,
+              mediaRevision: card.mediaRevision,
+            },
+          }
+        }
+        return slot
+      })
+      studioSlotsRef.current = nextSlots
+      onStudioSlotsChange(nextSlots)
+    }
+
+    // 방송 중이라면 방송 송출 클립도 새 스킨 단계의 영상으로 즉시 재추첨/갱신
+    if (broadcastPhaseRef.current === 'live') {
+      rollLivePlayVideos(livePlayVideoByCreatorRef.current)
+    }
+
+    scheduleAutoSave()
+  }
+
   function handleConditionCare(creatorId: string) {
     const target = ownedCreatorsRef.current.find((c) => c.id === creatorId)
     if (!target) return
@@ -4437,9 +4488,9 @@ export function InGame({
     return rolled.heat
   }
 
-  function handleBulkSnsCompose(): BulkSnsRevealEntry[] {
+  function handleBulkSnsCompose(): BulkSnsComposeResult {
     const plan = planBulkSnsCompose(ownedCreatorsRef.current, assetsRef.current)
-    if (plan.affordableIds.length === 0 || !spendAssets(plan.totalCost)) return []
+    if (plan.affordableIds.length === 0 || !spendAssets(plan.totalCost)) return { entries: [], skippedNoFunds: plan.skippedNoFunds }
 
     const affordableSet = new Set(plan.affordableIds)
 
@@ -4479,7 +4530,7 @@ export function InGame({
     }
     // 일괄 게시: 대상 캐릭터가 포함됐다면 SNS 임무 클리어
     for (const entry of posted) signalQuest('sns', entry.creatorId)
-    return posted
+    return { entries: posted, skippedNoFunds: plan.skippedNoFunds }
   }
 
   function handleVacation(creatorId: string) {
@@ -5525,6 +5576,7 @@ export function InGame({
             onAssignStaffPlacement={handleAssignStaffPlacement}
             onHDirect={handleHDirect}
             onVipDirect={handleVipDirect}
+            onSelectSkin={handleSelectCreatorSkin}
             lastHActionMonth={lastHActionMonth}
             lastVipActionMonthByCreator={lastVipActionMonthByCreator}
           />
@@ -5660,6 +5712,38 @@ export function InGame({
                     🔲 {t('settings.borderless')}
                   </button>
                 </div>
+                {displayModeState === 'borderless' && (
+                  <div className="space-y-2 pt-2">
+                    <label className="text-xs font-bold text-slate-400 tracking-wider">
+                      ▣ {t('settings.resolution')}
+                    </label>
+                    <p className="text-[10px] text-slate-600">
+                      {t('settings.resolutionDesc')}
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      {WINDOW_RESOLUTIONS.map((item) => {
+                        const selected = resolution === item.id
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                              setResolution(item.id)
+                              void setWindowResolution(item.id)
+                            }}
+                            className={`flex items-center justify-center py-3 px-1 text-center leading-tight rounded-xl text-xs font-bold border transition-all ${
+                              selected
+                                ? 'border-indigo-400 bg-indigo-600/30 text-indigo-100 shadow-[0_0_12px_rgba(99,102,241,0.3)]'
+                                : 'border-indigo-500/20 bg-slate-900 text-slate-400 hover:border-indigo-500/40 hover:text-slate-200'
+                            }`}
+                          >
+                            {item.id === 'full' ? t('settings.resolutionFull') : `${item.width}×${item.height}`}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="border-t border-white/5 pt-5 flex flex-col gap-2">
@@ -5817,11 +5901,7 @@ export function InGame({
         )}
       </section>
 
-      {broadcastPhase === 'live' ? (
-        <div className="fixed left-3 bottom-3 z-50 pointer-events-auto">
-          <FpsCounter />
-        </div>
-      ) : (
+      {broadcastPhase === 'live' ? null : (
       <nav className="game-dock relative z-20 shrink-0 px-6 py-3" aria-label={t('menu.ariaGameMenu')}>
         <div className="mx-auto flex w-full max-w-6xl gap-1.5 sm:gap-2">
           {TABS.filter((item) => item.id !== 'casino' || isCasinoGradeUnlocked).map((item) => {
@@ -5922,9 +6002,6 @@ export function InGame({
               </button>
             )
           })}
-        </div>
-        <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-30 pointer-events-auto">
-          <FpsCounter />
         </div>
       </nav>
       )}
@@ -6548,6 +6625,10 @@ export function InGame({
             ownedCreators.find((c) => c.id === promotionExam.creatorId) ||
             registeredCharacters.find((c) => c.id === promotionExam.creatorId)
           )}
+          creator={
+            ownedCreators.find((c) => c.id === promotionExam.creatorId) ||
+            registeredCharacters.find((c) => c.id === promotionExam.creatorId)
+          }
           result={promotionExam.result}
           onConfirm={confirmPromotionExam}
         />

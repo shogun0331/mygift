@@ -21,6 +21,10 @@ declare module '*.json' {
 
 interface ElectronAPI {
   platform: string
+  setDisplayMode?: (
+    mode: 'fullscreen' | 'borderless',
+    size?: { width?: number; height?: number; full?: boolean },
+  ) => Promise<{ success: boolean; error?: string }>
   saveEventAssets?: (
     eventId: string,
     assets: Array<{ fileName: string; kind: string; buffer: ArrayBuffer | number[] }>

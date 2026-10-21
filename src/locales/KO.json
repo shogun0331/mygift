@@ -186,9 +186,12 @@
   "settings": {
     "title": "SETTINGS",
     "displayMode": "화면 모드",
-    "displayModeDesc": "전체화면 모드 및 전체 창모드를 선택합니다.",
+    "displayModeDesc": "전체화면 또는 창모드를 선택합니다. 창모드에서는 해상도를 고릅니다.",
     "fullscreen": "전체화면 모드",
-    "borderless": "전체 창모드",
+    "borderless": "창모드",
+    "resolution": "해상도",
+    "resolutionDesc": "창모드의 크기를 선택합니다.",
+    "resolutionFull": "전체 창모드",
     "language": "언어 설정",
     "languageDesc": "인게임 및 에디터 화면의 언어를 선택합니다.",
     "audio": "오디오 설정",
@@ -322,7 +325,11 @@
     "staffHire": "영입하기",
     "noRegistered": "등록된 캐릭터가 없습니다.",
     "noRegisteredDesc": "에디터에서 캐릭터를 추가하면 스카우트 후보로 등장합니다.",
-    "staffPass": "거절 (새 후보 대기)"
+    "staffPass": "거절 (새 후보 대기)",
+    "skinUnlockTitle": "NEW SKIN UNLOCKED!",
+    "skinUnlockBadge": "{grade} GRADE 달성!",
+    "skinUnlockName": "SKIN{skin} 수위 의상 오픈",
+    "skinUnlockDesc": "새로운 스킨 의상이 해금되었습니다! 크리에이터 프로필에서 스킨을 바로 착용해보세요."
   },
   "sns": {
     "action": "SNS",
@@ -371,6 +378,7 @@
     "bulkRevealDoneTitle": "업로드 완료",
     "bulkRevealDone": "{count}명 게시 완료",
     "bulkRevealSkip": "건너뛰기",
+    "bulkRevealSkippedNoFunds": "금액이 부족합니다. ({count}명 제외)",
     "resultViral": "SNS 바이럴 성공! 고정 시청자가 +{viewers}명 증가했습니다.",
     "comment.h1a": "오늘 하늘 진짜 예쁘다",
     "comment.h1b": "밥 사진만 봐도 힐링됨",

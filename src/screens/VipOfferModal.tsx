@@ -31,7 +31,7 @@ export function VipOfferModal({ offer, stationRank, onAccept, onReject }: VipOff
       aria-modal="true"
       aria-labelledby="vip-offer-title"
     >
-      <div className="game-panel w-full max-w-md rounded-2xl border border-violet-400/30 px-5 py-6 shadow-[0_0_40px_rgba(167,139,250,0.18)]">
+      <div className="game-panel max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-violet-400/30 px-5 py-6 shadow-[0_0_40px_rgba(167,139,250,0.18)]">
         <p className="game-stat-label text-violet-300/85">VIP REQUEST</p>
         <h2 id="vip-offer-title" className="mt-1 text-xl font-black text-slate-100">
           {t('vip.offerTitle')}

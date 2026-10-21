@@ -37,7 +37,7 @@ export function PromotionNoticeModal({
       role="dialog"
       aria-modal="true"
     >
-      <div className="game-panel-strong relative w-full max-w-md overflow-hidden rounded-3xl border-2 border-indigo-500/40 shadow-[0_0_50px_rgba(99,102,241,0.25)]">
+      <div className="game-panel-strong relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-3xl border-2 border-indigo-500/40 shadow-[0_0_50px_rgba(99,102,241,0.25)]">
         {/* 상단 화려한 광원 배너 */}
         <div className="relative border-b border-indigo-400/20 bg-gradient-to-b from-indigo-950/80 via-purple-950/40 to-transparent px-6 pb-5 pt-7 text-center">
           <div className="mx-auto mb-2 inline-flex items-center gap-1.5 rounded-full border border-amber-400/50 bg-amber-500/20 px-3 py-1 text-[11px] font-black tracking-widest text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.3)]">

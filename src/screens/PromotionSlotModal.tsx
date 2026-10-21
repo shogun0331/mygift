@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { CreatorStatType } from '../game/characters'
+import {
+  findCharacterLevelThumbnailUrl,
+  type CreatorStatType,
+  type OwnedCreator,
+  type RegisteredCharacter,
+} from '../game/characters'
+import { resolveMediaSrc } from '../game/mediaUrl'
 import type { PromotionExamResult } from '../game/promotionExam'
 import { PROMOTION_STAT_TYPES } from '../game/promotionExam'
 import { formatMoneySigned } from '../game/money'
@@ -21,6 +27,7 @@ const RESULT_DELAY_MS = 280
 type PromotionSlotModalProps = {
   creatorName: string
   profileImageUrl?: string | null
+  creator?: OwnedCreator | RegisteredCharacter | null
   result: PromotionExamResult
   onConfirm: () => void
 }
@@ -28,6 +35,7 @@ type PromotionSlotModalProps = {
 export function PromotionSlotModal({
   creatorName,
   profileImageUrl,
+  creator,
   result,
   onConfirm,
 }: PromotionSlotModalProps) {
@@ -39,6 +47,18 @@ export function PromotionSlotModal({
   const isSuccess = result.kind === 'success' || result.kind === 'jackpot'
   const dialogueText = useMemo(() => getPromotionDialogueText(creatorName, locale), [creatorName, locale])
   const voiceUrl = useMemo(() => getPromotionVoiceUrl(creatorName), [creatorName])
+
+  const unlockedSkin: (2 | 3) | null =
+    isSuccess && result.toGrade === 'A'
+      ? 2
+      : isSuccess && result.toGrade === 'S'
+        ? 3
+        : null
+
+  const unlockedSkinThumbUrl = useMemo(() => {
+    if (!unlockedSkin || !creator) return null
+    return findCharacterLevelThumbnailUrl(creator, unlockedSkin)
+  }, [unlockedSkin, creator])
 
   useEffect(() => {
     playSfx('training-roll', { loop: true })
@@ -60,6 +80,9 @@ export function PromotionSlotModal({
     if (!showResult) return
     stopSfx('training-roll')
     playSfx(result.kind === 'fail' ? 'training-exam-fail' : 'training-exam-success')
+    if (unlockedSkin) {
+      window.setTimeout(() => playSfx('rank-up'), 280)
+    }
 
     // 승급 성공 시 전용 음성 보이스 재생
     if (isSuccess && voiceUrl) {
@@ -214,6 +237,61 @@ export function PromotionSlotModal({
                       </span>
                     </div>
                   </div>
+
+                  {/* SKIN UNLOCK MOTION BANNER (A등급 -> SKIN2 / S등급 -> SKIN3) */}
+                  {unlockedSkin ? (
+                    <div className="mt-3 flex flex-col items-center w-full max-w-md rounded-2xl border-2 border-indigo-400/80 bg-gradient-to-b from-indigo-950/95 via-purple-950/90 to-slate-950/95 p-3 sm:p-3.5 shadow-[0_0_30px_rgba(129,140,248,0.5)] skin-unlock-card-animate relative overflow-hidden text-left z-30">
+                      <div className="skin-unlock-shimmer-sweep" />
+
+                      <div className="flex items-center justify-between w-full mb-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-amber-300 animate-spin text-sm">✨</span>
+                          <span className="text-xs font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-300 to-indigo-300">
+                            {t('creator.skinUnlockTitle')}
+                          </span>
+                        </div>
+                        <span className="rounded-full bg-emerald-500/20 border border-emerald-400/50 px-2 py-0.5 text-[9px] font-black tracking-wider text-emerald-300 animate-pulse">
+                          🔓 UNLOCKED
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3.5 w-full">
+                        <div className="relative aspect-[3/4] w-16 sm:w-20 shrink-0 rounded-xl overflow-hidden border-2 border-indigo-300 shadow-[0_0_20px_rgba(99,102,241,0.6)] bg-slate-900 group">
+                          {unlockedSkinThumbUrl ? (
+                            <img
+                              src={resolveMediaSrc(unlockedSkinThumbUrl, creator?.mediaRevision)}
+                              alt={`SKIN${unlockedSkin}`}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center text-xs font-bold text-slate-400">
+                              SKIN{unlockedSkin}
+                            </div>
+                          )}
+                          <div className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[11px] font-black text-white shadow-lg animate-bounce">
+                            🔓
+                          </div>
+                          <div className="absolute inset-x-0 bottom-0 bg-slate-950/90 py-0.5 text-center">
+                            <span className="text-[10px] font-black tracking-wider text-indigo-300">
+                              SKIN{unlockedSkin}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-indigo-500/25 border border-indigo-400/30 text-[10px] font-black text-indigo-200">
+                            <span>{t('creator.skinUnlockBadge').replace('{grade}', result.toGrade)}</span>
+                          </div>
+                          <h4 className="mt-1 text-sm font-black text-white tracking-wide">
+                            {t('creator.skinUnlockName').replace('{skin}', String(unlockedSkin))}
+                          </h4>
+                          <p className="mt-1 text-[11px] text-slate-300 leading-snug">
+                            {t('creator.skinUnlockDesc')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
 
                   {/* Character Promotion Voice Dialogue Speech Bubble */}
                   {dialogueText && (
