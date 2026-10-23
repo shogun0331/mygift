@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
 import { getBgmVolumePercent, setBgmVolumePercent, useGameBgm } from '../game/bgm'
 import { useAppSuspended } from '../game/appLifecycle'
+import { createAssetLedger, readAssetLedger, writeAssetLedger } from '../game/assetLedger'
 import {
   getDisplayMode,
   getWindowResolution,
@@ -79,7 +80,8 @@ import {
   type SlotManagerState,
   type StaffKind,
 } from '../game/slotManagers'
-import { PromotionAuditModal } from './PromotionAuditModal'
+import { FanMeetingStatement } from './FanMeetingStatement'
+import { ExamMeetingModal } from './FanMeetingModal'
 import {
   QUEST_DEFS,
   pickQuestKind,
@@ -234,7 +236,12 @@ import { SnsResultModal } from './SnsResultModal'
 import { SalaryNegotiateModal } from './SalaryNegotiateModal'
 import { SchedulePanel } from './SchedulePanel'
 import { GameClearModal } from './GameClearModal'
-import { TutorialGuideOverlay, type TutorialStep } from '../components/TutorialGuideOverlay'
+import {
+  STAT_TUTORIAL_STEPS,
+  TutorialGuideOverlay,
+  isStatTutorialStep,
+  type TutorialStep,
+} from '../components/TutorialGuideOverlay'
 import {
   applyStationReview,
   capStationViewers,
@@ -253,12 +260,16 @@ import {
   type StationGradeConfig,
 } from '../game/stationGradeConfig'
 import {
+  advanceVipVisit,
   applyVipStaminaDrain,
+  isVipGrade,
   rollVipAcceptPayout,
   rollVipRejectViewers,
-  toVipOffer,
   type VipOffer,
+  type VipVisit,
 } from '../game/vip'
+import { FanMeetingModal } from './FanMeetingModal'
+import type { FanCardState } from '../game/fanMeeting'
 import {
   advanceAndPickSocialEvent,
   createSocialSpawnState,
@@ -876,7 +887,8 @@ export function InGame({
   const [livePlayVideoByCreator, setLivePlayVideoByCreator] = useState<Record<string, string>>({})
   const livePlayVideoByCreatorRef = useRef(livePlayVideoByCreator)
   const [monthWeekIndex, setMonthWeekIndex] = useState(boot?.monthWeekIndex ?? 0)
-  const [assets, setAssets] = useState(boot?.assets ?? INITIAL_ASSETS)
+  const assetLedgerRef = useRef(createAssetLedger(boot?.assets ?? INITIAL_ASSETS))
+  const [assets, setAssets] = useState(() => readAssetLedger(assetLedgerRef.current))
   const assetsRef = useRef(assets)
   const [liveEvents, setLiveEvents] = useState<DayEvent[]>([])
   const [conditionCrashes, setConditionCrashes] = useState<ConditionCrashFxItem[]>([])
@@ -968,6 +980,8 @@ export function InGame({
   const [settlementAssetsAfter, setSettlementAssetsAfter] = useState(0)
   const [settlementPortraits, setSettlementPortraits] = useState<Record<string, string>>({})
   const [broadcastEndedNotice, setBroadcastEndedNotice] = useState(false)
+  const [endedAsRest, setEndedAsRest] = useState(false)
+  const finishAsRestRef = useRef(false)
   /** 월간 방송 종료 후 명세서 대기·표시 중 — 닫기 전까지 방송 시작 잠금 */
   const [startBroadcastLocked, setStartBroadcastLocked] = useState(false)
   const [openCreatorScout, setOpenCreatorScout] = useState(
@@ -1017,6 +1031,7 @@ export function InGame({
     Boolean(boot?.stationAuditTarget),
   )
   const [selectedAuditCreators, setSelectedAuditCreators] = useState<any[] | null>(null)
+  const [examResult, setExamResult] = useState<{ success: boolean; count: number; staminaById: Record<string, number> } | null>(null)
 
   const staffScoutCooldownRef = useRef(boot?.scout?.staffScoutCooldown ?? 1)
   const [staffScoutAvailable, setStaffScoutAvailable] = useState(
@@ -1089,6 +1104,8 @@ export function InGame({
   } | null>(null)
   const stationReviewOfferedRef = useRef<string | null>(boot?.notifiedStationReviewKey ?? null)
   const [vipOffer, setVipOffer] = useState<VipOffer | null>(null)
+  const [vipVisit, setVipVisit] = useState<VipVisit | null>(null)
+  const [fanDeckCreators, setFanDeckCreators] = useState<any[] | null>(null)
   const [vipResult, setVipResult] = useState<VipResult | null>(null)
   const [vipEventPlay, setVipEventPlay] = useState<{
     offer: VipOffer
@@ -1119,7 +1136,7 @@ export function InGame({
     typeof boot?.lastVipActionMonth === 'object' && boot?.lastVipActionMonth !== null
       ? (boot.lastVipActionMonth as Record<string, number>)
       : {}
-  const [lastVipActionMonthByCreator, setLastVipActionMonthByCreator] = useState<Record<string, number>>(initialVipMap)
+  const [lastVipActionMonthByCreator] = useState<Record<string, number>>(initialVipMap)
   const lastVipActionMonthByCreatorRef = useRef(lastVipActionMonthByCreator)
   lastVipActionMonthByCreatorRef.current = lastVipActionMonthByCreator
   const [donationThanksPlay, setDonationThanksPlay] = useState<DonationThanksPlay | null>(null)
@@ -1261,10 +1278,13 @@ export function InGame({
   function beginRecruitPresentation(creator: OwnedCreator) {
     onScout(creator)
     setScoutSystem((prev) => clearFirstHireGuarantee(prev))
-    setTab('schedule')
     if (tutorialStep === 'scout_hire') {
-      setTutorialStep('studio_assign')
+      setTab('creator')
+      setTutorialStep('stat_sexy')
+      scheduleAutoSave()
+      return
     }
+    setTab('schedule')
     setRecruitFlyCard({
       id: creator.id,
       name: creator.name,
@@ -1272,6 +1292,18 @@ export function InGame({
       profileImageUrl: creator.profileImageUrl || null,
     })
     scheduleAutoSave()
+  }
+
+  function advanceStatTutorial() {
+    if (!isStatTutorialStep(tutorialStep)) return
+    const index = STAT_TUTORIAL_STEPS.indexOf(tutorialStep)
+    const next = STAT_TUTORIAL_STEPS[index + 1]
+    if (next) {
+      setTutorialStep(next)
+      return
+    }
+    setTab('schedule')
+    setTutorialStep('studio_assign')
   }
 
   function beginScoutVisualNovel(creator: OwnedCreator) {
@@ -1339,7 +1371,7 @@ export function InGame({
       weeklyStatement ||
       rankSettlement ||
       stationReview ||
-      vipOffer ||
+      vipOffer || vipVisit ||
       vipResult ||
       vipDepartPlay ||
       vipEventPlay ||
@@ -1363,6 +1395,7 @@ export function InGame({
     rankSettlement,
     stationReview,
     vipOffer,
+    vipVisit,
     vipResult,
     vipDepartPlay,
     vipEventPlay,
@@ -1378,7 +1411,7 @@ export function InGame({
     !weeklyStatement &&
     !rankSettlement &&
     !stationReview &&
-    !vipOffer &&
+    !vipOffer && !vipVisit &&
     !vipResult &&
     !vipDepartPlay &&
     !vipEventPlay &&
@@ -1686,7 +1719,7 @@ export function InGame({
       weeklyStatement ||
       rankSettlement ||
       stationReview ||
-      vipOffer ||
+      vipOffer || vipVisit ||
       vipResult ||
       vipDepartPlay ||
       vipEventPlay ||
@@ -1707,6 +1740,7 @@ export function InGame({
     rankSettlement,
     stationReview,
     vipOffer,
+    vipVisit,
     vipResult,
     vipDepartPlay,
     vipEventPlay,
@@ -1760,6 +1794,12 @@ export function InGame({
   const pendingGameClearRef = useRef(false)
   const pendingSocialQueueRef = useRef<SocialPending[]>([])
   const socialSpawnRef = useRef(boot?.socialSpawn ?? createSocialSpawnState())
+  const vipWaitRef = useRef<number | null>(
+    typeof boot?.vipWaitTurns === 'number' && Number.isFinite(boot.vipWaitTurns)
+      ? Math.max(0, Math.round(boot.vipWaitTurns))
+      : null,
+  )
+  const pendingVipVisitRef = useRef<VipVisit | null>(null)
   const stationGradeRef = useRef(stationGrade)
   const annualRevenueByYearRef = useRef<Record<number, number>>(
     boot?.annualRevenueByYear ?? {},
@@ -1794,7 +1834,9 @@ export function InGame({
     if (!plan || startedAt == null || plan.dayMs <= 0) return 0
     return Math.max(0, Math.min(1, (performance.now() - startedAt) / plan.dayMs))
   }
-  assetsRef.current = assets
+  const votedAssets = readAssetLedger(assetLedgerRef.current)
+  assetsRef.current = votedAssets
+  if (assets !== votedAssets) setAssets(votedAssets)
   livePlayVideoByCreatorRef.current = livePlayVideoByCreator
   speedRef.current = speed
   onOwnedCreatorsChangeRef.current = onOwnedCreatorsChange
@@ -1809,13 +1851,25 @@ export function InGame({
   const showCasinoModalRef = useRef(showCasinoModal)
   showCasinoModalRef.current = showCasinoModal
 
+  function heldAssets() {
+    const value = readAssetLedger(assetLedgerRef.current)
+    assetsRef.current = value
+    return value
+  }
+
+  function commitAssets(next: number) {
+    const value = writeAssetLedger(assetLedgerRef.current, next)
+    assetsRef.current = value
+    setAssets(value)
+    return value
+  }
+
   function spendAssets(amount: number): boolean {
     const cost = Math.max(0, Math.round(amount))
     if (cost <= 0) return true
-    if (assetsRef.current < cost) return false
-    const next = assetsRef.current - cost
-    assetsRef.current = next
-    setAssets(next)
+    const current = heldAssets()
+    if (current < cost) return false
+    commitAssets(current - cost)
     playSfx('asset-spend')
     return true
   }
@@ -1843,7 +1897,7 @@ export function InGame({
       gameMonth: gameMonthRef.current,
       broadcastMonthNumber: broadcastMonthNumberRef.current,
       monthWeekIndex: monthWeekIndexRef.current,
-      assets: assetsRef.current,
+      assets: heldAssets(),
       league: leagueRef.current,
       stationGrade: stationGradeRef.current,
       rankRefreshTurnsLeft: rankRefreshTurnsLeftRef.current,
@@ -1883,6 +1937,7 @@ export function InGame({
       notifiedStationReviewKey: stationReviewOfferedRef.current,
       lastHActionMonth: lastHActionMonthRef.current,
       lastVipActionMonth: lastVipActionMonthByCreatorRef.current,
+      vipWaitTurns: vipWaitRef.current ?? undefined,
       tutorialDone: tutorialDoneRef.current,
     }
   }
@@ -2009,7 +2064,7 @@ export function InGame({
         grade: creator.grade,
         condition: creator.condition,
         conditionScore: creator.conditionScore,
-        statCommunication: creator.statCommunication,
+        statSexy: creator.statSexy,
         snsSubscribers: creator.snsSubscribers ?? 0,
         snsRatio: ratio,
       }
@@ -2101,7 +2156,7 @@ export function InGame({
       const combined = Math.max(0.5, Math.min(1, staminaMult * careMult))
       drainByCreatorId[creator.id] = Math.max(
         1,
-        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance, scoreOf(creator)) * combined),
+        Math.round(calcWeeklyBroadcastStaminaCost(creator.statMental, scoreOf(creator)) * combined),
       )
       condDrainByCreatorId[creator.id] = care.equipped ? 0 : calcWeeklyBroadcastConditionCost(creator, 1)
     }
@@ -3134,10 +3189,10 @@ export function InGame({
     weeklyTrendTypeRef.current = nextTrend
 
     const trendNameMap: Record<CreatorStatType, string> = {
-      sexy: '섹시',
-      elegance: '기품',
-      communication: '소통',
-      performance: '퍼포먼스',
+      sexy: t('creator.statSexy'),
+      mental: t('creator.statMental'),
+      communication: t('creator.statCommunication'),
+      performance: t('creator.statPerformance'),
     }
     const trendEvent: DayEvent = {
       id: `trend-evt-${nextTrend}-${Math.round(performance.now())}`,
@@ -3389,11 +3444,7 @@ export function InGame({
       0,
     )
     const assetDelta = statementDraft.netProfitWon + careAlreadyPaid
-    const assetsAfter = assetsRef.current + assetDelta
-    if (assetDelta !== 0) {
-      setAssets(assetsAfter)
-      assetsRef.current = assetsAfter
-    }
+    const assetsAfter = assetDelta !== 0 ? commitAssets(heldAssets() + assetDelta) : heldAssets()
     const portraits: Record<string, string> = {}
     for (const creator of nextOwned) {
       if (creator.profileImageUrl) portraits[creator.id] = creator.profileImageUrl
@@ -3515,6 +3566,14 @@ export function InGame({
     )
     socialSpawnRef.current = socialRoll.state
     pendingSocialQueueRef.current = socialRoll.event ? [socialRoll.event] : []
+    const vipRoll = advanceVipVisit({
+      grade: stationGradeRef.current,
+      wait: vipWaitRef.current,
+      config: stationGradeConfig.vipConfig,
+    })
+    vipWaitRef.current = vipRoll.wait
+    const party = ownedCreatorsRef.current.slice(0, 4)
+    pendingVipVisitRef.current = party.some((creator) => creator.stamina > 0) ? vipRoll.visit : null
 
     const nextMonthNumber = broadcastMonthNumberRef.current + 1
     broadcastMonthNumberRef.current = nextMonthNumber
@@ -3555,6 +3614,8 @@ export function InGame({
     setStartBroadcastLocked(true)
 
     // 중앙에 '방송 종료'를 먼저 띄운 뒤 명세서 팝업
+    setEndedAsRest(finishAsRestRef.current)
+    finishAsRestRef.current = false
     setBroadcastEndedNotice(true)
     if (statementDelayTimerRef.current != null) {
       window.clearTimeout(statementDelayTimerRef.current)
@@ -3584,7 +3645,7 @@ export function InGame({
       ownedCreatorsRef.current,
       {
         unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
-        assets: assetsRef.current,
+        assets: heldAssets(),
         snsSubscribers: totalSns,
       },
       stationGradeConfig,
@@ -3840,9 +3901,7 @@ export function InGame({
   function grantStationPromotionAssets(nextGrade: StationGrade) {
     const reward = stationPromotionAssetReward(nextGrade)
     if (reward > 0) {
-      const nextAssets = assetsRef.current + reward
-      assetsRef.current = nextAssets
-      setAssets(nextAssets)
+      commitAssets(heldAssets() + reward)
     }
     triggerPromotionScoutOffer(nextGrade)
     return reward
@@ -3930,6 +3989,14 @@ export function InGame({
       else setSocialUi({ mode: 'hRetryOffer', pending: next })
       return
     }
+    const visit = pendingVipVisitRef.current
+    if (visit) {
+      pendingVipVisitRef.current = null
+      pendingScoutAfterRankRef.current = openScout
+      setStartBroadcastLocked(true)
+      setVipVisit(visit)
+      return
+    }
     if (snsResultQueueRef.current.length > 0) {
       pendingScoutAfterRankRef.current = openScout
       setStartBroadcastLocked(true)
@@ -4007,14 +4074,34 @@ export function InGame({
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
-    const nextAssets = assetsRef.current + Math.max(0, Math.round(payout))
-    assetsRef.current = nextAssets
-    setAssets(nextAssets)
+    commitAssets(heldAssets() + Math.max(0, Math.round(payout)))
     setVipResult({
       kind: 'accept',
       creatorId: offer.creatorId,
       creatorName: offer.creatorName,
       payout: Math.max(0, Math.round(payout)),
+    })
+    flushAutoSave()
+  }
+
+  function handleFanMeetingFinish(result: {
+    earned: number
+    satisfiedCount: number
+    lastRewardText: string
+    staminaById: Record<string, number>
+  }) {
+    setVipVisit(null)
+    setFanDeckCreators(null)
+    if (result.earned > 0) commitAssets(heldAssets() + result.earned)
+    setVipResult({
+      kind: 'visit',
+      creatorId: '',
+      creatorName: '',
+      pay: result.earned,
+      rewardText: result.lastRewardText,
+      pressure: 0,
+      staminaHit: false,
+      fanCount: result.satisfiedCount,
     })
     flushAutoSave()
   }
@@ -4247,40 +4334,6 @@ export function InGame({
     flushAutoSave()
   }
 
-  function handleVipDirect(creatorId: string) {
-    if (lastVipActionMonthByCreatorRef.current[creatorId] === broadcastMonthNumberRef.current) return
-    const creator = ownedCreatorsRef.current.find((c) => c.id === creatorId)
-    if (!creator) return
-    const updatedVipMap = { ...lastVipActionMonthByCreatorRef.current, [creatorId]: broadcastMonthNumberRef.current }
-    lastVipActionMonthByCreatorRef.current = updatedVipMap
-    setLastVipActionMonthByCreator(updatedVipMap)
-
-    const offer = toVipOffer(creator)
-    const payout = rollVipAcceptPayout(leagueRef.current.currentRank)
-    const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
-    const vipEventId = charDef?.eventLinks?.vip
-    const vipEvent = vipEventId
-      ? eventsRef.current.find((e) => e.id === vipEventId) ?? null
-      : null
-
-    let next:
-      | { kind: 'vn'; event: GameEvent }
-      | { kind: 'shorts'; event: GameEvent; beats: ShortsVnBeat[] }
-      | { kind: 'rewards' } = { kind: 'rewards' }
-
-    if (vipEvent) {
-      const beats = resolveShortsBeats(offer.creatorId, 'vip')
-      if (watchedEventIds.includes(vipEvent.id) && beats.length > 0) {
-        next = { kind: 'shorts', event: vipEvent, beats }
-      } else {
-        next = { kind: 'vn', event: vipEvent }
-      }
-    }
-
-    setVipDepartPlay({ creator, offer, payout, next })
-    flushAutoSave()
-  }
-
   function handleSelectCreatorSkin(creatorId: string, skin: 1 | 2 | 3) {
     const nextOwned = ownedCreatorsRef.current.map((creator) =>
       creator.id === creatorId ? { ...creator, selectedSkin: skin } : creator,
@@ -4363,7 +4416,7 @@ export function InGame({
         staminaMax: creator.staminaMax,
         revenueMult: creator.revenueMult,
         statSexy: creator.statSexy,
-        statElegance: creator.statElegance,
+        statMental: creator.statMental,
         statCommunication: creator.statCommunication,
         statPerformance: creator.statPerformance,
       },
@@ -4396,7 +4449,7 @@ export function InGame({
 
     if (isPromotionExamReady(target)) {
       const examCost = calcPromotionExamCost(target)
-      if (assetsRef.current < examCost) return
+      if (heldAssets() < examCost) return
       const result = resolvePromotionExam(target, examCost)
       if (!result) return
       if (examCost > 0 && !spendAssets(examCost)) return
@@ -4412,12 +4465,12 @@ export function InGame({
     }
 
     const trainingCost = calcTrainingCost(target)
-    if (assetsRef.current < trainingCost) return
+    if (heldAssets() < trainingCost) return
 
     const result = applyProductionTraining(target)
     const totalGain =
       result.gains.statSexy +
-      result.gains.statElegance +
+      result.gains.statMental +
       result.gains.statCommunication +
       result.gains.statPerformance
     if (totalGain <= 0) return
@@ -4439,9 +4492,7 @@ export function InGame({
     promotionExamRef.current = null
     setPromotionExam(null)
     if (play.result.refund > 0) {
-      const nextAssets = assetsRef.current + play.result.refund
-      assetsRef.current = nextAssets
-      setAssets(nextAssets)
+      commitAssets(heldAssets() + play.result.refund)
     }
     if (play.result.kind === 'fail') return
     const target = ownedCreatorsRef.current.find((c) => c.id === play.creatorId)
@@ -4489,7 +4540,7 @@ export function InGame({
   }
 
   function handleBulkSnsCompose(): BulkSnsComposeResult {
-    const plan = planBulkSnsCompose(ownedCreatorsRef.current, assetsRef.current)
+    const plan = planBulkSnsCompose(ownedCreatorsRef.current, heldAssets())
     if (plan.affordableIds.length === 0 || !spendAssets(plan.totalCost)) return { entries: [], skippedNoFunds: plan.skippedNoFunds }
 
     const affordableSet = new Set(plan.affordableIds)
@@ -4580,12 +4631,61 @@ export function InGame({
     }
   }
 
-  function handleStartBroadcast() {
+  function handleRestTurn() {
     if (broadcastPhase === 'live') return
     if (
       weeklyStatement ||
       startBroadcastLocked ||
       vipOffer ||
+      vipVisit ||
+      vipResult ||
+      vipDepartPlay ||
+      vipEventPlay ||
+      socialUi
+    ) {
+      return
+    }
+    const assigned = studioSlotsRef.current.some(
+      (slot) => slot.status === 'assigned' && slot.assignment?.creatorId,
+    )
+    if (assigned) return
+
+    if (statementDelayTimerRef.current != null) {
+      window.clearTimeout(statementDelayTimerRef.current)
+      statementDelayTimerRef.current = null
+    }
+    setBroadcastEndedNotice(false)
+    setEndedAsRest(false)
+    weekFinishedRef.current = false
+    monthStartViewersRef.current = leagueRef.current.viewers
+    productionViewersGainedRef.current = 0
+    const preservedCare = weekAccumRef.current.careExpenses
+    weekAccumRef.current = {
+      ...createWeekAccumulator(broadcastMonthNumberRef.current),
+      careExpenses: preservedCare,
+    }
+    for (let week = 0; week < WEEKS_PER_MONTH; week += 1) {
+      const { creators } = applyWeeklyStaminaAndCondition(
+        ownedCreatorsRef.current,
+        new Set(),
+        {},
+        new Set(),
+        new Set(),
+        new Set(),
+      )
+      ownedCreatorsRef.current = creators
+    }
+    onOwnedCreatorsChangeRef.current(ownedCreatorsRef.current)
+    finishAsRestRef.current = true
+    finishBroadcastMonth()
+  }
+
+  function handleStartBroadcast() {
+    if (broadcastPhase === 'live') return
+    if (
+      weeklyStatement ||
+      startBroadcastLocked ||
+      vipOffer || vipVisit ||
       vipResult ||
       vipDepartPlay ||
       vipEventPlay ||
@@ -4598,6 +4698,7 @@ export function InGame({
       (slot) => slot.status === 'assigned' && slot.assignment?.creatorId,
     )
     if (assignedSlots.length === 0) {
+      handleRestTurn()
       return
     }
 
@@ -4622,6 +4723,7 @@ export function InGame({
       setTutorialStep(null)
     }
     setBroadcastEndedNotice(false)
+    setEndedAsRest(false)
     weekFinishedRef.current = false
     setStartBroadcastLocked(false)
     setTab('dashboard')
@@ -4901,7 +5003,7 @@ export function InGame({
         stationReview ||
         promotionFx ||
         showGameClear ||
-        vipOffer ||
+        vipOffer || vipVisit ||
         vipResult ||
         vipDepartPlay ||
         vipEventPlay ||
@@ -4926,6 +5028,7 @@ export function InGame({
     promotionFx,
     showGameClear,
     vipOffer,
+    vipVisit,
     vipResult,
     vipDepartPlay,
     vipEventPlay,
@@ -5017,14 +5120,14 @@ export function InGame({
     const owned = ownedCreatorsRef.current
     const statVal = (
       cr: (typeof owned)[number],
-      key: 'statSexy' | 'statElegance' | 'statCommunication' | 'statPerformance',
+      key: 'statSexy' | 'statMental' | 'statCommunication' | 'statPerformance',
     ) => Number(cr[key] ?? 0)
     const mainOf = (cr: (typeof owned)[number]) => {
       switch (cr.statType) {
         case 'sexy':
           return statVal(cr, 'statSexy')
-        case 'elegance':
-          return statVal(cr, 'statElegance')
+        case 'mental':
+          return statVal(cr, 'statMental')
         case 'communication':
           return statVal(cr, 'statCommunication')
         default:
@@ -5146,9 +5249,7 @@ export function InGame({
       }
     }
     if (reward <= 0) reward = 1000
-    const next = assetsRef.current + reward
-    assetsRef.current = next
-    setAssets(next)
+    commitAssets(heldAssets() + reward)
     questRewardRef.current = reward
     questDoneRef.current = true
     setQuestReward(reward)
@@ -5516,6 +5617,7 @@ export function InGame({
             isPromotionReady={isStationPromotionEligible}
             onStartPromotionAudit={handleStartPromotionAudit}
             onStartBroadcast={handleStartBroadcast}
+            onRestTurn={handleRestTurn}
             onConditionCare={handleConditionCare}
             onRepairSlot={repairBrokenSlot}
             onConditionCrashDone={(id) =>
@@ -5534,7 +5636,6 @@ export function InGame({
         {tab === 'dashboard' ? null : tab === 'creator' ? (
           <CreatorPanel
             companyViewers={league.viewers}
-            stationRank={league.currentRank}
             ownedCreators={ownedCreators}
             registeredCharacters={registeredCharacters}
             scoutState={scoutSystem}
@@ -5575,10 +5676,8 @@ export function InGame({
             studioSlots={studioSlots}
             onAssignStaffPlacement={handleAssignStaffPlacement}
             onHDirect={handleHDirect}
-            onVipDirect={handleVipDirect}
             onSelectSkin={handleSelectCreatorSkin}
             lastHActionMonth={lastHActionMonth}
-            lastVipActionMonthByCreator={lastVipActionMonthByCreator}
           />
         ) : tab === 'schedule' ? (
           <SchedulePanel
@@ -5720,7 +5819,7 @@ export function InGame({
                     <p className="text-[10px] text-slate-600">
                       {t('settings.resolutionDesc')}
                     </p>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 gap-3">
                       {WINDOW_RESOLUTIONS.map((item) => {
                         const selected = resolution === item.id
                         return (
@@ -6018,8 +6117,7 @@ export function InGame({
               stationGrade={stationGradeRef.current}
               userAssets={assets}
               onUpdateAssets={(newAssets) => {
-                assetsRef.current = newAssets
-                setAssets(newAssets)
+                commitAssets(heldAssets() + (newAssets - assets))
                 scheduleAutoSave()
               }}
               onClose={() => {
@@ -6051,9 +6149,8 @@ export function InGame({
                 legend: assets,
               }}
               onUpdateChips={(_roomId, newAssets) => {
-                if (newAssets < assetsRef.current) playSfx('asset-spend')
-                assetsRef.current = newAssets
-                setAssets(newAssets)
+                if (newAssets < assets) playSfx('asset-spend')
+                commitAssets(heldAssets() + (newAssets - assets))
               }}
               onClose={() => {
                 setActiveCasinoRoomId(null)
@@ -6070,7 +6167,9 @@ export function InGame({
 
       {broadcastEndedNotice ? (
         <div className="broadcast-ended-overlay" role="status" aria-live="polite">
-          <p className="broadcast-ended-title">{t('dashboard.broadcastEnded')}</p>
+          <p className="broadcast-ended-title">
+            {t(endedAsRest ? 'dashboard.restEnded' : 'dashboard.broadcastEnded')}
+          </p>
         </div>
       ) : null}
 
@@ -6081,7 +6180,7 @@ export function InGame({
       !rankBubblePlay &&
       !stationReview &&
       !showGameClear &&
-      !vipOffer &&
+      !vipOffer && !vipVisit &&
       !vipResult &&
       !vipDepartPlay &&
       !vipEventPlay &&
@@ -6213,35 +6312,55 @@ export function InGame({
         />
       ) : null}
 
-      {stationAuditTarget && !auditDocPassNoticeOpen && !auditDeckSelecting ? (
-        <PromotionAuditModal
+      {stationAuditTarget && !auditDocPassNoticeOpen && !auditDeckSelecting && selectedAuditCreators && !examResult ? (
+        <ExamMeetingModal
           tier={stationAuditTarget.nextTier}
-          creators={(selectedAuditCreators || ownedCreators).map((creator) => ({
+          creators={(selectedAuditCreators ?? []).map((creator) => ({
             ...creator,
             auditMedia: mergeAuditMedia(
               creator.auditMedia,
               registeredCharacters.find((row) => row.id === creator.id)?.auditMedia,
             ),
           }))}
-          events={events}
           config={stationGradeConfig}
-          onComplete={(success, staminaDeductions) => {
+          onAbort={() => {
             setSelectedAuditCreators(null)
-            if (Object.keys(staminaDeductions).length > 0) {
+            setAuditDeckSelecting(true)
+          }}
+          onFinish={(result) => {
+            setExamResult({
+              success: result.satisfiedCount >= 4,
+              count: result.satisfiedCount,
+              staminaById: result.staminaById,
+            })
+          }}
+        />
+      ) : null}
+      {examResult && stationAuditTarget ? (
+        <FanMeetingStatement
+          fanCount={examResult.count}
+          pay={0}
+          rewardText=""
+          hideIncome
+          title={examResult.success ? t('audit.examPass') : t('audit.examFail')}
+          bodyText={t('audit.examBody').replace('{count}', String(examResult.count))}
+          confirmLabel={t('vip.confirm')}
+          onConfirm={() => {
+            const staminaById = examResult.staminaById
+            const success = examResult.success
+            setExamResult(null)
+            setSelectedAuditCreators(null)
+            if (Object.values(staminaById).some((loss) => loss > 0)) {
               const nextOwned = ownedCreatorsRef.current.map((c) => {
-                const ded = staminaDeductions[c.id]
-                if (ded && ded > 0) {
-                  return { ...c, stamina: Math.max(0, Math.round(c.stamina - ded)) }
-                }
+                const ded = staminaById[c.id] ?? 0
+                if (ded > 0) return { ...c, stamina: Math.max(0, Math.round(c.stamina - ded)) }
                 return c
               })
               ownedCreatorsRef.current = nextOwned
               onOwnedCreatorsChangeRef.current(nextOwned)
             }
-
             const target = stationAuditTarget
             setStationAuditTarget(null)
-
             if (success && target.nextTier) {
               const nextGrade = target.nextTier
               const oldRank = leagueRef.current.currentRank
@@ -6265,10 +6384,6 @@ export function InGame({
               return
             }
             continueMonthEndFlow()
-          }}
-          onClose={() => {
-            setSelectedAuditCreators(null)
-            setAuditDeckSelecting(true)
           }}
         />
       ) : null}
@@ -6427,6 +6542,43 @@ export function InGame({
         />
       ) : null}
 
+      {vipVisit && !fanDeckCreators && stationGradeConfig.vipConfig ? (
+        <AuditSimulatorDeckModal
+          tierKey={isVipGrade(stationGrade) ? stationGrade : 'sme'}
+          registeredCharacters={ownedCreators}
+          isSimulator={false}
+          titleKey="audit.fanDeckModalTitle"
+          startLabelKey="audit.startFanMeetingBtn"
+          onClose={() => {
+            setVipVisit(null)
+            setFanDeckCreators(null)
+            proceedNextAfterProposal(pendingScoutAfterRankRef.current)
+          }}
+          onStartSimulation={(selected) => setFanDeckCreators(selected)}
+        />
+      ) : null}
+
+      {vipVisit && fanDeckCreators && stationGradeConfig.vipConfig ? (
+        <FanMeetingModal
+          config={stationGradeConfig.vipConfig}
+          grade={stationGrade}
+          cards={fanDeckCreators.map((creator): FanCardState => ({
+            id: creator.id,
+            name: creator.name,
+            grade: creator.grade,
+            statType: creator.statType,
+            statPerformance: creator.statPerformance,
+            statMental: creator.statMental,
+            hp: Math.max(0, Math.round(creator.stamina ?? 0)),
+            hpMax: Math.max(0, Math.round(creator.stamina ?? 0)),
+            auditMedia: creator.auditMedia,
+            profileImageUrl: creator.profileImageUrl,
+          }))}
+          onAbort={() => setFanDeckCreators(null)}
+          onFinish={handleFanMeetingFinish}
+        />
+      ) : null}
+
       {vipOffer ? (
         <VipOfferModal
           offer={vipOffer}
@@ -6440,8 +6592,10 @@ export function InGame({
         <VipResultModal
           result={vipResult}
           onConfirm={() => {
+            const kind = vipResult?.kind
             setVipResult(null)
-            continueAfterMonthModals(pendingScoutAfterRankRef.current)
+            if (kind === 'visit') proceedNextAfterProposal(pendingScoutAfterRankRef.current)
+            else continueAfterMonthModals(pendingScoutAfterRankRef.current)
           }}
         />
       ) : null}
@@ -6719,6 +6873,7 @@ export function InGame({
         }}
         onAutoAssignSlot={handleTutorialAutoAssign}
         onAutoAssignStaff={handleTutorialAutoAssignStaff}
+        onStatNext={advanceStatTutorial}
       />
     </main>
   )

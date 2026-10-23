@@ -69,7 +69,7 @@ export type StationPromotionRule = {
 import { readBlurRegions } from '../events/BlurRegionEditor'
 import type { BlurRegion } from '../events/types'
 
-export type CreatorType = 'elegance' | 'performance' | 'communication' | 'sexy'
+export type CreatorType = 'mental' | 'performance' | 'communication' | 'sexy'
 
 export type AuditJudgeMediaSlot = {
   url: string | null
@@ -93,8 +93,8 @@ export type AuditJudgeConfig = {
     B?: AuditJudgeMediaSlot | string
     C?: AuditJudgeMediaSlot | string
   }
-  attackPower: number
-  satisfactionMod: number
+  ironWall: number
+  pressure: number
   description: string
   descriptions?: Record<string, string>
 }
@@ -131,11 +131,33 @@ export function getJudgeSatisfactionMediaUrl(judge?: AuditJudgeConfig | null, cu
   return getJudgeSatisfactionMediaSlot(judge, currentPct).url || ''
 }
 
+export type AuditLineupMember = {
+  id: string
+  name: string
+  imageUrl: string
+  blurRegions?: BlurRegion[]
+  centerImageUrl?: string
+  centerBlurRegions?: BlurRegion[]
+  satisfiedImageUrl?: string
+  satisfiedBlurRegions?: BlurRegion[]
+}
+
 export type AuditStageSetting = {
   targetSatisfaction: number
+  satisfactionMin: number
+  satisfactionMax: number
+  ironWallMin: number
+  ironWallMax: number
+  pressureMin: number
+  pressureMax: number
   recommendedGrade: Grade
   staminaCost: number
   judgeAttackMod: number
+  members: AuditLineupMember[]
+  backgroundUrl: string
+  backgroundBlurRegions: BlurRegion[]
+  openingUrl: string
+  openingBlurRegions: BlurRegion[]
 }
 
 export type PromotionAuditConfig = {
@@ -143,11 +165,103 @@ export type PromotionAuditConfig = {
   stageSettings: Record<Exclude<StationTierId, 'black' | 'tiny'>, AuditStageSetting>
 }
 
+function emptyAuditMember(tier: string, index: number): AuditLineupMember {
+  return {
+    id: `audit-${tier}-${index + 1}`,
+    name: '',
+    imageUrl: '',
+  }
+}
+
+function auditStage(
+  tier: 'sme' | 'mid' | 'large' | 'top',
+  recommendedGrade: Grade,
+  satisfactionMin: number,
+  satisfactionMax: number,
+  ironWallMin: number,
+  ironWallMax: number,
+  pressureMin: number,
+  pressureMax: number,
+  staminaCost: number,
+  judgeAttackMod: number,
+): AuditStageSetting {
+  return {
+    targetSatisfaction: satisfactionMax,
+    satisfactionMin,
+    satisfactionMax,
+    ironWallMin,
+    ironWallMax,
+    pressureMin,
+    pressureMax,
+    recommendedGrade,
+    staminaCost,
+    judgeAttackMod,
+    members: [0, 1, 2, 3].map((index) => emptyAuditMember(tier, index)),
+    backgroundUrl: '',
+    backgroundBlurRegions: [],
+    openingUrl: '',
+    openingBlurRegions: [],
+  }
+}
+
+export type VipTierId = Exclude<StationTierId, 'black' | 'tiny'>
+
+export const VIP_TIER_IDS: VipTierId[] = ['sme', 'mid', 'large', 'top']
+
+export type VipCharacterConfig = {
+  id: string
+  name: string
+  /** 8개 언어 이름. 비어 있으면 한국어 이름을 쓴다 */
+  names?: CharacterLocaleText
+  /** 에디터 카드와 방문 화면에 붙는 한 줄 소개 */
+  title?: string
+  /** 대기. 자기 차례가 아닐 때 */
+  imageUrl: string
+  blurRegions?: BlurRegion[]
+  /** 중앙. 자기 차례일 때 */
+  centerImageUrl?: string
+  centerBlurRegions?: BlurRegion[]
+  /** 만족. 만족도 100% 뒤 사라지기 전 */
+  satisfiedImageUrl?: string
+  satisfiedBlurRegions?: BlurRegion[]
+}
+
+export type VipRewardLine = {
+  id: string
+  text: string
+}
+
+export type VipTierSetting = {
+  /** 팬 만족도 목표. 체력과 같다 */
+  satisfactionMin: number
+  satisfactionMax: number
+  ironWallMin: number
+  ironWallMax: number
+  pressureMin: number
+  pressureMax: number
+  payMin: number
+  payMax: number
+  rewards: VipRewardLine[]
+}
+
+export type VipVisitConfig = {
+  characters: VipCharacterConfig[]
+  tiers: Record<VipTierId, VipTierSetting>
+  /** 팬이 줄을 서는 무대 배경 */
+  backgroundUrl?: string
+  backgroundBlurRegions?: BlurRegion[]
+  /** 팬미팅이 열릴 때 한 번 재생하는 오프닝 영상 */
+  openingUrl?: string
+  openingBlurRegions?: BlurRegion[]
+}
+
 export type StationGradeConfig = {
   tiers: Record<StationTierId, StationTierSpec>
   promotions: Record<Exclude<StationTierId, 'black'>, StationPromotionRule>
   /** 승급 심사 미니게임 4인 심사관 및 밸런스 설정 */
   auditConfig?: PromotionAuditConfig
+  /** 중소 이상 VIP 방문. 캐릭터는 공용, 능력치·지불액은 등급별 */
+  vipConfig?: VipVisitConfig
   /** 최종 1위(1등 클리어) 달성에 필요한 시청자 수 (기본값: 750,000) */
   topClearViewers?: number
   /**
@@ -354,6 +468,83 @@ function defaultCreatorReq(
   return { id, minGrade, count, enabled }
 }
 
+function vipReward(id: string, text: string): VipRewardLine {
+  return { id, text }
+}
+
+const FAN_IMAGE_NUMBERS = [1, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+
+function fanImageUrl(number: number, pose: 1 | 2 | 3): string {
+  return `media://chapter_assets/fans/${number}_${pose}.webp`
+}
+
+const DEFAULT_VIP_CHARACTERS: VipCharacterConfig[] = FAN_IMAGE_NUMBERS.map((number) => ({
+  id: `fan_${number}`,
+  name: '',
+  imageUrl: fanImageUrl(number, 1),
+  centerImageUrl: fanImageUrl(number, 2),
+  satisfiedImageUrl: fanImageUrl(number, 3),
+}))
+
+export function defaultVipConfig(): VipVisitConfig {
+  return {
+    characters: DEFAULT_VIP_CHARACTERS.map((character) => ({
+      ...character,
+      names: character.names ? { ...character.names } : undefined,
+    })),
+    backgroundUrl: '',
+    backgroundBlurRegions: [],
+    openingUrl: '',
+    openingBlurRegions: [],
+    tiers: {
+        sme: {
+        satisfactionMin: 90,
+        satisfactionMax: 130,
+        ironWallMin: 12,
+        ironWallMax: 20,
+        pressureMin: 16,
+        pressureMax: 24,
+        payMin: 50_000,
+        payMax: 150_000,
+        rewards: [vipReward('sme-1', '소규모 후원 계약을 제안한다.')],
+      },
+        mid: {
+        satisfactionMin: 130,
+        satisfactionMax: 190,
+        ironWallMin: 18,
+        ironWallMax: 28,
+        pressureMin: 22,
+        pressureMax: 32,
+        payMin: 150_000,
+        payMax: 400_000,
+        rewards: [vipReward('mid-1', '정기 후원 계약을 제안한다.')],
+      },
+        large: {
+        satisfactionMin: 190,
+        satisfactionMax: 270,
+        ironWallMin: 24,
+        ironWallMax: 36,
+        pressureMin: 28,
+        pressureMax: 40,
+        payMin: 400_000,
+        payMax: 900_000,
+        rewards: [vipReward('large-1', '대형 스폰서 계약을 제안한다.')],
+      },
+        top: {
+        satisfactionMin: 260,
+        satisfactionMax: 360,
+        ironWallMin: 30,
+        ironWallMax: 44,
+        pressureMin: 34,
+        pressureMax: 48,
+        payMin: 900_000,
+        payMax: 2_000_000,
+        rewards: [vipReward('top-1', '독점 후원 계약을 제안한다.')],
+      },
+    },
+  }
+}
+
 export function defaultStationGradeConfig(): StationGradeConfig {
   return {
     tiers: {
@@ -407,6 +598,7 @@ export function defaultStationGradeConfig(): StationGradeConfig {
       },
     },
     auditConfig: defaultAuditConfig(),
+    vipConfig: defaultVipConfig(),
     topClearViewers: 750_000,
     slotUnlockPrices: [...DEFAULT_SLOT_UNLOCK_PRICES],
     slotUnlockMinGrades: [...DEFAULT_SLOT_UNLOCK_MIN_GRADES],
@@ -519,8 +711,8 @@ export function defaultAuditConfig(): PromotionAuditConfig {
         targetTier: 'sme',
         successMediaUrl: '',
         failMediaUrl: '',
-        attackPower: 6,
-        satisfactionMod: 1.0,
+        ironWall: 22,
+        pressure: 22,
         description: FIXED_JUDGES_LOCALES[0].descriptions.ko,
         descriptions: FIXED_JUDGES_LOCALES[0].descriptions,
       },
@@ -532,8 +724,8 @@ export function defaultAuditConfig(): PromotionAuditConfig {
         targetTier: 'mid',
         successMediaUrl: '',
         failMediaUrl: '',
-        attackPower: 10,
-        satisfactionMod: 0.98,
+        ironWall: 32,
+        pressure: 32,
         description: FIXED_JUDGES_LOCALES[1].descriptions.ko,
         descriptions: FIXED_JUDGES_LOCALES[1].descriptions,
       },
@@ -545,8 +737,8 @@ export function defaultAuditConfig(): PromotionAuditConfig {
         targetTier: 'large',
         successMediaUrl: '',
         failMediaUrl: '',
-        attackPower: 12,
-        satisfactionMod: 0.95,
+        ironWall: 38,
+        pressure: 42,
         description: FIXED_JUDGES_LOCALES[2].descriptions.ko,
         descriptions: FIXED_JUDGES_LOCALES[2].descriptions,
       },
@@ -558,17 +750,17 @@ export function defaultAuditConfig(): PromotionAuditConfig {
         targetTier: 'top',
         successMediaUrl: '',
         failMediaUrl: '',
-        attackPower: 15,
-        satisfactionMod: 0.92,
+        ironWall: 48,
+        pressure: 55,
         description: FIXED_JUDGES_LOCALES[3].descriptions.ko,
         descriptions: FIXED_JUDGES_LOCALES[3].descriptions,
       },
     ],
     stageSettings: {
-      sme: { targetSatisfaction: 45, recommendedGrade: 'B', staminaCost: 15, judgeAttackMod: 1.0 },
-      mid: { targetSatisfaction: 110, recommendedGrade: 'A', staminaCost: 20, judgeAttackMod: 1.15 },
-      large: { targetSatisfaction: 160, recommendedGrade: 'A', staminaCost: 25, judgeAttackMod: 1.3 },
-      top: { targetSatisfaction: 220, recommendedGrade: 'S', staminaCost: 30, judgeAttackMod: 1.5 },
+      sme: auditStage('sme', 'B', 90, 130, 12, 20, 16, 24, 15, 1),
+      mid: auditStage('mid', 'A', 130, 190, 18, 28, 22, 32, 20, 1.15),
+      large: auditStage('large', 'A', 190, 270, 24, 36, 28, 40, 25, 1.3),
+      top: auditStage('top', 'S', 260, 360, 30, 44, 34, 48, 30, 1.5),
     },
   }
 }
@@ -754,6 +946,7 @@ export function normalizeStationGradeConfig(raw: unknown): StationGradeConfig {
     tiers,
     promotions,
     auditConfig: normalizeAuditConfig(record.auditConfig, defaults.auditConfig),
+    vipConfig: normalizeVipConfig(record.vipConfig, defaults.vipConfig),
     topClearViewers,
     slotUnlockPrices: normalizeSlotUnlockPrices(
       record.slotUnlockPrices,
@@ -765,6 +958,117 @@ export function normalizeStationGradeConfig(raw: unknown): StationGradeConfig {
     ),
     balance: normalizeViewerBalance(record.balance),
   }
+}
+
+function finiteInt(value: unknown, fallback: number, min = 0): number {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return fallback
+  return Math.max(min, Math.round(n))
+}
+
+function normalizeVipConfig(raw: unknown, fallback?: VipVisitConfig): VipVisitConfig {
+  const base = fallback ?? defaultVipConfig()
+  if (!raw || typeof raw !== 'object') return base
+  const row = raw as Record<string, unknown>
+  const characters = Array.isArray(row.characters)
+    ? row.characters.flatMap((item, index) => {
+        if (!item || typeof item !== 'object') return []
+        const character = item as Record<string, unknown>
+        const imageUrl = typeof character.imageUrl === 'string' ? character.imageUrl : ''
+        const centerImageUrl = typeof character.centerImageUrl === 'string' ? character.centerImageUrl : ''
+        const satisfiedImageUrl = typeof character.satisfiedImageUrl === 'string' ? character.satisfiedImageUrl : ''
+        const id =
+          typeof character.id === 'string' && character.id.trim()
+            ? character.id
+            : `vip_${index + 1}`
+        return [
+          {
+            id,
+            name: '',
+            imageUrl,
+            blurRegions: readBlurRegions(character),
+            centerImageUrl,
+            centerBlurRegions: readBlurRegions({ blurRegions: character.centerBlurRegions }),
+            satisfiedImageUrl,
+            satisfiedBlurRegions: readBlurRegions({ blurRegions: character.satisfiedBlurRegions }),
+          } satisfies VipCharacterConfig,
+        ]
+      })
+    : base.characters
+  const hasFanImage = (fan: VipCharacterConfig) =>
+    Boolean(fan.imageUrl.trim() || fan.centerImageUrl?.trim() || fan.satisfiedImageUrl?.trim())
+  const roster =
+    characters.length === 1 && !hasFanImage(characters[0]) ? base.characters : characters
+
+  const tiersRaw = row.tiers && typeof row.tiers === 'object' ? (row.tiers as Record<string, unknown>) : {}
+  const tiers = { ...base.tiers }
+  for (const tier of VIP_TIER_IDS) {
+    const source = tiersRaw[tier]
+    const preset = base.tiers[tier]
+    if (!source || typeof source !== 'object') {
+      tiers[tier] = preset
+      continue
+    }
+    const spec = source as Record<string, unknown>
+    const rewards = Array.isArray(spec.rewards)
+      ? spec.rewards.flatMap((item, index) => {
+          if (!item || typeof item !== 'object') return []
+          const reward = item as Record<string, unknown>
+          const text = typeof reward.text === 'string' ? reward.text : ''
+          const id =
+            typeof reward.id === 'string' && reward.id.trim()
+              ? reward.id
+              : `${tier}-${index + 1}`
+          return [{ id, text } satisfies VipRewardLine]
+        })
+      : preset.rewards
+    tiers[tier] = {
+      satisfactionMin: finiteInt(spec.satisfactionMin ?? spec.statMin, preset.satisfactionMin),
+      satisfactionMax: finiteInt(spec.satisfactionMax ?? spec.statMax, preset.satisfactionMax),
+      ironWallMin: finiteInt(spec.ironWallMin, preset.ironWallMin),
+      ironWallMax: finiteInt(spec.ironWallMax, preset.ironWallMax),
+      pressureMin: finiteInt(spec.pressureMin, preset.pressureMin),
+      pressureMax: finiteInt(spec.pressureMax, preset.pressureMax),
+      payMin: finiteInt(spec.payMin, preset.payMin),
+      payMax: finiteInt(spec.payMax, preset.payMax),
+      rewards,
+    }
+  }
+
+  const backgroundUrl = typeof row.backgroundUrl === 'string' ? row.backgroundUrl : ''
+  const openingUrl = typeof row.openingUrl === 'string' ? row.openingUrl : ''
+  return {
+    characters: roster,
+    tiers,
+    backgroundUrl,
+    backgroundBlurRegions: readBlurRegions({ blurRegions: row.backgroundBlurRegions }),
+    openingUrl,
+    openingBlurRegions: readBlurRegions({ blurRegions: row.openingBlurRegions }),
+  }
+}
+
+function finiteAudit(value: unknown, fallback: number): number {
+  const n = Math.round(Number(value))
+  return Number.isFinite(n) ? Math.max(0, n) : fallback
+}
+
+function normalizeAuditMembers(raw: unknown, fallback: AuditLineupMember[], tier: string): AuditLineupMember[] {
+  const list = Array.isArray(raw) ? raw : []
+  return [0, 1, 2, 3].map((index) => {
+    const item = list[index]
+    const row = item && typeof item === 'object' ? (item as Record<string, unknown>) : {}
+    const base = fallback[index] ?? emptyAuditMember(tier, index)
+    return {
+      id: typeof row.id === 'string' && row.id.trim() ? row.id.trim() : base.id,
+      name: typeof row.name === 'string' ? row.name : base.name,
+      imageUrl: typeof row.imageUrl === 'string' ? row.imageUrl : base.imageUrl,
+      blurRegions: readBlurRegions({ blurRegions: row.blurRegions }),
+      centerImageUrl: typeof row.centerImageUrl === 'string' ? row.centerImageUrl : base.centerImageUrl ?? '',
+      centerBlurRegions: readBlurRegions({ blurRegions: row.centerBlurRegions }),
+      satisfiedImageUrl: typeof row.satisfiedImageUrl === 'string' ? row.satisfiedImageUrl : base.satisfiedImageUrl ?? '',
+      satisfiedBlurRegions: readBlurRegions({ blurRegions: row.satisfiedBlurRegions }),
+    }
+  })
 }
 
 function normalizeAuditConfig(
@@ -819,13 +1123,21 @@ function normalizeAuditConfig(
       failMediaUrl: typeof rowItem.failMediaUrl === 'string' ? rowItem.failMediaUrl : '',
       failBlurRegions,
       auditMedia,
-      attackPower: Math.max(0, Math.round(Number(rowItem.attackPower) || fallbackJudge.attackPower || 10)),
-      satisfactionMod: Math.max(0.1, Number(rowItem.satisfactionMod) || fallbackJudge.satisfactionMod || 1.0),
+      ironWall: Number.isFinite(Number(rowItem.ironWall))
+        ? Math.max(0, Math.round(Number(rowItem.ironWall)))
+        : Math.max(0, Math.round(fallbackJudge.ironWall)),
+      pressure: Number.isFinite(Number(rowItem.pressure))
+        ? Math.max(0, Math.round(Number(rowItem.pressure)))
+        : Math.max(0, Math.round(fallbackJudge.pressure)),
       description,
       descriptions,
     }
   })
 
+  const sharedBackground = typeof row.backgroundUrl === 'string' ? row.backgroundUrl : ''
+  const sharedBackgroundBlur = readBlurRegions({ blurRegions: row.backgroundBlurRegions })
+  const sharedOpening = typeof row.openingUrl === 'string' ? row.openingUrl : ''
+  const sharedOpeningBlur = readBlurRegions({ blurRegions: row.openingBlurRegions })
   const rawStages = row.stageSettings && typeof row.stageSettings === 'object' ? (row.stageSettings as Record<string, unknown>) : {}
   const grades: Grade[] = ['S', 'A', 'B', 'C']
   const stageSettings = { ...base.stageSettings }
@@ -835,11 +1147,32 @@ function normalizeAuditConfig(
     const item = rawStages[tierKey] && typeof rawStages[tierKey] === 'object' ? (rawStages[tierKey] as Record<string, unknown>) : {}
     const recGrade = grades.includes(item.recommendedGrade as Grade) ? (item.recommendedGrade as Grade) : fallbackStage.recommendedGrade
 
+    const satisfactionMax = item.satisfactionMax == null
+      ? fallbackStage.satisfactionMax
+      : finiteAudit(item.satisfactionMax, fallbackStage.satisfactionMax)
+    const satisfactionMin = item.satisfactionMin == null
+      ? fallbackStage.satisfactionMin
+      : finiteAudit(item.satisfactionMin, fallbackStage.satisfactionMin)
     stageSettings[tierKey] = {
-      targetSatisfaction: Math.max(10, Math.round(Number(item.targetSatisfaction) || fallbackStage.targetSatisfaction)),
+      targetSatisfaction: satisfactionMax,
+      satisfactionMin: Math.min(satisfactionMin, satisfactionMax),
+      satisfactionMax: Math.max(satisfactionMin, satisfactionMax),
+      ironWallMin: finiteAudit(item.ironWallMin, fallbackStage.ironWallMin),
+      ironWallMax: finiteAudit(item.ironWallMax, fallbackStage.ironWallMax),
+      pressureMin: finiteAudit(item.pressureMin, fallbackStage.pressureMin),
+      pressureMax: finiteAudit(item.pressureMax, fallbackStage.pressureMax),
       recommendedGrade: recGrade,
       staminaCost: Math.max(0, Math.round(Number(item.staminaCost) || fallbackStage.staminaCost)),
       judgeAttackMod: Math.max(0.1, Number(item.judgeAttackMod) || fallbackStage.judgeAttackMod),
+      members: normalizeAuditMembers(item.members, fallbackStage.members, tierKey),
+      backgroundUrl: typeof item.backgroundUrl === 'string' ? item.backgroundUrl : sharedBackground,
+      backgroundBlurRegions: item.backgroundBlurRegions != null
+        ? readBlurRegions({ blurRegions: item.backgroundBlurRegions })
+        : sharedBackgroundBlur,
+      openingUrl: typeof item.openingUrl === 'string' ? item.openingUrl : sharedOpening,
+      openingBlurRegions: item.openingBlurRegions != null
+        ? readBlurRegions({ blurRegions: item.openingBlurRegions })
+        : sharedOpeningBlur,
     }
   }
 
@@ -856,8 +1189,15 @@ function normalizeViewerBalance(raw: unknown): ViewerBalance {
     const n = Number(row[key])
     return Number.isFinite(n) && n >= 0 ? n : DEFAULT_VIEWER_BALANCE[key]
   }
+  const legacyComm = Number(row.viewerPerCommPoint)
+  const sexyPoint = Number(row.viewerPerSexyPoint)
   return {
-    viewerPerCommPoint: pick('viewerPerCommPoint'),
+    viewerPerSexyPoint:
+      Number.isFinite(sexyPoint) && sexyPoint >= 0
+        ? sexyPoint
+        : Number.isFinite(legacyComm) && legacyComm >= 0
+          ? legacyComm
+          : DEFAULT_VIEWER_BALANCE.viewerPerSexyPoint,
     viewerGrowthRate: pick('viewerGrowthRate'),
     viewerOrganicGrowthRate: pick('viewerOrganicGrowthRate'),
     idleViewerDecay: pick('idleViewerDecay'),

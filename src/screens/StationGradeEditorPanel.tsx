@@ -1,22 +1,37 @@
-import type { Grade } from '../game/characters'
+import { useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
+import type { Grade, RegisteredCharacter } from '../game/characters'
 import { formatMoney } from '../game/money'
+import { resolveMediaSrc } from '../game/mediaUrl'
 import { NumericInput, type QuickPreset } from '../components/NumericInput'
+import { MediaDropBox } from './AuditEditorPanel'
+import { AuditLineupEditor } from './AuditLineupEditor'
+import { FanMeetingModal } from './FanMeetingModal'
+import { AuditSimulatorDeckModal } from './AuditSimulatorDeckModal'
+import { FanMeetingStatement } from './FanMeetingStatement'
+import type { FanCardState } from '../game/fanMeeting'
+import { hasPlayableFan } from '../game/vip'
 import {
   DEFAULT_SLOT_UNLOCK_MIN_GRADES,
   DEFAULT_SLOT_UNLOCK_PRICES,
   STATION_TIER_LABEL,
   STATION_TIER_ORDER,
   defaultAuditConfig,
+  defaultVipConfig,
   getHighLowAnteForGrade,
-  normalizeJudgeMediaSlot,
   tierMaxRank,
   tierViewerCap,
-  type AuditJudgeConfig,
   type CreatorCountRequirement,
+  type OptionalNumberCondition,
   type PromotionAuditConfig,
   type StationGradeConfig,
   type StationPromotionRule,
   type StationTierId,
+  type VipCharacterConfig,
+  type VipRewardLine,
+  type VipTierId,
+  type VipVisitConfig,
+  VIP_TIER_IDS,
 } from '../game/stationGradeConfig'
 
 type StationGradeEditorPanelProps = {
@@ -511,8 +526,189 @@ export function StationGradeEditorPanel({
         auditConfig={config.auditConfig ?? defaultAuditConfig()}
         onChange={(nextAudit) => onConfigChange({ ...config, auditConfig: nextAudit })}
       />
+
     </div>
   )
+}
+
+export function VipVisitEditorPanel({
+  config,
+  onConfigChange,
+  onSaveManual,
+  registeredCharacters,
+}: {
+  config: StationGradeConfig
+  onConfigChange: (config: StationGradeConfig) => void
+  onSaveManual?: () => void
+  registeredCharacters: RegisteredCharacter[]
+}) {
+  const vipConfig = config.vipConfig ?? defaultVipConfig()
+  const [deckOpen, setDeckOpen] = useState(false)
+  const [simGrade, setSimGrade] = useState<VipTierId | null>(null)
+  const [simCards, setSimCards] = useState<FanCardState[] | null>(null)
+  const [simResult, setSimResult] = useState<{
+    earned: number
+    satisfiedCount: number
+    lastRewardText: string
+  } | null>(null)
+  const [simNotice, setSimNotice] = useState('')
+  const playable = hasPlayableFan(vipConfig)
+
+  function closeSim() {
+    setDeckOpen(false)
+    setSimGrade(null)
+    setSimCards(null)
+    setSimResult(null)
+    setSimNotice('')
+  }
+
+  function openDeck() {
+    if (!playable) {
+      setSimNotice('팬 이미지를 먼저 넣어야 시뮬레이터가 열립니다.')
+      return
+    }
+    if (registeredCharacters.length === 0) {
+      setSimNotice('출전할 크리에이터가 없습니다.')
+      return
+    }
+    setSimNotice('')
+    setSimResult(null)
+    setDeckOpen(true)
+  }
+
+  return (
+    <div className="game-panel rounded-2xl p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div>
+          <h2 className="text-lg font-bold text-slate-100">팬미팅</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            팬마다 대기·중앙·만족 이미지 3장을 넣습니다. 만족도, 철벽, 압박은 방송국 등급에서 굴립니다.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={openDeck}
+            className="rounded-xl border border-pink-400/40 bg-pink-950/80 px-4 py-2 text-sm font-bold text-pink-100 shadow-[0_0_15px_rgba(244,114,182,0.25)] transition hover:bg-pink-900"
+          >
+            팬미팅 시뮬레이터
+          </button>
+          {onSaveManual ? (
+            <button
+              type="button"
+              onClick={onSaveManual}
+              className="game-btn game-btn-primary rounded-xl px-4 py-2 text-sm font-bold"
+            >
+              수동 저장
+            </button>
+          ) : null}
+        </div>
+      </div>
+      <VipEditorSection
+        vipConfig={vipConfig}
+        onChange={(nextVip) => onConfigChange({ ...config, vipConfig: nextVip })}
+      />
+      {simNotice ? simPopup(
+        <div className="w-full max-w-md rounded-3xl border border-pink-400/40 bg-slate-950 p-6">
+          <p className="text-sm text-slate-200">{simNotice}</p>
+          <button type="button" onClick={closeSim} className="game-btn game-btn-primary mt-4 rounded-xl px-4 py-2 text-xs font-bold">
+            닫기
+          </button>
+        </div>,
+      ) : null}
+      {deckOpen ? createPortal(
+        <AuditSimulatorDeckModal
+          tierKey={simGrade ?? 'sme'}
+          registeredCharacters={registeredCharacters}
+          isSimulator
+          titleKey="audit.fanDeckModalTitle"
+          startLabelKey="audit.startFanMeetingBtn"
+          onClose={() => setDeckOpen(false)}
+          onStartSimulation={(selected) => {
+            setDeckOpen(false)
+            setSimCards(selected.map((creator) => toFanCard(creator as RegisteredCharacter)))
+            setSimGrade((grade) => grade ?? 'sme')
+          }}
+        />,
+        document.body,
+      ) : null}
+      {simGrade && simCards
+        ? createPortal(
+            <FanMeetingModal
+              key={simGrade}
+              config={vipConfig}
+              grade={simGrade}
+              cards={simCards}
+              onAbort={closeSim}
+              headerExtra={<SimGradeBar grade={simGrade} onChange={setSimGrade} />}
+              onFinish={(result) => {
+                setSimCards(null)
+                setSimResult({
+                  earned: result.earned,
+                  satisfiedCount: result.satisfiedCount,
+                  lastRewardText: result.lastRewardText,
+                })
+              }}
+            />,
+            document.body,
+          )
+        : null}
+      {simResult ? (
+        <FanMeetingStatement
+          fanCount={simResult.satisfiedCount}
+          pay={simResult.earned}
+          rewardText={simResult.lastRewardText}
+          note="시뮬레이터 결과는 저장되지 않습니다."
+          confirmLabel="닫기"
+          onConfirm={closeSim}
+          zClass="z-[210]"
+        />
+      ) : null}
+    </div>
+  )
+}
+
+function simPopup(node: ReactNode) {
+  return createPortal(
+    <div className="fixed inset-0 z-[210] flex items-center justify-center bg-black/80 p-4">{node}</div>,
+    document.body,
+  )
+}
+
+function SimGradeBar({ grade, onChange }: { grade: VipTierId; onChange: (grade: VipTierId) => void }) {
+  return (
+    <div className="mt-2 flex flex-wrap gap-1">
+      {VIP_TIER_IDS.map((tier) => (
+        <button
+          key={tier}
+          type="button"
+          onClick={() => onChange(tier)}
+          className={`rounded-lg border px-2 py-1 text-[10px] font-bold ${
+            tier === grade ? 'border-pink-300 bg-pink-500/30 text-pink-50' : 'border-white/15 text-slate-300'
+          }`}
+        >
+          {STATION_TIER_LABEL[tier]}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function toFanCard(creator: RegisteredCharacter): FanCardState {
+  const row = creator as RegisteredCharacter & { stamina?: number; staminaMax?: number; statPerformance?: number; statMental?: number }
+  const hp = Math.max(1, Math.round(row.stamina ?? row.staminaMax ?? 100))
+  return {
+    id: creator.id,
+    name: creator.name,
+    grade: creator.grade ?? 'B',
+    statType: creator.statType,
+    statPerformance: Math.round(row.statPerformance ?? 70),
+    statMental: Math.round(row.statMental ?? 70),
+    hp,
+    hpMax: hp,
+    auditMedia: creator.auditMedia,
+    profileImageUrl: creator.profileImageUrl,
+  }
 }
 
 function AuditEditorSection({
@@ -522,302 +718,13 @@ function AuditEditorSection({
   auditConfig: PromotionAuditConfig
   onChange: (next: PromotionAuditConfig) => void
 }) {
-  const updateJudge = (idx: number, patch: Partial<AuditJudgeConfig>) => {
-    const nextJudges = auditConfig.judges.map((j, i) => (i === idx ? { ...j, ...patch } : j))
-    onChange({ ...auditConfig, judges: nextJudges })
-  }
-
-  const addJudge = () => {
-    const nextIdx = auditConfig.judges.length + 1
-    const newJudge: AuditJudgeConfig = {
-      id: `judge_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-      name: `신규 심사관 ${nextIdx}`,
-      avatarUrl: '',
-      attackPower: 10,
-      satisfactionMod: 1.0,
-      description: '새로 등록된 승급 심사관',
-    }
-    onChange({ ...auditConfig, judges: [...auditConfig.judges, newJudge] })
-  }
-
-  const removeJudge = (idx: number) => {
-    if (auditConfig.judges.length <= 1) return
-    const nextJudges = auditConfig.judges.filter((_, i) => i !== idx)
-    onChange({ ...auditConfig, judges: nextJudges })
-  }
-
-  const updateStage = (
-    tierKey: Exclude<StationTierId, 'black' | 'tiny'>,
-    patch: Partial<PromotionAuditConfig['stageSettings'][typeof tierKey]>,
-  ) => {
-    onChange({
-      ...auditConfig,
-      stageSettings: {
-        ...auditConfig.stageSettings,
-        [tierKey]: { ...auditConfig.stageSettings[tierKey], ...patch },
-      },
-    })
-  }
-
-  const grades: Grade[] = ['B', 'A', 'S']
-
-  return (
-    <div className="mt-8 rounded-2xl border border-purple-500/30 bg-purple-950/20 p-5 shadow-[0_0_30px_rgba(168,85,247,0.1)]">
-      <div className="flex items-center justify-between border-b border-purple-500/20 pb-3">
-        <div>
-          <h3 className="text-base font-bold text-purple-200">⚖️ 승급 심사 미니게임 밸런스 & 심사관 세팅</h3>
-          <p className="text-xs text-slate-400">
-            승급 심사관을 새로 생성/편집하고, 공격력(데미지 계수) 및 기업 단계별 권장 등급과 메인 스테미나 소모량을 관리합니다.
-          </p>
-        </div>
-      </div>
-
-      {/* 심사관 등록, 추가 및 편집 */}
-      <div className="mt-4">
-        <div className="flex items-center justify-between gap-3">
-          <h4 className="text-xs font-bold text-purple-300">
-            👥 등록된 심사관 ({auditConfig.judges.length}명)
-          </h4>
-          <button
-            type="button"
-            className="game-btn border border-purple-400/40 bg-purple-900/60 px-3 py-1 text-xs font-bold text-purple-200 hover:bg-purple-800"
-            onClick={addJudge}
-          >
-            ＋ 심사관 추가
-          </button>
-        </div>
-
-        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {auditConfig.judges.map((judge, idx) => (
-            <div
-              key={judge.id || `judge-${idx}`}
-              className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2.5"
-            >
-              <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                <span className="rounded bg-purple-900/60 px-2 py-0.5 text-[10px] font-bold text-purple-300">
-                  심사관 #{idx + 1}
-                </span>
-                {auditConfig.judges.length > 1 ? (
-                  <button
-                    type="button"
-                    className="game-btn px-2 py-0.5 text-[10px] text-rose-300 hover:text-rose-100"
-                    onClick={() => removeJudge(idx)}
-                  >
-                    삭제
-                  </button>
-                ) : null}
-              </div>
-
-              <label className="block text-[11px] font-semibold text-slate-400">
-                심사관 이름
-                <input
-                  type="text"
-                  className={fieldClassName}
-                  value={judge.name}
-                  onChange={(e) => updateJudge(idx, { name: e.target.value })}
-                />
-              </label>
-
-              <label className="block text-[11px] font-semibold text-slate-400">
-                초상화 미디어 URL (기본)
-                <input
-                  type="text"
-                  className={fieldClassName}
-                  placeholder="/assets/judges/judge_1.png"
-                  value={judge.avatarUrl}
-                  onChange={(e) => updateJudge(idx, { avatarUrl: e.target.value })}
-                />
-              </label>
-
-              <div className="grid grid-cols-3 gap-2">
-                <label className="block text-[10px] font-semibold text-amber-300">
-                  🌟 A 영상 (고만족 80%↑)
-                  <input
-                    type="text"
-                    className={fieldClassName}
-                    placeholder="/assets/judges/judge_1_high.mp4"
-                    value={normalizeJudgeMediaSlot(judge.auditMedia?.A).url || ''}
-                    onChange={(e) =>
-                      updateJudge(idx, {
-                        auditMedia: {
-                          ...(judge.auditMedia || {}),
-                          A: { ...normalizeJudgeMediaSlot(judge.auditMedia?.A), url: e.target.value },
-                        },
-                      })
-                    }
-                  />
-                </label>
-                <label className="block text-[10px] font-semibold text-cyan-300">
-                  ⚡ B 영상 (중만족 30~79%)
-                  <input
-                    type="text"
-                    className={fieldClassName}
-                    placeholder="/assets/judges/judge_1_mid.mp4"
-                    value={normalizeJudgeMediaSlot(judge.auditMedia?.B).url || ''}
-                    onChange={(e) =>
-                      updateJudge(idx, {
-                        auditMedia: {
-                          ...(judge.auditMedia || {}),
-                          B: { ...normalizeJudgeMediaSlot(judge.auditMedia?.B), url: e.target.value },
-                        },
-                      })
-                    }
-                  />
-                </label>
-                <label className="block text-[10px] font-semibold text-rose-300">
-                  💧 C 영상 (저만족 0~29%)
-                  <input
-                    type="text"
-                    className={fieldClassName}
-                    placeholder="/assets/judges/judge_1_low.mp4"
-                    value={normalizeJudgeMediaSlot(judge.auditMedia?.C).url || ''}
-                    onChange={(e) =>
-                      updateJudge(idx, {
-                        auditMedia: {
-                          ...(judge.auditMedia || {}),
-                          C: { ...normalizeJudgeMediaSlot(judge.auditMedia?.C), url: e.target.value },
-                        },
-                      })
-                    }
-                  />
-                </label>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <label className="block text-[11px] font-semibold text-slate-400">
-                  공격력 (데미지)
-                  <input
-                    type="number"
-                    min={0}
-                    className={fieldClassName}
-                    value={judge.attackPower}
-                    onChange={(e) =>
-                      updateJudge(idx, {
-                        attackPower: Math.max(0, Math.round(Number(e.target.value) || 0)),
-                      })
-                    }
-                  />
-                </label>
-                <label className="block text-[11px] font-semibold text-slate-400">
-                  만족도 계수
-                  <input
-                    type="number"
-                    step={0.1}
-                    min={0.1}
-                    className={fieldClassName}
-                    value={judge.satisfactionMod}
-                    onChange={(e) =>
-                      updateJudge(idx, {
-                        satisfactionMod: Math.max(0.1, Number(e.target.value) || 1.0),
-                      })
-                    }
-                  />
-                </label>
-              </div>
-
-              <label className="block text-[11px] font-semibold text-slate-400">
-                설명/특징
-                <input
-                  type="text"
-                  className={fieldClassName}
-                  value={judge.description}
-                  onChange={(e) => updateJudge(idx, { description: e.target.value })}
-                />
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 기업 단계별 심사 밸런스 */}
-      <div className="mt-6">
-        <h4 className="text-xs font-bold text-purple-300">🏢 기업 단계별 심사 목표 & 밸런스</h4>
-        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {(['sme', 'mid', 'large', 'top'] as const).map((tierKey) => {
-            const stage = auditConfig.stageSettings[tierKey]
-            return (
-              <div
-                key={tierKey}
-                className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2.5"
-              >
-                <h5 className="text-xs font-bold text-amber-300">{STATION_TIER_LABEL[tierKey]}</h5>
-
-                <label className="block text-[11px] font-semibold text-slate-400">
-                  목표 만족도 (점수)
-                  <input
-                    type="number"
-                    min={10}
-                    className={fieldClassName}
-                    value={stage.targetSatisfaction}
-                    onChange={(e) =>
-                      updateStage(tierKey, {
-                        targetSatisfaction: Math.max(10, Math.round(Number(e.target.value) || 10)),
-                      })
-                    }
-                  />
-                </label>
-
-                <label className="block text-[11px] font-semibold text-slate-400">
-                  권장 크리에이터 등급
-                  <select
-                    className={fieldClassName}
-                    value={stage.recommendedGrade}
-                    onChange={(e) =>
-                      updateStage(tierKey, { recommendedGrade: e.target.value as Grade })
-                    }
-                  >
-                    {grades.map((g) => (
-                      <option key={g} value={g}>
-                        {g} 등급 이상
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <label className="block text-[11px] font-semibold text-slate-400">
-                    메인 스테미나 소모
-                    <input
-                      type="number"
-                      min={0}
-                      className={fieldClassName}
-                      value={stage.staminaCost}
-                      onChange={(e) =>
-                        updateStage(tierKey, {
-                          staminaCost: Math.max(0, Math.round(Number(e.target.value) || 0)),
-                        })
-                      }
-                    />
-                  </label>
-                  <label className="block text-[11px] font-semibold text-slate-400">
-                    심사관 공격 계수
-                    <input
-                      type="number"
-                      step={0.1}
-                      min={0.1}
-                      className={fieldClassName}
-                      value={stage.judgeAttackMod}
-                      onChange={(e) =>
-                        updateStage(tierKey, {
-                          judgeAttackMod: Math.max(0.1, Number(e.target.value) || 1.0),
-                        })
-                      }
-                    />
-                  </label>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    </div>
-  )
+  return <AuditLineupEditor auditConfig={auditConfig} onChange={onChange} />
 }
 
 type OptionalNumberFieldProps = {
   label: string
-  value: { enabled: boolean; value: number }
-  onChange: (next: { enabled: boolean; value: number }) => void
+  value: OptionalNumberCondition
+  onChange: (next: OptionalNumberCondition) => void
 }
 
 function OptionalNumberField({ label, value, onChange }: OptionalNumberFieldProps) {
@@ -856,5 +763,330 @@ function OptionalNumberField({ label, value, onChange }: OptionalNumberFieldProp
         </div>
       ) : null}
     </div>
+  )
+}
+
+function VipEditorSection({
+  vipConfig,
+  onChange,
+}: {
+  vipConfig: VipVisitConfig
+  onChange: (next: VipVisitConfig) => void
+}) {
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const updateCharacter = (index: number, patch: Partial<VipCharacterConfig>) => {
+    const characters = vipConfig.characters.map((character, i) =>
+      i === index ? { ...character, ...patch } : character,
+    )
+    onChange({ ...vipConfig, characters })
+  }
+
+  const updateTier = (tier: VipTierId, patch: Partial<VipVisitConfig['tiers'][VipTierId]>) => {
+    onChange({
+      ...vipConfig,
+      tiers: {
+        ...vipConfig.tiers,
+        [tier]: { ...vipConfig.tiers[tier], ...patch },
+      },
+    })
+  }
+
+  const updateReward = (tier: VipTierId, index: number, text: string) => {
+    const rewards = vipConfig.tiers[tier].rewards.map((reward, i) =>
+      i === index ? { ...reward, text } : reward,
+    )
+    updateTier(tier, { rewards })
+  }
+
+  return (
+    <div className="mt-8 rounded-2xl border border-amber-500/30 bg-amber-950/15 p-5">
+      <div className="border-b border-amber-500/20 pb-3">
+        <h3 className="text-base font-bold text-amber-100">팬미팅</h3>
+        <p className="mt-1 text-xs leading-relaxed text-slate-400">
+          중소기업부터 3~5턴마다 팬미팅이 열립니다. 카드 체력이 모두 0이 될 때까지 팬이 이어지고, 만족한 팬만 지불액을 줍니다. 만족도는 그 팬의 체력이고, 철벽과 함께 높을수록 지불액이 올라갑니다. 낸 카드는 만족을 채워도 압박만큼 체력이 줄고, 멘탈이 높으면 덜 줄어듭니다.
+        </p>
+      </div>
+
+      <div className="mt-4 grid max-w-4xl gap-4 md:grid-cols-2">
+        <MediaDropBox
+          label="배경"
+          description="팬이 줄을 서는 무대. 16:9 이미지"
+          slot={{ url: vipConfig.backgroundUrl ?? '', blurRegions: vipConfig.backgroundBlurRegions ?? [] }}
+          onUpdateSlot={(next) =>
+            onChange({
+              ...vipConfig,
+              backgroundUrl: next.url || '',
+              backgroundBlurRegions: next.blurRegions,
+            })
+          }
+        />
+        <MediaDropBox
+          label="오프닝 영상"
+          description="팬미팅이 열릴 때 짧게 한 번 재생"
+          slot={{ url: vipConfig.openingUrl ?? '', blurRegions: vipConfig.openingBlurRegions ?? [] }}
+          onUpdateSlot={(next) =>
+            onChange({
+              ...vipConfig,
+              openingUrl: next.url || '',
+              openingBlurRegions: next.blurRegions,
+            })
+          }
+        />
+      </div>
+
+      <div className="mt-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h4 className="text-sm font-bold text-amber-100">팬 명단 ({vipConfig.characters.length}명)</h4>
+            <p className="text-xs text-slate-400">카드를 누르면 대기, 중앙, 만족 이미지 3장을 넣습니다.</p>
+          </div>
+          <button
+            type="button"
+            className="game-btn px-3 py-1 text-xs"
+            onClick={() =>
+              onChange({
+                ...vipConfig,
+                characters: [
+                  ...vipConfig.characters,
+                  {
+                    id: `vip_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+                    name: '',
+                    imageUrl: '',
+                  },
+                ],
+              })
+            }
+          >
+            팬 추가
+          </button>
+        </div>
+        {vipConfig.characters.length === 0 ? (
+          <p className="mt-4 rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-sm text-slate-500">
+            등록된 팬이 없습니다. 팬 추가로 이미지 3장을 넣으세요.
+          </p>
+        ) : (
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {vipConfig.characters.map((character, index) => (
+              <button
+                key={character.id}
+                type="button"
+                onClick={() => setEditingIndex(index)}
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-amber-500/30 bg-amber-950/20 text-left shadow-md transition-all hover:scale-[1.02] hover:border-amber-300/80"
+              >
+                <div className="relative aspect-video w-full overflow-hidden bg-black/70">
+                  {character.imageUrl ? (
+                    <img
+                      src={resolveMediaSrc(character.imageUrl)}
+                      alt=""
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full flex-col items-center justify-center p-3 text-center">
+                      <span className="text-2xl">📁</span>
+                      <span className="mt-1 text-[11px] font-bold text-amber-200">대기 이미지 없음</span>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/70 opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="rounded-xl border border-amber-300/40 bg-amber-900/90 px-3 py-1.5 text-xs font-black text-white">
+                      이미지 3장
+                    </span>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {editingIndex != null && vipConfig.characters[editingIndex] ? (
+        <VipCharacterModal
+          character={vipConfig.characters[editingIndex]}
+          onChange={(patch) => updateCharacter(editingIndex, patch)}
+          onDelete={() => {
+            onChange({
+              ...vipConfig,
+              characters: vipConfig.characters.filter((_, i) => i !== editingIndex),
+            })
+            setEditingIndex(null)
+          }}
+          onClose={() => setEditingIndex(null)}
+        />
+      ) : null}
+
+      <div className="mt-6 space-y-4">
+        {VIP_TIER_IDS.map((tier) => {
+          const spec = vipConfig.tiers[tier]
+          return (
+            <section key={tier} className="rounded-xl border border-white/10 bg-black/20 p-3">
+              <h4 className="text-sm font-bold text-amber-100">{STATION_TIER_LABEL[tier]}</h4>
+              <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">
+                <NumberField
+                  label="만족도 min"
+                  value={spec.satisfactionMin}
+                  onChange={(satisfactionMin) => updateTier(tier, { satisfactionMin })}
+                />
+                <NumberField
+                  label="만족도 max"
+                  value={spec.satisfactionMax}
+                  onChange={(satisfactionMax) => updateTier(tier, { satisfactionMax })}
+                />
+                <NumberField
+                  label="철벽 min"
+                  value={spec.ironWallMin}
+                  onChange={(ironWallMin) => updateTier(tier, { ironWallMin })}
+                />
+                <NumberField
+                  label="철벽 max"
+                  value={spec.ironWallMax}
+                  onChange={(ironWallMax) => updateTier(tier, { ironWallMax })}
+                />
+                <NumberField
+                  label="압박 min"
+                  value={spec.pressureMin}
+                  onChange={(pressureMin) => updateTier(tier, { pressureMin })}
+                />
+                <NumberField
+                  label="압박 max"
+                  value={spec.pressureMax}
+                  onChange={(pressureMax) => updateTier(tier, { pressureMax })}
+                />
+                <NumberField
+                  label="지불액 min"
+                  value={spec.payMin}
+                  onChange={(payMin) => updateTier(tier, { payMin })}
+                />
+                <NumberField
+                  label="지불액 max"
+                  value={spec.payMax}
+                  onChange={(payMax) => updateTier(tier, { payMax })}
+                />
+              </div>
+              <div className="mt-3 space-y-2">
+                {spec.rewards.map((reward, index) => (
+                  <div key={reward.id} className="flex items-start gap-2">
+                    <label className="block min-w-0 flex-1 text-[11px] font-semibold text-slate-400">
+                      보상 문구
+                      <input
+                        type="text"
+                        className={fieldClassName}
+                        value={reward.text}
+                        onChange={(event) => updateReward(tier, index, event.target.value)}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      className="mt-6 game-btn px-2 py-2 text-[10px] text-rose-300"
+                      onClick={() =>
+                        updateTier(tier, {
+                          rewards: spec.rewards.filter((_, i) => i !== index),
+                        })
+                      }
+                    >
+                      삭제
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className="game-btn px-3 py-1 text-xs"
+                  onClick={() =>
+                    updateTier(tier, {
+                      rewards: [...spec.rewards, newReward(tier)],
+                    })
+                  }
+                >
+                  보상 문구 추가
+                </button>
+              </div>
+            </section>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function VipCharacterModal({
+  character,
+  onChange,
+  onDelete,
+  onClose,
+}: {
+  character: VipCharacterConfig
+  onChange: (patch: Partial<VipCharacterConfig>) => void
+  onDelete: () => void
+  onClose: () => void
+}) {
+  return createPortal(
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md" role="dialog" aria-modal="true">
+      <div className="game-panel relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-3xl border border-amber-500/40 bg-slate-950 p-6 shadow-[0_0_60px_rgba(245,158,11,0.25)]">
+        <div className="flex items-center justify-between border-b border-amber-500/20 pb-4">
+          <h3 className="text-lg font-black text-slate-100">이미지 3장</h3>
+          <button type="button" onClick={onClose} className="text-xs font-bold text-slate-400 hover:text-white">
+            닫기 ✕
+          </button>
+        </div>
+        <div className="mt-5 space-y-4 overflow-y-auto pr-1">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <MediaDropBox
+              label="1. 대기"
+              description="자기 차례가 아닐 때"
+              slot={{ url: character.imageUrl, blurRegions: character.blurRegions ?? [] }}
+              onUpdateSlot={(next) => onChange({ imageUrl: next.url || '', blurRegions: next.blurRegions })}
+            />
+            <MediaDropBox
+              label="2. 중앙"
+              description="자기 차례일 때"
+              slot={{ url: character.centerImageUrl ?? '', blurRegions: character.centerBlurRegions ?? [] }}
+              onUpdateSlot={(next) => onChange({ centerImageUrl: next.url || '', centerBlurRegions: next.blurRegions })}
+            />
+            <MediaDropBox
+              label="3. 만족"
+              description="만족한 뒤 사라지기 전"
+              slot={{ url: character.satisfiedImageUrl ?? '', blurRegions: character.satisfiedBlurRegions ?? [] }}
+              onUpdateSlot={(next) => onChange({ satisfiedImageUrl: next.url || '', satisfiedBlurRegions: next.blurRegions })}
+            />
+          </div>
+        </div>
+        <div className="mt-6 flex items-center justify-between border-t border-amber-500/20 pt-4">
+          <button type="button" onClick={onDelete} className="game-btn px-4 py-2 text-xs font-bold text-rose-300">
+            삭제
+          </button>
+          <button type="button" onClick={onClose} className="game-btn game-btn-primary rounded-xl px-5 py-2 text-xs font-bold">
+            완료 및 닫기
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
+function newReward(tier: VipTierId): VipRewardLine {
+  return {
+    id: `${tier}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`,
+    text: '',
+  }
+}
+
+function NumberField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string
+  value: number
+  onChange: (next: number) => void
+}) {
+  return (
+    <label className="block text-[11px] font-semibold text-slate-300">
+      {label}
+      <input
+        type="number"
+        min={0}
+        className={fieldClassName}
+        value={value}
+        onChange={(event) => onChange(Math.max(0, Math.round(Number(event.target.value) || 0)))}
+      />
+    </label>
   )
 }

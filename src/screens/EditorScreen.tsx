@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type DragEvent, type FormEvent, type ReactNode, type RefObject } from 'react'
+import { useTranslation } from '../locales/i18n'
 import { createPortal } from 'react-dom'
 import { CommonEventPanel } from '../events/CommonEventPanel'
 import { EventManagePanel } from '../events/EventManagePanel'
@@ -7,7 +8,8 @@ import { CharacterSnsEditor } from './CharacterSnsEditor'
 import { CharacterSpecialVacationEditor } from './CharacterSpecialVacationEditor'
 import { CharacterAuditEditorModal } from './CharacterAuditEditorModal'
 import { AuditSimulatorDeckModal } from './AuditSimulatorDeckModal'
-import { PromotionAuditModal } from './PromotionAuditModal'
+import { ExamMeetingModal } from './FanMeetingModal'
+import { FanMeetingStatement } from './FanMeetingStatement'
 import { ShortsVnEditorPanel } from './ShortsVnEditorPanel'
 import {
   CHARACTER_EVENT_SLOTS,
@@ -38,7 +40,7 @@ import { VnCharacterEditorPanel, VnStandingRegister } from './VnCharacterEditorP
 import type { AddStaffPayload, RegisteredStaff } from '../game/staff'
 import { AuditEditorPanel } from './AuditEditorPanel'
 import { StaffEditorPanel } from './StaffEditorPanel'
-import { StationGradeEditorPanel } from './StationGradeEditorPanel'
+import { StationGradeEditorPanel, VipVisitEditorPanel } from './StationGradeEditorPanel'
 import { HighLowEditorPanel } from '../minigames/highlow/HighLowEditorPanel'
 import { SlotEditorPanel } from '../minigames/slot/SlotEditorPanel'
 import { BgmEditorPanel } from './BgmEditorPanel'
@@ -57,6 +59,7 @@ type EditorTab =
   | 'stationGrade'
   | 'staff'
   | 'audit'
+  | 'vipVisit'
   | 'shortsVn'
   | 'highlow'
   | 'slot'
@@ -99,7 +102,7 @@ const VIDEO_ACCEPT = 'video/mp4,video/webm,video/ogg,video/quicktime'
 const STAT_TYPE_LABEL: Record<CreatorStatType, string> = {
   sexy: '섹시',
   communication: '소통',
-  elegance: '기품',
+  mental: '멘탈',
   performance: '퍼포먼스',
 }
 
@@ -157,6 +160,8 @@ export function EditorScreen({
   const [simulatorTierKey, setSimulatorTierKey] = useState<Exclude<StationTierId, 'black' | 'tiny'> | null>(null)
   const [simulatorCreators, setSimulatorCreators] = useState<RegisteredCharacter[] | null>(null)
   const [isAuditSimulatorActive, setIsAuditSimulatorActive] = useState(false)
+  const [auditSimResult, setAuditSimResult] = useState<{ success: boolean; count: number } | null>(null)
+  const { t } = useTranslation()
   useGameBgm(isAuditSimulatorActive ? 'audit' : null)
   const [showSimulator, setShowSimulator] = useState(false)
   const [simulatorMode, setSimulatorMode] = useState<'debug' | 'game'>('debug')
@@ -304,6 +309,15 @@ export function EditorScreen({
             }`}
           >
             ⚖️ 승급심사 관리
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('vipVisit')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'vipVisit' ? 'is-active' : ''
+            }`}
+          >
+            팬미팅
           </button>
           <button
             type="button"
@@ -593,7 +607,14 @@ export function EditorScreen({
               config={stationGradeConfig}
               onConfigChange={onStationGradeConfigChange}
               onSaveManual={onSaveStationGradeManual}
-              onStartSimulator={(tierKey) => setSimulatorTierKey(tierKey)}
+              registeredCharacters={registeredCharacters}
+            />
+          ) : tab === 'vipVisit' ? (
+            <VipVisitEditorPanel
+              config={stationGradeConfig}
+              onConfigChange={onStationGradeConfigChange}
+              onSaveManual={onSaveStationGradeManual}
+              registeredCharacters={registeredCharacters}
             />
           ) : tab === 'shortsVn' ? (
             <ShortsVnEditorPanel
@@ -691,24 +712,41 @@ export function EditorScreen({
           onClose={() => setSimulatorTierKey(null)}
         />
       )}
-      {isAuditSimulatorActive && simulatorTierKey && simulatorCreators && (
-        <PromotionAuditModal
+      {isAuditSimulatorActive && simulatorTierKey && simulatorCreators && !auditSimResult && (
+        <ExamMeetingModal
           tier={simulatorTierKey}
-          creators={simulatorCreators as any}
-          events={events}
+          creators={simulatorCreators as never[]}
           config={stationGradeConfig}
-          onComplete={() => {
+          onFinish={(result) => {
+            setAuditSimResult({ success: result.satisfiedCount >= 4, count: result.satisfiedCount })
+          }}
+          onAbort={() => {
             setIsAuditSimulatorActive(false)
             setSimulatorCreators(null)
             setSimulatorTierKey(null)
+            setAuditSimResult(null)
           }}
-          onClose={() => {
+        />
+      )}
+      {auditSimResult ? (
+        <FanMeetingStatement
+          fanCount={auditSimResult.count}
+          pay={0}
+          rewardText=""
+          hideIncome
+          title={auditSimResult.success ? t('audit.examPass') : t('audit.examFail')}
+          bodyText={t('audit.examBody').replace('{count}', String(auditSimResult.count))}
+          note="시뮬레이터 결과는 저장되지 않습니다."
+          confirmLabel="닫기"
+          zClass="z-[210]"
+          onConfirm={() => {
+            setAuditSimResult(null)
             setIsAuditSimulatorActive(false)
             setSimulatorCreators(null)
             setSimulatorTierKey(null)
           }}
         />
-      )}
+      ) : null}
     </main>
   )
 }

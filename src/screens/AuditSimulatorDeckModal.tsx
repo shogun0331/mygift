@@ -12,6 +12,8 @@ type Props = {
   tierKey: Exclude<StationTierId, 'black' | 'tiny'>
   registeredCharacters: any[]
   isSimulator?: boolean
+  titleKey?: string
+  startLabelKey?: string
   onStartSimulation: (selectedCharacters: any[]) => void
   onClose?: () => void
 }
@@ -36,6 +38,8 @@ export function AuditSimulatorDeckModal({
   tierKey,
   registeredCharacters,
   isSimulator = false,
+  titleKey = 'audit.deckModalTitle',
+  startLabelKey = 'audit.startPromotionExamBtn',
   onStartSimulation,
   onClose,
 }: Props) {
@@ -111,7 +115,9 @@ export function AuditSimulatorDeckModal({
   }
 
   const handleStart = () => {
-    const selected = boostedCharacters.filter((c) => activeSelectedIds.includes(c.id))
+    const selected = deckSlots
+      .map((id) => (id ? boostedCharacters.find((c) => c.id === id) ?? null : null))
+      .filter((c): c is NonNullable<typeof c> => c != null)
     if (selected.length === 0) {
       alert(t('audit.deckModalSelectAlert'))
       return
@@ -140,7 +146,7 @@ export function AuditSimulatorDeckModal({
           <div className="flex items-center gap-3">
             <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-950/80 px-3.5 py-1 text-xs font-black text-cyan-300 uppercase tracking-wider shadow-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping" />
-              <span>{t(companyTierLabelKey(tierKey))} {t('audit.deckModalTitle')}</span>
+              <span>{t(companyTierLabelKey(tierKey))} {t(titleKey)}</span>
             </div>
             <h3 className="text-base sm:text-lg font-extrabold text-slate-200">
               {t('audit.deckModalSubtitle')}
@@ -394,7 +400,7 @@ export function AuditSimulatorDeckModal({
             onClick={handleStart}
             className="w-full sm:w-auto cursor-pointer rounded-xl border border-cyan-400/50 bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-500 px-8 py-3 text-sm font-black text-slate-950 shadow-[0_0_25px_rgba(6,182,212,0.4)] transition-all hover:scale-105 hover:brightness-110 active:scale-95 flex items-center justify-center gap-2"
           >
-            <span>{t('audit.startPromotionExamBtn', { count: activeSelectedIds.length })}</span>
+            <span>{t(startLabelKey, { count: activeSelectedIds.length })}</span>
             <span className="text-xs font-bold">➔</span>
           </button>
         </div>

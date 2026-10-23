@@ -2,6 +2,7 @@ import { characterDisplayName } from '../game/characterLocales'
 import { formatMoney } from '../game/money'
 import { formatViewers } from '../game/ranking'
 import { useTranslation } from '../locales/i18n'
+import { FanMeetingStatement } from './FanMeetingStatement'
 
 export type VipResult =
   | {
@@ -16,6 +17,16 @@ export type VipResult =
       creatorName: string
       viewerLoss: number
     }
+  | {
+      kind: 'visit'
+      creatorId: string
+      creatorName: string
+      pay: number
+      rewardText: string
+      pressure: number
+      staminaHit: boolean
+      fanCount: number
+    }
 
 type VipResultModalProps = {
   result: VipResult
@@ -24,6 +35,17 @@ type VipResultModalProps = {
 
 export function VipResultModal({ result, onConfirm }: VipResultModalProps) {
   const { t, locale } = useTranslation()
+  if (result.kind === 'visit') {
+    return (
+      <FanMeetingStatement
+        fanCount={result.fanCount}
+        pay={result.pay}
+        rewardText={result.rewardText}
+        confirmLabel={t('vip.confirm')}
+        onConfirm={onConfirm}
+      />
+    )
+  }
   const accepted = result.kind === 'accept'
   const displayName = characterDisplayName(
     { id: result.creatorId, name: result.creatorName },
@@ -39,12 +61,14 @@ export function VipResultModal({ result, onConfirm }: VipResultModalProps) {
     >
       <div
         className={`game-panel max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl px-5 py-6 ${
-          accepted
-            ? 'border border-emerald-400/25 shadow-[0_0_40px_rgba(52,211,153,0.14)]'
-            : 'border border-rose-400/25 shadow-[0_0_40px_rgba(244,63,94,0.14)]'
+          result.kind === 'reject'
+            ? 'border border-rose-400/25 shadow-[0_0_40px_rgba(244,63,94,0.14)]'
+            : 'border border-emerald-400/25 shadow-[0_0_40px_rgba(52,211,153,0.14)]'
         }`}
       >
-        <p className="game-stat-label">{accepted ? 'VIP MEETING' : 'VIP DECLINED'}</p>
+        <p className="game-stat-label">
+          {result.kind === 'reject' ? 'VIP DECLINED' : 'VIP MEETING'}
+        </p>
         <h2 id="vip-result-title" className="mt-1 text-xl font-black text-slate-100">
           {accepted ? t('vip.resultAcceptTitle') : t('vip.resultRejectTitle')}
         </h2>
