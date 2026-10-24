@@ -178,6 +178,7 @@ export function FanMeetingModal({
   const flashSeq = useRef(0)
   const critSeq = useRef(0)
   const [verdict, setVerdict] = useState<'pass' | 'fail' | null>(null)
+  const [meetingEnded, setMeetingEnded] = useState(false)
   const [callout, setCallout] = useState<{ id: number; taste: boolean; critical: boolean } | null>(null)
 
   useEffect(() => {
@@ -240,7 +241,8 @@ export function FanMeetingModal({
         later(1500, () => finish(next))
         return
       }
-      finish(next)
+      setMeetingEnded(true)
+      later(1500, () => finish(next))
       return
     }
     const queued = queuedRef.current
@@ -726,6 +728,11 @@ export function FanMeetingModal({
           </div>
         </div>
         )
+      ) : null}
+      {meetingEnded ? (
+        <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center px-6">
+          <p className="fan-crit-title">{t('vip.visitEndTitle')}</p>
+        </div>
       ) : null}
       {verdict ? (
         <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center px-6">

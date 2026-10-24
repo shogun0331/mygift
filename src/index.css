@@ -4522,8 +4522,7 @@ html.theme-on-air .live-rank-card-inner.is-first {
   transform: translateX(-50%);
   z-index: 88;
   width: min(92vw, 30rem);
-  pointer-events: none;
-  animation: station-promo-fade 2.6s ease forwards;
+  pointer-events: auto;
 }
 
 .station-promotion-card {

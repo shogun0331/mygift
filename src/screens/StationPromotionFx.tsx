@@ -1,4 +1,4 @@
-import { useEffect, type CSSProperties } from 'react'
+import { useRef, type CSSProperties } from 'react'
 import { useTranslation } from '../locales/i18n'
 
 type StationPromotionFxProps = {
@@ -9,7 +9,6 @@ type StationPromotionFxProps = {
   onDone: () => void
 }
 
-const FX_MS = 1200
 const SPARK_COLORS = ['#fbbf24', '#fde68a', '#fb923c', '#f472b6', '#a5f3fc', '#6ee7b7']
 
 function sparkStyle(index: number): CSSProperties {
@@ -31,18 +30,19 @@ export function StationPromotionFx({
   onDone,
 }: StationPromotionFxProps) {
   const { t } = useTranslation()
-
-  useEffect(() => {
-    const timer = window.setTimeout(onDone, FX_MS)
-    return () => window.clearTimeout(timer)
-  }, [onDone])
+  const doneRef = useRef(false)
+  const finish = () => {
+    if (doneRef.current) return
+    doneRef.current = true
+    onDone()
+  }
 
   return (
     <div
       className="station-promotion-fx cursor-pointer"
-      role="status"
+      role="dialog"
       aria-live="assertive"
-      onClick={onDone}
+      onClick={finish}
     >
       <div className="station-promotion-sparks" aria-hidden>
         {Array.from({ length: 18 }, (_, i) => (
@@ -62,6 +62,7 @@ export function StationPromotionFx({
           {t('ranking.rankUnit')} → {toRank}
           {t('ranking.rankUnit')}
         </p>
+        <p className="mt-4 text-xs font-bold tracking-wide text-amber-100/80">{t('station.reviewContinue')}</p>
       </div>
     </div>
   )

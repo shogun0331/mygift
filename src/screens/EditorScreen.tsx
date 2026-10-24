@@ -44,6 +44,8 @@ import { StationGradeEditorPanel, VipVisitEditorPanel } from './StationGradeEdit
 import { HighLowEditorPanel } from '../minigames/highlow/HighLowEditorPanel'
 import { SlotEditorPanel } from '../minigames/slot/SlotEditorPanel'
 import { BgmEditorPanel } from './BgmEditorPanel'
+import { OpeningEditorPanel } from './OpeningEditorPanel'
+import type { OpeningVideoConfig } from '../game/openingVideos'
 import { useGameBgm, type BgmTrack, type GameBgmConfig } from '../game/bgm'
 import { IS_MOSAIC_DISABLED } from '../game/mosaicBuild'
 import { MOSAIC_BLOCK_PRESETS, mosaicBlockLabel, setMosaicBlockPx, useMosaicBlockPx } from '../game/visualFx'
@@ -64,6 +66,7 @@ type EditorTab =
   | 'highlow'
   | 'slot'
   | 'bgm'
+  | 'opening'
 type CharacterView = 'list' | 'add' | 'edit' | 'sns' | 'specialVacation'
 
 type EditorScreenProps = {
@@ -93,6 +96,9 @@ type EditorScreenProps = {
   onBgmConfigChange: (config: GameBgmConfig) => void
   onUploadBgm: (track: BgmTrack, file: File) => Promise<void>
   onClearBgm: (track: BgmTrack) => Promise<void>
+  openingConfig: OpeningVideoConfig
+  onUploadOpening: (index: number, file: File) => Promise<void>
+  onClearOpening: (index: number) => Promise<void>
   onBack: () => void
 }
 
@@ -151,6 +157,9 @@ export function EditorScreen({
   onBgmConfigChange,
   onUploadBgm,
   onClearBgm,
+  openingConfig,
+  onUploadOpening,
+  onClearOpening,
   onBack,
 }: EditorScreenProps) {
   const [tab, setTab] = useState<EditorTab>('character')
@@ -264,6 +273,15 @@ export function EditorScreen({
             }`}
           >
             BGM 설정
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('opening')}
+            className={`game-btn-tab flex w-full items-center justify-start rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+              tab === 'opening' ? 'is-active' : ''
+            }`}
+          >
+            오프닝 영상
           </button>
           <button
             type="button"
@@ -638,6 +656,8 @@ export function EditorScreen({
               onUpload={onUploadBgm}
               onClear={onClearBgm}
             />
+          ) : tab === 'opening' ? (
+            <OpeningEditorPanel config={openingConfig} onUpload={onUploadOpening} onClear={onClearOpening} />
           ) : null}
         </section>
       </div>

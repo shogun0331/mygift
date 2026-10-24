@@ -110,6 +110,11 @@ app.commandLine.appendSwitch('enable-gpu-rasterization')
 app.commandLine.appendSwitch('enable-zero-copy')
 app.commandLine.appendSwitch('limit-fps', '60')
 app.commandLine.appendSwitch('max-fps', '60')
+// 창모드에서 다른 창에 가리면 Chromium이 렌더러를 버린다.
+// 다시 클릭하면 같은 URL을 새로 열어 게임이 처음부터 재시작된다.
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
+app.commandLine.appendSwitch('disable-renderer-backgrounding')
+app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion')
 
 function splitPublicSegments(segments) {
   return segments.flatMap((seg) =>
@@ -691,7 +696,6 @@ function enterExclusiveFullscreen(win) {
 }
 
 const WINDOW_SIZE_PRESETS = [
-  { width: 1280, height: 720 },
   { width: 1920, height: 1080 },
 ]
 
@@ -847,6 +851,7 @@ function attachAltTabMinimize(win) {
   const minimizeForAltTab = () => {
     if (isQuitting || isDisplayLocked()) return
     if (lastDisplayMode !== 'fullscreen') return
+    if (!win.isFullScreen()) return
     if (win.isDestroyed() || win.isMinimized()) return
     try {
       if (win.webContents.isDevToolsFocused()) return
@@ -928,6 +933,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
+      backgroundThrottling: false,
       additionalArguments: [
         `--broadcast-system-locale=${deviceLangHints.systemLocale}`,
         `--broadcast-preferred-langs=${encodeURIComponent(JSON.stringify(deviceLangHints.preferredLanguages))}`,
@@ -960,6 +966,8 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
   }
+
+  mainWindow.webContents.setBackgroundThrottling(false)
 }
 
 app.whenReady().then(() => {
@@ -1468,6 +1476,88 @@ ipcMain.handle('prune-bgm-files', async (event, { keep }) => {
       if (keepSet.has(entry.name)) continue
       fs.unlinkSync(path.join(dirPath, entry.name))
     }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('save-opening-videos', async (event, { assets }) => {
+  try {
+    const targetDir = publicWritePath('chapter_assets', 'opening')
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true })
+    }
+    for (const asset of assets || []) {
+      const safeName = path.basename(String(asset?.fileName || ''))
+      if (!safeName || !asset.buffer) continue
+      fs.writeFileSync(path.join(targetDir, safeName), Buffer.from(asset.buffer))
+    }
+    return { success: true, path: targetDir }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('save-opening-config-json', async (event, { config }) => {
+  try {
+    const dir = publicWritePath('chapter_assets')
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    writeJson(path.join(dir, 'opening.json'), config ?? {})
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('load-opening-config-json', async () => {
+  try {
+    const config = readPublicJson('chapter_assets', 'opening.json') || { videos: [] }
+    return { success: true, config }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('delete-opening-video', async (event, { fileName }) => {
+  try {
+    const safeName = path.basename(String(fileName || ''))
+    if (!safeName) return { success: false, error: 'invalid path' }
+    const filePath = publicWritePath('chapter_assets', 'opening', safeName)
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('prune-opening-videos', async (event, { keep }) => {
+  try {
+    const dirPath = publicWritePath('chapter_assets', 'opening')
+    if (!fs.existsSync(dirPath)) return { success: true }
+    const keepSet = new Set(
+      (Array.isArray(keep) ? keep : []).map((name) => path.basename(String(name || ''))).filter(Boolean),
+    )
+    for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+      if (!entry.isFile() || keepSet.has(entry.name)) continue
+      fs.unlinkSync(path.join(dirPath, entry.name))
+    }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+})
+
+ipcMain.handle('open-opening-folder', async (event, { fileName } = {}) => {
+  try {
+    const dirPath = publicWritePath('chapter_assets', 'opening')
+    if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true })
+    const safeName = path.basename(String(fileName || ''))
+    const filePath = safeName ? path.join(dirPath, safeName) : ''
+    if (filePath && fs.existsSync(filePath)) shell.showItemInFolder(filePath)
+    else await shell.openPath(dirPath)
     return { success: true }
   } catch (err) {
     return { success: false, error: err.message }

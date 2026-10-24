@@ -9,7 +9,7 @@ import { applyGradePromotion, mainStatValueOf, nextGradeBreak, wouldPromote } fr
 export const PROMOTION_STAT_TYPES = [
   'sexy',
   'communication',
-  'elegance',
+  'mental',
   'performance',
 ] as const satisfies readonly CreatorStatType[]
 
@@ -39,7 +39,7 @@ export type PromotionExamResult = {
 export function isPromotionExamReady(
   creator: Pick<
     OwnedCreator,
-    'grade' | 'statType' | 'statSexy' | 'statElegance' | 'statCommunication' | 'statPerformance'
+    'grade' | 'statType' | 'statSexy' | 'statMental' | 'statCommunication' | 'statPerformance'
   >,
 ): boolean {
   return wouldPromote(creator)
@@ -109,8 +109,8 @@ export function applyPromotionExamResult(
       ? 'statSexy'
       : type === 'communication'
         ? 'statCommunication'
-        : type === 'elegance'
-          ? 'statElegance'
+        : type === 'mental'
+          ? 'statMental'
           : 'statPerformance'
   const current = Math.max(0, Math.min(100, Number(next[field]) || 0))
   return {

@@ -20,7 +20,7 @@ export type RankCreator = {
   grade: CreatorGrade
   condition?: string
   conditionScore?: number
-  statCommunication?: number
+  statSexy?: number
   snsSubscribers?: number
   snsRatio?: number
 }
@@ -427,42 +427,40 @@ export function viewersForRank(rank: number): number {
   return Math.round(band.minViewers + t * (band.maxViewers - band.minViewers))
 }
 
-function clampCommunication(value: unknown): number {
+function clampSexy(value: unknown): number {
   const n = Number(value)
   if (!Number.isFinite(n)) return 0
   return Math.max(0, Math.min(100, n))
 }
 
-/** 소통 0~100 → 시청자 잠재력 1.0~2.0배 */
-export function communicationMultOf(communication = 0): number {
-  return 1 + clampCommunication(communication) / 100
+/** 섹시 0~100 → 시청자 잠재력 1.0~2.0배 */
+export function sexyMultOf(sexy = 0): number {
+  return 1 + clampSexy(sexy) / 100
 }
 
-export function averageCommunication(creators: RankCreator[]): number {
+export function averageSexy(creators: RankCreator[]): number {
   if (creators.length === 0) return 0
-  const sum = creators.reduce((acc, creator) => acc + clampCommunication(creator.statCommunication), 0)
+  const sum = creators.reduce((acc, creator) => acc + clampSexy(creator.statSexy), 0)
   return sum / creators.length
 }
 
-/** 소통이 높을수록 이탈이 줄어듦. 0 → 1.0, 100 → 0.5 */
-function communicationRetainOf(communication = 0): number {
-  return 1 - clampCommunication(communication) / 200
+/** 섹시가 높을수록 이탈이 줄어듦. 0 → 1.0, 100 → 0.5 */
+function sexyRetainOf(sexy = 0): number {
+  return 1 - clampSexy(sexy) / 200
 }
 
-/** 로스터 잠재력·배분 가중치 = (소통기본 + SNS구독자×소통비례전환율) × SNS시너지 × 등급배율 */
+/** 로스터 잠재력·배분 가중치 = (섹시기본 + SNS구독자×섹시비례전환율) × 등급배율 */
 export function creatorViewerWeight(creator: RankCreator): number {
-  const commScore = clampCommunication(creator.statCommunication)
-  const commRatio = commScore / 100 // 0.0 ~ 1.0
-  const commBase = commScore * getViewerBalance().viewerPerCommPoint
+  const sexyScore = clampSexy(creator.statSexy)
+  const sexyRatio = sexyScore / 100
+  const sexyBase = sexyScore * getViewerBalance().viewerPerSexyPoint
 
-  // SNS 구독자가 소통 능력치에 따라 방송 시청자로 유입되는 비율 (기존 0.5%~3.0% -> 0.1%~0.6%로 조정)
   const snsSubs = Math.max(0, Number(creator.snsSubscribers) || 0)
-  const snsViewerConvertRate = 0.001 + commRatio * 0.005
+  const snsViewerConvertRate = 0.001 + sexyRatio * 0.005
   const snsViewers = snsSubs * snsViewerConvertRate
-  // SNS 게시 비율 시너지 제거 (예측 가능한 시청자 유입 계산)
   const ratioSynergy = 1.0
 
-  return (commBase + snsViewers) * ratioSynergy * gradeViewerMult(creator.grade)
+  return (sexyBase + snsViewers) * ratioSynergy * gradeViewerMult(creator.grade)
 }
 
 /** 회사 획득 시청자를 가중치 비율로 나눠 합이 gained와 같게 맞춤 */
@@ -542,7 +540,7 @@ export function growLeagueBetweenRefresh(
       state.viewers,
       potential,
       didBroadcast,
-      averageCommunication(viewerRoster),
+      averageSexy(viewerRoster),
       minFloor,
     ),
     stationGrade,
@@ -580,14 +578,14 @@ export function growLeagueViewers(
   current: number,
   potential: number,
   didBroadcast: boolean,
-  communication = 0,
+  sexy = 0,
   minViewerFloor = VIEWER_FLOOR,
 ): number {
   const now = Math.max(minViewerFloor, Math.round(current))
   const cap = Math.max(minViewerFloor, Math.round(potential))
-  const retain = communicationRetainOf(communication)
+  const retain = sexyRetainOf(sexy)
 
-  // 무방송: 자연 이탈 (이탈율은 소통이 높을수록 감소, 현재 등급 최저 시청자 보장)
+  // 무방송: 자연 이탈 (이탈율은 섹시가 높을수록 감소, 현재 등급 최저 시청자 보장)
   if (!didBroadcast) {
     return Math.max(
       minViewerFloor,
@@ -934,7 +932,7 @@ export function settleLeagueRank(
       state.viewers,
       potential,
       didBroadcast,
-      averageCommunication(viewerRoster),
+      averageSexy(viewerRoster),
       minFloor,
     ),
     stationGrade,

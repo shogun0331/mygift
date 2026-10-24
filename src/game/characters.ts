@@ -30,14 +30,15 @@ import type { RegisteredStaff } from './staff'
 export type Grade = 'S' | 'A' | 'B' | 'C'
 
 /** 에디터에서 고르는 특화 타입. 영입 시 해당 스탯이 높게 시작 */
-export const CREATOR_STAT_TYPES = ['sexy', 'communication', 'elegance', 'performance'] as const
+export const CREATOR_STAT_TYPES = ['sexy', 'communication', 'mental', 'performance'] as const
 export type CreatorStatType = (typeof CREATOR_STAT_TYPES)[number]
 
 export function normalizeCreatorStatType(raw: unknown): CreatorStatType {
+  if (raw === 'elegance') return 'mental'
   if (
     raw === 'sexy' ||
     raw === 'communication' ||
-    raw === 'elegance' ||
+    raw === 'mental' ||
     raw === 'performance'
   ) {
     return raw
@@ -77,10 +78,16 @@ export type CharacterAuditMediaSlot = {
   blurRegions: BlurRegion[]
 }
 
+export type AuditStrikeKey = 'critical' | 'type' | 'basic'
+
+export type CharacterAuditStrikeImages = Record<AuditStrikeKey, CharacterAuditMediaSlot[]>
+
 export type CharacterAuditMedia = {
   A: CharacterAuditMediaSlot
   B: CharacterAuditMediaSlot
   C: CharacterAuditMediaSlot
+  /** 카드 결과별 3:4 이미지. 크리티컬, 타입 일치, 기본 공격 */
+  strikes: CharacterAuditStrikeImages
 }
 
 function sanitizeAuditMediaUrl(raw: unknown): string | null {
@@ -107,13 +114,50 @@ export function normalizeAuditMediaSlot(raw: unknown): CharacterAuditMediaSlot {
   }
 }
 
+function normalizeStrikeImages(raw: unknown): CharacterAuditStrikeImages {
+  const row = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {}
+  const list = (value: unknown) =>
+    Array.isArray(value)
+      ? value.map((item) => normalizeAuditMediaSlot(item)).filter((slot) => Boolean(slot.url))
+      : []
+  return {
+    critical: list(row.critical),
+    type: list(row.type),
+    basic: list(row.basic),
+  }
+}
+
 export function normalizeAuditMedia(raw: unknown): CharacterAuditMedia {
   const row = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {}
   return {
     A: normalizeAuditMediaSlot(row.A),
     B: normalizeAuditMediaSlot(row.B),
     C: normalizeAuditMediaSlot(row.C),
+    strikes: normalizeStrikeImages(row.strikes),
   }
+}
+
+/** 크리티컬이면 크리티컬 이미지, 타입 일치면 타입 이미지, 그 외에는 기본 공격 이미지 중 한 장 */
+export function pickAuditStrikeSlot(
+  media: CharacterAuditMedia | null | undefined,
+  hit: { critical: boolean; typeMatched: boolean },
+): CharacterAuditMediaSlot | null {
+  const strikes = normalizeAuditMedia(media).strikes
+  const key: AuditStrikeKey = hit.critical ? 'critical' : hit.typeMatched ? 'type' : 'basic'
+  const list = strikes[key]
+  if (list.length === 0) return null
+  return list[Math.floor(Math.random() * list.length)] ?? null
+}
+
+/** 팬미팅. 크리티컬만 전용 이미지. 기본 공격과 타입 일치는 두 묶음을 섞어 고른다. */
+export function pickFanStrikeSlot(
+  media: CharacterAuditMedia | null | undefined,
+  hit: { critical: boolean },
+): CharacterAuditMediaSlot | null {
+  const strikes = normalizeAuditMedia(media).strikes
+  const list = hit.critical ? strikes.critical : [...strikes.basic, ...strikes.type]
+  if (list.length === 0) return null
+  return list[Math.floor(Math.random() * list.length)] ?? null
 }
 
 export function mergeAuditMedia(
@@ -126,10 +170,17 @@ export function mergeAuditMedia(
     url: left.url ?? right.url,
     blurRegions: left.blurRegions.length > 0 ? left.blurRegions : right.blurRegions,
   })
+  const strike = (key: AuditStrikeKey) =>
+    a.strikes[key].length > 0 ? a.strikes[key] : b.strikes[key]
   return {
     A: slot(a.A, b.A),
     B: slot(a.B, b.B),
     C: slot(a.C, b.C),
+    strikes: {
+      critical: strike('critical'),
+      type: strike('type'),
+      basic: strike('basic'),
+    },
   }
 }
 
@@ -414,7 +465,7 @@ export type OwnedCreator = RegisteredCharacter & {
   staminaMax: number
   revenueMult: number
   statSexy: number
-  statElegance: number
+  statMental: number
   statCommunication: number
   statPerformance: number
   /** 컨디션 티어 (conditionScore에서 파생) */
@@ -597,7 +648,7 @@ export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
     staminaMax: STAMINA_MAX,
     revenueMult: 1.0,
     statSexy: 25,
-    statElegance: 25,
+    statMental: 25,
     statCommunication: 25,
     statPerformance: 25,
     conditionScore,
@@ -615,7 +666,7 @@ export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
 
 /** 구 세이브(loyalty 등) → 신규 능력치 필드 보정 */
 export function normalizeOwnedCreator(
-  raw: OwnedCreator & { loyalty?: number; skill?: number; popularity?: number },
+  raw: OwnedCreator & { loyalty?: number; skill?: number; popularity?: number; statElegance?: number },
 ): OwnedCreator {
   const { skill: _skill, popularity: _popularity, ...rest } = raw
   const base = normalizeRegisteredCharacter(rest)
@@ -665,7 +716,7 @@ export function normalizeOwnedCreator(
     staminaMax,
     revenueMult: Number(raw.revenueMult ?? 1) || 1,
     statSexy: personalityOf(raw.statSexy),
-    statElegance: personalityOf(raw.statElegance),
+    statMental: personalityOf(raw.statMental ?? raw.statElegance),
     statCommunication: personalityOf(raw.statCommunication),
     statPerformance: personalityOf(raw.statPerformance),
     conditionScore,

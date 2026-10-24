@@ -14,7 +14,7 @@ import {
   type DisplayMode,
   type WindowResolution,
 } from '../game/displayMode'
-import { tierViewerCap, type StationTierId, stationTierRank } from '../game/stationGradeConfig'
+import { tierViewerCap, stationTierRank } from '../game/stationGradeConfig'
 import { getSeVolumePercent, playSfx, setSeVolumePercent } from '../game/uiSfx'
 import {
   deserializeWeekAccum,
@@ -76,6 +76,7 @@ import {
   productionViewerBonus,
   removeStaffFromState,
   staffBonusOf,
+  staffOfferBase,
   unequipStaff,
   type SlotManagerState,
   type StaffKind,
@@ -1528,6 +1529,7 @@ export function InGame({
   // 영세기업(tiny) -> 중소기업(sme)부터는 승급심사(미니게임) 필수
   useEffect(() => {
     if (stationGrade !== 'black' || broadcastPhase === 'live') return
+    if (broadcastEndedNotice || weeklyStatement) return
     const review = applyStationReview(
       stationGrade,
       league.viewers,
@@ -1567,6 +1569,8 @@ export function InGame({
   }, [
     stationGrade,
     broadcastPhase,
+    broadcastEndedNotice,
+    weeklyStatement,
     league.viewers,
     ownedCreators,
     unlockedSlotCount,
@@ -1630,7 +1634,12 @@ export function InGame({
       promoteEventPlay ||
       introEventPlay ||
       scoutEventState ||
-      vipEventPlay
+      vipEventPlay ||
+      broadcastEndedNotice ||
+      weeklyStatement ||
+      stationReview ||
+      rankSettlement ||
+      promotionCongratsPlay
     ) {
       return
     }
@@ -1655,6 +1664,11 @@ export function InGame({
     introEventPlay,
     scoutEventState,
     vipEventPlay,
+    broadcastEndedNotice,
+    weeklyStatement,
+    stationReview,
+    rankSettlement,
+    promotionCongratsPlay,
     events,
   ])
 
@@ -1668,7 +1682,12 @@ export function InGame({
       promoteEventPlay ||
       introEventPlay ||
       scoutEventState ||
-      vipEventPlay
+      vipEventPlay ||
+      broadcastEndedNotice ||
+      weeklyStatement ||
+      stationReview ||
+      rankSettlement ||
+      promotionCongratsPlay
     ) {
       return
     }
@@ -1693,6 +1712,11 @@ export function InGame({
     introEventPlay,
     scoutEventState,
     vipEventPlay,
+    broadcastEndedNotice,
+    weeklyStatement,
+    stationReview,
+    rankSettlement,
+    promotionCongratsPlay,
     events,
   ])
 
@@ -2896,27 +2920,10 @@ export function InGame({
     if (pool.length > 0) {
       const picked = pool[Math.floor(Math.random() * pool.length)]
 
-      const baseCostTable: Record<StationTierId, number> = {
-        black: 5_000,     // 일반사업자: $5,000 (5천)
-        tiny: 50_000,     // 영세기업: $50,000 (5만)
-        sme: 250_000,     // 중소기업: $250,000 (25만)
-        mid: 375_000,     // 중견기업: $375,000 (37.5만)
-        large: 500_000,   // 대기업: $500,000 (50만)
-        top: 2_500_000,   // 일등기업: $2,500,000 (250만)
-      }
-
-      const baseSalaryTable: Record<StationTierId, number> = {
-        black: 12_000,    // 연봉 $12,000
-        tiny: 20_000,     // 연봉 $20,000
-        sme: 60_000,      // 연봉 $60,000
-        mid: 90_000,      // 연봉 $90,000
-        large: 120_000,   // 연봉 $120,000
-        top: 300_000,     // 연봉 $300,000
-      }
-
       const currentTier = stationGradeRef.current ?? 'black'
-      const baseCost = baseCostTable[currentTier] ?? 10_000
-      const baseSalary = baseSalaryTable[currentTier] ?? 24_000
+      const offerBase = staffOfferBase(currentTier)
+      const baseCost = offerBase.hire
+      const baseSalary = offerBase.salary
 
       const costVariation = Math.random() * 0.1 - 0.05 // -5% ~ +5% 미세 랜덤 변동
       const salaryVariation = Math.random() * 0.1 - 0.05
@@ -3683,6 +3690,22 @@ export function InGame({
         }
       }
     }
+    if (stationGradeRef.current === 'black' && broadcastPhaseRef.current !== 'live') {
+      const tinyReview = applyStationReview(
+        'black',
+        leagueRef.current.viewers,
+        ownedCreatorsRef.current,
+        {
+          unlockedSlotCount: countUnlockedSlots(studioSlotsRef.current),
+          assets: heldAssets(),
+        },
+        stationGradeConfig,
+      )
+      if (tinyReview.promoted && tinyReview.status.next === 'tiny') {
+        pendingScoutAfterRankRef.current = openScout
+        return
+      }
+    }
     const pendingRank = pendingRankResultRef.current
     pendingRankResultRef.current = null
     if (pendingRank) {
@@ -3747,14 +3770,18 @@ export function InGame({
   function handleAcceptStaffSalaryRaise() {
     if (!staffSalaryRaiseRequest) return
     const { staffId, requestedSalary } = staffSalaryRaiseRequest
-    setHiredStaffSalaries((prev) => ({
-      ...prev,
+    const nextSalaries = {
+      ...hiredStaffSalariesRef.current,
       [staffId]: requestedSalary,
-    }))
-    setHiredStaffLastRaiseMonths((prev) => ({
-      ...prev,
+    }
+    const nextRaiseMonths = {
+      ...hiredStaffLastRaiseMonthsRef.current,
       [staffId]: gameMonthRef.current,
-    }))
+    }
+    hiredStaffSalariesRef.current = nextSalaries
+    hiredStaffLastRaiseMonthsRef.current = nextRaiseMonths
+    setHiredStaffSalaries(nextSalaries)
+    setHiredStaffLastRaiseMonths(nextRaiseMonths)
     setStaffSalaryRaiseRequest(null)
     const openScout = pendingScoutAfterRankRef.current
     continueAfterMonthModals(openScout)
@@ -6388,7 +6415,7 @@ export function InGame({
         />
       ) : null}
 
-      {promotionFx ? (
+      {promotionFx && !weeklyStatement && !broadcastEndedNotice ? (
         <StationPromotionFx
           fromLabel={t(companyTierLabelKey(promotionFx.fromGrade))}
           toLabel={t(companyTierLabelKey(promotionFx.toGrade))}
@@ -6458,7 +6485,12 @@ export function InGame({
         />
       ) : null}
 
-      {promoteEventPlay ? (
+      {promoteEventPlay &&
+      !weeklyStatement &&
+      !broadcastEndedNotice &&
+      !promotionFx &&
+      !stationReview &&
+      !rankSettlement ? (
         <GameEventSimulator
           key={`promote-event-${promoteEventPlay.id}`}
           event={promoteEventPlay}

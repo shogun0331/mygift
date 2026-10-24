@@ -90,6 +90,23 @@ interface ElectronAPI {
   openBgmFolder?: (
     fileName?: string
   ) => Promise<{ success: boolean; error?: string }>
+  saveOpeningVideos?: (
+    assets: Array<{ fileName: string; buffer: ArrayBuffer | number[] }>
+  ) => Promise<{ success: boolean; path?: string; error?: string }>
+  saveOpeningVideoConfigJson?: (
+    config: Record<string, unknown>
+  ) => Promise<{ success: boolean; error?: string }>
+  loadOpeningVideoConfigJson?: (
+  ) => Promise<{ success: boolean; config?: Record<string, unknown>; error?: string }>
+  deleteOpeningVideo?: (
+    fileName: string
+  ) => Promise<{ success: boolean; error?: string }>
+  pruneOpeningVideos?: (
+    keep: string[]
+  ) => Promise<{ success: boolean; error?: string }>
+  openOpeningFolder?: (
+    fileName?: string
+  ) => Promise<{ success: boolean; error?: string }>
   saveStationGradeConfigJson?: (
     config: Record<string, unknown>
   ) => Promise<{ success: boolean; config?: any; error?: string }>

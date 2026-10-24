@@ -37,6 +37,23 @@ export function productionViewerBonus(snsSubscribers: number) {
 
 export const STAFF_HIRE_COST = 2_500
 
+/** 스태프 영입비·연봉의 회사 등급 기준. 역할과 무관하고, 제안마다 약 ±5%. */
+const STAFF_OFFER_BASE = {
+  black: { hire: 5_000, salary: 12_000 },
+  tiny: { hire: 50_000, salary: 20_000 },
+  sme: { hire: 250_000, salary: 60_000 },
+  mid: { hire: 375_000, salary: 90_000 },
+  large: { hire: 500_000, salary: 120_000 },
+  top: { hire: 2_500_000, salary: 300_000 },
+} as const
+
+export function staffOfferBase(grade: string | null | undefined) {
+  if (grade && Object.prototype.hasOwnProperty.call(STAFF_OFFER_BASE, grade)) {
+    return STAFF_OFFER_BASE[grade as keyof typeof STAFF_OFFER_BASE]
+  }
+  return STAFF_OFFER_BASE.black
+}
+
 export function createEmptySlotManagers(): SlotManagers {
   return {
     security: null,

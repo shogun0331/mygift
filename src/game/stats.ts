@@ -1,5 +1,6 @@
-import { normalizeCreatorStatType, type CreatorStatType, type Grade } from './characters'
+import { CREATOR_STAT_TYPES, normalizeCreatorStatType, type CreatorStatType, type Grade } from './characters'
 export type { CreatorStatType } from './characters'
+export { CREATOR_STAT_TYPES } from './characters'
 
 export type CharacterStats = {
   heat: number
@@ -8,7 +9,7 @@ export type CharacterStats = {
   staminaMax: number
   revenueMult: number
   statSexy: number
-  statElegance: number
+  statMental: number
   statCommunication: number
   statPerformance: number
 }
@@ -117,14 +118,12 @@ const VIEWER_BONUS_K = 2.2
 const VIEWER_BONUS_REF = 150
 const VIEWER_BONUS_CAP = 10
 
-/** 섹시+퍼포먼스로 RAW 수익 배율. (합/50), 하한 0.3 */
+/** 소통으로 RAW 수익 배율. (소통/25), 하한 0.3. 옛 (섹시+퍼포먼스)/50 과 같은 스케일 */
 export function statRevenueBonusOf(creator: {
-  statSexy?: number
-  statPerformance?: number
+  statCommunication?: number
 }): number {
-  const sexy = Math.max(0, Math.min(100, Number(creator.statSexy) || 0))
-  const performance = Math.max(0, Math.min(100, Number(creator.statPerformance) || 0))
-  return Math.max(0.3, (sexy + performance) / 50)
+  const communication = Math.max(0, Math.min(100, Number(creator.statCommunication) || 0))
+  return Math.max(0.3, communication / 25)
 }
 
 /** 회사 통합 시청자 로그 보너스. 0명이어도 1.0, 상한 10. 시청자가 수익의 가장 큰 배율 */
@@ -162,7 +161,7 @@ export function rollGrade(premium = false): Grade {
 export const CREATOR_STAT_TYPE_FIELD = {
   sexy: 'statSexy',
   communication: 'statCommunication',
-  elegance: 'statElegance',
+  mental: 'statMental',
   performance: 'statPerformance',
 } as const satisfies Record<CreatorStatType, keyof CharacterStats>
 
@@ -194,7 +193,7 @@ export function rollStatsForGrade(grade: Grade, statType?: CreatorStatType | str
     staminaMax: 100,
     revenueMult: caps.revenueMult,
     statSexy: rollTyped('statSexy'),
-    statElegance: rollTyped('statElegance'),
+    statMental: rollTyped('statMental'),
     statCommunication: rollTyped('statCommunication'),
     statPerformance: rollTyped('statPerformance'),
   }
@@ -223,49 +222,44 @@ export function clampStats(stats: CharacterStats, grade: Grade): CharacterStats 
     staminaMax,
     revenueMult: caps.revenueMult,
     statSexy: personality(stats.statSexy),
-    statElegance: personality(stats.statElegance),
+    statMental: personality(stats.statMental),
     statCommunication: personality(stats.statCommunication),
     statPerformance: personality(stats.statPerformance),
   }
 }
 
-export const CREATOR_STAT_TYPES: CreatorStatType[] = [
-  'sexy',
-  'elegance',
-  'communication',
-  'performance',
-]
-
 /** 주간 대세 타입 랜덤 추첨 */
 export function rollRandomWeeklyTrendType(): CreatorStatType {
   const idx = Math.floor(Math.random() * CREATOR_STAT_TYPES.length)
-  return CREATOR_STAT_TYPES[idx]
+  return CREATOR_STAT_TYPES[idx]!
 }
 
-/** 크리에이터의 주력(최고) 타입 판별 */
+/** 크리에이터의 주력 타입. 저장값 elegance 는 mental 로 읽는다 */
 export function getCreatorPrimaryStatType(creator: {
   statType?: string
   statSexy?: number
+  statMental?: number
   statElegance?: number
   statCommunication?: number
   statPerformance?: number
 }): CreatorStatType {
   if (
     creator.statType === 'sexy' ||
+    creator.statType === 'mental' ||
     creator.statType === 'elegance' ||
     creator.statType === 'communication' ||
     creator.statType === 'performance'
   ) {
-    return creator.statType as CreatorStatType
+    return normalizeCreatorStatType(creator.statType)
   }
   const stats = [
     { type: 'sexy' as const, val: Number(creator.statSexy) || 0 },
-    { type: 'elegance' as const, val: Number(creator.statElegance) || 0 },
+    { type: 'mental' as const, val: Number(creator.statMental ?? creator.statElegance) || 0 },
     { type: 'communication' as const, val: Number(creator.statCommunication) || 0 },
     { type: 'performance' as const, val: Number(creator.statPerformance) || 0 },
   ]
   stats.sort((a, b) => b.val - a.val)
-  return stats[0].type
+  return stats[0]!.type
 }
 
 /** 대세 타입 맞춤 시 주어지는 방송 수익 보너스 배율 (+35%) */

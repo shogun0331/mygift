@@ -99,6 +99,7 @@ type DashboardPanelProps = {
   isPromotionReady?: boolean
   onStartPromotionAudit?: () => void
   onStartBroadcast: () => void
+  onRestTurn: () => void
   onConditionCare?: (creatorId: string) => void
   onConditionCrashDone?: (id: string) => void
   onGearFailBurstDone?: (id: string) => void
@@ -367,7 +368,7 @@ function formatSystemFeedText(
   if (event.id.startsWith('trend-evt-') || event.text.includes('주간 대세 트렌드') || event.text.includes('trend')) {
     let typeName = ''
     if (event.text.includes('섹시') || event.id.includes('sexy')) typeName = t('creator.typeSexy') || 'Sexy'
-    else if (event.text.includes('기품') || event.id.includes('elegance')) typeName = t('creator.typeElegance') || 'Elegance'
+    else if (event.text.includes('멘탈') || event.id.includes('mental') || event.text.includes('기품') || event.id.includes('elegance')) typeName = t('creator.typeMental') || 'Mental'
     else if (event.text.includes('소통') || event.id.includes('communication')) typeName = t('creator.typeCommunication') || 'Communication'
     else if (event.text.includes('퍼포먼스') || event.id.includes('performance')) typeName = t('creator.typePerformance') || 'Performance'
     else typeName = 'Popular'
@@ -694,6 +695,7 @@ export const DashboardPanel = memo(function DashboardPanel({
   isPromotionReady = false,
   onStartPromotionAudit,
   onStartBroadcast,
+  onRestTurn,
   onConditionCare,
   onConditionCrashDone,
   onGearFailBurstDone,
@@ -714,6 +716,8 @@ export const DashboardPanel = memo(function DashboardPanel({
     (s) => s.status === 'assigned' && Boolean(s.assignment?.creatorId),
   )
   const canStartBroadcast = !isLive && !startBroadcastLocked && hasAssignedCreator
+  const showRest = !isLive && !hasAssignedCreator
+  const canRest = showRest && !startBroadcastLocked
   const [revenueBursts, setRevenueBursts] = useState<RevenueBurst[]>([])
   const seenEventIdsRef = useRef(new Set<string>())
 
@@ -971,11 +975,19 @@ export const DashboardPanel = memo(function DashboardPanel({
         <button
           type="button"
           data-tutorial="start-broadcast-btn"
-          onClick={onStartBroadcast}
-          disabled={!canStartBroadcast}
-          className="game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+          onClick={showRest ? onRestTurn : onStartBroadcast}
+          disabled={showRest ? !canRest : !canStartBroadcast}
+          className={
+            showRest
+              ? 'mt-auto w-full shrink-0 rounded-2xl border border-sky-300/40 bg-sky-500/15 px-4 py-3 text-sm font-bold tracking-wide text-sky-100 disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer'
+              : 'game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer'
+          }
         >
-          {isLive ? t('dashboard.broadcasting') : t('dashboard.startBroadcast')}
+          {isLive
+            ? t('dashboard.broadcasting')
+            : showRest
+              ? t('dashboard.restTurn')
+              : t('dashboard.startBroadcast')}
         </button>
       </aside>
     </div>

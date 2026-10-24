@@ -9,7 +9,7 @@ import {
 } from './stationGradeConfig'
 
 export const CREATOR_TYPE_LABEL: Record<CreatorType, { label: string; icon: string; tone: string }> = {
-  elegance: { label: '기품', icon: '💎', tone: 'text-purple-400 border-purple-500/40 bg-purple-950/60' },
+  mental: { label: '멘탈', icon: '💎', tone: 'text-purple-400 border-purple-500/40 bg-purple-950/60' },
   performance: { label: '퍼포먼스', icon: '🎯', tone: 'text-cyan-400 border-cyan-500/40 bg-cyan-950/60' },
   communication: { label: '소통', icon: '💬', tone: 'text-emerald-400 border-emerald-500/40 bg-emerald-950/60' },
   sexy: { label: '섹시', icon: '🔥', tone: 'text-rose-400 border-rose-500/40 bg-rose-950/60' },
@@ -19,7 +19,7 @@ export function getCreatorTypeDisplayName(type: CreatorType, t?: (key: string, p
   if (t) {
     switch (type) {
       case 'sexy': return t('creator.statSexy')
-      case 'elegance': return t('creator.statElegance')
+      case 'mental': return t('creator.statMental')
       case 'communication': return t('creator.statCommunication')
       case 'performance': return t('creator.statPerformance')
     }
@@ -27,7 +27,7 @@ export function getCreatorTypeDisplayName(type: CreatorType, t?: (key: string, p
   return CREATOR_TYPE_LABEL[type]?.label || type
 }
 
-export const ALL_CREATOR_TYPES: CreatorType[] = ['elegance', 'performance', 'communication', 'sexy']
+export const ALL_CREATOR_TYPES: CreatorType[] = ['mental', 'performance', 'communication', 'sexy']
 
 export type TurnActionResult = {
   turn: number
@@ -67,12 +67,11 @@ export type AuditSession = {
   failReason?: 'no_cards' | 'satisfaction_failed'
 }
 
-const GRADE_ORDER: Record<Grade, number> = { C: 0, B: 1, A: 2, S: 3 }
-
-/** 크리에이터 ID/해시 기반 타입 결정 */
-export function typeForCreator(creatorId: string, customType?: CreatorType): CreatorType {
-  if (customType && ALL_CREATOR_TYPES.includes(customType)) {
-    return customType
+/** 크리에이터 ID/해시 기반 타입 결정. 구 저장값 elegance 는 mental */
+export function typeForCreator(creatorId: string, customType?: string): CreatorType {
+  if (customType === 'elegance') return 'mental'
+  if (customType && (ALL_CREATOR_TYPES as string[]).includes(customType)) {
+    return customType as CreatorType
   }
   let hash = 0
   for (let i = 0; i < creatorId.length; i += 1) {
@@ -106,7 +105,6 @@ export function createAuditSession(
     judge = pool[randIdx] ?? judges[0]!
   }
 
-  // 턴별 무작위 요구 타입 결정 (무제한 턴을 위해 초기 10개 생성)
   const turnDemands: CreatorType[] = []
   for (let t = 0; t < 10; t += 1) {
     const randType = ALL_CREATOR_TYPES[Math.floor(Math.random() * ALL_CREATOR_TYPES.length)]!
@@ -121,7 +119,7 @@ export function createAuditSession(
     currentSatisfaction: 0,
     targetSatisfaction: stage.targetSatisfaction,
     recommendedGrade: stage.recommendedGrade,
-    baseStaminaCost: 15,
+    baseStaminaCost: 0,
     cooldownMap: {},
     staminaDeductions: {},
     history: [],
@@ -130,157 +128,110 @@ export function createAuditSession(
   }
 }
 
-/** 40 ~ 100 스탯 범위를 0.8배(40 스탯 시작점) ~ 2.0배(100 스탯 마지노선) 계수로 정밀 변환 */
-export function calcStatFactor(statValue: number): number {
-  const clamped = Math.max(40, Math.min(100, statValue))
-  // 40 스탯 -> 0.8x, 70 스탯 -> 1.4x, 100 스탯 -> 2.0x
-  const factor = 0.8 + ((clamped - 40) / 60) * 1.2
-  return Number(factor.toFixed(2))
+function clampStat(value: unknown): number {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return 0
+  return Math.max(0, Math.min(100, n))
 }
 
-/** 캐릭터 개별 요구 타입 능력치 수치 추출 헬퍼 (statSexy / statElegance / statCommunication / statPerformance) */
-export function getCreatorStatValue(
-  creator: {
-    statSexy?: number
-    statElegance?: number
-    statCommunication?: number
-    statPerformance?: number
-    statValue?: number
-    stats?: Record<string, number>
-  },
-  demandedType: CreatorType,
-): number {
-  if (typeof creator.statValue === 'number' && !isNaN(creator.statValue)) {
-    return Math.max(40, Math.min(100, creator.statValue))
-  }
-
-  // 1. 요구 타입별 스탯 매핑 (40~100)
-  if (demandedType === 'sexy' && typeof creator.statSexy === 'number') return Math.max(40, Math.min(100, creator.statSexy))
-  if (demandedType === 'elegance' && typeof creator.statElegance === 'number') return Math.max(40, Math.min(100, creator.statElegance))
-  if (demandedType === 'communication' && typeof creator.statCommunication === 'number') return Math.max(40, Math.min(100, creator.statCommunication))
-  if (demandedType === 'performance' && typeof creator.statPerformance === 'number') return Math.max(40, Math.min(100, creator.statPerformance))
-
-  // 2. stats 맵 객체 매핑
-  if (creator.stats && typeof creator.stats[demandedType] === 'number') {
-    return Math.max(40, Math.min(100, creator.stats[demandedType]))
-  }
-
-  // 3. 스탯 중 최고값 매핑
-  const allStats = [creator.statSexy, creator.statElegance, creator.statCommunication, creator.statPerformance].filter(
-    (v): v is number => typeof v === 'number' && !isNaN(v),
-  )
-  if (allStats.length > 0) {
-    return Math.max(40, Math.min(100, Math.max(...allStats)))
-  }
-
-  return 40 // 신입 기본 시작 스탯 (40 ~ 100 범위)
+/** 멘탈 방어 = round(멘탈 × 0.35) */
+export function mentalDefenseOf(mental: number): number {
+  return Math.round(clampStat(mental) * 0.35)
 }
 
-/** 카드 제출 및 턴 진행 계산 */
+/** 일반 90%: 퍼포먼스 90~100% − 철벽. 타입 일치·크리티컬은 철벽 무시 */
+export function rollAuditStrike(
+  performance: number,
+  ironWall: number,
+  ignoreWall = false,
+): {
+  scoreGained: number
+  isCritical: boolean
+  criticalMultiplier: number
+} {
+  const perf = clampStat(performance)
+  const wall = ignoreWall ? 0 : Math.max(0, Math.round(Number(ironWall) || 0))
+  if (Math.random() < 0.1) {
+    return {
+      scoreGained: Math.round(perf * 1.5),
+      isCritical: true,
+      criticalMultiplier: 1.5,
+    }
+  }
+  const roll = 0.9 + Math.random() * 0.1
+  return {
+    scoreGained: Math.max(0, Math.round(perf * roll) - wall),
+    isCritical: false,
+    criticalMultiplier: 1,
+  }
+}
+
+/** 압박 피해 = max(0, 압박 − 멘탈 방어) */
+export function pressureDamageOf(pressure: number, mental: number): number {
+  return Math.max(0, Math.round(Number(pressure) || 0) - mentalDefenseOf(mental))
+}
+
+/** 카드 제출. 요구 타입과 같으면 철벽을 무시하고 만족도가 오른다 */
 export function submitTurnPerformance(
   session: AuditSession,
   creator: {
     id: string
     name: string
-    type?: CreatorType
+    type?: string
     statSexy?: number
+    statMental?: number
     statElegance?: number
     statCommunication?: number
     statPerformance?: number
-    stats?: Record<string, number>
-    statValue?: number
   },
   creatorGrade: Grade,
-  stageAttackMod = 1.0,
+  _stageAttackMod = 1,
 ): AuditSession {
   if (session.isCompleted) {
     return session
   }
 
   const turn = session.currentTurn
+  const performance = clampStat(creator.statPerformance)
+  const mental = clampStat(creator.statMental ?? creator.statElegance)
   const nextTurnDemands = [...session.turnDemands]
   while (nextTurnDemands.length <= turn) {
     const randType = ALL_CREATOR_TYPES[Math.floor(Math.random() * ALL_CREATOR_TYPES.length)]!
     nextTurnDemands.push(randType)
   }
-  const demandedType = nextTurnDemands[turn - 1] ?? 'elegance'
+  const demandedType = nextTurnDemands[turn - 1] ?? 'mental'
   const cType = typeForCreator(creator.id, creator.type)
   const typeMatched = cType === demandedType
-
-  // 등급 정합성 (Power Factor)
-  const cRank = GRADE_ORDER[creatorGrade] ?? 0
-  const reqRank = GRADE_ORDER[session.recommendedGrade] ?? 0
-  const gradeMet = cRank >= reqRank
-
-  let powerFactor = 1.0
-  if (gradeMet) {
-    powerFactor = cRank > reqRank ? 1.2 : 1.0
-  } else {
-    const diff = reqRank - cRank
-    powerFactor = diff >= 2 ? 0.4 : 0.6 // 등급 미달 시 40% ~ 60% 로 점수 반토막
-  }
-
-  // 🌟 캐릭터 개별 능력치 (40~100 정밀 스케일) 비례 반영 계수 산출 (40 스탯=0.8x ~ 100 스탯=2.0x)
-  const rawStatValue = getCreatorStatValue(creator, demandedType)
-  const statFactor = calcStatFactor(rawStatValue)
-
-  // 💥 30% 확률 크리티컬 히트 시스템 (Critical Multiplier: 2.0x ~ 2.5x)
-  const isCritical = Math.random() < 0.30
-  const criticalMultiplier = isCritical ? Number((2.0 + Math.random() * 0.5).toFixed(2)) : 1.0
-
-  // 기본 만족도 점수 계산 (40~100 스탯 0.8x~2.0x 정밀 비례!)
-  const baseScore = 15
-  const typeMultiplier = typeMatched ? 1.5 : 1.0
-  let scoreGained = Math.round(
-    baseScore * statFactor * typeMultiplier * powerFactor * session.judge.satisfactionMod * criticalMultiplier
-  )
-
-  // 등급 미달 시 심사관 반격 데미지 & 추가 메인 스테미나 소모
-  let reboundDamage = 0
-  let extraStaminaCost = 0
-  if (!gradeMet) {
-    reboundDamage = Math.round(session.judge.attackPower * stageAttackMod)
-    extraStaminaCost = 10
-    scoreGained = Math.max(2, scoreGained - reboundDamage)
-  }
-
-  // 🔥 공격 타입 일치 시(typeMatched) 최저 만족도 점수 10점 보장 계산!
-  if (typeMatched) {
-    scoreGained = Math.max(10, scoreGained)
-  }
-
+  const strike = rollAuditStrike(performance, session.judge.ironWall, typeMatched)
   const nextSatisfaction = Math.min(
     session.targetSatisfaction,
-    Math.max(0, session.currentSatisfaction + scoreGained),
+    Math.max(0, session.currentSatisfaction + strike.scoreGained),
   )
+  const won = nextSatisfaction >= session.targetSatisfaction
+  const damage = won ? 0 : pressureDamageOf(session.judge.pressure, mental)
 
-  const totalStaminaCost = 15 + extraStaminaCost
   const nextStaminaDeductions = {
     ...session.staminaDeductions,
-    [creator.id]: (session.staminaDeductions[creator.id] ?? 0) + totalStaminaCost,
+    [creator.id]: (session.staminaDeductions[creator.id] ?? 0) + damage,
   }
 
-  // 쿨다운 사용 안함 (스테미나만 소모하도록 쿨다운 제거)
-  const nextCooldownMap: Record<string, number> = {}
-
-  // 반응 미디어 판정 (high: 80%↑, mid: 30~79%, low: 0~29%)
   const ratio = session.targetSatisfaction > 0 ? nextSatisfaction / session.targetSatisfaction : 0
   let mediaReaction: 'high' | 'mid' | 'low' = 'mid'
   if (ratio >= 0.8) mediaReaction = 'high'
   else if (ratio < 0.3) mediaReaction = 'low'
 
-  let message = `${CREATOR_TYPE_LABEL[cType].icon} ${creator.name} 퍼포먼스!`
-  if (isCritical) {
-    message += ` 💥 CRITICAL! ${criticalMultiplier}배 대폭발!`
-  }
-  if (typeMatched && gradeMet) {
-    message += ` ✨ 타입 일치 1.5배 만족도 대폭 상승! (+${scoreGained}점)`
-  } else if (typeMatched && !gradeMet) {
-    message += ` ⚠️ 타입은 맞지만 등급 미달로 점수 감점! (+${scoreGained}점, 심사관 반격 -${reboundDamage}점)`
-  } else if (!typeMatched && gradeMet) {
-    message += ` 💬 일반 반응 (+${scoreGained}점)`
+  let message = `${creator.name} 퍼포먼스!`
+  if (typeMatched && strike.isCritical) {
+    message += ` 타입 일치, 철벽 무시, 취향 저격! (+${strike.scoreGained})`
+  } else if (typeMatched) {
+    message += ` 타입 일치, 철벽 무시 (+${strike.scoreGained})`
+  } else if (strike.isCritical) {
+    message += ` 취향 저격! 1.5배 (+${strike.scoreGained})`
   } else {
-    message += ` ⚡ 미달 및 불일치 감점 (+${scoreGained}점)`
+    message += ` (+${strike.scoreGained})`
+  }
+  if (!won && damage > 0) {
+    message += ` 압박 -${damage}`
   }
 
   const turnResult: TurnActionResult = {
@@ -292,29 +243,26 @@ export function submitTurnPerformance(
     typeMatched,
     creatorGrade,
     recommendedGrade: session.recommendedGrade,
-    gradeMet,
-    scoreGained,
-    reboundDamage,
-    extraStaminaCost,
-    totalStaminaDeducted: totalStaminaCost,
+    gradeMet: true,
+    scoreGained: strike.scoreGained,
+    reboundDamage: damage,
+    extraStaminaCost: 0,
+    totalStaminaDeducted: damage,
     mediaReaction,
-    isCritical,
-    criticalMultiplier,
+    isCritical: strike.isCritical,
+    criticalMultiplier: strike.criticalMultiplier,
     message,
   }
-
-  const isSuccess = nextSatisfaction >= session.targetSatisfaction
-  const isCompleted = isSuccess
 
   return {
     ...session,
     currentTurn: turn + 1,
     turnDemands: nextTurnDemands,
     currentSatisfaction: nextSatisfaction,
-    cooldownMap: nextCooldownMap,
+    cooldownMap: {},
     staminaDeductions: nextStaminaDeductions,
     history: [...session.history, turnResult],
-    isCompleted,
-    isSuccess,
+    isCompleted: won,
+    isSuccess: won,
   }
 }

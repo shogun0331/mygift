@@ -34,11 +34,11 @@ export const CONDITION_SCORE_RANGE: Record<
 }
 
 export const STAMINA_MAX = 100
-/** 방송 턴(월) 기본 스테미나 소모. 기품으로 감소. 주 정산 때는 1/4만 깎음 */
+/** 방송 턴(월) 기본 스테미나 소모. 멘탈로 감소. 주 정산 때는 1/4만 깎음 */
 export const STAMINA_BROADCAST_COST = 40
-/** 기품 감쇠 후에도 이 값 미만으로 내려가지 않음 (월간 최소 16 소모) */
+/** 멘탈 감쇠 후에도 이 값 미만으로 내려가지 않음 (월간 최소 16 소모) */
 export const STAMINA_BROADCAST_COST_MIN = 16
-/** 기품 1당 방송 스테미나 소모 감소. (기품 100시 24 감소하여 월간 16 소모) */
+/** 멘탈 1당 방송 스테미나 소모 감소. (멘탈 100시 24 감소하여 월간 16 소모) */
 export const ELEGANCE_STAMINA_REDUCTION = 0.24
 export const STAMINA_REST_GAIN = 20
 /** @deprecated 특별휴가는 스테미나 풀 충전 */
@@ -266,9 +266,9 @@ export function previewLiveConditionScore(
   return clampConditionScore(next)
 }
 
-/** 주간 방송 시 소모될 컨디션량 계산 (기품 수치로 감소) */
+/** 주간 방송 시 소모될 컨디션량 계산 (멘탈 수치로 감소) */
 export function calcWeeklyBroadcastConditionCost(
-  creator: { stamina?: number; staminaMax?: number; statElegance?: number },
+  creator: { stamina?: number; staminaMax?: number; statMental?: number },
   conditionMult = 1,
 ): number {
   const staminaMax = Math.min(STAMINA_MAX, Math.max(1, Math.round(creator.staminaMax ?? STAMINA_MAX)))
@@ -285,11 +285,11 @@ export function calcWeeklyBroadcastConditionCost(
     baseCondLoss += rollInt(CONDITION_SPIKE_DROP.min, CONDITION_SPIKE_DROP.max)
   }
 
-  // 기품(statElegance) 수치가 높을수록 컨디션 소모 감쇄 (기품 100당 50% 소모 감쇄, 최대 60% 감쇄)
-  const elegance = Math.max(0, Math.min(150, Number(creator.statElegance) || 0))
-  const eleganceMult = Math.max(0.4, 1 - elegance * 0.005)
+  // 멘탈이 높을수록 컨디션 소모 감쇄 (멘탈 100당 50% 소모 감쇄, 최대 60% 감쇄)
+  const mental = Math.max(0, Math.min(150, Number(creator.statMental) || 0))
+  const mentalMult = Math.max(0.4, 1 - mental * 0.005)
 
-  return Math.max(1, Math.round(baseCondLoss * conditionMult * eleganceMult))
+  return Math.max(1, Math.round(baseCondLoss * conditionMult * mentalMult))
 }
 
 export function isCreatorBroadcastBlockedLive(
@@ -303,9 +303,9 @@ export function isCreatorBroadcastBlockedLive(
   return !canBroadcastByStamina(preview)
 }
 
-/** 방송 턴(월) 스테미나 소모. 40 − 기품×0.5, 최소 8 */
-export function calcBroadcastStaminaCost(elegance = 0): number {
-  const stat = Math.max(0, Math.min(100, Number(elegance) || 0))
+/** 방송 턴(월) 스테미나 소모. 40 − 멘탈×0.5, 최소 8 */
+export function calcBroadcastStaminaCost(mental = 0): number {
+  const stat = Math.max(0, Math.min(100, Number(mental) || 0))
   return Math.max(
     STAMINA_BROADCAST_COST_MIN,
     STAMINA_BROADCAST_COST - stat * ELEGANCE_STAMINA_REDUCTION,
@@ -329,10 +329,10 @@ export function staminaDrainMultFromCondition(
 
 /** 주 종료 차감. 한 턴=4주이므로 월간 소모의 1/4. 컨디션 저하 시 최대 3.5배 급증 */
 export function calcWeeklyBroadcastStaminaCost(
-  elegance = 0,
+  mental = 0,
   conditionInput?: { conditionScore?: number; condition?: string } | number,
 ): number {
-  const baseCost = Math.max(1, Math.round(calcBroadcastStaminaCost(elegance) / WEEKS_PER_MONTH))
+  const baseCost = Math.max(1, Math.round(calcBroadcastStaminaCost(mental) / WEEKS_PER_MONTH))
   const mult = staminaDrainMultFromCondition(conditionInput)
   return Math.max(1, Math.round(baseCost * mult))
 }
@@ -350,7 +350,7 @@ type StaminaConditionState = {
   restStreak?: number
   stamina?: number
   staminaMax?: number
-  statElegance?: number
+  statMental?: number
 }
 
 function withVitals<T extends StaminaConditionState>(
@@ -405,7 +405,7 @@ export type SlotDrainMults = {
 }
 
 /**
- * 주 종료: 실제 방송자 스테미나 −월간(40 − 기품×0.5, 최소 8)/4 + 컨디션 소모
+ * 주 종료: 실제 방송자 스테미나 −월간(40 − 멘탈×0.5, 최소 8)/4 + 컨디션 소모
  * 슬롯 배정만 하고 못 나간 사람(스테미나 부족 등)도 스테미나는 0까지 소모, 컨디션은 유지
  * 슬롯에서 빠진 사람만 스테미나 +20 + 컨디션 회복
  * 방송자는 보유 인원×2% 확률로 진상 사태(캐릭터당 주 1회, 이미 고장난 칸은 제외)
@@ -433,7 +433,7 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
       const conditionMult = Math.max(0.5, Math.min(1, drain?.conditionMult ?? 1))
       const staminaCost = Math.max(
         1,
-        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance, currentScore) * staminaMult),
+        Math.round(calcWeeklyBroadcastStaminaCost(creator.statMental, currentScore) * staminaMult),
       )
       const staminaAfter = clampStamina(staminaNow - staminaCost, staminaMax)
       const isLowStamina = staminaAfter < STAMINA_LOW_THRESHOLD
@@ -451,9 +451,9 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
         if (Math.random() < spikeChance) {
           baseCondLoss += rollInt(CONDITION_SPIKE_DROP.min, CONDITION_SPIKE_DROP.max)
         }
-        const elegance = Math.max(0, Math.min(150, Number((creator as any).statElegance) || 0))
-        const eleganceMult = Math.max(0.4, 1 - elegance * 0.005)
-        baseCondLoss = Math.round(baseCondLoss * eleganceMult)
+        const mental = Math.max(0, Math.min(150, Number((creator as { statMental?: number }).statMental) || 0))
+        const mentalMult = Math.max(0.4, 1 - mental * 0.005)
+        baseCondLoss = Math.round(baseCondLoss * mentalMult)
       }
 
       const rawCond = -baseCondLoss
@@ -504,7 +504,7 @@ export function applyWeeklyStaminaAndCondition<T extends StaminaConditionState &
       const staminaMult = Math.max(0.5, Math.min(1, drain?.staminaMult ?? 1))
       const staminaCost = Math.max(
         1,
-        Math.round(calcWeeklyBroadcastStaminaCost(creator.statElegance) * staminaMult),
+        Math.round(calcWeeklyBroadcastStaminaCost(creator.statMental) * staminaMult),
       )
       return withVitals(creator, currentScore, staminaNow - staminaCost, 0)
     }

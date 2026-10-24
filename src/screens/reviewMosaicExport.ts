@@ -245,6 +245,21 @@ function collectCharacterItems(characters: RegisteredCharacter[]): ReviewExportI
         fit: 'cover',
       })
     }
+    for (const key of ['critical', 'type', 'basic'] as const) {
+      audit.strikes[key].forEach((row, index) => {
+        if (!row.url) return
+        const hint = row.url.replace(/\\/g, '/').split('/').pop() || `${key}_${index + 1}`
+        items.push({
+          folder: `${root}/audit/${key}`,
+          nameHint: `${String(index + 1).padStart(2, '0')}_${hint}`,
+          url: row.url,
+          kind: 'image',
+          regions: readBlurRegions(row),
+          label: `${character.name} 승급 ${key} ${index + 1}`,
+          fit: 'cover',
+        })
+      })
+    }
 
     const shorts = character.shortsVn
     if (shorts) {

@@ -117,7 +117,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                   {t('settings.resolutionDesc') || '창모드의 크기를 선택합니다.'}
                 </p>
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {WINDOW_RESOLUTIONS.map((item) => {
                   const selected = resolution === item.id
                   return (

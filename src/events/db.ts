@@ -13,6 +13,7 @@ import {
   type StationGradeConfig,
 } from '../game/stationGradeConfig'
 import { emptyBgmConfig, normalizeBgmConfig, type GameBgmConfig } from '../game/bgm'
+import { emptyOpeningVideoConfig, normalizeOpeningVideoConfig, type OpeningVideoConfig } from '../game/openingVideos'
 
 const STATION_GRADE_CONFIG_KEY = 'broadcast-station-grade-config'
 const STATION_GRADE_CONFIG_PUBLIC = '/chapter_assets/station_grade_config.json'
@@ -618,6 +619,8 @@ export async function loadCommonSounds(): Promise<any[]> {
 
 const BGM_CONFIG_KEY = 'broadcast-bgm-config'
 const BGM_CONFIG_PUBLIC = '/chapter_assets/bgm.json'
+const OPENING_CONFIG_KEY = 'broadcast-opening-videos'
+const OPENING_CONFIG_PUBLIC = '/chapter_assets/opening.json'
 
 async function postDevJson<T>(url: string, body: unknown): Promise<T | null> {
   if (typeof window === 'undefined' || !window.location.protocol.startsWith('http')) return null
@@ -691,6 +694,85 @@ export async function saveBgmConfig(config: GameBgmConfig) {
     // ignore
   }
   return normalized
+}
+
+export async function persistOpeningVideos(
+  assets: Array<{ fileName: string; buffer: ArrayBuffer | number[] }>,
+): Promise<{ success: boolean; path?: string; error?: string }> {
+  const payload = assets.map((asset) => ({
+    fileName: asset.fileName,
+    buffer: asset.buffer instanceof ArrayBuffer ? Array.from(new Uint8Array(asset.buffer)) : asset.buffer,
+  }))
+  if (window.electronAPI?.saveOpeningVideos) {
+    return window.electronAPI.saveOpeningVideos(payload)
+  }
+  const fromDev = await postDevJson<{ success: boolean; path?: string; error?: string }>(
+    '/api/save-opening-videos',
+    { assets: payload },
+  )
+  if (fromDev) return fromDev
+  return { success: false, error: '로컬 프로젝트 폴더에 저장할 수 없습니다.' }
+}
+
+export async function removeOpeningVideo(fileName: string): Promise<void> {
+  if (window.electronAPI?.deleteOpeningVideo) {
+    await window.electronAPI.deleteOpeningVideo(fileName)
+    return
+  }
+  await postDevJson('/api/delete-opening-video', { fileName })
+}
+
+export async function pruneUnusedOpeningVideos(keep: string[]): Promise<void> {
+  if (window.electronAPI?.pruneOpeningVideos) {
+    await window.electronAPI.pruneOpeningVideos(keep)
+    return
+  }
+  await postDevJson('/api/prune-opening-videos', { keep })
+}
+
+export async function openOpeningFolder(fileName?: string | null): Promise<{ success: boolean; error?: string }> {
+  if (window.electronAPI?.openOpeningFolder) {
+    return window.electronAPI.openOpeningFolder(fileName ?? undefined)
+  }
+  const fromDev = await postDevJson<{ success: boolean; error?: string }>('/api/open-opening-folder', {
+    fileName: fileName ?? undefined,
+  })
+  return fromDev ?? { success: false, error: '오프닝 영상 폴더를 열 수 없습니다.' }
+}
+
+export async function saveOpeningVideoConfig(config: OpeningVideoConfig) {
+  const normalized = normalizeOpeningVideoConfig(config)
+  if (window.electronAPI?.saveOpeningVideoConfigJson) {
+    const res = await window.electronAPI.saveOpeningVideoConfigJson(normalized)
+    if (!res.success) throw new Error(res.error || 'Failed to save opening videos')
+  } else {
+    const fromDev = await postDevJson<{ success: boolean; error?: string }>('/api/save-opening-config-json', {
+      config: normalized,
+    })
+    if (fromDev && !fromDev.success) throw new Error(fromDev.error || 'Failed to save opening videos')
+  }
+  try {
+    localStorage.setItem(OPENING_CONFIG_KEY, JSON.stringify(normalized))
+  } catch {
+    // ignore
+  }
+  return normalized
+}
+
+export async function loadOpeningVideoConfig(): Promise<OpeningVideoConfig> {
+  if (window.electronAPI?.loadOpeningVideoConfigJson) {
+    const res = await window.electronAPI.loadOpeningVideoConfigJson()
+    if (res.success) return normalizeOpeningVideoConfig(res.config)
+  }
+  const fromPublic = await fetchPublicJson<unknown>(OPENING_CONFIG_PUBLIC)
+  if (fromPublic) return normalizeOpeningVideoConfig(fromPublic)
+  try {
+    const raw = localStorage.getItem(OPENING_CONFIG_KEY)
+    if (raw) return normalizeOpeningVideoConfig(JSON.parse(raw))
+  } catch {
+    // ignore
+  }
+  return emptyOpeningVideoConfig()
 }
 
 export async function loadBgmConfig(): Promise<GameBgmConfig> {

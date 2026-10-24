@@ -240,7 +240,7 @@ export function hireScoutOffer(offer: ScoutOffer): OwnedCreator {
     staminaMax,
     revenueMult: stats.revenueMult,
     statSexy: stats.statSexy,
-    statElegance: stats.statElegance,
+    statMental: stats.statMental,
     statCommunication: stats.statCommunication,
     statPerformance: stats.statPerformance,
     selectedSkin: 1,

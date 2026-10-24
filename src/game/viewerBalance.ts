@@ -5,8 +5,8 @@
  */
 
 export type ViewerBalance = {
-  /** 소통 1당 시청자 기여 (로스터 잠재력 계수) */
-  viewerPerCommPoint: number
+  /** 섹시 1당 시청자 기여 (로스터 잠재력 계수) */
+  viewerPerSexyPoint: number
   /** 방송 중 잠재력 방향 월 성장률 */
   viewerGrowthRate: number
   /** 잠재력 도달/초과 시 월 유기성장률 */
@@ -19,7 +19,7 @@ export type ViewerBalance = {
 
 /** 기본값 — station_grade_config.json `balance` 섹션과 동일해야 함 */
 export const DEFAULT_VIEWER_BALANCE: ViewerBalance = {
-  viewerPerCommPoint: 20,
+  viewerPerSexyPoint: 20,
   viewerGrowthRate: 0.18,
   viewerOrganicGrowthRate: 0.01,
   idleViewerDecay: 0.015,
@@ -34,12 +34,13 @@ function clampNum(value: unknown, fallback: number): number {
 }
 
 export function setViewerBalance(
-  balance: Partial<ViewerBalance> | null | undefined,
+  balance: (Partial<ViewerBalance> & { viewerPerCommPoint?: number }) | null | undefined,
 ): void {
+  const legacy = balance?.viewerPerCommPoint
   active = {
-    viewerPerCommPoint: clampNum(
-      balance?.viewerPerCommPoint,
-      DEFAULT_VIEWER_BALANCE.viewerPerCommPoint,
+    viewerPerSexyPoint: clampNum(
+      balance?.viewerPerSexyPoint ?? legacy,
+      DEFAULT_VIEWER_BALANCE.viewerPerSexyPoint,
     ),
     viewerGrowthRate: clampNum(balance?.viewerGrowthRate, DEFAULT_VIEWER_BALANCE.viewerGrowthRate),
     viewerOrganicGrowthRate: clampNum(

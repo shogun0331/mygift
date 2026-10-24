@@ -59,7 +59,7 @@ type CreatorStatField = (typeof CREATOR_STAT_TYPE_FIELD)[CreatorStatType]
 
 const STAT_FIELDS = [
   'statSexy',
-  'statElegance',
+  'statMental',
   'statCommunication',
   'statPerformance',
 ] as const satisfies readonly CreatorStatField[]
@@ -157,7 +157,7 @@ export function applyProductionTraining(creator: OwnedCreator): {
       creator,
       gains: {
         statSexy: 0,
-        statElegance: 0,
+        statMental: 0,
         statCommunication: 0,
         statPerformance: 0,
       },
@@ -167,7 +167,7 @@ export function applyProductionTraining(creator: OwnedCreator): {
   }
   const gains = {
     statSexy: 0,
-    statElegance: 0,
+    statMental: 0,
     statCommunication: 0,
     statPerformance: 0,
   } satisfies Record<CreatorStatField, number>

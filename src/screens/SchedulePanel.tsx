@@ -69,8 +69,8 @@ const STAT_TYPE_STYLE: Record<
     badge: 'border-cyan-400/55 bg-cyan-500/30 text-cyan-100',
     text: 'text-cyan-200',
   },
-  elegance: {
-    labelKey: 'creator.typeElegance',
+  mental: {
+    labelKey: 'creator.typeMental',
     frame: 'border-violet-300 shadow-[0_0_18px_rgba(167,139,250,0.5)]',
     card: '!border-2 !border-violet-300 hover:!border-violet-200 !shadow-[0_0_16px_rgba(167,139,250,0.5)]',
     badge: 'border-violet-300/55 bg-violet-500/30 text-violet-100',

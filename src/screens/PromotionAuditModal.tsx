@@ -2,20 +2,21 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from '../locales/i18n'
 import {
   CREATOR_TYPE_LABEL,
-  getCreatorTypeDisplayName,
   createAuditSession,
+  getCreatorTypeDisplayName,
   submitTurnPerformance,
+  typeForCreator,
   type AuditSession,
 } from '../game/auditEngine'
 import { characterDisplayName, pickCharacterLocaleText } from '../game/characterLocales'
-import { auditMediaSlotUrl, type RegisteredCharacter as RegisteredCreator } from '../game/characters'
+import { auditMediaSlotUrl, pickAuditStrikeSlot, type RegisteredCharacter as RegisteredCreator } from '../game/characters'
 import { readBlurRegions } from '../events/BlurRegionEditor'
 import type { BlurRegion, GameEvent } from '../events/types'
 import { blurRegionsForVnFile } from './CharacterAuditEditorModal'
 import { MosaicMediaFrame } from './MosaicMediaFrame'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { stationGradeLabel, type StationGrade } from '../game/station'
-import { getJudgeSatisfactionMediaSlot, type StationGradeConfig, type CreatorType } from '../game/stationGradeConfig'
+import { getJudgeSatisfactionMediaSlot, type StationGradeConfig } from '../game/stationGradeConfig'
 import { useI18n } from '../locales/i18n'
 import {
   getJudgeReactionDialogue,
@@ -98,6 +99,7 @@ export function PromotionAuditModal({
 
   const [lastPerformedCreator, setLastPerformedCreator] = useState<RegisteredCreator | null>(null)
   const [popupCutsceneMediaUrl, setPopupCutsceneMediaUrl] = useState<string | null>(null)
+  const [popupCutscenePortrait, setPopupCutscenePortrait] = useState(false)
   const [popupCutsceneBlurRegions, setPopupCutsceneBlurRegions] = useState<BlurRegion[]>([])
   const [isCutsceneModalOpen, setIsCutsceneModalOpen] = useState<boolean>(false)
   const [canCloseCutscene, setCanCloseCutscene] = useState(false)
@@ -171,16 +173,16 @@ export function PromotionAuditModal({
   const displayCreators = creators.slice(0, 4)
 
   // 심사관 반격 턴 시퀀스 시작
-  const triggerJudgeCounterAttack = (targetCreatorId: string) => {
-    // 만족도를 완전히 채워서 이미 승급 성공한 경우에만 공격 멈춤! (5/5 턴 포함 미달 시 마지막 반격 정상 수행)
-    if (session.isSuccess || session.currentSatisfaction >= session.targetSatisfaction) {
+  const triggerJudgeCounterAttack = (targetCreatorId: string, damage: number) => {
+    const live = sessionRef.current
+    if (live.isSuccess || live.currentSatisfaction >= live.targetSatisfaction) {
       setIsActionLocked(false)
       return
     }
 
     setIsJudgeTurn(true)
     playSfx('audit-judge-attack')
-    const attackDmg = Math.round(session.judge.attackPower || 20)
+    const attackDmg = Math.max(0, Math.round(damage))
     setLastDamageDealt(attackDmg)
 
     // ⚔️ 심사관 공격 멘트 7개국어 중 픽업하여 말풍선 표시
@@ -266,16 +268,14 @@ export function PromotionAuditModal({
       } else {
         const curStaminaMap = creatorStaminaMapRef.current
         const usableCreators = displayCreators.filter(
-          (c) => (curStaminaMap[c.id] ?? 100) >= 15,
+          (c) => (curStaminaMap[c.id] ?? 100) > 0,
         )
 
-        if (usableCreators.length > 0) {
-          // 🎯 사용할 수 있는 크리에이터(스테미너 15 이상) 중 무작위 1명 피격 대상으로 픽업!
-          const randIdx = Math.floor(Math.random() * usableCreators.length)
-          const randomTarget = usableCreators[randIdx]!
+        if (_targetCreatorId && usableCreators.some((c) => c.id === _targetCreatorId)) {
+          const dealt = sessionRef.current.history.at(-1)?.reboundDamage ?? 0
           setTimeout(() => {
-            triggerJudgeCounterAttack(randomTarget.id)
-          }, 1000) // 1초 딜레이 쉼표!
+            triggerJudgeCounterAttack(_targetCreatorId, dealt)
+          }, 1000)
         } else {
           setIsActionLocked(false)
         }
@@ -345,7 +345,7 @@ export function PromotionAuditModal({
       !isCutsceneModalOpen
     ) {
       const hasPlayableCard = displayCreators.some(
-        (c) => (creatorStaminaMap[c.id] ?? 100) >= 15,
+        (c) => (creatorStaminaMap[c.id] ?? 100) > 0,
       )
       if (!hasPlayableCard) {
         setSession((prev) => {
@@ -438,30 +438,17 @@ export function PromotionAuditModal({
   )
 
   const judgeName = pickCharacterLocaleText(session.judge.names, locale, session.judge.name)
-
-  const currentDemand = session.turnDemands[session.currentTurn - 1] ?? 'elegance'
+  const currentDemand = session.turnDemands[session.currentTurn - 1] ?? 'mental'
   const currentDemandInfo = CREATOR_TYPE_LABEL[currentDemand]
 
   const handlePerform = (creator: RegisteredCreator) => {
     if (session.isCompleted || isJudgeTurn || isActionLocked) return
     const currentStamina = creatorStaminaMap[creator.id] ?? 100
-    if (currentStamina < 15) {
-      return // 스테미나 15 미만 시 퍼포먼스 제시 불가!
-    }
+    if (currentStamina <= 0) return
 
-    setShowActionGuide(false) // 조작 개시 시 가이드 해제
-    setIsActionLocked(true) // 카드 선택 즉시 잠금 개시!
+    setShowActionGuide(false)
+    setIsActionLocked(true)
     playSfx('audit-card-perform')
-
-    // ⚡ 퍼포먼스 1회 제출 당 스테미너 15 차감!
-    setCreatorStaminaMap((prev) => {
-      const cur = prev[creator.id] ?? 100
-      const next = Math.max(0, cur - 15)
-      return {
-        ...prev,
-        [creator.id]: next,
-      }
-    })
 
     setLastPerformedCreator(creator)
     const nextSession = submitTurnPerformance(
@@ -469,16 +456,11 @@ export function PromotionAuditModal({
       {
         id: creator.id,
         name: creator.name,
-        type: (creator as any).type || (creator as any).statType,
-        statSexy: (creator as any).statSexy,
-        statElegance: (creator as any).statElegance,
-        statCommunication: (creator as any).statCommunication,
-        statPerformance: (creator as any).statPerformance,
-        stats: (creator as any).stats,
-        statValue: (creator as any).statValue || (creator as any).power,
+        type: (creator as { statType?: string }).statType,
+        statPerformance: (creator as { statPerformance?: number }).statPerformance,
+        statMental: (creator as { statMental?: number }).statMental,
       },
       creator.grade ?? 'B',
-      config?.auditConfig?.stageSettings[tier]?.judgeAttackMod ?? 1.0,
     )
 
     const lastResult = nextSession.history[nextSession.history.length - 1] ?? null
@@ -505,8 +487,10 @@ export function PromotionAuditModal({
     // 카드를 클릭하여 제출 시, 중간 사이즈 미디어 추가 오버레이 팝업 띄우기
     const nextPct = Math.round((nextSession.currentSatisfaction / nextSession.targetSatisfaction) * 100)
     const nextMediaKey = nextPct >= 80 ? 'A' : nextPct >= 30 ? 'B' : 'C'
-    const targetSlot = creator.auditMedia?.[nextMediaKey]
+    const strikeSlot = pickAuditStrikeSlot(creator.auditMedia, { critical: isCrit, typeMatched: matched })
+    const targetSlot = strikeSlot ?? creator.auditMedia?.[nextMediaKey]
     const targetMedia = auditMediaSlotUrl(targetSlot)
+    setPopupCutscenePortrait(Boolean(strikeSlot?.url))
 
     if (targetMedia) {
       setPopupCutsceneMediaUrl(targetMedia)
@@ -634,7 +618,7 @@ export function PromotionAuditModal({
               canCloseCutscene ? 'cursor-pointer' : 'cursor-wait'
             }`}
           >
-            <div className="relative aspect-[16/9] w-full max-w-2xl sm:max-w-3xl overflow-hidden rounded-3xl border-2 border-purple-400/60 bg-black shadow-[0_0_80px_rgba(168,85,247,0.5)]">
+            <div className={`relative overflow-hidden rounded-3xl border-2 border-purple-400/60 bg-black shadow-[0_0_80px_rgba(168,85,247,0.5)] ${popupCutscenePortrait ? 'aspect-[3/4] w-full max-w-sm' : 'aspect-[16/9] w-full max-w-2xl sm:max-w-3xl'}`}>
               <MosaicMediaFrame
                 src={resolveMediaSrc(popupCutsceneMediaUrl)}
                 kind={isVideoMediaUrl(popupCutsceneMediaUrl) ? 'video' : 'image'}
@@ -680,12 +664,17 @@ export function PromotionAuditModal({
                 <span className="rounded-full border border-amber-400 bg-amber-500/20 px-2.5 py-0.5 text-xs font-black text-amber-200 shadow-[0_0_12px_rgba(251,191,36,0.5)] animate-pulse">
                   {getSatisfyJudgeTitle(locale)}
                 </span>
-                <span className="hidden sm:inline text-xs font-bold text-slate-300">| {t('audit.preferred')}:</span>
+                <span className="hidden sm:inline text-xs font-bold text-slate-300">
+                  | {t('audit.preferred')}:
+                </span>
                 <span
-                  className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-black ${currentDemandInfo.tone}`}
+                  className={`flex items-center gap-1 rounded-lg border px-2 py-0.5 text-xs font-black ${currentDemandInfo.tone}`}
                 >
                   <span>{currentDemandInfo.icon}</span>
                   <span>{getCreatorTypeDisplayName(currentDemand, t)}</span>
+                </span>
+                <span className="hidden md:inline text-xs font-bold text-slate-300">
+                  | {t('audit.pressure')} {session.judge.pressure} · {t('audit.ironWall')} {session.judge.ironWall}
                 </span>
               </div>
 
@@ -815,8 +804,8 @@ export function PromotionAuditModal({
                     {/* 영문 CRITICAL! 황금 빛 네온 타이틀 오버레이 */}
                     {isCriticalHit ? (
                       <div className="mb-2 flex flex-col items-center animate-bounce drop-shadow-[0_0_35px_rgba(251,191,36,1)]">
-                        <span className="text-4xl sm:text-6xl font-black italic tracking-widest text-amber-300 drop-shadow-[0_0_25px_rgba(251,191,36,1)] uppercase">
-                          CRITICAL!
+                        <span className="text-4xl sm:text-6xl font-black italic tracking-widest text-amber-300 drop-shadow-[0_0_25px_rgba(251,191,36,1)]">
+                          {t('audit.tasteStrike')}
                         </span>
                         <span className="rounded-full border-2 border-amber-400 bg-amber-950/90 px-3.5 py-0.5 text-xs sm:text-sm font-black text-amber-200 shadow-[0_0_20px_rgba(251,191,36,0.9)] mt-1">
                           🔥 {criticalMult}x MULTIPLIER
@@ -832,8 +821,8 @@ export function PromotionAuditModal({
                         </span>
                       </div>
                       {isTypeMatchedHit ? (
-                        <span className="mt-1.5 rounded-full border border-pink-300/80 bg-pink-950/80 px-3 py-0.5 text-xs font-black text-amber-300 shadow-lg animate-pulse">
-                          🔥 1.5x
+                        <span className="mt-1.5 rounded-full border border-emerald-300/80 bg-emerald-950/80 px-3 py-0.5 text-xs font-black text-emerald-200 shadow-lg animate-pulse">
+                          {t('audit.typeMatch')}
                         </span>
                       ) : null}
                     </div>
@@ -846,6 +835,8 @@ export function PromotionAuditModal({
                 <div className="mb-1 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-slate-200">⚖️ {t('audit.satisfactionLabel')}</span>
+                    <span className="text-[11px] font-bold text-rose-200">{t('audit.pressure')} {session.judge.pressure}</span>
+                    <span className="text-[11px] font-bold text-sky-200">{t('audit.ironWall')} {session.judge.ironWall}</span>
                   </div>
                   <span className="font-black tabular-nums text-amber-300">
                     {t('audit.satisfactionScoreFormat', { current: session.currentSatisfaction, target: session.targetSatisfaction, percent: Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100) })}
@@ -917,17 +908,15 @@ export function PromotionAuditModal({
 
           <div className="grid grid-cols-4 gap-1.5 sm:gap-2 max-w-xl sm:max-w-2xl mx-auto">
             {displayCreators.map((creator) => {
-              const rawType = creator.statType || (creator as any).type || (creator as any).primaryStat || 'elegance'
-              const cType: CreatorType =
-                rawType === 'sexy' || rawType === 'communication' || rawType === 'elegance' || rawType === 'performance'
-                  ? rawType
-                  : 'elegance'
+              const performance = Math.max(0, Math.min(100, Number((creator as { statPerformance?: number }).statPerformance) || 0))
+              const mental = Math.max(0, Math.min(100, Number((creator as { statMental?: number }).statMental) || 0))
+              const cType = typeForCreator(creator.id, (creator as { statType?: string }).statType)
               const typeInfo = CREATOR_TYPE_LABEL[cType]
               const isTypeMatched = cType === currentDemand
               const creatorGrade = creator.grade ?? 'B'
-              const profileUrl = (creator as any).profileImageUrl || (creator as any).avatarUrl
+              const profileUrl = (creator as { profileImageUrl?: string }).profileImageUrl
               const currentStamina = creatorStaminaMap[creator.id] ?? 100
-              const isStaminaExhausted = currentStamina < 15
+              const isStaminaExhausted = currentStamina <= 0
               const isHitFlashing = hitFlashingCardId === creator.id
               const isCardDisabled = isStaminaExhausted || isJudgeTurn || isActionLocked || showResultModal
 
@@ -988,12 +977,11 @@ export function PromotionAuditModal({
                     </div>
                   )}
 
-                  {/* 🌟 심사관 만족 조건 충족 1.5배 아웃라인 글로우 오버레이 */}
                   {isTypeMatched && !isCardDisabled && !isHitFlashing ? (
                     <div className="pointer-events-none absolute inset-0 z-20 rounded-xl border-2 border-emerald-400/90 shadow-[inset_0_0_20px_rgba(52,211,153,0.6)] animate-pulse" />
                   ) : null}
 
-                  {/* ⚔️ 심사관 피격 흔들림 & 붉은 번쩍임 핏빛 오버레이 (이모지 100% 제거) */}
+                  {/* 상단 뱃지 */}
                   {isHitFlashing ? (
                     <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-rose-600/70 animate-pulse backdrop-blur-xs">
                       <span className="rounded-lg border-2 border-rose-300 bg-rose-950/90 px-2.5 py-1 text-xs sm:text-sm font-black text-rose-200 shadow-[0_0_25px_rgba(244,63,94,1)] drop-shadow">
@@ -1007,12 +995,17 @@ export function PromotionAuditModal({
                     <span className={`rounded-md border px-2 py-0.5 text-xs sm:text-sm font-black italic tracking-widest backdrop-blur-xs ${getGradeBadgeStyle(creatorGrade)}`}>
                       {creatorGrade}
                     </span>
-                    {isTypeMatched ? (
-                      <span className="rounded bg-emerald-500/90 px-1.5 py-0.3 text-[9px] font-black text-white shadow-md animate-pulse">
-                        🔥 {t('audit.multiplierFormat')}
-                      </span>
-                    ) : null}
+                    <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-black text-cyan-200">
+                      {t('creator.statPerformance')} {performance}
+                    </span>
                   </div>
+                  {isTypeMatched && !isHitFlashing ? (
+                    <div className="relative z-10 px-1.5">
+                      <span className="rounded bg-emerald-500/90 px-1.5 py-0.5 text-[9px] font-black text-white shadow-md">
+                        {t('audit.typeMatch')}
+                      </span>
+                    </div>
+                  ) : null}
 
                   {/* 스테미나 부족 제시 불가 레이어 */}
                   {isStaminaExhausted ? (
@@ -1030,11 +1023,16 @@ export function PromotionAuditModal({
                     <div className="flex items-center justify-between gap-1">
                       <h4 className="truncate text-xs font-black text-white drop-shadow-md">{characterDisplayName(creator, locale)}</h4>
                       <span
-                        className={`flex items-center justify-center rounded border px-1.5 py-0.5 text-xs font-black shadow-md ${typeInfo.tone}`}
+                        className={`flex shrink-0 items-center rounded border px-1 py-0.5 text-[9px] font-black ${typeInfo.tone}`}
                         title={getCreatorTypeDisplayName(cType, t)}
                       >
                         <span>{typeInfo.icon}</span>
                         <span className="ml-0.5 hidden sm:inline">{getCreatorTypeDisplayName(cType, t)}</span>
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-end">
+                      <span className="rounded border border-violet-300/50 bg-violet-950/80 px-1.5 py-0.5 text-[9px] font-black text-violet-100">
+                        {t('creator.statMental')} {mental}
                       </span>
                     </div>
 

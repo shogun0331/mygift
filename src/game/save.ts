@@ -90,6 +90,8 @@ export type GameSave = {
   lastHActionMonth?: number
   /** 이번 턴에 VIP 만남을 수행한 캐릭터별 월 번호 매핑 (creatorId → month) */
   lastVipActionMonth?: Record<string, number>
+  /** 다음 VIP 방문까지 남은 턴. 없으면 중소 이상에서 처음 3~5턴을 센다 */
+  vipWaitTurns?: number
   /** 첫 튜토리얼 완료 여부 */
   tutorialDone?: boolean
 }
@@ -235,12 +237,12 @@ export function getTopCreatorMeta(save: GameSave): TopCharacterMeta | null {
       (a.statCommunication ?? 0) +
       (a.statPerformance ?? 0) +
       (a.statSexy ?? 0) +
-      (a.statElegance ?? 0)
+      (a.statMental ?? 0)
     const scoreB =
       (b.statCommunication ?? 0) +
       (b.statPerformance ?? 0) +
       (b.statSexy ?? 0) +
-      (b.statElegance ?? 0)
+      (b.statMental ?? 0)
     return scoreB - scoreA
   })
 

@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import {
   emptyAuditMediaSlot,
   normalizeAuditMedia,
+  type AuditStrikeKey,
   type CharacterAuditMedia,
   type CharacterAuditMediaSlot,
   type RegisteredCharacter,
@@ -105,6 +106,10 @@ export function CharacterAuditEditorModal({ character, events, onSave, onClose }
     setAuditMedia((prev) => ({ ...prev, [key]: next }))
   }
 
+  const updateStrikes = (key: AuditStrikeKey, next: CharacterAuditMediaSlot[]) => {
+    setAuditMedia((prev) => ({ ...prev, strikes: { ...prev.strikes, [key]: next } }))
+  }
+
   const handleSave = () => {
     onSave(auditMedia)
     onClose()
@@ -145,7 +150,7 @@ export function CharacterAuditEditorModal({ character, events, onSave, onClose }
           </p>
         </div>
 
-        <div className="mt-5 min-h-0 flex-1 overflow-auto">
+        <div className="mt-5 min-h-0 flex-1 space-y-5 overflow-auto">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <AuditMediaDropbox
               badge="🌟 A 영상 (고만족도 80%↑)"
@@ -174,6 +179,36 @@ export function CharacterAuditEditorModal({ character, events, onSave, onClose }
               onPickFromVn={() => setPickerSlot('C')}
               onUpdate={(next) => updateSlot('C', next)}
             />
+          </div>
+
+          <div>
+            <p className="text-xs font-bold text-pink-200">타격 이미지 (3:4)</p>
+            <p className="mt-1 text-[11px] text-slate-400">
+              카드를 냈을 때 결과에 맞는 이미지 중 한 장이 나옵니다. 이미지를 여러 장 끌어다 놓으세요.
+            </p>
+            <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <StrikeImageDrop
+                title="크리티컬"
+                hint="10% 철벽 무시, 1.5배"
+                tone="border-amber-400/40 bg-amber-950/40 text-amber-100"
+                slots={auditMedia.strikes.critical}
+                onChange={(next) => updateStrikes('critical', next)}
+              />
+              <StrikeImageDrop
+                title="타입 일치"
+                hint="취향 저격"
+                tone="border-emerald-400/40 bg-emerald-950/40 text-emerald-100"
+                slots={auditMedia.strikes.type}
+                onChange={(next) => updateStrikes('type', next)}
+              />
+              <StrikeImageDrop
+                title="기본 공격"
+                hint="타입도 크리티컬도 아닌 타격"
+                tone="border-sky-400/40 bg-sky-950/40 text-sky-100"
+                slots={auditMedia.strikes.basic}
+                onChange={(next) => updateStrikes('basic', next)}
+              />
+            </div>
           </div>
         </div>
 
@@ -353,6 +388,92 @@ function AuditMediaDropbox({
           e.target.value = ''
         }}
       />
+    </div>
+  )
+}
+
+function readImageFile(file: File): Promise<string | null> {
+  if (!file.type.startsWith('image/')) return Promise.resolve(null)
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null)
+    reader.onerror = () => resolve(null)
+    reader.readAsDataURL(file)
+  })
+}
+
+function StrikeImageDrop({
+  title,
+  hint,
+  tone,
+  slots,
+  onChange,
+}: {
+  title: string
+  hint: string
+  tone: string
+  slots: CharacterAuditMediaSlot[]
+  onChange: (next: CharacterAuditMediaSlot[]) => void
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+
+  const addFiles = async (files: FileList | File[]) => {
+    const urls = (await Promise.all(Array.from(files).map(readImageFile))).filter((url): url is string => Boolean(url))
+    if (urls.length === 0) return
+    onChange([...slots, ...urls.map((url) => ({ url, blurRegions: [] }))])
+  }
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/30 p-3">
+      <span className={`inline-block rounded-lg border px-2.5 py-1 text-[11px] font-black ${tone}`}>{title}</span>
+      <p className="mt-1 min-h-[28px] text-[10px] text-slate-400">{hint}</p>
+      <div
+        onDragOver={(event) => {
+          event.preventDefault()
+          setIsDragging(true)
+        }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={(event) => {
+          event.preventDefault()
+          setIsDragging(false)
+          if (event.dataTransfer.files?.length) void addFiles(event.dataTransfer.files)
+        }}
+        className={`mt-2 flex min-h-16 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-2 py-3 text-center ${
+          isDragging ? 'border-pink-300 bg-pink-500/15' : 'border-white/20 bg-black/40'
+        }`}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        <span className="text-[11px] font-bold text-slate-200">이미지 드롭</span>
+        <span className="text-[10px] text-slate-500">3:4 · 여러 장</span>
+      </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={(event) => {
+          if (event.target.files?.length) void addFiles(event.target.files)
+          event.target.value = ''
+        }}
+      />
+      {slots.length > 0 ? (
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          {slots.map((slot, index) => (
+            <div key={`${slot.url}-${index}`} className="group relative aspect-[3/4] overflow-hidden rounded-lg border border-white/10 bg-black">
+              <img src={resolveMediaSrc(slot.url || '')} alt="" className="h-full w-full object-cover" />
+              <button
+                type="button"
+                className="absolute right-1 top-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-bold text-rose-200 opacity-0 group-hover:opacity-100"
+                onClick={() => onChange(slots.filter((_, itemIndex) => itemIndex !== index))}
+              >
+                삭제
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }

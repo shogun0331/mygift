@@ -3,6 +3,11 @@ import { useTranslation } from '../locales/i18n'
 
 export type TutorialStep =
   | 'scout_hire'
+  | 'stat_sexy'
+  | 'stat_communication'
+  | 'stat_mental'
+  | 'stat_performance'
+  | 'stat_stamina'
   | 'studio_assign'
   | 'nav_dashboard'
   | 'start_broadcast'
@@ -15,11 +20,26 @@ export type TutorialStep =
   | 'sns_open_compose'
   | 'sns_post'
 
+export const STAT_TUTORIAL_STEPS = [
+  'stat_sexy',
+  'stat_communication',
+  'stat_mental',
+  'stat_performance',
+  'stat_stamina',
+] as const satisfies readonly TutorialStep[]
+
+export function isStatTutorialStep(
+  step: TutorialStep | null,
+): step is (typeof STAT_TUTORIAL_STEPS)[number] {
+  return step != null && (STAT_TUTORIAL_STEPS as readonly string[]).includes(step)
+}
+
 interface TutorialGuideOverlayProps {
   step: TutorialStep | null
   onSkip?: () => void
   onAutoAssignSlot?: () => void
   onAutoAssignStaff?: () => void
+  onStatNext?: () => void
 }
 
 interface TargetRect {
@@ -34,6 +54,7 @@ export function TutorialGuideOverlay({
   onSkip,
   onAutoAssignSlot,
   onAutoAssignStaff,
+  onStatNext,
 }: TutorialGuideOverlayProps) {
   const { t } = useTranslation()
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null)
@@ -53,6 +74,16 @@ export function TutorialGuideOverlay({
 
       if (step === 'scout_hire') {
         selector = '[data-tutorial="scout-hire-btn"]'
+      } else if (step === 'stat_sexy') {
+        selector = '[data-tutorial="stat-sexy"]'
+      } else if (step === 'stat_communication') {
+        selector = '[data-tutorial="stat-communication"]'
+      } else if (step === 'stat_mental') {
+        selector = '[data-tutorial="stat-mental"]'
+      } else if (step === 'stat_performance') {
+        selector = '[data-tutorial="stat-performance"]'
+      } else if (step === 'stat_stamina') {
+        selector = '[data-tutorial="stat-stamina"]'
       } else if (step === 'studio_assign') {
         selector = '[data-tutorial="studio-hand-card-0"]'
         slotSelector = '[data-tutorial="studio-slot-0"]'
@@ -129,6 +160,31 @@ export function TutorialGuideOverlay({
       title: t('tutorial.step1Title') || 'STEP 1: 크리에이터 영입',
       desc: t('tutorial.step1Desc') || '방송을 진행할 크리에이터를 영입하세요! 아래의 [영입] 버튼을 클릭하세요.',
       targetLabel: '영입하기',
+    },
+    stat_sexy: {
+      title: t('tutorial.statSexyTitle'),
+      desc: t('tutorial.statSexyDesc'),
+      targetLabel: '',
+    },
+    stat_communication: {
+      title: t('tutorial.statCommunicationTitle'),
+      desc: t('tutorial.statCommunicationDesc'),
+      targetLabel: '',
+    },
+    stat_mental: {
+      title: t('tutorial.statMentalTitle'),
+      desc: t('tutorial.statMentalDesc'),
+      targetLabel: '',
+    },
+    stat_performance: {
+      title: t('tutorial.statPerformanceTitle'),
+      desc: t('tutorial.statPerformanceDesc'),
+      targetLabel: '',
+    },
+    stat_stamina: {
+      title: t('tutorial.statStaminaTitle'),
+      desc: t('tutorial.statStaminaDesc'),
+      targetLabel: '',
     },
     studio_assign: {
       title: t('tutorial.step2Title') || 'STEP 2: 스튜디오 슬롯 배치',
@@ -255,6 +311,19 @@ export function TutorialGuideOverlay({
       return {
         bottom: `${window.innerHeight - targetRect.top + 25}px`,
         right: `${Math.max(20, window.innerWidth - targetRect.left - targetRect.width)}px`,
+      }
+    }
+
+    if (isStatTutorialStep(step)) {
+      const dialogWidth = 380
+      const leftOfTarget = targetRect.left - dialogWidth - 24
+      const top = Math.max(16, Math.min(window.innerHeight - 240, targetRect.top))
+      if (leftOfTarget > 16) {
+        return { top: `${top}px`, left: `${leftOfTarget}px` }
+      }
+      return {
+        top: `${Math.min(window.innerHeight - 240, targetRect.top + targetRect.height + 16)}px`,
+        left: `${Math.max(16, Math.min(window.innerWidth - dialogWidth - 16, targetRect.left))}px`,
       }
     }
 
@@ -442,6 +511,16 @@ export function TutorialGuideOverlay({
           {stepInfo.desc}
         </p>
 
+        {isStatTutorialStep(step) && onStatNext ? (
+          <button
+            type="button"
+            onClick={onStatNext}
+            className="mt-3 w-full rounded-xl bg-gradient-to-r from-pink-600 to-indigo-600 py-2 text-xs font-bold text-white shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+          >
+            {t('tutorial.statNext')}
+          </button>
+        ) : null}
+
         {step === 'studio_assign' && onAutoAssignSlot && (
           <button
             type="button"
@@ -464,7 +543,7 @@ export function TutorialGuideOverlay({
       </div>
 
       {/* Animated Finger Pointer & Motion */}
-      {targetRect && (
+      {targetRect && !isStatTutorialStep(step) && (
         <>
           {(step === 'studio_assign' || step === 'staff_assign') && slotRect ? (
             /* Studio Drag/Move Gesture from Card to Slot */

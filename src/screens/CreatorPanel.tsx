@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState, useRef, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState, useRef, type CSSProperties, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import {
   findCharacterIconUrl,
   findCharacterLevelThumbnailUrl,
@@ -42,7 +43,6 @@ import {
   characterDisplayName,
 } from '../game/characterLocales'
 import { isHUnlocked } from '../game/social'
-import { vipAcceptPayoutRange } from '../game/vip'
 import { useTranslation } from '../locales/i18n'
 import {
   maxScoutCreatorsForGrade,
@@ -55,17 +55,17 @@ import { SnsBulkComposeModal } from './SnsBulkComposeModal'
 import { SnsBulkPostRevealModal } from './SnsBulkPostRevealModal'
 import { previewBulkSnsCompose, canComposeSnsCreator, canAffordBulkSnsCompose, type BulkSnsRevealEntry, type BulkSnsComposeResult, type SnsHeat } from '../game/sns'
 import type { RegisteredStaff, StaffKind } from '../game/staff'
-import { staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
+import { STAFF_KINDS, staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
-import { findSlotIdForStaff } from '../game/slotManagers'
+import { findSlotIdForStaff, staffOfferBase } from '../game/slotManagers'
+import { KIND_TONE, StaffKindIcon } from './StaffManagerUi'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import type { ScoutedStaffCandidate } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
-import type { TutorialStep } from '../components/TutorialGuideOverlay'
+import { isStatTutorialStep, type TutorialStep } from '../components/TutorialGuideOverlay'
 
 type CreatorPanelProps = {
   companyViewers?: number
-  stationRank?: number
   ownedCreators: OwnedCreator[]
   registeredCharacters: RegisteredCharacter[]
   scoutState: ScoutSystemState
@@ -103,9 +103,7 @@ type CreatorPanelProps = {
   studioSlots: StudioSlot[]
   onAssignStaffPlacement: (staffId: string) => void
   onHDirect?: (creatorId: string) => void
-  onVipDirect?: (creatorId: string) => void
   lastHActionMonth?: number
-  lastVipActionMonthByCreator?: Record<string, number>
   onSelectSkin?: (creatorId: string, skin: 1 | 2 | 3) => void
 }
 
@@ -119,19 +117,100 @@ const GRADE_STYLE: Record<Grade, string> = {
 const STAT_TYPE_LABEL_KEY: Record<CreatorStatType, string> = {
   sexy: 'creator.typeSexy',
   communication: 'creator.typeCommunication',
-  elegance: 'creator.typeElegance',
+  mental: 'creator.typeMental',
   performance: 'creator.typePerformance',
 }
 
 const STAT_VALUE_LABEL_KEY: Record<CreatorStatType, string> = {
   sexy: 'creator.statSexy',
   communication: 'creator.statCommunication',
-  elegance: 'creator.statElegance',
+  mental: 'creator.statMental',
   performance: 'creator.statPerformance',
 }
 
 function formatSalary(value: number) {
   return formatMoney(value)
+}
+
+const STAFF_ROLE_EFFECT_KEY: Record<StaffKind, string> = {
+  security: 'staff.dutySecurityBonus',
+  repair: 'staff.dutyRepairBonus',
+  care: 'staff.dutyCareBonus',
+  production: 'staff.dutyProductionBonus',
+}
+
+function staffRoleTooltip(
+  t: (key: string) => string,
+  kind: StaffKind,
+  grade: string,
+  salary?: number,
+) {
+  const base = staffOfferBase(grade)
+  const annual = salary ?? base.salary
+  const cost = t(salary != null ? 'staff.roleCostHired' : 'staff.roleCost')
+    .replace('{hire}', formatMoney(base.hire))
+    .replace('{salary}', formatMoney(annual))
+    .replace('{monthly}', formatMoney(Math.round(annual / 12)))
+  return `${t(STAFF_ROLE_EFFECT_KEY[kind])} ${cost}`
+}
+
+function HoverTip({ text, children }: { text: string; children: ReactNode }) {
+  const [pos, setPos] = useState<{ top: number; left: number; below: boolean } | null>(null)
+
+  const place = (el: HTMLElement) => {
+    const rect = el.getBoundingClientRect()
+    const below = window.innerHeight - rect.bottom > 128
+    const left = Math.min(Math.max(8, rect.left), window.innerWidth - 296)
+    setPos({
+      top: below ? rect.bottom + 6 : rect.top - 6,
+      left,
+      below,
+    })
+  }
+
+  return (
+    <span
+      className="inline-flex"
+      onMouseEnter={(event) => place(event.currentTarget)}
+      onMouseLeave={() => setPos(null)}
+      onFocus={(event) => place(event.currentTarget)}
+      onBlur={() => setPos(null)}
+    >
+      {children}
+      {pos
+        ? createPortal(
+            <span
+              role="tooltip"
+              style={{
+                position: 'fixed',
+                left: pos.left,
+                top: pos.below ? pos.top : undefined,
+                bottom: pos.below ? undefined : window.innerHeight - pos.top,
+              }}
+              className="pointer-events-none z-[80] w-72 rounded-lg border border-white/10 bg-slate-950/95 px-2.5 py-2 text-left text-[11px] font-medium leading-4 text-slate-200 shadow-lg"
+            >
+              {text}
+            </span>,
+            document.body,
+          )
+        : null}
+    </span>
+  )
+}
+
+function StaffRoleChip({ kind, label, hint }: { kind: StaffKind; label: string; hint: string }) {
+  return (
+    <HoverTip text={hint}>
+      <span
+        tabIndex={0}
+        aria-label={`${label}. ${hint}`}
+        className={`inline-flex cursor-help items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${KIND_TONE[kind]}`}
+      >
+        <StaffKindIcon kind={kind} className="h-3 w-3" />
+        {label}
+      </span>
+    </HoverTip>
+  )
 }
 
 /** CCTV 스테미나 바와 동일 톤 — 리스트용 축소 게이지 */
@@ -208,10 +287,7 @@ export function CreatorPanel({
   studioSlots,
   onAssignStaffPlacement,
   onHDirect,
-  onVipDirect,
   lastHActionMonth,
-  lastVipActionMonthByCreator,
-  stationRank = 100,
   onSelectSkin,
 }: CreatorPanelProps) {
   const { t, locale } = useTranslation()
@@ -229,6 +305,22 @@ export function CreatorPanel({
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const statTutorial = isStatTutorialStep(tutorialStep ?? null)
+
+  useEffect(() => {
+    if (!statTutorial) return
+    const first = ownedCreators[0]
+    if (first && selectedId !== first.id) setSelectedId(first.id)
+  }, [statTutorial, ownedCreators, selectedId])
+
+  useEffect(() => {
+    if (!tutorialStep || !statTutorial) return
+    const selector = `[data-tutorial="${tutorialStep.replace('_', '-')}"]`
+    const timer = window.setTimeout(() => {
+      document.querySelector(selector)?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+    }, 50)
+    return () => window.clearTimeout(timer)
+  }, [tutorialStep, statTutorial, selectedId])
   const [snsCreatorId, setSnsCreatorId] = useState<string | null>(null)
   const [bulkSnsOpen, setBulkSnsOpen] = useState(false)
   const [bulkRevealState, setBulkRevealState] = useState<BulkSnsComposeResult | null>(null)
@@ -393,21 +485,22 @@ export function CreatorPanel({
     return (
       <CreatorDetailView
         companyViewers={companyViewers}
-        stationRank={stationRank}
         creator={selected}
         assets={assets}
         broadcastMonthNumber={broadcastMonthNumber}
         ownedCreators={ownedCreators}
         studioSlots={studioSlots}
-        onBack={() => setSelectedId(null)}
+        onBack={() => {
+          if (statTutorial) return
+          setSelectedId(null)
+        }}
+        backLocked={statTutorial}
         registeredCharacters={registeredCharacters}
         onConditionCare={onConditionCare}
         onVacation={onVacation}
         onProductionTraining={onProductionTraining}
         onHDirect={onHDirect}
-        onVipDirect={onVipDirect}
         lastHActionMonth={lastHActionMonth}
-        lastVipActionMonthByCreator={lastVipActionMonthByCreator}
         onSelectSkin={onSelectSkin}
       />
     )
@@ -756,7 +849,8 @@ export function CreatorPanel({
 
         return (
           <section className="game-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
-            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 px-3 py-2.5 sm:px-4">
+            <div className="flex shrink-0 flex-col gap-2 border-b border-white/8 px-3 py-2.5 sm:px-4">
+              <div className="flex items-center justify-between gap-2">
               <div>
                 <p className="text-xs font-semibold tracking-wide text-slate-200">{t('creator.staffManageTitle')}</p>
                 <p className="mt-0.5 text-[10px] text-slate-500">{t('creator.staffManageDesc')}</p>
@@ -809,6 +903,18 @@ export function CreatorPanel({
                 <span className="game-chip text-[10px]">
                   {t('common.countUnit').replace('{count}', String(displayStaffs.length))}
                 </span>
+              </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-[10px] text-slate-500">{t('staff.roleMenu')}</span>
+                {STAFF_KINDS.map((kind) => (
+                  <StaffRoleChip
+                    key={kind}
+                    kind={kind}
+                    label={t(STAFF_KIND_LABEL_KEY[kind])}
+                    hint={staffRoleTooltip(t, kind, stationGrade)}
+                  />
+                ))}
               </div>
             </div>
 
@@ -869,9 +975,11 @@ export function CreatorPanel({
                             </div>
                           </td>
                           <td className="px-3 py-2.5">
-                            <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-slate-300">
-                              {t(STAFF_KIND_LABEL_KEY[staff.kind])}
-                            </span>
+                            <StaffRoleChip
+                              kind={staff.kind}
+                              label={t(STAFF_KIND_LABEL_KEY[staff.kind])}
+                              hint={staffRoleTooltip(t, staff.kind, stationGrade, salary)}
+                            />
                           </td>
                           <td className="px-3 py-2.5 font-semibold text-slate-300">
                             {(() => {
@@ -1073,8 +1181,7 @@ function ScoutView({
                   )}
                 </div>
                 <p className="text-xs font-semibold text-slate-400">
-                  {t('creator.statSexy')} {stats.statSexy} · {t('creator.statPerformance')}{' '}
-                  {stats.statPerformance}
+                  {t('creator.statCommunication')} {stats.statCommunication}
                 </p>
               </div>
 
@@ -1156,25 +1263,22 @@ function getSkinThumbnailUrl(
 
 function CreatorDetailView({
   companyViewers = 0,
-  stationRank = 100,
   creator,
   assets,
   broadcastMonthNumber,
   ownedCreators = [],
   studioSlots,
   onBack,
+  backLocked = false,
   onConditionCare,
   onVacation,
   onProductionTraining,
   onHDirect,
-  onVipDirect,
   lastHActionMonth,
-  lastVipActionMonthByCreator,
   onSelectSkin,
   registeredCharacters,
 }: {
   companyViewers?: number
-  stationRank?: number
   creator: OwnedCreator
   assets: number
   broadcastMonthNumber: number
@@ -1182,13 +1286,12 @@ function CreatorDetailView({
   studioSlots?: StudioSlot[]
   registeredCharacters?: RegisteredCharacter[]
   onBack: () => void
+  backLocked?: boolean
   onConditionCare: (creatorId: string) => void
   onVacation: (creatorId: string) => void
   onProductionTraining: (creatorId: string) => void
   onHDirect?: (creatorId: string) => void
-  onVipDirect?: (creatorId: string) => void
   lastHActionMonth?: number
-  lastVipActionMonthByCreator?: Record<string, number>
   onSelectSkin?: (creatorId: string, skin: 1 | 2 | 3) => void
 }) {
   const { t, locale } = useTranslation()
@@ -1217,7 +1320,6 @@ function CreatorDetailView({
   const canCare = !conditionFull && canAffordCare
   const statType = normalizeCreatorStatType(creator.statType)
   const mainStatLabel = t(STAT_VALUE_LABEL_KEY[statType])
-  const vipPayout = vipAcceptPayoutRange(stationRank)
   const mainStatValue = mainStatValueOf(creator)
   const nextBreak = nextGradeBreak(creator.grade)
   const breakNeed = nextBreak ? Math.max(0, nextBreak.need - mainStatValue) : 0
@@ -1271,9 +1373,11 @@ function CreatorDetailView({
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
       <header className="game-panel-strong flex shrink-0 flex-wrap items-center gap-3 rounded-2xl px-4 py-3">
-        <button type="button" onClick={onBack} className="game-btn rounded-xl px-3 py-2 text-sm">
-          {t('common.back')}
-        </button>
+        {backLocked ? null : (
+          <button type="button" onClick={onBack} className="game-btn rounded-xl px-3 py-2 text-sm">
+            {t('common.back')}
+          </button>
+        )}
         <div className="min-w-0 flex-1">
           <p className="game-kicker">CREATOR PROFILE</p>
           <h2 className="flex items-center gap-2 truncate text-base font-semibold text-slate-100 flex-wrap">
@@ -1297,9 +1401,9 @@ function CreatorDetailView({
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-auto lg:grid-cols-[18rem_minmax(0,1fr)] lg:overflow-hidden">
-        <section className="mx-auto flex w-full max-w-[18rem] min-h-[22rem] flex-col gap-2.5 lg:mx-0 lg:h-full lg:min-h-0">
-          <article className="game-card relative min-h-[16rem] w-full flex-1 overflow-hidden lg:min-h-0">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-auto lg:grid-cols-[minmax(15rem,17.5rem)_minmax(0,1fr)] lg:overflow-hidden">
+        <section className="mx-auto flex w-full max-w-[17.5rem] flex-col gap-2.5 lg:mx-0">
+          <article className="game-card relative aspect-[3/4] w-full overflow-hidden">
             <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-b from-slate-700/80 to-slate-950">
               <div
                 className={`mb-16 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br text-2xl font-bold text-slate-950 ${creator.avatarTone}`}
@@ -1312,7 +1416,7 @@ function CreatorDetailView({
                 key={`${creator.id}-${activeSkin}`}
                 src={resolveMediaSrc(activeSkinUrl, creator.mediaRevision)}
                 alt=""
-                className="absolute inset-0 h-full w-full object-contain object-bottom transition-all duration-300"
+                className="absolute inset-0 h-full w-full object-cover object-top transition-all duration-300"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none'
                 }}
@@ -1442,18 +1546,22 @@ function CreatorDetailView({
             <PersonalityStatBars stats={creator} t={t} />
             <StatBar
               label={t('creator.expectedRevenue')}
+              hint={t('creator.statHintRevenue')}
               valueLabel={formatMoney(calcMonthRevenueWon(creator, 0, 1, companyViewers))}
               percent={100}
               barClass="from-emerald-400 to-teal-300"
             />
             <StatBar
               label={t('creator.statStamina')}
+              hint={t('creator.statHintStamina')}
               valueLabel={`${creator.stamina}/${creator.staminaMax}`}
               percent={staminaPct}
               barClass="from-cyan-400 to-teal-300"
+              tutorialAttr="stat-stamina"
             />
             <StatBar
               label={t('condition.title')}
+              hint={t('creator.statHintCondition')}
               valueLabel={`${CONDITION_ICON[condition]} ${t(CONDITION_LABEL_KEY[condition])} (${conditionScore})`}
               percent={conditionScore}
               barClass="from-emerald-400 to-lime-300"
@@ -1582,49 +1690,6 @@ function CreatorDetailView({
                         </button>
                       )
                     })()}
-
-                    <button
-                      type="button"
-                      disabled={lastVipActionMonthByCreator?.[creator.id] === broadcastMonthNumber}
-                      onClick={() => onVipDirect?.(creator.id)}
-                      className="flex w-full items-start justify-between gap-3 rounded-xl border border-amber-400/40 bg-gradient-to-r from-amber-950/40 via-yellow-950/30 to-amber-950/40 px-3 py-2.5 text-left transition hover:border-amber-400/60 hover:bg-amber-900/30 hover:shadow-[0_0_15px_rgba(251,191,36,0.3)] disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      <span className="min-w-0">
-                        <span className="flex items-center gap-1.5 text-sm font-bold text-amber-200">
-                          <span aria-hidden>👑</span>
-                          {t('social.vipActionTitle')}
-                        </span>
-                        <span className="mt-1 block text-[10px] leading-4 text-amber-300/80">
-                          {t('social.vipActionDesc')}
-                        </span>
-                        <span className="mt-1 flex items-center gap-1 text-[11px] font-black text-amber-300">
-                          <span>💰</span>
-                          <span>
-                            {t('social.vipActionPayout').replace(
-                              '{range}',
-                              `${formatMoney(vipPayout.min)} ~ ${formatMoney(vipPayout.max)}`,
-                            )}
-                          </span>
-                        </span>
-                        {lastVipActionMonthByCreator?.[creator.id] === broadcastMonthNumber ? (
-                          <span className="mt-1 block text-[10px] font-semibold text-amber-300/80">
-                            {t('social.vipAlreadyUsedThisTurn')}
-                          </span>
-                        ) : (
-                          <span className="mt-1 block text-[10px] font-semibold text-emerald-400">
-                            {t('social.vipReady')}
-                          </span>
-                        )}
-                      </span>
-                      <div className="shrink-0 flex flex-col items-end gap-1">
-                        <span className="text-xs font-black text-amber-300 rounded-lg border border-amber-400/40 bg-amber-500/20 px-2 py-1 shadow">
-                          {t('social.vipActionTag')}
-                        </span>
-                        <span className="text-[11px] font-black text-emerald-400">
-                          +{formatMoney(vipPayout.min)}~
-                        </span>
-                      </div>
-                    </button>
                   </>
                 ) : null}
               </div>
@@ -1769,17 +1834,33 @@ function TrainingBurstFx() {
 }
 
 const PERSONALITY_STAT_BARS = [
-  { key: 'statSexy', labelKey: 'creator.statSexy', barClass: 'from-rose-500 to-pink-300' },
+  {
+    key: 'statSexy',
+    labelKey: 'creator.statSexy',
+    hintKey: 'creator.statHintSexy',
+    barClass: 'from-rose-500 to-pink-300',
+    tutorialAttr: 'stat-sexy',
+  },
   {
     key: 'statCommunication',
     labelKey: 'creator.statCommunication',
+    hintKey: 'creator.statHintCommunication',
     barClass: 'from-sky-400 to-cyan-300',
+    tutorialAttr: 'stat-communication',
   },
-  { key: 'statElegance', labelKey: 'creator.statElegance', barClass: 'from-violet-300 to-slate-200' },
+  {
+    key: 'statMental',
+    labelKey: 'creator.statMental',
+    hintKey: 'creator.statHintMental',
+    barClass: 'from-violet-300 to-slate-200',
+    tutorialAttr: 'stat-mental',
+  },
   {
     key: 'statPerformance',
     labelKey: 'creator.statPerformance',
+    hintKey: 'creator.statHintPerformance',
     barClass: 'from-amber-400 to-orange-300',
+    tutorialAttr: 'stat-performance',
   },
 ] as const
 
@@ -1789,7 +1870,7 @@ function PersonalityStatBars({
 }: {
   stats: {
     statSexy?: number
-    statElegance?: number
+    statMental?: number
     statCommunication?: number
     statPerformance?: number
   }
@@ -1806,6 +1887,8 @@ function PersonalityStatBars({
             valueLabel={`${value}`}
             percent={value}
             barClass={row.barClass}
+            hint={t(row.hintKey)}
+            tutorialAttr={row.tutorialAttr}
           />
         )
       })}
@@ -1813,24 +1896,60 @@ function PersonalityStatBars({
   )
 }
 
+function StatHint({ text }: { text: string }) {
+  const [below, setBelow] = useState(true)
+  return (
+    <span
+      className="group/hint relative inline-flex"
+      onMouseEnter={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect()
+        setBelow(window.innerHeight - rect.bottom > 96)
+      }}
+    >
+      <button
+        type="button"
+        className="inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white/15 text-[9px] font-black leading-none text-slate-500 hover:border-white/30 hover:text-slate-200"
+        aria-label={text}
+      >
+        ?
+      </button>
+      <span
+        role="tooltip"
+        className={`pointer-events-none absolute left-0 z-30 hidden w-64 rounded-lg border border-white/10 bg-slate-950/95 px-2.5 py-2 text-left text-[11px] font-medium leading-4 text-slate-200 shadow-lg group-hover/hint:block group-focus-within/hint:block ${
+          below ? 'top-full mt-1' : 'bottom-full mb-1'
+        }`}
+      >
+        {text}
+      </span>
+    </span>
+  )
+}
+
 function StatBar({
   label,
+  hint,
   valueLabel,
   note,
   percent,
   barClass,
+  tutorialAttr,
 }: {
   label: string
+  hint?: string
   valueLabel: string
   note?: string
   percent: number
   barClass: string
+  tutorialAttr?: string
 }) {
   const width = Math.max(0, Math.min(100, percent))
   return (
-    <div>
+    <div data-tutorial={tutorialAttr}>
       <div className="mb-1 flex items-end justify-between gap-2">
-        <p className="text-[11px] font-semibold tracking-wide text-slate-400">{label}</p>
+        <p className="flex items-center gap-1 text-[11px] font-semibold tracking-wide text-slate-400">
+          <span>{label}</span>
+          {hint ? <StatHint text={hint} /> : null}
+        </p>
         <p className="text-xs font-bold tabular-nums text-slate-200">{valueLabel}</p>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-slate-800">

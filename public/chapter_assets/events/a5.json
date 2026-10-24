@@ -375,7 +375,7 @@
     {
       "id": "node_1786843238702_34_ilc3",
       "type": "graphic",
-      "image": "2026-10-17_00028__restored_1080p_nf_comp.mp4",
+      "image": "2026-10-17_00028__48fps.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -477,7 +477,7 @@
     {
       "id": "graphic_a5_7",
       "type": "graphic",
-      "image": "2026-10-17_00030__restored_1080p_nf_comp.mp4",
+      "image": "2026-10-17_00030__48fps.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4
@@ -932,20 +932,20 @@
       "size": 3814318
     },
     {
-      "id": "1792327789985-5j43bnd",
-      "fileName": "2026-10-17_00028__restored_1080p_nf_comp.mp4",
+      "id": "1792647790625-0lqpzw4",
+      "fileName": "2026-10-17_00030__48fps.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/a5/videos/2026-10-17_00028__restored_1080p_nf_comp.mp4",
-      "url": "media://chapter_assets/events/a5/videos/2026-10-17_00028__restored_1080p_nf_comp.mp4",
-      "size": 4249686
+      "sourcePath": "chapter_assets/events/a5/videos/2026-10-17_00030__48fps.mp4",
+      "url": "media://chapter_assets/events/a5/videos/2026-10-17_00030__48fps.mp4",
+      "size": 2712479
     },
     {
-      "id": "1792327796623-9sfi05p",
-      "fileName": "2026-10-17_00030__restored_1080p_nf_comp.mp4",
+      "id": "1792647797967-sxyf3sx",
+      "fileName": "2026-10-17_00028__48fps.mp4",
       "kind": "video",
-      "sourcePath": "chapter_assets/events/a5/videos/2026-10-17_00030__restored_1080p_nf_comp.mp4",
-      "url": "media://chapter_assets/events/a5/videos/2026-10-17_00030__restored_1080p_nf_comp.mp4",
-      "size": 3332069
+      "sourcePath": "chapter_assets/events/a5/videos/2026-10-17_00028__48fps.mp4",
+      "url": "media://chapter_assets/events/a5/videos/2026-10-17_00028__48fps.mp4",
+      "size": 4473319
     }
   ],
   "sourceZipName": "직접 생성",

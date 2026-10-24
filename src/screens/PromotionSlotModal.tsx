@@ -17,7 +17,7 @@ import { getGradeBadgeStyle } from './DashboardPanel'
 const REEL_META: Record<CreatorStatType, { labelKey: string; tone: string }> = {
   sexy: { labelKey: 'creator.statSexy', tone: 'sexy' },
   communication: { labelKey: 'creator.statCommunication', tone: 'comm' },
-  elegance: { labelKey: 'creator.statElegance', tone: 'elegance' },
+  mental: { labelKey: 'creator.statMental', tone: 'mental' },
   performance: { labelKey: 'creator.statPerformance', tone: 'perf' },
 }
 
@@ -409,7 +409,7 @@ function ReelGlyph({ type }: { type: CreatorStatType }) {
       </svg>
     )
   }
-  if (type === 'elegance') {
+  if (type === 'mental') {
     return (
       <svg viewBox="0 0 48 48" className="promotion-reel-glyph" aria-hidden>
         <path

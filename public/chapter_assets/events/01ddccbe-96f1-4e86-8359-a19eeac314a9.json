@@ -502,7 +502,7 @@
     {
       "id": "node_1787179147661_51_vnfi",
       "type": "graphic",
-      "image": "2026-10-18_00002__restored_1080p_nf_comp.mp4",
+      "image": "2026-10-18_00002__48fps.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4,
@@ -555,7 +555,7 @@
     {
       "id": "node_1792309959772_ykdg",
       "type": "graphic",
-      "image": "2026-10-18_00003__restored_1080p_nf_comp.mp4",
+      "image": "2026-10-18_00003__48fps.mp4",
       "delay": 2,
       "ignoreDelay": false,
       "speed": 1.4,
@@ -919,28 +919,28 @@
       "size": 3405837
     },
     {
-      "id": "1792309948102-lkp0ffo",
-      "fileName": "2026-10-18_00002__restored_1080p_nf_comp.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00002__restored_1080p_nf_comp.mp4",
-      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00002__restored_1080p_nf_comp.mp4",
-      "size": 4096608
-    },
-    {
-      "id": "1792309967304-wwwyp5d",
-      "fileName": "2026-10-18_00003__restored_1080p_nf_comp.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00003__restored_1080p_nf_comp.mp4",
-      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00003__restored_1080p_nf_comp.mp4",
-      "size": 2266282
-    },
-    {
       "id": "1792309989816-i2qb8xh",
       "fileName": "2026-10-18_00004__restored_1080p_nf_comp.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00004__restored_1080p_nf_comp.mp4",
       "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00004__restored_1080p_nf_comp.mp4",
       "size": 2558933
+    },
+    {
+      "id": "1792649599811-qum2mfx",
+      "fileName": "2026-10-18_00002__48fps.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00002__48fps.mp4",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00002__48fps.mp4",
+      "size": 4683432
+    },
+    {
+      "id": "1792649605257-v57vmzx",
+      "fileName": "2026-10-18_00003__48fps.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00003__48fps.mp4",
+      "url": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00003__48fps.mp4",
+      "size": 3098108
     }
   ],
   "sourceZipName": "직접 생성",

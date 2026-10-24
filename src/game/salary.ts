@@ -22,20 +22,18 @@ export const SALARY_OFFER_MULT = { min: 1.0, max: 1.35 } as const
 const MONTHS_PER_YEAR = 12
 
 export type SalaryStatInput = {
-  statSexy?: number
-  statPerformance?: number
+  statCommunication?: number
 }
 
 /**
- * 주간 기본 수익 — (섹시 + 퍼포먼스) × 단가 × 등급배율. 시청자 0 기준.
+ * 주간 기본 수익 — 소통 × 40 × 등급배율. 시청자 0 기준.
  */
 export function estimateBaseWeekRevenueWon(stats: SalaryStatInput, grade?: Grade): number {
-  const sexy = Math.max(0, Math.min(100, Number(stats.statSexy) || 0))
-  const performance = Math.max(0, Math.min(100, Number(stats.statPerformance) || 0))
+  const communication = Math.max(0, Math.min(100, Number(stats.statCommunication) || 0))
   return Math.max(
     0,
     Math.round(
-      (sexy + performance) * viewerBonusOf(0) * REVENUE_PER_STAT_POINT * gradeRevenueMult(grade),
+      communication * viewerBonusOf(0) * REVENUE_PER_STAT_POINT * 2 * gradeRevenueMult(grade),
     ),
   )
 }
@@ -66,8 +64,7 @@ export function calcSalaryFloorFromWorst(stats: SalaryStatInput, grade?: Grade):
 export function rollNegotiatedSalary(stats: CharacterStats, grade: Grade): number {
   const floor = calcSalaryFloorFromNormal(
     {
-      statSexy: stats.statSexy,
-      statPerformance: stats.statPerformance,
+      statCommunication: stats.statCommunication,
     },
     grade,
   )
@@ -82,8 +79,7 @@ export function estimateDefaultSalaryForGrade(grade: Grade): number {
   const typical = typicalStatForGrade(grade)
   const floor = calcSalaryFloorFromNormal(
     {
-      statSexy: typical,
-      statPerformance: typical,
+      statCommunication: typical,
     },
     grade,
   )

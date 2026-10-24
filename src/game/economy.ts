@@ -54,13 +54,12 @@ export type StudioDayPlan = {
 }
 
 /**
- * 주간 총수익(USD) = (섹시 + 퍼포먼스) × 시청자보너스 × 단가 × 등급배율 × 컨디션배율(0.6~1.2)
+ * 주간 총수익(USD) = 소통 × 40 × 시청자보너스 × 등급배율 × 컨디션배율(0.6~1.2)
  */
 export function calcWeekRevenueWon(
   creator: {
     grade?: string
-    statSexy?: number
-    statPerformance?: number
+    statCommunication?: number
     condition?: string
     conditionScore?: number
   },
@@ -68,15 +67,15 @@ export function calcWeekRevenueWon(
   _equipmentRevenueMult = 1,
   companyViewers = 0,
 ): number {
-  const sexy = Math.max(0, Math.min(100, Number(creator.statSexy) || 0))
-  const performance = Math.max(0, Math.min(100, Number(creator.statPerformance) || 0))
+  const communication = Math.max(0, Math.min(100, Number(creator.statCommunication) || 0))
   const condMult = conditionRevenueMultOf(creator)
   return Math.max(
     0,
     Math.round(
-      (sexy + performance) *
+      communication *
         viewerBonusOf(companyViewers) *
         REVENUE_PER_STAT_POINT *
+        2 *
         gradeRevenueMult(creator.grade) *
         condMult *
         Math.max(0, Number(_equipmentRevenueMult) || 1),
@@ -87,8 +86,7 @@ export function calcWeekRevenueWon(
 export function calcMonthRevenueWon(
   creator: {
     grade?: string
-    statSexy?: number
-    statPerformance?: number
+    statCommunication?: number
     condition?: string
     conditionScore?: number
   },

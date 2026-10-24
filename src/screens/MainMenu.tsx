@@ -162,6 +162,14 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
   // Keyboard navigation for menu
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target
+      if (target instanceof HTMLElement) {
+        const tag = target.tagName
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) {
+          return
+        }
+      }
+
       if (exitConfirmOpen) {
         if (e.key === 'Escape') {
           e.preventDefault()

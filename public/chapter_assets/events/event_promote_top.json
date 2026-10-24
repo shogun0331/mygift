@@ -396,7 +396,7 @@
     {
       "id": "node_1792375692028_44_rgg0",
       "type": "graphic",
-      "image": "2026-10-18_00043__restored_1080p_nf_comp.mp4",
+      "image": "2026-10-21_00095__48fps.mp4",
       "delay": 2,
       "ignoreDelay": false,
       "speed": 1,
@@ -694,7 +694,7 @@
     {
       "id": "node_1792375692028_81_p98q",
       "type": "graphic",
-      "image": "2026-10-18_00042__restored_1080p_nf_comp.mp4",
+      "image": "2026-10-18_00042__48fps.mp4",
       "delay": 2,
       "ignoreDelay": false,
       "speed": 1.2,
@@ -1025,28 +1025,28 @@
       "size": 3019541
     },
     {
-      "id": "1792375572255-zi2owep",
-      "fileName": "2026-10-18_00043__restored_1080p_nf_comp.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/event_promote_top/videos/2026-10-18_00043__restored_1080p_nf_comp.mp4",
-      "url": "media://chapter_assets/events/event_promote_top/videos/2026-10-18_00043__restored_1080p_nf_comp.mp4",
-      "size": 2306327
-    },
-    {
-      "id": "1792375784203-jsxvq8h",
-      "fileName": "2026-10-18_00042__restored_1080p_nf_comp.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/event_promote_top/videos/2026-10-18_00042__restored_1080p_nf_comp.mp4",
-      "url": "media://chapter_assets/events/event_promote_top/videos/2026-10-18_00042__restored_1080p_nf_comp.mp4",
-      "size": 3260835
-    },
-    {
       "id": "1792375803426-jodtmw8",
       "fileName": "2026-10-18_00041__restored_1080p_nf_comp.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/event_promote_top/videos/2026-10-18_00041__restored_1080p_nf_comp.mp4",
       "url": "media://chapter_assets/events/event_promote_top/videos/2026-10-18_00041__restored_1080p_nf_comp.mp4",
       "size": 2388210
+    },
+    {
+      "id": "1792649876933-skubdyv",
+      "fileName": "2026-10-21_00095__48fps.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/event_promote_top/videos/2026-10-21_00095__48fps.mp4",
+      "url": "media://chapter_assets/events/event_promote_top/videos/2026-10-21_00095__48fps.mp4",
+      "size": 3314363
+    },
+    {
+      "id": "1792649914221-lvykiue",
+      "fileName": "2026-10-18_00042__48fps.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/event_promote_top/videos/2026-10-18_00042__48fps.mp4",
+      "url": "media://chapter_assets/events/event_promote_top/videos/2026-10-18_00042__48fps.mp4",
+      "size": 4059669
     }
   ],
   "defaultLanguage": "ko",

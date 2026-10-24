@@ -198,6 +198,155 @@ function getSharedAudioContext(): AudioContext | null {
   return sharedAudioCtx
 }
 
+/** 팬미팅 오프닝 제목. 글자가 모일 때 올라가고, 0.84초에 맺히며, 사라질 때 내려간다. */
+export function playFanOpeningSting(): () => void {
+  const stoppers: Array<() => void> = []
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return () => {}
+    const vol = volume * 0.5
+    if (vol <= 0.01) return () => {}
+    const now = ctx.currentTime
+
+    const sweep = ctx.createOscillator()
+    const sweepGain = ctx.createGain()
+    sweep.type = 'sine'
+    sweep.frequency.setValueAtTime(220, now)
+    sweep.frequency.exponentialRampToValueAtTime(880, now + 0.72)
+    sweepGain.gain.setValueAtTime(0.001, now)
+    sweepGain.gain.exponentialRampToValueAtTime(vol * 0.16, now + 0.32)
+    sweepGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8)
+    sweep.connect(sweepGain)
+    sweepGain.connect(ctx.destination)
+    sweep.start(now)
+    sweep.stop(now + 0.82)
+    stoppers.push(() => sweep.stop())
+
+    ;[523.25, 659.25, 783.99, 1046.5].forEach((freq, index) => {
+      const start = 0.4 + index * 0.1
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(freq, now + start)
+      gain.gain.setValueAtTime(0.001, now + start)
+      gain.gain.exponentialRampToValueAtTime(vol * 0.22, now + start + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + 0.22)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start(now + start)
+      osc.stop(now + start + 0.24)
+      stoppers.push(() => osc.stop())
+    })
+
+    ;[523.25, 659.25, 783.99].forEach((freq) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(freq, now + 0.84)
+      gain.gain.setValueAtTime(0.001, now + 0.84)
+      gain.gain.exponentialRampToValueAtTime(vol * 0.28, now + 0.88)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.7)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start(now + 0.84)
+      osc.stop(now + 1.72)
+      stoppers.push(() => osc.stop())
+    })
+
+    const exit = ctx.createOscillator()
+    const exitGain = ctx.createGain()
+    exit.type = 'sine'
+    exit.frequency.setValueAtTime(740, now + 2.3)
+    exit.frequency.exponentialRampToValueAtTime(196, now + 2.95)
+    exitGain.gain.setValueAtTime(0.001, now + 2.3)
+    exitGain.gain.exponentialRampToValueAtTime(vol * 0.14, now + 2.42)
+    exitGain.gain.exponentialRampToValueAtTime(0.001, now + 2.98)
+    exit.connect(exitGain)
+    exitGain.connect(ctx.destination)
+    exit.start(now + 2.3)
+    exit.stop(now + 3)
+    stoppers.push(() => exit.stop())
+  } catch {
+    return () => {}
+  }
+  return () => {
+    for (const stop of stoppers) {
+      try {
+        stop()
+      } catch {
+        // already stopped
+      }
+    }
+  }
+}
+
+/** 팬미팅 취향 저격. 부드러운 차임. */
+export function playFanTasteSting(delay = 0) {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.55
+    if (vol <= 0.01) return
+    const now = ctx.currentTime + delay
+    ;[523.25, 659.25, 783.99, 1046.5].forEach((freq, index) => {
+      const start = index * 0.07
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, now + start)
+      gain.gain.setValueAtTime(0.001, now + start)
+      gain.gain.exponentialRampToValueAtTime(vol * 0.28, now + start + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + 0.38)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start(now + start)
+      osc.stop(now + start + 0.4)
+    })
+  } catch {
+    // ignore
+  }
+}
+
+/** 팬미팅 크리티컬. 짧은 타격 뒤에 높은 핑. */
+export function playFanCriticalSting() {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * 0.6
+    if (vol <= 0.01) return
+    const now = ctx.currentTime
+
+    const hit = ctx.createOscillator()
+    const hitGain = ctx.createGain()
+    hit.type = 'square'
+    hit.frequency.setValueAtTime(180, now)
+    hit.frequency.exponentialRampToValueAtTime(70, now + 0.12)
+    hitGain.gain.setValueAtTime(vol * 0.2, now)
+    hitGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14)
+    hit.connect(hitGain)
+    hitGain.connect(ctx.destination)
+    hit.start(now)
+    hit.stop(now + 0.16)
+
+    ;[880, 1318.5].forEach((freq, index) => {
+      const start = 0.04 + index * 0.06
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(freq, now + start)
+      gain.gain.setValueAtTime(0.001, now + start)
+      gain.gain.exponentialRampToValueAtTime(vol * 0.34, now + start + 0.015)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + 0.22)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start(now + start)
+      osc.stop(now + start + 0.24)
+    })
+  } catch {
+    // ignore
+  }
+}
+
 /** 승급 통과 성공 웅장한 팡파르 (Web Audio Synth Fanfare) */
 export function playAuditPassFanfare() {
   try {

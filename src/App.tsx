@@ -13,6 +13,11 @@ import {
   persistBgmFiles,
   pruneUnusedBgmFiles,
   removeBgmFile,
+  saveOpeningVideoConfig,
+  loadOpeningVideoConfig,
+  persistOpeningVideos,
+  pruneUnusedOpeningVideos,
+  removeOpeningVideo,
 } from './events/db'
 import { loadHighLowConfigFromDisk } from './minigames/highlow/highLowStore'
 import type { GameEvent } from './events/types'
@@ -31,6 +36,7 @@ import { setViewerBalance } from './game/viewerBalance'
 import { normalizeOwnerCharacterId } from './events/types'
 import {
   createRegisteredCharacter,
+  normalizeAuditMedia,
   findCharacterProfileUrl,
   findLevelIdleVideoUrl,
   normalizeOwnedCreator,
@@ -95,6 +101,12 @@ import {
   type BgmTrack,
   type GameBgmConfig,
 } from './game/bgm'
+import {
+  emptyOpeningVideoConfig,
+  normalizeOpeningVideoConfig,
+  openingVideoFileNames,
+  type OpeningVideoConfig,
+} from './game/openingVideos'
 
 const STAFF_STORAGE_KEY = 'broadcast-staff-json'
 
@@ -832,6 +844,10 @@ export default function App() {
   const [isStationGradeConfigLoaded, setIsStationGradeConfigLoaded] = useState(false)
   const [bgmConfig, setBgmConfig] = useState<GameBgmConfig>(emptyBgmConfig)
   const [isBgmConfigLoaded, setIsBgmConfigLoaded] = useState(false)
+  const [openingConfig, setOpeningConfig] = useState<OpeningVideoConfig>(emptyOpeningVideoConfig)
+  const [isOpeningConfigLoaded, setIsOpeningConfigLoaded] = useState(false)
+  const openingConfigRef = useRef(openingConfig)
+  openingConfigRef.current = openingConfig
   /** 데이터 로드 완료 상태 플래그 */
   const [isLoaded, setIsLoaded] = useState(false)
   /** 인게임에서 1회 이상 시청한 시뮬레이터 이벤트 */
@@ -968,6 +984,16 @@ export default function App() {
         setIsBgmConfigLoaded(true)
       })
 
+    loadOpeningVideoConfig()
+      .then((config) => {
+        setOpeningConfig(normalizeOpeningVideoConfig(config))
+        setIsOpeningConfigLoaded(true)
+      })
+      .catch((err) => {
+        console.error('Failed to load opening videos:', err)
+        setIsOpeningConfigLoaded(true)
+      })
+
     void loadHighLowConfigFromDisk().catch((err) => {
       console.error('Failed to load highlow config:', err)
     })
@@ -1005,6 +1031,13 @@ export default function App() {
       console.error('Failed to save BGM config:', err)
     })
   }, [bgmConfig, isBgmConfigLoaded])
+
+  useEffect(() => {
+    if (!isOpeningConfigLoaded) return
+    saveOpeningVideoConfig(openingConfig).catch((err) => {
+      console.error('Failed to save opening videos:', err)
+    })
+  }, [openingConfig, isOpeningConfigLoaded])
 
   // 3. 캐릭터 상태 변경 시 자동 저장
   useEffect(() => {
@@ -1073,20 +1106,7 @@ export default function App() {
             blurRegions: post.blurRegions ?? [],
             blurDefault: post.blurDefault ?? 4,
           })),
-          auditMedia: {
-            A: {
-              url: c.auditMedia?.A?.url ?? null,
-              blurRegions: c.auditMedia?.A?.blurRegions ?? [],
-            },
-            B: {
-              url: c.auditMedia?.B?.url ?? null,
-              blurRegions: c.auditMedia?.B?.blurRegions ?? [],
-            },
-            C: {
-              url: c.auditMedia?.C?.url ?? null,
-              blurRegions: c.auditMedia?.C?.blurRegions ?? [],
-            },
-          },
+          auditMedia: normalizeAuditMedia(c.auditMedia),
           shortsVn: {
             vip: (c.shortsVn?.vip ?? []).map((beat) => ({
               id: beat.id,
@@ -1632,6 +1652,40 @@ export default function App() {
     setBgmConfig(next)
   }
 
+  function buildOpeningFileName(index: number, originalName: string) {
+    const trimmed = (originalName || 'opening').trim()
+    const lastDot = trimmed.lastIndexOf('.')
+    const ext =
+      lastDot >= 0 ? trimmed.slice(lastDot).replace(/[^a-zA-Z0-9.]/g, '').slice(0, 8) : '.mp4'
+    return `opening_${String(index + 1).padStart(2, '0')}__${Date.now()}${ext || '.mp4'}`
+  }
+
+  async function handleUploadOpening(index: number, file: File) {
+    const fileName = buildOpeningFileName(index, file.name)
+    const buffer = await file.arrayBuffer()
+    const res = await persistOpeningVideos([{ fileName, buffer }])
+    if (!res.success) throw new Error(res.error || '오프닝 영상 저장 실패')
+    const videos = openingConfigRef.current.videos.slice()
+    const prev = videos[index]
+    videos[index] = fileName
+    const next = { videos }
+    openingConfigRef.current = next
+    if (prev && prev !== fileName) await removeOpeningVideo(prev)
+    await pruneUnusedOpeningVideos(openingVideoFileNames(next))
+    setOpeningConfig(next)
+  }
+
+  async function handleClearOpening(index: number) {
+    const videos = openingConfigRef.current.videos.slice()
+    const prev = videos[index]
+    videos[index] = null
+    const next = { videos }
+    openingConfigRef.current = next
+    if (prev) await removeOpeningVideo(prev)
+    await pruneUnusedOpeningVideos(openingVideoFileNames(next))
+    setOpeningConfig(next)
+  }
+
   async function handleClearBgm(track: BgmTrack) {
     const prev = bgmConfig[track].fileName
     const next = { ...bgmConfig, [track]: { fileName: null } }
@@ -1695,6 +1749,9 @@ export default function App() {
           onBgmConfigChange={setBgmConfig}
           onUploadBgm={handleUploadBgm}
           onClearBgm={handleClearBgm}
+          openingConfig={openingConfig}
+          onUploadOpening={handleUploadOpening}
+          onClearOpening={handleClearOpening}
           onBack={() => setScreen(editorReturnScreen === 'game' ? 'game' : 'main')}
         />
       </>

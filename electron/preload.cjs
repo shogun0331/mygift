@@ -56,6 +56,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteBgmFile: (fileName) => ipcRenderer.invoke('delete-bgm-file', { fileName }),
   pruneBgmFiles: (keep) => ipcRenderer.invoke('prune-bgm-files', { keep }),
   openBgmFolder: (fileName) => ipcRenderer.invoke('open-bgm-folder', { fileName }),
+  saveOpeningVideos: (assets) => ipcRenderer.invoke('save-opening-videos', { assets }),
+  saveOpeningVideoConfigJson: (config) => ipcRenderer.invoke('save-opening-config-json', { config }),
+  loadOpeningVideoConfigJson: () => ipcRenderer.invoke('load-opening-config-json'),
+  deleteOpeningVideo: (fileName) => ipcRenderer.invoke('delete-opening-video', { fileName }),
+  pruneOpeningVideos: (keep) => ipcRenderer.invoke('prune-opening-videos', { keep }),
+  openOpeningFolder: (fileName) => ipcRenderer.invoke('open-opening-folder', { fileName }),
   saveStationGradeConfigJson: (config) => ipcRenderer.invoke('save-station-grade-config-json', { config }),
   loadStationGradeConfigJson: () => ipcRenderer.invoke('load-station-grade-config-json'),
   deleteEventFile: (eventId, kind, fileName) =>

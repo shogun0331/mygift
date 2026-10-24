@@ -55,7 +55,7 @@ export function DateOfferModal({
       aria-modal="true"
       aria-labelledby="date-offer-title"
     >
-      <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-xl overflow-y-auto rounded-3xl border border-pink-500/40 bg-gradient-to-b from-slate-950/96 via-purple-950/50 to-slate-950/96 p-6 shadow-[0_0_75px_rgba(236,72,153,0.4)] sm:max-w-2xl sm:p-8">
+      <div className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-pink-500/40 bg-gradient-to-b from-slate-950/96 via-purple-950/50 to-slate-950/96 p-6 shadow-[0_0_75px_rgba(236,72,153,0.4)] sm:max-w-2xl sm:p-8">
         {/* Ambient background light flares */}
         <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-pink-500/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-purple-500/20 blur-3xl" />
@@ -120,7 +120,7 @@ export function DateResultModal({
       aria-modal="true"
       aria-labelledby="date-result-title"
     >
-      <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-xl overflow-y-auto rounded-3xl border border-pink-500/40 bg-gradient-to-b from-slate-950/96 via-purple-950/50 to-slate-950/96 p-6 shadow-[0_0_75px_rgba(236,72,153,0.4)] sm:max-w-2xl sm:p-8">
+      <div className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-pink-500/40 bg-gradient-to-b from-slate-950/96 via-purple-950/50 to-slate-950/96 p-6 shadow-[0_0_75px_rgba(236,72,153,0.4)] sm:max-w-2xl sm:p-8">
         {/* Ambient background light flares */}
         <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-pink-500/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-purple-500/20 blur-3xl" />
