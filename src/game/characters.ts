@@ -480,6 +480,8 @@ export type OwnedCreator = RegisteredCharacter & {
   proposalState?: 'accepted' | 'rejected' | null
   /** 데이트 아크: 0=데이트1 대기, 1=데이트2, 2=H, 3=H 완료 */
   dateArcStep?: 0 | 1 | 2 | 3
+  /** 호감도 0~100. 방송·SNS·트레이닝·특별휴가로만 오르고 줄지 않는다 */
+  affection?: number
   snsPublishedIds?: string[]
   snsFeed?: SnsPublishedPost[]
   snsPending?: SnsPendingPost | null
@@ -488,6 +490,10 @@ export type OwnedCreator = RegisteredCharacter & {
   snsHeat3Pity?: number
   /** 방송 턴 누적 트레이닝 카운트 */
   trainingTurns?: number
+  /** 1/3로 나눈 뒤 남은 트레이닝 상승분. 다음 훈련에 이어진다 */
+  trainingRemainder?: Partial<
+    Record<'statSexy' | 'statMental' | 'statCommunication' | 'statPerformance', number>
+  >
   /** 선택된 코스튬 스킨 (1: SKIN1, 2: SKIN2, 3: SKIN3) */
   selectedSkin?: 1 | 2 | 3
   /** 상세보기 VIP 만남 — 캐릭터당 1회 */
@@ -657,6 +663,7 @@ export function scoutCharacter(character: RegisteredCharacter): OwnedCreator {
     lastVacationMonth: null,
     vipUsed: false,
     dateArcStep: 0,
+    affection: 0,
     snsPublishedIds: [],
     snsFeed: [],
     snsPending: null,
@@ -711,6 +718,7 @@ export function normalizeOwnedCreator(
     ...base,
     heat: Math.max(1, Math.min(2, Number(raw.heat ?? 1) || 1)),
     dateArcStep,
+    affection: Math.max(0, Math.min(100, Math.round(Number(raw.affection ?? 0) || 0))),
     trust,
     stamina,
     staminaMax,

@@ -169,6 +169,7 @@ export function EditorScreen({
   const [simulatorTierKey, setSimulatorTierKey] = useState<Exclude<StationTierId, 'black' | 'tiny'> | null>(null)
   const [simulatorCreators, setSimulatorCreators] = useState<RegisteredCharacter[] | null>(null)
   const [isAuditSimulatorActive, setIsAuditSimulatorActive] = useState(false)
+  const [auditPracticeOpen, setAuditPracticeOpen] = useState(false)
   const [auditSimResult, setAuditSimResult] = useState<{ success: boolean; count: number } | null>(null)
   const { t } = useTranslation()
   useGameBgm(isAuditSimulatorActive ? 'audit' : null)
@@ -730,8 +731,19 @@ export function EditorScreen({
             setIsAuditSimulatorActive(true)
           }}
           onClose={() => setSimulatorTierKey(null)}
+          onReplayTutorial={() => setAuditPracticeOpen(true)}
         />
       )}
+      {auditPracticeOpen && simulatorTierKey ? (
+        <ExamMeetingModal
+          practice
+          tier={simulatorTierKey}
+          creators={registeredCharacters.slice(0, 4) as never[]}
+          config={stationGradeConfig}
+          onAbort={() => setAuditPracticeOpen(false)}
+          onFinish={() => setAuditPracticeOpen(false)}
+        />
+      ) : null}
       {isAuditSimulatorActive && simulatorTierKey && simulatorCreators && !auditSimResult && (
         <ExamMeetingModal
           tier={simulatorTierKey}

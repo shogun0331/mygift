@@ -168,8 +168,11 @@ export function applyVipVisitPressure<T extends { stamina: number; staminaMax: n
   })
 }
 
+/** 팬미팅은 중소 이상에서 방송 4턴마다 한 번 열린다. */
+export const FAN_MEETING_INTERVAL = 4
+
 export function rollVipWait(): number {
-  return rollInt(3, 5)
+  return FAN_MEETING_INTERVAL
 }
 
 export function hasPlayableFan(config: VipVisitConfig | undefined): boolean {
@@ -215,19 +218,27 @@ export function rollVipVisit(config: VipVisitConfig | undefined, grade: StationG
   }
 }
 
-/** 중소 이상에서만 대기를 깎고, 0이 되면 방문을 만든다. */
+/**
+ * 중소 이상에서만 대기를 깎는다.
+ * 0이 되면 opened. 방문 카드를 못 만들어도 팬미팅 턴은 연다.
+ */
 export function advanceVipVisit(input: {
   grade: StationGrade
   wait: number | null
   config: VipVisitConfig | undefined
-}): { wait: number | null; visit: VipVisit | null } {
+}): { wait: number | null; visit: VipVisit | null; opened: boolean } {
   if (stationTierRank(input.grade) < stationTierRank('sme')) {
-    return { wait: input.wait, visit: null }
+    return { wait: null, visit: null, opened: false }
   }
-  if (input.wait == null) {
-    return { wait: rollVipWait(), visit: null }
+  const wait =
+    input.wait == null
+      ? FAN_MEETING_INTERVAL
+      : Math.min(FAN_MEETING_INTERVAL, Math.max(0, Math.round(input.wait)))
+  const next = wait - 1
+  if (next > 0) return { wait: next, visit: null, opened: false }
+  return {
+    wait: FAN_MEETING_INTERVAL,
+    visit: rollVipVisit(input.config, input.grade),
+    opened: true,
   }
-  const next = input.wait - 1
-  if (next > 0) return { wait: next, visit: null }
-  return { wait: rollVipWait(), visit: rollVipVisit(input.config, input.grade) }
 }

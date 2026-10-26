@@ -55,6 +55,11 @@ export function SnsBulkPostRevealModal({ entries, skippedNoFunds, onDone }: SnsB
   const startedRef = useRef(false)
   const heat3SeenRef = useRef(new Set<string>())
 
+  const onDoneRef = useRef(onDone)
+  onDoneRef.current = onDone
+  const entriesRef = useRef(entries)
+  entriesRef.current = entries
+
   const intervalMs = useMemo(() => {
     const count = entries.length
     if (count <= 1) return 520
@@ -72,48 +77,36 @@ export function SnsBulkPostRevealModal({ entries, skippedNoFunds, onDone }: SnsB
   }, [])
 
   useEffect(() => {
-    if (visibleCount <= 0) return
-    const entry = entries[visibleCount - 1]
-    if (!entry || entry.heat !== 3) {
-      setHeat3Burst(null)
-      setHeat3CardKey(null)
-      return
-    }
-    const key = `${entry.creatorId}-${entry.postId}`
-    if (heat3SeenRef.current.has(key)) return
-    heat3SeenRef.current.add(key)
-    playSfx('sns-heat3')
-    setHeat3CardKey(key)
-    setHeat3Burst({ name: entry.displayName, key: Date.now() })
-
-    // 이펙트 오버레이와 카드의 이펙트 해제를 1600ms에 한 번에 정리하여 화면 떨림/리프레시 현상 방지
-    const clearTimer = window.setTimeout(() => {
-      setHeat3Burst(null)
-      setHeat3CardKey(null)
-    }, 1600)
-    return () => window.clearTimeout(clearTimer)
-  }, [visibleCount, entries])
-
-  useEffect(() => {
-    if (!startedRef.current) return
-    if (visibleCount >= entries.length) {
-      if (entries.length === 0) {
-        onDone()
-        return
+    if (!startedRef.current || visibleCount <= 0) return
+    const list = entriesRef.current
+    const entry = list[visibleCount - 1]
+    if (entry?.heat === 3) {
+      const key = `${entry.creatorId}-${entry.postId}`
+      if (!heat3SeenRef.current.has(key)) {
+        heat3SeenRef.current.add(key)
+        playSfx('sns-heat3')
+        setHeat3CardKey(key)
+        setHeat3Burst({ name: entry.displayName, key: Date.now() })
       }
+    }
+    if (visibleCount >= list.length) {
+      if (list.length === 0) onDoneRef.current()
       setFinished(true)
       return
     }
-    const last = entries[visibleCount - 1]
-    const wait = last?.heat === 3 ? 1650 : intervalMs
-    const timer = window.setTimeout(() => setVisibleCount((count) => count + 1), wait)
+    const wait = entry?.heat === 3 ? 1500 : intervalMs
+    const timer = window.setTimeout(() => {
+      setHeat3Burst(null)
+      setHeat3CardKey(null)
+      setVisibleCount((count) => count + 1)
+    }, wait)
     return () => window.clearTimeout(timer)
-  }, [visibleCount, entries, intervalMs, onDone])
+  }, [visibleCount, intervalMs])
 
   useEffect(() => {
     const scroller = scrollRef.current
     if (!scroller) return
-    scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' })
+    scroller.scrollTop = scroller.scrollHeight
   }, [visibleCount])
 
   useEffect(() => {
@@ -145,9 +138,7 @@ export function SnsBulkPostRevealModal({ entries, skippedNoFunds, onDone }: SnsB
   return createPortal(
     <div className="sns-bulk-reveal-overlay fixed inset-0 z-[93] flex items-center justify-center bg-black/84 p-4 backdrop-blur-[6px]">
       <div
-        className={`sns-bulk-reveal-phone relative flex h-[min(88dvh,42rem)] w-[min(92vw,24rem)] flex-col overflow-hidden rounded-[2rem] p-[0.65rem] shadow-[0_28px_80px_rgba(0,0,0,0.55)] ${
-          heat3Burst ? 'sns-bulk-reveal-phone--heat3' : ''
-        }`}
+        className="sns-bulk-reveal-phone relative flex h-[min(88dvh,42rem)] w-[min(92vw,24rem)] flex-col overflow-hidden rounded-[2rem] p-[0.65rem] shadow-[0_28px_80px_rgba(0,0,0,0.55)]"
         style={{
           background:
             'linear-gradient(165deg, #3a3f4d 0%, #1a1d26 38%, #0d0f14 100%)',
@@ -196,7 +187,7 @@ export function SnsBulkPostRevealModal({ entries, skippedNoFunds, onDone }: SnsB
             ) : null}
           </header>
 
-          <div ref={scrollRef} className="sns-bulk-reveal-feed relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
+          <div ref={scrollRef} className="sns-bulk-reveal-feed relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
             <div className="sns-bulk-reveal-list px-3 py-2">
               {visible.map((entry, index) => {
                 const cardKey = `${entry.creatorId}-${entry.postId}`

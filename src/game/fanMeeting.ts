@@ -164,7 +164,10 @@ function cardsDead(cards: FanCardState[]): boolean {
   return cards.every((card) => card.hp <= 0)
 }
 
-/** 압박 − 멘탈 방어. 방어가 더 커도 압박의 35%는 남긴다. */
+/**
+ * 승급심사·팬미팅 카드전의 압박.
+ * 멘탈 방어(멘탈×0.35)를 뺀 뒤에도 압박의 35%는 남는다. 만족시킨 타격에도 들어간다.
+ */
 function fanPressureDamage(pressure: number, mental: number): number {
   const press = Math.max(0, Math.round(Number(pressure) || 0))
   if (press <= 0) return 0

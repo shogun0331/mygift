@@ -90,8 +90,22 @@ export type GameSave = {
   lastHActionMonth?: number
   /** 이번 턴에 VIP 만남을 수행한 캐릭터별 월 번호 매핑 (creatorId → month) */
   lastVipActionMonth?: Record<string, number>
-  /** 다음 VIP 방문까지 남은 턴. 없으면 중소 이상에서 처음 3~5턴을 센다 */
+  /** 다음 팬미팅까지 남은 방송 턴. 없으면 중소 이상에서 4턴을 센다 */
   vipWaitTurns?: number
+  /** 팬미팅 턴이 대기 중. 플레이어가 버튼을 눌러 입장할 때까지 유지 */
+  fanMeetingDue?: boolean
+  /** 1이면 이미 지난 팬미팅 대기를 한 번 보정했다 */
+  fanMeetingScheduleVersion?: number
+  /** 직전 달 상단 일정 */
+  lastMonthEvents?: { fanMeeting: boolean; casino: boolean }
+  /** 이번 달 상단 일정. 카지노를 이용한 뒤 카운트가 0이 되어도 달을 유지한다 */
+  currentMonthEvents?: { fanMeeting: boolean; casino: boolean }
+  /** 팬미팅 연습 튜토리얼을 한 번 봤는지 */
+  fanMeetingTutorialSeen?: boolean
+  /** 승급심사 연습 튜토리얼을 한 번 봤는지 */
+  examTutorialSeen?: boolean
+  /** 호감도 데이트 대기열. 한 턴에 맨 앞 한 명만 재생한다 */
+  affectionVnQueue?: string[]
   /** 첫 튜토리얼 완료 여부 */
   tutorialDone?: boolean
 }
@@ -140,16 +154,18 @@ function serializeMediaUrl(url?: string | null): string | undefined {
 }
 
 export function serializeOwnedCreator(creator: OwnedCreator): OwnedCreator {
+  // 이미지·심사 컷은 캐릭터 파일에 있다. 세이브에 base64까지 넣으면 localStorage 한도를 넘겨 저장이 실패한다.
   return {
     ...creator,
-    images: (creator.images ?? []).map((img) => {
-      const { file: _file, ...rest } = img
-      return { ...rest, url: serializeMediaUrl(img.url) }
-    }),
-    videos: (creator.videos ?? []).map((vid) => {
-      const { file: _file, ...rest } = vid
-      return { ...rest, url: serializeMediaUrl(vid.url) ?? '' }
-    }),
+    profileBlob: undefined,
+    profileImageUrl: serializeMediaUrl(creator.profileImageUrl) ?? null,
+    images: [],
+    videos: [],
+    vnImages: undefined,
+    snsPosts: undefined,
+    auditMedia: undefined,
+    shortsVn: undefined,
+    specialVacation: undefined,
   }
 }
 

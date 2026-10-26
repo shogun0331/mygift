@@ -7,11 +7,15 @@ import {
 import { roundMoney } from './money'
 import { CREATOR_STAT_TYPE_FIELD, GRADE_CAPS, rollInt } from './stats'
 
-export const TRAINING_MAIN_GAIN = { min: 2, max: 3 } as const
-export const TRAINING_OFF_GAIN = { min: 1, max: 1 } as const
+/** 한 번에 굴리는 원래 상승. 실제 반영은 이 값의 1/3이다. */
+const TRAINING_ROLL_MAIN = { min: 2, max: 3 } as const
+const TRAINING_ROLL_OFF = { min: 1, max: 1 } as const
+/** 화면에 보이는 한 회 상승 범위 */
+export const TRAINING_MAIN_GAIN = { min: 0, max: 1 } as const
+export const TRAINING_OFF_GAIN = { min: 0, max: 1 } as const
 
-/** 훈련 비용 — 트레이닝 가격 전반 상향 조정 */
-const TRAINING_COST_BASE = 3_500
+/** 훈련 비용. 기존 가격의 1/3 */
+const TRAINING_COST_BASE = 3_500 / 3
 const TRAINING_COST_GROWTH = 1.048
 const TRAINING_GRADE_MULT: Record<Grade, number> = {
   C: 1.5,
@@ -103,7 +107,7 @@ export function getRequiredTrainingTurns(grade: Grade): number {
   return GRADE_TRAINING_TURNS[grade] ?? 2
 }
 
-/** 방송 1턴 누적. 필요 턴에 도달하면 주력 +2~3 / 그 외 +1을 조용히 적용하고 카운터를 리셋한다 */
+/** 방송 1턴 누적. 필요 턴에 도달하면 유료 훈련과 같은 1/3 상승을 적용하고 카운터를 리셋한다 */
 export function applyBroadcastTrainingTick(creator: OwnedCreator): OwnedCreator {
   if (wouldPromote(creator) || mainStatValueOf(creator) >= 100) {
     return creator
@@ -145,50 +149,61 @@ function clampStat(value: unknown) {
   return Math.max(0, Math.min(100, Math.round(n)))
 }
 
+function emptyGains(): Record<CreatorStatField, number> {
+  return {
+    statSexy: 0,
+    statMental: 0,
+    statCommunication: 0,
+    statPerformance: 0,
+  }
+}
+
+/** 굴린 상승의 1/3만 능력치에 더하고, 나머지는 다음 훈련으로 넘긴다. */
+function takeThird(current: number, raw: number, bank: number) {
+  const room = 100 - current
+  const pooled = Math.max(0, bank) + raw
+  const gain = Math.min(room, Math.floor(pooled / 3))
+  return { value: current + gain, gain, bank: pooled - gain * 3 }
+}
+
 export function applyProductionTraining(creator: OwnedCreator): {
   creator: OwnedCreator
   gains: Record<CreatorStatField, number>
   previousGrade: Grade
   promotedTo: Grade | null
+  applied: boolean
 } {
   const mainField = mainStatFieldOf(creator.statType)
   if (wouldPromote(creator) || clampStat(creator[mainField]) >= 100) {
     return {
       creator,
-      gains: {
-        statSexy: 0,
-        statMental: 0,
-        statCommunication: 0,
-        statPerformance: 0,
-      },
+      gains: emptyGains(),
       previousGrade: creator.grade,
       promotedTo: null,
+      applied: false,
     }
   }
-  const gains = {
-    statSexy: 0,
-    statMental: 0,
-    statCommunication: 0,
-    statPerformance: 0,
-  } satisfies Record<CreatorStatField, number>
+  const gains = emptyGains()
+  const remainder = { ...(creator.trainingRemainder ?? {}) }
   const nextStats = { ...creator }
 
   for (const field of STAT_FIELDS) {
     const current = clampStat(creator[field])
-    const room = 100 - current
     const raw =
       field === mainField
-        ? rollInt(TRAINING_MAIN_GAIN.min, TRAINING_MAIN_GAIN.max)
-        : rollInt(TRAINING_OFF_GAIN.min, TRAINING_OFF_GAIN.max)
-    const gain = Math.min(room, raw)
-    gains[field] = gain
-    nextStats[field] = current + gain
+        ? rollInt(TRAINING_ROLL_MAIN.min, TRAINING_ROLL_MAIN.max)
+        : rollInt(TRAINING_ROLL_OFF.min, TRAINING_ROLL_OFF.max)
+    const next = takeThird(current, raw, remainder[field] ?? 0)
+    gains[field] = next.gain
+    nextStats[field] = next.value
+    remainder[field] = next.bank
   }
 
   return {
-    creator: nextStats,
+    creator: { ...nextStats, trainingRemainder: remainder },
     gains,
     previousGrade: creator.grade,
     promotedTo: null,
+    applied: true,
   }
 }

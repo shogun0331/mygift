@@ -307,6 +307,75 @@ export function playFanTasteSting(delay = 0) {
   }
 }
 
+/** 승급심사관이 마음에 들어 할 때의 반응. full이면 게이지를 채운 순간. */
+export function playAuditJudgePleased(full = false) {
+  try {
+    const ctx = getSharedAudioContext()
+    if (!ctx) return
+    const vol = volume * (full ? 0.92 : 0.72)
+    if (vol <= 0.01) return
+    const now = ctx.currentTime
+
+    const body = ctx.createOscillator()
+    const bodyGain = ctx.createGain()
+    body.type = 'sine'
+    body.frequency.setValueAtTime(full ? 196 : 164, now)
+    body.frequency.exponentialRampToValueAtTime(full ? 98 : 110, now + 0.28)
+    bodyGain.gain.setValueAtTime(vol * (full ? 0.42 : 0.22), now)
+    bodyGain.gain.exponentialRampToValueAtTime(0.001, now + (full ? 0.42 : 0.26))
+    body.connect(bodyGain)
+    bodyGain.connect(ctx.destination)
+    body.start(now)
+    body.stop(now + (full ? 0.44 : 0.28))
+
+    const notes = full
+      ? [
+          { freq: 523.25, start: 0.02, duration: 0.22 },
+          { freq: 659.25, start: 0.1, duration: 0.24 },
+          { freq: 783.99, start: 0.18, duration: 0.28 },
+          { freq: 1046.5, start: 0.28, duration: 0.7 },
+          { freq: 1318.51, start: 0.34, duration: 0.64 },
+          { freq: 1567.98, start: 0.4, duration: 0.58 },
+        ]
+      : [
+          { freq: 392, start: 0.02, duration: 0.2 },
+          { freq: 493.88, start: 0.08, duration: 0.22 },
+          { freq: 587.33, start: 0.15, duration: 0.28 },
+          { freq: 783.99, start: 0.22, duration: 0.36 },
+        ]
+
+    notes.forEach(({ freq, start, duration }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = full ? 'triangle' : 'sine'
+      osc.frequency.setValueAtTime(freq, now + start)
+      gain.gain.setValueAtTime(0.001, now + start)
+      gain.gain.exponentialRampToValueAtTime(vol * (full ? 0.22 : 0.2), now + start + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + duration)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start(now + start)
+      osc.stop(now + start + duration + 0.02)
+    })
+
+    if (!full) return
+
+    const shine = ctx.createOscillator()
+    const shineGain = ctx.createGain()
+    shine.type = 'sine'
+    shine.frequency.setValueAtTime(2093, now + 0.36)
+    shineGain.gain.setValueAtTime(0.001, now + 0.36)
+    shineGain.gain.exponentialRampToValueAtTime(vol * 0.12, now + 0.4)
+    shineGain.gain.exponentialRampToValueAtTime(0.001, now + 0.95)
+    shine.connect(shineGain)
+    shineGain.connect(ctx.destination)
+    shine.start(now + 0.36)
+    shine.stop(now + 0.98)
+  } catch {
+    // ignore
+  }
+}
+
 /** 팬미팅 크리티컬. 짧은 타격 뒤에 높은 핑. */
 export function playFanCriticalSting() {
   try {

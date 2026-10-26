@@ -91,3 +91,9 @@ export function flushAutoSave(): void {
   const save = captureCurrentSave()
   if (save) saveGame(save)
 }
+
+if (typeof window !== 'undefined') {
+  ;(window as Window & { __flushBroadcastSave?: () => void }).__flushBroadcastSave = () => {
+    flushAutoSave()
+  }
+}

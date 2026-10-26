@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from '../locales/i18n'
 import type { RegisteredCharacter } from '../game/characters'
 import { normalizeCreatorStatType } from '../game/characters'
@@ -16,6 +16,10 @@ type Props = {
   startLabelKey?: string
   onStartSimulation: (selectedCharacters: any[]) => void
   onClose?: () => void
+  /** 출전 가능한 크리에이터가 없을 때 이번 팬미팅을 넘긴다 */
+  onPass?: () => void
+  forceTutorial?: boolean
+  onReplayTutorial?: () => void
 }
 
 /** 등급별(S, A, B, C) 프리미엄 네온 글로우 뱃지 스타일 헬퍼 */
@@ -42,7 +46,16 @@ export function AuditSimulatorDeckModal({
   startLabelKey = 'audit.startPromotionExamBtn',
   onStartSimulation,
   onClose,
+  onPass,
+  forceTutorial = false,
+  onReplayTutorial,
 }: Props) {
+  const replayRef = useRef(onReplayTutorial)
+  replayRef.current = onReplayTutorial
+  useEffect(() => {
+    if (!forceTutorial) return
+    replayRef.current?.()
+  }, [forceTutorial])
   const { t, locale } = useTranslation()
   // 시뮬레이터일 때만 S등급 보정, 인게임 정식 심사 덱 배치 시에는 보유 캐릭터의 실제 능력치 유지
   const boostedCharacters: any[] = registeredCharacters.map((c) => ({
@@ -64,6 +77,7 @@ export function AuditSimulatorDeckModal({
 
   // 현재 배치된 캐릭터 ID 리스트
   const activeSelectedIds = deckSlots.filter(Boolean) as string[]
+  const canField = boostedCharacters.some((character) => ((character as any).stamina ?? 100) > 30)
 
   // 하단 카드 클릭 시 덱 장착 / 해제 (빈 슬롯 탐색)
   const toggleSelect = (id: string) => {
@@ -152,16 +166,18 @@ export function AuditSimulatorDeckModal({
               {t('audit.deckModalSubtitle')}
             </h3>
           </div>
-          {onClose ? (
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 text-slate-400 transition hover:border-slate-500 hover:bg-slate-700 hover:text-white active:scale-95"
-              aria-label="Close modal"
-            >
-              ✕
-            </button>
-          ) : null}
+          <div className="flex shrink-0 items-center gap-2">
+            {onClose ? (
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 text-slate-400 transition hover:border-slate-500 hover:bg-slate-700 hover:text-white active:scale-95"
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
+            ) : null}
+          </div>
         </div>
 
         {/* 메인 덱 구성 컨텐츠 영역 */}
@@ -394,15 +410,38 @@ export function AuditSimulatorDeckModal({
         </div>
 
         {/* 푸터 버튼 */}
-        <div className="shrink-0 flex items-center justify-end border-t border-cyan-500/20 pt-3">
-          <button
-            type="button"
-            onClick={handleStart}
-            className="w-full sm:w-auto cursor-pointer rounded-xl border border-cyan-400/50 bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-500 px-8 py-3 text-sm font-black text-slate-950 shadow-[0_0_25px_rgba(6,182,212,0.4)] transition-all hover:scale-105 hover:brightness-110 active:scale-95 flex items-center justify-center gap-2"
-          >
-            <span>{t(startLabelKey, { count: activeSelectedIds.length })}</span>
-            <span className="text-xs font-bold">➔</span>
-          </button>
+        <div className="shrink-0 flex items-center justify-between gap-3 border-t border-cyan-500/20 pt-3">
+          {onReplayTutorial ? (
+            <button
+              type="button"
+              onClick={onReplayTutorial}
+              className="cursor-pointer rounded-xl border border-amber-200 bg-amber-400 px-4 py-3 text-xs font-black text-slate-950 shadow-[0_0_18px_rgba(251,191,36,0.45)]"
+            >
+              {t('audit.replayTutorial')}
+            </button>
+          ) : (
+            <span />
+          )}
+          <div className="flex shrink-0 items-center gap-2">
+            {onPass && !canField ? (
+              <button
+                type="button"
+                onClick={onPass}
+                className="cursor-pointer rounded-xl border border-rose-300/50 bg-rose-500/15 px-5 py-3 text-sm font-black text-rose-100 transition hover:border-rose-200 hover:bg-rose-500/25"
+              >
+                {t('audit.passFanMeeting')}
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={handleStart}
+              disabled={!canField}
+              className="shrink-0 cursor-pointer rounded-xl border border-cyan-400/50 bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-500 px-8 py-3 text-sm font-black text-slate-950 shadow-[0_0_25px_rgba(6,182,212,0.4)] transition-all hover:scale-105 hover:brightness-110 active:scale-95 flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+            >
+              <span>{t(startLabelKey, { count: activeSelectedIds.length })}</span>
+              <span className="text-xs font-bold">➔</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

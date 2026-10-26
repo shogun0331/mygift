@@ -61,10 +61,16 @@ export const SNS_HEAT3_PITY_BASE = 0.1
 export const SNS_HEAT3_PITY_STEP = 0.06
 export const SNS_HEAT3_PITY_CAP = 0.34
 
-/** 콘셉트와 수위에 따른 촬영비 (파격적 화보(heat 3)는 고급 화보 제작비 5배 적용) */
+/** 수위별 추첨 가중치. 둘 다 남아 있으면 수위 3은 1/5(20%). */
+export const SNS_HEAT_WEIGHT: Record<SnsHeat, number> = {
+  2: 4,
+  3: 1,
+}
+
+/** 콘셉트와 수위에 따른 촬영비. 기본가는 절반, 파격적 화보(heat 3)는 그 5배. */
 export function calcSnsPostCost(totalAssetCount: number, heat: SnsHeat = 2): number {
   const count = Math.max(1, Math.round(totalAssetCount))
-  const baseCost = 12_000 + count * 1_200
+  const baseCost = 6_000 + count * 600
   return heat === 3 ? baseCost * 5 : baseCost
 }
 
@@ -90,26 +96,76 @@ export function hasSnsComposeStock(
   posts: SnsPostDef[],
   publishedIds: readonly string[],
 ): boolean {
-  return Boolean(nextSnsPost(posts, publishedIds, 2) || nextSnsPost(posts, publishedIds, 3))
+  return unpublishedSnsPosts(posts, publishedIds).length > 0
 }
 
-/** 
- * 일반 게시물(heat: 2)을 모두 게시해야 수위 게시물(heat: 3)이 등장함.
+function unpublishedSnsPosts(
+  posts: SnsPostDef[],
+  publishedIds: readonly string[],
+  heat?: SnsHeat,
+): SnsPostDef[] {
+  const used = new Set(publishedIds)
+  return posts.filter((post) => !used.has(post.id) && (heat == null || post.heat === heat))
+}
+
+function snsStockKey(posts: SnsPostDef[], publishedIds: readonly string[]) {
+  const used = [...publishedIds].sort().join('\n')
+  const defs = posts.map((post) => `${post.id}:${post.heat}`).join('\n')
+  return `${used}\n--\n${defs}`
+}
+
+const reservedSnsRolls = new Map<string, { key: string; roll: SnsComposeRoll }>()
+
+/**
+ * 남은 게시물을 수위 가중치로 고른다.
+ * 수위 2와 3이 둘 다 있으면 수위 3 확률은 20%. 한 수위만 남으면 그 수위만 나온다.
  */
 export function rollSnsCompose(
   posts: SnsPostDef[],
   publishedIds: readonly string[],
   pity: number,
 ): SnsComposeRoll | null {
-  const light = nextSnsPost(posts, publishedIds, 2)
-  const bold = nextSnsPost(posts, publishedIds, 3)
-  if (!light && !bold) return null
-  // 일반 게시물(light)이 남아있으면 무조건 일반 게시물 우선 소진
-  if (light) {
-    return { post: light, heat: 2, nextPity: normalizeSnsHeat3Pity(pity) + 1 }
+  const options = ([2, 3] as const)
+    .map((heat) => ({ heat, pool: unpublishedSnsPosts(posts, publishedIds, heat) }))
+    .filter((row) => row.pool.length > 0)
+  if (options.length === 0) return null
+
+  const total = options.reduce((sum, row) => sum + SNS_HEAT_WEIGHT[row.heat], 0)
+  let ticket = Math.random() * total
+  let picked = options[options.length - 1]!
+  for (const row of options) {
+    ticket -= SNS_HEAT_WEIGHT[row.heat]
+    if (ticket < 0) {
+      picked = row
+      break
+    }
   }
-  // 일반 게시물이 모두 소진된 경우에만 수위 게시물(bold) 출현
-  return { post: bold!, heat: 3, nextPity: 0 }
+  const post = picked.pool[rollInt(0, picked.pool.length - 1)]
+  if (!post) return null
+  return {
+    post,
+    heat: picked.heat,
+    nextPity: picked.heat === 3 ? 0 : normalizeSnsHeat3Pity(pity) + 1,
+  }
+}
+
+/** 견적과 실제 게시가 같은 결과를 쓰도록, 재고가 바뀌기 전까지 추첨을 유지한다. */
+export function reserveSnsCompose(
+  creatorId: string,
+  posts: SnsPostDef[],
+  publishedIds: readonly string[],
+  pity: number,
+): SnsComposeRoll | null {
+  const key = snsStockKey(posts, publishedIds)
+  const cached = reservedSnsRolls.get(creatorId)
+  if (cached?.key === key) return cached.roll
+  const roll = rollSnsCompose(posts, publishedIds, pity)
+  if (!roll) {
+    reservedSnsRolls.delete(creatorId)
+    return null
+  }
+  reservedSnsRolls.set(creatorId, { key, roll })
+  return roll
 }
 
 /** 캐릭터당 최대 모을 수 있는 영구 SNS 구독자 캡 (10만 명) */
@@ -218,17 +274,6 @@ export function snsCaptionOf(post: SnsPostDef, locale: Locale | string | null | 
   return snsCharacterLine(post.heat, captionLineOf(post), locale)
 }
 
-export function nextSnsPost(
-  posts: SnsPostDef[],
-  publishedIds: readonly string[],
-  heat: SnsHeat,
-): SnsPostDef | null {
-  const used = new Set(publishedIds)
-  const pool = posts.filter((post) => post.heat === heat && !used.has(post.id))
-  if (pool.length === 0) return null
-  return pool[rollInt(0, pool.length - 1)] ?? null
-}
-
 export type SnsComposeCandidate = {
   id: string
   snsPosts?: SnsPostDef[]
@@ -259,6 +304,14 @@ export type BulkSnsComposeResult = {
   skippedNoFunds: number
 }
 
+export type PlannedSnsRoll = {
+  creatorId: string
+  postId: string
+  heat: SnsHeat
+  cost: number
+  nextPity: number
+}
+
 export function previewBulkSnsCompose(
   creators: readonly SnsComposeCandidate[],
 ): BulkSnsComposePreview {
@@ -286,8 +339,12 @@ export function canComposeSnsCreator(
 ): boolean {
   if (creator.snsPending) return false
   const posts = creator.snsPosts ?? []
-  const published = creator.snsPublishedIds ?? []
-  const rolled = rollSnsCompose(posts, published, creator.snsHeat3Pity ?? 0)
+  const rolled = reserveSnsCompose(
+    creator.id,
+    posts,
+    creator.snsPublishedIds ?? [],
+    creator.snsHeat3Pity ?? 0,
+  )
   if (!rolled) return false
   return assets >= calcSnsPostCost(posts.length, rolled.heat)
 }
@@ -295,6 +352,7 @@ export function canComposeSnsCreator(
 export type BulkSnsComposePlan = {
   eligibleIds: string[]
   affordableIds: string[]
+  rolls: PlannedSnsRoll[]
   totalCost: number
   fullCost: number
   skippedPending: number
@@ -309,6 +367,7 @@ export function planBulkSnsCompose(
   const preview = previewBulkSnsCompose(creators)
   const byId = new Map(creators.map((creator) => [creator.id, creator]))
   const affordableIds: string[] = []
+  const rolls: PlannedSnsRoll[] = []
   let remaining = assets
   let totalCost = 0
   let fullCost = 0
@@ -318,14 +377,21 @@ export function planBulkSnsCompose(
     const creator = byId.get(id)
     if (!creator) continue
     const posts = creator.snsPosts ?? []
-    const rolled = rollSnsCompose(posts, creator.snsPublishedIds ?? [], creator.snsHeat3Pity ?? 0)
-    const heat = rolled?.heat ?? 2
-    const cost = calcSnsPostCost(posts.length, heat)
+    const rolled = reserveSnsCompose(id, posts, creator.snsPublishedIds ?? [], creator.snsHeat3Pity ?? 0)
+    if (!rolled) continue
+    const cost = calcSnsPostCost(posts.length, rolled.heat)
     fullCost += cost
     if (remaining >= cost) {
       remaining -= cost
       totalCost += cost
       affordableIds.push(id)
+      rolls.push({
+        creatorId: id,
+        postId: rolled.post.id,
+        heat: rolled.heat,
+        cost,
+        nextPity: rolled.nextPity,
+      })
     } else {
       skippedNoFunds += 1
     }
@@ -334,6 +400,7 @@ export function planBulkSnsCompose(
   return {
     eligibleIds: preview.eligibleIds,
     affordableIds,
+    rolls,
     totalCost,
     fullCost,
     skippedPending: preview.skippedPending,

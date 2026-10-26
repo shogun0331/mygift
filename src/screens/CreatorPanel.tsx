@@ -53,7 +53,16 @@ import { SnsFeedModal } from './SnsFeedModal'
 import { RedDot } from './RedDot'
 import { SnsBulkComposeModal } from './SnsBulkComposeModal'
 import { SnsBulkPostRevealModal } from './SnsBulkPostRevealModal'
-import { previewBulkSnsCompose, canComposeSnsCreator, canAffordBulkSnsCompose, type BulkSnsRevealEntry, type BulkSnsComposeResult, type SnsHeat } from '../game/sns'
+import {
+  previewBulkSnsCompose,
+  canComposeSnsCreator,
+  canAffordBulkSnsCompose,
+  type BulkSnsComposePlan,
+  type BulkSnsRevealEntry,
+  type BulkSnsComposeResult,
+  type SnsComposeRoll,
+  type SnsHeat,
+} from '../game/sns'
 import type { RegisteredStaff, StaffKind } from '../game/staff'
 import { STAFF_KINDS, staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
@@ -87,8 +96,9 @@ type CreatorPanelProps = {
   onConditionCare: (creatorId: string) => void
   onVacation: (creatorId: string) => void
   onProductionTraining: (creatorId: string) => void
-  onSnsCompose: (creatorId: string) => SnsHeat | null
-  onBulkSnsCompose: () => BulkSnsRevealEntry[] | BulkSnsComposeResult
+  onSnsCompose: (creatorId: string, roll: SnsComposeRoll) => SnsHeat | null
+  onBulkSnsCompose: (plan: BulkSnsComposePlan) => BulkSnsRevealEntry[] | BulkSnsComposeResult
+  onBulkRevealDone?: () => void
   registeredStaff: RegisteredStaff[]
   managerState: SlotManagerState
   onHireStaff: (staffId: string, hireCost: number, salary: number) => boolean
@@ -105,6 +115,8 @@ type CreatorPanelProps = {
   onHDirect?: (creatorId: string) => void
   lastHActionMonth?: number
   onSelectSkin?: (creatorId: string, skin: 1 | 2 | 3) => void
+  stationRank?: number
+  onConfess?: (creatorId: string) => void
 }
 
 const GRADE_STYLE: Record<Grade, string> = {
@@ -273,6 +285,7 @@ export function CreatorPanel({
   onProductionTraining,
   onSnsCompose,
   onBulkSnsCompose,
+  onBulkRevealDone,
   registeredStaff,
   managerState,
   onHireStaff,
@@ -289,6 +302,8 @@ export function CreatorPanel({
   onHDirect,
   lastHActionMonth,
   onSelectSkin,
+  stationRank = 0,
+  onConfess,
 }: CreatorPanelProps) {
   const { t, locale } = useTranslation()
   const [view, setView] = useState<'roster' | 'scout' | 'staffScout'>('roster')
@@ -502,6 +517,8 @@ export function CreatorPanel({
         onHDirect={onHDirect}
         lastHActionMonth={lastHActionMonth}
         onSelectSkin={onSelectSkin}
+        stationRank={stationRank}
+        onConfess={onConfess}
       />
     )
   }
@@ -1021,7 +1038,7 @@ export function CreatorPanel({
           creator={snsCreator}
           assets={assets}
           onClose={() => setSnsCreatorId(null)}
-          onCompose={() => onSnsCompose(snsCreator.id)}
+          onCompose={(roll) => onSnsCompose(snsCreator.id, roll)}
         />
       ) : null}
       {bulkSnsOpen ? (
@@ -1029,8 +1046,8 @@ export function CreatorPanel({
           creators={ownedCreators}
           assets={assets}
           onClose={() => setBulkSnsOpen(false)}
-          onCompose={() => {
-            const raw = onBulkSnsCompose()
+          onCompose={(plan) => {
+            const raw = onBulkSnsCompose(plan)
             const result: BulkSnsComposeResult = Array.isArray(raw)
               ? { entries: raw, skippedNoFunds: 0 }
               : raw
@@ -1046,7 +1063,10 @@ export function CreatorPanel({
         <SnsBulkPostRevealModal
           entries={bulkRevealState.entries}
           skippedNoFunds={bulkRevealState.skippedNoFunds}
-          onDone={() => setBulkRevealState(null)}
+          onDone={() => {
+            setBulkRevealState(null)
+            onBulkRevealDone?.()
+          }}
         />
       ) : null}
     </div>
@@ -1277,6 +1297,8 @@ function CreatorDetailView({
   lastHActionMonth,
   onSelectSkin,
   registeredCharacters,
+  stationRank = 0,
+  onConfess,
 }: {
   companyViewers?: number
   creator: OwnedCreator
@@ -1293,6 +1315,8 @@ function CreatorDetailView({
   onHDirect?: (creatorId: string) => void
   lastHActionMonth?: number
   onSelectSkin?: (creatorId: string, skin: 1 | 2 | 3) => void
+  stationRank?: number
+  onConfess?: (creatorId: string) => void
 }) {
   const { t, locale } = useTranslation()
   const assignedSlot = studioSlots?.find(
@@ -1566,6 +1590,13 @@ function CreatorDetailView({
               percent={conditionScore}
               barClass="from-emerald-400 to-lime-300"
             />
+            <StatBar
+              label={t('affection.label')}
+              hint={t('affection.confessLocked')}
+              valueLabel={`${Math.max(0, Math.min(100, Math.round(creator.affection ?? 0)))}`}
+              percent={Math.max(0, Math.min(100, Math.round(creator.affection ?? 0)))}
+              barClass="from-pink-400 to-rose-300"
+            />
             <div className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5">
               <p className="text-[10px] font-semibold tracking-wide text-slate-500">{t('creator.currentSalary')}</p>
               <p className="mt-0.5 text-base font-bold tabular-nums text-amber-400">
@@ -1747,7 +1778,7 @@ function CreatorDetailView({
                   <p className="mt-1.5 text-[10px] leading-4 text-slate-500">
                     {fillLocale(t('creator.trainingForecast'), {
                       main: `${TRAINING_MAIN_GAIN.min}~${TRAINING_MAIN_GAIN.max}`,
-                      off: String(TRAINING_OFF_GAIN.min),
+                      off: `${TRAINING_OFF_GAIN.min}~${TRAINING_OFF_GAIN.max}`,
                     })}
                   </p>
                   {examReady ? (
@@ -1802,6 +1833,35 @@ function CreatorDetailView({
           </div>
         </section>
       </div>
+      {stationRank === 1 ? (
+        (() => {
+          const affection = Math.max(0, Math.min(100, Math.round(creator.affection ?? 0)))
+          const replay = creator.proposalState === 'accepted'
+          const canConfess = replay || (affection >= 100 && (creator.dateArcStep ?? 0) >= 3)
+          return (
+            <div className="flex shrink-0 justify-center pb-1">
+              <button
+                type="button"
+                disabled={!canConfess}
+                onClick={() => onConfess?.(creator.id)}
+                className={`group relative inline-flex min-w-[14rem] items-center justify-center gap-2 overflow-hidden rounded-full border px-8 py-3 text-sm font-black tracking-[0.18em] transition ${
+                  canConfess
+                    ? 'border-rose-200/80 bg-gradient-to-r from-rose-500 via-pink-400 to-amber-300 text-slate-950 shadow-[0_0_28px_rgba(244,114,182,0.45)] hover:brightness-110'
+                    : 'cursor-not-allowed border-rose-300/25 bg-gradient-to-r from-slate-900 via-rose-950/80 to-slate-900 text-rose-200/70'
+                }`}
+              >
+                <span aria-hidden className={canConfess ? 'text-base' : 'text-sm opacity-70'}>
+                  ♥
+                </span>
+                {replay ? t('affection.replayEnding') : t('affection.confess')}
+                {canConfess ? null : (
+                  <span className="text-[10px] font-bold tracking-normal text-rose-200/60">{affection}/100</span>
+                )}
+              </button>
+            </div>
+          )
+        })()
+      ) : null}
     </div>
   )
 }

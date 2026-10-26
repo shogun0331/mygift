@@ -60,7 +60,7 @@ export function FanMeetingStatement({
   zClass = 'z-[87]',
 }: FanMeetingStatementProps) {
   const { t } = useTranslation()
-  const countedPay = useCountTo(Math.max(0, pay), 180)
+  const countedPay = useCountTo(Math.max(0, pay), 180, 1100)
 
   return (
     <div
@@ -96,7 +96,7 @@ export function FanMeetingStatement({
               {hideIncome ? <div /> : (
               <div>
                 <p className="game-stat-label">{t('vip.visitResultIncome')}</p>
-                <p className="statement-amt-pos mt-1 text-2xl font-bold tabular-nums tracking-tight sm:text-3xl">
+                <p className="statement-amt-pos mt-1 text-3xl font-black tabular-nums tracking-tight text-amber-200 drop-shadow-[0_0_16px_rgba(251,191,36,0.65)] sm:text-5xl">
                   {formatMoneySigned(countedPay)}
                 </p>
               </div>

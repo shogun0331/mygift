@@ -166,7 +166,7 @@ export function rollAuditStrike(
   }
 }
 
-/** 압박 피해 = max(0, 압박 − 멘탈 방어) */
+/** 턴제 심사·VIP 방문의 압박. 카드전(승급심사/팬미팅)은 fanPressureDamage를 쓴다. */
 export function pressureDamageOf(pressure: number, mental: number): number {
   return Math.max(0, Math.round(Number(pressure) || 0) - mentalDefenseOf(mental))
 }

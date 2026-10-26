@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import {
   findCharacterIconUrl,
   findLevelIdleVideoUrl,
+  type Grade,
   type OwnedCreator,
 } from '../game/characters'
 import {
@@ -98,6 +99,9 @@ type DashboardPanelProps = {
   /** 승급 조건 충족 시 방송시작 버튼 위에 승급심사 버튼 노출 */
   isPromotionReady?: boolean
   onStartPromotionAudit?: () => void
+  /** 팬미팅 턴이면 방송시작 대신 팬미팅 버튼 */
+  fanMeetingReady?: boolean
+  onStartFanMeeting?: () => void
   onStartBroadcast: () => void
   onRestTurn: () => void
   onConditionCare?: (creatorId: string) => void
@@ -106,6 +110,7 @@ type DashboardPanelProps = {
   onStaffActionDone?: (id: string) => void
   onToxicQteResolve?: (id: string, success: boolean) => void
   onRepairSlot?: (slotId: string) => void
+  onSelectSkin?: (creatorId: string, skin: 1 | 2 | 3) => void
 }
 
 type StreamCreatorView = {
@@ -128,6 +133,7 @@ type StreamCreatorView = {
   preview: string
   weeklyStaminaDrain?: number
   weeklyConditionDrain?: number
+  selectedSkin?: 1 | 2 | 3
   tag?: { text: string; tone: 'amber' | 'rose' | 'cyan' | 'violet' }
 }
 
@@ -211,6 +217,7 @@ function toBroadcastSlot(
       preview: visuals.preview,
       weeklyStaminaDrain: weeklyDrain,
       weeklyConditionDrain,
+      selectedSkin: activeSkin === 2 || activeSkin === 3 ? activeSkin : 1,
     },
   }
 }
@@ -694,6 +701,8 @@ export const DashboardPanel = memo(function DashboardPanel({
   startBroadcastLocked = false,
   isPromotionReady = false,
   onStartPromotionAudit,
+  fanMeetingReady = false,
+  onStartFanMeeting,
   onStartBroadcast,
   onRestTurn,
   onConditionCare,
@@ -702,6 +711,7 @@ export const DashboardPanel = memo(function DashboardPanel({
   onStaffActionDone,
   onToxicQteResolve,
   onRepairSlot,
+  onSelectSkin,
 }: DashboardPanelProps) {
   const { t, locale } = useTranslation()
   const ownedById = useMemo(() => {
@@ -896,6 +906,7 @@ export const DashboardPanel = memo(function DashboardPanel({
             onStaffActionDone={onStaffActionDone}
             onToxicQteResolve={onToxicQteResolve}
             onRepairSlot={onRepairSlot}
+            onSelectSkin={onSelectSkin}
           />
         ))}
       </section>
@@ -972,27 +983,54 @@ export const DashboardPanel = memo(function DashboardPanel({
           </button>
         ) : null}
 
-        <button
-          type="button"
-          data-tutorial="start-broadcast-btn"
-          onClick={showRest ? onRestTurn : onStartBroadcast}
-          disabled={showRest ? !canRest : !canStartBroadcast}
-          className={
-            showRest
-              ? 'mt-auto w-full shrink-0 rounded-2xl border border-sky-300/40 bg-sky-500/15 px-4 py-3 text-sm font-bold tracking-wide text-sky-100 disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer'
-              : 'game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer'
-          }
-        >
-          {isLive
-            ? t('dashboard.broadcasting')
-            : showRest
-              ? t('dashboard.restTurn')
-              : t('dashboard.startBroadcast')}
-        </button>
+        {fanMeetingReady && onStartFanMeeting ? (
+          <button
+            type="button"
+            onClick={onStartFanMeeting}
+            disabled={startBroadcastLocked || isLive}
+            className="mt-auto w-full shrink-0 cursor-pointer rounded-2xl border border-fuchsia-200/50 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-violet-500 px-4 py-3 text-sm font-black tracking-wide text-white shadow-[0_8px_24px_rgba(217,70,239,0.4)] transition-all hover:scale-[1.02] hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px]"
+          >
+            {t('dashboard.fanMeeting')}
+          </button>
+        ) : (
+          <button
+            type="button"
+            data-tutorial="start-broadcast-btn"
+            onClick={showRest ? onRestTurn : onStartBroadcast}
+            disabled={showRest ? !canRest : !canStartBroadcast}
+            className={
+              showRest
+                ? 'mt-auto w-full shrink-0 rounded-2xl border border-sky-300/40 bg-sky-500/15 px-4 py-3 text-sm font-bold tracking-wide text-sky-100 disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer'
+                : 'game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer'
+            }
+          >
+            {isLive
+              ? t('dashboard.broadcasting')
+              : showRest
+                ? t('dashboard.restTurn')
+                : t('dashboard.startBroadcast')}
+          </button>
+        )}
       </aside>
     </div>
   )
 })
+
+function isDashboardSkinUnlocked(grade: Grade, skin: 1 | 2 | 3) {
+  if (skin === 1) return true
+  if (skin === 2) return grade === 'A' || grade === 'S'
+  return grade === 'S'
+}
+
+function nextUnlockedSkin(grade: Grade, current: 1 | 2 | 3): 1 | 2 | 3 {
+  const order: Array<1 | 2 | 3> = [1, 2, 3]
+  const start = order.indexOf(current)
+  for (let step = 1; step <= order.length; step += 1) {
+    const skin = order[(start + step) % order.length]!
+    if (isDashboardSkinUnlocked(grade, skin)) return skin
+  }
+  return current
+}
 
 const StreamCard = memo(function StreamCard({
   slot,
@@ -1014,6 +1052,7 @@ const StreamCard = memo(function StreamCard({
   onStaffActionDone,
   onToxicQteResolve,
   onRepairSlot,
+  onSelectSkin,
   liveWeekClock = null,
   liveClockPaused = false,
 }: {
@@ -1036,6 +1075,7 @@ const StreamCard = memo(function StreamCard({
   onStaffActionDone?: (id: string) => void
   onToxicQteResolve?: (id: string, success: boolean) => void
   onRepairSlot?: (slotId: string) => void
+  onSelectSkin?: (creatorId: string, skin: 1 | 2 | 3) => void
   liveWeekClock?: { origin: number; dayMs: number } | null
   liveClockPaused?: boolean
 }) {
@@ -1427,6 +1467,20 @@ const StreamCard = memo(function StreamCard({
                     <span className="font-medium text-amber-400"> ({creator.concept})</span>
                   ) : null}
                 </p>
+                {creator && !isLive && onSelectSkin ? (
+                  <button
+                    type="button"
+                    title="SKIN"
+                    onClick={() => {
+                      const current =
+                        creator.selectedSkin === 2 || creator.selectedSkin === 3 ? creator.selectedSkin : 1
+                      onSelectSkin(creator.id, nextUnlockedSkin(creator.grade, current))
+                    }}
+                    className="shrink-0 rounded-md border border-indigo-400/50 bg-indigo-950/80 px-1.5 py-0.5 text-[9px] font-black tracking-wider text-indigo-200 hover:border-indigo-300 hover:bg-indigo-900"
+                  >
+                    SKIN{creator.selectedSkin === 2 || creator.selectedSkin === 3 ? creator.selectedSkin : 1}
+                  </button>
+                ) : null}
                 {creator?.tag ? (
                   <span
                     className={`rounded-md border px-1.5 py-0.5 text-[9px] font-semibold ${TAG_STYLE[creator.tag.tone]}`}

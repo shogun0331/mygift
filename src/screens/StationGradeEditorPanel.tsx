@@ -544,6 +544,7 @@ export function VipVisitEditorPanel({
 }) {
   const vipConfig = config.vipConfig ?? defaultVipConfig()
   const [deckOpen, setDeckOpen] = useState(false)
+  const [practiceOpen, setPracticeOpen] = useState(false)
   const [simGrade, setSimGrade] = useState<VipTierId | null>(null)
   const [simCards, setSimCards] = useState<FanCardState[] | null>(null)
   const [simResult, setSimResult] = useState<{
@@ -624,11 +625,29 @@ export function VipVisitEditorPanel({
           titleKey="audit.fanDeckModalTitle"
           startLabelKey="audit.startFanMeetingBtn"
           onClose={() => setDeckOpen(false)}
+          onReplayTutorial={() => {
+            if (registeredCharacters.length === 0) {
+              setSimNotice('출전할 크리에이터가 없습니다.')
+              return
+            }
+            setPracticeOpen(true)
+          }}
           onStartSimulation={(selected) => {
             setDeckOpen(false)
             setSimCards(selected.map((creator) => toFanCard(creator as RegisteredCharacter)))
             setSimGrade((grade) => grade ?? 'sme')
           }}
+        />,
+        document.body,
+      ) : null}
+      {practiceOpen ? createPortal(
+        <FanMeetingModal
+          practice
+          config={vipConfig}
+          grade={simGrade ?? 'sme'}
+          cards={registeredCharacters.slice(0, 4).map(toFanCard)}
+          onAbort={() => setPracticeOpen(false)}
+          onFinish={() => setPracticeOpen(false)}
         />,
         document.body,
       ) : null}

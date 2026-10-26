@@ -252,6 +252,7 @@ export function hireScoutOffer(offer: ScoutOffer): OwnedCreator {
     lastVacationMonth: null,
     vipUsed: false,
     dateArcStep: 0,
+    affection: 0,
     snsPublishedIds: [],
     snsFeed: [],
     snsPending: null,

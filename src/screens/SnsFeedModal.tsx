@@ -9,9 +9,10 @@ import {
   calcSnsPostCost,
   hasSnsComposeStock,
   MAX_CREATOR_SNS_SUBSCRIBERS,
-  rollSnsCompose,
+  reserveSnsCompose,
   snsCaptionOf,
   snsPostMedia,
+  type SnsComposeRoll,
   type SnsHeat,
 } from '../game/sns'
 import { snsCommentText, type SnsComment } from '../game/snsComments'
@@ -24,7 +25,7 @@ type SnsFeedModalProps = {
   creator: OwnedCreator
   assets: number
   onClose: () => void
-  onCompose: () => SnsHeat | null
+  onCompose: (roll: SnsComposeRoll) => SnsHeat | null
 }
 
 function snsHandle(name: string) {
@@ -82,7 +83,9 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
     ? creator.images?.find((image) => image.id === creator.characterIllustrationId)?.url
     : avatarUrl
   const snsSubscribers = creator.snsSubscribers ?? 0
-  const ratio = calcCreatorSnsRatio(publishedIds.length, posts.length)
+  const issuedCount =
+    publishedIds.length + (pending && !publishedIds.includes(pending.postId) ? 1 : 0)
+  const ratio = calcCreatorSnsRatio(issuedCount, posts.length)
   const ratioPercent = Math.round(ratio * 100)
   const postCount = feed.length + (pending ? 1 : 0)
 
@@ -129,16 +132,15 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
     return () => window.removeEventListener('keydown', onKey)
   }, [lightbox, onClose])
 
-  const nextRolled = rollSnsCompose(posts, publishedIds, creator.snsHeat3Pity ?? 0)
-  const nextHeat = nextRolled?.heat ?? 2
-  const postCost = calcSnsPostCost(posts.length, nextHeat)
-  const canCompose =
-    !pending && hasSnsComposeStock(posts, publishedIds) && assets >= postCost
+  const usedIds = pending ? [...publishedIds, pending.postId] : publishedIds
+  const lockedRoll = reserveSnsCompose(creator.id, posts, usedIds, creator.snsHeat3Pity ?? 0)
+  const postCost = calcSnsPostCost(posts.length, lockedRoll?.heat ?? 2)
+  const canCompose = !pending && lockedRoll != null && assets >= postCost
 
   function submitCompose() {
-    if (!canCompose) return
+    if (!canCompose || !lockedRoll) return
     waitRevealRef.current = true
-    const heat = onCompose()
+    const heat = onCompose(lockedRoll)
     if (heat === 3) {
       playSfx('sns-heat3')
       setHeat3Burst(true)
@@ -201,7 +203,7 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
                 <div className="mt-3 rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-2.5">
                   <div className="flex items-center justify-between text-[11px] font-bold text-cyan-200">
                     <span>📱 {t('sns.publishProgress')}</span>
-                    <span>{ratioPercent}% {t('sns.postProgressFormat', { published: publishedIds.length, total: posts.length })}</span>
+                    <span>{ratioPercent}% {t('sns.postProgressFormat', { published: issuedCount, total: posts.length })}</span>
                   </div>
                   <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-black/40">
                     <div

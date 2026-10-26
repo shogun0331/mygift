@@ -168,13 +168,13 @@ import {
   calcSnsPostCost,
   calcSnsSubscribersGain,
   MAX_CREATOR_SNS_SUBSCRIBERS,
-  planBulkSnsCompose,
   resolveSnsPending,
-  rollSnsCompose,
   snsCaptionOf,
   snsPostMedia,
+  type BulkSnsComposePlan,
   type BulkSnsRevealEntry,
   type BulkSnsComposeResult,
+  type SnsComposeRoll,
   type SnsHeat,
   type SnsResult,
 } from '../game/sns'
@@ -266,13 +266,14 @@ import {
   isVipGrade,
   rollVipAcceptPayout,
   rollVipRejectViewers,
+  rollVipVisit,
   type VipOffer,
   type VipVisit,
 } from '../game/vip'
 import { FanMeetingModal } from './FanMeetingModal'
+import { MonthEventStrip, emptyMonthEvents, type MonthEventFlags } from './MonthEventStrip'
 import type { FanCardState } from '../game/fanMeeting'
 import {
-  advanceAndPickSocialEvent,
   createSocialSpawnState,
   dateArcAfter,
   rollRejectConditionLoss,
@@ -280,8 +281,27 @@ import {
   type HRetryPending,
   type SocialPending,
 } from '../game/social'
+import {
+  AFFECTION_BROADCAST,
+  AFFECTION_SNS,
+  AFFECTION_TRAINING,
+  AFFECTION_VACATION,
+  AFFECTION_H,
+  affectionGainOf,
+  applyAffection,
+  clampAffection,
+  enqueueAffectionCreator,
+  enqueueAffectionCreators,
+  isWaitingForAffectionScene,
+  requeueAffectionAfterScene,
+  rollSnsAffection,
+  takeGainedAffectionScene,
+  takeNextAffectionScene,
+  type AffectionGain,
+} from '../game/affection'
+import { AffectionBroadcastPopup, AffectionGainPopup } from './AffectionPopup'
 import { RankChangeModal } from './RankChangeModal'
-import { RankingPanel, type RankPromotionCelebration } from './RankingPanel'
+import { RankingPanel } from './RankingPanel'
 import { StationReviewModal } from './StationReviewModal'
 import { StationPromotionFx } from './StationPromotionFx'
 import { PromotionCongratsDialogue, type PromotionCongratsPlay } from './PromotionCongratsDialogue'
@@ -297,7 +317,6 @@ import { DonationThanksDialogue, type DonationThanksPlay } from './DonationThank
 import { pickRandomDonationThanks } from '../game/donationLines'
 import { fetchPublicJson } from '../game/publicJson'
 import { getPromotionVoiceUrl } from '../game/promotionLines'
-import { ProposalShortsPlayer } from './ProposalShortsPlayer'
 import { WeeklySettlementModal } from './WeeklySettlementModal'
 import { GameEventSimulator } from '../events/EventSimulator'
 import type { CommonEventLinks } from '../events/commonEventLinks'
@@ -538,15 +557,6 @@ function IconEdit() {
         strokeWidth="1.6"
         strokeLinejoin="round"
       />
-    </svg>
-  )
-}
-
-function IconHudDate() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x="3.5" y="5" width="17" height="15" rx="2" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M8 3.5v3M16 3.5v3M3.5 9.5h17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   )
 }
@@ -875,16 +885,6 @@ export function InGame({
   const speed: SpeedOption = '1x'
   const [gameMonth, setGameMonth] = useState(boot?.gameMonth ?? 0)
   const [broadcastPhase, setBroadcastPhase] = useState<BroadcastPhase>('prep')
-
-  function handleDevPrevMonth() {
-    setGameMonth((prev) => Math.max(0, prev - 1))
-    setBroadcastMonthNumber((prev) => Math.max(1, prev - 1))
-  }
-
-  function handleDevNextMonth() {
-    setGameMonth((prev) => prev + 1)
-    setBroadcastMonthNumber((prev) => prev + 1)
-  }
   const [livePlayVideoByCreator, setLivePlayVideoByCreator] = useState<Record<string, string>>({})
   const livePlayVideoByCreatorRef = useRef(livePlayVideoByCreator)
   const [monthWeekIndex, setMonthWeekIndex] = useState(boot?.monthWeekIndex ?? 0)
@@ -968,6 +968,14 @@ export function InGame({
   const isCasinoAvailable =
     isCasinoGradeUnlocked && (stationGrade === 'top' || casinoTurnCount >= getCasinoRequiredTurns(stationGrade))
 
+  useEffect(() => {
+    if (!isCasinoAvailable || monthMarksRef.current.casino) return
+    const next = { ...monthMarksRef.current, casino: true }
+    monthMarksRef.current = next
+    setMonthMarks(next)
+    flushAutoSave()
+  }, [isCasinoAvailable])
+
   const [highLowConfigs, setHighLowConfigs] = useState(loadHighLowConfig)
   useEffect(() => {
     let cancelled = false
@@ -1006,9 +1014,6 @@ export function InGame({
     fromRank: number
     toRank: number
   } | null>(null)
-  /** 랭킹 패널에 표시되는 축하 연출 정보 — promotionFx와 동일 시점에 세팅, VN 종료 후 해제 */
-  const [promotionCelebration, setPromotionCelebration] =
-    useState<RankPromotionCelebration | null>(null)
   const [promotionCongratsPlay, setPromotionCongratsPlay] = useState<PromotionCongratsPlay | null>(null)
   const [promoteEventPlay, setPromoteEventPlay] = useState<GameEvent | null>(null)
   const [stationAuditTarget, setStationAuditTargetState] = useState<{
@@ -1106,6 +1111,33 @@ export function InGame({
   const stationReviewOfferedRef = useRef<string | null>(boot?.notifiedStationReviewKey ?? null)
   const [vipOffer, setVipOffer] = useState<VipOffer | null>(null)
   const [vipVisit, setVipVisit] = useState<VipVisit | null>(null)
+  /** 팬미팅 턴. 자동으로 열지 않고, 방송시작 버튼이 팬미팅 버튼이 된다. */
+  const [fanMeetingDue, setFanMeetingDue] = useState(Boolean(boot?.fanMeetingDue))
+  const [fanMeetingWait, setFanMeetingWait] = useState<number | null>(
+    typeof boot?.vipWaitTurns === 'number' && Number.isFinite(boot.vipWaitTurns)
+      ? Math.max(0, Math.round(boot.vipWaitTurns))
+      : null,
+  )
+  const [lastMonthEvents, setLastMonthEvents] = useState<MonthEventFlags>(() =>
+    boot?.lastMonthEvents
+      ? {
+          fanMeeting: Boolean(boot.lastMonthEvents.fanMeeting),
+          casino: Boolean(boot.lastMonthEvents.casino),
+        }
+      : emptyMonthEvents(),
+  )
+  const [monthMarks, setMonthMarks] = useState<MonthEventFlags>(() => {
+    const saved = boot?.currentMonthEvents
+    return {
+      fanMeeting: Boolean(saved?.fanMeeting) || Boolean(boot?.fanMeetingDue),
+      casino: Boolean(saved?.casino),
+    }
+  })
+  const [fanMeetingTutorialSeen, setFanMeetingTutorialSeen] = useState(Boolean(boot?.fanMeetingTutorialSeen))
+  const [examTutorialSeen, setExamTutorialSeen] = useState(Boolean(boot?.examTutorialSeen))
+  const [practiceKind, setPracticeKind] = useState<'fan' | 'exam' | null>(null)
+  const [assetPreview, setAssetPreview] = useState(0)
+  const [assetFlies, setAssetFlies] = useState<Array<{ id: number; amount: number }>>([])
   const [fanDeckCreators, setFanDeckCreators] = useState<any[] | null>(null)
   const [vipResult, setVipResult] = useState<VipResult | null>(null)
   const [vipEventPlay, setVipEventPlay] = useState<{
@@ -1179,8 +1211,11 @@ export function InGame({
   const [socialUi, setSocialUi] = useState<SocialUi | null>(null)
   const [showGameClear, setShowGameClear] = useState(false)
   const [endingEventPlay, setEndingEventPlay] = useState<GameEvent | null>(null)
-  const [proposalPlayCreator, setProposalPlayCreator] = useState<OwnedCreator | null>(null)
   const [proposalEndingVnEvent, setProposalEndingVnEvent] = useState<GameEvent | null>(null)
+  const [affectionPopup, setAffectionPopup] = useState<AffectionGain | null>(null)
+  const [affectionSummary, setAffectionSummary] = useState<AffectionGain[] | null>(null)
+  const [affectionNotice, setAffectionNotice] = useState<string | null>(null)
+  const [snsAffectionSummary, setSnsAffectionSummary] = useState<AffectionGain[] | null>(null)
 
   // 스카웃 VN 이벤트 진행
   type ScoutEventState = {
@@ -1239,6 +1274,7 @@ export function InGame({
     fromGrade: Grade
     toGrade: Grade
   } | null>(null)
+
 
   const [snsResultQueue, setSnsResultQueue] = useState<SnsResult[]>([])
   const snsResultQueueRef = useRef<SnsResult[]>([])
@@ -1377,6 +1413,7 @@ export function InGame({
       vipDepartPlay ||
       vipEventPlay ||
       socialUi ||
+      fanMeetingDue ||
       startBroadcastLocked ||
       openCreatorScout ||
       promotionExam
@@ -1401,6 +1438,7 @@ export function InGame({
     vipDepartPlay,
     vipEventPlay,
     socialUi,
+    fanMeetingDue,
     startBroadcastLocked,
     openCreatorScout,
     promotionExam,
@@ -1417,6 +1455,7 @@ export function InGame({
     !vipDepartPlay &&
     !vipEventPlay &&
     !socialUi &&
+    !fanMeetingDue &&
     !startBroadcastLocked &&
     !openCreatorScout &&
     !promotionExam
@@ -1429,11 +1468,18 @@ export function InGame({
     if (!check.ok) return
     const creator = hireScoutOffer(offer)
     if (!freeHire && !spendAssets(offer.salary)) return
+    if (!ownedCreatorsRef.current.some((row) => row.id === creator.id)) {
+      ownedCreatorsRef.current = [...ownedCreatorsRef.current, creator]
+    }
+    onOwnedCreatorsChangeRef.current(ownedCreatorsRef.current)
+    const hiredScout = clearFirstHireGuarantee(clearScoutOfferAfterHire(scoutSystemRef.current))
+    scoutSystemRef.current = hiredScout
+    setScoutSystem(hiredScout)
     setOpenCreatorScout(false)
-    setScoutSystem((prev) => clearScoutOfferAfterHire(prev))
     setCreatorScoutAvailable(false)
     creatorScoutAvailableRef.current = false
     setCreatorScoutCooldown(rollInt(2, 4))
+    flushAutoSave()
     beginScoutVisualNovel(creator)
   }
 
@@ -1559,12 +1605,8 @@ export function InGame({
         fromRank: oldRank,
         toRank: newRank,
       })
-      setPromotionCelebration({
-        fromGradeLabel: t(companyTierLabelKey(stationGrade)),
-        toGradeLabel: t(companyTierLabelKey(nextGrade)),
-      })
       setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
-      scheduleAutoSave()
+      flushAutoSave()
     }
   }, [
     stationGrade,
@@ -1585,7 +1627,8 @@ export function InGame({
       weeklyStatement ||
       broadcastEndedNotice ||
       rankSettlement ||
-      startBroadcastLocked
+      startBroadcastLocked ||
+      fanMeetingDue
     ) {
       return
     }
@@ -1616,6 +1659,7 @@ export function InGame({
     broadcastEndedNotice,
     rankSettlement,
     startBroadcastLocked,
+    fanMeetingDue,
     stationGrade,
     league.viewers,
     ownedCreators,
@@ -1750,6 +1794,7 @@ export function InGame({
       socialUi ||
       scoutEventState ||
       openCreatorScout ||
+      fanMeetingDue ||
       snsResultQueue.length > 0
     ) {
       return
@@ -1771,6 +1816,7 @@ export function InGame({
     socialUi,
     scoutEventState,
     openCreatorScout,
+    fanMeetingDue,
     snsResultQueue.length,
   ])
   const dayPlanRef = useRef<StudioDayPlan | null>(null)
@@ -1813,17 +1859,47 @@ export function InGame({
     oldRank: number
     newRank: number
   } | null>(null)
-  const rankRefreshTurnsLeftRef = useRef(RANK_REFRESH_TURNS)
+  const rankRefreshTurnsLeftRef = useRef(boot?.rankRefreshTurnsLeft ?? RANK_REFRESH_TURNS)
   const pendingStationReviewRef = useRef(boot?.pendingStationReview ?? false)
   const pendingGameClearRef = useRef(false)
   const pendingSocialQueueRef = useRef<SocialPending[]>([])
   const socialSpawnRef = useRef(boot?.socialSpawn ?? createSocialSpawnState())
+  const affectionVnQueueRef = useRef<string[]>(
+    Array.isArray(boot?.affectionVnQueue) ? boot.affectionVnQueue.filter((id) => typeof id === 'string') : [],
+  )
+  const pendingBroadcastAffectionRef = useRef<AffectionGain[]>([])
+  const monthAffectionGateRef = useRef(false)
+  const vacationAffectionRef = useRef<AffectionGain | null>(null)
+  const pendingHAffectionIdRef = useRef<string | null>(null)
+  const affectionPopupRef = useRef<AffectionGain | null>(null)
+  const affectionPopupQueueRef = useRef<AffectionGain[]>([])
+  const pendingSnsAffectionRef = useRef<AffectionGain[]>([])
+  const pendingTrainingAffectionRef = useRef<AffectionGain[]>([])
+  const trainingAffectionTimerRef = useRef(0)
+  const midGameDateIdsRef = useRef<string[]>([])
+  const midGameDateTimerRef = useRef(0)
+  const midGameDateRef = useRef(false)
   const vipWaitRef = useRef<number | null>(
     typeof boot?.vipWaitTurns === 'number' && Number.isFinite(boot.vipWaitTurns)
       ? Math.max(0, Math.round(boot.vipWaitTurns))
       : null,
   )
   const pendingVipVisitRef = useRef<VipVisit | null>(null)
+  const fanMeetingDueRef = useRef(Boolean(boot?.fanMeetingDue))
+  const fanMeetingScheduleVersionRef = useRef(boot?.fanMeetingScheduleVersion === 1 ? 1 : 0)
+  const lastMonthEventsRef = useRef(lastMonthEvents)
+  lastMonthEventsRef.current = lastMonthEvents
+  const monthMarksRef = useRef(monthMarks)
+  const seenMonthMarksRef = useRef(monthMarks)
+  if (seenMonthMarksRef.current !== monthMarks) {
+    seenMonthMarksRef.current = monthMarks
+    monthMarksRef.current = monthMarks
+  }
+  const fanMeetingTutorialSeenRef = useRef(fanMeetingTutorialSeen)
+  fanMeetingTutorialSeenRef.current = fanMeetingTutorialSeen
+  const examTutorialSeenRef = useRef(examTutorialSeen)
+  examTutorialSeenRef.current = examTutorialSeen
+  const assetPreviewRef = useRef(0)
   const stationGradeRef = useRef(stationGrade)
   const annualRevenueByYearRef = useRef<Record<number, number>>(
     boot?.annualRevenueByYear ?? {},
@@ -1871,7 +1947,11 @@ export function InGame({
   leagueRef.current = league
   stationGradeRef.current = stationGrade
   const casinoTurnCountRef = useRef(casinoTurnCount)
-  casinoTurnCountRef.current = casinoTurnCount
+  const seenCasinoTurnCountRef = useRef(casinoTurnCount)
+  if (seenCasinoTurnCountRef.current !== casinoTurnCount) {
+    seenCasinoTurnCountRef.current = casinoTurnCount
+    casinoTurnCountRef.current = casinoTurnCount
+  }
   const showCasinoModalRef = useRef(showCasinoModal)
   showCasinoModalRef.current = showCasinoModal
 
@@ -1885,6 +1965,7 @@ export function InGame({
     const value = writeAssetLedger(assetLedgerRef.current, next)
     assetsRef.current = value
     setAssets(value)
+    scheduleAutoSave()
     return value
   }
 
@@ -1942,16 +2023,18 @@ export function InGame({
         staffScoutAvailable: staffScoutAvailableRef.current,
         creatorScoutAvailable: creatorScoutAvailableRef.current,
         creatorScoutFirstDone: creatorScoutFirstDoneRef.current,
-        scoutedStaffCandidate: scoutedStaffCandidateRef.current
-          ? {
-              staffId: scoutedStaffCandidateRef.current.id,
-              proposedHireCost: scoutedStaffCandidateRef.current.proposedHireCost,
-              proposedSalary: scoutedStaffCandidateRef.current.proposedSalary,
-            }
-          : null,
+        scoutedStaffCandidate:
+          staffCandidateRawRef.current ??
+          (scoutedStaffCandidateRef.current
+            ? {
+                staffId: scoutedStaffCandidateRef.current.id,
+                proposedHireCost: scoutedStaffCandidateRef.current.proposedHireCost,
+                proposedSalary: scoutedStaffCandidateRef.current.proposedSalary,
+              }
+            : null),
         staffScoutCooldown: staffScoutCooldownRef.current,
       },
-      scoutSystem: serializeScoutSystem(scoutSystemRef.current),
+      scoutSystem: scoutRawRef.current ?? serializeScoutSystem(scoutSystemRef.current),
       pendingStationReview: pendingStationReviewRef.current,
       stationAuditTarget: stationAuditTargetRef.current,
       liveRevenueByCreator: liveRevenueByCreatorRef.current,
@@ -1962,6 +2045,13 @@ export function InGame({
       lastHActionMonth: lastHActionMonthRef.current,
       lastVipActionMonth: lastVipActionMonthByCreatorRef.current,
       vipWaitTurns: vipWaitRef.current ?? undefined,
+      fanMeetingDue: fanMeetingDueRef.current,
+      fanMeetingScheduleVersion: fanMeetingScheduleVersionRef.current === 1 ? 1 : undefined,
+      lastMonthEvents: lastMonthEventsRef.current,
+      currentMonthEvents: monthMarksRef.current,
+      fanMeetingTutorialSeen: fanMeetingTutorialSeenRef.current,
+      examTutorialSeen: examTutorialSeenRef.current,
+      affectionVnQueue: affectionVnQueueRef.current,
       tutorialDone: tutorialDoneRef.current,
     }
   }
@@ -3247,6 +3337,18 @@ export function InGame({
     }
     weekFinishedRef.current = true
 
+    const leavingGrade = stationGradeRef.current
+    const leavingReq = getCasinoRequiredTurns(leavingGrade)
+    const leavingCasino =
+      stationTierRank(leavingGrade) >= stationTierRank('sme') &&
+      (leavingGrade === 'top' || casinoTurnCountRef.current >= leavingReq)
+    const leavingEvents = {
+      fanMeeting: monthMarksRef.current.fanMeeting || fanMeetingDueRef.current,
+      casino: monthMarksRef.current.casino || leavingCasino,
+    }
+    lastMonthEventsRef.current = leavingEvents
+    setLastMonthEvents(leavingEvents)
+
     // 턴 종료 → 무조건 다음 달
     const nextMonth = gameMonthRef.current + 1
     gameMonthRef.current = nextMonth
@@ -3565,22 +3667,24 @@ export function InGame({
       baseViewersGained: viewersGained - productionViewers - snsViewers,
     }
 
-    const socialBlocked = Boolean(pendingRankResultRef.current?.gameCleared)
-    const socialRoll = advanceAndPickSocialEvent(
-      socialSpawnRef.current,
-      ownedCreatorsRef.current,
-      socialBlocked,
-    )
-    socialSpawnRef.current = socialRoll.state
-    pendingSocialQueueRef.current = socialRoll.event ? [socialRoll.event] : []
-    const vipRoll = advanceVipVisit({
-      grade: stationGradeRef.current,
-      wait: vipWaitRef.current,
-      config: stationGradeConfig.vipConfig,
-    })
+    pendingBroadcastAffectionRef.current = grantBroadcastAffection(weekSnapshot)
+    monthAffectionGateRef.current = true
+    pendingSocialQueueRef.current = []
+    const carriedFanMeeting = fanMeetingDueRef.current
+    const vipRoll = carriedFanMeeting
+      ? { wait: vipWaitRef.current, visit: null as ReturnType<typeof rollVipVisit>, opened: false }
+      : advanceVipVisit({
+          grade: stationGradeRef.current,
+          wait: vipWaitRef.current,
+          config: stationGradeConfig.vipConfig,
+        })
     vipWaitRef.current = vipRoll.wait
-    const party = ownedCreatorsRef.current.slice(0, 4)
-    pendingVipVisitRef.current = party.some((creator) => creator.stamina > 0) ? vipRoll.visit : null
+    setFanMeetingWait(vipRoll.wait)
+    if (!carriedFanMeeting && vipRoll.opened) {
+      pendingVipVisitRef.current = vipRoll.visit
+      fanMeetingDueRef.current = true
+      setFanMeetingDue(true)
+    }
 
     const nextMonthNumber = broadcastMonthNumberRef.current + 1
     broadcastMonthNumberRef.current = nextMonthNumber
@@ -3597,7 +3701,14 @@ export function InGame({
     const nextCasinoTurns = Math.min(reqCasinoTurns, casinoTurnCountRef.current + 1)
     const willCasinoOpen = isUnlocked && (stationGradeRef.current === 'top' || nextCasinoTurns >= reqCasinoTurns)
 
+    casinoTurnCountRef.current = nextCasinoTurns
     setCasinoTurnCount(nextCasinoTurns)
+    const nextMarks = {
+      fanMeeting: carriedFanMeeting || vipRoll.opened,
+      casino: willCasinoOpen,
+    }
+    monthMarksRef.current = nextMarks
+    setMonthMarks(nextMarks)
     if (!wasCasinoOpen && willCasinoOpen) {
       const casinoOpenEvent: DayEvent = {
         id: `casino-open-${nextMonthNumber}-${Math.round(performance.now())}`,
@@ -3837,16 +3948,7 @@ export function InGame({
       setStartBroadcastLocked(false)
       return
     }
-    if (checkPromotionExamNotices(openScout)) {
-      return
-    }
-    if (checkStaffSalaryRaise(openScout)) {
-      return
-    }
-    if (checkProposalEvent(openScout)) {
-      return
-    }
-    proceedNextAfterProposal(openScout)
+    continueAfterMonthModals(openScout)
   }
 
   function releaseMonthEndLock(openScout: boolean) {
@@ -3910,15 +4012,17 @@ export function InGame({
     if (!offer) return
 
     const turn = broadcastMonthNumberRef.current
-    setScoutSystem((prev) => ({
-      ...prev,
+    const nextScout = {
+      ...scoutSystemRef.current,
       activeOffer: offer,
       offerAppearedTurn: turn,
       lastAppearTurn: turn,
       hasUnread: true,
       openingScoutPending: false,
-      appearCount: prev.appearCount + 1,
-    }))
+      appearCount: scoutSystemRef.current.appearCount + 1,
+    }
+    scoutSystemRef.current = nextScout
+    setScoutSystem(nextScout)
     setCreatorScoutAvailable(false)
     creatorScoutAvailableRef.current = false
     setCreatorScoutCooldown(rollInt(2, 4))
@@ -3934,76 +4038,236 @@ export function InGame({
     return reward
   }
 
-  function checkProposalEvent(openScout: boolean): boolean {
-    const isTopRank =
-      leagueRef.current.currentRank === 1 ||
-      stationGradeRef.current === 'top'
-
-    if (!isTopRank) return false
-
-    // 데이트 1차, 2차, H이벤트까지 모두 완료(dateArcStep >= 3)한 크리에이터만 고백 가능
-    const allEligible = ownedCreatorsRef.current.filter((c) => (c.dateArcStep ?? 0) >= 3)
-    if (allEligible.length === 0) return false
-
-    let pendingCreators = allEligible.filter((c) => !c.proposalState)
-
-    // 모두 거부(rejected)한 상태인 경우, 다음 사이클을 위해 상태를 리셋하고 이번 턴은 넘김
-    if (pendingCreators.length === 0 && allEligible.every((c) => c.proposalState === 'rejected')) {
-      const resetOwned = ownedCreatorsRef.current.map((c) =>
-        (c.dateArcStep ?? 0) >= 3 ? { ...c, proposalState: null } : c,
-      )
-      ownedCreatorsRef.current = resetOwned
-      onOwnedCreatorsChangeRef.current(resetOwned)
-      flushAutoSave()
-      return false
+  function pushAffectionPopup(gain: AffectionGain) {
+    if (affectionPopupRef.current) {
+      affectionPopupQueueRef.current.push(gain)
+      scheduleMidGameDate()
+      return
     }
+    affectionPopupRef.current = gain
+    setAffectionPopup(gain)
+    scheduleMidGameDate()
+  }
 
-    if (pendingCreators.length === 0) return false
+  function clearMidGameDateTimer() {
+    if (!midGameDateTimerRef.current) return
+    window.clearTimeout(midGameDateTimerRef.current)
+    midGameDateTimerRef.current = 0
+  }
 
-    const chosen = pendingCreators[Math.floor(Math.random() * pendingCreators.length)]
-    pendingScoutAfterRankRef.current = openScout
-    setStartBroadcastLocked(true)
-    // 고백 팝업 표시 직전 상태 저장 (로드 시 고백 직전 상황으로 복원)
+  /** 호감도 숫자를 잠깐 보여 준 뒤 데이트 신청. 팝업이 끝날 때까지 기다리지 않는다. */
+  function scheduleMidGameDate() {
+    if (midGameDateIdsRef.current.length === 0) return
+    clearMidGameDateTimer()
+    midGameDateTimerRef.current = window.setTimeout(() => {
+      midGameDateTimerRef.current = 0
+      if (midGameDateIdsRef.current.length === 0) return
+      affectionPopupQueueRef.current = []
+      affectionPopupRef.current = null
+      setAffectionPopup(null)
+      setSnsAffectionSummary(null)
+      offerMidGameDate()
+    }, 800)
+  }
+
+  function queueTrainingAffection(gain: AffectionGain) {
+    clearMidGameDateTimer()
+    const list = pendingTrainingAffectionRef.current
+    const index = list.findIndex((row) => row.creatorId === gain.creatorId)
+    if (index < 0) {
+      pendingTrainingAffectionRef.current = [...list, gain]
+    } else {
+      const prev = list[index]!
+      const next = list.slice()
+      next[index] = { ...prev, after: gain.after, amount: prev.amount + gain.amount }
+      pendingTrainingAffectionRef.current = next
+    }
+    if (trainingAffectionTimerRef.current) window.clearTimeout(trainingAffectionTimerRef.current)
+    trainingAffectionTimerRef.current = window.setTimeout(() => {
+      trainingAffectionTimerRef.current = 0
+      const gains = pendingTrainingAffectionRef.current
+      pendingTrainingAffectionRef.current = []
+      if (gains.length === 0) return
+      if (gains.length === 1) {
+        const only = gains[0]!
+        affectionPopupQueueRef.current = affectionPopupQueueRef.current.filter(
+          (row) => row.creatorId !== only.creatorId,
+        )
+        affectionPopupRef.current = only
+        setAffectionPopup(only)
+        setSnsAffectionSummary(null)
+        scheduleMidGameDate()
+        return
+      }
+      affectionPopupQueueRef.current = []
+      affectionPopupRef.current = null
+      setAffectionPopup(null)
+      setSnsAffectionSummary(gains)
+      scheduleMidGameDate()
+    }, 550)
+  }
+
+  function closeAffectionPopup() {
+    const next = affectionPopupQueueRef.current.shift() ?? null
+    affectionPopupRef.current = next
+    setAffectionPopup(next)
+    if (!next) offerMidGameDate()
+  }
+
+  function flushPendingSnsAffection() {
+    const gains = pendingSnsAffectionRef.current
+    pendingSnsAffectionRef.current = []
+    if (gains.length === 0) return
+    if (gains.length === 1) {
+      pushAffectionPopup(gains[0]!)
+      return
+    }
+    setSnsAffectionSummary(gains)
+    scheduleMidGameDate()
+  }
+
+  function rememberAffectionScene(creator: OwnedCreator) {
+    affectionVnQueueRef.current = enqueueAffectionCreator(affectionVnQueueRef.current, creator)
+  }
+
+  function noteMidGameDate(creator: OwnedCreator, gained: number) {
+    if (gained <= 0 || !isWaitingForAffectionScene(creator)) return
+    rememberAffectionScene(creator)
+    if (!midGameDateIdsRef.current.includes(creator.id)) {
+      midGameDateIdsRef.current = [...midGameDateIdsRef.current, creator.id]
+    }
+  }
+
+  function offerMidGameDate() {
+    clearMidGameDateTimer()
+    const ids = midGameDateIdsRef.current
+    if (ids.length === 0) return
+    midGameDateIdsRef.current = []
+    if (socialUi || broadcastPhaseRef.current === 'live' || startBroadcastLocked) return
+    const taken = takeGainedAffectionScene(
+      affectionVnQueueRef.current,
+      ownedCreatorsRef.current,
+      new Set(ids),
+    )
+    affectionVnQueueRef.current = taken.queue
     flushAutoSave()
-    setProposalPlayCreator(chosen)
+    if (!taken.pending) return
+    midGameDateRef.current = true
+    setSocialUi({ mode: 'dateOffer', pending: taken.pending })
+  }
+
+  function grantAffectionTo(creatorId: string, amount: number, popup: boolean): AffectionGain | null {
+    const gains = grantAffectionBatch([{ creatorId, amount }])
+    const gain = gains[0] ?? null
+    if (popup && gain) pushAffectionPopup(gain)
+    return gain
+  }
+
+  function grantAffectionBatch(grants: Array<{ creatorId: string; amount: number }>): AffectionGain[] {
+    let roster = ownedCreatorsRef.current
+    const gains: AffectionGain[] = []
+    for (const grant of grants) {
+      const index = roster.findIndex((creator) => creator.id === grant.creatorId)
+      if (index < 0) continue
+      const current = roster[index]!
+      const before = clampAffection(current.affection)
+      const applied = applyAffection(current, grant.amount)
+      roster = roster.map((creator, row) => (row === index ? applied.creator : creator))
+      if (applied.gained <= 0) continue
+      noteMidGameDate(applied.creator, applied.gained)
+      gains.push(
+        affectionGainOf(
+          applied.creator,
+          before,
+          clampAffection(applied.creator.affection),
+          characterDisplayName(applied.creator, locale),
+        ),
+      )
+    }
+    if (roster !== ownedCreatorsRef.current) {
+      ownedCreatorsRef.current = roster
+      onOwnedCreatorsChangeRef.current(roster)
+    }
+    return gains
+  }
+
+  function grantBroadcastAffection(week: { byCreator: Map<string, { weeksBroadcast: number }> }) {
+    const gains: AffectionGain[] = []
+    const fresh: Array<{ creator: OwnedCreator; slotIndex: number }> = []
+    let roster = ownedCreatorsRef.current
+    for (const [creatorId, accum] of week.byCreator) {
+      if ((accum.weeksBroadcast ?? 0) <= 0) continue
+      const index = roster.findIndex((creator) => creator.id === creatorId)
+      if (index < 0) continue
+      const before = clampAffection(roster[index]!.affection)
+      const applied = applyAffection(roster[index]!, AFFECTION_BROADCAST)
+      roster = roster.map((creator, row) => (row === index ? applied.creator : creator))
+      const slotIndex = studioSlotsRef.current.findIndex(
+        (slot) => slot.status === 'assigned' && slot.assignment?.creatorId === creatorId,
+      )
+      if (applied.gained <= 0) continue
+      fresh.push({ creator: applied.creator, slotIndex: slotIndex < 0 ? 999 : slotIndex })
+      gains.push(
+        affectionGainOf(
+          applied.creator,
+          before,
+          clampAffection(applied.creator.affection),
+          characterDisplayName(applied.creator, locale),
+        ),
+      )
+    }
+    if (roster !== ownedCreatorsRef.current) {
+      ownedCreatorsRef.current = roster
+      onOwnedCreatorsChangeRef.current(roster)
+    }
+    affectionVnQueueRef.current = enqueueAffectionCreators(affectionVnQueueRef.current, fresh)
+    return gains
+  }
+
+  function openMonthAffectionVn(): boolean {
+    affectionVnQueueRef.current = enqueueAffectionCreators(
+      affectionVnQueueRef.current,
+      ownedCreatorsRef.current.map((creator, slotIndex) => ({ creator, slotIndex })),
+    )
+    const taken = takeNextAffectionScene(affectionVnQueueRef.current, ownedCreatorsRef.current)
+    affectionVnQueueRef.current = taken.queue
+    flushAutoSave()
+    if (!taken.pending) return false
+    setStartBroadcastLocked(true)
+    setSocialUi({ mode: 'dateOffer', pending: taken.pending })
     return true
   }
 
-  function handleProposalAccept() {
-    if (!proposalPlayCreator) return
-    const creator = proposalPlayCreator
-    patchOwnedCreator(creator.id, (c) => ({
-      ...c,
-      proposalState: 'accepted',
-    }))
-    flushAutoSave()
-    setProposalPlayCreator(null)
-
-    const charDef = registeredCharactersRef.current.find((c) => c.id === creator.id)
-    const endingVnId = charDef?.eventLinks?.endingVn
-    const endingEvent = endingVnId
-      ? eventsRef.current.find((e) => e.id === endingVnId) ?? null
-      : null
-
-    if (endingEvent) {
-      setProposalEndingVnEvent(endingEvent)
-    } else {
-      onBack?.()
-    }
+  function closeAffectionSummary() {
+    setAffectionSummary(null)
+    if (openMonthAffectionVn()) return
+    continueAfterMonthModals(pendingScoutAfterRankRef.current)
   }
 
-  function handleProposalReject() {
-    if (!proposalPlayCreator) return
-    const creator = proposalPlayCreator
-    patchOwnedCreator(creator.id, (c) => ({
-      ...c,
-      proposalState: 'rejected',
-    }))
-    flushAutoSave()
-    setProposalPlayCreator(null)
-    const openScout = pendingScoutAfterRankRef.current
-    // 거부 시 한 턴에 다음 캐릭터가 연달아 고백하지 않도록 바로 다음 모달/소셜 큐로 진행
-    proceedNextAfterProposal(openScout)
+  function handleConfess(creatorId: string) {
+    const creator = ownedCreatorsRef.current.find((row) => row.id === creatorId)
+    if (!creator) return
+    const replay = creator.proposalState === 'accepted'
+    const ready =
+      replay ||
+      (leagueRef.current.currentRank === 1 &&
+        clampAffection(creator.affection) >= 100 &&
+        (creator.dateArcStep ?? 0) >= 3)
+    if (!ready) return
+    const charDef = registeredCharactersRef.current.find((row) => row.id === creatorId)
+    const endingVnId = charDef?.eventLinks?.endingVn
+    const endingEvent = endingVnId
+      ? eventsRef.current.find((event) => event.id === endingVnId) ?? null
+      : null
+    if (!endingEvent) {
+      setAffectionNotice(t('affection.noEnding'))
+      return
+    }
+    if (!replay) {
+      patchOwnedCreator(creatorId, (row) => ({ ...row, proposalState: 'accepted' }))
+      flushAutoSave()
+    }
+    setProposalEndingVnEvent(endingEvent)
   }
 
   function proceedNextAfterProposal(openScout: boolean) {
@@ -4018,10 +4282,12 @@ export function InGame({
     }
     const visit = pendingVipVisitRef.current
     if (visit) {
-      pendingVipVisitRef.current = null
       pendingScoutAfterRankRef.current = openScout
-      setStartBroadcastLocked(true)
-      setVipVisit(visit)
+      fanMeetingDueRef.current = true
+      setFanMeetingDue(true)
+      setStartBroadcastLocked(false)
+      setTab('dashboard')
+      flushAutoSave()
       return
     }
     if (snsResultQueueRef.current.length > 0) {
@@ -4033,13 +4299,24 @@ export function InGame({
   }
 
   function continueAfterMonthModals(openScout: boolean) {
+    if (monthAffectionGateRef.current) {
+      monthAffectionGateRef.current = false
+      pendingScoutAfterRankRef.current = openScout
+      if (tutorialDoneRef.current) {
+        const gains = pendingBroadcastAffectionRef.current
+        pendingBroadcastAffectionRef.current = []
+        if (gains.length > 0) {
+          setStartBroadcastLocked(true)
+          setAffectionSummary(gains)
+          return
+        }
+        if (openMonthAffectionVn()) return
+      }
+    }
     if (checkPromotionExamNotices(openScout)) {
       return
     }
     if (checkStaffSalaryRaise(openScout)) {
-      return
-    }
-    if (checkProposalEvent(openScout)) {
       return
     }
     proceedNextAfterProposal(openScout)
@@ -4054,6 +4331,7 @@ export function InGame({
   }
 
   const completeDateEvent = (pending: DatePending) => {
+    let updated: OwnedCreator | null = null
     patchOwnedCreator(pending.creatorId, (creator) => {
       let nextCreator = {
         ...creator,
@@ -4062,8 +4340,12 @@ export function InGame({
       if (pending.step === 'h') {
         nextCreator = applyFullVitalsRecovery(nextCreator)
       }
+      updated = nextCreator
       return nextCreator
     })
+    if (updated) {
+      affectionVnQueueRef.current = requeueAffectionAfterScene(affectionVnQueueRef.current, updated)
+    }
     setSocialUi({ mode: 'dateResult', pending })
     flushAutoSave()
   }
@@ -4111,14 +4393,72 @@ export function InGame({
     flushAutoSave()
   }
 
+  function showAssetFly(amount: number, preview: boolean) {
+    if (amount <= 0) return
+    const id = Date.now() + Math.random()
+    setAssetFlies((prev) => [...prev, { id, amount }])
+    window.setTimeout(() => {
+      setAssetFlies((prev) => prev.filter((fly) => fly.id !== id))
+    }, 900)
+    if (!preview) return
+    assetPreviewRef.current += amount
+    setAssetPreview(assetPreviewRef.current)
+  }
+
+  function clearAssetPreview() {
+    assetPreviewRef.current = 0
+    setAssetPreview(0)
+  }
+
+  function openPractice(kind: 'fan' | 'exam') {
+    if (kind === 'fan') {
+      fanMeetingTutorialSeenRef.current = true
+      setFanMeetingTutorialSeen(true)
+    } else {
+      examTutorialSeenRef.current = true
+      setExamTutorialSeen(true)
+    }
+    if (ownedCreatorsRef.current.length > 0) setPracticeKind(kind)
+    flushAutoSave()
+  }
+
+  function closePractice() {
+    clearAssetPreview()
+    setPracticeKind(null)
+  }
+
+  function handleStartFanMeeting() {
+    if (broadcastPhase === 'live' || vipVisit) return
+    let visit = pendingVipVisitRef.current
+    if (!visit) {
+      visit = rollVipVisit(stationGradeConfig.vipConfig, stationGradeRef.current)
+    }
+    if (!visit) return
+    pendingVipVisitRef.current = visit
+    setVipVisit(visit)
+  }
+
+  function handleFanMeetingPass() {
+    pendingVipVisitRef.current = null
+    fanMeetingDueRef.current = false
+    setFanMeetingDue(false)
+    setVipVisit(null)
+    setFanDeckCreators(null)
+    flushAutoSave()
+  }
+
   function handleFanMeetingFinish(result: {
     earned: number
     satisfiedCount: number
     lastRewardText: string
     staminaById: Record<string, number>
   }) {
+    pendingVipVisitRef.current = null
+    fanMeetingDueRef.current = false
+    setFanMeetingDue(false)
     setVipVisit(null)
     setFanDeckCreators(null)
+    clearAssetPreview()
     if (result.earned > 0) commitAssets(heldAssets() + result.earned)
     setVipResult({
       kind: 'visit',
@@ -4277,6 +4617,10 @@ export function InGame({
       if (isStaminaDepleted(creator.stamina)) return creator
       return applyFullVitalsRecovery(creator)
     })
+    if (pendingHAffectionIdRef.current === pending.creatorId) {
+      pendingHAffectionIdRef.current = null
+      grantAffectionTo(pending.creatorId, AFFECTION_H, true)
+    }
     setSocialUi({
       mode: 'hRetryResult',
       pending,
@@ -4310,6 +4654,7 @@ export function InGame({
     if (!creator || isStaminaDepleted(creator.stamina)) return
     setLastHActionMonth(broadcastMonthNumberRef.current)
     lastHActionMonthRef.current = broadcastMonthNumberRef.current
+    pendingHAffectionIdRef.current = creatorId
 
     const pending: HRetryPending = {
       kind: 'hRetry',
@@ -4495,19 +4840,26 @@ export function InGame({
     if (heldAssets() < trainingCost) return
 
     const result = applyProductionTraining(target)
-    const totalGain =
-      result.gains.statSexy +
-      result.gains.statMental +
-      result.gains.statCommunication +
-      result.gains.statPerformance
-    if (totalGain <= 0) return
+    if (!result.applied) return
     if (!spendAssets(trainingCost)) return
 
+    const trained = applyAffection(result.creator, AFFECTION_TRAINING)
     const nextOwned = ownedCreatorsRef.current.map((creator) =>
-      creator.id === creatorId ? result.creator : creator,
+      creator.id === creatorId ? trained.creator : creator,
     )
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    if (trained.gained > 0) {
+      noteMidGameDate(trained.creator, trained.gained)
+      queueTrainingAffection(
+        affectionGainOf(
+          trained.creator,
+          clampAffection(result.creator.affection),
+          clampAffection(trained.creator.affection),
+          characterDisplayName(trained.creator, locale),
+        ),
+      )
+    }
     playSfx('training')
     scheduleAutoSave()
     signalQuest('train', creatorId)
@@ -4535,19 +4887,21 @@ export function InGame({
     signalQuest('promote', play.creatorId)
   }
 
-  function handleSnsCompose(creatorId: string): SnsHeat | null {
+  function handleSnsCompose(creatorId: string, roll: SnsComposeRoll): SnsHeat | null {
     const target = ownedCreatorsRef.current.find((creator) => creator.id === creatorId)
     if (!target || target.snsPending) return null
-    const published = target.snsPublishedIds ?? []
-    const rolled = rollSnsCompose(target.snsPosts ?? [], published, target.snsHeat3Pity ?? 0)
-    const cost = calcSnsPostCost((target.snsPosts ?? []).length)
-    if (!rolled || !spendAssets(cost)) return null
+    const posts = target.snsPosts ?? []
+    const published = new Set(target.snsPublishedIds ?? [])
+    const post = posts.find((row) => row.id === roll.post.id)
+    if (!post || published.has(post.id)) return null
+    const cost = calcSnsPostCost(posts.length, post.heat)
+    if (!spendAssets(cost)) return null
     const nextOwned = ownedCreatorsRef.current.map((creator) =>
       creator.id === creatorId
         ? {
             ...creator,
-            snsPending: { postId: rolled.post.id, heat: rolled.heat },
-            snsHeat3Pity: rolled.nextPity,
+            snsPending: { postId: post.id, heat: post.heat },
+            snsHeat3Pity: post.heat === 3 ? 0 : roll.nextPity,
           }
         : creator,
     )
@@ -4561,41 +4915,52 @@ export function InGame({
     scheduleAutoSave()
     playSfx('sns-write')
     unlockCharacterAchievement(creatorId, 'sns')
-    if (rolled.heat === 3) unlockCharacterAchievement(creatorId, 'sns_heat3')
+    if (post.heat === 3) unlockCharacterAchievement(creatorId, 'sns_heat3')
+    grantAffectionTo(creatorId, post.heat === 3 ? rollSnsAffection() : AFFECTION_SNS, true)
     signalQuest('sns', creatorId)
-    return rolled.heat
+    return post.heat
   }
 
-  function handleBulkSnsCompose(): BulkSnsComposeResult {
-    const plan = planBulkSnsCompose(ownedCreatorsRef.current, heldAssets())
-    if (plan.affordableIds.length === 0 || !spendAssets(plan.totalCost)) return { entries: [], skippedNoFunds: plan.skippedNoFunds }
+  function handleBulkSnsCompose(plan: BulkSnsComposePlan): BulkSnsComposeResult {
+    const byId = new Map(ownedCreatorsRef.current.map((creator) => [creator.id, creator]))
+    const accepted = plan.rolls.filter((roll) => {
+      const creator = byId.get(roll.creatorId)
+      if (!creator || creator.snsPending) return false
+      const posts = creator.snsPosts ?? []
+      const published = new Set(creator.snsPublishedIds ?? [])
+      return posts.some((post) => post.id === roll.postId) && !published.has(roll.postId)
+    })
+    const total = accepted.reduce((sum, roll) => {
+      const creator = byId.get(roll.creatorId)
+      const heat = creator?.snsPosts?.find((post) => post.id === roll.postId)?.heat ?? roll.heat
+      return sum + calcSnsPostCost((creator?.snsPosts ?? []).length, heat)
+    }, 0)
+    if (accepted.length === 0 || !spendAssets(total)) {
+      return { entries: [], skippedNoFunds: plan.skippedNoFunds }
+    }
 
-    const affordableSet = new Set(plan.affordableIds)
-
+    const acceptedById = new Map(accepted.map((roll) => [roll.creatorId, roll]))
     const posted: BulkSnsRevealEntry[] = []
     const nextOwned = ownedCreatorsRef.current.map((creator) => {
-      if (!affordableSet.has(creator.id)) return creator
-      const rolled = rollSnsCompose(
-        creator.snsPosts ?? [],
-        creator.snsPublishedIds ?? [],
-        creator.snsHeat3Pity ?? 0,
-      )
-      if (!rolled) return creator
-      const media = snsPostMedia(creator.snsPosts ?? [], creator.images, creator.videos, rolled.post.id)
+      const roll = acceptedById.get(creator.id)
+      if (!roll) return creator
+      const post = (creator.snsPosts ?? []).find((row) => row.id === roll.postId)
+      if (!post) return creator
+      const media = snsPostMedia(creator.snsPosts ?? [], creator.images, creator.videos, post.id)
       posted.push({
         creatorId: creator.id,
-        postId: rolled.post.id,
-        heat: rolled.heat,
+        postId: post.id,
+        heat: post.heat,
         displayName: characterDisplayName(creator, locale),
         avatarUrl: creator.profileImageUrl,
-        caption: snsCaptionOf(rolled.post, locale),
+        caption: snsCaptionOf(post, locale),
         media,
-        blurRegions: rolled.post.blurRegions ?? [],
+        blurRegions: post.blurRegions ?? [],
       })
       return {
         ...creator,
-        snsPending: { postId: rolled.post.id, heat: rolled.heat },
-        snsHeat3Pity: rolled.nextPity,
+        snsPending: { postId: post.id, heat: post.heat },
+        snsHeat3Pity: post.heat === 3 ? 0 : roll.nextPity,
       }
     })
     ownedCreatorsRef.current = nextOwned
@@ -4606,6 +4971,12 @@ export function InGame({
       unlockCharacterAchievement(entry.creatorId, 'sns')
       if (entry.heat === 3) unlockCharacterAchievement(entry.creatorId, 'sns_heat3')
     }
+    pendingSnsAffectionRef.current = grantAffectionBatch(
+      posted.map((entry) => ({
+        creatorId: entry.creatorId,
+        amount: entry.heat === 3 ? rollSnsAffection() : AFFECTION_SNS,
+      })),
+    )
     // 일괄 게시: 대상 캐릭터가 포함됐다면 SNS 임무 클리어
     for (const entry of posted) signalQuest('sns', entry.creatorId)
     return { entries: posted, skippedNoFunds: plan.skippedNoFunds }
@@ -4627,16 +4998,32 @@ export function InGame({
     const cost = isAllBroadcastBlocked ? 0 : calcVacationCost(target.salary, target.grade)
     if (cost > 0 && !spendAssets(cost)) return
     let recovered: OwnedCreator | null = null
+    let vacationGained = 0
+    let vacationGain: AffectionGain | null = null
     const nextOwned = ownedCreatorsRef.current.map((creator) => {
       if (creator.id !== creatorId) return creator
-      recovered = {
+      const rested = {
         ...applyVacationRecovery(creator),
         lastVacationMonth: month,
       }
-      return recovered
+      const before = clampAffection(rested.affection)
+      const applied = applyAffection(rested, AFFECTION_VACATION)
+      recovered = applied.creator
+      vacationGained = applied.gained
+      if (applied.gained > 0) {
+        vacationGain = affectionGainOf(
+          applied.creator,
+          before,
+          clampAffection(applied.creator.affection),
+          characterDisplayName(applied.creator, locale),
+        )
+      }
+      return applied.creator
     })
     ownedCreatorsRef.current = nextOwned
     onOwnedCreatorsChangeRef.current(nextOwned)
+    if (recovered) noteMidGameDate(recovered, vacationGained)
+    vacationAffectionRef.current = vacationGain
     flushAutoSave()
     signalQuest('vacation', creatorId)
     playSfx('condition-recover')
@@ -4659,7 +5046,7 @@ export function InGame({
   }
 
   function handleRestTurn() {
-    if (broadcastPhase === 'live') return
+    if (broadcastPhase === 'live' || fanMeetingDue) return
     if (
       weeklyStatement ||
       startBroadcastLocked ||
@@ -4708,7 +5095,7 @@ export function InGame({
   }
 
   function handleStartBroadcast() {
-    if (broadcastPhase === 'live') return
+    if (broadcastPhase === 'live' || fanMeetingDue) return
     if (
       weeklyStatement ||
       startBroadcastLocked ||
@@ -5067,7 +5454,6 @@ export function InGame({
     snsResultQueue.length,
   ])
 
-  const clock = formatGameClock(monthToCalendarDate(GAME_EPOCH, gameMonth))
   const broadcastWeekCurrent = monthWeekIndex + 1
   const broadcastWeeksLeft = Math.max(0, WEEKS_PER_MONTH - broadcastWeekCurrent)
   const broadcastMonthPct = Math.round((broadcastWeekCurrent / WEEKS_PER_MONTH) * 100)
@@ -5520,35 +5906,24 @@ export function InGame({
 
         <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
           <div className="game-hud-strip min-w-0">
-            <div className="game-hud-cell game-hud-cell--date">
-              <div className="game-hud-cell-head">
-                <IconHudDate />
-                <p className="game-stat-label">{t('hud.dateTime')}</p>
-              </div>
-              <div className="flex items-center gap-1.5">
-                {import.meta.env.DEV ? (
-                  <button
-                    type="button"
-                    onClick={handleDevPrevMonth}
-                    title="[DEV] 1달 전으로 이동"
-                    className="flex h-5 w-5 items-center justify-center rounded bg-purple-500/30 border border-purple-400/50 text-[10px] font-black text-purple-200 hover:bg-purple-500/60 active:scale-95 transition shadow-sm"
-                  >
-                    ◀
-                  </button>
-                ) : null}
-                <p className="game-stat-value tabular-nums text-slate-100">{clock.date}</p>
-                {import.meta.env.DEV ? (
-                  <button
-                    type="button"
-                    onClick={handleDevNextMonth}
-                    title="[DEV] 1달 후로 이동"
-                    className="flex h-5 w-5 items-center justify-center rounded bg-purple-500/30 border border-purple-400/50 text-[10px] font-black text-purple-200 hover:bg-purple-500/60 active:scale-95 transition shadow-sm"
-                  >
-                    ▶
-                  </button>
-                ) : null}
-              </div>
-            </div>
+            <MonthEventStrip
+              previous={lastMonthEvents}
+              current={{
+                fanMeeting: monthMarks.fanMeeting || fanMeetingDue,
+                casino: monthMarks.casino || isCasinoAvailable,
+              }}
+              next={{
+                fanMeeting:
+                  stationTierRank(stationGrade) >= stationTierRank('sme') &&
+                  !(monthMarks.fanMeeting || fanMeetingDue) &&
+                  fanMeetingWait === 1,
+                casino:
+                  stationTierRank(stationGrade) >= stationTierRank('sme') &&
+                  (stationGrade === 'top' ||
+                    (!isCasinoAvailable &&
+                      casinoTurnCount + 1 >= getCasinoRequiredTurns(stationGrade))),
+              }}
+            />
             <div className="game-hud-cell game-hud-cell--rank">
               <div className="game-hud-cell-head">
                 <IconHudRank />
@@ -5580,7 +5955,10 @@ export function InGame({
                 <IconHudAssets />
                 <p className="game-stat-label">{t('hud.assets')}</p>
               </div>
-              <p className="game-stat-value tabular-nums">{formatAssets(assets)}</p>
+              <p data-hud-assets className="game-stat-value tabular-nums">{formatAssets(assets + assetPreview)}</p>
+              {assetFlies.map((fly) => (
+                <span key={fly.id} className="asset-fly">+{formatMoney(fly.amount)}</span>
+              ))}
             </div>
           </div>
 
@@ -5641,6 +6019,8 @@ export function InGame({
             slotGearById={slotGearById}
             assets={assets}
             startBroadcastLocked={startBroadcastLocked}
+            fanMeetingReady={fanMeetingDue && !vipVisit}
+            onStartFanMeeting={handleStartFanMeeting}
             isPromotionReady={isStationPromotionEligible}
             onStartPromotionAudit={handleStartPromotionAudit}
             onStartBroadcast={handleStartBroadcast}
@@ -5657,6 +6037,7 @@ export function InGame({
               setStaffActions((prev) => prev.filter((row) => row.id !== id))
             }
             onToxicQteResolve={resolveToxicQte}
+            onSelectSkin={handleSelectCreatorSkin}
           />
         </div>
 
@@ -5689,6 +6070,7 @@ export function InGame({
             onProductionTraining={handleProductionTraining}
             onSnsCompose={handleSnsCompose}
             onBulkSnsCompose={handleBulkSnsCompose}
+            onBulkRevealDone={flushPendingSnsAffection}
             registeredStaff={registeredStaff}
             managerState={managerState}
             onHireStaff={handleHireStaff}
@@ -5705,6 +6087,8 @@ export function InGame({
             onHDirect={handleHDirect}
             onSelectSkin={handleSelectCreatorSkin}
             lastHActionMonth={lastHActionMonth}
+            stationRank={league.currentRank}
+            onConfess={handleConfess}
           />
         ) : tab === 'schedule' ? (
           <SchedulePanel
@@ -5786,7 +6170,6 @@ export function InGame({
             creators={toRankCreators(ownedCreators)}
             turnsUntilRankRefresh={rankRefreshTurnsLeft}
             rankPlay={rankBubblePlay}
-            promotionCelebration={promotionCelebration}
             onRankPlayDone={() => {
               setRankBubblePlay(null)
               const pending = pendingRankAfterBubbleRef.current
@@ -6148,11 +6531,13 @@ export function InGame({
                 scheduleAutoSave()
               }}
               onClose={() => {
+                showCasinoModalRef.current = false
                 setShowCasinoModal(false)
                 if (stationGradeRef.current !== 'top') {
+                  casinoTurnCountRef.current = 0
                   setCasinoTurnCount(0)
                 }
-                scheduleAutoSave()
+                flushAutoSave()
               }}
             />
           </div>
@@ -6182,9 +6567,10 @@ export function InGame({
               onClose={() => {
                 setActiveCasinoRoomId(null)
                 if (stationGradeRef.current !== 'top') {
+                  casinoTurnCountRef.current = 0
                   setCasinoTurnCount(0)
                 }
-                scheduleAutoSave()
+                flushAutoSave()
               }}
               initialRoomId={activeCasinoRoomId}
             />
@@ -6211,6 +6597,7 @@ export function InGame({
       !vipResult &&
       !vipDepartPlay &&
       !vipEventPlay &&
+      !fanMeetingDue &&
       !socialUi &&
       !salaryEventPlay &&
       !scoutEventState &&
@@ -6336,6 +6723,8 @@ export function InGame({
             setSelectedAuditCreators(selectedDeck)
             setAuditDeckSelecting(false)
           }}
+          forceTutorial={!examTutorialSeen}
+          onReplayTutorial={() => openPractice('exam')}
         />
       ) : null}
 
@@ -6403,11 +6792,8 @@ export function InGame({
                 fromRank: oldRank,
                 toRank: newRank,
               })
-              setPromotionCelebration({
-                fromGradeLabel: t(companyTierLabelKey(target.currentTier)),
-                toGradeLabel: t(companyTierLabelKey(nextGrade)),
-              })
               setRankBubblePlay({ fromRank: oldRank, toRank: newRank })
+              flushAutoSave()
               return
             }
             continueMonthEndFlow()
@@ -6458,26 +6844,19 @@ export function InGame({
                   } else {
                     const speaker = pickRandomOwnedPromotionSpeaker(ownedCreatorsRef.current)
                     if (speaker) setPromotionCongratsPlay({ creator: speaker })
-                    else {
-                      setPromotionCelebration(null)
-                      continueMonthEndFlow()
-                    }
+                    else continueMonthEndFlow()
                   }
                 })
                 .catch(() => {
                   const speaker = pickRandomOwnedPromotionSpeaker(ownedCreatorsRef.current)
                   if (speaker) setPromotionCongratsPlay({ creator: speaker })
-                  else {
-                    setPromotionCelebration(null)
-                    continueMonthEndFlow()
-                  }
+                  else continueMonthEndFlow()
                 })
             } else {
               const speaker = pickRandomOwnedPromotionSpeaker(ownedCreatorsRef.current)
               if (speaker) {
                 setPromotionCongratsPlay({ creator: speaker })
               } else {
-                setPromotionCelebration(null)
                 continueMonthEndFlow()
               }
             }
@@ -6502,7 +6881,6 @@ export function InGame({
             if (speaker) {
               setPromotionCongratsPlay({ creator: speaker })
             } else {
-              setPromotionCelebration(null)
               continueMonthEndFlow()
             }
           }}
@@ -6515,7 +6893,6 @@ export function InGame({
           play={promotionCongratsPlay}
           onClose={() => {
             setPromotionCongratsPlay(null)
-            setPromotionCelebration(null)
             continueMonthEndFlow()
           }}
         />
@@ -6584,9 +6961,11 @@ export function InGame({
           onClose={() => {
             setVipVisit(null)
             setFanDeckCreators(null)
-            proceedNextAfterProposal(pendingScoutAfterRankRef.current)
           }}
           onStartSimulation={(selected) => setFanDeckCreators(selected)}
+          onPass={handleFanMeetingPass}
+          forceTutorial={!fanMeetingTutorialSeen}
+          onReplayTutorial={() => openPractice('fan')}
         />
       ) : null}
 
@@ -6606,8 +6985,53 @@ export function InGame({
             auditMedia: creator.auditMedia,
             profileImageUrl: creator.profileImageUrl,
           }))}
-          onAbort={() => setFanDeckCreators(null)}
+          onAbort={() => {
+            clearAssetPreview()
+            setFanDeckCreators(null)
+          }}
+          onPayout={(amount) => showAssetFly(amount, true)}
           onFinish={handleFanMeetingFinish}
+        />
+      ) : null}
+
+      {practiceKind === 'fan' && stationGradeConfig.vipConfig ? (
+        <FanMeetingModal
+          practice
+          config={stationGradeConfig.vipConfig}
+          grade={isVipGrade(stationGrade) ? stationGrade : 'sme'}
+          cards={ownedCreators.slice(0, 4).map((creator): FanCardState => ({
+            id: creator.id,
+            name: creator.name,
+            grade: creator.grade,
+            statType: creator.statType,
+            statPerformance: creator.statPerformance,
+            statMental: creator.statMental,
+            hp: Math.max(0, Math.round(creator.stamina ?? 0)),
+            hpMax: Math.max(0, Math.round(creator.stamina ?? 0)),
+            auditMedia: creator.auditMedia,
+            profileImageUrl: creator.profileImageUrl,
+          }))}
+          onPayout={(amount) => showAssetFly(amount, false)}
+          onAbort={closePractice}
+          onFinish={closePractice}
+        />
+      ) : null}
+
+      {practiceKind === 'exam' && stationAuditTarget ? (
+        <ExamMeetingModal
+          practice
+          tier={stationAuditTarget.nextTier}
+          creators={ownedCreators.slice(0, 4).map((creator) => ({
+            ...creator,
+            auditMedia: mergeAuditMedia(
+              creator.auditMedia,
+              registeredCharacters.find((row) => row.id === creator.id)?.auditMedia,
+            ),
+          }))}
+          config={stationGradeConfig}
+          onPayout={(amount) => showAssetFly(amount, false)}
+          onAbort={closePractice}
+          onFinish={closePractice}
         />
       ) : null}
 
@@ -6640,6 +7064,10 @@ export function InGame({
           pending={socialUi.pending}
           onConfirm={() => {
             setSocialUi(null)
+            if (midGameDateRef.current) {
+              midGameDateRef.current = false
+              return
+            }
             continueAfterMonthModals(pendingScoutAfterRankRef.current)
           }}
         />
@@ -6721,7 +7149,12 @@ export function InGame({
         <SpecialVacationPlayer
           key={`vacation-${vacationPlay.id}-${vacationPlay.lastVacationMonth ?? 0}`}
           creator={vacationPlay}
-          onClose={() => setVacationPlay(null)}
+          onClose={() => {
+            const gain = vacationAffectionRef.current
+            vacationAffectionRef.current = null
+            setVacationPlay(null)
+            if (gain) pushAffectionPopup(gain)
+          }}
         />
       ) : null}
 
@@ -6865,14 +7298,34 @@ export function InGame({
         />
       ) : null}
 
-      {proposalPlayCreator ? (
-        <ProposalShortsPlayer
-          creatorName={characterDisplayName(proposalPlayCreator, locale)}
-          lookupName={proposalPlayCreator.name}
-          profileImageUrl={findCharacterProfileUrl(proposalPlayCreator)}
-          onAccept={handleProposalAccept}
-          onReject={handleProposalReject}
+      {affectionPopup ? (
+        <AffectionGainPopup gain={affectionPopup} onClose={closeAffectionPopup} />
+      ) : null}
+      {affectionSummary ? (
+        <AffectionBroadcastPopup gains={affectionSummary} onClose={closeAffectionSummary} />
+      ) : null}
+      {snsAffectionSummary ? (
+        <AffectionBroadcastPopup
+          gains={snsAffectionSummary}
+          onClose={() => {
+            setSnsAffectionSummary(null)
+            offerMidGameDate()
+          }}
         />
+      ) : null}
+      {affectionNotice ? (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-950/75 p-4">
+          <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-950 p-6 text-center">
+            <p className="text-sm font-semibold text-slate-200">{affectionNotice}</p>
+            <button
+              type="button"
+              onClick={() => setAffectionNotice(null)}
+              className="mt-5 w-full rounded-xl bg-pink-400 py-3 text-sm font-black text-slate-950"
+            >
+              {t('affection.confirm')}
+            </button>
+          </div>
+        </div>
       ) : null}
 
       {proposalEndingVnEvent ? (
@@ -6883,7 +7336,6 @@ export function InGame({
           onClose={() => {
             onEventWatched?.(proposalEndingVnEvent.id)
             setProposalEndingVnEvent(null)
-            onBack?.()
           }}
           registeredCharacters={registeredCharacters}
         />

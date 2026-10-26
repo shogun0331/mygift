@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { BlurRegionOverlay } from '../events/BlurRegionEditor'
 import { CREATOR_TYPE_LABEL, getCreatorTypeDisplayName, typeForCreator } from '../game/auditEngine'
 import { auditMediaSlotUrl, pickFanStrikeSlot } from '../game/characters'
@@ -19,7 +19,7 @@ import { formatMoney } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import type { StationGrade, VipVisitConfig } from '../game/stationGradeConfig'
 import { defaultAuditConfig, defaultVipConfig, type StationGradeConfig } from '../game/stationGradeConfig'
-import { playFanCriticalSting, playFanOpeningSting, playFanTasteSting, playSfx } from '../game/uiSfx'
+import { playAuditJudgePleased, playFanCriticalSting, playFanOpeningSting, playFanTasteSting, playSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
 import { getGradeBadgeStyle } from './PromotionAuditModal'
 
@@ -33,6 +33,8 @@ type FanMeetingModalProps = {
   showSpeech?: boolean
   onFinish: (result: { earned: number; satisfiedCount: number; lastRewardText: string; staminaById: Record<string, number> }) => void
   onAbort?: () => void
+  onPayout?: (amount: number) => void
+  practice?: boolean
   headerExtra?: ReactNode
 }
 
@@ -122,6 +124,171 @@ function FanFigure({
   )
 }
 
+type PracticeStep = 'type' | 'match' | 'iron' | 'mismatch' | 'pressure' | 'reward'
+
+function livingPracticeCards(meeting: FanMeeting) {
+  return meeting.cards.filter((card) => card.hp > 0)
+}
+
+function practiceHas(meeting: FanMeeting, matched: boolean) {
+  const demand = meeting.center.demand
+  return livingPracticeCards(meeting).some(
+    (card) => (typeForCreator(card.id, card.statType) === demand) === matched,
+  )
+}
+
+function practiceFocusId(meeting: FanMeeting, step: PracticeStep): string | null {
+  if (step !== 'match' && step !== 'mismatch') return null
+  const wantMatch = step === 'match'
+  const card = meeting.cards.find(
+    (item) => item.hp > 0 && (typeForCreator(item.id, item.statType) === meeting.center.demand) === wantMatch,
+  )
+  return card?.id ?? null
+}
+
+function explainAdvance(meeting: FanMeeting, step: PracticeStep): PracticeStep {
+  if (step === 'type') return practiceHas(meeting, true) ? 'match' : 'iron'
+  if (step === 'iron') return practiceHas(meeting, false) ? 'mismatch' : 'pressure'
+  return 'reward'
+}
+
+function PracticeCoach({
+  kind,
+  step,
+  onNext,
+  onDone,
+}: {
+  kind: 'fan' | 'exam'
+  step: PracticeStep
+  onNext: () => void
+  onDone: () => void
+}) {
+  const { t } = useTranslation()
+  const [targetRect, setTargetRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
+  const [buttonRect, setButtonRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
+  const clickStep = step === 'match' || step === 'mismatch'
+  const selector =
+    clickStep
+      ? '[data-practice-target="1"]'
+      : step === 'type'
+        ? '[data-coach="type"]'
+        : step === 'iron'
+          ? '[data-coach="iron"]'
+          : step === 'pressure'
+            ? '[data-coach="pressure"]'
+            : kind === 'fan'
+              ? '[data-coach="earned"]'
+              : '[data-coach="reward"]'
+  const bodyKey =
+    step === 'type'
+      ? 'tutorial.coachLookType'
+      : step === 'match'
+        ? kind === 'fan'
+          ? 'tutorial.coachFan1'
+          : 'tutorial.coachExam1'
+        : step === 'iron'
+          ? 'tutorial.coachLookIron'
+          : step === 'mismatch'
+            ? kind === 'fan'
+              ? 'tutorial.coachFan2'
+              : 'tutorial.coachExam2'
+            : step === 'pressure'
+              ? 'tutorial.coachLookPressure'
+              : kind === 'fan'
+                ? 'tutorial.coachFan3'
+                : 'tutorial.coachExam3'
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = document.querySelector(selector)
+      if (!el) setTargetRect(null)
+      else {
+        const box = el.getBoundingClientRect()
+        setTargetRect({ top: box.top, left: box.left, width: box.width, height: box.height })
+      }
+      const button = document.querySelector('[data-coach-action="next"]')
+      if (!button) setButtonRect(null)
+      else {
+        const box = button.getBoundingClientRect()
+        setButtonRect({ top: box.top, left: box.left, width: box.width, height: box.height })
+      }
+    }
+    measure()
+    const timer = window.setInterval(measure, 150)
+    window.addEventListener('resize', measure)
+    return () => {
+      window.clearInterval(timer)
+      window.removeEventListener('resize', measure)
+    }
+  }, [selector])
+
+  const hand = clickStep ? targetRect : buttonRect
+  return (
+    <div className="pointer-events-none fixed inset-0 z-[80] overflow-hidden">
+      {targetRect ? (
+        <>
+          <div className="pointer-events-auto fixed inset-x-0 top-0 bg-slate-950/78" style={{ height: Math.max(0, targetRect.top - 8) }} />
+          <div className="pointer-events-auto fixed inset-x-0 bottom-0 bg-slate-950/78" style={{ top: targetRect.top + targetRect.height + 8 }} />
+          <div
+            className="pointer-events-auto fixed left-0 bg-slate-950/78"
+            style={{ top: targetRect.top - 8, height: targetRect.height + 16, width: Math.max(0, targetRect.left - 8) }}
+          />
+          <div
+            className="pointer-events-auto fixed right-0 bg-slate-950/78"
+            style={{ top: targetRect.top - 8, height: targetRect.height + 16, left: targetRect.left + targetRect.width + 8 }}
+          />
+          <div
+            className="pointer-events-none fixed rounded-2xl ring-4 ring-pink-400"
+            style={{
+              top: targetRect.top - 8,
+              left: targetRect.left - 8,
+              width: targetRect.width + 16,
+              height: targetRect.height + 16,
+              boxShadow: '0 0 28px rgba(244,114,182,0.9)',
+            }}
+          />
+        </>
+      ) : (
+        <div className="pointer-events-auto fixed inset-0 bg-slate-950/78" />
+      )}
+      <div className="pointer-events-auto fixed left-1/2 top-20 z-[81] w-[380px] max-w-[calc(100vw-32px)] -translate-x-1/2 rounded-2xl border-2 border-pink-500/80 bg-slate-950/95 p-4 shadow-[0_0_35px_rgba(236,72,153,0.45)]">
+        <div className="flex items-center gap-1.5 border-b border-pink-500/30 pb-2">
+          <span className="h-2.5 w-2.5 animate-ping rounded-full bg-pink-500" />
+          <p className="truncate text-xs font-black tracking-wider text-pink-300">
+            {t(kind === 'fan' ? 'tutorial.coachTitleFan' : 'tutorial.coachTitleExam')}
+          </p>
+        </div>
+        <p className="mt-2.5 text-xs font-medium leading-relaxed text-slate-200">{t(bodyKey)}</p>
+        {step === 'reward' ? (
+          <p className="mt-1 text-xs font-medium leading-relaxed text-slate-300">
+            {t(kind === 'fan' ? 'tutorial.coachFan4' : 'tutorial.coachExam4')}
+          </p>
+        ) : null}
+        {clickStep ? (
+          <p className="mt-2 text-xs font-black text-pink-200">{t('tutorial.coachTap')}</p>
+        ) : (
+          <button
+            type="button"
+            data-coach-action="next"
+            onClick={step === 'reward' ? onDone : onNext}
+            className="mt-3 w-full cursor-pointer rounded-xl bg-gradient-to-r from-pink-500 to-fuchsia-500 py-2.5 text-xs font-black text-white shadow-lg"
+          >
+            {step === 'reward' ? t('tutorial.coachEnd') : t('tutorial.coachNext')}
+          </button>
+        )}
+      </div>
+      {hand ? (
+        <div
+          className="pointer-events-none fixed z-[82] text-4xl"
+          style={{ top: hand.top + Math.min(hand.height * 0.42, 28), left: hand.left + hand.width / 2 - 16 }}
+        >
+          <span className="drop-shadow-[0_0_12px_rgba(236,72,153,0.95)]">👆</span>
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
 export function FanMeetingModal({
   config,
   grade,
@@ -132,17 +299,21 @@ export function FanMeetingModal({
   showSpeech = true,
   onFinish,
   onAbort,
+  onPayout,
+  practice = false,
   headerExtra,
 }: FanMeetingModalProps) {
   const { t, locale } = useTranslation()
   const [meeting, setMeeting] = useState<FanMeeting | null>(() => prepared ?? createFanMeeting(config, grade, cards))
+  const [practiceStep, setPracticeStep] = useState<PracticeStep | null>(practice ? 'type' : null)
   const [lineup] = useState(() => (fixedLine && prepared ? [prepared.center, ...prepared.waiting] : []))
   const finishedRef = useRef(false)
   const aliveRef = useRef(true)
   const busyRef = useRef(false)
   const [departing, setDeparting] = useState<FanPortrait | null>(null)
   const openingUrl = config.openingUrl?.trim() ?? ''
-  const [opening, setOpening] = useState(Boolean(openingUrl))
+  const [opening, setOpening] = useState(Boolean(openingUrl) && !practice)
+  const [payoutBurst, setPayoutBurst] = useState<{ id: number; amount: number } | null>(null)
   const meetingRef = useRef(meeting)
   const openingRef = useRef(opening)
   const autoRef = useRef(false)
@@ -201,12 +372,22 @@ export function FanMeetingModal({
   function finish(current: FanMeeting) {
     if (finishedRef.current) return
     finishedRef.current = true
+    if (practice) {
+      onFinish({ earned: 0, satisfiedCount: 0, lastRewardText: '', staminaById: {} })
+      return
+    }
     onFinish({
       earned: current.earned,
       satisfiedCount: current.satisfiedCount,
       lastRewardText: current.lastRewardText,
       staminaById: staminaMap(current),
     })
+  }
+
+  function announcePay(amount: number) {
+    if (amount <= 0) return
+    setPayoutBurst({ id: Date.now(), amount })
+    onPayout?.(amount)
   }
 
   useEffect(() => {
@@ -257,8 +438,16 @@ export function FanMeetingModal({
   }
 
   function continueAfter(result: FanSubmitResult) {
+    if (practice) {
+      setPracticeStep((step) => {
+        if (step === 'match' && result.typeMatched) return 'iron'
+        if (step === 'mismatch' && !result.typeMatched) return 'pressure'
+        return step
+      })
+    }
     if (result.satisfied) {
       setFloatText('')
+      if (!fixedLine) announcePay(result.meeting.center.pay)
       const next = fixedLine ? advanceFixedLine(result.meeting) : advanceFanLine(result.meeting, config, grade)
       meetingRef.current = next
       setMeeting(next)
@@ -307,9 +496,15 @@ export function FanMeetingModal({
     }
     busyRef.current = true
     const result = submitFanCard(current, cardId)
-    if (result.critical) playFanCriticalSting()
-    if (result.typeMatched) playFanTasteSting(result.critical ? 0.16 : 0)
-    if (!result.critical && !result.typeMatched) playSfx('audit-card-perform')
+    if (fixedLine) {
+      if (result.satisfied) playAuditJudgePleased(true)
+      else if (result.critical || result.typeMatched) playAuditJudgePleased(false)
+      else playSfx('audit-card-perform')
+    } else {
+      if (result.critical) playFanCriticalSting()
+      if (result.typeMatched) playFanTasteSting(result.critical ? 0.16 : 0)
+      if (!result.critical && !result.typeMatched) playSfx('audit-card-perform')
+    }
     meetingRef.current = result.meeting
     setMeeting(result.meeting)
     setFloatText(`${result.gained > 0 ? `+${result.gained}` : '+0'}${result.damage > 0 ? ` / -${result.damage}` : ''}`)
@@ -363,12 +558,28 @@ export function FanMeetingModal({
   function requestCard(cardId: string) {
     const current = meetingRef.current
     if (!current || current.over || openingRef.current || flash?.url) return
+    if (practiceStep) {
+      if (practiceStep !== 'match' && practiceStep !== 'mismatch') return
+      if (cardId !== practiceFocusId(current, practiceStep)) return
+    }
     if (busyRef.current) {
+      if (practiceStep) return
       queuedRef.current = cardId
       return
     }
     playCard(cardId, current)
   }
+
+  useEffect(() => {
+    if (!practice || !meeting || !practiceStep || practiceStep === 'reward') return
+    if (practiceStep === 'match' && !practiceHas(meeting, true)) {
+      setPracticeStep('iron')
+    } else if (practiceStep === 'iron' && !practiceHas(meeting, false)) {
+      setPracticeStep('pressure')
+    } else if (practiceStep === 'mismatch' && !practiceHas(meeting, false)) {
+      setPracticeStep('pressure')
+    }
+  }, [practice, meeting, practiceStep])
 
   useEffect(() => {
     if (!auto || opening || fixedLine) return
@@ -406,7 +617,15 @@ export function FanMeetingModal({
             <p className="text-lg font-black text-pink-100">{title ?? t('vip.visitTitle')}</p>
             {headerExtra}
           </div>
-          <div className="text-right text-xs text-slate-300">
+          <div className="flex items-center gap-3 text-right text-xs text-slate-300">
+            {fixedLine ? null : (
+              <div data-coach="earned" className="rounded-2xl border border-amber-300/60 bg-amber-400/15 px-4 py-1.5 shadow-[0_0_18px_rgba(251,191,36,0.28)]">
+                <p className="text-[10px] font-black tracking-widest text-amber-200/80">{t('vip.earnedSoFar')}</p>
+                <p className="text-2xl font-black tabular-nums leading-none text-amber-100 drop-shadow-[0_0_12px_rgba(251,191,36,0.7)]">
+                  {formatMoney(meeting.earned)}
+                </p>
+              </div>
+            )}
             {onAbort ? (
               <button type="button" onClick={onAbort} className="text-xs font-bold text-slate-400 hover:text-white">
                 닫기 ✕
@@ -459,20 +678,20 @@ export function FanMeetingModal({
                     {active ? (
                       <>
                         <div className={`absolute bottom-[4.6rem] left-2 z-20 flex flex-col items-start gap-1 ${statsClass}`}>
-                          <span className="whitespace-nowrap rounded-lg border border-sky-300/50 bg-slate-950/90 px-2.5 py-1 text-xs font-black text-sky-100 shadow-[0_0_14px_rgba(56,189,248,0.35)]">
+                          <span data-coach={fixedLine ? 'iron' : undefined} className="whitespace-nowrap rounded-lg border border-sky-300/50 bg-slate-950/90 px-2.5 py-1 text-xs font-black text-sky-100 shadow-[0_0_14px_rgba(56,189,248,0.35)]">
                             {t('audit.ironWall')} {live.ironWall}
                           </span>
-                          <span className="whitespace-nowrap rounded-lg border border-rose-300/50 bg-slate-950/90 px-2.5 py-1 text-xs font-black text-rose-100 shadow-[0_0_14px_rgba(251,113,133,0.35)]">
+                          <span data-coach={fixedLine ? 'pressure' : undefined} className="whitespace-nowrap rounded-lg border border-rose-300/50 bg-slate-950/90 px-2.5 py-1 text-xs font-black text-rose-100 shadow-[0_0_14px_rgba(251,113,133,0.35)]">
                             {t('audit.pressure')} {live.pressure}
                           </span>
                         </div>
                         <div className={`absolute inset-x-0 bottom-1 z-20 px-1 ${statsClass}`}>
                           <div className="mb-1 flex items-center justify-between gap-2">
-                            <span className="truncate text-xs font-black text-pink-50 drop-shadow">
+                            <span data-coach={fixedLine ? 'reward' : undefined} className="truncate text-xs font-black text-pink-50 drop-shadow">
                               {t('vip.fanSatisfaction').replace('{value}', String(satisfaction))}
                             </span>
                             <span className="flex shrink-0 items-center gap-1">
-                              <span className={`flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[10px] font-black ${CREATOR_TYPE_LABEL[live.demand].tone}`}>
+                              <span data-coach={fixedLine ? 'type' : undefined} className={`flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[10px] font-black ${CREATOR_TYPE_LABEL[live.demand].tone}`}>
                                 <span>{CREATOR_TYPE_LABEL[live.demand].icon}</span>
                                 <span>{getCreatorTypeDisplayName(live.demand, t)}</span>
                               </span>
@@ -514,10 +733,10 @@ export function FanMeetingModal({
             <div />
             <div className="flex w-fit flex-col items-center">
               <div className="relative">
-                <span className={`absolute right-full top-[38%] z-20 mr-3 whitespace-nowrap rounded-lg border border-sky-300/50 bg-slate-950/90 px-2.5 py-1 text-xs font-black text-sky-100 shadow-[0_0_14px_rgba(56,189,248,0.35)] ${statsClass}`}>
+                <span data-coach={fixedLine ? undefined : 'iron'} className={`absolute right-full top-[38%] z-20 mr-3 whitespace-nowrap rounded-lg border border-sky-300/50 bg-slate-950/90 px-2.5 py-1 text-xs font-black text-sky-100 shadow-[0_0_14px_rgba(56,189,248,0.35)] ${statsClass}`}>
                   {t('audit.ironWall')} {meeting.center.ironWall}
                 </span>
-                <span className={`absolute right-full top-[52%] z-20 mr-3 whitespace-nowrap rounded-lg border border-rose-300/50 bg-slate-950/90 px-2.5 py-1 text-xs font-black text-rose-100 shadow-[0_0_14px_rgba(251,113,133,0.35)] ${statsClass}`}>
+                <span data-coach={fixedLine ? undefined : 'pressure'} className={`absolute right-full top-[52%] z-20 mr-3 whitespace-nowrap rounded-lg border border-rose-300/50 bg-slate-950/90 px-2.5 py-1 text-xs font-black text-rose-100 shadow-[0_0_14px_rgba(251,113,133,0.35)] ${statsClass}`}>
                   {t('audit.pressure')} {meeting.center.pressure}
                 </span>
                 {showSpeech && statsOn && bubble ? (
@@ -549,11 +768,11 @@ export function FanMeetingModal({
                 ) : null}
                 <div className={`absolute inset-x-0 bottom-1 z-20 px-1 ${statsClass}`}>
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <span className="truncate text-xs font-black text-pink-50 drop-shadow">
+                    <span data-coach={fixedLine ? 'reward' : undefined} className="truncate text-xs font-black text-pink-50 drop-shadow">
                       {t('vip.fanSatisfaction').replace('{value}', String(satisfaction))}
                     </span>
                     <span className="flex shrink-0 items-center gap-1">
-                      <span className={`flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[10px] font-black ${CREATOR_TYPE_LABEL[meeting.center.demand].tone}`}>
+                      <span data-coach={fixedLine ? undefined : 'type'} className={`flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[10px] font-black ${CREATOR_TYPE_LABEL[meeting.center.demand].tone}`}>
                         <span>{CREATOR_TYPE_LABEL[meeting.center.demand].icon}</span>
                         <span>{getCreatorTypeDisplayName(meeting.center.demand, t)}</span>
                       </span>
@@ -567,7 +786,7 @@ export function FanMeetingModal({
                     />
                   </div>
                   {fixedLine ? null : (
-                    <p className="mt-1 text-center text-[11px] font-black text-amber-200 drop-shadow">
+                    <p data-coach="reward" className="mt-1 text-center text-[11px] font-black text-amber-200 drop-shadow">
                       {t('vip.visitPay').replace('{amount}', formatMoney(meeting.center.pay))}
                     </p>
                   )}
@@ -612,7 +831,7 @@ export function FanMeetingModal({
         </div>
 
         <div className="shrink-0 border-t border-pink-500/20 bg-slate-950/90 px-4 py-3">
-          {fixedLine ? null : (
+          {fixedLine || practice ? null : (
             <div className="mb-2 flex justify-end">
               <button
                 type="button"
@@ -637,20 +856,28 @@ export function FanMeetingModal({
               const staminaPct = card.hpMax > 0 ? Math.min(100, Math.round((card.hp / card.hpMax) * 100)) : 0
               const waitingFan = !statsOn
               const performing = Boolean(flash?.url)
-              const disabled = dead || meeting.over || opening || performing
+              const focusId = practiceStep ? practiceFocusId(meeting, practiceStep) : null
+              const practiceTarget = focusId === card.id
+              const practiceLocked = practiceStep != null && !practiceTarget
+              const disabled = dead || meeting.over || opening || performing || practiceLocked
               return (
                 <button
                   key={card.id}
                   type="button"
                   disabled={disabled}
+                  data-practice-target={practiceTarget ? '1' : undefined}
                   onClick={() => requestCard(card.id)}
                   className={`group relative flex aspect-[3/4] max-h-[210px] flex-col justify-between overflow-hidden rounded-xl text-left transition-all ${
                     dead
                       ? 'cursor-not-allowed border border-white/10 opacity-40 grayscale'
+                      : practiceLocked
+                        ? 'cursor-not-allowed border border-white/10 brightness-[0.25] saturate-50'
                       : performing
                         ? 'cursor-not-allowed border border-white/10 brightness-[0.32] saturate-50'
                         : waitingFan
                         ? 'cursor-pointer border border-white/10 brightness-[0.32] saturate-50'
+                        : practiceTarget
+                          ? 'cursor-pointer border-2 border-amber-300 ring-4 ring-amber-300/70 shadow-[0_0_24px_rgba(251,191,36,0.65)] hover:scale-[1.03]'
                         : matched
                           ? 'cursor-pointer border-2 border-pink-400 ring-4 ring-pink-500/50 shadow-[0_0_24px_rgba(244,114,182,0.55)] hover:scale-[1.03]'
                           : 'cursor-pointer border border-pink-400/30 hover:scale-[1.03] hover:border-pink-300'
@@ -768,6 +995,22 @@ export function FanMeetingModal({
           </p>
         </div>
       ) : null}
+      {payoutBurst ? (
+        <p key={payoutBurst.id} className="fan-payout-burst pointer-events-none absolute left-1/2 top-[38%] z-[55] text-5xl font-black text-amber-200">
+          +{formatMoney(payoutBurst.amount)}
+        </p>
+      ) : null}
+      {practice && practiceStep && !opening ? (
+        <PracticeCoach
+          kind={fixedLine ? 'exam' : 'fan'}
+          step={practiceStep}
+          onNext={() => {
+            if (!meeting) return
+            setPracticeStep(explainAdvance(meeting, practiceStep))
+          }}
+          onDone={() => onAbort?.()}
+        />
+      ) : null}
     </div>
   )
 }
@@ -808,6 +1051,8 @@ export function ExamMeetingModal({
   config,
   onAbort,
   onFinish,
+  onPayout,
+  practice = false,
   headerExtra,
 }: {
   tier: Exclude<StationGrade, 'black' | 'tiny'>
@@ -815,6 +1060,8 @@ export function ExamMeetingModal({
   config: StationGradeConfig
   onAbort: () => void
   onFinish: FanMeetingModalProps['onFinish']
+  onPayout?: (amount: number) => void
+  practice?: boolean
   headerExtra?: ReactNode
 }) {
   const { t } = useTranslation()
@@ -852,6 +1099,8 @@ export function ExamMeetingModal({
       headerExtra={headerExtra}
       onAbort={onAbort}
       onFinish={onFinish}
+      onPayout={onPayout}
+      practice={practice}
     />
   )
 }

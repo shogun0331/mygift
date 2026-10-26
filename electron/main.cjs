@@ -2109,7 +2109,20 @@ function requestAppQuit() {
     emitWindowLifecycle(win, 'suspended')
   }
   Promise.race([
-    gameAnalytics.endSession(),
+    Promise.all([
+      gameAnalytics.endSession(),
+      Promise.all(
+        BrowserWindow.getAllWindows().map((win) => {
+          if (win.isDestroyed() || win.webContents.isDestroyed()) return Promise.resolve()
+          return win.webContents
+            .executeJavaScript(
+              'typeof window.__flushBroadcastSave==="function"&&window.__flushBroadcastSave()',
+              true,
+            )
+            .catch(() => {})
+        }),
+      ),
+    ]),
     new Promise((resolve) => setTimeout(resolve, 1500)),
   ]).finally(() => {
     for (const win of BrowserWindow.getAllWindows()) {

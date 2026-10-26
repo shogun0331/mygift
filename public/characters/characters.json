@@ -1868,7 +1868,7 @@
       "2": "1792545625541-nughods",
       "3": "1792545614964-qeq8jkq"
     },
-    "mediaRevision": 1792751026108,
+    "mediaRevision": 1792975260814,
     "images": [
       {
         "id": "1792300023387-o0stcpb",
@@ -1988,15 +1988,6 @@
         "fileName": "1792328313510-zn7iqhy__2026-10-18_00131.webp",
         "fileSize": 174146,
         "url": "media://characters/1786833964287-iflkqh2/images/1792328313510-zn7iqhy__2026-10-18_00131.webp",
-        "keys": [
-          "sns"
-        ]
-      },
-      {
-        "id": "1792328313510-wbqet58",
-        "fileName": "1792328313510-wbqet58__2026-10-18_00132.webp",
-        "fileSize": 260634,
-        "url": "media://characters/1786833964287-iflkqh2/images/1792328313510-wbqet58__2026-10-18_00132.webp",
         "keys": [
           "sns"
         ]
@@ -2769,25 +2760,6 @@
         "blurDefault": 4
       },
       {
-        "id": "1792328313512-r3ays68",
-        "heat": 3,
-        "imageId": "1792328313510-wbqet58",
-        "videoId": null,
-        "captions": {
-          "ko": "",
-          "en": "",
-          "ja": "",
-          "zh-cn": "",
-          "zh-tw": "",
-          "ru": "",
-          "es": "",
-          "de": ""
-        },
-        "captionLine": 26,
-        "blurRegions": [],
-        "blurDefault": 4
-      },
-      {
         "id": "1792328313512-678eoem",
         "heat": 3,
         "imageId": "1792328313510-0esj320",
@@ -3489,7 +3461,7 @@
       "2": "1792545756697-giynqpd",
       "3": "1792545747050-3dvjmc7"
     },
-    "mediaRevision": 1792736642473,
+    "mediaRevision": 1792976154275,
     "images": [
       {
         "id": "1792300049733-zrhvx45",
@@ -4054,15 +4026,6 @@
         "fileName": "1792545831197-a0bysan__2026-10-20_00211.mp4",
         "fileSize": 1367118,
         "url": "media://characters/1786849140255-p0lxz2i/videos/1792545831197-a0bysan__2026-10-20_00211.mp4",
-        "keys": [],
-        "level": 3,
-        "stage": 1
-      },
-      {
-        "id": "1792545831198-i8fh8r4",
-        "fileName": "1792545831198-i8fh8r4__2026-10-20_00190.mp4",
-        "fileSize": 1172771,
-        "url": "media://characters/1786849140255-p0lxz2i/videos/1792545831198-i8fh8r4__2026-10-20_00190.mp4",
         "keys": [],
         "level": 3,
         "stage": 1
@@ -13258,7 +13221,7 @@
       "2": "1792546340480-xgcgmhp",
       "3": "1792546326240-x4c1pv3"
     },
-    "mediaRevision": 1792751310492,
+    "mediaRevision": 1793006330011,
     "images": [
       {
         "id": "1792300159860-zpyuomc",
@@ -14801,13 +14764,13 @@
     "shortsVn": {
       "vip": [
         {
-          "id": "shorts-1792387425902-ag5tsh",
-          "mediaUrl": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00003__restored_1080p_nf_comp.mp4",
-          "caption": "…대단하세요.",
+          "id": "shorts-1793006303469-zy66il",
+          "mediaUrl": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00002__48fps.mp4",
+          "caption": "",
           "durationSec": 2,
           "blurRegions": [],
-          "sourceNodeId": "node_1792309959772_ykdg",
-          "captionNodeId": "node_1787179099672_27_1aor"
+          "sourceNodeId": "node_1787179147661_51_vnfi",
+          "captionNodeId": null
         },
         {
           "id": "shorts-1792387429728-fz8taq",
@@ -14821,13 +14784,13 @@
       ],
       "h": [
         {
-          "id": "shorts-1792387459664-g1v6dt",
-          "mediaUrl": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00002__restored_1080p_nf_comp.mp4",
-          "caption": "기분 좋아요… 사장님 자지, 제 안에서 커지고 있어요…",
+          "id": "shorts-1793006323252-71qbaw",
+          "mediaUrl": "media://chapter_assets/events/01ddccbe-96f1-4e86-8359-a19eeac314a9/videos/2026-10-18_00002__48fps.mp4",
+          "caption": "좋아요… 더 세게…",
           "durationSec": 2,
           "blurRegions": [],
           "sourceNodeId": "node_1787179147661_51_vnfi",
-          "captionNodeId": "node_1787179147661_55_yl5v"
+          "captionNodeId": "node_1787179147661_59_x0zq"
         },
         {
           "id": "shorts-1792387468542-srs69q",

@@ -2,14 +2,19 @@ import { useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import type { OwnedCreator } from '../game/characters'
 import { formatMoney } from '../game/money'
-import { planBulkSnsCompose, type BulkSnsRevealEntry, type BulkSnsComposeResult } from '../game/sns'
+import {
+  planBulkSnsCompose,
+  type BulkSnsComposePlan,
+  type BulkSnsRevealEntry,
+  type BulkSnsComposeResult,
+} from '../game/sns'
 import { useTranslation } from '../locales/i18n'
 
 type SnsBulkComposeModalProps = {
   creators: OwnedCreator[]
   assets: number
   onClose: () => void
-  onCompose: () => BulkSnsRevealEntry[] | BulkSnsComposeResult
+  onCompose: (plan: BulkSnsComposePlan) => BulkSnsRevealEntry[] | BulkSnsComposeResult
 }
 
 export function SnsBulkComposeModal({
@@ -34,7 +39,7 @@ export function SnsBulkComposeModal({
 
   function submit() {
     if (!canSubmit) return
-    const res = onCompose()
+    const res = onCompose(plan)
     const entries = Array.isArray(res) ? res : res?.entries
     if (entries && entries.length > 0) onClose()
   }

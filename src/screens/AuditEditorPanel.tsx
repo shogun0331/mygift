@@ -36,6 +36,7 @@ export function AuditEditorPanel({
   const { t } = useTranslation()
   const auditConfig = config.auditConfig ?? defaultAuditConfig()
   const [deckOpen, setDeckOpen] = useState(false)
+  const [practiceOpen, setPracticeOpen] = useState(false)
   const [simGrade, setSimGrade] = useState<VipTierId | null>(null)
   const [simCreators, setSimCreators] = useState<RegisteredCharacter[] | null>(null)
   const [simResult, setSimResult] = useState<{ success: boolean; count: number } | null>(null)
@@ -111,7 +112,25 @@ export function AuditEditorPanel({
           registeredCharacters={registeredCharacters}
           isSimulator
           onClose={() => setDeckOpen(false)}
+          onReplayTutorial={() => {
+            if (registeredCharacters.length === 0) {
+              setSimNotice('출전할 크리에이터가 없습니다.')
+              return
+            }
+            setPracticeOpen(true)
+          }}
           onStartSimulation={beginSim}
+        />,
+        document.body,
+      ) : null}
+      {practiceOpen ? createPortal(
+        <ExamMeetingModal
+          practice
+          tier={simGrade ?? 'sme'}
+          creators={registeredCharacters.slice(0, 4)}
+          config={config}
+          onAbort={() => setPracticeOpen(false)}
+          onFinish={() => setPracticeOpen(false)}
         />,
         document.body,
       ) : null}

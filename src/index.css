@@ -350,8 +350,123 @@ html.theme-on-air .game-kicker {
   border-radius: 999px;
 }
 
-.game-hud-cell--date::before {
+.game-hud-cell--date::before,
+.game-hud-cell--months::before {
   background: #64748b;
+}
+
+.game-hud-cell--months {
+  min-width: 36rem;
+  padding: 0.38rem 0.7rem 0.38rem 0.9rem;
+}
+
+.game-hud-month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(10.8rem, 1fr));
+}
+
+.game-hud-month-col {
+  min-width: 0;
+  padding-right: 0.4rem;
+}
+
+.game-hud-month-col + .game-hud-month-col {
+  border-left: 1px solid rgba(148, 163, 184, 0.16);
+  padding-left: 0.5rem;
+}
+
+.game-hud-event-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.28rem;
+  margin-top: 0.16rem;
+}
+
+.game-hud-event {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.22rem;
+  border-radius: 999px;
+  padding: 0.08rem 0.42rem 0.08rem 0.22rem;
+  font-size: 0.66rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.game-hud-event-mark {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+}
+
+.game-hud-event--fan {
+  color: #ffe4f1;
+  border: 1px solid rgba(251, 113, 182, 0.75);
+  background: linear-gradient(180deg, rgba(236, 72, 153, 0.55), rgba(88, 18, 52, 0.88));
+  box-shadow:
+    0 0 12px rgba(236, 72, 153, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.game-hud-event--fan .game-hud-event-mark {
+  color: #fff1f6;
+  filter: drop-shadow(0 0 4px rgba(251, 113, 182, 0.9));
+}
+
+.game-hud-event--casino {
+  color: #fff6d4;
+  border: 1px solid rgba(252, 211, 77, 0.8);
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.62), rgba(82, 42, 8, 0.9));
+  box-shadow:
+    0 0 12px rgba(245, 158, 11, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.game-hud-event--casino .game-hud-event-mark {
+  color: #fff7d6;
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.95));
+}
+
+.game-hud-event-empty {
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #64748b;
+}
+
+.asset-fly {
+  position: fixed;
+  left: 50%;
+  top: 46%;
+  z-index: 240;
+  pointer-events: none;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #fde68a;
+  text-shadow: 0 0 18px rgba(251, 191, 36, 0.85);
+  animation: asset-fly-to-hud 0.85s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+@keyframes asset-fly-to-hud {
+  0% { opacity: 0; transform: translate(-50%, 12px) scale(0.6); }
+  18% { opacity: 1; transform: translate(-50%, 0) scale(1.15); }
+  100% { opacity: 0; transform: translate(34vw, -38vh) scale(0.45); }
+}
+
+.fan-payout-burst {
+  animation: fan-payout-pop 0.9s ease-out forwards;
+}
+
+@keyframes fan-payout-pop {
+  0% { opacity: 0; transform: translate(-50%, 8px) scale(0.7); }
+  20% { opacity: 1; transform: translate(-50%, 0) scale(1.08); }
+  100% { opacity: 0; transform: translate(-50%, -28px) scale(1); }
 }
 
 .game-hud-cell--rank::before {
@@ -419,6 +534,13 @@ html.theme-on-air .game-kicker {
   font-size: 0.58rem;
   letter-spacing: 0.12em;
   line-height: 1;
+}
+
+.game-hud-cell--months .game-hud-month-label {
+  overflow: visible;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  padding-top: 0.06rem;
 }
 
 .game-hud-cell .game-stat-value {
@@ -4514,19 +4636,32 @@ html.theme-on-air .live-rank-card-inner.is-first {
   }
 }
 
-/* ?? Station promotion fx (1월 1일 등급 승급) ?? */
+/* 등급 승급 결과 — 화면 중앙 모달 */
 .station-promotion-fx {
   position: fixed;
-  top: 9%;
-  left: 50%;
-  transform: translateX(-50%);
+  inset: 0;
   z-index: 88;
-  width: min(92vw, 30rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(2, 6, 23, 0.78);
+  backdrop-filter: blur(8px);
   pointer-events: auto;
 }
 
 .station-promotion-card {
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 26rem);
   text-align: center;
+  padding: 1.6rem 1.4rem 1.25rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.55),
+    0 0 42px rgba(245, 158, 11, 0.22);
   animation: station-promo-pop 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
 }
 
@@ -5443,10 +5578,8 @@ html.theme-on-air .live-rank-card-inner.is-first {
   box-shadow: inset 0 0 0 1px rgba(232, 121, 249, 0.28);
 }
 
-.sns-heat3-burst,
 .sns-heat3-burst-spark {
   will-change: transform, opacity;
-  transform: translateZ(0);
 }
 
 @keyframes sns-heat3-burst-in {

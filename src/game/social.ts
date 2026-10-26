@@ -194,14 +194,7 @@ export function createSocialSpawnState(): SocialSpawnState {
   }
 }
 
-function consumeChannel(): SpawnChannel {
-  return { wait: 2, ready: false }
-}
-
-/**
- * 월 종료 시 호출.
-
-/** 세이브/로드 등으로 wait가 음수/비정상이면 0~2로 정규화 (2턴 캐던스 보호) */
+/** 세이브/로드 등으로 wait가 음수/비정상이면 0~2로 정규화 */
 function normalizeSpawnState(raw: SocialSpawnState): SocialSpawnState {
   const clamp = (v: unknown) => {
     const n = Number(v)
@@ -215,57 +208,14 @@ function normalizeSpawnState(raw: SocialSpawnState): SocialSpawnState {
   }
 }
 
-function allChannels(channel: SpawnChannel): SocialSpawnState {
-  return { date: { ...channel }, vip: { ...channel }, h: { ...channel } }
-}
-
 /**
- * 월 종료 시 호출.
- * 2턴 캐던스가 차면 메인 이벤트(데이트 1·2차 / 첫 H)가 남아 있을 경우
- * {무조건} 1개를 발행한다.
- * VIP/H 재이용은 버튼으로 직접 이용하므로 자동 발행하지 않는다.
- * 블락(게임 클리어) 중에는 캐던스를 소모하지 않고 유지한다.
+ * 데이트 1·2와 첫 섹스 씬은 호감도 대기열에서만 나온다.
+ * 이 함수는 예전 2턴 자동 발행을 하지 않는다.
  */
 export function advanceAndPickSocialEvent(
   state: SocialSpawnState,
-  roster: OwnedCreator[],
-  blocked: boolean,
+  _roster: OwnedCreator[],
+  _blocked: boolean,
 ): { state: SocialSpawnState; event: SocialPending | null } {
-  const normalized = normalizeSpawnState(state)
-  const currentWait = normalized.date.wait
-
-  // 블락(게임 클리어 등) 중에는 캐던스를 소모하지 않고 유지
-  if (blocked) {
-    return { state: normalized, event: null }
-  }
-
-  const nextWait = currentWait - 1
-
-  // 아직 2턴이 채워지지 않은 경우 대기
-  if (nextWait > 0) {
-    return {
-      state: allChannels({ wait: nextWait, ready: false }),
-      event: null,
-    }
-  }
-
-  // 1. 메인 이벤트 대상 검색: 데이트 1·2차(dateArcStep < 2) 및 첫 H(dateArcStep === 2)
-  const mainDateTarget = pickDateTarget(roster)
-  const mainHUnlockTarget = pickHUnlockTarget(roster)
-
-  if (mainDateTarget || mainHUnlockTarget) {
-    // 메인 이벤트가 남아 있으면 확률 판정 없이 무조건 발행 (2턴 캐던스 보장)
-    let event: SocialPending
-    if (mainDateTarget && mainHUnlockTarget) {
-      event = (Math.random() < 0.5 ? buildDatePending(mainDateTarget) : buildDatePending(mainHUnlockTarget))!
-    } else if (mainDateTarget) {
-      event = buildDatePending(mainDateTarget)!
-    } else {
-      event = buildDatePending(mainHUnlockTarget!)!
-    }
-    return { state: allChannels(consumeChannel()), event }
-  }
-
-  // 메인 이벤트 대상이 없으면 발행하지 않음 (VIP/H 재이용은 버튼으로 직접 이용)
-  return { state: allChannels({ wait: 0, ready: true }), event: null }
+  return { state: normalizeSpawnState(state), event: null }
 }

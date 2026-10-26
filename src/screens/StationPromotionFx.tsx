@@ -49,8 +49,13 @@ export function StationPromotionFx({
           <span key={i} style={sparkStyle(i)} />
         ))}
       </div>
-      <div className="station-promotion-card">
-        <p className="station-promotion-kicker">{t('station.reviewKicker')}</p>
+      <div
+        className="station-promotion-card"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="mx-auto mb-3 inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1">
+          <p className="station-promotion-kicker">{t('station.reviewKicker')}</p>
+        </div>
         <h2 className="station-promotion-title">{t('station.reviewPass')}</h2>
         <div className="station-promotion-grades">
           <span className="station-promotion-from">{fromLabel}</span>
@@ -62,7 +67,13 @@ export function StationPromotionFx({
           {t('ranking.rankUnit')} → {toRank}
           {t('ranking.rankUnit')}
         </p>
-        <p className="mt-4 text-xs font-bold tracking-wide text-amber-100/80">{t('station.reviewContinue')}</p>
+        <button
+          type="button"
+          onClick={finish}
+          className="mt-5 w-full cursor-pointer rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 px-5 py-3 text-sm font-black text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.45)] transition hover:brightness-110"
+        >
+          {t('station.confirm')}
+        </button>
       </div>
     </div>
   )
