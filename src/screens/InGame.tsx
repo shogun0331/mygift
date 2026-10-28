@@ -182,7 +182,6 @@ import {
   allocateViewersGained,
   applyAudiencePenalty,
   companyTierLabelKey,
-  companyTierOf,
   creatorViewerWeight,
   formatViewers,
   growLeagueBetweenRefresh,
@@ -5934,7 +5933,7 @@ export function InGame({
                 {t('ranking.rankUnit')}
               </p>
               <p className="game-hud-rank-company">
-                {t(companyTierLabelKey(companyTierOf(league.currentRank).id))}
+                {t(companyTierLabelKey(stationGrade))}
               </p>
             </div>
             <div className="game-hud-cell game-hud-cell--viewers">
@@ -6777,6 +6776,21 @@ export function InGame({
             }
             const target = stationAuditTarget
             setStationAuditTarget(null)
+            if (!success) {
+              const stay = target.currentTier
+              stationGradeRef.current = stay
+              setStationGrade(stay)
+              const stayed = reapplyLeagueGate(
+                leagueRef.current,
+                toRankCreators(ownedCreatorsRef.current),
+                stay,
+              )
+              leagueRef.current = stayed
+              setLeague(stayed)
+              flushAutoSave()
+              continueMonthEndFlow()
+              return
+            }
             if (success && target.nextTier) {
               const nextGrade = target.nextTier
               const oldRank = leagueRef.current.currentRank

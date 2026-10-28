@@ -2,8 +2,11 @@ import type { CSSProperties, ReactNode } from 'react'
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
+  characterHasOwnSkinLevel,
   findCharacterIconUrl,
   findLevelIdleVideoUrl,
+  findOwnSkinPreview,
+  type CharacterSkinLevel,
   type Grade,
   type OwnedCreator,
 } from '../game/characters'
@@ -134,6 +137,7 @@ type StreamCreatorView = {
   weeklyStaminaDrain?: number
   weeklyConditionDrain?: number
   selectedSkin?: 1 | 2 | 3
+  skins?: Array<{ skin: CharacterSkinLevel; imageUrl: string | null; videoUrl: string | null }>
   tag?: { text: string; tone: 'amber' | 'rose' | 'cyan' | 'violet' }
 }
 
@@ -218,8 +222,25 @@ function toBroadcastSlot(
       weeklyStaminaDrain: weeklyDrain,
       weeklyConditionDrain,
       selectedSkin: activeSkin === 2 || activeSkin === 3 ? activeSkin : 1,
+      skins: openDashboardSkins(owned, owned?.grade ?? slot.assignment.grade),
     },
   }
+}
+
+function isSkinGradeOpen(grade: Grade, skin: CharacterSkinLevel) {
+  if (skin === 1) return true
+  if (skin === 2) return grade === 'A' || grade === 'S'
+  return grade === 'S'
+}
+
+function openDashboardSkins(owned: OwnedCreator | undefined, grade: string) {
+  if (!owned) return []
+  const safeGrade: Grade = grade === 'S' || grade === 'A' || grade === 'B' || grade === 'C' ? grade : 'C'
+  const skins = ([1, 2, 3] as const).filter(
+    (skin) => isSkinGradeOpen(safeGrade, skin) && characterHasOwnSkinLevel(owned, skin),
+  )
+  if (skins.length < 2) return []
+  return skins.map((skin) => ({ skin, ...findOwnSkinPreview(owned, skin) }))
 }
 
 /** 유저 ID 기반 트위치/숲(아프리카TV) 스타일 닉네임 색상 생성 */
@@ -1016,22 +1037,6 @@ export const DashboardPanel = memo(function DashboardPanel({
   )
 })
 
-function isDashboardSkinUnlocked(grade: Grade, skin: 1 | 2 | 3) {
-  if (skin === 1) return true
-  if (skin === 2) return grade === 'A' || grade === 'S'
-  return grade === 'S'
-}
-
-function nextUnlockedSkin(grade: Grade, current: 1 | 2 | 3): 1 | 2 | 3 {
-  const order: Array<1 | 2 | 3> = [1, 2, 3]
-  const start = order.indexOf(current)
-  for (let step = 1; step <= order.length; step += 1) {
-    const skin = order[(start + step) % order.length]!
-    if (isDashboardSkinUnlocked(grade, skin)) return skin
-  }
-  return current
-}
-
 const StreamCard = memo(function StreamCard({
   slot,
   slotId,
@@ -1467,19 +1472,40 @@ const StreamCard = memo(function StreamCard({
                     <span className="font-medium text-amber-400"> ({creator.concept})</span>
                   ) : null}
                 </p>
-                {creator && !isLive && onSelectSkin ? (
-                  <button
-                    type="button"
-                    title="SKIN"
-                    onClick={() => {
-                      const current =
-                        creator.selectedSkin === 2 || creator.selectedSkin === 3 ? creator.selectedSkin : 1
-                      onSelectSkin(creator.id, nextUnlockedSkin(creator.grade, current))
-                    }}
-                    className="shrink-0 rounded-md border border-indigo-400/50 bg-indigo-950/80 px-1.5 py-0.5 text-[9px] font-black tracking-wider text-indigo-200 hover:border-indigo-300 hover:bg-indigo-900"
-                  >
-                    SKIN{creator.selectedSkin === 2 || creator.selectedSkin === 3 ? creator.selectedSkin : 1}
-                  </button>
+                {creator && !isLive && onSelectSkin && (creator.skins?.length ?? 0) > 1 ? (
+                  <span className="flex shrink-0 items-center gap-1">
+                    {creator.skins!.map((skin) => {
+                      const selected = (creator.selectedSkin ?? 1) === skin.skin
+                      const imageSrc = skin.imageUrl
+                        ? resolveMediaSrc(skin.imageUrl, creator.mediaRevision)
+                        : null
+                      const videoSrc = skin.videoUrl
+                        ? resolveMediaSrc(skin.videoUrl, creator.mediaRevision ?? skin.videoUrl)
+                        : null
+                      return (
+                        <button
+                          key={skin.skin}
+                          type="button"
+                          onClick={() => onSelectSkin(creator.id, skin.skin)}
+                          className={`relative h-7 w-5 origin-center overflow-hidden rounded-md border bg-slate-950 transition-transform duration-150 ease-out hover:z-10 hover:scale-[1.85] ${
+                            selected ? 'border-white/85' : 'border-white/15 opacity-80 hover:opacity-100'
+                          }`}
+                        >
+                          {imageSrc ? (
+                            <img src={imageSrc} alt="" className="h-full w-full object-cover object-top" />
+                          ) : videoSrc ? (
+                            <video
+                              src={videoSrc}
+                              muted
+                              playsInline
+                              preload="metadata"
+                              className="h-full w-full object-cover object-top"
+                            />
+                          ) : null}
+                        </button>
+                      )
+                    })}
+                  </span>
                 ) : null}
                 {creator?.tag ? (
                   <span

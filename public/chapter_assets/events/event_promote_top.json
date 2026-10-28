@@ -184,6 +184,14 @@
       "text_key": "node_1792375692028_19_dty3"
     },
     {
+      "id": "node_1793064025847_zvxf",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "Mature BJ Moans and Gulping Sounds 2.wav",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1792375692028_20_rlar",
       "type": "graphic",
       "image": "2026-10-18_00044__restored_1080p_nf_comp.mp4",
@@ -290,6 +298,14 @@
       "text_key": "node_1792375692028_32_fy4e"
     },
     {
+      "id": "node_1793064069118_lwq3",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "",
+      "loop": false,
+      "stop": true
+    },
+    {
       "id": "node_1792375729552_9o65",
       "type": "vn",
       "background": "2026-10-19_00019_.webp",
@@ -394,6 +410,14 @@
       "text_key": "node_1792375692028_43_m2oj"
     },
     {
+      "id": "node_1792375692028_45_loas",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "Flirtatious-Energetic Soft to Intense Moans 3.wav",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1792375692028_44_rgg0",
       "type": "graphic",
       "image": "2026-10-21_00095__48fps.mp4",
@@ -404,12 +428,12 @@
       "blurDefault": 4
     },
     {
-      "id": "node_1792375692028_45_loas",
+      "id": "node_1793064085070_3y94",
       "type": "text",
       "speakerType": "narrator",
       "speaker": "",
       "text": "Reiko가 천천히 몸을 내린다. 플레이어의 것이 그녀의 안으로 들어간다. 따뜻하고 조이는 감각이 퍼진다.",
-      "text_key": "node_1792375692028_45_loas"
+      "text_key": "node_1793064085070_3y94"
     },
     {
       "id": "node_1792375692028_46_iwd5",
@@ -758,6 +782,14 @@
       "text_key": "node_1792375692028_88_kmc7"
     },
     {
+      "id": "node_1793064173089_8l1l",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "",
+      "loop": false,
+      "stop": true
+    },
+    {
       "id": "node_1792375799165_2rln",
       "type": "graphic",
       "image": "2026-10-18_00041__restored_1080p_nf_comp.mp4",
@@ -1047,6 +1079,14 @@
       "sourcePath": "chapter_assets/events/event_promote_top/videos/2026-10-18_00042__48fps.mp4",
       "url": "media://chapter_assets/events/event_promote_top/videos/2026-10-18_00042__48fps.mp4",
       "size": 4059669
+    },
+    {
+      "id": "1793064134460-bu0rylk",
+      "fileName": "Flirtatious-Energetic Soft to Intense Moans 3.wav",
+      "kind": "sound",
+      "sourcePath": "chapter_assets/events/event_promote_top/sounds/Flirtatious-Energetic Soft to Intense Moans 3.wav",
+      "url": "media://chapter_assets/events/event_promote_top/sounds/Flirtatious-Energetic Soft to Intense Moans 3.wav",
+      "size": 1361174
     }
   ],
   "defaultLanguage": "ko",

@@ -318,8 +318,8 @@
     {
       "id": "node_1787120009569_34_y4c0",
       "type": "sound",
-      "role": "sfx",
-      "sound": "sucking.mp3",
+      "role": "bgm",
+      "sound": "Flirtatious Licking Sounds 3.wav",
       "loop": true,
       "stop": false
     },
@@ -402,7 +402,7 @@
     {
       "id": "node_1788399068401_eco8",
       "type": "sound",
-      "role": "sfx",
+      "role": "bgm",
       "sound": "",
       "loop": false,
       "stop": true
@@ -491,8 +491,8 @@
     {
       "id": "node_1787120009569_52_w6s5",
       "type": "sound",
-      "role": "sfx",
-      "sound": "fuck2.m4a",
+      "role": "bgm",
+      "sound": "Medium to Intense Moans 3.wav",
       "loop": true,
       "stop": false
     },
@@ -626,7 +626,7 @@
     {
       "id": "node_1788399092786_nt52",
       "type": "sound",
-      "role": "sfx",
+      "role": "bgm",
       "sound": "node_1787120009569_63_cwz0.wav",
       "loop": false,
       "stop": true

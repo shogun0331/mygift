@@ -844,6 +844,51 @@ export function findCharacterLevelThumbnailUrl(
   return fallbackToBaseProfile ? findCharacterBaseProfileUrl(creator) : null
 }
 
+export type CharacterSkinLevel = 1 | 2 | 3
+
+type SkinMediaOwner = {
+  id?: string
+  videos?: CharacterVideo[] | null
+  images?: CharacterImage[] | null
+  profileImageId?: string | null
+  profileImageUrl?: string | null
+  characterIconId?: string | null
+  levelThumbnailImageIds?: CharacterLevelThumbnails | null
+}
+
+/** 그 수위에 영상이나 썸네일이 직접 있는지. 1단계는 항상 있다. 다른 수위 자료로 채우지 않는다. */
+export function characterHasOwnSkinLevel(
+  creator: SkinMediaOwner | null | undefined,
+  level: CharacterSkinLevel,
+): boolean {
+  if (level === 1) return true
+  if (!creator) return false
+  if (findCharacterLevelThumbnailUrl(creator, level, false)) return true
+  return (creator.videos ?? []).some(
+    (video) => (video.level ?? 1) === level && Boolean(resolveCharacterVideoUrl(creator, video)),
+  )
+}
+
+/** 스킨 선택 칸에 쓸 그림. 2·3단계는 그 수위 썸네일만 쓰고, 없으면 그 수위 영상이다. */
+export function findOwnSkinPreview(
+  creator: SkinMediaOwner | null | undefined,
+  level: CharacterSkinLevel,
+): { imageUrl: string | null; videoUrl: string | null } {
+  if (!creator) return { imageUrl: null, videoUrl: null }
+  if (level === 1) {
+    return {
+      imageUrl: findCharacterLevelThumbnailUrl(creator, 1, true) || findCharacterBaseProfileUrl(creator),
+      videoUrl: null,
+    }
+  }
+  const imageUrl = findCharacterLevelThumbnailUrl(creator, level, false)
+  if (imageUrl) return { imageUrl, videoUrl: null }
+  const video = (creator.videos ?? []).find(
+    (row) => (row.level ?? 1) === level && Boolean(resolveCharacterVideoUrl(creator, row)),
+  )
+  return { imageUrl: null, videoUrl: video ? resolveCharacterVideoUrl(creator, video) : null }
+}
+
 /** 기본 대기(idle) 영상 URL — 수위 1/2/3별 기본 대기 영상 검색 및 폴백 */
 export function findLevelIdleVideoUrl(
   creator: { id?: string; videos?: CharacterVideo[] | null },

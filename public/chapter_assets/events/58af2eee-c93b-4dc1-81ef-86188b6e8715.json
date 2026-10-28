@@ -210,6 +210,14 @@
       "sound": "node_1786860403048_20_4gof.wav"
     },
     {
+      "id": "node_1793067022492_e7pe",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "Mature BJ Moans and Gulping Sounds 2.wav",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1792314832703_hy6j",
       "type": "graphic",
       "image": "2026-10-17_00072__restored_1080p_nf_comp.mp4",
@@ -314,6 +322,14 @@
       "text_key": "node_1786860403048_31_uvww"
     },
     {
+      "id": "node_1793067033160_x9v9",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "",
+      "loop": false,
+      "stop": true
+    },
+    {
       "id": "node_1792311042614_51c4",
       "type": "vn",
       "background": "bg_bridal_room.webp",
@@ -364,6 +380,14 @@
       "text_key": "node_1786860403048_36_q0b1",
       "voice": "node_1786860403048_36_q0b1.wav",
       "sound": "node_1786860403048_36_q0b1.wav"
+    },
+    {
+      "id": "node_1793067039879_u6ju",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "Medium to Intense Moans 3.wav",
+      "loop": true,
+      "stop": false
     },
     {
       "id": "graphic_58af2eee_5",
@@ -484,6 +508,14 @@
       "speaker": "player",
       "text": "아…… 나온다……! (허리가 떨리며 정액을 쏟아낸다)",
       "text_key": "node_1786860403048_49_i9zr"
+    },
+    {
+      "id": "node_1793067050232_5xwy",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "node_1792314981296_cy5u",

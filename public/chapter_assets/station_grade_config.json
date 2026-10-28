@@ -5,11 +5,11 @@
       "highLowAnte": 1000
     },
     "tiny": {
-      "maxScoutCreators": 3,
+      "maxScoutCreators": 4,
       "highLowAnte": 5000
     },
     "sme": {
-      "maxScoutCreators": 5,
+      "maxScoutCreators": 6,
       "highLowAnte": 15000
     },
     "mid": {

@@ -311,7 +311,7 @@
       "id": "node_1787100604876_35_apno",
       "type": "sound",
       "role": "sfx",
-      "sound": "Calm Licking Sounds 1.wav",
+      "sound": "Mature BJ Moans and Gulping Sounds 2.wav",
       "loop": true,
       "stop": false
     },
@@ -513,14 +513,14 @@
       "id": "node_1787100604876_55_rlsc",
       "type": "sound",
       "role": "sfx",
-      "sound": "fuck2.m4a",
+      "sound": "Medium to Intense Moans 3.wav",
       "loop": true,
       "stop": false
     },
     {
       "id": "node_1787100604876_54_0dao",
       "type": "graphic",
-      "image": "2026-10-17_00028__restored_1080p_nf_comp.mp4",
+      "image": "rina_missionary_loop_1080p_48fps_comp.mp4",
       "delay": 2,
       "blurRegions": [],
       "blurDefault": 4,
@@ -573,7 +573,7 @@
     {
       "id": "node_1791527454932_yn3d",
       "type": "graphic",
-      "image": "2026-10-17_00028__restored_1080p_nf_comp.mp4",
+      "image": "rina_missionary_loop_1080p_48fps_comp.mp4",
       "delay": 2,
       "ignoreDelay": false,
       "speed": 2,
@@ -611,7 +611,7 @@
     {
       "id": "node_1792056520443_jvw2",
       "type": "graphic",
-      "image": "2026-10-17_00023__restored_1080p_nf_comp.mp4",
+      "image": "rina_cowgirl_loop_1080p_48fps_comp.mp4",
       "delay": 2,
       "ignoreDelay": false,
       "speed": 2.3,
@@ -981,28 +981,28 @@
       "size": 2568761
     },
     {
-      "id": "1792245885073-wbwrpul",
-      "fileName": "2026-10-17_00028__restored_1080p_nf_comp.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/a3/videos/2026-10-17_00028__restored_1080p_nf_comp.mp4",
-      "url": "media://chapter_assets/events/a3/videos/2026-10-17_00028__restored_1080p_nf_comp.mp4",
-      "size": 3651813
-    },
-    {
-      "id": "1792245895179-y3fl34b",
-      "fileName": "2026-10-17_00023__restored_1080p_nf_comp.mp4",
-      "kind": "video",
-      "sourcePath": "chapter_assets/events/a3/videos/2026-10-17_00023__restored_1080p_nf_comp.mp4",
-      "url": "media://chapter_assets/events/a3/videos/2026-10-17_00023__restored_1080p_nf_comp.mp4",
-      "size": 2256981
-    },
-    {
       "id": "1792245918740-193tloj",
       "fileName": "2026-10-17_00025__restored_1080p_nf_comp.mp4",
       "kind": "video",
       "sourcePath": "chapter_assets/events/a3/videos/2026-10-17_00025__restored_1080p_nf_comp.mp4",
       "url": "media://chapter_assets/events/a3/videos/2026-10-17_00025__restored_1080p_nf_comp.mp4",
       "size": 1771527
+    },
+    {
+      "id": "1793076577168-bwiem6k",
+      "fileName": "rina_missionary_loop_1080p_48fps_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a3/videos/rina_missionary_loop_1080p_48fps_comp.mp4",
+      "url": "media://chapter_assets/events/a3/videos/rina_missionary_loop_1080p_48fps_comp.mp4",
+      "size": 4302046
+    },
+    {
+      "id": "1793076592698-luggekw",
+      "fileName": "rina_cowgirl_loop_1080p_48fps_comp.mp4",
+      "kind": "video",
+      "sourcePath": "chapter_assets/events/a3/videos/rina_cowgirl_loop_1080p_48fps_comp.mp4",
+      "url": "media://chapter_assets/events/a3/videos/rina_cowgirl_loop_1080p_48fps_comp.mp4",
+      "size": 2804947
     }
   ],
   "sourceZipName": "직접 생성",

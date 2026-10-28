@@ -226,6 +226,14 @@
       "sound": "node_1786843238702_22_nxjt.wav"
     },
     {
+      "id": "node_1793064940692_o0eg",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "Mature BJ Moans and Gulping Sounds 2.wav",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1792110938806_ehnh",
       "type": "graphic",
       "image": "2026-10-17_00029__restored_1080p_nf_comp.mp4",
@@ -330,6 +338,14 @@
       "text_key": "node_1786843238702_32_xe89"
     },
     {
+      "id": "node_1793064851377_e7uq",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "",
+      "loop": false,
+      "stop": true
+    },
+    {
       "id": "graphic_a5_4",
       "type": "vn",
       "background": "bg_bridal_room.webp",
@@ -371,6 +387,14 @@
       "text_key": "node_1786843238702_36_7nis",
       "voice": "node_1786843238702_36_7nis.wav",
       "sound": "node_1786843238702_36_7nis.wav"
+    },
+    {
+      "id": "node_1793064860815_zsca",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "Medium to Intense Moans 3.wav",
+      "loop": true,
+      "stop": false
     },
     {
       "id": "node_1786843238702_34_ilc3",
@@ -473,6 +497,14 @@
       "speaker": "",
       "text": "그녀의 안에 정액을 전부 쏟아내고, 천천히 자지를 뽑는다.",
       "text_key": "node_1786843238702_47_rb4a"
+    },
+    {
+      "id": "node_1793064898892_y6vl",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "",
+      "loop": false,
+      "stop": true
     },
     {
       "id": "graphic_a5_7",

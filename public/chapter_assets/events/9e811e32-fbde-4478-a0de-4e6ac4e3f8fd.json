@@ -448,6 +448,14 @@
       "text_key": "node_1787118693734_47_l160"
     },
     {
+      "id": "node_1793065359449_94jl",
+      "type": "sound",
+      "role": "bgm",
+      "sound": "Mature BJ Moans and Gulping Sounds 2.wav",
+      "loop": true,
+      "stop": false
+    },
+    {
       "id": "node_1787118693734_48_l39u",
       "type": "graphic",
       "image": "2026-10-18_00029__restored_1080p_nf_comp.mp4",
@@ -455,14 +463,6 @@
       "blurRegions": [],
       "blurDefault": 4,
       "speed": 1.2
-    },
-    {
-      "id": "node_1787118693734_49_kois",
-      "type": "sound",
-      "role": "sfx",
-      "sound": "sucking.mp3",
-      "loop": true,
-      "stop": false
     },
     {
       "id": "node_1788398961954_19k5",
@@ -545,7 +545,7 @@
     {
       "id": "node_1788398977186_vm2e",
       "type": "sound",
-      "role": "sfx",
+      "role": "bgm",
       "sound": "",
       "loop": false,
       "stop": true

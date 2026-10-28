@@ -2,8 +2,6 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import {
   COMPANY_TIERS,
   companyTierLabelKey,
-  companyTierOf,
-  companyTierReached,
   formatViewers,
   getPyramidY,
   MILESTONE_REWARDS,
@@ -15,7 +13,11 @@ import {
 import type {
   StationGrade,
 } from '../game/station'
-import type { StationGradeConfig, StationPromotionRule } from '../game/stationGradeConfig'
+import {
+  stationTierRank,
+  type StationGradeConfig,
+  type StationPromotionRule,
+} from '../game/stationGradeConfig'
 import type { Grade } from '../game/characters'
 import { playSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
@@ -45,7 +47,7 @@ const TIER_COUNT = COMPANY_TIERS.length
 
 export function RankingPanel({
   league,
-  stationGrade: _stationGrade,
+  stationGrade,
   stationGradeConfig,
   unlockedSlotCount,
   assets,
@@ -98,8 +100,6 @@ export function RankingPanel({
     ? rankPlay.fromRank + (rankPlay.toRank - rankPlay.fromRank) * playProgress
     : league.currentRank
   const displayRank = Math.round(displayRankFloat)
-  const currentTier = companyTierOf(displayRankFloat)
-  const destTier = companyTierOf(rankPlay?.toRank ?? league.currentRank)
   const rankUp = (rankPlay?.fromRank ?? league.previousRank) > displayRank
   const rankDown = (rankPlay?.fromRank ?? league.previousRank) < displayRank
   const playing = Boolean(rankPlay)
@@ -129,8 +129,8 @@ export function RankingPanel({
             {displayRank}
             {t('ranking.rankUnit')}
           </span>
-          <span className={`rank-stats-tier rank-stats-tier--${currentTier.id}`}>
-            {t(companyTierLabelKey(currentTier.id))}
+          <span className={`rank-stats-tier rank-stats-tier--${stationGrade}`}>
+            {t(companyTierLabelKey(stationGrade))}
           </span>
           <RankDelta up={rankUp} down={rankDown} />
         </div>
@@ -140,8 +140,8 @@ export function RankingPanel({
         <div className="rank-pyramid-wrap">
           <div className="rank-layers" aria-hidden={false}>
             {COMPANY_TIERS.map((tier, index) => {
-              const active = tier.id === destTier.id
-              const filled = companyTierReached(displayRankFloat, tier)
+              const active = tier.id === stationGrade
+              const filled = stationTierRank(tier.id) <= stationTierRank(stationGrade)
               return (
                 <div
                   key={tier.id}
@@ -174,8 +174,8 @@ export function RankingPanel({
             <TierCard
               key={tier.id}
               tier={tier}
-              active={tier.id === currentTier.id}
-              filled={companyTierReached(displayRank, tier)}
+              active={tier.id === stationGrade}
+              filled={stationTierRank(tier.id) <= stationTierRank(stationGrade)}
               rule={tier.id === 'black' ? null : stationGradeConfig.promotions[tier.id]}
               ctx={{ viewers: league.viewers, unlockedSlotCount, assets, creators }}
             />

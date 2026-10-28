@@ -411,7 +411,7 @@
     {
       "id": "node_1787097515369_46_05e0",
       "type": "sound",
-      "role": "sfx",
+      "role": "bgm",
       "sound": "Mature BJ Moans and Gulping Sounds 2.wav",
       "loop": true,
       "stop": false
@@ -525,7 +525,7 @@
     {
       "id": "node_1787097515369_57_ra49",
       "type": "sound",
-      "role": "sfx",
+      "role": "bgm",
       "sound": "node_1787097515369_57_ra49.wav",
       "loop": false,
       "stop": true
