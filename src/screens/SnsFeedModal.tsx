@@ -5,13 +5,18 @@ import { characterDisplayJob, characterDisplayName } from '../game/characterLoca
 import { formatMoney } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import {
+  SNS_AD_BANNERS,
+  calcCreatorSnsAdRevenue,
   calcCreatorSnsRatio,
   calcSnsPostCost,
   hasSnsComposeStock,
   MAX_CREATOR_SNS_SUBSCRIBERS,
+  pickSnsAdBannerIndex,
   reserveSnsCompose,
+  snsAdBannerSrc,
   snsCaptionOf,
   snsPostMedia,
+  sumSnsFeedLikes,
   type SnsComposeRoll,
   type SnsHeat,
 } from '../game/sns'
@@ -24,6 +29,8 @@ import { SnsMediaLightbox, SnsMediaWithBlur } from './SnsMediaWithBlur'
 type SnsFeedModalProps = {
   creator: OwnedCreator
   assets: number
+  /** 배너 카피 고정용 월 번호 */
+  broadcastMonthNumber?: number
   onClose: () => void
   onCompose: (roll: SnsComposeRoll) => SnsHeat | null
 }
@@ -60,7 +67,13 @@ function Face({
   )
 }
 
-export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedModalProps) {
+export function SnsFeedModal({
+  creator,
+  assets,
+  broadcastMonthNumber = 1,
+  onClose,
+  onCompose,
+}: SnsFeedModalProps) {
   const { t, locale } = useTranslation()
   const feedScrollRef = useRef<HTMLDivElement>(null)
   const waitRevealRef = useRef(false)
@@ -88,6 +101,16 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
   const ratio = calcCreatorSnsRatio(issuedCount, posts.length)
   const ratioPercent = Math.round(ratio * 100)
   const postCount = feed.length + (pending ? 1 : 0)
+  const adEstimate = calcCreatorSnsAdRevenue(creator)
+  const adBanner =
+    SNS_AD_BANNERS[
+      pickSnsAdBannerIndex(creator.id, broadcastMonthNumber, SNS_AD_BANNERS.length)
+    ] ?? SNS_AD_BANNERS[0]!
+  const totalLikes = sumSnsFeedLikes(feed)
+  const adBrand = t(adBanner.brandKey)
+  const adSlogan = t(adBanner.sloganKey)
+  const adToneLight = adBanner.tone === 'light'
+  const adBannerImage = snsAdBannerSrc(adBanner.file)
 
   const feedItems = [
     ...(pending
@@ -215,7 +238,83 @@ export function SnsFeedModal({ creator, assets, onClose, onCompose }: SnsFeedMod
               </div>
             </section>
 
-            <div className="border-t border-white/8 px-4 pb-4">
+            {/* 가상 광고 배너 — 납작한 가로 띠 */}
+            <div className="border-t border-white/8 px-3 pt-2.5">
+              <div
+                className="relative h-[88px] overflow-hidden rounded-xl border border-white/12 shadow-[0_8px_20px_rgba(0,0,0,0.35)]"
+                aria-label={t('sns.adBadge')}
+              >
+                <img
+                  src={adBannerImage}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover object-[center_42%]"
+                  draggable={false}
+                />
+
+                {/* 왼쪽 ~48%만 카피 영역 */}
+                <div className="absolute inset-y-0 left-0 flex w-[48%] flex-col justify-center px-2.5 py-1.5">
+                  <div className="flex items-center gap-1">
+                    <span
+                      className={`rounded px-1 py-px text-[7px] font-black uppercase tracking-[0.14em] ${
+                        adToneLight
+                          ? 'bg-stone-900/80 text-white'
+                          : 'bg-black/45 text-white/95 ring-1 ring-white/25'
+                      }`}
+                    >
+                      {t('sns.adBadge')}
+                    </span>
+                    <span
+                      className={`truncate text-[8px] font-bold uppercase tracking-wider ${
+                        adToneLight ? 'text-stone-500' : 'text-white/55'
+                      }`}
+                    >
+                      {t('sns.adSponsored')}
+                    </span>
+                  </div>
+
+                  <p
+                    className={`mt-0.5 truncate text-[12px] font-black leading-tight tracking-tight ${
+                      adToneLight ? 'text-stone-900' : 'text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.45)]'
+                    }`}
+                  >
+                    {adBrand}
+                  </p>
+                  <p
+                    className={`truncate text-[10px] font-semibold leading-snug ${
+                      adToneLight ? 'text-stone-600' : 'text-white/82'
+                    }`}
+                  >
+                    {adSlogan}
+                  </p>
+
+                  <div className="mt-1 flex flex-wrap items-center gap-1">
+                    <span
+                      className={`inline-flex max-w-full truncate rounded-full px-1.5 py-px text-[8px] font-bold tabular-nums ${
+                        adToneLight
+                          ? 'bg-stone-900/8 text-stone-700 ring-1 ring-stone-900/10'
+                          : 'bg-black/35 text-white/90 ring-1 ring-white/15'
+                      }`}
+                    >
+                      {t('sns.adEstimate', { amount: formatMoney(adEstimate) })}
+                    </span>
+                    <span
+                      className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-px text-[8px] font-bold tabular-nums ${
+                        adToneLight
+                          ? 'bg-stone-900/8 text-stone-600 ring-1 ring-stone-900/10'
+                          : 'bg-black/35 text-white/85 ring-1 ring-white/15'
+                      }`}
+                    >
+                      <span className={adToneLight ? 'text-rose-500' : 'text-rose-300'} aria-hidden>
+                        ♥
+                      </span>
+                      {totalLikes.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-white/8 px-4 pb-4 pt-3">
               {feedItems.length === 0 ? (
                 <div className="py-14 text-center">
                   <p className="text-sm font-bold text-slate-100">{t('sns.empty')}</p>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { formatMoneySigned } from '../game/money'
+import { localizeVipRewardText } from '../game/vip'
 import { useTranslation } from '../locales/i18n'
 
 type FanMeetingStatementProps = {
@@ -61,6 +62,7 @@ export function FanMeetingStatement({
 }: FanMeetingStatementProps) {
   const { t } = useTranslation()
   const countedPay = useCountTo(Math.max(0, pay), 180, 1100)
+  const localizedReward = localizeVipRewardText(rewardText, t)
 
   return (
     <div
@@ -84,10 +86,10 @@ export function FanMeetingStatement({
             </p>
           </header>
 
-          {rewardText ? (
+          {localizedReward ? (
             <p className="mt-4 text-sm leading-relaxed text-slate-200">
               <span className="game-stat-label mr-2">{t('vip.visitReward')}</span>
-              {rewardText}
+              {localizedReward}
             </p>
           ) : null}
 

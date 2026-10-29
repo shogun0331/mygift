@@ -1473,7 +1473,10 @@ const StreamCard = memo(function StreamCard({
                   ) : null}
                 </p>
                 {creator && !isLive && onSelectSkin && (creator.skins?.length ?? 0) > 1 ? (
-                  <span className="flex shrink-0 items-center gap-1">
+                  <span className="ml-0.5 flex shrink-0 items-center gap-1.5 rounded-xl border border-fuchsia-300/40 bg-fuchsia-950/45 px-1.5 py-1 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06),0_0_14px_rgba(232,121,249,0.18)]">
+                    <span className="text-[8px] font-black uppercase tracking-[0.12em] text-fuchsia-200/90">
+                      Skin
+                    </span>
                     {creator.skins!.map((skin) => {
                       const selected = (creator.selectedSkin ?? 1) === skin.skin
                       const imageSrc = skin.imageUrl
@@ -1486,9 +1489,12 @@ const StreamCard = memo(function StreamCard({
                         <button
                           key={skin.skin}
                           type="button"
+                          title={`SKIN ${skin.skin}`}
                           onClick={() => onSelectSkin(creator.id, skin.skin)}
-                          className={`relative h-7 w-5 origin-center overflow-hidden rounded-md border bg-slate-950 transition-transform duration-150 ease-out hover:z-10 hover:scale-[1.85] ${
-                            selected ? 'border-white/85' : 'border-white/15 opacity-80 hover:opacity-100'
+                          className={`relative h-8 w-6 origin-center overflow-hidden rounded-md border bg-slate-950 transition-transform duration-150 ease-out hover:z-10 hover:scale-[1.7] ${
+                            selected
+                              ? 'border-white/90 ring-1 ring-fuchsia-300/50'
+                              : 'border-white/20 opacity-85 hover:border-white/55 hover:opacity-100'
                           }`}
                         >
                           {imageSrc ? (
@@ -1501,7 +1507,11 @@ const StreamCard = memo(function StreamCard({
                               preload="metadata"
                               className="h-full w-full object-cover object-top"
                             />
-                          ) : null}
+                          ) : (
+                            <span className="flex h-full w-full items-center justify-center text-[9px] font-black text-slate-400">
+                              {skin.skin}
+                            </span>
+                          )}
                         </button>
                       )
                     })}

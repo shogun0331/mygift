@@ -263,6 +263,18 @@ export function WeeklySettlementModal({
                   {t('settlement.viewersUnit')}
                 </dd>
               </div>
+              <div className="flex items-center justify-between gap-4 border-t border-emerald-400/20 pt-1.5 sm:col-span-2">
+                <dt className="font-semibold text-emerald-200/90">{t('settlement.snsAdRevenue')}</dt>
+                <dd
+                  className={`tabular-nums font-bold ${
+                    (statement.snsAdRevenueWon ?? 0) > 0 ? 'statement-amt-pos' : 'text-slate-500'
+                  }`}
+                >
+                  {(statement.snsAdRevenueWon ?? 0) > 0
+                    ? `+${formatStatementWon(statement.snsAdRevenueWon)}`
+                    : formatStatementWon(0)}
+                </dd>
+              </div>
             </dl>
           </section>
 

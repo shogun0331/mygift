@@ -139,7 +139,9 @@ export function translate(locale: Locale, key: string, params?: Record<string, s
 
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
-      val = val!.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v))
+      // 함수 치환: formatMoney의 `$1,014`처럼 `$`가 들어와도 `$1` 백레퍼런스로 깨지지 않게 함
+      const text = String(v)
+      val = val!.replace(new RegExp(`\\{${k}\\}`, 'g'), () => text)
     })
   }
 

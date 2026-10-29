@@ -2,7 +2,7 @@ import { BlurRegionOverlay } from '../events/BlurRegionEditor'
 import { pickCharacterLocaleText } from '../game/characterLocales'
 import { formatMoney } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
-import type { VipVisit } from '../game/vip'
+import { localizeVipRewardText, type VipVisit } from '../game/vip'
 import { useTranslation } from '../locales/i18n'
 
 type VipVisitModalProps = {
@@ -72,7 +72,9 @@ export function VipVisitModal({ visit, assets, onAccept, onReject }: VipVisitMod
             {t('vip.visitPay').replace('{amount}', formatMoney(visit.pay))}
           </p>
           <p className="mt-2 text-[10px] font-black tracking-wide text-slate-400">{t('vip.visitReward')}</p>
-          <p className="mt-1 text-sm leading-relaxed text-slate-200">{visit.rewardText}</p>
+          <p className="mt-1 text-sm leading-relaxed text-slate-200">
+            {localizeVipRewardText(visit.rewardText, t)}
+          </p>
         </section>
 
         {canPay ? null : (

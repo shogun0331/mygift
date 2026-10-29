@@ -1,4 +1,9 @@
 import { useDateOfferSpeech } from './useDateOfferSpeech'
+import {
+  AFFECTION_MAX,
+  AFFECTION_THRESHOLDS,
+  clampAffection,
+} from '../game/affection'
 import { characterDisplayName } from '../game/characterLocales'
 import type { DatePending } from '../game/social'
 import { useTranslation } from '../locales/i18n'
@@ -34,9 +39,11 @@ function Face({ name, imageUrl }: { name: string; imageUrl?: string | null }) {
 
 export function DateOfferModal({
   pending,
+  affection,
   onStart,
 }: {
   pending: DatePending
+  affection?: number
   onStart: () => void
 }) {
   const { t, locale } = useTranslation()
@@ -47,6 +54,16 @@ export function DateOfferModal({
   const speech = useDateOfferSpeech(displayName, pending.creatorId)
   const line =
     speech?.text || t('date.offerBody').replace('{name}', displayName)
+  const currentAffection = clampAffection(affection)
+  const requiredAffection = AFFECTION_THRESHOLDS[pending.step]
+  const affectionPct = Math.max(
+    0,
+    Math.min(100, Math.round((currentAffection / AFFECTION_MAX) * 100)),
+  )
+  const thresholdPct = Math.max(
+    0,
+    Math.min(100, Math.round((requiredAffection / AFFECTION_MAX) * 100)),
+  )
 
   return (
     <div
@@ -76,7 +93,39 @@ export function DateOfferModal({
             <Face name={displayName} imageUrl={pending.profileImageUrl} />
             <div className="min-w-0 flex-1">
               <p className="truncate text-lg sm:text-xl font-black text-white">{displayName}</p>
+              <p className="mt-1 text-xs font-semibold text-pink-200/80">
+                {t('date.offerAffectionReady')}
+              </p>
             </div>
+          </div>
+
+          {/* Affection gauge */}
+          <div className="mt-4 rounded-2xl border border-pink-400/30 bg-pink-950/35 px-4 py-3.5 shadow-inner">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-black tracking-wide text-pink-200">
+                {t('affection.label')}
+              </p>
+              <p className="text-xs font-black tabular-nums text-pink-100">
+                {t('date.offerAffectionValue', {
+                  current: currentAffection,
+                  max: AFFECTION_MAX,
+                })}
+              </p>
+            </div>
+            <div className="relative mt-2.5 h-3 overflow-hidden rounded-full bg-slate-900/90 ring-1 ring-pink-400/20">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-pink-500 via-rose-400 to-fuchsia-300 shadow-[0_0_12px_rgba(244,114,182,0.55)] transition-[width] duration-500"
+                style={{ width: `${affectionPct}%` }}
+              />
+              <span
+                className="pointer-events-none absolute top-1/2 h-4 w-0.5 -translate-y-1/2 bg-amber-200/90 shadow-[0_0_8px_rgba(253,230,138,0.9)]"
+                style={{ left: `calc(${thresholdPct}% - 1px)` }}
+                title={t('date.offerAffectionNeed', { need: requiredAffection })}
+              />
+            </div>
+            <p className="mt-2 text-[11px] font-semibold text-pink-200/75">
+              {t('date.offerAffectionNeed', { need: requiredAffection })}
+            </p>
           </div>
 
           {/* Dialogue Line */}

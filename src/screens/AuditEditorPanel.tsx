@@ -64,13 +64,14 @@ export function AuditEditorPanel({
     setDeckOpen(false)
     setSimCreators(selected.map((creator) => {
       const row = creator as RegisteredCharacter & { stamina?: number; staminaMax?: number; statPerformance?: number; statMental?: number }
-      const hp = Math.max(1, Math.round(row.stamina ?? row.staminaMax ?? 100))
+      const hpMax = Math.max(1, Math.round(row.staminaMax ?? row.stamina ?? 100))
+      const hp = Math.max(0, Math.min(hpMax, Math.round(row.stamina ?? hpMax)))
       return {
         ...creator,
         statPerformance: Math.round(row.statPerformance ?? 70),
         statMental: Math.round(row.statMental ?? 70),
         stamina: hp,
-        staminaMax: hp,
+        staminaMax: hpMax,
       }
     }))
     setSimGrade((grade) => grade ?? 'sme')

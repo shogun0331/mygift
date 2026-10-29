@@ -92,6 +92,8 @@ export type WeeklyStatement = {
   snsViewersGained: number
   /** 그 외(리그 성장/이탈/마일스톤 등) 시청자 변동 */
   baseViewersGained: number
+  /** SNS 구독자·하트 기반 광고 수익(USD) */
+  snsAdRevenueWon: number
 }
 
 export type WeeklyCreatorAccum = {
@@ -223,6 +225,8 @@ export function buildWeeklyStatement(opts: {
   productionViewersGained?: number
   /** SNS 포스팅으로 늘어난 시청자 (기본 0) */
   snsViewersGained?: number
+  /** SNS 광고 수익 (기본 0, 월말 패치로 넣는 경우 많음) */
+  snsAdRevenueWon?: number
   /** 이번 달 정산 시점의 리그 순위 */
   rank?: number
   previousRank?: number
@@ -408,6 +412,7 @@ export function buildWeeklyStatement(opts: {
   const productionViewersGained = Math.max(0, Math.round(opts.productionViewersGained ?? 0))
   const snsViewersGained = Math.max(0, Math.round(opts.snsViewersGained ?? 0))
   const baseViewersGained = viewersGained - productionViewersGained - snsViewersGained
+  const snsAdRevenueWon = Math.max(0, Math.round(opts.snsAdRevenueWon ?? 0))
 
   return {
     monthNumber: week.monthNumber,
@@ -416,9 +421,9 @@ export function buildWeeklyStatement(opts: {
     lines,
     staffLines,
     expenses,
-    totalRevenueWon,
+    totalRevenueWon: totalRevenueWon + snsAdRevenueWon,
     totalExpenseWon,
-    netProfitWon,
+    netProfitWon: totalRevenueWon + snsAdRevenueWon - totalExpenseWon,
     profitChangePct,
     highlights: highlights.slice(0, 8),
     rank: Math.max(1, Math.round(opts.rank ?? 1)),
@@ -430,6 +435,7 @@ export function buildWeeklyStatement(opts: {
     productionViewersGained,
     snsViewersGained,
     baseViewersGained,
+    snsAdRevenueWon,
   }
 }
 

@@ -169,11 +169,13 @@ import {
   calcSnsSubscribersGain,
   MAX_CREATOR_SNS_SUBSCRIBERS,
   resolveSnsPending,
+  rollSnsAdPayout,
   snsCaptionOf,
   snsPostMedia,
   type BulkSnsComposePlan,
   type BulkSnsRevealEntry,
   type BulkSnsComposeResult,
+  type SnsAdPayout,
   type SnsComposeRoll,
   type SnsHeat,
   type SnsResult,
@@ -232,6 +234,12 @@ import { RecruitCardFlyFx, type RecruitFlyCard } from './RecruitCardFlyFx'
 import { RestRequiredModal } from './RestRequiredModal'
 import { PromotionSlotModal } from './PromotionSlotModal'
 import { PromotionNoticeModal } from './PromotionNoticeModal'
+import {
+  TurnEventNoticeModal,
+  emptyTurnEventNotice,
+  hasTurnEventNotice,
+  type TurnEventNoticeFlags,
+} from './TurnEventNoticeModal'
 import { SnsResultModal } from './SnsResultModal'
 import { SalaryNegotiateModal } from './SalaryNegotiateModal'
 import { SchedulePanel } from './SchedulePanel'
@@ -1108,6 +1116,13 @@ export function InGame({
     status: StationReviewStatus
   } | null>(null)
   const stationReviewOfferedRef = useRef<string | null>(boot?.notifiedStationReviewKey ?? null)
+  const [turnEventNotice, setTurnEventNotice] = useState<TurnEventNoticeFlags | null>(null)
+  const pendingTurnEventNoticeRef = useRef<TurnEventNoticeFlags>(emptyTurnEventNotice())
+  const pendingStationReviewPayloadRef = useRef<{
+    promoted: boolean
+    status: StationReviewStatus
+  } | null>(null)
+  const turnNoticeFromMonthEndRef = useRef(false)
   const [vipOffer, setVipOffer] = useState<VipOffer | null>(null)
   const [vipVisit, setVipVisit] = useState<VipVisit | null>(null)
   /** 팬미팅 턴. 자동으로 열지 않고, 방송시작 버튼이 팬미팅 버튼이 된다. */
@@ -1407,6 +1422,7 @@ export function InGame({
       weeklyStatement ||
       rankSettlement ||
       stationReview ||
+      turnEventNotice ||
       vipOffer || vipVisit ||
       vipResult ||
       vipDepartPlay ||
@@ -1431,6 +1447,7 @@ export function InGame({
     weeklyStatement,
     rankSettlement,
     stationReview,
+    turnEventNotice,
     vipOffer,
     vipVisit,
     vipResult,
@@ -1449,6 +1466,7 @@ export function InGame({
     !weeklyStatement &&
     !rankSettlement &&
     !stationReview &&
+    !turnEventNotice &&
     !vipOffer && !vipVisit &&
     !vipResult &&
     !vipDepartPlay &&
@@ -1617,12 +1635,13 @@ export function InGame({
     unlockedSlotCount,
   ])
 
-  // 목표 시청자·승급 조건 충족 시 서류 팝업 — 현재 등급→다음 등급 구간당 1회만
+  // 목표 시청자·승급 조건 충족 시 — 구간당 1회 턴 일정 알림(이후 서류 팝업)
   useEffect(() => {
     if (!isStationPromotionEligible) return
     if (broadcastPhase !== 'prep') return
     if (
       stationReview ||
+      turnEventNotice ||
       weeklyStatement ||
       broadcastEndedNotice ||
       rankSettlement ||
@@ -1647,13 +1666,19 @@ export function InGame({
       const key = `${review.status.current}:${review.status.next}`
       if (stationReviewOfferedRef.current === key) return
       stationReviewOfferedRef.current = key
-      setStationReview({ promoted: review.promoted, status: review.status })
+      pendingStationReviewPayloadRef.current = {
+        promoted: review.promoted,
+        status: review.status,
+      }
+      turnNoticeFromMonthEndRef.current = false
+      setTurnEventNotice({ fanMeeting: false, casino: false, promotion: true })
       scheduleAutoSave()
     }
   }, [
     isStationPromotionEligible,
     broadcastPhase,
     stationReview,
+    turnEventNotice,
     weeklyStatement,
     broadcastEndedNotice,
     rankSettlement,
@@ -1681,6 +1706,7 @@ export function InGame({
       broadcastEndedNotice ||
       weeklyStatement ||
       stationReview ||
+      turnEventNotice ||
       rankSettlement ||
       promotionCongratsPlay
     ) {
@@ -1710,6 +1736,7 @@ export function InGame({
     broadcastEndedNotice,
     weeklyStatement,
     stationReview,
+    turnEventNotice,
     rankSettlement,
     promotionCongratsPlay,
     events,
@@ -1729,6 +1756,7 @@ export function InGame({
       broadcastEndedNotice ||
       weeklyStatement ||
       stationReview ||
+      turnEventNotice ||
       rankSettlement ||
       promotionCongratsPlay
     ) {
@@ -1758,6 +1786,7 @@ export function InGame({
     broadcastEndedNotice,
     weeklyStatement,
     stationReview,
+    turnEventNotice,
     rankSettlement,
     promotionCongratsPlay,
     events,
@@ -1786,6 +1815,7 @@ export function InGame({
       weeklyStatement ||
       rankSettlement ||
       stationReview ||
+      turnEventNotice ||
       vipOffer || vipVisit ||
       vipResult ||
       vipDepartPlay ||
@@ -1807,6 +1837,7 @@ export function InGame({
     weeklyStatement,
     rankSettlement,
     stationReview,
+    turnEventNotice,
     vipOffer,
     vipVisit,
     vipResult,
@@ -1953,6 +1984,10 @@ export function InGame({
   }
   const showCasinoModalRef = useRef(showCasinoModal)
   showCasinoModalRef.current = showCasinoModal
+  const activeCasinoRoomIdRef = useRef(activeCasinoRoomId)
+  activeCasinoRoomIdRef.current = activeCasinoRoomId
+  /** 카지노 이용 중 월말 체인을 미뤄 둔 경우, 닫을 때 이어서 처리 */
+  const resumeMonthEndAfterCasinoRef = useRef(false)
 
   function heldAssets() {
     const value = readAssetLedger(assetLedgerRef.current)
@@ -3545,7 +3580,6 @@ export function InGame({
       previousRank: rankBefore,
       rankChange: rankChange,
     })
-    prevWeekRevenueRef.current = statementDraft.netProfitWon
     // 케어비는 이미 즉시 차감됐으므로, 명세서 net에 포함된 케어분을 환산 보정
     const careAlreadyPaid = weekSnapshot.careExpenses.reduce(
       (sum, row) => sum + row.amountWon,
@@ -3559,6 +3593,7 @@ export function InGame({
     }
 
     const snsResults: SnsResult[] = []
+    const adPayoutByCreatorId: Record<string, SnsAdPayout> = {}
     let extraViewers = 0
     const afterSnsOwned = ownedCreatorsRef.current.map((creator) => {
       const pending = creator.snsPending
@@ -3584,6 +3619,25 @@ export function InGame({
         creator.videos,
         pending.postId,
       )
+      const nextFeed = [
+        ...(creator.snsFeed ?? []),
+        {
+          postId: pending.postId,
+          heat: pending.heat,
+          likes: rolled.likes,
+          comments: rolled.comments,
+          publishedMonth: broadcastMonthNumberRef.current,
+        },
+      ]
+      const nextCreator = {
+        ...creator,
+        snsPending: null,
+        snsSubscribers: nextSnsSubscribers,
+        snsPublishedIds: [...(creator.snsPublishedIds ?? []), pending.postId],
+        snsFeed: nextFeed,
+      }
+      const adPayout = rollSnsAdPayout(nextCreator, { heat: pending.heat })
+      adPayoutByCreatorId[creator.id] = adPayout
       snsResults.push({
         creatorId: creator.id,
         creatorName: characterDisplayName(creator, locale),
@@ -3597,23 +3651,11 @@ export function InGame({
         comments: rolled.comments,
         viewersGained: rolled.viewersGained,
         snsSubscribersGained: snsSubGain,
+        snsSubscribersTotal: nextSnsSubscribers,
+        adRevenueWon: adPayout.amount,
+        adRevenueTier: adPayout.tier,
       })
-      return {
-        ...creator,
-        snsPending: null,
-        snsSubscribers: nextSnsSubscribers,
-        snsPublishedIds: [...(creator.snsPublishedIds ?? []), pending.postId],
-        snsFeed: [
-          ...(creator.snsFeed ?? []),
-          {
-            postId: pending.postId,
-            heat: pending.heat,
-            likes: rolled.likes,
-            comments: rolled.comments,
-            publishedMonth: broadcastMonthNumberRef.current,
-          },
-        ],
-      }
+      return nextCreator
     })
     if (snsResults.length > 0) {
       ownedCreatorsRef.current = afterSnsOwned
@@ -3634,6 +3676,19 @@ export function InGame({
         leagueRef.current = updatedLeague
         setLeague(updatedLeague)
       }
+    }
+
+    // SNS 광고 수익: pending resolve 이후 확률 롤 (크리에이터당 1회)
+    const rosterForAds = snsResults.length > 0 ? afterSnsOwned : ownedCreatorsRef.current
+    let snsAdRevenueWon = 0
+    for (const creator of rosterForAds) {
+      const payout = adPayoutByCreatorId[creator.id] ?? rollSnsAdPayout(creator)
+      adPayoutByCreatorId[creator.id] = payout
+      snsAdRevenueWon += payout.amount
+    }
+    let assetsAfterAds = assetsAfter
+    if (snsAdRevenueWon > 0) {
+      assetsAfterAds = commitAssets(heldAssets() + snsAdRevenueWon)
     }
 
     const viewersGained = leagueRef.current.viewers - viewersBefore
@@ -3664,7 +3719,11 @@ export function InGame({
       productionViewersGained: productionViewers,
       snsViewersGained: snsViewers,
       baseViewersGained: viewersGained - productionViewers - snsViewers,
+      snsAdRevenueWon,
+      totalRevenueWon: statementDraft.totalRevenueWon + snsAdRevenueWon,
+      netProfitWon: statementDraft.netProfitWon + snsAdRevenueWon,
     }
+    prevWeekRevenueRef.current = statement.netProfitWon
 
     pendingBroadcastAffectionRef.current = grantBroadcastAffection(weekSnapshot)
     monthAffectionGateRef.current = true
@@ -3721,6 +3780,12 @@ export function InGame({
       }
       setLiveEvents((prev) => [casinoOpenEvent, ...prev].slice(0, MAX_RECENT_EVENTS))
     }
+    pendingTurnEventNoticeRef.current = {
+      fanMeeting: !carriedFanMeeting && Boolean(vipRoll.opened),
+      casino: !wasCasinoOpen && willCasinoOpen,
+      promotion: false,
+    }
+    pendingStationReviewPayloadRef.current = null
     weekAccumRef.current = createWeekAccumulator(nextMonthNumber)
     setBroadcastPhase('prep')
     setLivePlayVideoByCreator({})
@@ -3740,7 +3805,7 @@ export function InGame({
     statementDelayTimerRef.current = window.setTimeout(() => {
       statementDelayTimerRef.current = null
       setBroadcastEndedNotice(false)
-      setSettlementAssetsAfter(assetsAfter)
+      setSettlementAssetsAfter(assetsAfterAds)
       setSettlementPortraits(portraits)
       setWeeklyStatement(statement)
       if (!tutorialDoneRef.current) {
@@ -3782,20 +3847,24 @@ export function InGame({
     const openScout =
       ownedCreatorsRef.current.length === 0 &&
       Boolean(scoutSystemRef.current.activeOffer)
-    // 매 턴 목표 시청자 및 조건 달성 시 승급심사 서류 팝업
+    // 매 턴 목표 시청자 및 조건 달성 시 — 승급심사는 턴 일정 알림에 합류(구간당 1회)
     if (pendingStationReviewRef.current) {
       pendingStationReviewRef.current = false
-      pendingScoutAfterRankRef.current = openScout
       if (!stationAuditTargetRef.current) {
         const review = evaluateCurrentStationReview()
         if (review.promoted && review.status.next && review.status.next !== 'tiny') {
           const key = `${review.status.current}:${review.status.next}`
           if (stationReviewOfferedRef.current !== key) {
             stationReviewOfferedRef.current = key
-            setStartBroadcastLocked(true)
-            setStationReview({ promoted: review.promoted, status: review.status })
+            pendingStationReviewPayloadRef.current = {
+              promoted: review.promoted,
+              status: review.status,
+            }
+            pendingTurnEventNoticeRef.current = {
+              ...pendingTurnEventNoticeRef.current,
+              promotion: true,
+            }
             scheduleAutoSave()
-            return
           }
         }
       }
@@ -4297,7 +4366,47 @@ export function InGame({
     releaseMonthEndLock(openScout)
   }
 
+  function tryOpenTurnEventNotice(openScout: boolean): boolean {
+    const pending = pendingTurnEventNoticeRef.current
+    if (!hasTurnEventNotice(pending)) return false
+    pendingTurnEventNoticeRef.current = emptyTurnEventNotice()
+    pendingScoutAfterRankRef.current = openScout
+    turnNoticeFromMonthEndRef.current = true
+    setStartBroadcastLocked(true)
+    setTurnEventNotice({ ...pending })
+    return true
+  }
+
+  function closeTurnEventNotice() {
+    setTurnEventNotice(null)
+    const fromMonthEnd = turnNoticeFromMonthEndRef.current
+    turnNoticeFromMonthEndRef.current = false
+    const review = pendingStationReviewPayloadRef.current
+    pendingStationReviewPayloadRef.current = null
+    if (review) {
+      setStationReview(review)
+      return
+    }
+    if (fromMonthEnd) {
+      continueAfterMonthModals(pendingScoutAfterRankRef.current)
+    }
+  }
+
   function continueAfterMonthModals(openScout: boolean) {
+    // 카지노가 열려 있으면 월말 후속 팝업을 미룬다 (닫힌 뒤 재개)
+    if (showCasinoModalRef.current || activeCasinoRoomIdRef.current) {
+      pendingScoutAfterRankRef.current = openScout
+      resumeMonthEndAfterCasinoRef.current = true
+      setStartBroadcastLocked(true)
+      return
+    }
+    // 명세서 직후: 스태프 연봉 → 일정 알림 → 호감도 → 크리에이터 승급 안내 → 소셜
+    if (checkStaffSalaryRaise(openScout)) {
+      return
+    }
+    if (tryOpenTurnEventNotice(openScout)) {
+      return
+    }
     if (monthAffectionGateRef.current) {
       monthAffectionGateRef.current = false
       pendingScoutAfterRankRef.current = openScout
@@ -4313,9 +4422,6 @@ export function InGame({
       }
     }
     if (checkPromotionExamNotices(openScout)) {
-      return
-    }
-    if (checkStaffSalaryRaise(openScout)) {
       return
     }
     proceedNextAfterProposal(openScout)
@@ -5414,6 +5520,7 @@ export function InGame({
         rankSettlement ||
         rankBubblePlay ||
         stationReview ||
+        turnEventNotice ||
         promotionFx ||
         showGameClear ||
         vipOffer || vipVisit ||
@@ -5424,7 +5531,10 @@ export function InGame({
         salaryEventPlay ||
         scoutEventState ||
         promotionExam ||
+        promotionExamNotice ||
         staffSalaryRaiseRequest ||
+        affectionSummary ||
+        snsAffectionSummary ||
         snsResultQueue.length > 0,
     )
     if (!monthEndUiOpen) {
@@ -5438,6 +5548,7 @@ export function InGame({
     rankSettlement,
     rankBubblePlay,
     stationReview,
+    turnEventNotice,
     promotionFx,
     showGameClear,
     vipOffer,
@@ -5449,7 +5560,10 @@ export function InGame({
     salaryEventPlay,
     scoutEventState,
     promotionExam,
+    promotionExamNotice,
     staffSalaryRaiseRequest,
+    affectionSummary,
+    snsAffectionSummary,
     snsResultQueue.length,
   ])
 
@@ -6458,6 +6572,8 @@ export function InGame({
                       window.alert(t('alert.casinoGradeRequired'))
                       return
                     }
+                    // 월말 모달 체인(호감도→연봉 등) 중에는 카지노 진입 금지
+                    if (startBroadcastLocked) return
                     if (isCasinoAvailable) {
                       if (Math.random() < 0.5) {
                         setActiveCasinoRoomId('local')
@@ -6537,6 +6653,10 @@ export function InGame({
                   setCasinoTurnCount(0)
                 }
                 flushAutoSave()
+                if (resumeMonthEndAfterCasinoRef.current) {
+                  resumeMonthEndAfterCasinoRef.current = false
+                  continueAfterMonthModals(pendingScoutAfterRankRef.current)
+                }
               }}
             />
           </div>
@@ -6564,12 +6684,17 @@ export function InGame({
                 commitAssets(heldAssets() + (newAssets - assets))
               }}
               onClose={() => {
+                activeCasinoRoomIdRef.current = null
                 setActiveCasinoRoomId(null)
                 if (stationGradeRef.current !== 'top') {
                   casinoTurnCountRef.current = 0
                   setCasinoTurnCount(0)
                 }
                 flushAutoSave()
+                if (resumeMonthEndAfterCasinoRef.current) {
+                  resumeMonthEndAfterCasinoRef.current = false
+                  continueAfterMonthModals(pendingScoutAfterRankRef.current)
+                }
               }}
               initialRoomId={activeCasinoRoomId}
             />
@@ -6591,6 +6716,7 @@ export function InGame({
       !rankSettlement &&
       !rankBubblePlay &&
       !stationReview &&
+      !turnEventNotice &&
       !showGameClear &&
       !vipOffer && !vipVisit &&
       !vipResult &&
@@ -6643,6 +6769,10 @@ export function InGame({
             continueAfterMonthModals(openScout)
           }}
         />
+      ) : null}
+
+      {turnEventNotice ? (
+        <TurnEventNoticeModal flags={turnEventNotice} onConfirm={closeTurnEventNotice} />
       ) : null}
 
       {stationReview ? (
@@ -6765,7 +6895,16 @@ export function InGame({
             const success = examResult.success
             setExamResult(null)
             setSelectedAuditCreators(null)
-            if (Object.values(staminaById).some((loss) => loss > 0)) {
+            if (success) {
+              // 승급심사 통과: 전원 체력 풀 회복 (심사 소모분 무시)
+              const nextOwned = ownedCreatorsRef.current.map((c) => {
+                const max = Math.max(1, Math.round(c.staminaMax ?? 100))
+                return { ...c, stamina: max }
+              })
+              ownedCreatorsRef.current = nextOwned
+              onOwnedCreatorsChangeRef.current(nextOwned)
+              playSfx('condition-recover')
+            } else if (Object.values(staminaById).some((loss) => loss > 0)) {
               const nextOwned = ownedCreatorsRef.current.map((c) => {
                 const ded = staminaById[c.id] ?? 0
                 if (ded > 0) return { ...c, stamina: Math.max(0, Math.round(c.stamina - ded)) }
@@ -6987,18 +7126,22 @@ export function InGame({
         <FanMeetingModal
           config={stationGradeConfig.vipConfig}
           grade={stationGrade}
-          cards={fanDeckCreators.map((creator): FanCardState => ({
-            id: creator.id,
-            name: creator.name,
-            grade: creator.grade,
-            statType: creator.statType,
-            statPerformance: creator.statPerformance,
-            statMental: creator.statMental,
-            hp: Math.max(0, Math.round(creator.stamina ?? 0)),
-            hpMax: Math.max(0, Math.round(creator.stamina ?? 0)),
-            auditMedia: creator.auditMedia,
-            profileImageUrl: creator.profileImageUrl,
-          }))}
+          cards={fanDeckCreators.map((creator): FanCardState => {
+            const hpMax = Math.max(1, Math.round(creator.staminaMax ?? creator.stamina ?? 100))
+            const hp = Math.max(0, Math.min(hpMax, Math.round(creator.stamina ?? 0)))
+            return {
+              id: creator.id,
+              name: creator.name,
+              grade: creator.grade,
+              statType: creator.statType,
+              statPerformance: creator.statPerformance,
+              statMental: creator.statMental,
+              hp,
+              hpMax,
+              auditMedia: creator.auditMedia,
+              profileImageUrl: creator.profileImageUrl,
+            }
+          })}
           onAbort={() => {
             clearAssetPreview()
             setFanDeckCreators(null)
@@ -7013,18 +7156,22 @@ export function InGame({
           practice
           config={stationGradeConfig.vipConfig}
           grade={isVipGrade(stationGrade) ? stationGrade : 'sme'}
-          cards={ownedCreators.slice(0, 4).map((creator): FanCardState => ({
-            id: creator.id,
-            name: creator.name,
-            grade: creator.grade,
-            statType: creator.statType,
-            statPerformance: creator.statPerformance,
-            statMental: creator.statMental,
-            hp: Math.max(0, Math.round(creator.stamina ?? 0)),
-            hpMax: Math.max(0, Math.round(creator.stamina ?? 0)),
-            auditMedia: creator.auditMedia,
-            profileImageUrl: creator.profileImageUrl,
-          }))}
+          cards={ownedCreators.slice(0, 4).map((creator): FanCardState => {
+            const hpMax = Math.max(1, Math.round(creator.staminaMax ?? creator.stamina ?? 100))
+            const hp = Math.max(0, Math.min(hpMax, Math.round(creator.stamina ?? 0)))
+            return {
+              id: creator.id,
+              name: creator.name,
+              grade: creator.grade,
+              statType: creator.statType,
+              statPerformance: creator.statPerformance,
+              statMental: creator.statMental,
+              hp,
+              hpMax,
+              auditMedia: creator.auditMedia,
+              profileImageUrl: creator.profileImageUrl,
+            }
+          })}
           onPayout={(amount) => showAssetFly(amount, false)}
           onAbort={closePractice}
           onFinish={closePractice}
@@ -7071,7 +7218,13 @@ export function InGame({
       ) : null}
 
       {socialUi?.mode === 'dateOffer' ? (
-        <DateOfferModal pending={socialUi.pending} onStart={handleDateStart} />
+        <DateOfferModal
+          pending={socialUi.pending}
+          affection={
+            ownedCreators.find((creator) => creator.id === socialUi.pending.creatorId)?.affection
+          }
+          onStart={handleDateStart}
+        />
       ) : null}
       {socialUi?.mode === 'dateResult' ? (
         <DateResultModal

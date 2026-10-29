@@ -269,8 +269,13 @@ export function SlotEditorPanel() {
                     className="p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-amber-500/40 transition-all space-y-3"
                   >
                     <div className="flex items-center gap-3 border-b border-slate-800 pb-2">
-                      <span className="text-3xl p-2 rounded-xl bg-slate-900 border border-slate-800 shadow-inner">
-                        {sym.icon}
+                      <span className="p-1.5 rounded-xl bg-slate-900 border border-slate-800 shadow-inner inline-flex">
+                        <img
+                          src={sym.iconSrc}
+                          alt={sym.name}
+                          draggable={false}
+                          className="slot-symbol-img w-10 h-10 object-contain"
+                        />
                       </span>
                       <div>
                         <span className="font-bold text-sm text-slate-100 block">{sym.name}</span>

@@ -231,6 +231,52 @@ export type VipRewardLine = {
   text: string
 }
 
+/** 프리셋/구세이브 보상 id·한글 문구 → i18n 키 */
+const VIP_REWARD_LOCALE_KEYS: Record<string, string> = {
+  'vip.rewardSme1': 'vip.rewardSme1',
+  'vip.rewardMid1': 'vip.rewardMid1',
+  'vip.rewardLarge1': 'vip.rewardLarge1',
+  'vip.rewardTop1': 'vip.rewardTop1',
+  '소규모 후원 계약을 제안한다.': 'vip.rewardSme1',
+  '정기 후원 계약을 제안한다.': 'vip.rewardMid1',
+  '대형 스폰서 계약을 제안한다.': 'vip.rewardLarge1',
+  '독점 후원 계약을 제안한다.': 'vip.rewardTop1',
+  'sme-1': 'vip.rewardSme1',
+  'mid-1': 'vip.rewardMid1',
+  'large-1': 'vip.rewardLarge1',
+  'top-1': 'vip.rewardTop1',
+}
+
+function normalizeVipRewardLookup(raw: string): string {
+  return String(raw ?? '')
+    .trim()
+    .normalize('NFC')
+    .replace(/[。.．]$/u, '.')
+}
+
+/** 보상 id/문구를 로케일 키로 변환. 커스텀 문구면 null. */
+export function resolveVipRewardLocaleKey(reward: {
+  id?: string | null
+  text?: string | null
+}): string | null {
+  const id = normalizeVipRewardLookup(reward.id ?? '')
+  if (id && VIP_REWARD_LOCALE_KEYS[id]) return VIP_REWARD_LOCALE_KEYS[id]
+  const text = normalizeVipRewardLookup(reward.text ?? '')
+  if (!text) return null
+  if (VIP_REWARD_LOCALE_KEYS[text]) return VIP_REWARD_LOCALE_KEYS[text]
+  if (text.startsWith('vip.reward')) return text
+  return null
+}
+
+/** 저장/표시용 보상 텍스트를 i18n 키로 정규화. */
+export function canonicalizeVipRewardText(reward: {
+  id?: string | null
+  text?: string | null
+}): string {
+  const raw = String(reward.text ?? '').trim()
+  return resolveVipRewardLocaleKey(reward) ?? raw
+}
+
 export type VipTierSetting = {
   /** 팬 만족도 목표. 체력과 같다 */
   satisfactionMin: number
@@ -506,7 +552,7 @@ export function defaultVipConfig(): VipVisitConfig {
         pressureMax: 44,
         payMin: 50_000,
         payMax: 150_000,
-        rewards: [vipReward('sme-1', '소규모 후원 계약을 제안한다.')],
+        rewards: [vipReward('sme-1', 'vip.rewardSme1')],
       },
         mid: {
         satisfactionMin: 34,
@@ -517,7 +563,7 @@ export function defaultVipConfig(): VipVisitConfig {
         pressureMax: 48,
         payMin: 150_000,
         payMax: 400_000,
-        rewards: [vipReward('mid-1', '정기 후원 계약을 제안한다.')],
+        rewards: [vipReward('mid-1', 'vip.rewardMid1')],
       },
         large: {
         satisfactionMin: 48,
@@ -528,7 +574,7 @@ export function defaultVipConfig(): VipVisitConfig {
         pressureMax: 56,
         payMin: 400_000,
         payMax: 900_000,
-        rewards: [vipReward('large-1', '대형 스폰서 계약을 제안한다.')],
+        rewards: [vipReward('large-1', 'vip.rewardLarge1')],
       },
         top: {
         satisfactionMin: 64,
@@ -539,7 +585,7 @@ export function defaultVipConfig(): VipVisitConfig {
         pressureMax: 64,
         payMin: 900_000,
         payMax: 2_000_000,
-        rewards: [vipReward('top-1', '독점 후원 계약을 제안한다.')],
+        rewards: [vipReward('top-1', 'vip.rewardTop1')],
       },
     },
   }
@@ -1014,11 +1060,13 @@ function normalizeVipConfig(raw: unknown, fallback?: VipVisitConfig): VipVisitCo
       ? spec.rewards.flatMap((item, index) => {
           if (!item || typeof item !== 'object') return []
           const reward = item as Record<string, unknown>
-          const text = typeof reward.text === 'string' ? reward.text : ''
+          const rawText = typeof reward.text === 'string' ? reward.text : ''
           const id =
             typeof reward.id === 'string' && reward.id.trim()
               ? reward.id
               : `${tier}-${index + 1}`
+          // 구세이브/퍼블릭 JSON의 한글 프리셋 문구 → i18n 키로 정규화
+          const text = canonicalizeVipRewardText({ id, text: rawText })
           return [{ id, text } satisfies VipRewardLine]
         })
       : preset.rewards

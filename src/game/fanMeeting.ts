@@ -9,6 +9,7 @@ import type { CharacterAuditMedia, Grade } from './characters'
 import type { CharacterLocaleText } from './characterLocales'
 import { rollInt } from './stats'
 import {
+  canonicalizeVipRewardText,
   type AuditLineupMember,
   type CreatorType,
   type PromotionAuditConfig,
@@ -135,7 +136,7 @@ export function spawnFan(config: VipVisitConfig, grade: StationGrade, avoid: str
       payMin: tier.payMin,
       payMax: tier.payMax,
     }),
-    rewardText: reward?.text.trim() ?? '',
+    rewardText: reward ? canonicalizeVipRewardText(reward) : '',
   }
 }
 

@@ -8,6 +8,8 @@ import { LEAGUE_SIZE } from './ranking'
 import { rollInt } from './stats'
 import {
   VIP_TIER_IDS,
+  canonicalizeVipRewardText,
+  resolveVipRewardLocaleKey,
   stationTierRank,
   type StationGrade,
   type VipTierId,
@@ -16,6 +18,28 @@ import {
 
 /** 스폰 주기(3~6턴, 50%)는 social.ts VIP_SPAWN. 보유 캐릭터 중 선택 */
 export const VIP_SPAWN_CHANCE = 0.5
+
+export {
+  canonicalizeVipRewardText,
+  resolveVipRewardLocaleKey,
+} from './stationGradeConfig'
+
+/** 팬미팅/VIP 보상 문구를 현재 로케일로 변환. 커스텀 문구는 그대로. */
+export function localizeVipRewardText(
+  text: string | undefined | null,
+  translate: (key: string) => string,
+): string {
+  const trimmed = String(text ?? '').trim()
+  if (!trimmed) return ''
+  const key = resolveVipRewardLocaleKey({ text: trimmed })
+  if (!key) return trimmed
+  const localized = translate(key)
+  // 키 자체가 그대로 돌아오면(누락) 원문 표시
+  if (!localized || localized === key) {
+    return trimmed.startsWith('vip.') ? localized || trimmed : trimmed
+  }
+  return localized
+}
 
 export const VIP_REJECT_VIEWERS_BY_GRADE: Record<Grade, { min: number; max: number }> = {
   C: { min: 500, max: 1_000 },
@@ -214,7 +238,7 @@ export function rollVipVisit(config: VipVisitConfig | undefined, grade: StationG
       payMin: tier.payMin,
       payMax: tier.payMax,
     }),
-    rewardText: reward?.text.trim() ?? '',
+    rewardText: reward ? canonicalizeVipRewardText(reward) : '',
   }
 }
 

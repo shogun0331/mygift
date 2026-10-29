@@ -5568,6 +5568,67 @@ html.theme-on-air .live-rank-card-inner.is-first {
   text-shadow: 0 0 12px rgba(232, 121, 249, 0.45);
 }
 
+.sns-ad-jackpot-flash {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(251, 191, 36, 0.28), transparent 42%),
+    radial-gradient(circle at 50% 50%, rgba(232, 121, 249, 0.22), transparent 58%);
+  animation: sns-ad-jackpot-flash 0.9s ease-out both;
+}
+
+.sns-ad-jackpot-card {
+  animation: sns-ad-jackpot-pulse 0.85s ease-out both;
+}
+
+.sns-ad-jackpot-spark {
+  position: absolute;
+  font-size: 1.35rem;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.55));
+  animation: sns-ad-jackpot-spark 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform: rotate(var(--spark-rot, 0deg));
+}
+
+@keyframes sns-ad-jackpot-flash {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sns-ad-jackpot-pulse {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 rgba(232, 121, 249, 0);
+  }
+  40% {
+    transform: scale(1.03);
+    box-shadow: 0 0 28px rgba(232, 121, 249, 0.45);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 14px rgba(251, 191, 36, 0.25);
+  }
+}
+
+@keyframes sns-ad-jackpot-spark {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.4) rotate(var(--spark-rot, 0deg));
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.15) rotate(var(--spark-rot, 0deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-28px) scale(0.85) rotate(var(--spark-rot, 0deg));
+  }
+}
+
 .sns-bulk-reveal-phone--heat3 {
   animation: sns-bulk-heat3-glow 0.85s ease-out both;
 }
@@ -5824,6 +5885,180 @@ html.theme-on-air .live-rank-card-inner.is-first {
   overflow: hidden;
 }
 
+.pachislot-top-marquee--art {
+  position: relative;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  z-index: 2;
+  line-height: 0;
+  width: 100%;
+}
+
+/* 탑패널 중앙 LED/도트매트릭스 텍스트 영역 */
+.slot-toppanel-display {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  top: 28%;
+  bottom: 30%;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.35rem;
+  overflow: hidden;
+  pointer-events: none;
+  line-height: 1.1;
+}
+
+.slot-digital-text {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Menlo, Consolas, monospace;
+  font-size: clamp(0.62rem, 2.6vw, 0.95rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fde68a;
+  text-shadow:
+    0 0 4px rgba(250, 204, 21, 0.95),
+    0 0 10px rgba(245, 158, 11, 0.75),
+    0 0 18px rgba(245, 158, 11, 0.45);
+}
+
+.slot-digital-text.is-spin {
+  color: #fbbf24;
+  animation: slot-digital-blink 0.7s steps(1, end) infinite;
+}
+
+.slot-digital-text.is-win,
+.slot-digital-text.is-counting {
+  color: #fef08a;
+  text-shadow:
+    0 0 6px rgba(250, 204, 21, 1),
+    0 0 14px rgba(234, 179, 8, 0.95),
+    0 0 22px rgba(245, 158, 11, 0.7);
+}
+
+.slot-digital-text.is-counting {
+  animation: slot-digital-blink 0.35s steps(1, end) infinite;
+}
+
+.slot-digital-text.is-ready {
+  color: #86efac;
+  text-shadow:
+    0 0 4px rgba(74, 222, 128, 0.95),
+    0 0 12px rgba(34, 197, 94, 0.7);
+}
+
+.slot-digital-text.is-miss {
+  color: #94a3b8;
+  text-shadow: 0 0 6px rgba(148, 163, 184, 0.55);
+}
+
+.slot-digital-text.is-idle {
+  color: #fb7185;
+  text-shadow:
+    0 0 4px rgba(251, 113, 133, 0.9),
+    0 0 12px rgba(244, 63, 94, 0.65);
+}
+
+@keyframes slot-digital-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.35;
+  }
+}
+
+.pachislot-reel-showcase--flush {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0.5rem;
+  padding: 0.35rem 0.5rem 0.5rem;
+  overflow: visible;
+}
+
+/* 탑패널·릴윈도우를 같은 폭으로 세로 밀착 */
+.pachislot-panel-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: min(100%, 300px);
+  margin: 0 auto;
+  line-height: 0;
+}
+
+.pachislot-reel-stack-row {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+
+.pachislot-payline-col {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+}
+
+.pachislot-payline-col.is-left {
+  right: calc(100% + 0.35rem);
+}
+
+.pachislot-payline-col.is-right {
+  left: calc(100% + 0.35rem);
+}
+
+.pachislot-reel-showcase-body {
+  display: none;
+}
+
+.slot-toppanel-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+  filter: none;
+}
+
+.pachislot-panel-stack .pachislot-reel-window--framed {
+  width: 100%;
+  margin: 0;
+}
+
+.pachislot-top-marquee--art .pachislot-marquee-lamps {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 6%;
+  padding: 0.2rem 0.4rem;
+  border-radius: 999px;
+  border-bottom: none;
+  background: rgba(0, 0, 0, 0.45);
+}
+
 .pachislot-marquee-lamps {
   display: flex;
   justify-content: space-between;
@@ -5897,6 +6132,84 @@ html.theme-on-air .live-rank-card-inner.is-first {
     inset 0 0 0 2px rgba(251, 191, 36, 0.5),
     inset 0 20px 28px rgba(0, 0, 0, 0.9),
     inset 0 -20px 28px rgba(0, 0, 0, 0.9);
+}
+
+.pachislot-reel-window--framed {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  display: block;
+  width: min(100%, 300px);
+  /* frame chrome + 3x70px reels keep land offset stable */
+  height: 268px;
+  margin: 0 auto;
+}
+
+.slot-reel-window-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  /* behind reels so white drum blanks are covered by live symbols */
+  z-index: 1;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.7));
+}
+
+.pachislot-reel-window-inner {
+  position: absolute;
+  /* align to white reel openings; fixed px matches 70px cells */
+  top: 28px;
+  right: 30px;
+  bottom: 30px;
+  left: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.pachislot-reel-window--framed .pachislot-reel-column {
+  height: 210px;
+  border-color: rgba(15, 23, 42, 0.35);
+  background: linear-gradient(180deg, #070a12 0%, #121826 50%, #070a12 100%);
+  box-shadow: inset 0 18px 16px rgba(0, 0, 0, 0.55), inset 0 -18px 16px rgba(0, 0, 0, 0.55);
+  border-radius: 0.4rem;
+}
+
+.slot-symbol-img {
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
+}
+
+.slot-symbol-img--hot {
+  filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.95)) brightness(1.08);
+}
+
+.slot-lever-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  line-height: 0;
+  transform-origin: 50% 92%;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.slot-lever-btn.is-pulled {
+  transform: rotate(42deg);
+}
+
+.slot-lever-img {
+  width: 4.5rem;
+  height: auto;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.75));
+  mix-blend-mode: screen;
 }
 
 .pachislot-reel-column {
@@ -6026,41 +6339,84 @@ html.theme-on-air .live-rank-card-inner.is-first {
     inset 0 3px 5px rgba(0, 0, 0, 0.5);
 }
 
-/* High-Gloss 3D Golden Arcade SPIN Button */
-.pachislot-btn-spin {
+/* Image spin button: cap (normal/pressed) + gold bezel overlay */
+.slot-spin-btn {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  padding: 0.6rem 1.5rem;
-  border-radius: 1rem;
-  border: 3px solid #fef08a;
-  background:
-    linear-gradient(180deg, #fef08a 0%, #f59e0b 45%, #b45309 100%);
-  box-shadow:
-    0 6px 0 #78350f,
-    0 8px 20px rgba(245, 158, 11, 0.7),
-    inset 0 2px 3px rgba(255, 255, 255, 0.8);
-  font-weight: 900;
-  color: #0f172a;
-  text-shadow: 0 1px 1px rgba(254, 240, 138, 0.8);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  width: 4.6rem;
+  height: 4.6rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  line-height: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  overflow: visible;
 }
 
-.pachislot-btn-spin:not(:disabled):hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 8px 0 #78350f,
-    0 12px 24px rgba(245, 158, 11, 0.9),
-    inset 0 2px 3px rgba(255, 255, 255, 0.9);
+.slot-spin-btn:not(.is-disabled):hover {
+  filter: brightness(1.08);
 }
 
-.pachislot-btn-spin:active {
-  transform: translateY(4px);
-  box-shadow:
-    0 2px 0 #78350f,
-    inset 0 3px 5px rgba(0, 0, 0, 0.5);
+.slot-spin-btn.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.25);
+}
+
+.slot-spin-btn.is-bonus:not(.is-disabled) {
+  animation: slot-spin-btn-pulse 1s ease-in-out infinite;
+}
+
+.slot-spin-cap,
+.slot-spin-bezel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+  mix-blend-mode: screen;
+}
+
+/* 캡은 베젤 안쪽에만 — 크기 고정, 클릭 시 스케일 변경 없음 */
+.slot-spin-cap {
+  inset: 12%;
+  width: 76%;
+  height: 76%;
+  z-index: 1;
+  transition: opacity 0.06s linear;
+}
+
+.slot-spin-cap.is-pressed-cap {
+  opacity: 0;
+}
+
+.slot-spin-btn:active:not(.is-disabled) .slot-spin-cap.is-normal,
+.slot-spin-btn.is-pressed .slot-spin-cap.is-normal {
+  opacity: 0;
+}
+
+.slot-spin-btn:active:not(.is-disabled) .slot-spin-cap.is-pressed-cap,
+.slot-spin-btn.is-pressed .slot-spin-cap.is-pressed-cap {
+  opacity: 1;
+}
+
+.slot-spin-bezel {
+  z-index: 2;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55));
+}
+
+@keyframes slot-spin-btn-pulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.18);
+  }
 }
 
 /* 5. Bottom Graphic Artwork Panel & 3D Metallic Coin Tray */

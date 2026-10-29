@@ -304,7 +304,14 @@ export function FanMeetingModal({
   headerExtra,
 }: FanMeetingModalProps) {
   const { t, locale } = useTranslation()
-  const [meeting, setMeeting] = useState<FanMeeting | null>(() => prepared ?? createFanMeeting(config, grade, cards))
+  const initialHpByIdRef = useRef<Record<string, number>>({})
+  const [meeting, setMeeting] = useState<FanMeeting | null>(() => {
+    const next = prepared ?? createFanMeeting(config, grade, cards)
+    if (next) {
+      initialHpByIdRef.current = Object.fromEntries(next.cards.map((card) => [card.id, card.hp]))
+    }
+    return next
+  })
   const [practiceStep, setPracticeStep] = useState<PracticeStep | null>(practice ? 'type' : null)
   const [lineup] = useState(() => (fixedLine && prepared ? [prepared.center, ...prepared.waiting] : []))
   const finishedRef = useRef(false)
@@ -366,7 +373,12 @@ export function FanMeetingModal({
   }, [meeting])
 
   function staminaMap(current: FanMeeting): Record<string, number> {
-    return Object.fromEntries(current.cards.map((card) => [card.id, Math.max(0, card.hpMax - card.hp)]))
+    return Object.fromEntries(
+      current.cards.map((card) => {
+        const start = initialHpByIdRef.current[card.id] ?? card.hp
+        return [card.id, Math.max(0, start - card.hp)]
+      }),
+    )
   }
 
   function finish(current: FanMeeting) {
@@ -467,7 +479,8 @@ export function FanMeetingModal({
       return
     }
     let nextMeeting = result.meeting
-    if (fixedLine && !nextMeeting.over) {
+    // 카드를 낼 때마다 요구 타입 재굴림 (승급심사·팬미팅 공통). 직전 타입은 제외.
+    if (!nextMeeting.over) {
       nextMeeting = {
         ...nextMeeting,
         center: { ...nextMeeting.center, demand: rollDemand(nextMeeting.center.demand) },
@@ -1030,7 +1043,8 @@ type ExamCreator = {
 }
 
 function examCard(creator: ExamCreator): FanCardState {
-  const hp = Math.max(1, Math.round(creator.stamina ?? creator.staminaMax ?? 100))
+  const hpMax = Math.max(1, Math.round(creator.staminaMax ?? creator.stamina ?? 100))
+  const hp = Math.max(0, Math.min(hpMax, Math.round(creator.stamina ?? hpMax)))
   return {
     id: creator.id,
     name: creator.name,
@@ -1039,7 +1053,7 @@ function examCard(creator: ExamCreator): FanCardState {
     statPerformance: Math.round(creator.statPerformance ?? 0),
     statMental: Math.round(creator.statMental ?? creator.statElegance ?? 0),
     hp,
-    hpMax: hp,
+    hpMax,
     auditMedia: creator.auditMedia,
     profileImageUrl: creator.profileImageUrl,
   }

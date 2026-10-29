@@ -934,7 +934,7 @@
         "rewards": [
           {
             "id": "sme-1",
-            "text": "소규모 후원 계약을 제안한다."
+            "text": "vip.rewardSme1"
           }
         ]
       },
@@ -950,7 +950,7 @@
         "rewards": [
           {
             "id": "mid-1",
-            "text": "정기 후원 계약을 제안한다."
+            "text": "vip.rewardMid1"
           }
         ]
       },
@@ -966,7 +966,7 @@
         "rewards": [
           {
             "id": "large-1",
-            "text": "대형 스폰서 계약을 제안한다."
+            "text": "vip.rewardLarge1"
           }
         ]
       },
@@ -982,7 +982,7 @@
         "rewards": [
           {
             "id": "top-1",
-            "text": "독점 후원 계약을 제안한다."
+            "text": "vip.rewardTop1"
           }
         ]
       }

@@ -1037,6 +1037,7 @@ export function CreatorPanel({
         <SnsFeedModal
           creator={snsCreator}
           assets={assets}
+          broadcastMonthNumber={broadcastMonthNumber}
           onClose={() => setSnsCreatorId(null)}
           onCompose={(roll) => onSnsCompose(snsCreator.id, roll)}
         />

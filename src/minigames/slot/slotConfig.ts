@@ -14,23 +14,40 @@ export type SlotSymbolId =
 export type SlotSymbolDef = {
   id: SlotSymbolId
   name: string
+  /** 이모지 폴백 (에디터/구버전 세이브 호환) */
   icon: string
+  /** 릴/페이테이블용 심볼 이미지 경로 (public) */
+  iconSrc: string
   multiplier: number // 3개 매칭 시 배율
   weight: number // 릴 생성 출현 가중치
   isScatter?: boolean
   isWild?: boolean
 }
 
+const SLOT_ASSET_BASE = '/casino/slot'
+/** 이미지 여백 크롭 반영용 캐시 버스트 */
+const SLOT_ASSET_VER = 'v5'
+
+export const SLOT_UI_ASSETS = {
+  cctvFrame: `${SLOT_ASSET_BASE}/cctv_frame.webp?${SLOT_ASSET_VER}`,
+  topPanel: `${SLOT_ASSET_BASE}/slot_toppanel.webp?${SLOT_ASSET_VER}`,
+  reelWindow: `${SLOT_ASSET_BASE}/slot_reel_window.webp?${SLOT_ASSET_VER}`,
+  lever: `${SLOT_ASSET_BASE}/slot_lever.webp?${SLOT_ASSET_VER}`,
+  btnBezel: `${SLOT_ASSET_BASE}/btn_bezel.webp?${SLOT_ASSET_VER}`,
+  btnCapNormal: `${SLOT_ASSET_BASE}/btn_cap_normal.webp?${SLOT_ASSET_VER}`,
+  btnCapPressed: `${SLOT_ASSET_BASE}/btn_cap_pressed.webp?${SLOT_ASSET_VER}`,
+} as const
+
 export const DEFAULT_SLOT_SYMBOLS: Record<SlotSymbolId, SlotSymbolDef> = {
-  cherry: { id: 'cherry', name: '체리', icon: '🍒', multiplier: 2, weight: 28 },
-  lemon: { id: 'lemon', name: '레몬', icon: '🍋', multiplier: 3, weight: 24 },
-  grape: { id: 'grape', name: '포도', icon: '🍇', multiplier: 4, weight: 20 },
-  bell: { id: 'bell', name: '벨', icon: '🔔', multiplier: 5, weight: 16 },
-  star: { id: 'star', name: '별', icon: '⭐', multiplier: 8, weight: 12 },
-  diamond: { id: 'diamond', name: '다이아', icon: '💎', multiplier: 12, weight: 8 },
-  seven: { id: 'seven', name: '세븐', icon: '✨7️⃣✨', multiplier: 20, weight: 5 },
-  scatter: { id: 'scatter', name: '스캐터', icon: '🎰', multiplier: 10, weight: 4, isScatter: true },
-  wild: { id: 'wild', name: '와일드', icon: '🃏', multiplier: 15, weight: 3, isWild: true },
+  cherry: { id: 'cherry', name: '체리', icon: '🍒', iconSrc: `${SLOT_ASSET_BASE}/sym_cherry.webp`, multiplier: 2, weight: 28 },
+  lemon: { id: 'lemon', name: '레몬', icon: '🍋', iconSrc: `${SLOT_ASSET_BASE}/sym_lemon.webp`, multiplier: 3, weight: 24 },
+  grape: { id: 'grape', name: '포도', icon: '🍇', iconSrc: `${SLOT_ASSET_BASE}/sym_grape.webp`, multiplier: 4, weight: 20 },
+  bell: { id: 'bell', name: '벨', icon: '🔔', iconSrc: `${SLOT_ASSET_BASE}/sym_bell.webp`, multiplier: 5, weight: 16 },
+  star: { id: 'star', name: '별', icon: '⭐', iconSrc: `${SLOT_ASSET_BASE}/sym_star.webp`, multiplier: 8, weight: 12 },
+  diamond: { id: 'diamond', name: '다이아', icon: '💎', iconSrc: `${SLOT_ASSET_BASE}/sym_diamond.webp`, multiplier: 12, weight: 8 },
+  seven: { id: 'seven', name: '세븐', icon: '7️⃣', iconSrc: `${SLOT_ASSET_BASE}/sym_seven.webp`, multiplier: 20, weight: 5 },
+  scatter: { id: 'scatter', name: '스캐터', icon: '🎰', iconSrc: `${SLOT_ASSET_BASE}/sym_scatter.webp`, multiplier: 10, weight: 4, isScatter: true },
+  wild: { id: 'wild', name: '와일드', icon: '🃏', iconSrc: `${SLOT_ASSET_BASE}/sym_wild.webp`, multiplier: 15, weight: 3, isWild: true },
 }
 
 export const SLOT_SYMBOLS = DEFAULT_SLOT_SYMBOLS
@@ -78,7 +95,18 @@ export function loadSlotConfig(): SlotMachineConfig {
       bigWinShare: typeof parsed.bigWinShare === 'number' ? parsed.bigWinShare : DEFAULT_SLOT_CONFIG.bigWinShare,
       scatterShare: typeof parsed.scatterShare === 'number' ? parsed.scatterShare : DEFAULT_SLOT_CONFIG.scatterShare,
       jackpotShare: typeof parsed.jackpotShare === 'number' ? parsed.jackpotShare : DEFAULT_SLOT_CONFIG.jackpotShare,
-      symbols: { ...DEFAULT_SLOT_CONFIG.symbols, ...(parsed.symbols ?? {}) },
+      symbols: (() => {
+        const merged = { ...DEFAULT_SLOT_CONFIG.symbols, ...(parsed.symbols ?? {}) }
+        // 구버전 세이브에 iconSrc가 없어도 기본 이미지 경로를 항상 유지
+        for (const id of Object.keys(DEFAULT_SLOT_SYMBOLS) as SlotSymbolId[]) {
+          merged[id] = {
+            ...merged[id],
+            iconSrc: DEFAULT_SLOT_SYMBOLS[id].iconSrc,
+            icon: merged[id]?.icon || DEFAULT_SLOT_SYMBOLS[id].icon,
+          }
+        }
+        return merged
+      })(),
       stationBetAmounts: { ...DEFAULT_SLOT_CONFIG.stationBetAmounts, ...(parsed.stationBetAmounts ?? {}) },
     }
   } catch (e) {

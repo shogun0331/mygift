@@ -55,6 +55,12 @@ export type SnsResult = {
   comments: SnsComment[]
   viewersGained: number
   snsSubscribersGained?: number
+  /** 반응 집계 후 총 SNS 구독자 */
+  snsSubscribersTotal?: number
+  /** 이번 턴 해당 크리에이터 SNS 광고 수익(USD) */
+  adRevenueWon?: number
+  /** 월말 광고 페이아웃 티어 */
+  adRevenueTier?: SnsAdRevenueTier
 }
 
 export const SNS_HEAT3_PITY_BASE = 0.1
@@ -472,4 +478,183 @@ export function resolveSnsPending(heat: SnsHeat): {
     comments: pickSnsComments(heat, rollInt(3, 4)),
     viewersGained: rollInt(viewerBand.min, viewerBand.max),
   }
+}
+
+/** SNS 광고: 구독자 1명당 기여(USD) */
+export const SNS_AD_SUB_RATE = 0.02
+/** SNS 광고: 누적 하트 1개당 기여(USD) */
+export const SNS_AD_LIKE_RATE = 0.015
+/** 일반 티어 크리에이터당 월 광고 수익 상한 */
+export const SNS_AD_REVENUE_CAP = 25_000
+/** 중박(hit) 상한 */
+export const SNS_AD_HIT_CAP = 120_000
+/** 잭팟 상한 */
+export const SNS_AD_JACKPOT_CAP = 500_000
+
+export type SnsAdRevenueTier = 'normal' | 'hit' | 'jackpot'
+
+export type SnsAdPayout = {
+  amount: number
+  tier: SnsAdRevenueTier
+  baseline: number
+}
+
+function rollUnit(): number {
+  return Math.random()
+}
+
+function rollRange(min: number, max: number): number {
+  const lo = Math.min(min, max)
+  const hi = Math.max(min, max)
+  return lo + rollUnit() * (hi - lo)
+}
+
+/** SNS 피드 가상 광고 배너 (왼쪽 카피 / 오른쪽 제품컷) */
+export const SNS_AD_BANNERS = [
+  {
+    id: 'bag',
+    file: 'banner_bag.webp',
+    brandKey: 'sns.adBrandBag',
+    sloganKey: 'sns.adSloganBag',
+    tone: 'light',
+  },
+  {
+    id: 'candle',
+    file: 'banner_candle.webp',
+    brandKey: 'sns.adBrandCandle',
+    sloganKey: 'sns.adSloganCandle',
+    tone: 'dark',
+  },
+  {
+    id: 'coffee',
+    file: 'banner_coffee.webp',
+    brandKey: 'sns.adBrandCoffee',
+    sloganKey: 'sns.adSloganCoffee',
+    tone: 'dark',
+  },
+  {
+    id: 'cosmetics',
+    file: 'banner_cosmetics.webp',
+    brandKey: 'sns.adBrandCosmetics',
+    sloganKey: 'sns.adSloganCosmetics',
+    tone: 'light',
+  },
+  {
+    id: 'earbuds',
+    file: 'banner_earbuds.webp',
+    brandKey: 'sns.adBrandEarbuds',
+    sloganKey: 'sns.adSloganEarbuds',
+    tone: 'light',
+  },
+] as const
+
+export type SnsAdBanner = (typeof SNS_AD_BANNERS)[number]
+
+export function snsAdBannerSrc(file: string): string {
+  const base = import.meta.env.BASE_URL || '/'
+  return `${base}sns-ads/${file}`
+}
+
+export function sumSnsFeedLikes(feed: readonly SnsPublishedPost[] | undefined): number {
+  return (feed ?? []).reduce((sum, post) => sum + Math.max(0, Math.round(post.likes) || 0), 0)
+}
+
+/** 구독자·하트에 비례한 월 광고 수익(USD). */
+export function calcSnsAdRevenue(subscribers: number, likes: number): number {
+  const subs = Math.max(0, Math.round(Number(subscribers) || 0))
+  const hearts = Math.max(0, Math.round(Number(likes) || 0))
+  if (subs <= 0 && hearts <= 0) return 0
+  const raw = subs * SNS_AD_SUB_RATE + hearts * SNS_AD_LIKE_RATE
+  return Math.max(0, Math.min(SNS_AD_REVENUE_CAP, Math.round(raw)))
+}
+
+/** 구독자>0 이거나 피드가 있으면 광고 대상. */
+export function calcCreatorSnsAdRevenue(creator: {
+  snsSubscribers?: number
+  snsFeed?: SnsPublishedPost[]
+}): number {
+  const feed = creator.snsFeed ?? []
+  const subs = Math.max(0, Math.round(creator.snsSubscribers ?? 0))
+  if (subs <= 0 && feed.length === 0) return 0
+  return calcSnsAdRevenue(subs, sumSnsFeedLikes(feed))
+}
+
+/** 베이스라인 합 (피드 예상·레거시). 월말 확정은 rollSnsAdPayout 사용. */
+export function sumCreatorsSnsAdRevenue(
+  creators: readonly { snsSubscribers?: number; snsFeed?: SnsPublishedPost[] }[],
+): number {
+  return creators.reduce((sum, creator) => sum + calcCreatorSnsAdRevenue(creator), 0)
+}
+
+/**
+ * 월말 광고 페이아웃 롤.
+ * 기본: normal ~72% / hit ~23% / jackpot ~5%
+ * 파격 화보(heat 3): 베이스·확률·배수 모두 상향
+ */
+export function rollSnsAdPayout(
+  creator: {
+    snsSubscribers?: number
+    snsFeed?: SnsPublishedPost[]
+  },
+  opts?: { heat?: SnsHeat },
+): SnsAdPayout {
+  const rawBaseline = calcCreatorSnsAdRevenue(creator)
+  if (rawBaseline <= 0) return { amount: 0, tier: 'normal', baseline: 0 }
+
+  const heat3 = opts?.heat === 3
+  const baseline = heat3 ? Math.round(rawBaseline * 2) : rawBaseline
+  const ticket = rollUnit()
+
+  // heat3: jackpot 12% / hit 38% / normal 50%
+  // 기본: jackpot 5% / hit 23% / normal 72%
+  const jackpotChance = heat3 ? 0.12 : 0.05
+  const hitChance = heat3 ? 0.5 : 0.28
+
+  if (ticket < jackpotChance) {
+    const mult = heat3 ? rollRange(60, 120) : rollRange(40, 100)
+    const floor = heat3 ? 80_000 : 50_000
+    const raw = Math.max(baseline * mult, floor)
+    return {
+      amount: Math.max(0, Math.min(SNS_AD_JACKPOT_CAP, Math.round(raw))),
+      tier: 'jackpot',
+      baseline,
+    }
+  }
+  if (ticket < hitChance) {
+    const mult = heat3 ? rollRange(15, 35) : rollRange(8, 20)
+    const floor = heat3 ? 15_000 : 8_000
+    const cap = heat3 ? Math.min(SNS_AD_HIT_CAP * 2, SNS_AD_JACKPOT_CAP) : SNS_AD_HIT_CAP
+    const raw = Math.max(baseline * mult, floor)
+    return {
+      amount: Math.max(0, Math.min(cap, Math.round(raw))),
+      tier: 'hit',
+      baseline,
+    }
+  }
+  const mult = heat3 ? rollRange(1.4, 2.2) : rollRange(0.9, 1.25)
+  const normalCap = heat3 ? SNS_AD_HIT_CAP : SNS_AD_REVENUE_CAP
+  const raw = baseline * mult
+  return {
+    amount: Math.max(0, Math.min(normalCap, Math.round(raw))),
+    tier: 'normal',
+    baseline,
+  }
+}
+
+export function sumRolledSnsAdRevenue(
+  creators: readonly { snsSubscribers?: number; snsFeed?: SnsPublishedPost[] }[],
+): { total: number; payouts: SnsAdPayout[] } {
+  const payouts = creators.map((creator) => rollSnsAdPayout(creator))
+  const total = payouts.reduce((sum, row) => sum + row.amount, 0)
+  return { total, payouts }
+}
+
+/** 캐릭터·월 기준 고정 배너 카피 인덱스 */
+export function pickSnsAdBannerIndex(seed: string, month: number, count: number): number {
+  if (count <= 0) return 0
+  let hash = Math.max(0, Math.round(month) || 0) * 2654435761
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0
+  }
+  return hash % count
 }
