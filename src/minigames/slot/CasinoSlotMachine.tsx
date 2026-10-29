@@ -580,20 +580,24 @@ export function CasinoSlotMachine({
             </div>
           </div>
 
-          {/* MIDDLE COLUMN: Authentic Pachislot Cabinet & Reels */}
-          <div className="relative flex flex-col items-center justify-center w-full min-h-0 overflow-visible max-w-2xl mx-auto">
-            <div className={`pachislot-cabinet ${machineToneClass} flex flex-col relative w-full max-w-xl mx-auto`}>
-              {/* COIN PARTICLES OVERLAY */}
+          {/* MIDDLE COLUMN: Classic cabinet device */}
+          <div className="relative flex flex-col items-center justify-center w-full min-h-0 overflow-visible">
+            <div className="slot-device-wrap">
+            <div className={`slot-device ${machineToneClass}`}>
+              <img
+                src={SLOT_UI_ASSETS.cabinet}
+                alt=""
+                draggable={false}
+                className="slot-device-frame"
+              />
+
+              {/* COIN / CONFETTI */}
               {coinParticles.length > 0 && (
                 <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
                   {coinParticles.map((p) => (
                     <div
                       key={p.id}
-                      style={{
-                        left: `${p.x}%`,
-                        bottom: '15%',
-                        animationDelay: `${p.delay}s`,
-                      }}
+                      style={{ left: `${p.x}%`, bottom: '28%', animationDelay: `${p.delay}s` }}
                       className="absolute text-2xl sm:text-3xl animate-coin-float filter drop-shadow-[0_0_10px_rgba(250,204,21,0.9)]"
                     >
                       {p.icon}
@@ -601,8 +605,6 @@ export function CasinoSlotMachine({
                   ))}
                 </div>
               )}
-
-              {/* CONFETTI PARTICLES OVERLAY */}
               {confettiParticles.length > 0 && (
                 <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
                   {confettiParticles.map((p) => (
@@ -610,7 +612,7 @@ export function CasinoSlotMachine({
                       key={p.id}
                       style={{
                         left: `${p.x}%`,
-                        top: '0%',
+                        top: '18%',
                         backgroundColor: p.color,
                         animationDelay: `${p.delay}s`,
                       }}
@@ -620,248 +622,235 @@ export function CasinoSlotMachine({
                 </div>
               )}
 
-              {/* REEL SHOWCASE DECK (탑패널 + 릴 동일폭 밀착 스택) */}
-              <div className="pachislot-reel-showcase pachislot-reel-showcase--flush">
-                <div className="pachislot-panel-stack">
-                  <div className="pachislot-top-marquee pachislot-top-marquee--art">
-                    <img
-                      src={SLOT_UI_ASSETS.topPanel}
-                      alt="GOLDEN SLOT"
-                      draggable={false}
-                      className="slot-toppanel-img"
-                    />
-                    {/* 탑패널 중앙 도트매트릭스 디스플레이 */}
-                    <div className="slot-toppanel-display" aria-live="polite">
-                      {isSpinning ? (
-                        <span className="slot-digital-text is-spin">{t('casino.spinning')}</span>
-                      ) : lastResult ? (
-                        lastResult.totalWinAmount > 0 ? (
-                          <span className={`slot-digital-text is-win ${isCountingUp ? 'is-counting' : ''}`}>
-                            {(winTier === 'big' || winTier === 'jackpot'
-                              ? t('casino.megaWin')
-                              : winTier === 'medium'
-                              ? t('casino.bigWin')
-                              : t('casino.win'))
-                            }{' '}
-                            <span ref={winAmountTextRef}>
-                              +${(isCountingUp ? animWinAmount : lastResult.totalWinAmount).toLocaleString()}
-                            </span>
+              {/* Marquee under crown: compact top panel */}
+              <div className="slot-device-marquee">
+                <div className="pachislot-top-marquee pachislot-top-marquee--art">
+                  <img
+                    src={SLOT_UI_ASSETS.topPanel}
+                    alt="GOLDEN SLOT"
+                    draggable={false}
+                    className="slot-toppanel-img"
+                  />
+                  <div className="slot-toppanel-display" aria-live="polite">
+                    {isSpinning ? (
+                      <span className="slot-digital-text is-spin">{t('casino.spinning')}</span>
+                    ) : lastResult ? (
+                      lastResult.totalWinAmount > 0 ? (
+                        <span className={`slot-digital-text is-win ${isCountingUp ? 'is-counting' : ''}`}>
+                          {(winTier === 'big' || winTier === 'jackpot'
+                            ? t('casino.megaWin')
+                            : winTier === 'medium'
+                            ? t('casino.bigWin')
+                            : t('casino.win'))
+                          }{' '}
+                          <span ref={winAmountTextRef}>
+                            +${(isCountingUp ? animWinAmount : lastResult.totalWinAmount).toLocaleString()}
                           </span>
-                        ) : (
-                          <span className={`slot-digital-text ${isOutOfSpins ? 'is-idle' : 'is-miss'}`}>
-                            {isOutOfSpins ? t('casino.outOfSpinsMsg') : t('casino.tryNext')}
-                          </span>
-                        )
+                        </span>
                       ) : (
-                        <span className="slot-digital-text is-ready">{t('casino.startPrompt')}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="pachislot-reel-stack-row">
-                    {/* LEFT PAYLINE BADGES */}
-                    <div className="pachislot-payline-col is-left flex flex-col gap-3 text-[10px] font-mono font-bold">
-                      {PAYLINES.slice(0, 4).map((line) => {
-                        const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
-                        return (
-                          <div
-                            key={line.id}
-                            style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
-                            className={`px-2 py-0.5 rounded-lg border-2 ${
-                              isWon
-                                ? 'bg-amber-400 animate-bounce shadow-[0_0_15px_currentColor]'
-                                : 'bg-slate-950/90'
-                            } transition-all`}
-                          >
-                            L{line.id}
-                          </div>
-                        )
-                      })}
-                    </div>
-
-                    {/* 3 REEL COLUMNS CONTAINER */}
-                    <div className="pachislot-reel-window pachislot-reel-window--framed">
-                      <img
-                        src={SLOT_UI_ASSETS.reelWindow}
-                        alt=""
-                        draggable={false}
-                        className="slot-reel-window-frame"
-                      />
-                      <div className="pachislot-reel-window-inner">
-                        <svg className="absolute inset-0 w-full h-full pointer-events-none z-30">
-                          {PAYLINES.map((line) => {
-                            const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
-                            return (
-                              <path
-                                key={line.id}
-                                d={getLineSvgCoords(line.coords)}
-                                fill="none"
-                                stroke={isWon ? line.color : 'transparent'}
-                                strokeWidth={isWon ? 5 : 0}
-                                className={isWon ? 'animate-pulse filter drop-shadow-[0_0_15px_currentColor]' : ''}
-                              />
-                            )
-                          })}
-                        </svg>
-
-                        {[0, 1, 2].map((colIdx) => {
-                          const isColumnSpinning = stoppedCount <= colIdx
-                          const stripSymbols = colStrips[colIdx] ?? []
-                          const landOffsetPx = 9 * 70
-
-                          return (
-                            <div key={colIdx} className="pachislot-reel-column">
-                              <div
-                                className={`pachislot-reel-strip ${
-                                  isColumnSpinning ? 'is-spinning' : 'is-stopped'
-                                }`}
-                                style={{
-                                  ['--reel-land' as string]: `-${landOffsetPx}px`,
-                                }}
-                              >
-                                {stripSymbols.map((symId, idx) => {
-                                  const rowIdx = idx - 9
-                                  const isTargetCell = !isColumnSpinning && rowIdx >= 0 && rowIdx < 3
-                                  const isWinningCell =
-                                    isTargetCell &&
-                                    lastResult?.winningLines.some((w) =>
-                                      w.payline.coords.some(([r, c]) => r === rowIdx && c === colIdx),
-                                    )
-
-                                  return (
-                                    <div
-                                      key={`${symId}-${idx}`}
-                                      className={`pachislot-reel-cell ${isWinningCell ? 'is-winner' : ''}`}
-                                    >
-                                      <SlotSymbolImg
-                                        symId={symId}
-                                        className={symId === 'seven' || isWinningCell ? 'slot-symbol-img--hot' : ''}
-                                      />
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-
-                    {/* RIGHT PAYLINE BADGES */}
-                    <div className="pachislot-payline-col is-right flex flex-col gap-3 text-[10px] font-mono font-bold">
-                      {PAYLINES.slice(4, 8).map((line) => {
-                        const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
-                        return (
-                          <div
-                            key={line.id}
-                            style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
-                            className={`px-2 py-0.5 rounded-lg border-2 ${
-                              isWon
-                                ? 'bg-amber-400 animate-bounce shadow-[0_0_15px_currentColor]'
-                                : 'bg-slate-950/90'
-                            } transition-all`}
-                          >
-                            L{line.id}
-                          </div>
-                        )
-                      })}
-                    </div>
+                        <span className={`slot-digital-text ${isOutOfSpins ? 'is-idle' : 'is-miss'}`}>
+                          {isOutOfSpins ? t('casino.outOfSpinsMsg') : t('casino.tryNext')}
+                        </span>
+                      )
+                    ) : (
+                      <span className="slot-digital-text is-ready">{t('casino.startPrompt')}</span>
+                    )}
                   </div>
                 </div>
-
               </div>
 
-              {/* PHYSICAL BUTTON DECK & LEVER */}
-              <div className="pachislot-button-deck flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 sm:gap-3">
+              {/* SCREEN HOLE: reel only */}
+              <div className="slot-device-screen">
+                <div className="pachislot-reel-stack-row">
+                  <div className="pachislot-payline-col is-left flex flex-col gap-2 text-[9px] font-mono font-bold">
+                    {PAYLINES.slice(0, 4).map((line) => {
+                      const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
+                      return (
+                        <div
+                          key={line.id}
+                          style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
+                          className={`px-1.5 py-0.5 rounded-md border-2 ${
+                            isWon
+                              ? 'bg-amber-400 animate-bounce shadow-[0_0_15px_currentColor]'
+                              : 'bg-slate-950/90'
+                          } transition-all`}
+                        >
+                          L{line.id}
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  <div className="pachislot-reel-window pachislot-reel-window--framed">
+                    <img
+                      src={SLOT_UI_ASSETS.reelWindow}
+                      alt=""
+                      draggable={false}
+                      className="slot-reel-window-frame"
+                    />
+                    <div className="pachislot-reel-window-inner">
+                      <svg className="absolute inset-0 w-full h-full pointer-events-none z-30">
+                        {PAYLINES.map((line) => {
+                          const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
+                          return (
+                            <path
+                              key={line.id}
+                              d={getLineSvgCoords(line.coords)}
+                              fill="none"
+                              stroke={isWon ? line.color : 'transparent'}
+                              strokeWidth={isWon ? 5 : 0}
+                              className={isWon ? 'animate-pulse filter drop-shadow-[0_0_15px_currentColor]' : ''}
+                            />
+                          )
+                        })}
+                      </svg>
+
+                      {[0, 1, 2].map((colIdx) => {
+                        const isColumnSpinning = stoppedCount <= colIdx
+                        const stripSymbols = colStrips[colIdx] ?? []
+                        // 더미 9칸 / 전체 12칸 → 비율 랜딩 (화면 리사이즈에도 맞춤)
+                        const landOffset = '-75%'
+
+                        return (
+                          <div key={colIdx} className="pachislot-reel-column">
+                            <div
+                              className={`pachislot-reel-strip ${
+                                isColumnSpinning ? 'is-spinning' : 'is-stopped'
+                              }`}
+                              style={{
+                                ['--reel-land' as string]: landOffset,
+                              }}
+                            >
+                              {stripSymbols.map((symId, idx) => {
+                                const rowIdx = idx - 9
+                                const isTargetCell = !isColumnSpinning && rowIdx >= 0 && rowIdx < 3
+                                const isWinningCell =
+                                  isTargetCell &&
+                                  lastResult?.winningLines.some((w) =>
+                                    w.payline.coords.some(([r, c]) => r === rowIdx && c === colIdx),
+                                  )
+
+                                return (
+                                  <div
+                                    key={`${symId}-${idx}`}
+                                    className={`pachislot-reel-cell ${isWinningCell ? 'is-winner' : ''}`}
+                                  >
+                                    <SlotSymbolImg
+                                      symId={symId}
+                                      sizeClass="w-full h-full"
+                                      className={symId === 'seven' || isWinningCell ? 'slot-symbol-img--hot' : ''}
+                                    />
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="pachislot-payline-col is-right flex flex-col gap-2 text-[9px] font-mono font-bold">
+                    {PAYLINES.slice(4, 8).map((line) => {
+                      const isWon = lastResult?.winningLines.some((w) => w.payline.id === line.id)
+                      return (
+                        <div
+                          key={line.id}
+                          style={{ borderColor: line.color, color: isWon ? '#000' : line.color }}
+                          className={`px-1.5 py-0.5 rounded-md border-2 ${
+                            isWon
+                              ? 'bg-amber-400 animate-bounce shadow-[0_0_15px_currentColor]'
+                              : 'bg-slate-950/90'
+                          } transition-all`}
+                        >
+                          L{line.id}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* BOTTOM CONTROL PANEL */}
+              <div className="slot-device-controls">
+                <div className="slot-device-stops" role="group" aria-label={t('casino.stop')}>
                   {[0, 1, 2].map((idx) => {
                     const isStopped = stoppedCount > idx
+                    const canStop = isSpinning && stoppedCount === idx
                     return (
                       <button
                         key={idx}
                         type="button"
-                        disabled={isStopped || !isSpinning}
+                        disabled={!canStop}
                         onClick={() => handleStopColumn(idx)}
-                        className={`pachislot-btn-stop ${isStopped ? 'is-pressed opacity-50' : ''}`}
-                      >
-                        <span>{t('casino.stop')}</span>
-                        <span className="text-[9px] font-bold text-amber-400">{idx + 1}</span>
-                      </button>
+                        aria-label={`${t('casino.stop')} ${idx + 1}`}
+                        className={`slot-stop-lamp ${isStopped ? 'is-red' : 'is-green'} ${
+                          canStop ? 'is-active' : ''
+                        }`}
+                      />
                     )
                   })}
                 </div>
 
-                <button
-                  type="button"
-                  disabled={isSpinning || isOutOfSpins}
-                  onClick={handleSpin}
-                  aria-label={
-                    isSpinning
-                      ? t('casino.spinning')
-                      : isOutOfSpins
-                      ? t('casino.spinsExhausted')
-                      : freeSpinsLeft > 0
-                      ? t('casino.bonusSpin').replace('{spins}', String(freeSpinsLeft))
-                      : t('casino.spin').replace('{spins}', String(spinsLeft))
-                  }
-                  className={`slot-spin-btn ${
-                    isSpinning || isLeverPulled ? 'is-pressed' : ''
-                  } ${isSpinning || isOutOfSpins ? 'is-disabled' : ''} ${
-                    !isSpinning && !isOutOfSpins && freeSpinsLeft > 0 ? 'is-bonus' : ''
-                  }`}
-                >
-                  <img
-                    src={SLOT_UI_ASSETS.btnCapNormal}
-                    alt=""
-                    draggable={false}
-                    className="slot-spin-cap is-normal"
-                  />
-                  <img
-                    src={SLOT_UI_ASSETS.btnCapPressed}
-                    alt=""
-                    draggable={false}
-                    className="slot-spin-cap is-pressed-cap"
-                  />
-                  <img
-                    src={SLOT_UI_ASSETS.btnBezel}
-                    alt=""
-                    draggable={false}
-                    className="slot-spin-bezel"
-                  />
-                </button>
-              </div>
-
-              {/* BOTTOM COIN TRAY */}
-              <div className="pachislot-bottom-deck">
-                <div className="pachislot-coin-tray flex items-center justify-between px-4 py-2 border-2 border-amber-400/50 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-2xl shadow-[0_0_25px_rgba(245,158,11,0.25)]">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-2xl sm:text-3xl animate-bounce drop-shadow-[0_0_12px_rgba(250,204,21,0.9)]">🪙</span>
-                    <span className="text-xs sm:text-sm font-black tracking-wide text-amber-300 uppercase">{t('casino.accumulatedWin')}</span>
+                <div className="slot-device-spin-cluster">
+                  <div className="slot-device-chances" aria-live="polite">
+                    <span className="slot-digital-text slot-device-chances-text">
+                      {freeSpinsLeft > 0
+                        ? t('casino.bonusSpin').replace('{spins}', String(freeSpinsLeft))
+                        : t('casino.spinsRemaining', { spins: spinsLeft }).replace(/[()]/g, '')}
+                    </span>
                   </div>
-                  <div className="text-base sm:text-xl font-black font-mono text-yellow-200 bg-gradient-to-r from-amber-950 via-yellow-900/90 to-amber-950 px-4 py-1.5 rounded-xl border-2 border-yellow-400/80 shadow-[0_0_20px_rgba(250,204,21,0.5)]">
-                    +${sessionTotalWon.toLocaleString()}
-                  </div>
+                  <button
+                    type="button"
+                    disabled={isSpinning || isOutOfSpins}
+                    onClick={handleSpin}
+                    aria-label={
+                      isSpinning
+                        ? t('casino.spinning')
+                        : isOutOfSpins
+                        ? t('casino.spinsExhausted')
+                        : freeSpinsLeft > 0
+                        ? t('casino.bonusSpin').replace('{spins}', String(freeSpinsLeft))
+                        : t('casino.spin').replace('{spins}', String(spinsLeft))
+                    }
+                    className={`slot-spin-btn ${
+                      isSpinning || isLeverPulled ? 'is-pressed' : ''
+                    } ${isSpinning || isOutOfSpins ? 'is-disabled' : ''} ${
+                      !isSpinning && !isOutOfSpins && freeSpinsLeft > 0 ? 'is-bonus' : ''
+                    }`}
+                  >
+                    <img
+                      src={SLOT_UI_ASSETS.btnCapNormal}
+                      alt=""
+                      draggable={false}
+                      className="slot-spin-cap is-normal"
+                    />
+                    <img
+                      src={SLOT_UI_ASSETS.btnCapPressed}
+                      alt=""
+                      draggable={false}
+                      className="slot-spin-cap is-pressed-cap"
+                    />
+                    <img
+                      src={SLOT_UI_ASSETS.btnBezel}
+                      alt=""
+                      draggable={false}
+                      className="slot-spin-bezel"
+                    />
+                  </button>
                 </div>
               </div>
 
-              {/* 3D SIDE MECHANICAL PULL LEVER */}
-              <div className="hidden xl:flex flex-col items-center justify-center absolute -right-16 top-[42%] -translate-y-1/2 select-none z-30">
-                <button
-                  type="button"
-                  disabled={isSpinning || isOutOfSpins}
-                  onClick={handleSpin}
-                  aria-label={t('casino.spin').replace('{spins}', String(spinsLeft))}
-                  className={`slot-lever-btn ${isLeverPulled ? 'is-pulled' : ''} ${
-                    isSpinning || isOutOfSpins ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer hover:brightness-110'
-                  }`}
-                >
-                  <img
-                    src={SLOT_UI_ASSETS.lever}
-                    alt=""
-                    draggable={false}
-                    className="slot-lever-img"
-                  />
-                </button>
+            </div>
+
+              {/* TOTAL WIN — 기기 아래, 텍스트만 */}
+              <div className="slot-device-wintray">
+                <span className="slot-digital-text slot-device-wintray-label">
+                  {t('casino.accumulatedWin')}
+                </span>
+                <span className="slot-digital-text slot-device-wintray-value">
+                  +${sessionTotalWon.toLocaleString()}
+                </span>
               </div>
             </div>
           </div>

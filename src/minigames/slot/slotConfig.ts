@@ -26,13 +26,14 @@ export type SlotSymbolDef = {
 
 const SLOT_ASSET_BASE = '/casino/slot'
 /** 이미지 여백 크롭 반영용 캐시 버스트 */
-const SLOT_ASSET_VER = 'v5'
+const SLOT_ASSET_VER = 'v7'
 
 export const SLOT_UI_ASSETS = {
   cctvFrame: `${SLOT_ASSET_BASE}/cctv_frame.webp?${SLOT_ASSET_VER}`,
   topPanel: `${SLOT_ASSET_BASE}/slot_toppanel.webp?${SLOT_ASSET_VER}`,
   reelWindow: `${SLOT_ASSET_BASE}/slot_reel_window.webp?${SLOT_ASSET_VER}`,
   lever: `${SLOT_ASSET_BASE}/slot_lever.webp?${SLOT_ASSET_VER}`,
+  cabinet: `${SLOT_ASSET_BASE}/slot_cabinet.webp?${SLOT_ASSET_VER}`,
   btnBezel: `${SLOT_ASSET_BASE}/btn_bezel.webp?${SLOT_ASSET_VER}`,
   btnCapNormal: `${SLOT_ASSET_BASE}/btn_cap_normal.webp?${SLOT_ASSET_VER}`,
   btnCapPressed: `${SLOT_ASSET_BASE}/btn_cap_pressed.webp?${SLOT_ASSET_VER}`,
