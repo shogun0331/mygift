@@ -11,6 +11,8 @@ import { formatMoney } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { getSeVolumePercent } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
+import { SHELL_UI_ASSETS } from '../ui/shellAssets'
+import '../ui/shellFrames.css'
 
 export type DonationThanksPlay = {
   creator: OwnedCreator
@@ -123,38 +125,40 @@ export function DonationThanksDialogue({ play, onClose }: Props) {
       <button
         type="button"
         onClick={requestClose}
-        className={`donation-thanks-card pointer-events-auto flex w-full max-w-xl items-start gap-3 rounded-2xl border border-fuchsia-400/40 bg-slate-950/92 px-3.5 py-3 text-left shadow-[0_0_28px_rgba(232,121,249,0.28)] backdrop-blur-md sm:gap-4 sm:px-4 sm:py-3.5 ${
+        className={`vn-dialogue-strip donation-thanks-card pointer-events-auto w-full max-w-xl text-left ${
           visible ? 'is-visible' : ''
         }`}
       >
-        <div className="relative shrink-0">
+        <img
+          src={SHELL_UI_ASSETS.vnDialogueStrip}
+          alt=""
+          draggable={false}
+          className="vn-dialogue-strip__bezel"
+        />
+        <div className="vn-dialogue-strip__avatar">
           {iconSrc ? (
-            <img
-              src={iconSrc}
-              alt=""
-              className="h-14 w-14 rounded-xl border border-fuchsia-300/50 object-cover shadow-md sm:h-16 sm:w-16"
-            />
+            <img src={iconSrc} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-fuchsia-300/40 bg-fuchsia-950/60 text-lg font-black text-fuchsia-200 sm:h-16 sm:w-16">
+            <div className="flex h-full w-full items-center justify-center bg-fuchsia-950/60 text-sm font-black text-fuchsia-200">
               {name.slice(0, 1)}
             </div>
           )}
-          <span className="absolute -right-1 -top-1 rounded-full border border-amber-300/50 bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-black shadow">
-            SUPER
-          </span>
         </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="vn-nameplate donation-thanks-name inline-flex items-center gap-2 !border-l-fuchsia-300">
-            <span>{name}</span>
+        <div className="vn-dialogue-strip__body">
+          <div className="vn-nameplate donation-thanks-name inline-flex max-w-full items-center gap-2 !border-l-fuchsia-300 truncate">
+            <span className="truncate">{name}</span>
+            <span className="shrink-0 rounded-full border border-amber-200/80 bg-amber-400 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-slate-950 [text-shadow:none]">
+              SUPER
+            </span>
           </div>
-          <p className="mt-1.5 text-[12px] font-bold tabular-nums text-amber-200/95 sm:text-[13px]">
+          <p className="text-[11px] font-bold tabular-nums text-amber-200/95 sm:text-[12px]">
             {t('dashboard.donationThanksAmount').replace('{amount}', formatMoney(amount))}
           </p>
-          <p className="vn-line donation-thanks-line mt-1.5 whitespace-pre-wrap text-[13px] font-semibold leading-relaxed text-white sm:text-sm">
+          <p className="vn-line donation-thanks-line whitespace-pre-wrap text-[12px] font-semibold leading-snug text-white sm:text-[13px]">
             {line || t('dashboard.donationThanksFallback')}
           </p>
-          <p className="mt-2 text-[10px] font-semibold text-white/40">
+          <p className="pt-0.5 text-[9px] font-semibold text-white/45">
             {t('dashboard.donationThanksTap')}
           </p>
         </div>

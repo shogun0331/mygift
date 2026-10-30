@@ -33,6 +33,10 @@ export type StationTierSpec = {
   maxScoutCreators: number
   /** 이 등급에서의 하이로우 무료 판돈 (Free Ante) */
   highLowAnte?: number
+  /** 카지노 슬롯 입장료 (로비→슬롯) */
+  slotEntryFee?: number
+  /** 카지노 하이로우 입장료 (로비→하이로우) */
+  highLowEntryFee?: number
 }
 
 export const DEFAULT_HIGH_LOW_ANTE: Record<StationTierId, number> = {
@@ -44,6 +48,29 @@ export const DEFAULT_HIGH_LOW_ANTE: Record<StationTierId, number> = {
   top: 400_000,
 }
 
+/** 카지노 슬롯 기본 입장료 (등급별) */
+export const DEFAULT_SLOT_ENTRY_FEE: Record<StationTierId, number> = {
+  black: 0,
+  tiny: 0,
+  sme: 5_000,
+  mid: 20_000,
+  large: 60_000,
+  top: 150_000,
+}
+
+/** 카지노 하이로우 기본 입장료 (등급별) */
+export const DEFAULT_HIGH_LOW_ENTRY_FEE: Record<StationTierId, number> = {
+  black: 0,
+  tiny: 0,
+  sme: 10_000,
+  mid: 40_000,
+  large: 120_000,
+  top: 300_000,
+}
+
+export const DEFAULT_CASINO_SLOT_MIN_GRADE: StationTierId = 'sme'
+export const DEFAULT_CASINO_HIGH_LOW_MIN_GRADE: StationTierId = 'mid'
+
 export function getHighLowAnteForGrade(
   config: StationGradeConfig | undefined | null,
   grade: StationTierId,
@@ -54,6 +81,53 @@ export function getHighLowAnteForGrade(
     return Math.round(val)
   }
   return DEFAULT_HIGH_LOW_ANTE[grade] ?? 2_500
+}
+
+export function getSlotEntryFeeForGrade(
+  config: StationGradeConfig | undefined | null,
+  grade: StationTierId,
+): number {
+  if (!config?.tiers?.[grade]) return DEFAULT_SLOT_ENTRY_FEE[grade] ?? 0
+  const val = config.tiers[grade].slotEntryFee
+  if (val != null && Number.isFinite(val) && val >= 0) {
+    return Math.round(val)
+  }
+  return DEFAULT_SLOT_ENTRY_FEE[grade] ?? 0
+}
+
+export function getHighLowEntryFeeForGrade(
+  config: StationGradeConfig | undefined | null,
+  grade: StationTierId,
+): number {
+  if (!config?.tiers?.[grade]) return DEFAULT_HIGH_LOW_ENTRY_FEE[grade] ?? 0
+  const val = config.tiers[grade].highLowEntryFee
+  if (val != null && Number.isFinite(val) && val >= 0) {
+    return Math.round(val)
+  }
+  return DEFAULT_HIGH_LOW_ENTRY_FEE[grade] ?? 0
+}
+
+export function getCasinoSlotMinGrade(
+  config: StationGradeConfig | undefined | null,
+): StationTierId {
+  const g = config?.casinoSlotMinGrade
+  if (g && STATION_TIER_ORDER.includes(g)) return g
+  return DEFAULT_CASINO_SLOT_MIN_GRADE
+}
+
+export function getCasinoHighLowMinGrade(
+  config: StationGradeConfig | undefined | null,
+): StationTierId {
+  const g = config?.casinoHighLowMinGrade
+  if (g && STATION_TIER_ORDER.includes(g)) return g
+  return DEFAULT_CASINO_HIGH_LOW_MIN_GRADE
+}
+
+export function meetsCasinoGameGrade(
+  current: StationTierId,
+  required: StationTierId,
+): boolean {
+  return stationTierRank(current) >= stationTierRank(required)
 }
 
 /** 다음 등급으로 올라가기 위한 연간 심사 조건 */
@@ -320,6 +394,10 @@ export type StationGradeConfig = {
    * 인덱스 0 = 2번째 칸 … (prices와 동일 인덱스)
    */
   slotUnlockMinGrades: StationTierId[]
+  /** 카지노 슬롯 최소 해금 등급 (기본 sme) */
+  casinoSlotMinGrade?: StationTierId
+  /** 카지노 하이로우 최소 해금 등급 (기본 mid) */
+  casinoHighLowMinGrade?: StationTierId
   /** 시청자 성장 밸런스 — JSON `balance` 섹션에서 관리 */
   balance?: ViewerBalance
 }
@@ -594,13 +672,45 @@ export function defaultVipConfig(): VipVisitConfig {
 export function defaultStationGradeConfig(): StationGradeConfig {
   return {
     tiers: {
-      black: { maxScoutCreators: 2, highLowAnte: 1000 },
-      tiny: { maxScoutCreators: 3, highLowAnte: 5000 },
-      sme: { maxScoutCreators: 4, highLowAnte: 15000 },
-      mid: { maxScoutCreators: 5, highLowAnte: 50000 },
-      large: { maxScoutCreators: 6, highLowAnte: 150000 },
-      top: { maxScoutCreators: 8, highLowAnte: 400000 },
+      black: {
+        maxScoutCreators: 2,
+        highLowAnte: 1000,
+        slotEntryFee: DEFAULT_SLOT_ENTRY_FEE.black,
+        highLowEntryFee: DEFAULT_HIGH_LOW_ENTRY_FEE.black,
+      },
+      tiny: {
+        maxScoutCreators: 3,
+        highLowAnte: 5000,
+        slotEntryFee: DEFAULT_SLOT_ENTRY_FEE.tiny,
+        highLowEntryFee: DEFAULT_HIGH_LOW_ENTRY_FEE.tiny,
+      },
+      sme: {
+        maxScoutCreators: 4,
+        highLowAnte: 15000,
+        slotEntryFee: DEFAULT_SLOT_ENTRY_FEE.sme,
+        highLowEntryFee: DEFAULT_HIGH_LOW_ENTRY_FEE.sme,
+      },
+      mid: {
+        maxScoutCreators: 5,
+        highLowAnte: 50000,
+        slotEntryFee: DEFAULT_SLOT_ENTRY_FEE.mid,
+        highLowEntryFee: DEFAULT_HIGH_LOW_ENTRY_FEE.mid,
+      },
+      large: {
+        maxScoutCreators: 6,
+        highLowAnte: 150000,
+        slotEntryFee: DEFAULT_SLOT_ENTRY_FEE.large,
+        highLowEntryFee: DEFAULT_HIGH_LOW_ENTRY_FEE.large,
+      },
+      top: {
+        maxScoutCreators: 8,
+        highLowAnte: 400000,
+        slotEntryFee: DEFAULT_SLOT_ENTRY_FEE.top,
+        highLowEntryFee: DEFAULT_HIGH_LOW_ENTRY_FEE.top,
+      },
     },
+    casinoSlotMinGrade: DEFAULT_CASINO_SLOT_MIN_GRADE,
+    casinoHighLowMinGrade: DEFAULT_CASINO_HIGH_LOW_MIN_GRADE,
     promotions: {
       tiny: {
         to: 'tiny',
@@ -870,6 +980,16 @@ function normalizePromotionRule(
   }
 }
 
+function normalizeOptionalNonNegInt(
+  raw: unknown,
+  fallback: number | undefined,
+): number | undefined {
+  if (raw != null && Number.isFinite(Number(raw)) && Number(raw) >= 0) {
+    return Math.round(Number(raw))
+  }
+  return fallback
+}
+
 function normalizeTierSpec(raw: unknown, fallback: StationTierSpec): StationTierSpec {
   if (!raw || typeof raw !== 'object') return { ...fallback }
   const row = raw as Record<string, unknown>
@@ -877,14 +997,25 @@ function normalizeTierSpec(raw: unknown, fallback: StationTierSpec): StationTier
     1,
     Math.min(12, Math.round(Number(row.maxScoutCreators) ?? fallback.maxScoutCreators)),
   )
-  const highLowAnte =
-    row.highLowAnte != null && Number.isFinite(Number(row.highLowAnte)) && Number(row.highLowAnte) >= 0
-      ? Math.round(Number(row.highLowAnte))
-      : fallback.highLowAnte
+  const highLowAnte = normalizeOptionalNonNegInt(row.highLowAnte, fallback.highLowAnte)
+  const slotEntryFee = normalizeOptionalNonNegInt(row.slotEntryFee, fallback.slotEntryFee)
+  const highLowEntryFee = normalizeOptionalNonNegInt(
+    row.highLowEntryFee,
+    fallback.highLowEntryFee,
+  )
   return {
     maxScoutCreators,
     ...(highLowAnte !== undefined ? { highLowAnte } : {}),
+    ...(slotEntryFee !== undefined ? { slotEntryFee } : {}),
+    ...(highLowEntryFee !== undefined ? { highLowEntryFee } : {}),
   }
+}
+
+function normalizeCasinoMinGrade(raw: unknown, fallback: StationTierId): StationTierId {
+  if (typeof raw === 'string' && STATION_TIER_ORDER.includes(raw as StationTierId)) {
+    return raw as StationTierId
+  }
+  return fallback
 }
 
 function normalizeSlotUnlockPrices(raw: unknown, fallback: number[]): number[] {
@@ -1001,6 +1132,14 @@ export function normalizeStationGradeConfig(raw: unknown): StationGradeConfig {
     slotUnlockMinGrades: normalizeSlotUnlockMinGrades(
       record.slotUnlockMinGrades,
       defaults.slotUnlockMinGrades,
+    ),
+    casinoSlotMinGrade: normalizeCasinoMinGrade(
+      record.casinoSlotMinGrade,
+      defaults.casinoSlotMinGrade ?? DEFAULT_CASINO_SLOT_MIN_GRADE,
+    ),
+    casinoHighLowMinGrade: normalizeCasinoMinGrade(
+      record.casinoHighLowMinGrade,
+      defaults.casinoHighLowMinGrade ?? DEFAULT_CASINO_HIGH_LOW_MIN_GRADE,
     ),
     balance: normalizeViewerBalance(record.balance),
   }

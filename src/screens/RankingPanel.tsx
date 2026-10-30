@@ -10,9 +10,7 @@ import {
   type LeagueState,
   type MilestoneReward,
 } from '../game/ranking'
-import type {
-  StationGrade,
-} from '../game/station'
+import type { StationGrade } from '../game/station'
 import {
   stationTierRank,
   type StationGradeConfig,
@@ -21,6 +19,7 @@ import {
 import type { Grade } from '../game/characters'
 import { playSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
+import { RANKING_UI_ASSETS } from '../ui/rankingAssets'
 
 export type RankBubblePlay = {
   fromRank: number
@@ -138,6 +137,12 @@ export function RankingPanel({
 
       <div className="rank-board">
         <div className="rank-pyramid-wrap">
+          <img
+            src={RANKING_UI_ASSETS.spotlight}
+            alt=""
+            draggable={false}
+            className="rank-spotlight"
+          />
           <div className="rank-layers" aria-hidden={false}>
             {COMPANY_TIERS.map((tier, index) => {
               const active = tier.id === stationGrade
@@ -155,6 +160,7 @@ export function RankingPanel({
                 >
                   <div className={`rank-layer rank-layer--${tier.id}`} />
                   {filled ? <LayerSparks dense={active} /> : null}
+                  {active ? <span className="rank-layer-laser" aria-hidden /> : null}
                 </div>
               )
             })}
@@ -185,18 +191,47 @@ export function RankingPanel({
 
       <footer className="rank-foot">
         <p className="rank-foot-meta">
+          <span className="rank-foot-ico" aria-hidden>
+            <svg viewBox="0 0 16 16" width="12" height="12">
+              <circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.4" />
+              <path
+                d="M8 4.2v4.1l2.4 1.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+              />
+            </svg>
+          </span>
           {t('ranking.refreshIn')}: {turnsUntilRankRefresh}
           {t('ranking.turnUnit')}
-          <span className="rank-foot-dot">·</span>
+        </p>
+        <span className="rank-foot-dot" aria-hidden>
+          ·
+        </span>
+        <p className="rank-foot-meta">
+          <span className="rank-foot-ico" aria-hidden>
+            <svg viewBox="0 0 16 16" width="12" height="12">
+              <path
+                fill="currentColor"
+                d="M3.2 2.2h1.4v11.6H3.2zm2.2 0 7.2 2.7-7.2 2.7z"
+              />
+            </svg>
+          </span>
           {t('station.nextReview')}: {nextReviewDate}
         </p>
         {reward && nextMilestone ? (
-          <p className="rank-foot-reward">
-            {nextMilestone}
-            {t('ranking.rankUnit')} {t('ranking.entry')}
-            {' — '}
-            <RewardSummary reward={reward} />
-          </p>
+          <>
+            <span className="rank-foot-dot" aria-hidden>
+              ·
+            </span>
+            <p className="rank-foot-reward">
+              {nextMilestone}
+              {t('ranking.rankUnit')} {t('ranking.entry')}
+              {' — '}
+              <RewardSummary reward={reward} />
+            </p>
+          </>
         ) : null}
       </footer>
     </div>
@@ -261,11 +296,19 @@ function CurrentMarker({
         className={`rank-tip-card${rising ? ' is-filling' : ''}`}
         style={{ '--fill': `${Math.round(fill * 100)}%` } as CSSProperties}
       >
-        <p className="rank-tip-kicker">{t('ranking.currentMarker')}</p>
-        <p className="rank-tip-rank">
-          {rank}
-          {t('ranking.rankUnit')}
-        </p>
+        <img
+          src={RANKING_UI_ASSETS.tipPlate}
+          alt=""
+          draggable={false}
+          className="rank-tip-plate"
+        />
+        <div className="rank-tip__label">
+          <p className="rank-tip-kicker">{t('ranking.currentMarker')}</p>
+          <p className="rank-tip-rank">
+            {rank}
+            {t('ranking.rankUnit')}
+          </p>
+        </div>
       </div>
     </div>
   )
@@ -316,6 +359,7 @@ function TierCard({
           </div>
         ) : null}
       </div>
+      {active ? <span className="rank-card-you">YOU</span> : null}
     </div>
   )
 }

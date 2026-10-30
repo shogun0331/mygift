@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { getSeVolumePercent } from '../../game/uiSfx'
 import { resolveMediaSrc } from '../../game/mediaUrl'
-import type { Locale } from '../../locales/i18n'
+import { useTranslation, type Locale } from '../../locales/i18n'
 
 // Vite eager import for synchronous dialogue loading (zero fetch lag / zero 404 errors)
 const dialogueModules = import.meta.glob<string[]>('./dialogues/*.json', {
@@ -10,17 +10,54 @@ const dialogueModules = import.meta.glob<string[]>('./dialogues/*.json', {
   import: 'default',
 })
 
-function getDialogueText(tier: 1 | 2 | 3, locale: string, index: number, isLoss?: boolean): string {
-  if (isLoss) {
-    const key = `./dialogues/casino_lose_${locale}.json`
-    const fallbackKey = `./dialogues/casino_lose_KO.json`
-    const lines = dialogueModules[key] || dialogueModules[fallbackKey] || []
-    return lines[index] || lines[0] || '...'
+function normalizeDialogueLocale(locale: string): string {
+  const raw = String(locale || 'KO').trim().toUpperCase().replace(/_/g, '-')
+  if (raw === 'ZH-TW' || raw === 'ZH-HK' || raw === 'ZH-MO') return 'ZH-CN'
+  if (raw === 'ZH') return 'ZH-CN'
+  return raw
+}
+
+function linesFromModule(mod: unknown): string[] {
+  if (Array.isArray(mod)) return mod.filter((line): line is string => typeof line === 'string')
+  if (mod && typeof mod === 'object' && Array.isArray((mod as { default?: unknown }).default)) {
+    return ((mod as { default: unknown[] }).default).filter(
+      (line): line is string => typeof line === 'string',
+    )
   }
-  const key = `./dialogues/casino_dealer_tier${tier}_${locale}.json`
-  const fallbackKey = `./dialogues/casino_dealer_tier${tier}_KO.json`
-  const lines = dialogueModules[key] || dialogueModules[fallbackKey] || []
-  return lines[index] || lines[0] || '...'
+  return []
+}
+
+function findDialogueLines(fileBase: string, locale: string): string[] {
+  const loc = normalizeDialogueLocale(locale)
+  const candidates = [
+    `./dialogues/${fileBase}_${loc}.json`,
+    loc !== 'KO' ? `./dialogues/${fileBase}_KO.json` : null,
+    `./dialogues/${fileBase}_EN.json`,
+  ].filter(Boolean) as string[]
+
+  for (const key of candidates) {
+    const lines = linesFromModule(dialogueModules[key])
+    if (lines.length > 0) return lines
+  }
+
+  // Vite/Windows 경로 변형 대비: 파일명 suffix로 재검색
+  const entries = Object.entries(dialogueModules)
+  for (const tag of [loc, 'KO', 'EN']) {
+    const suffix = `${fileBase}_${tag}.json`.toLowerCase()
+    const hit = entries.find(([path]) => path.replace(/\\/g, '/').toLowerCase().endsWith(suffix))
+    if (!hit) continue
+    const lines = linesFromModule(hit[1])
+    if (lines.length > 0) return lines
+  }
+  return []
+}
+
+function getDialogueText(tier: 1 | 2 | 3, locale: string, index: number, isLoss?: boolean): string {
+  const fileBase = isLoss ? 'casino_lose' : `casino_dealer_tier${tier}`
+  const lines = findDialogueLines(fileBase, locale)
+  if (lines.length === 0) return '...'
+  const safeIndex = ((index % lines.length) + lines.length) % lines.length
+  return lines[safeIndex] || lines[0] || '...'
 }
 
 export type DealerDialoguePlay = {
@@ -39,11 +76,13 @@ type Props = {
 }
 
 export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
+  const { t } = useTranslation()
   const { tier, index, dealerName, dealerMediaUrl, dealerMediaType, isLoss } = play
+  const dealerLabel = t('guide.dealerName')
   const displayDealerName =
     dealerName && !dealerName.includes('룸') && !dealerName.includes('Room')
       ? dealerName
-      : '딜러'
+      : dealerLabel
   const [visible, setVisible] = useState(false)
   const voiceRef = useRef<HTMLAudioElement | null>(null)
   const closingRef = useRef(false)
@@ -157,18 +196,24 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
               🎩
             </div>
           )}
-          <span className={`absolute -right-1 -top-1 rounded-full border border-amber-300/80 ${badgeBgClass} px-2 py-0.5 text-[9px] font-black tracking-wider shadow-md`}>
-            DEALER
+          <span
+            className={`absolute -right-1 -top-1 rounded-full border border-amber-300/80 ${badgeBgClass} px-2 py-0.5 text-[9px] font-black tracking-wider shadow-md`}
+          >
+            {dealerLabel}
           </span>
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between border-b border-amber-400/40 pb-1.5">
-            <span className={`text-xs sm:text-sm font-black ${nameColorClass} uppercase tracking-wider font-mono`}>
+            <span
+              className={`text-xs sm:text-sm font-black ${nameColorClass} uppercase tracking-wider font-mono`}
+            >
               {displayDealerName}
             </span>
-            <span className={`text-[10px] sm:text-xs font-bold ${voiceColorClass} animate-pulse flex items-center gap-1`}>
-              <span>🔊</span> <span>VOICE PLAYING</span>
+            <span
+              className={`text-[10px] sm:text-xs font-bold ${voiceColorClass} animate-pulse flex items-center gap-1`}
+            >
+              <span>🔊</span> <span>{t('guide.voicePlaying')}</span>
             </span>
           </div>
 
@@ -177,7 +222,7 @@ export function HighLowDealerDialogue({ play, locale, onClose }: Props) {
           </p>
 
           <p className="mt-1.5 text-[10px] text-slate-400 font-mono">
-            (클릭하여 대사 닫기)
+            ({t('guide.clickToCloseLine')})
           </p>
         </div>
       </div>

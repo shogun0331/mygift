@@ -1,4 +1,5 @@
 import { useTranslation } from '../locales/i18n'
+import { UiDialogBtn, UiDialogShell } from '../ui/UiDialogShell'
 
 export type TurnEventNoticeFlags = {
   fanMeeting: boolean
@@ -91,55 +92,47 @@ export function TurnEventNoticeModal({ flags, onConfirm }: TurnEventNoticeModalP
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[87] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md animate-in fade-in duration-200"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="turn-event-notice-title"
+    <UiDialogShell
+      labelledBy="turn-event-notice-title"
+      tone="indigo"
+      zClassName="z-[87]"
+      backdropClassName="animate-in fade-in duration-200"
     >
-      <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-indigo-400/30 bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-900/95 p-6 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
-        <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-fuchsia-500 via-amber-300 to-sky-400 shadow-[0_0_12px_rgba(251,191,36,0.45)]" />
-
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-amber-300">
-          <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping" />
-          {t('turnEventNotice.badge')}
-        </div>
-
-        <h2 id="turn-event-notice-title" className="mt-3 text-xl font-black tracking-tight text-slate-100">
-          {t('turnEventNotice.title')}
-        </h2>
-        <p className="mt-1 text-xs leading-relaxed text-slate-400">{t('turnEventNotice.body')}</p>
-
-        <ul className="mt-4 space-y-2.5">
-          {items.map((item) => (
-            <li
-              key={item.key}
-              className={`flex items-start gap-3 rounded-xl border px-3.5 py-3 ${item.tone}`}
-            >
-              <span
-                className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${item.iconTone}`}
-              >
-                <item.Icon />
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-black">{item.title}</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-slate-300/90">{item.body}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-6 flex justify-center">
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="w-full max-w-[220px] cursor-pointer rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 px-5 py-3 text-sm font-black text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.45)] transition-all hover:scale-105 hover:brightness-110 active:scale-95"
-          >
-            {t('turnEventNotice.confirm')}
-          </button>
-        </div>
+      <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-amber-300">
+        <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping" />
+        {t('turnEventNotice.badge')}
       </div>
-    </div>
+
+      <h2 id="turn-event-notice-title" className="mt-3 text-xl font-black tracking-tight text-slate-100">
+        {t('turnEventNotice.title')}
+      </h2>
+      <p className="mt-1 text-xs leading-relaxed text-slate-400">{t('turnEventNotice.body')}</p>
+
+      <ul className="mt-4 space-y-2.5">
+        {items.map((item) => (
+          <li
+            key={item.key}
+            className={`flex items-start gap-3 rounded-xl border px-3.5 py-3 ${item.tone}`}
+          >
+            <span
+              className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${item.iconTone}`}
+            >
+              <item.Icon />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-black">{item.title}</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-slate-300/90">{item.body}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-6 flex justify-center">
+        <UiDialogBtn onClick={onConfirm} className="w-full max-w-[220px]">
+          {t('turnEventNotice.confirm')}
+        </UiDialogBtn>
+      </div>
+    </UiDialogShell>
   )
 }
 

@@ -7,7 +7,7 @@
     "startChips": 50000,
     "dealerName": "Dealer",
     "dealerTitle": "LOCAL DEALER",
-    "dealerMediaUrl": "media://chapter_assets/highlow/local_dealer.mp4",
+    "dealerMediaUrl": "media://chapter_assets/highlow/tier1_1793345202886_dealer_base_loo.mp4",
     "dealerMediaType": "video",
     "badgeColor": "#3b82f6",
     "borderColor": "rgba(59, 130, 246, 0.4)",
@@ -15,22 +15,22 @@
     "itemDropRate": 40,
     "itemDropRates": {
       "staff_hire": 0.5,
-      "peek_card": 2,
-      "double_payout": 3,
-      "loss_shield": 2
+      "peek_card": 5,
+      "double_payout": 5,
+      "loss_shield": 5
     },
     "maxComboLimit": 3,
     "dealerMediaStages": {
       "tier1": {
-        "url": "media://chapter_assets/highlow/local_tier1.mp4",
+        "url": "media://chapter_assets/highlow/tier1_1793345202886_dealer_base_loo.mp4",
         "type": "video"
       },
       "tier2": {
-        "url": "media://chapter_assets/highlow/local_tier2.mp4",
+        "url": "media://chapter_assets/highlow/tier2_1793345206200_dealer_breasts_.mp4",
         "type": "video"
       },
       "tier3": {
-        "url": "media://chapter_assets/highlow/local_tier3.mp4",
+        "url": "media://chapter_assets/highlow/tier3_1793345208179_dealer_masturba.mp4",
         "type": "video"
       }
     }

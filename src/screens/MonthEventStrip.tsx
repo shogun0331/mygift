@@ -1,4 +1,5 @@
 import { useTranslation } from '../locales/i18n'
+import { HUD_UI_ASSETS } from '../ui/hudAssets'
 
 export type MonthEventFlags = {
   fanMeeting: boolean
@@ -9,54 +10,14 @@ export function emptyMonthEvents(): MonthEventFlags {
   return { fanMeeting: false, casino: false }
 }
 
-function FanMark() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden className="game-hud-event-mark">
-      <path
-        fill="currentColor"
-        d="M8 13.2 2.7 8.1a3.1 3.1 0 0 1 4.4-4.4L8 4.6l.9-.9a3.1 3.1 0 0 1 4.4 4.4L8 13.2Z"
-      />
-    </svg>
-  )
-}
-
-function CasinoMark() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden className="game-hud-event-mark">
-      <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="8" cy="8" r="2.15" fill="currentColor" />
-      <path
-        d="M8 1.7v2M8 12.3v2M1.7 8h2M12.3 8h2"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function EventChips({ flags }: { flags: MonthEventFlags }) {
-  const { t } = useTranslation()
-  if (!flags.fanMeeting && !flags.casino) {
-    return <p className="game-hud-event-empty">{t('hud.noEvent')}</p>
-  }
-  return (
-    <div className="game-hud-event-list">
-      {flags.fanMeeting ? (
-        <span className="game-hud-event game-hud-event--fan">
-          <FanMark />
-          <span>{t('hud.eventFan')}</span>
-        </span>
-      ) : null}
-      {flags.casino ? (
-        <span className="game-hud-event game-hud-event--casino">
-          <CasinoMark />
-          <span>{t('hud.eventCasino')}</span>
-        </span>
-      ) : null}
-    </div>
-  )
+function summarizeFlags(
+  flags: MonthEventFlags,
+  t: (key: string) => string,
+): string {
+  const parts: string[] = []
+  if (flags.fanMeeting) parts.push(t('hud.eventFan'))
+  if (flags.casino) parts.push(t('hud.eventCasino'))
+  return parts.length > 0 ? parts.join(' · ') : t('hud.noEvent')
 }
 
 export function MonthEventStrip({
@@ -69,21 +30,53 @@ export function MonthEventStrip({
   next: MonthEventFlags
 }) {
   const { t } = useTranslation()
-  const columns = [
-    { key: 'prev', label: t('hud.monthPrev'), flags: previous },
-    { key: 'now', label: t('hud.monthNow'), flags: current },
-    { key: 'next', label: t('hud.monthNext'), flags: next },
-  ]
+  const chips: Array<{ key: string; src: string; label: string; tone: 'fan' | 'casino' }> = []
+  if (current.fanMeeting) {
+    chips.push({
+      key: 'fan',
+      src: HUD_UI_ASSETS.fan,
+      label: t('hud.eventFan'),
+      tone: 'fan',
+    })
+  }
+  if (current.casino) {
+    chips.push({
+      key: 'casino',
+      src: HUD_UI_ASSETS.casino,
+      label: t('hud.eventCasino'),
+      tone: 'casino',
+    })
+  }
+
+  const prevTip = `${t('hud.monthPrev')}: ${summarizeFlags(previous, t)}`
+  const nextTip = `${t('hud.monthNext')}: ${summarizeFlags(next, t)}`
+
   return (
-    <div className="game-hud-cell game-hud-cell--months">
-      <div className="game-hud-month-grid">
-        {columns.map((column) => (
-          <div key={column.key} className="game-hud-month-col">
-            <p className="game-stat-label game-hud-month-label">{column.label}</p>
-            <EventChips flags={column.flags} />
-          </div>
-        ))}
+    <div
+      className="game-hud-schedule"
+      aria-label={`${t('hud.monthNow')}: ${summarizeFlags(current, t)}`}
+    >
+      <span className="game-hud-schedule-arrow" title={prevTip} aria-hidden>
+        ◀
+      </span>
+      <div className="game-hud-schedule-current">
+        {chips.length === 0 ? (
+          <span className="game-hud-schedule-empty">—</span>
+        ) : (
+          chips.map((chip) => (
+            <span
+              key={chip.key}
+              className={`game-hud-schedule-chip game-hud-schedule-chip--${chip.tone}`}
+            >
+              <img src={chip.src} alt="" className="hud-ico" draggable={false} />
+              <span>{chip.label}</span>
+            </span>
+          ))
+        )}
       </div>
+      <span className="game-hud-schedule-arrow" title={nextTip} aria-hidden>
+        ▶
+      </span>
     </div>
   )
 }

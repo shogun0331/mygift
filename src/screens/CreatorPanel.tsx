@@ -72,6 +72,13 @@ import { resolveMediaSrc } from '../game/mediaUrl'
 import type { ScoutedStaffCandidate } from '../game/characters'
 import type { StudioSlot } from '../game/studioSlots'
 import { isStatTutorialStep, type TutorialStep } from '../components/TutorialGuideOverlay'
+import { HUD_UI_ASSETS } from '../ui/hudAssets'
+import {
+  GradePlate,
+  STAT_TYPE_CHIP_TONE,
+  STAT_TYPE_LABEL_KEY,
+  TypeStatIcon,
+} from '../ui/creatorMarks'
 
 type CreatorPanelProps = {
   companyViewers?: number
@@ -119,18 +126,200 @@ type CreatorPanelProps = {
   onConfess?: (creatorId: string) => void
 }
 
-const GRADE_STYLE: Record<Grade, string> = {
-  S: 'border-amber-400 text-amber-200 bg-gradient-to-r from-amber-950 via-yellow-900 to-amber-950 shadow-[0_0_12px_rgba(251,191,36,0.85)] ring-1 ring-amber-400/50',
-  A: 'border-purple-400 text-purple-200 bg-gradient-to-r from-purple-950 via-indigo-900 to-purple-950 shadow-[0_0_12px_rgba(168,85,247,0.85)] ring-1 ring-purple-400/50',
-  B: 'border-cyan-400 text-cyan-200 bg-gradient-to-r from-cyan-950 via-slate-900 to-cyan-950 shadow-[0_0_12px_rgba(6,182,212,0.8)] ring-1 ring-cyan-400/50',
-  C: 'border-slate-400 text-slate-200 bg-slate-900 shadow-[0_0_8px_rgba(148,163,184,0.5)]',
+function StatTypeIcon({
+  type,
+  label,
+  showLabel = false,
+  size = 'md',
+}: {
+  type: CreatorStatType
+  label: string
+  showLabel?: boolean
+  size?: 'sm' | 'md'
+}) {
+  const dim = size === 'sm' ? 'h-5 w-5' : 'h-6 w-6'
+  const chip = (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-md border px-1 py-0.5 ${STAT_TYPE_CHIP_TONE[type]}`}
+    >
+      <TypeStatIcon type={type} className={dim} />
+      {showLabel ? (
+        <span className="pr-1 text-[10px] font-bold tracking-wide text-slate-200">{label}</span>
+      ) : null}
+    </span>
+  )
+  return (
+    <HoverTip text={label}>
+      <span tabIndex={0} aria-label={label} className="inline-flex cursor-help outline-none">
+        {chip}
+      </span>
+    </HoverTip>
+  )
 }
 
-const STAT_TYPE_LABEL_KEY: Record<CreatorStatType, string> = {
-  sexy: 'creator.typeSexy',
-  communication: 'creator.typeCommunication',
-  mental: 'creator.typeMental',
-  performance: 'creator.typePerformance',
+type CreatorMarkKind = 'promo' | 'hVip' | 'posted'
+
+function CreatorMark({ kind, label }: { kind: CreatorMarkKind; label: string }) {
+  const tone =
+    kind === 'promo'
+      ? 'border-amber-400/50 bg-amber-500/15 text-amber-200'
+      : kind === 'hVip'
+        ? 'border-pink-500/40 bg-pink-500/10 text-pink-300'
+        : 'border-emerald-400/30 bg-emerald-500/10 text-emerald-200'
+  return (
+    <HoverTip text={label}>
+      <span
+        tabIndex={0}
+        aria-label={label}
+        className={`inline-flex h-4 w-4 shrink-0 cursor-help items-center justify-center rounded-full border outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${tone}`}
+      >
+        {kind === 'promo' ? (
+          <svg className="h-2.5 w-2.5" viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+            <path d="M6 1.5L10.5 8.5H1.5L6 1.5z" />
+          </svg>
+        ) : kind === 'hVip' ? (
+          <svg className="h-2.5 w-2.5" viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+            <path d="M6 10.2S1.8 7.4 1.8 4.6A2.2 2.2 0 0 1 6 3.4a2.2 2.2 0 0 1 4.2 1.2C10.2 7.4 6 10.2 6 10.2z" />
+          </svg>
+        ) : (
+          <svg className="h-2.5 w-2.5" viewBox="0 0 12 12" fill="none" aria-hidden>
+            <path
+              d="M2.5 6.2l2.4 2.4 4.6-5"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+      </span>
+    </HoverTip>
+  )
+}
+
+function StudioAssignIcon({ assigned, label }: { assigned: boolean; label: string }) {
+  if (!assigned) {
+    return <span className="text-slate-600 text-xs font-semibold">-</span>
+  }
+  return (
+    <span
+      title={label}
+      className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-emerald-400/50 bg-emerald-500/20 text-emerald-300 shadow-[0_0_8px_rgba(52,211,153,0.35)]"
+    >
+      <svg className="h-3 w-3" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <rect x="2" y="4.5" width="12" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="8" cy="8.5" r="2.2" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M5.5 4.5l1-2h3l1 2" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      </svg>
+    </span>
+  )
+}
+
+function HeaderGlyph({ kind }: { kind: 'bolt' | 'coin' | 'fan' | 'up' }) {
+  if (kind === 'coin') {
+    return <img src={HUD_UI_ASSETS.coin} alt="" aria-hidden className="h-3.5 w-3.5 object-contain" />
+  }
+  if (kind === 'fan') {
+    return <img src={HUD_UI_ASSETS.fan} alt="" aria-hidden className="h-3.5 w-3.5 object-contain" />
+  }
+  if (kind === 'up') {
+    return (
+      <svg className="h-3 w-3 text-emerald-400" viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+        <path d="M6 2L10 7H7.5v3h-3V7H2L6 2z" />
+      </svg>
+    )
+  }
+  return (
+    <svg className="h-3 w-3 text-cyan-400" viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+      <path d="M6.8 1L3 7h2.6L5 11l4.2-7H6.8L8.2 1H6.8z" />
+    </svg>
+  )
+}
+
+function PhoneGlyph({ className = 'h-3 w-3' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" aria-hidden>
+      <rect x="4" y="1.5" width="8" height="13" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M7 12.5h2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function DetailGlyph({
+  kind,
+  className = 'h-3.5 w-3.5',
+}: {
+  kind: 'heart' | 'pulse' | 'care' | 'vacation' | 'hLove' | 'calendar' | 'trophy'
+  className?: string
+}) {
+  if (kind === 'heart') {
+    return (
+      <svg className={`${className} text-pink-400`} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+        <path d="M8 13.2S2.8 9.8 2.8 6.2A2.9 2.9 0 0 1 8 4.6a2.9 2.9 0 0 1 5.2 1.6C13.2 9.8 8 13.2 8 13.2z" />
+      </svg>
+    )
+  }
+  if (kind === 'pulse') {
+    return (
+      <svg className={`${className} text-emerald-400`} viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path
+          d="M1.5 8h2.2l1.3-3.2L7.5 12l2-5.5L11 8h3.5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    )
+  }
+  if (kind === 'care') {
+    return (
+      <svg className={`${className} text-slate-200`} viewBox="0 0 16 16" fill="none" aria-hidden>
+        <rect x="2.5" y="2.5" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M8 5v6M5 8h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    )
+  }
+  if (kind === 'vacation') {
+    return (
+      <svg className={`${className} text-amber-300`} viewBox="0 0 16 16" fill="none" aria-hidden>
+        <circle cx="8" cy="8" r="2.4" stroke="currentColor" strokeWidth="1.4" />
+        <path
+          d="M8 2.2v1.4M8 12.4v1.4M2.2 8h1.4M12.4 8h1.4M3.9 3.9l1 1M11.1 11.1l1 1M12.1 3.9l-1 1M4.9 11.1l-1 1"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+        />
+      </svg>
+    )
+  }
+  if (kind === 'hLove') {
+    return (
+      <svg className={`${className} text-pink-300`} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+        <path d="M5.2 11.5S1.8 9.2 1.8 6.8A2 2 0 0 1 5.2 5.6a2 2 0 0 1 3.4 1.2C8.6 9.2 5.2 11.5 5.2 11.5z" />
+        <path d="M10.8 12.2S7.8 10.2 7.8 8.1A1.7 1.7 0 0 1 10.8 7a1.7 1.7 0 0 1 3 1.1c0 2.1-3 4.1-3 4.1z" opacity="0.85" />
+      </svg>
+    )
+  }
+  if (kind === 'calendar') {
+    return (
+      <svg className={`${className} text-slate-400`} viewBox="0 0 16 16" fill="none" aria-hidden>
+        <rect x="2.5" y="3.5" width="11" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M2.5 6.5h11M5.5 2.5v2M10.5 2.5v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
+    )
+  }
+  return (
+    <svg className={`${className} text-amber-300`} viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path
+        d="M4.5 12.5h7v-1.2l-1.4-1V7.2A2.1 2.1 0 0 0 8.8 5.2V4.8a.8.8 0 1 0-1.6 0v.4A2.1 2.1 0 0 0 5.9 7.2v3.1l-1.4 1v1.2z"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+      <path d="M6.2 12.5v.8a1.8 1.8 0 0 0 3.6 0v-.8" stroke="currentColor" strokeWidth="1.3" />
+    </svg>
+  )
 }
 
 const STAT_VALUE_LABEL_KEY: Record<CreatorStatType, string> = {
@@ -524,21 +713,16 @@ export function CreatorPanel({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
-      <div className="game-panel-strong flex shrink-0 flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3">
-        <div className="min-w-0">
-          <p className="game-kicker">CREATOR MANAGEMENT</p>
-          <p className="mt-0.5 text-xs text-slate-500">
-            {t('creator.manageSubtitle').replace('{count}', String(ownedCreators.length))}
-          </p>
-        </div>
-      </div>
-
-      <section className="game-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl mb-4">
+    <div className="flex h-full min-h-0 flex-col gap-2.5 overflow-hidden">
+      <section className="game-panel flex min-h-0 flex-[1.15] flex-col overflow-hidden rounded-2xl">
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 px-3 py-2.5 sm:px-4">
-          <div>
-            <p className="text-xs font-semibold tracking-wide text-slate-200">{t('creator.manageTitle')}</p>
-            <p className="mt-0.5 text-[10px] text-slate-500">{t('creator.manageDesc')}</p>
+          <div className="min-w-0">
+            <p className="text-sm font-bold tracking-wide text-slate-100">{t('creator.manageTitle')}</p>
+            <p className="mt-0.5 truncate text-[10px] text-slate-500">
+              {t('creator.manageSubtitle').replace('{count}', String(ownedCreators.length))}
+              <span className="mx-1.5 text-slate-700">·</span>
+              {t('creator.manageDesc')}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             {ownedCreators.length > 0 ? (
@@ -549,7 +733,10 @@ export function CreatorPanel({
                 className="game-btn relative rounded-lg px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-40"
                 title={!bulkSnsEligible ? t('sns.bulkComposeNone') : undefined}
               >
-                📱 {t('sns.bulkCompose')}
+                <span className="inline-flex items-center gap-1">
+                  <PhoneGlyph className="h-3 w-3" />
+                  {t('sns.bulkCompose')}
+                </span>
                 {bulkSnsAffordable ? <RedDot label={t('sns.composeAvailable')} /> : null}
               </button>
             ) : null}
@@ -618,6 +805,7 @@ export function CreatorPanel({
                         sortField === 'stamina' ? 'text-cyan-300 font-bold' : ''
                       }`}
                     >
+                      <HeaderGlyph kind="bolt" />
                       <span>{t('creator.statStamina')}</span>
                       <span className="text-[10px] text-cyan-400 font-bold">
                         {sortField === 'stamina' ? (sortOrder === 'desc' ? '▼' : '▲') : '↕'}
@@ -633,6 +821,7 @@ export function CreatorPanel({
                         sortField === 'salary' ? 'text-amber-300 font-bold' : ''
                       }`}
                     >
+                      <HeaderGlyph kind="coin" />
                       <span>{t('creator.currentSalary')}</span>
                       <span className="text-[10px] text-amber-400 font-bold">
                         {sortField === 'salary' ? (sortOrder === 'desc' ? '▼' : '▲') : '↕'}
@@ -647,6 +836,7 @@ export function CreatorPanel({
                         sortField === 'revenue' ? 'text-emerald-300 font-bold' : ''
                       }`}
                     >
+                      <HeaderGlyph kind="up" />
                       <span>{t('creator.expectedRevenue')}</span>
                       <span className="text-[10px] text-emerald-400 font-bold">
                         {sortField === 'revenue' ? (sortOrder === 'desc' ? '▼' : '▲') : '↕'}
@@ -661,6 +851,7 @@ export function CreatorPanel({
                         sortField === 'sns' ? 'text-cyan-200 font-bold' : ''
                       }`}
                     >
+                      <HeaderGlyph kind="fan" />
                       <span>{t('sns.subscribers')}</span>
                       <span className="text-[10px] text-cyan-300 font-bold">
                         {sortField === 'sns' ? (sortOrder === 'desc' ? '▼' : '▲') : '↕'}
@@ -720,58 +911,31 @@ export function CreatorPanel({
                             </div>
                           )}
                           <div className="min-w-0">
-                            <div className="flex min-w-0 items-center gap-1.5 flex-wrap">
+                            <div className="flex min-w-0 items-center gap-1.5">
                               <p className="truncate font-semibold text-slate-100">{displayName}</p>
                               {examReady ? (
-                                <span
-                                  title={t('creator.promotionPendingTooltip')}
-                                  className="shrink-0 inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-amber-200 shadow-[0_0_10px_rgba(251,191,36,0.35)] animate-pulse"
-                                >
-                                  <span>🏆</span>
-                                  {t('creator.promotionPendingBadge')}
-                                </span>
+                                <CreatorMark
+                                  kind="promo"
+                                  label={t('creator.promotionPendingTooltip')}
+                                />
                               ) : null}
                               {isHUnlocked(creator) ? (
-                                <span
-                                  title={t('social.hUnlockedTooltip')}
-                                  className="shrink-0 inline-flex items-center gap-1 rounded-full border border-pink-500/50 bg-pink-500/15 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-pink-300 shadow-[0_0_8px_rgba(236,72,153,0.25)]"
-                                >
-                                  <span>💕</span>
-                                  {t('social.hUnlockedBadge')}
-                                </span>
+                                <CreatorMark kind="hVip" label={t('social.hUnlockedTooltip')} />
                               ) : null}
                               {snsPosted ? (
-                                <span
-                                  title={t('sns.alreadyPosted')}
-                                  className="shrink-0 rounded-full border border-emerald-400/40 bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-emerald-200"
-                                >
-                                  {t('sns.postedMark')}
-                                </span>
+                                <CreatorMark kind="posted" label={t('sns.alreadyPosted')} />
                               ) : null}
                             </div>
-                            <p className="text-[10px] text-slate-500">{displayJob}</p>
+                            <p className="truncate text-[10px] text-slate-500">{displayJob}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-3 py-2.5 text-center">
-                        {assignedSlot ? (
-                          <span
-                            title={t('menu.studio')}
-                            className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 text-xs font-black shadow-[0_0_8px_rgba(52,211,153,0.35)]"
-                          >
-                            ✓
-                          </span>
-                        ) : (
-                          <span className="text-slate-600 text-xs font-semibold">-</span>
-                        )}
+                        <StudioAssignIcon assigned={Boolean(assignedSlot)} label={t('menu.studio')} />
                       </td>
                       <td className="px-3 py-2.5">
                         <div className="inline-flex items-center gap-1">
-                          <span
-                            className={`rounded-md border px-2 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}
-                          >
-                            {creator.grade}
-                          </span>
+                          <GradePlate grade={creator.grade} size="sm" />
                           {examReady ? (
                             <span
                               title={t('creator.promotionPendingTooltip')}
@@ -784,7 +948,7 @@ export function CreatorPanel({
                       </td>
                       <td className="px-3 py-2.5">
                         <div
-                          className={`relative h-6 w-36 overflow-hidden rounded-md bg-slate-900 shadow-inner border transition-all duration-300 ${staminaTone.track}`}
+                          className={`relative h-6 w-28 overflow-hidden rounded-md bg-slate-900 shadow-inner border transition-all duration-300 ${staminaTone.track}`}
                           title={`${t('creator.statStamina')} ${Math.round(creator.stamina)}/${creator.staminaMax}`}
                         >
                           <div
@@ -792,28 +956,29 @@ export function CreatorPanel({
                             style={{ width: `${staminaPct}%` }}
                           />
                           <div
-                            className={`pointer-events-none absolute inset-0 flex items-center justify-between px-2 text-[10px] font-black tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.85)] ${staminaTone.text}`}
+                            className={`pointer-events-none absolute inset-0 flex items-center justify-end px-2 text-[10px] font-black tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.85)] ${staminaTone.text}`}
                           >
-                            <span>
-                              {staminaBlocked ? '🚨 Stamina' : 'Stamina'}
-                            </span>
                             <span className="tabular-nums">
                               {Math.round(creator.stamina)}/{creator.staminaMax}
                             </span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 text-slate-300">
-                        {t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(creator.statType)])}
+                      <td className="px-3 py-2.5">
+                        <StatTypeIcon
+                          type={normalizeCreatorStatType(creator.statType)}
+                          label={t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(creator.statType)])}
+                          size="sm"
+                        />
                       </td>
-                      <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
+                      <td className="px-3 py-2.5 font-semibold tabular-nums text-slate-200">
                         {formatSalary(creator.salary)}
                       </td>
-                      <td className="px-3 py-2.5 font-bold tabular-nums text-emerald-400">
+                      <td className="px-3 py-2.5 font-semibold tabular-nums text-emerald-300/90">
                         {formatMoney(expectedRev)}
                       </td>
-                      <td className="px-3 py-2.5 font-bold tabular-nums text-cyan-300">
-                        📱 {t('sns.countUnit', { count: snsSubs.toLocaleString() })}
+                      <td className="px-3 py-2.5 font-semibold tabular-nums text-slate-300">
+                        {t('sns.countUnit', { count: snsSubs.toLocaleString() })}
                       </td>
                       <td className="px-3 py-2.5 sm:px-4">
                         <div className="flex flex-wrap gap-1.5">
@@ -826,15 +991,16 @@ export function CreatorPanel({
                                 onTutorialStepChange?.('sns_post')
                               }
                             }}
-                            className={`game-btn relative rounded-lg px-2.5 py-1 text-xs ${
+                            className={`game-btn relative inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs ${
                               snsPosted
                                 ? 'border-emerald-400/35 bg-emerald-500/10 text-emerald-100'
                                 : ''
                             }`}
                           >
-                            📱 {t('sns.action')}
+                            <PhoneGlyph className="h-3 w-3" />
+                            {t('sns.action')}
                             {snsPosted ? (
-                              <span className="ml-1 text-[9px] font-black text-emerald-300">
+                              <span className="ml-0.5 text-[9px] font-black text-emerald-300">
                                 ✓
                               </span>
                             ) : null}
@@ -1008,7 +1174,7 @@ export function CreatorPanel({
                               return `${y}.${mm}`
                             })()}
                           </td>
-                          <td className="px-3 py-2.5 font-semibold tabular-nums text-amber-400">
+                          <td className="px-3 py-2.5 font-semibold tabular-nums text-slate-200">
                             {salary > 0 ? formatSalary(salary) : '-'}
                           </td>
                           <td className="px-3 py-2.5 font-semibold text-slate-300">
@@ -1161,15 +1327,16 @@ function ScoutView({
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-              <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-                <span
-                  className={`rounded-md border px-2.5 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[offer.grade]}`}
-                >
-                  {offer.grade}
-                </span>
-                <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-xs font-bold text-slate-200">
-                  {t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(offer.template.statType)])}
-                </span>
+              <div className="absolute top-2 left-2 flex flex-wrap items-center gap-1">
+                <GradePlate grade={offer.grade} size="md" />
+                <StatTypeIcon
+                  type={normalizeCreatorStatType(offer.template.statType)}
+                  label={t(
+                    STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(offer.template.statType)],
+                  )}
+                  showLabel
+                  size="sm"
+                />
               </div>
               <div className="absolute inset-x-0 bottom-0 p-3">
                 <h3 className="text-lg font-bold text-slate-50">
@@ -1407,13 +1574,18 @@ function CreatorDetailView({
           <p className="game-kicker">CREATOR PROFILE</p>
           <h2 className="flex items-center gap-2 truncate text-base font-semibold text-slate-100 flex-wrap">
             <span>{displayName}</span>
-            <span className={`rounded-md border px-2 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}>
-              {creator.grade}
-            </span>
+            <GradePlate grade={creator.grade} size="sm" />
             {assignedSlot ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/50 bg-emerald-500/15 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_8px_rgba(52,211,153,0.3)]">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                {t('menu.studio')} ✓
+              <span
+                title={t('menu.studio')}
+                className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/50 bg-emerald-500/15 px-2.5 py-0.5 text-xs font-bold text-emerald-300 shadow-[0_0_8px_rgba(52,211,153,0.3)]"
+              >
+                <svg className="h-3 w-3" viewBox="0 0 16 16" fill="none" aria-hidden>
+                  <rect x="2" y="4.5" width="12" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                  <circle cx="8" cy="8.5" r="2.2" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M5.5 4.5l1-2h3l1 2" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                </svg>
+                {t('menu.studio')}
               </span>
             ) : null}
           </h2>
@@ -1448,22 +1620,28 @@ function CreatorDetailView({
               />
             ) : null}
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1">
-              <span
-                className={`rounded-md border px-2.5 py-0.5 text-xs font-black italic tracking-widest ${GRADE_STYLE[creator.grade]}`}
-              >
-                {creator.grade}
-              </span>
+            <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1">
+              <GradePlate grade={creator.grade} size="md" />
               <span className="rounded border border-indigo-400/50 bg-indigo-950/80 px-2 py-0.5 text-xs font-black tracking-wider text-indigo-300 shadow">
                 SKIN{activeSkin}
               </span>
-              <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-xs font-bold text-slate-200">
-                {t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(creator.statType)])}
-              </span>
+              <StatTypeIcon
+                type={normalizeCreatorStatType(creator.statType)}
+                label={t(STAT_TYPE_LABEL_KEY[normalizeCreatorStatType(creator.statType)])}
+                showLabel
+                size="sm"
+              />
               {assignedSlot ? (
-                <span className="inline-flex items-center gap-1 rounded border border-emerald-400/50 bg-emerald-950/70 px-2 py-0.5 text-xs font-bold text-emerald-300 shadow">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  {t('menu.studio')} ✓
+                <span
+                  title={t('menu.studio')}
+                  className="inline-flex items-center gap-1 rounded border border-emerald-400/50 bg-emerald-950/70 px-2 py-0.5 text-xs font-bold text-emerald-300 shadow"
+                >
+                  <svg className="h-3 w-3" viewBox="0 0 16 16" fill="none" aria-hidden>
+                    <rect x="2" y="4.5" width="12" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                    <circle cx="8" cy="8.5" r="2.2" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M5.5 4.5l1-2h3l1 2" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                  </svg>
+                  {t('menu.studio')}
                 </span>
               ) : null}
             </div>
@@ -1570,13 +1748,7 @@ function CreatorDetailView({
           >
             <PersonalityStatBars stats={creator} t={t} />
             <StatBar
-              label={t('creator.expectedRevenue')}
-              hint={t('creator.statHintRevenue')}
-              valueLabel={formatMoney(calcMonthRevenueWon(creator, 0, 1, companyViewers))}
-              percent={100}
-              barClass="from-emerald-400 to-teal-300"
-            />
-            <StatBar
+              icon={<HeaderGlyph kind="bolt" />}
               label={t('creator.statStamina')}
               hint={t('creator.statHintStamina')}
               valueLabel={`${creator.stamina}/${creator.staminaMax}`}
@@ -1585,6 +1757,7 @@ function CreatorDetailView({
               tutorialAttr="stat-stamina"
             />
             <StatBar
+              icon={<DetailGlyph kind="pulse" />}
               label={t('condition.title')}
               hint={t('creator.statHintCondition')}
               valueLabel={`${CONDITION_ICON[condition]} ${t(CONDITION_LABEL_KEY[condition])} (${conditionScore})`}
@@ -1592,18 +1765,31 @@ function CreatorDetailView({
               barClass="from-emerald-400 to-lime-300"
             />
             <StatBar
+              icon={<DetailGlyph kind="heart" />}
               label={t('affection.label')}
               hint={t('affection.confessLocked')}
               valueLabel={`${Math.max(0, Math.min(100, Math.round(creator.affection ?? 0)))}`}
               percent={Math.max(0, Math.min(100, Math.round(creator.affection ?? 0)))}
               barClass="from-pink-400 to-rose-300"
             />
+            <StatBar
+              icon={<HeaderGlyph kind="up" />}
+              label={t('creator.expectedRevenue')}
+              hint={t('creator.statHintRevenue')}
+              valueLabel={formatMoney(calcMonthRevenueWon(creator, 0, 1, companyViewers))}
+              percent={100}
+              barClass="from-emerald-400 to-teal-300"
+            />
             <div className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5">
-              <p className="text-[10px] font-semibold tracking-wide text-slate-500">{t('creator.currentSalary')}</p>
+              <p className="flex items-center gap-1 text-[10px] font-semibold tracking-wide text-slate-500">
+                <HeaderGlyph kind="coin" />
+                {t('creator.currentSalary')}
+              </p>
               <p className="mt-0.5 text-base font-bold tabular-nums text-amber-400">
                 {formatSalary(creator.salary)}
               </p>
-              <p className="mt-0.5 text-xs text-slate-400">
+              <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-400">
+                <DetailGlyph kind="calendar" className="h-3 w-3" />
                 {t('creator.contractLeft').replace('{weeks}', formatContract(creator.contractWeeks, t))}
               </p>
             </div>
@@ -1623,7 +1809,7 @@ function CreatorDetailView({
                 >
                   <span className="min-w-0">
                     <span className="flex items-center gap-1.5 text-sm font-semibold text-slate-100">
-                      <span aria-hidden>✚</span>
+                      <DetailGlyph kind="care" className="h-4 w-4" />
                       {t('creator.careOption')}
                     </span>
                     <span className="mt-1 block text-[10px] leading-4 text-slate-400">
@@ -1652,7 +1838,7 @@ function CreatorDetailView({
                 >
                   <span className="min-w-0">
                     <span className="flex items-center gap-1.5 text-sm font-semibold text-slate-100">
-                      <span aria-hidden>☼</span>
+                      <DetailGlyph kind="vacation" className="h-4 w-4" />
                       {t('creator.vacationTitle')}
                     </span>
                     <span className="mt-1 block text-[10px] leading-4 text-slate-400">
@@ -1696,7 +1882,7 @@ function CreatorDetailView({
                         >
                           <span className="min-w-0">
                             <span className="flex items-center gap-1.5 text-sm font-bold text-pink-200">
-                              <span aria-hidden>💕</span>
+                              <DetailGlyph kind="hLove" className="h-4 w-4" />
                               {t('social.hActionTitle')}
                             </span>
                             <span className="mt-1 block text-[10px] leading-4 text-pink-300/80">
@@ -1732,8 +1918,9 @@ function CreatorDetailView({
 
               <div className="relative z-10 shrink-0">
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-[11px] font-semibold tracking-wide text-amber-200/90">
-                    ⚡ {t('creator.trainingTitle')}
+                  <h3 className="inline-flex items-center gap-1 text-[11px] font-semibold tracking-wide text-amber-200/90">
+                    <HeaderGlyph kind="bolt" />
+                    {t('creator.trainingTitle')}
                   </h3>
                   <p className="truncate text-right text-[10px] font-semibold text-slate-500">
                     {fillLocale(t('creator.trainingStatus'), {
@@ -1783,18 +1970,21 @@ function CreatorDetailView({
                     })}
                   </p>
                   {examReady ? (
-                    <p className="mt-1.5 text-[10px] font-bold text-amber-300">
-                      🏆 {t('creator.promotionPendingTooltip')}
+                    <p className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-bold text-amber-300">
+                      <DetailGlyph kind="trophy" className="h-3.5 w-3.5" />
+                      {t('creator.promotionPendingTooltip')}
                     </p>
                   ) : (
-                    <p className="mt-1.5 text-[10px] leading-4 text-slate-400">
-                      ⚡{' '}
-                      {fillLocale(t('creator.trainingIntervalHint'), {
-                        grade: creator.grade,
-                        turns: String(reqTrainingTurns),
-                        current: String(trainingTurns),
-                        required: String(reqTrainingTurns),
-                      })}
+                    <p className="mt-1.5 inline-flex items-start gap-1 text-[10px] leading-4 text-slate-400">
+                      <HeaderGlyph kind="bolt" />
+                      <span>
+                        {fillLocale(t('creator.trainingIntervalHint'), {
+                          grade: creator.grade,
+                          turns: String(reqTrainingTurns),
+                          current: String(trainingTurns),
+                          required: String(reqTrainingTurns),
+                        })}
+                      </span>
                     </p>
                   )}
                 </div>
@@ -1817,7 +2007,8 @@ function CreatorDetailView({
                 } ${trainHot ? 'training-fx-btn-hot' : ''}`}
               >
                 {canTrain ? <RedDot label={t('creator.trainingAvailable')} /> : null}
-                <span className="text-base font-bold tracking-wide text-current">
+                <span className="inline-flex items-center gap-1.5 text-base font-bold tracking-wide text-current">
+                  <HeaderGlyph kind="bolt" />
                   {trainButtonLabel}
                 </span>
                 {trainingMaxed ? null : (
@@ -1897,6 +2088,7 @@ function TrainingBurstFx() {
 const PERSONALITY_STAT_BARS = [
   {
     key: 'statSexy',
+    type: 'sexy' as const,
     labelKey: 'creator.statSexy',
     hintKey: 'creator.statHintSexy',
     barClass: 'from-rose-500 to-pink-300',
@@ -1904,6 +2096,7 @@ const PERSONALITY_STAT_BARS = [
   },
   {
     key: 'statCommunication',
+    type: 'communication' as const,
     labelKey: 'creator.statCommunication',
     hintKey: 'creator.statHintCommunication',
     barClass: 'from-sky-400 to-cyan-300',
@@ -1911,6 +2104,7 @@ const PERSONALITY_STAT_BARS = [
   },
   {
     key: 'statMental',
+    type: 'mental' as const,
     labelKey: 'creator.statMental',
     hintKey: 'creator.statHintMental',
     barClass: 'from-violet-300 to-slate-200',
@@ -1918,6 +2112,7 @@ const PERSONALITY_STAT_BARS = [
   },
   {
     key: 'statPerformance',
+    type: 'performance' as const,
     labelKey: 'creator.statPerformance',
     hintKey: 'creator.statHintPerformance',
     barClass: 'from-amber-400 to-orange-300',
@@ -1944,6 +2139,7 @@ function PersonalityStatBars({
         return (
           <StatBar
             key={row.key}
+            icon={<TypeStatIcon type={row.type} />}
             label={t(row.labelKey)}
             valueLabel={`${value}`}
             percent={value}
@@ -1987,6 +2183,7 @@ function StatHint({ text }: { text: string }) {
 }
 
 function StatBar({
+  icon,
   label,
   hint,
   valueLabel,
@@ -1995,6 +2192,7 @@ function StatBar({
   barClass,
   tutorialAttr,
 }: {
+  icon?: ReactNode
   label: string
   hint?: string
   valueLabel: string
@@ -2008,6 +2206,7 @@ function StatBar({
     <div data-tutorial={tutorialAttr}>
       <div className="mb-1 flex items-end justify-between gap-2">
         <p className="flex items-center gap-1 text-[11px] font-semibold tracking-wide text-slate-400">
+          {icon ? <span className="inline-flex shrink-0 items-center">{icon}</span> : null}
           <span>{label}</span>
           {hint ? <StatHint text={hint} /> : null}
         </p>

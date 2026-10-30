@@ -1,0 +1,436 @@
+.lobby {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  user-select: none;
+}
+
+.lobby__bg {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.lobby__veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 22%, rgba(2, 6, 23, 0.55) 100%),
+    linear-gradient(to bottom, rgba(2, 6, 23, 0.28) 0%, transparent 18%, transparent 78%, rgba(2, 6, 23, 0.45) 100%);
+}
+
+.lobby__title {
+  position: absolute;
+  left: 32%;
+  top: 6%;
+  width: 36%;
+  aspect-ratio: 900 / 160;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 5;
+}
+
+.lobby__title-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  font-size: clamp(0.75rem, 1.6vw, 1.15rem);
+  color: #f8e7c0;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.65), 0 0 12px rgba(245, 158, 11, 0.35);
+}
+
+.lobby__assets {
+  position: absolute;
+  left: 5%;
+  top: 5%;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.lobby__assets-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgb(148 163 184);
+  text-transform: uppercase;
+}
+
+.lobby__assets-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: rgb(253 230 138);
+}
+
+.lobby__exit {
+  position: absolute;
+  right: 6%;
+  top: 5%;
+  width: 120px;
+  height: 48px;
+  z-index: 6;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: grid;
+  place-items: center;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.lobby__exit span {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #e2e8f0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.lobby__exit:hover {
+  filter: brightness(1.12);
+}
+
+.lobby__exit:active {
+  filter: brightness(0.82);
+  transform: scale(0.98);
+}
+
+/* Center CCTV (dealer feed from High-Low / Slot config) */
+.lobby__cctv {
+  position: absolute;
+  left: 50%;
+  top: 26%;
+  transform: translateX(-50%);
+  width: min(20vw, 15rem);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.lobby__cctv-monitor {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.65));
+}
+
+.lobby__cctv-feed {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  top: 6.2%;
+  bottom: 8.6%;
+  overflow: hidden;
+  border-radius: 0.35rem;
+  background: #020617;
+}
+
+.lobby__cctv-bezel {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.lobby__cctv-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.02) brightness(1.02) saturate(0.95);
+}
+
+.lobby__cctv-scanline {
+  opacity: 0.22;
+  background-size: 100% 5px;
+  background-image: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.18) 50%
+  );
+}
+
+.lobby__cctv-scanline::before {
+  opacity: 0.35;
+}
+
+.lobby__cctv-noise {
+  opacity: 0.03;
+}
+
+.lobby__cctv-hud-tl {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  pointer-events: none;
+}
+
+.lobby__cctv-rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(244, 63, 94, 0.55);
+  background: rgba(0, 0, 0, 0.75);
+  color: rgb(251 113 133);
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.lobby__cctv-rec-dot {
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 9999px;
+  background: rgb(244 63 94);
+  animation: lobbyCctvPulse 1.2s ease-in-out infinite;
+}
+
+.lobby__cctv-cam,
+.lobby__cctv-hud-br {
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  background: rgba(0, 0, 0, 0.72);
+  color: rgb(203 213 225);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.lobby__cctv-hud-br {
+  position: absolute;
+  right: 0.4rem;
+  bottom: 0.4rem;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.lobby__cctv-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background: linear-gradient(to bottom, #020617, #0f172a, #020617);
+  color: rgb(203 213 225);
+}
+
+.lobby__cctv-fallback-icon {
+  font-size: 1.75rem;
+}
+
+.lobby__cctv-fallback-name {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@keyframes lobbyCctvPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.lobby__portal-wrap {
+  position: absolute;
+  top: 17.8%;
+  width: 32.3%;
+  aspect-ratio: 620 / 780;
+  z-index: 4;
+}
+
+.lobby__portal-wrap.lobby__portal--slot {
+  left: 7%;
+}
+
+.lobby__portal-wrap.lobby__portal--highlow {
+  right: 7%;
+}
+
+.lobby__portal {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-color: transparent;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.lobby__tutorial {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 6;
+  transform: translate(-50%, 120%);
+  border: 1px solid rgba(251, 191, 36, 0.7);
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  background: rgba(2, 6, 23, 0.88);
+  color: rgb(253 230 138);
+  font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lobby__tutorial:hover {
+  filter: brightness(1.15);
+}
+
+.lobby__portal-glow {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.lobby__portal:hover:not(.is-locked) {
+  transform: scale(1.02);
+  filter: brightness(1.1) drop-shadow(0 0 18px rgba(230, 186, 110, 0.55));
+}
+
+.lobby__portal:hover:not(.is-locked) .lobby__portal-glow {
+  opacity: 0.75;
+}
+
+.lobby__portal:active:not(.is-locked) {
+  transform: scale(0.995);
+  filter: brightness(0.94);
+}
+
+.lobby__portal.is-locked {
+  cursor: not-allowed;
+  filter: grayscale(0.55) brightness(0.72);
+}
+
+.lobby__portal.is-broke {
+  cursor: not-allowed;
+}
+
+.lobby__lock {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  color: rgb(253 230 138);
+  background: rgba(2, 6, 23, 0.72);
+  border: 1px solid rgba(251, 191, 36, 0.55);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
+.lobby__label {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 2.5%;
+  height: 18%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  pointer-events: none;
+  text-align: center;
+}
+
+.lobby__label-title {
+  font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  color: #fff7ed;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+
+.lobby__label-sub {
+  font-size: clamp(0.95rem, 1.85vw, 1.35rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: rgb(253 224 71);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.95),
+    0 0 10px rgba(0, 0, 0, 0.55);
+}
+
+.lobby__portal.is-locked .lobby__label-sub,
+.lobby__portal.is-broke .lobby__label-sub {
+  color: rgb(252 165 165);
+}
+
+.lobby__label-enter {
+  margin-top: 0.15rem;
+  font-size: clamp(0.7rem, 1.15vw, 0.85rem);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: rgb(251 113 133);
+  text-shadow: 0 0 8px rgba(244, 63, 94, 0.55);
+}
+
+@media (max-width: 900px) {
+  .lobby__portal-wrap {
+    width: 38%;
+    top: 20%;
+  }
+  .lobby__portal-wrap.lobby__portal--slot {
+    left: 4%;
+  }
+  .lobby__portal-wrap.lobby__portal--highlow {
+    right: 4%;
+  }
+  .lobby__title {
+    left: 18%;
+    width: 64%;
+  }
+  .lobby__cctv {
+    width: min(28vw, 9.5rem);
+    top: 30%;
+  }
+}

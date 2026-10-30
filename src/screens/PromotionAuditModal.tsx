@@ -27,6 +27,15 @@ import {
   getSelectCardPrompt,
 } from '../game/judgeDialogues'
 import { playSfx, playAuditPassFanfare } from '../game/uiSfx'
+import { DECK_UI_ASSETS } from '../ui/deckAssets'
+import {
+  BoltGlyph,
+  GradePlate,
+  STAT_TYPE_CHIP_TONE,
+  STAT_TYPE_LABEL_KEY,
+  TypeStatIcon,
+} from '../ui/creatorMarks'
+import type { Grade } from '../game/characters'
 
 function isVideoMediaUrl(url: string) {
   const clean = url.split('?')[0].toLowerCase()
@@ -813,11 +822,21 @@ export function PromotionAuditModal({
                       </div>
                     ) : null}
 
-                    {/* 무 텍스트 — 오직 순수 상승 수치 (+25) & 아이콘만 표출 */}
+                    {/* 만족도 상승량 강조 */}
                     <div className="mt-2 flex flex-col items-center">
-                      <div className="flex items-center gap-1.5 rounded-2xl border-2 border-pink-300/70 bg-black/85 px-5 py-2 shadow-[0_0_40px_rgba(244,114,182,0.5)] backdrop-blur-md">
-                        <span className="text-4xl sm:text-5xl font-black tracking-tighter text-pink-300 drop-shadow-[0_0_15px_rgba(244,114,182,0.8)]">
-                          +{lastScoreGained}
+                      <div
+                        className={`flex flex-col items-center gap-0.5 rounded-2xl border-2 px-5 py-2 shadow-[0_0_40px_rgba(244,114,182,0.5)] backdrop-blur-md ${
+                          isCriticalHit
+                            ? 'border-amber-300/80 bg-amber-950/90'
+                            : 'border-pink-300/70 bg-black/85'
+                        }`}
+                      >
+                        <span
+                          className={`text-4xl sm:text-5xl font-black tracking-tighter drop-shadow-[0_0_15px_rgba(244,114,182,0.8)] ${
+                            isCriticalHit ? 'text-amber-200' : 'text-pink-300'
+                          }`}
+                        >
+                          {t('audit.satisfactionGain', { value: lastScoreGained })}
                         </span>
                       </div>
                       {isTypeMatchedHit ? (
@@ -842,16 +861,34 @@ export function PromotionAuditModal({
                     {t('audit.satisfactionScoreFormat', { current: session.currentSatisfaction, target: session.targetSatisfaction, percent: Math.round((session.currentSatisfaction / session.targetSatisfaction) * 100) })}
                   </span>
                 </div>
-                <div className="h-3 overflow-hidden rounded-full border border-white/10 bg-slate-900 shadow-inner">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-amber-500 via-emerald-400 to-teal-300 transition-all duration-500 ease-out shadow-[0_0_12px_rgba(245,158,11,0.5)]"
-                    style={{
-                      width: `${Math.min(
-                        100,
-                        (session.currentSatisfaction / session.targetSatisfaction) * 100,
-                      )}%`,
-                    }}
-                  />
+                <div className="relative">
+                  {showImpactEffect && lastScoreGained !== null ? (
+                    <div
+                      key={`sat-gain-${lastScoreGained}-${session.currentSatisfaction}`}
+                      className={`sat-gain-float pointer-events-none absolute left-1/2 bottom-full z-30 mb-1 whitespace-nowrap rounded-xl border px-3 py-1 shadow-lg backdrop-blur-md ${
+                        isCriticalHit
+                          ? 'border-amber-300/70 bg-amber-950/90 text-amber-100'
+                          : isTypeMatchedHit
+                            ? 'border-pink-300/70 bg-pink-950/90 text-pink-100'
+                            : 'border-white/20 bg-slate-950/90 text-slate-100'
+                      }`}
+                    >
+                      <span className="text-base font-black tabular-nums">
+                        {t('audit.satisfactionGain', { value: lastScoreGained })}
+                      </span>
+                    </div>
+                  ) : null}
+                  <div className="h-3 overflow-hidden rounded-full border border-white/10 bg-slate-900 shadow-inner">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-amber-500 via-emerald-400 to-teal-300 transition-all duration-500 ease-out shadow-[0_0_12px_rgba(245,158,11,0.5)]"
+                      style={{
+                        width: `${Math.min(
+                          100,
+                          (session.currentSatisfaction / session.targetSatisfaction) * 100,
+                        )}%`,
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -906,19 +943,30 @@ export function PromotionAuditModal({
             ) : null}
           </div>
 
-          <div className="grid grid-cols-4 gap-1.5 sm:gap-2 max-w-xl sm:max-w-2xl mx-auto">
+          <div className="mx-auto grid max-w-xl grid-cols-4 gap-1.5 sm:max-w-2xl sm:gap-2">
             {displayCreators.map((creator) => {
-              const performance = Math.max(0, Math.min(100, Number((creator as { statPerformance?: number }).statPerformance) || 0))
-              const mental = Math.max(0, Math.min(100, Number((creator as { statMental?: number }).statMental) || 0))
+              const performance = Math.max(
+                0,
+                Math.min(100, Number((creator as { statPerformance?: number }).statPerformance) || 0),
+              )
+              const mental = Math.max(
+                0,
+                Math.min(100, Number((creator as { statMental?: number }).statMental) || 0),
+              )
               const cType = typeForCreator(creator.id, (creator as { statType?: string }).statType)
-              const typeInfo = CREATOR_TYPE_LABEL[cType]
               const isTypeMatched = cType === currentDemand
-              const creatorGrade = creator.grade ?? 'B'
+              const creatorGrade = (['S', 'A', 'B', 'C'].includes(
+                String(creator.grade ?? 'B').toUpperCase(),
+              )
+                ? String(creator.grade ?? 'B').toUpperCase()
+                : 'B') as Grade
+              const typeLabel = t(STAT_TYPE_LABEL_KEY[cType]) || getCreatorTypeDisplayName(cType, t)
               const profileUrl = (creator as { profileImageUrl?: string }).profileImageUrl
               const currentStamina = creatorStaminaMap[creator.id] ?? 100
               const isStaminaExhausted = currentStamina <= 0
               const isHitFlashing = hitFlashingCardId === creator.id
-              const isCardDisabled = isStaminaExhausted || isJudgeTurn || isActionLocked || showResultModal
+              const isCardDisabled =
+                isStaminaExhausted || isJudgeTurn || isActionLocked || showResultModal
 
               return (
                 <div
@@ -930,24 +978,27 @@ export function PromotionAuditModal({
                   onClick={() => {
                     if (!isCardDisabled) handlePerform(creator)
                   }}
+                  title={typeLabel}
                   style={
                     isHitFlashing
-                      ? { animation: 'cctvCameraShake 600ms cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite' }
+                      ? {
+                          animation:
+                            'cctvCameraShake 600ms cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite',
+                        }
                       : undefined
                   }
-                  className={`group relative aspect-[3/4] max-h-[155px] sm:max-h-[185px] flex flex-col justify-between overflow-hidden rounded-xl transition-all ${
+                  className={`group relative flex aspect-[3/4] max-h-[155px] flex-col justify-between overflow-hidden rounded-xl transition-all sm:max-h-[185px] ${
                     isHitFlashing
-                      ? 'border-rose-500 ring-4 ring-rose-500 shadow-[0_0_50px_rgba(244,63,94,1)] bg-rose-950 z-30'
+                      ? 'z-30 border border-rose-400/80 bg-rose-950 outline outline-1 outline-rose-300/50 shadow-[0_0_22px_rgba(244,63,94,0.45)]'
                       : isCardDisabled
-                      ? 'cursor-not-allowed border border-purple-900/40 opacity-40 grayscale-[30%]'
-                      : selectedCreatorId === creator.id
-                      ? 'cursor-pointer border-2 border-amber-400 ring-2 ring-amber-400/60 shadow-[0_0_22px_rgba(251,191,36,0.38)] scale-[1.02]'
-                      : isTypeMatched
-                      ? 'cursor-pointer border-2 border-emerald-400 ring-4 ring-emerald-500/60 shadow-[0_0_35px_rgba(52,211,153,0.8)] scale-[1.02] hover:scale-[1.04]'
-                      : 'cursor-pointer border border-purple-500/30 hover:border-purple-400 hover:scale-[1.03] hover:shadow-[0_0_18px_rgba(168,85,247,0.3)]'
+                        ? 'cursor-not-allowed border border-white/10 opacity-40 grayscale-[30%]'
+                        : selectedCreatorId === creator.id
+                          ? 'scale-[1.02] cursor-pointer border border-amber-300/80 outline outline-1 outline-amber-200/45 shadow-[0_0_16px_rgba(251,191,36,0.28)]'
+                          : isTypeMatched
+                            ? 'scale-[1.02] cursor-pointer border border-emerald-400/70 outline outline-1 outline-emerald-300/35 shadow-[0_0_14px_rgba(52,211,153,0.28)] hover:scale-[1.03]'
+                            : 'cursor-pointer border border-white/15 hover:border-amber-200/40 hover:scale-[1.02]'
                   }`}
                 >
-                  {/* CCTV 진상 카메라 지진 셰이크 키프레임 */}
                   <style>{`
                     @keyframes cctvCameraShake {
                       0% { transform: translate(0, 0) rotate(0deg) scale(1.08); }
@@ -963,40 +1014,36 @@ export function PromotionAuditModal({
                       100% { transform: translate(0, 0) rotate(0deg) scale(1); }
                     }
                   `}</style>
-                  {/* 3:4 프로필 미디어 배경 커버 */}
                   {profileUrl ? (
                     <img
                       src={resolveMediaSrc(profileUrl)}
                       alt={characterDisplayName(creator, locale)}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="absolute inset-[4%] rounded-[14px] object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 text-xl font-bold text-purple-300">
-                      <span>👤</span>
-                      <span className="text-[10px]">{characterDisplayName(creator, locale).slice(0, 2)}</span>
+                    <div className="absolute inset-[4%] flex flex-col items-center justify-center rounded-[14px] bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 text-xl font-bold text-slate-400">
+                      <span>{characterDisplayName(creator, locale).slice(0, 1)}</span>
                     </div>
                   )}
+                  <img
+                    src={DECK_UI_ASSETS.cardBezel}
+                    alt=""
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 z-[5] h-full w-full object-fill"
+                  />
 
-                  {isTypeMatched && !isCardDisabled && !isHitFlashing ? (
-                    <div className="pointer-events-none absolute inset-0 z-20 rounded-xl border-2 border-emerald-400/90 shadow-[inset_0_0_20px_rgba(52,211,153,0.6)] animate-pulse" />
-                  ) : null}
-
-                  {/* 상단 뱃지 */}
                   {isHitFlashing ? (
                     <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-rose-600/70 animate-pulse backdrop-blur-xs">
-                      <span className="rounded-lg border-2 border-rose-300 bg-rose-950/90 px-2.5 py-1 text-xs sm:text-sm font-black text-rose-200 shadow-[0_0_25px_rgba(244,63,94,1)] drop-shadow">
+                      <span className="rounded-lg border border-rose-300/70 bg-rose-950/90 px-2.5 py-1 text-xs font-black text-rose-200 drop-shadow sm:text-sm">
                         -{lastDamageDealt}
                       </span>
                     </div>
                   ) : null}
 
-                  {/* 상단 뱃지 오버레이 (S, A, B, C 단 1글자 프리미엄 네온 & 매칭) */}
-                  <div className="relative z-10 flex items-center justify-between p-1.5 bg-gradient-to-b from-black/80 to-transparent">
-                    <span className={`rounded-md border px-2 py-0.5 text-xs sm:text-sm font-black italic tracking-widest backdrop-blur-xs ${getGradeBadgeStyle(creatorGrade)}`}>
-                      {creatorGrade}
-                    </span>
-                    <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-black text-cyan-200">
-                      {t('creator.statPerformance')} {performance}
+                  <div className="relative z-10 flex items-start justify-between gap-1 bg-gradient-to-b from-black/80 to-transparent p-1.5">
+                    <GradePlate grade={creatorGrade} size="sm" />
+                    <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-black tabular-nums text-cyan-200">
+                      {performance}
                     </span>
                   </div>
                   {isTypeMatched && !isHitFlashing ? (
@@ -1007,42 +1054,43 @@ export function PromotionAuditModal({
                     </div>
                   ) : null}
 
-                  {/* 스테미나 부족 제시 불가 레이어 */}
                   {isStaminaExhausted ? (
                     <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/90 p-1 text-center backdrop-blur-xs">
-                      <span className="text-base">🪫</span>
-                      <span className="mt-0.5 text-[9px] font-black text-rose-400 leading-tight">
+                      <BoltGlyph className="h-4 w-4 text-rose-400" />
+                      <span className="mt-0.5 text-[9px] font-black leading-tight text-rose-400">
                         {t('audit.staminaDepleted')}
                       </span>
                       <span className="text-[8px] text-slate-400">{t('audit.cannotPresent')}</span>
                     </div>
                   ) : null}
 
-                  {/* 하단 캐릭터 프로필 & 타입 아이콘 & 스테미나 비주얼 게이지 바 */}
-                  <div className="relative z-10 flex flex-col justify-end p-2 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent pt-5 space-y-1">
+                  <div className="relative z-10 flex flex-col justify-end space-y-1 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent p-2 pt-5">
                     <div className="flex items-center justify-between gap-1">
-                      <h4 className="truncate text-xs font-black text-white drop-shadow-md">{characterDisplayName(creator, locale)}</h4>
+                      <h4 className="truncate text-xs font-black text-white drop-shadow-md">
+                        {characterDisplayName(creator, locale)}
+                      </h4>
                       <span
-                        className={`flex shrink-0 items-center rounded border px-1 py-0.5 text-[9px] font-black ${typeInfo.tone}`}
-                        title={getCreatorTypeDisplayName(cType, t)}
+                        className={`inline-flex shrink-0 items-center rounded-md border p-0.5 ${STAT_TYPE_CHIP_TONE[cType]}`}
+                        aria-label={typeLabel}
                       >
-                        <span>{typeInfo.icon}</span>
-                        <span className="ml-0.5 hidden sm:inline">{getCreatorTypeDisplayName(cType, t)}</span>
+                        <TypeStatIcon type={cType} className="h-4 w-4" />
                       </span>
                     </div>
                     <div className="flex items-center justify-end">
-                      <span className="rounded border border-violet-300/50 bg-violet-950/80 px-1.5 py-0.5 text-[9px] font-black text-violet-100">
-                        {t('creator.statMental')} {mental}
+                      <span className="rounded border border-violet-300/40 bg-violet-950/70 px-1.5 py-0.5 text-[9px] font-black text-violet-100">
+                        {mental}
                       </span>
                     </div>
 
-                    {/* 스테미나 실시간 프로그레스 게이지 바 */}
-                    <div className="flex flex-col space-y-0.5 border-t border-white/10 pt-1">
-                      <div className="flex items-center justify-between text-[8px] font-black text-amber-300">
-                        <span>⚡ STAMINA</span>
-                        <span className="tabular-nums font-bold text-slate-200">{currentStamina} / 100</span>
+                    <div
+                      className="flex flex-col space-y-0.5 border-t border-white/10 pt-1"
+                      title={`${t('creator.statStamina')} ${currentStamina}/100`}
+                    >
+                      <div className="flex items-center justify-between text-[8px] font-black text-slate-200">
+                        <BoltGlyph className="h-2.5 w-2.5 text-amber-300" />
+                        <span className="tabular-nums font-bold">{currentStamina}/100</span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-900 border border-white/15 shadow-inner">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full border border-white/15 bg-slate-900 shadow-inner">
                         <div
                           className="h-full rounded-full bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-300 transition-all duration-300"
                           style={{ width: `${Math.min(100, Math.max(0, currentStamina))}%` }}

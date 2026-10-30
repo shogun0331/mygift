@@ -208,9 +208,14 @@ import {
   type ScoutSystemState,
 } from '../game/scout'
 import {
+  getCasinoHighLowMinGrade,
+  getCasinoSlotMinGrade,
+  getHighLowEntryFeeForGrade,
+  getSlotEntryFeeForGrade,
   meetsSlotUnlockByRank,
   meetsSlotUnlockGrade,
   slotUnlockPriceOf,
+  STATION_TIER_LABEL,
 } from '../game/stationGradeConfig'
 
 import {
@@ -228,6 +233,7 @@ import { type ToxicWhackQteItem } from './ToxicWhackQte'
 import { CreatorPanel } from './CreatorPanel'
 import { RedDot } from './RedDot'
 import { DashboardPanel } from './DashboardPanel'
+import './dashboardModern.css'
 import { StaffSalaryRaiseModal } from './StaffSalaryRaiseModal'
 import { type ScoutedStaffCandidate } from '../game/characters'
 import { RecruitCardFlyFx, type RecruitFlyCard } from './RecruitCardFlyFx'
@@ -279,6 +285,7 @@ import {
 } from '../game/vip'
 import { FanMeetingModal } from './FanMeetingModal'
 import { MonthEventStrip, emptyMonthEvents, type MonthEventFlags } from './MonthEventStrip'
+import { HUD_UI_ASSETS } from '../ui/hudAssets'
 import type { FanCardState } from '../game/fanMeeting'
 import {
   createSocialSpawnState,
@@ -333,6 +340,7 @@ import { HighLowMinigame } from '../minigames/highlow/HighLowMinigame'
 import { loadHighLowConfig, loadHighLowConfigFromDisk } from '../minigames/highlow/highLowStore'
 import { type HighLowRoomId } from '../minigames/highlow/highLowConfig'
 import { CasinoSlotMachine } from '../minigames/slot/CasinoSlotMachine'
+import { CasinoLobby } from '../minigames/casino/CasinoLobby'
 
 export type GameTab =
   | 'dashboard'
@@ -347,7 +355,7 @@ const SPEED_OPTIONS = ['1x', '2x', '3x'] as const
 type SpeedOption = (typeof SPEED_OPTIONS)[number]
 
 const INITIAL_ASSETS = 200_000
-const MAX_RECENT_EVENTS = 24
+const MAX_RECENT_EVENTS = 36
 
 /**
  * /chapter_assets/events/{eventId}.json 을 fetch하고, loc/{lang}.json 번역 파일도
@@ -822,6 +830,7 @@ export function InGame({
         if (tag === 'input' || tag === 'textarea' || tag === 'select') {
           return
         }
+        if (broadcastPhaseRef.current === 'live') return
         setTab((prev) => (prev === 'settings' ? 'dashboard' : 'settings'))
       }
     }
@@ -928,7 +937,10 @@ export function InGame({
   )
   const [weeklyStatement, setWeeklyStatement] = useState<WeeklyStatement | null>(null)
   const [casinoTurnCount, setCasinoTurnCount] = useState(boot?.casinoTurnCount ?? 0) // 0..3 (3턴에 1번 활성화)
+  const [showCasinoLobby, setShowCasinoLobby] = useState(boot?.showCasinoLobby ?? false)
   const [showCasinoModal, setShowCasinoModal] = useState(boot?.showCasinoModal ?? false)
+  /** true only when entering casino from HUD; skip on return-from-game / save restore */
+  const casinoLobbyPlayOpeningRef = useRef(!(boot?.showCasinoLobby || boot?.showCasinoModal))
   const [activeCasinoRoomId, setActiveCasinoRoomId] = useState<HighLowRoomId | null>(null)
   const [showAchievementsModal, setShowAchievementsModal] = useState(false)
 
@@ -1149,6 +1161,9 @@ export function InGame({
   })
   const [fanMeetingTutorialSeen, setFanMeetingTutorialSeen] = useState(Boolean(boot?.fanMeetingTutorialSeen))
   const [examTutorialSeen, setExamTutorialSeen] = useState(Boolean(boot?.examTutorialSeen))
+  const [slotTutorialSeen, setSlotTutorialSeen] = useState(Boolean(boot?.slotTutorialSeen))
+  const [highLowTutorialSeen, setHighLowTutorialSeen] = useState(Boolean(boot?.highLowTutorialSeen))
+  const [casinoPractice, setCasinoPractice] = useState<'slot' | 'highlow' | null>(null)
   const [practiceKind, setPracticeKind] = useState<'fan' | 'exam' | null>(null)
   const [assetPreview, setAssetPreview] = useState(0)
   const [assetFlies, setAssetFlies] = useState<Array<{ id: number; amount: number }>>([])
@@ -1929,6 +1944,13 @@ export function InGame({
   fanMeetingTutorialSeenRef.current = fanMeetingTutorialSeen
   const examTutorialSeenRef = useRef(examTutorialSeen)
   examTutorialSeenRef.current = examTutorialSeen
+  const slotTutorialSeenRef = useRef(slotTutorialSeen)
+  slotTutorialSeenRef.current = slotTutorialSeen
+  const highLowTutorialSeenRef = useRef(highLowTutorialSeen)
+  highLowTutorialSeenRef.current = highLowTutorialSeen
+  const casinoPracticeRef = useRef(casinoPractice)
+  casinoPracticeRef.current = casinoPractice
+  const casinoPracticeReplayRef = useRef(false)
   const assetPreviewRef = useRef(0)
   const stationGradeRef = useRef(stationGrade)
   const annualRevenueByYearRef = useRef<Record<number, number>>(
@@ -1982,12 +2004,100 @@ export function InGame({
     seenCasinoTurnCountRef.current = casinoTurnCount
     casinoTurnCountRef.current = casinoTurnCount
   }
+  const showCasinoLobbyRef = useRef(showCasinoLobby)
+  showCasinoLobbyRef.current = showCasinoLobby
   const showCasinoModalRef = useRef(showCasinoModal)
   showCasinoModalRef.current = showCasinoModal
   const activeCasinoRoomIdRef = useRef(activeCasinoRoomId)
   activeCasinoRoomIdRef.current = activeCasinoRoomId
   /** 카지노 이용 중 월말 체인을 미뤄 둔 경우, 닫을 때 이어서 처리 */
   const resumeMonthEndAfterCasinoRef = useRef(false)
+
+  function isCasinoSessionOpen() {
+    return (
+      showCasinoLobbyRef.current ||
+      showCasinoModalRef.current ||
+      Boolean(activeCasinoRoomIdRef.current)
+    )
+  }
+
+  function closeCasinoSession() {
+    showCasinoLobbyRef.current = false
+    showCasinoModalRef.current = false
+    activeCasinoRoomIdRef.current = null
+    casinoPracticeRef.current = null
+    casinoPracticeReplayRef.current = false
+    setCasinoPractice(null)
+    setShowCasinoLobby(false)
+    setShowCasinoModal(false)
+    setActiveCasinoRoomId(null)
+    if (stationGradeRef.current !== 'top') {
+      casinoTurnCountRef.current = 0
+      setCasinoTurnCount(0)
+    }
+    flushAutoSave()
+    if (resumeMonthEndAfterCasinoRef.current) {
+      resumeMonthEndAfterCasinoRef.current = false
+      continueAfterMonthModals(pendingScoutAfterRankRef.current)
+    }
+  }
+
+  function returnToCasinoLobby() {
+    showCasinoModalRef.current = false
+    activeCasinoRoomIdRef.current = null
+    setShowCasinoModal(false)
+    setActiveCasinoRoomId(null)
+    casinoPracticeReplayRef.current = false
+    casinoPracticeRef.current = null
+    setCasinoPractice(null)
+    casinoLobbyPlayOpeningRef.current = false
+    showCasinoLobbyRef.current = true
+    setShowCasinoLobby(true)
+    scheduleAutoSave()
+  }
+
+  function openCasinoGame(kind: 'slot' | 'highlow', replay: boolean) {
+    const needsPractice =
+      replay || (kind === 'slot' ? !slotTutorialSeenRef.current : !highLowTutorialSeenRef.current)
+    casinoPracticeReplayRef.current = replay
+    casinoPracticeRef.current = needsPractice ? kind : null
+    setCasinoPractice(needsPractice ? kind : null)
+    showCasinoLobbyRef.current = false
+    setShowCasinoLobby(false)
+    if (kind === 'slot') {
+      activeCasinoRoomIdRef.current = null
+      setActiveCasinoRoomId(null)
+      showCasinoModalRef.current = true
+      setShowCasinoModal(true)
+    } else {
+      showCasinoModalRef.current = false
+      setShowCasinoModal(false)
+      activeCasinoRoomIdRef.current = 'local'
+      setActiveCasinoRoomId('local')
+    }
+    scheduleAutoSave()
+  }
+
+  function finishCasinoPractice() {
+    const kind = casinoPracticeRef.current
+    if (!kind) return
+    const replay = casinoPracticeReplayRef.current
+    if (kind === 'slot') {
+      slotTutorialSeenRef.current = true
+      setSlotTutorialSeen(true)
+    } else {
+      highLowTutorialSeenRef.current = true
+      setHighLowTutorialSeen(true)
+    }
+    casinoPracticeRef.current = null
+    casinoPracticeReplayRef.current = false
+    setCasinoPractice(null)
+    if (replay) {
+      returnToCasinoLobby()
+      return
+    }
+    scheduleAutoSave()
+  }
 
   function heldAssets() {
     const value = readAssetLedger(assetLedgerRef.current)
@@ -2073,6 +2183,7 @@ export function InGame({
       stationAuditTarget: stationAuditTargetRef.current,
       liveRevenueByCreator: liveRevenueByCreatorRef.current,
       casinoTurnCount: casinoTurnCountRef.current,
+      showCasinoLobby: showCasinoLobbyRef.current,
       showCasinoModal: showCasinoModalRef.current,
       notifiedPromotionExams: notifiedPromotionExamsRef.current,
       notifiedStationReviewKey: stationReviewOfferedRef.current,
@@ -2085,6 +2196,8 @@ export function InGame({
       currentMonthEvents: monthMarksRef.current,
       fanMeetingTutorialSeen: fanMeetingTutorialSeenRef.current,
       examTutorialSeen: examTutorialSeenRef.current,
+      slotTutorialSeen: slotTutorialSeenRef.current,
+      highLowTutorialSeen: highLowTutorialSeenRef.current,
       affectionVnQueue: affectionVnQueueRef.current,
       tutorialDone: tutorialDoneRef.current,
     }
@@ -3331,7 +3444,8 @@ export function InGame({
       creatorName: '',
       type: 'viewers',
       amount: 0,
-      text: `🔥 주간 대세 트렌드가 [${trendNameMap[nextTrend]}] 타입으로 변경되었습니다! (+35% 수익 보너스)`,
+      // Localized in formatSystemFeedText via id prefix — keep English fallback only
+      text: `Weekly trend updated to [${trendNameMap[nextTrend]}] type! (+35% revenue bonus)`,
       atMs: 0,
       tone: 'bg-pink-500',
     }
@@ -3774,7 +3888,8 @@ export function InGame({
         creatorName: '',
         type: 'viewers',
         amount: 0,
-        text: `🎰 ✨ [골든 베가스 카지노] 라운지가 오픈되었습니다! (하단 CASINO 탭)`,
+        // Localized in formatSystemFeedText via id prefix
+        text: 'casino-open',
         atMs: 0,
         tone: 'bg-amber-500',
       }
@@ -4394,7 +4509,7 @@ export function InGame({
 
   function continueAfterMonthModals(openScout: boolean) {
     // 카지노가 열려 있으면 월말 후속 팝업을 미룬다 (닫힌 뒤 재개)
-    if (showCasinoModalRef.current || activeCasinoRoomIdRef.current) {
+    if (isCasinoSessionOpen()) {
       pendingScoutAfterRankRef.current = openScout
       resumeMonthEndAfterCasinoRef.current = true
       setStartBroadcastLocked(true)
@@ -5351,7 +5466,7 @@ export function InGame({
       ? null
       : stationAuditTarget
         ? 'audit'
-        : showCasinoModal
+        : showCasinoLobby || showCasinoModal || activeCasinoRoomId
           ? 'casino'
           : broadcastPhase === 'live'
             ? 'live'
@@ -5453,12 +5568,8 @@ export function InGame({
       )
       if (activeCreators.length > 0) {
         const currentViewers = Math.max(10, leagueRef.current.viewers)
-        // 시청자 수 기반 채팅 확률 — 배치 수에 따라 총 스폰량 보정
-        const chatChance = Math.min(
-          0.55,
-          (0.05 + Math.log10(currentViewers) * 0.12) / Math.sqrt(assignedCount),
-        )
-        const chatBurst = 1
+        const chatChance = Math.min(0.85, 0.28 + Math.log10(currentViewers) * 0.12)
+        const chatBurst = currentViewers >= 800 ? 2 : 1
 
         if (Math.random() < chatChance) {
           for (let i = 0; i < chatBurst; i++) {
@@ -5874,115 +5985,7 @@ export function InGame({
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-1 items-center justify-center gap-2 lg:gap-3">
-          {broadcastPhase !== 'live' ? (
-            <div className="game-hud-strip game-hud-strip--goal shrink-0">
-              <div className="game-hud-cell game-hud-cell--quest shrink-0">
-                <style>{`@keyframes qxFlash{0%{transform:translate(-50%,-50%) scale(.5);opacity:.95}100%{transform:translate(-50%,-50%) scale(2.7);opacity:0}}@keyframes qxPop{0%{transform:translate(-50%,-50%) scale(.3) rotate(0);opacity:0}12%{opacity:1}100%{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(1.15) rotate(120deg);opacity:0}}`}</style>
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="relative shrink-0">
-                    {questKind && questTargetImg ? (
-                      <img
-                        src={questTargetImg}
-                        alt=""
-                        className={`relative z-10 h-10 w-10 rounded-full object-cover ring-2 ${
-                          questDone ? 'ring-emerald-400' : 'ring-white/25'
-                        }`}
-                      />
-                    ) : (
-                      <span className="relative z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-800/80 text-2xl leading-none">
-                        {questKind ? QUEST_DEFS[questKind].icon : '🎯'}
-                      </span>
-                    )}
-                    {questFx ? (
-                      <>
-                        <span
-                          aria-hidden
-                          className="pointer-events-none absolute left-1/2 top-1/2 h-12 w-12 rounded-full bg-emerald-300/40"
-                          style={{ animation: 'qxFlash .75s ease-out forwards' }}
-                        />
-                        {Array.from({ length: 10 }).map((_, i) => {
-                          const ang = (i / 10) * Math.PI * 2
-                          const dist = i % 2 === 0 ? 30 : 20
-                          return (
-                            <span
-                              key={i}
-                              aria-hidden
-                              className="pointer-events-none absolute left-1/2 top-1/2 text-sm font-black"
-                              style={
-                                {
-                                  '--tx': `${Math.round(Math.cos(ang) * dist)}px`,
-                                  '--ty': `${Math.round(Math.sin(ang) * dist - 6)}px`,
-                                  color:
-                                    i % 3 === 0
-                                      ? '#fde68a'
-                                      : i % 3 === 1
-                                        ? '#f0abfc'
-                                        : '#6ee7b7',
-                                  animation: 'qxPop .95s ease-out forwards',
-                                  animationDelay: `${i * 26}ms`,
-                                  textShadow: '0 0 8px currentColor',
-                                } as React.CSSProperties
-                              }
-                            >
-                              ✦
-                            </span>
-                          )
-                        })}
-                      </>
-                    ) : null}
-                    {questDone ? (
-                      <span className="absolute -bottom-0.5 -right-0.5 z-20 inline-flex h-4 w-4 items-center justify-center rounded-full border border-emerald-300 bg-emerald-500 text-[10px] font-black leading-none text-white">
-                        ✔
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="flex min-w-0 flex-col">
-                    <p className="game-stat-label">{t('mission.label')}</p>
-                    <p className="truncate text-[13px] font-black leading-tight text-slate-100">
-                      {questKind
-                        ? t(
-                            QUEST_DEFS[questKind].textKey,
-                            questTargetId
-                              ? { name: creatorNameOf(questTargetId) }
-                              : undefined,
-                          )
-                        : '—'}
-                    </p>
-                    {questDone && questReward > 0 ? (
-                      <p className="truncate text-[10px] font-black leading-none text-emerald-300">
-                        {t('mission.reward', { reward: formatMoney(questReward) })}
-                      </p>
-                    ) : null}
-                    {questReaction ? (
-                      <p className="mt-1 max-w-[230px] rounded-md border border-white/10 bg-slate-900/80 px-1.5 py-1 text-[11px] font-semibold leading-snug text-white/95 shadow">
-                        <span className="mr-0.5 text-amber-300">“</span>
-                        {questReaction}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
-              <div className="game-hud-cell game-hud-cell--next-goal">
-                <div className="game-hud-cell-head">
-                  <IconHudNextGoal />
-                  <p className="game-stat-label">{t('hud.nextGoal')}</p>
-                </div>
-                <div
-                  className={`game-hud-goal-progress${nextGoalMet ? ' is-met' : ''}${
-                    !stationReviewHud.next ? ' is-maxed' : ''
-                  }`}
-                  title={nextGoalCountLabel}
-                >
-                  <div
-                    className="game-hud-goal-progress-fill"
-                    style={{ width: `${nextGoalPct}%` }}
-                  />
-                  <span className="game-hud-goal-progress-text">{nextGoalCountLabel}</span>
-                </div>
-              </div>
-            </div>
-          ) : null}
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:gap-3">
           {broadcastPhase === 'live' ? (
             <div className="game-panel min-w-0 max-w-md flex-1 rounded-xl border border-pink-400/35 px-3 py-2 shadow-[0_0_18px_rgba(255,42,116,0.12)] sm:px-4">
               <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
@@ -6015,76 +6018,212 @@ export function InGame({
               </div>
             </div>
           ) : null}
-        </div>
 
-        <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
-          <div className="game-hud-strip min-w-0">
-            <MonthEventStrip
-              previous={lastMonthEvents}
-              current={{
-                fanMeeting: monthMarks.fanMeeting || fanMeetingDue,
-                casino: monthMarks.casino || isCasinoAvailable,
-              }}
-              next={{
-                fanMeeting:
-                  stationTierRank(stationGrade) >= stationTierRank('sme') &&
-                  !(monthMarks.fanMeeting || fanMeetingDue) &&
-                  fanMeetingWait === 1,
-                casino:
-                  stationTierRank(stationGrade) >= stationTierRank('sme') &&
-                  (stationGrade === 'top' ||
-                    (!isCasinoAvailable &&
-                      casinoTurnCount + 1 >= getCasinoRequiredTurns(stationGrade))),
-              }}
-            />
-            <div className="game-hud-cell game-hud-cell--rank">
-              <div className="game-hud-cell-head">
-                <IconHudRank />
-                <p className="game-stat-label">{t('hud.stationRank')}</p>
+          <div className="game-hud-bar min-w-0">
+            {broadcastPhase !== 'live' ? (
+              <div
+                className="game-hud-group game-hud-group--quest"
+                aria-label={t('mission.label')}
+              >
+                <style>{`@keyframes qxFlash{0%{transform:translate(-50%,-50%) scale(.5);opacity:.95}100%{transform:translate(-50%,-50%) scale(2.7);opacity:0}}@keyframes qxPop{0%{transform:translate(-50%,-50%) scale(.3) rotate(0);opacity:0}12%{opacity:1}100%{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(1.15) rotate(120deg);opacity:0}}`}</style>
+                <div className="relative shrink-0">
+                  {questKind && questTargetImg ? (
+                    <img
+                      src={questTargetImg}
+                      alt=""
+                      className={`relative z-10 h-9 w-9 rounded-full object-cover ring-2 ${
+                        questDone ? 'ring-emerald-400' : 'ring-white/25'
+                      }`}
+                    />
+                  ) : (
+                    <span className="relative z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-800/80 text-xl leading-none">
+                      {questKind ? QUEST_DEFS[questKind].icon : '🎯'}
+                    </span>
+                  )}
+                  {questFx ? (
+                    <>
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute left-1/2 top-1/2 h-12 w-12 rounded-full bg-emerald-300/40"
+                        style={{ animation: 'qxFlash .75s ease-out forwards' }}
+                      />
+                      {Array.from({ length: 10 }).map((_, i) => {
+                        const ang = (i / 10) * Math.PI * 2
+                        const dist = i % 2 === 0 ? 30 : 20
+                        return (
+                          <span
+                            key={i}
+                            aria-hidden
+                            className="pointer-events-none absolute left-1/2 top-1/2 text-sm font-black"
+                            style={
+                              {
+                                '--tx': `${Math.round(Math.cos(ang) * dist)}px`,
+                                '--ty': `${Math.round(Math.sin(ang) * dist - 6)}px`,
+                                color:
+                                  i % 3 === 0
+                                    ? '#fde68a'
+                                    : i % 3 === 1
+                                      ? '#f0abfc'
+                                      : '#6ee7b7',
+                                animation: 'qxPop .95s ease-out forwards',
+                                animationDelay: `${i * 26}ms`,
+                                textShadow: '0 0 8px currentColor',
+                              } as React.CSSProperties
+                            }
+                          >
+                            ✦
+                          </span>
+                        )
+                      })}
+                    </>
+                  ) : null}
+                  {questDone ? (
+                    <span className="absolute -bottom-0.5 -right-0.5 z-20 inline-flex h-4 w-4 items-center justify-center rounded-full border border-emerald-300 bg-emerald-500 text-[10px] font-black leading-none text-white">
+                      ✔
+                    </span>
+                  ) : null}
+                </div>
+                <div className="game-hud-quest-copy min-w-0">
+                  <div className="flex min-w-0 items-start gap-2">
+                    <p className="game-hud-quest-title truncate">
+                      {questKind
+                        ? t(
+                            QUEST_DEFS[questKind].textKey,
+                            questTargetId
+                              ? { name: creatorNameOf(questTargetId) }
+                              : undefined,
+                          )
+                        : '—'}
+                    </p>
+                    {questDone && questReward > 0 ? (
+                      <span className="game-hud-quest-reward shrink-0">
+                        <img
+                          src={HUD_UI_ASSETS.coin}
+                          alt=""
+                          className="hud-ico hud-ico--sm"
+                          draggable={false}
+                        />
+                        <span>+{formatMoney(questReward)}</span>
+                      </span>
+                    ) : null}
+                  </div>
+                  {questReaction ? (
+                    <p className="game-hud-quest-reaction truncate">
+                      “{questReaction}
+                    </p>
+                  ) : null}
+                </div>
+                <div
+                  className={`game-hud-goal-progress${nextGoalMet ? ' is-met' : ''}${
+                    !stationReviewHud.next ? ' is-maxed' : ''
+                  }`}
+                  title={nextGoalCountLabel}
+                  aria-label={nextGoalCountLabel}
+                >
+                  <div
+                    className="game-hud-goal-progress-fill"
+                    style={{ width: `${nextGoalPct}%` }}
+                  />
+                  <span className="game-hud-goal-progress-text">{nextGoalCountLabel}</span>
+                </div>
               </div>
-              <p className="game-stat-value tabular-nums">
-                {league.currentRank}
-                {t('ranking.rankUnit')}
-              </p>
-              <p className="game-hud-rank-company">
-                {t(companyTierLabelKey(stationGrade))}
-              </p>
+            ) : null}
+
+            <div className="game-hud-group game-hud-group--schedule">
+              <MonthEventStrip
+                previous={lastMonthEvents}
+                current={{
+                  fanMeeting: monthMarks.fanMeeting || fanMeetingDue,
+                  casino: monthMarks.casino || isCasinoAvailable,
+                }}
+                next={{
+                  fanMeeting:
+                    stationTierRank(stationGrade) >= stationTierRank('sme') &&
+                    !(monthMarks.fanMeeting || fanMeetingDue) &&
+                    fanMeetingWait === 1,
+                  casino:
+                    stationTierRank(stationGrade) >= stationTierRank('sme') &&
+                    (stationGrade === 'top' ||
+                      (!isCasinoAvailable &&
+                        casinoTurnCount + 1 >= getCasinoRequiredTurns(stationGrade))),
+                }}
+              />
             </div>
-            <div className="game-hud-cell game-hud-cell--viewers">
-              <div className="game-hud-cell-head">
-                <IconHudViewers />
-                <p className="game-stat-label">{t('hud.viewers')}</p>
+
+            <div className="game-hud-group game-hud-group--stats">
+              <div
+                className="game-hud-stat"
+                aria-label={`${t('hud.stationRank')} ${league.currentRank}`}
+              >
+                <span className="game-hud-stat-ico" aria-hidden>
+                  <IconHudRank />
+                </span>
+                <div className="game-hud-stat-copy">
+                  <p className="game-hud-stat-value tabular-nums">
+                    {league.currentRank}
+                    <span className="game-hud-stat-unit">{t('ranking.rankUnit')}</span>
+                  </p>
+                  <p className="game-hud-stat-sub">
+                    {t(companyTierLabelKey(stationGrade))}
+                  </p>
+                </div>
               </div>
-              <p className="game-stat-value tabular-nums">
-                {formatViewers(league.viewers)}
-                {viewerCap != null ? (
-                  <span className="text-slate-500/80"> / {formatViewers(viewerCap)}</span>
-                ) : null}
-                {t('ranking.viewersUnit')}
-              </p>
-            </div>
-            <div className="game-hud-cell game-hud-cell--assets">
-              <div className="game-hud-cell-head">
-                <IconHudAssets />
-                <p className="game-stat-label">{t('hud.assets')}</p>
+              <div className="game-hud-stat-divider" aria-hidden />
+              <div
+                className="game-hud-stat"
+                aria-label={`${t('hud.viewers')} ${formatViewers(league.viewers)}`}
+              >
+                <span className="game-hud-stat-ico" aria-hidden>
+                  <IconHudViewers />
+                </span>
+                <div className="game-hud-stat-copy">
+                  <p className="game-hud-stat-value tabular-nums">
+                    {formatViewers(league.viewers)}
+                    {viewerCap != null ? (
+                      <span className="game-hud-stat-cap"> / {formatViewers(viewerCap)}</span>
+                    ) : null}
+                  </p>
+                  <p className="game-hud-stat-sub">{t('ranking.viewersUnit')}</p>
+                </div>
               </div>
-              <p data-hud-assets className="game-stat-value tabular-nums">{formatAssets(assets + assetPreview)}</p>
-              {assetFlies.map((fly) => (
-                <span key={fly.id} className="asset-fly">+{formatMoney(fly.amount)}</span>
-              ))}
+              <div className="game-hud-stat-divider" aria-hidden />
+              <div
+                className="game-hud-stat game-hud-stat--assets"
+                aria-label={`${t('hud.assets')} ${formatAssets(assets + assetPreview)}`}
+              >
+                <span className="game-hud-stat-ico" aria-hidden>
+                  <IconHudAssets />
+                </span>
+                <div className="game-hud-stat-copy">
+                  <p data-hud-assets className="game-hud-stat-value game-hud-stat-value--gold tabular-nums">
+                    {formatAssets(assets + assetPreview)}
+                  </p>
+                </div>
+                {assetFlies.map((fly) => (
+                  <span key={fly.id} className="asset-fly">
+                    +{formatMoney(fly.amount)}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
           <button
             type="button"
-            onClick={() => setTab('settings')}
+            onClick={() => {
+              if (broadcastPhase === 'live') return
+              setTab('settings')
+            }}
+            disabled={broadcastPhase === 'live'}
             title={t('menu.settings')}
             aria-label={t('menu.settings')}
             aria-pressed={tab === 'settings'}
             className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition ${
-              tab === 'settings'
-                ? 'border-pink-400/50 bg-pink-500/20 text-pink-200 shadow-[0_0_14px_rgba(255,42,116,0.25)]'
-                : 'border-white/15 bg-slate-950/70 text-slate-300 hover:border-indigo-400/40 hover:text-indigo-200'
+              broadcastPhase === 'live'
+                ? 'cursor-not-allowed border-white/10 bg-slate-950/40 text-slate-600 opacity-40'
+                : tab === 'settings'
+                  ? 'border-pink-400/50 bg-pink-500/20 text-pink-200 shadow-[0_0_14px_rgba(255,42,116,0.25)]'
+                  : 'border-white/15 bg-slate-950/70 text-slate-300 hover:border-indigo-400/40 hover:text-indigo-200'
             }`}
           >
             <IconSettings />
@@ -6575,11 +6714,9 @@ export function InGame({
                     // 월말 모달 체인(호감도→연봉 등) 중에는 카지노 진입 금지
                     if (startBroadcastLocked) return
                     if (isCasinoAvailable) {
-                      if (Math.random() < 0.5) {
-                        setActiveCasinoRoomId('local')
-                      } else {
-                        setShowCasinoModal(true)
-                      }
+                      casinoLobbyPlayOpeningRef.current = true
+                      showCasinoLobbyRef.current = true
+                      setShowCasinoLobby(true)
                       scheduleAutoSave()
                     }
                     return
@@ -6631,33 +6768,72 @@ export function InGame({
       )}
 
       {/* -------------------------------------------------------------------- */}
+      {/* CASINO LOBBY — choose Slot / High-Low                               */}
+      {/* -------------------------------------------------------------------- */}
+      {showCasinoLobby && !showCasinoModal && !activeCasinoRoomId && (
+        <div className="fixed inset-0 z-[99990] bg-slate-950 animate-fade-in select-none">
+          <CasinoLobby
+            stationGrade={stationGrade}
+            stationGradeConfig={stationGradeConfig}
+            assets={assets}
+            playOpening={casinoLobbyPlayOpeningRef.current}
+            onEnterSlot={(fee) => {
+              if (!spendAssets(fee)) return
+              openCasinoGame('slot', false)
+            }}
+            onEnterHighLow={(fee) => {
+              if (!spendAssets(fee)) return
+              openCasinoGame('highlow', false)
+            }}
+            onTutorialSlot={() => openCasinoGame('slot', true)}
+            onTutorialHighLow={() => openCasinoGame('highlow', true)}
+            onExit={closeCasinoSession}
+            onBlocked={(reason, game) => {
+              const minGrade =
+                game === 'slot'
+                  ? getCasinoSlotMinGrade(stationGradeConfig)
+                  : getCasinoHighLowMinGrade(stationGradeConfig)
+              const gradeKey = companyTierLabelKey(minGrade)
+              const gradeLabelRaw = t(gradeKey)
+              const gradeLabel =
+                gradeLabelRaw === gradeKey ? STATION_TIER_LABEL[minGrade] : gradeLabelRaw
+              if (reason === 'grade') {
+                window.alert(t('casino.alertGradeRequired', { grade: gradeLabel }))
+                return
+              }
+              const feeValue =
+                game === 'slot'
+                  ? getSlotEntryFeeForGrade(stationGradeConfig, stationGrade)
+                  : getHighLowEntryFeeForGrade(stationGradeConfig, stationGrade)
+              window.alert(
+                t('casino.alertNotEnoughAssets', { fee: feeValue.toLocaleString() }),
+              )
+            }}
+          />
+        </div>
+      )}
+
+      {/* -------------------------------------------------------------------- */}
       {/* 3x3 REEL SLOT MACHINE FULLSCREEN MODAL                              */}
       {/* -------------------------------------------------------------------- */}
       {showCasinoModal && (
-        <div className="fixed inset-0 z-[99990] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-2 sm:p-4 animate-fade-in select-none">
+        <div className="fixed inset-0 z-[99991] bg-slate-950 animate-fade-in select-none">
           <GoldenVegasLoungeBackground />
-
-          <div className="relative w-full max-w-4xl h-auto max-h-[96vh] rounded-3xl bg-slate-950/95 border-2 border-amber-400/80 shadow-[0_0_90px_rgba(245,158,11,0.45),inset_0_0_30px_rgba(245,158,11,0.15)] flex flex-col overflow-hidden z-10 my-auto p-1 sm:p-2">
+          <div className="absolute inset-0 z-10 flex flex-col overflow-hidden">
             <CasinoSlotMachine
+              key={casinoPractice === 'slot' ? 'slot-practice' : 'slot-live'}
               stationGrade={stationGradeRef.current}
               userAssets={assets}
+              practice={casinoPractice === 'slot'}
+              practiceReplay={casinoPractice === 'slot' && casinoPracticeReplayRef.current}
+              onPracticeDone={finishCasinoPractice}
               onUpdateAssets={(newAssets) => {
+                if (casinoPracticeRef.current === 'slot') return
                 commitAssets(heldAssets() + (newAssets - assets))
                 scheduleAutoSave()
               }}
-              onClose={() => {
-                showCasinoModalRef.current = false
-                setShowCasinoModal(false)
-                if (stationGradeRef.current !== 'top') {
-                  casinoTurnCountRef.current = 0
-                  setCasinoTurnCount(0)
-                }
-                flushAutoSave()
-                if (resumeMonthEndAfterCasinoRef.current) {
-                  resumeMonthEndAfterCasinoRef.current = false
-                  continueAfterMonthModals(pendingScoutAfterRankRef.current)
-                }
-              }}
+              onClose={returnToCasinoLobby}
+              onDefeatExit={closeCasinoSession}
             />
           </div>
         </div>
@@ -6672,30 +6848,24 @@ export function InGame({
 
           <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(245,158,11,0.5),inset_0_0_40px_rgba(245,158,11,0.2)] border-2 border-amber-400/80 bg-slate-950 flex flex-col z-10 my-auto">
             <HighLowMinigame
+              key={casinoPractice === 'highlow' ? 'highlow-practice' : 'highlow-live'}
               configs={highLowConfigs}
               customAnte={getHighLowAnteForGrade(stationGradeConfig, stationGradeRef.current)}
+              practice={casinoPractice === 'highlow'}
+              practiceReplay={casinoPractice === 'highlow' && casinoPracticeReplayRef.current}
+              onPracticeDone={finishCasinoPractice}
               userChipsMap={{
                 local: assets,
                 star: assets,
                 legend: assets,
               }}
               onUpdateChips={(_roomId, newAssets) => {
+                if (casinoPracticeRef.current === 'highlow') return
                 if (newAssets < assets) playSfx('asset-spend')
                 commitAssets(heldAssets() + (newAssets - assets))
               }}
-              onClose={() => {
-                activeCasinoRoomIdRef.current = null
-                setActiveCasinoRoomId(null)
-                if (stationGradeRef.current !== 'top') {
-                  casinoTurnCountRef.current = 0
-                  setCasinoTurnCount(0)
-                }
-                flushAutoSave()
-                if (resumeMonthEndAfterCasinoRef.current) {
-                  resumeMonthEndAfterCasinoRef.current = false
-                  continueAfterMonthModals(pendingScoutAfterRankRef.current)
-                }
-              }}
+              onClose={returnToCasinoLobby}
+              onDefeatExit={closeCasinoSession}
               initialRoomId={activeCasinoRoomId}
             />
           </div>

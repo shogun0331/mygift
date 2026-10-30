@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { formatMoney } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { useTranslation } from '../locales/i18n'
+import { DASHBOARD_UI_ASSETS } from '../ui/dashboardAssets'
 
 export type LiveRankRow = {
   id: string
@@ -69,14 +70,13 @@ function RollingMoney({ value, className }: { value: number; className?: string 
 
 function RankCrown() {
   return (
-    <svg className="live-rank-crown" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M4 16.5 6.2 8.2 10 12.2 12 6.5l2 5.7 3.8-4 2.2 8.3H4Z"
-        fill="currentColor"
-        opacity="0.95"
-      />
-      <path d="M5 18.2h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
+    <img
+      src={DASHBOARD_UI_ASSETS.rankCrown}
+      alt=""
+      draggable={false}
+      className="dash-rank-crown-img live-rank-crown"
+      aria-hidden
+    />
   )
 }
 

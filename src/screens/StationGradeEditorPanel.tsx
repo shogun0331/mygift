@@ -12,13 +12,21 @@ import { FanMeetingStatement } from './FanMeetingStatement'
 import type { FanCardState } from '../game/fanMeeting'
 import { hasPlayableFan } from '../game/vip'
 import {
+  DEFAULT_CASINO_HIGH_LOW_MIN_GRADE,
+  DEFAULT_CASINO_SLOT_MIN_GRADE,
+  DEFAULT_HIGH_LOW_ENTRY_FEE,
+  DEFAULT_SLOT_ENTRY_FEE,
   DEFAULT_SLOT_UNLOCK_MIN_GRADES,
   DEFAULT_SLOT_UNLOCK_PRICES,
   STATION_TIER_LABEL,
   STATION_TIER_ORDER,
   defaultAuditConfig,
   defaultVipConfig,
+  getCasinoHighLowMinGrade,
+  getCasinoSlotMinGrade,
   getHighLowAnteForGrade,
+  getHighLowEntryFeeForGrade,
+  getSlotEntryFeeForGrade,
   tierMaxRank,
   tierViewerCap,
   type CreatorCountRequirement,
@@ -193,6 +201,60 @@ export function StationGradeEditorPanel({
         </div>
       </section>
 
+      <section className="mt-6 rounded-xl border border-amber-500/30 bg-black/20 p-4">
+        <h3 className="text-sm font-bold text-amber-200">카지노 로비 해금 등급</h3>
+        <p className="mt-1 text-[11px] text-slate-500">
+          슬롯·하이로우 각각 입장에 필요한 최소 방송국 등급입니다. 등급별 입장료는 아래 티어 카드에서
+          설정합니다.
+        </p>
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label className="block text-xs font-semibold text-slate-400">
+            슬롯 최소 등급
+            <select
+              className={fieldClassName}
+              value={getCasinoSlotMinGrade(config)}
+              onChange={(event) =>
+                onConfigChange({
+                  ...config,
+                  casinoSlotMinGrade: event.target.value as StationTierId,
+                })
+              }
+            >
+              {STATION_TIER_ORDER.map((tier) => (
+                <option key={tier} value={tier}>
+                  {STATION_TIER_LABEL[tier]}
+                </option>
+              ))}
+            </select>
+            <span className="mt-1 block text-[10px] font-normal text-slate-500">
+              기본: {STATION_TIER_LABEL[DEFAULT_CASINO_SLOT_MIN_GRADE]}
+            </span>
+          </label>
+          <label className="block text-xs font-semibold text-slate-400">
+            하이로우 최소 등급
+            <select
+              className={fieldClassName}
+              value={getCasinoHighLowMinGrade(config)}
+              onChange={(event) =>
+                onConfigChange({
+                  ...config,
+                  casinoHighLowMinGrade: event.target.value as StationTierId,
+                })
+              }
+            >
+              {STATION_TIER_ORDER.map((tier) => (
+                <option key={tier} value={tier}>
+                  {STATION_TIER_LABEL[tier]}
+                </option>
+              ))}
+            </select>
+            <span className="mt-1 block text-[10px] font-normal text-slate-500">
+              기본: {STATION_TIER_LABEL[DEFAULT_CASINO_HIGH_LOW_MIN_GRADE]}
+            </span>
+          </label>
+        </div>
+      </section>
+
       <section className="mt-6 rounded-xl border border-white/10 bg-black/20 p-4">
         <h3 className="text-sm font-bold text-cyan-200">슬롯 해금 조건 (공통)</h3>
         <p className="mt-1 text-[11px] text-slate-500">
@@ -265,7 +327,7 @@ export function StationGradeEditorPanel({
             <section key={tier} className="rounded-xl border border-white/10 bg-black/20 p-4">
               <h3 className="text-sm font-bold text-amber-200">{STATION_TIER_LABEL[tier]}</h3>
 
-              <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 <label className="block text-xs font-semibold text-slate-400">
                   스카우트 인원 상한
                   <div className="mt-1.5">
@@ -308,6 +370,54 @@ export function StationGradeEditorPanel({
                       }
                     />
                   </div>
+                </label>
+                <label className="block text-xs font-semibold text-pink-300">
+                  슬롯 입장료 ($)
+                  <div className="mt-1.5">
+                    <NumericInput
+                      value={getSlotEntryFeeForGrade(config, tier)}
+                      min={0}
+                      unitLabel="$"
+                      quickPresets={[
+                        { label: '+$1천', amount: 1000 },
+                        { label: '+$5천', amount: 5000 },
+                        { label: '+$2만', amount: 20000 },
+                        { label: '초기화', amount: 'reset' },
+                      ]}
+                      onChange={(nextVal) =>
+                        setTierField(tier, {
+                          slotEntryFee: nextVal,
+                        })
+                      }
+                    />
+                  </div>
+                  <span className="mt-1 block text-[10px] font-normal text-slate-500">
+                    기본 {formatMoney(DEFAULT_SLOT_ENTRY_FEE[tier] ?? 0)}
+                  </span>
+                </label>
+                <label className="block text-xs font-semibold text-rose-300">
+                  하이로우 입장료 ($)
+                  <div className="mt-1.5">
+                    <NumericInput
+                      value={getHighLowEntryFeeForGrade(config, tier)}
+                      min={0}
+                      unitLabel="$"
+                      quickPresets={[
+                        { label: '+$1천', amount: 1000 },
+                        { label: '+$1만', amount: 10000 },
+                        { label: '+$4만', amount: 40000 },
+                        { label: '초기화', amount: 'reset' },
+                      ]}
+                      onChange={(nextVal) =>
+                        setTierField(tier, {
+                          highLowEntryFee: nextVal,
+                        })
+                      }
+                    />
+                  </div>
+                  <span className="mt-1 block text-[10px] font-normal text-slate-500">
+                    기본 {formatMoney(DEFAULT_HIGH_LOW_ENTRY_FEE[tier] ?? 0)}
+                  </span>
                 </label>
                 <div className="block text-xs font-semibold text-slate-500">
                   시청자 상한 (자동)

@@ -82,6 +82,8 @@ export type GameSave = {
   /** 카지노 쿨다운 턴 카운트 (0~3) 및 모달 상태 */
   casinoTurnCount?: number
   showCasinoModal?: boolean
+  /** 카지노 로비(게임 선택) 오픈 여부 */
+  showCasinoLobby?: boolean
   /** 이미 팝업으로 안내한 크리에이터 승급심사 키 목록 (creatorId:targetGrade) */
   notifiedPromotionExams?: string[]
   /** 이미 안내한 방송국 승급심사 팝업 키 (currentGrade:nextGrade) — 해당 구간 1회만 */
@@ -104,6 +106,10 @@ export type GameSave = {
   fanMeetingTutorialSeen?: boolean
   /** 승급심사 연습 튜토리얼을 한 번 봤는지 */
   examTutorialSeen?: boolean
+  /** 슬롯 연습 튜토리얼을 한 번 봤는지 */
+  slotTutorialSeen?: boolean
+  /** 하이로우 연습 튜토리얼을 한 번 봤는지 */
+  highLowTutorialSeen?: boolean
   /** 호감도 데이트 대기열. 한 턴에 맨 앞 한 명만 재생한다 */
   affectionVnQueue?: string[]
   /** 첫 튜토리얼 완료 여부 */

@@ -6,14 +6,17 @@ import {
   type CasinoItem,
   type CasinoItemType,
   CASINO_ITEMS_INFO,
+  HIGH_LOW_UI_ASSETS,
   SUIT_SYMBOLS,
   SUIT_COLORS,
   getCardDisplayValue,
   calculatePayout,
   createDeck,
+  drawDealerCard,
   rollRewardItem,
   getActiveDealerMedia,
 } from './highLowConfig'
+import './highLowPanel.css'
 import { useTranslation } from '../../locales/i18n'
 import { HighLowDealerDialogue, type DealerDialoguePlay } from './HighLowDealerDialogue'
 import { resolveMediaSrc } from '../../game/mediaUrl'
@@ -26,6 +29,7 @@ import {
   playItemUseSound,
 } from '../../game/uiSfx'
 import { unlockAchievement } from '../../game/achievements'
+import { CasinoPracticeCoach } from '../casino/CasinoPracticeCoach'
 
 export type GamePhase =
   | 'LOBBY'
@@ -39,8 +43,15 @@ export interface HighLowMinigameProps {
   userChipsMap: Record<HighLowRoomId, number>
   onUpdateChips: (roomId: HighLowRoomId, newChips: number) => void
   onClose?: () => void
+  /** 패배 시 카지노 세션 전체 종료 (로비로 복귀하지 않음) */
+  onDefeatExit?: () => void
   initialRoomId?: HighLowRoomId
   customAnte?: number
+  /** 자산·퇴장이 적용되지 않는 연습 한 판 */
+  practice?: boolean
+  /** 로비 다시보기. 결과 문구만 달라진다 */
+  practiceReplay?: boolean
+  onPracticeDone?: () => void
 }
 
 interface LogEntry {
@@ -132,13 +143,11 @@ const CUSTOM_HIGH_LOW_STYLES = `
 @keyframes goldenCardPulse {
   0%, 100% {
     transform: scale(1) translateY(0);
-    box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
-    border-color: rgba(251, 191, 36, 0.8);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
   }
   50% {
-    transform: scale(1.06) translateY(-6px);
-    box-shadow: 0 0 50px rgba(245, 158, 11, 0.95), 0 0 20px rgba(255, 255, 255, 0.8);
-    border-color: rgba(255, 235, 59, 1);
+    transform: scale(1.04) translateY(-4px);
+    filter: drop-shadow(0 12px 22px rgba(180, 140, 60, 0.35));
   }
 }
 
@@ -285,8 +294,7 @@ const CUSTOM_HIGH_LOW_STYLES = `
 `
 
 /* -------------------------------------------------------------------------- */
-/*  트럼프 카드 렌더링 컴포넌트 (.hl-card / .hl-card-back)                     */
-/*  (부드러운 Scale Down 핑퐁 & Fade 연출 - 모서리 깨짐 0%)                   */
+/*  트럼프 카드 — 이미지 플레이트 + 랭크/슈트 오버레이                        */
 /* -------------------------------------------------------------------------- */
 export const CardView: React.FC<{
   card?: Card | null
@@ -308,55 +316,35 @@ export const CardView: React.FC<{
   isPeeking = false,
 }) => {
   const cardSizeClass = isLarge
-    ? 'w-28 h-40 sm:w-36 sm:h-52 lg:w-40 lg:h-56'
-    : 'w-24 h-34 sm:w-28 sm:h-40 lg:w-32 lg:h-44'
+    ? 'w-32 sm:w-40 lg:w-44 aspect-[2/3]'
+    : 'w-28 sm:w-32 lg:w-36 aspect-[2/3]'
 
   const isClickable = !!onClick && !isFaceUp
+  const plateStyle = {
+    ['--hl-card-back' as string]: `url(${HIGH_LOW_UI_ASSETS.cardBack})`,
+    ['--hl-card-front' as string]: `url(${HIGH_LOW_UI_ASSETS.cardFront})`,
+  } as React.CSSProperties
 
-  // 뒷면 카드
   const renderBackView = () => (
     <div
       onClick={onClick}
-      className={`hl-card-back relative flex flex-col items-center justify-center ${cardSizeClass} rounded-2xl border-2 ${
-        isClickable
-          ? 'border-amber-400 animate-golden-card-pulse cursor-pointer'
-          : 'border-amber-400/70 shadow-[0_0_30px_rgba(245,158,11,0.35)]'
-      } bg-slate-950 select-none transition-all duration-200 hover:scale-[1.07] hover:border-yellow-300 overflow-hidden ${className}`}
+      style={plateStyle}
+      className={`hl-card-back relative flex flex-col items-center justify-center ${cardSizeClass} select-none transition-transform duration-200 hover:scale-[1.04] ${
+        isClickable ? 'animate-golden-card-pulse cursor-pointer' : ''
+      } ${className}`}
     >
-      <div className="absolute inset-1.5 rounded-xl border border-amber-400/40 bg-slate-900 flex flex-col items-center justify-center p-2 overflow-hidden">
-        <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#f59e0b_1.5px,transparent_1.5px)] [background-size:10px_10px]" />
-        <div className="w-full h-full border border-amber-400/30 rounded-lg flex flex-col items-center justify-center p-2 bg-slate-950/90">
-          <svg
-            className="w-10 h-10 text-amber-400 animate-pulse"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <polygon points="12 2 2 7 12 12 22 7 12 2" strokeWidth="1.5" />
-            <polyline points="2 17 12 22 22 17" strokeWidth="1.5" />
-            <polyline points="2 12 12 17 22 12" strokeWidth="1.5" />
-          </svg>
-          <span className="text-[9px] font-mono text-amber-300 font-bold mt-2 tracking-widest">
-            HIGH-LOW DUEL
-          </span>
-        </div>
-      </div>
-
-      {/* Interactive Finger Click Guide Badge */}
       {isClickable && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/40 backdrop-blur-[1px] pointer-events-none">
-          <span className="text-3xl animate-finger-tap drop-shadow-[0_0_10px_rgba(245,158,11,0.9)]">
-            👆
-          </span>
-          <span className="mt-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-black uppercase text-slate-950 bg-gradient-to-r from-amber-400 to-yellow-300 shadow-[0_0_15px_rgba(245,158,11,0.9)] tracking-wider animate-pulse">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/35 pointer-events-none">
+          <span className="text-3xl animate-finger-tap">👆</span>
+          <span className="mt-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-black uppercase text-slate-950 bg-amber-200/95 tracking-wider border border-amber-100/80">
             CLICK TO FLIP!
           </span>
         </div>
       )}
 
       {pulseText && !isClickable && (
-        <div className="absolute -bottom-8 whitespace-nowrap text-[11px] font-bold text-amber-300 bg-slate-950/95 border border-amber-400/80 px-3 py-1 rounded-full shadow-[0_0_15px_rgba(245,158,11,0.8)] animate-bounce z-20">
-          ✨ {pulseText}
+        <div className="absolute -bottom-8 whitespace-nowrap text-[11px] font-bold text-amber-100/95 bg-slate-950/90 border border-white/15 px-3 py-1 rounded-full z-20">
+          {pulseText}
         </div>
       )}
     </div>
@@ -367,64 +355,48 @@ export const CardView: React.FC<{
   const suitSymbol = SUIT_SYMBOLS[card.suit]
   const color = SUIT_COLORS[card.suit]
   const displayVal = getCardDisplayValue(card.value)
+  const rankSize = isLarge ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'
+  const suitMini = isLarge ? 'text-sm sm:text-base' : 'text-xs sm:text-sm'
+  const suitBig = isLarge ? 'text-6xl sm:text-7xl' : 'text-5xl sm:text-6xl'
 
-  // 앞면 카드
   const renderFrontView = () => (
     <div
       onClick={onClick}
-      className={`hl-card relative flex flex-col justify-between ${cardSizeClass} rounded-2xl bg-gradient-to-b from-slate-50 to-slate-100 border-2 border-slate-300 shadow-[0_12px_35px_rgba(0,0,0,0.6)] p-3 select-none overflow-hidden ${className}`}
-      style={{ color }}
+      style={{ ...plateStyle, color }}
+      className={`hl-card relative ${cardSizeClass} select-none ${className}`}
     >
-      {/* Top Left [숫자 + 무늬] */}
-      <div className="absolute top-2.5 left-2.5 flex flex-col items-center leading-none font-bold">
-        <span className={`${isLarge ? 'text-3xl sm:text-4xl' : 'text-xl sm:text-2xl'} font-black tracking-tighter`}>
-          {displayVal}
-        </span>
-        <span className={`${isLarge ? 'text-base sm:text-lg' : 'text-sm sm:text-base'} mt-0.5`}>
-          {suitSymbol}
-        </span>
+      <div className={`hl-card__rank hl-card__rank--tl ${rankSize}`}>
+        <span className="font-black tracking-tighter">{displayVal}</span>
+        <span className={`${suitMini} mt-0.5`}>{suitSymbol}</span>
       </div>
 
-      {/* Center Center 대형 무늬 */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span className={`${isLarge ? 'text-7xl sm:text-8xl' : 'text-5xl sm:text-6xl'} opacity-90 drop-shadow-md`}>
-          {suitSymbol}
-        </span>
+      <div className="hl-card__suit">
+        <span className={`${suitBig} opacity-90`}>{suitSymbol}</span>
       </div>
 
-      {/* Bottom Right 180도 뒤집힌 [숫자 + 무늬] (우측 하단 정렬) */}
-      <div className="absolute bottom-2.5 right-2.5 flex flex-col items-center leading-none font-bold rotate-180">
-        <span className={`${isLarge ? 'text-3xl sm:text-4xl' : 'text-xl sm:text-2xl'} font-black tracking-tighter`}>
-          {displayVal}
-        </span>
-        <span className={`${isLarge ? 'text-base sm:text-lg' : 'text-sm sm:text-base'} mt-0.5`}>
-          {suitSymbol}
-        </span>
+      <div className={`hl-card__rank hl-card__rank--br ${rankSize}`}>
+        <span className="font-black tracking-tighter">{displayVal}</span>
+        <span className={`${suitMini} mt-0.5`}>{suitSymbol}</span>
       </div>
     </div>
   )
 
-  // 카드 엿보기 (Peek) 뷰: 복잡한 뱃지 제거 후 깨끗한 앞면 카드를 반투명(opacity-55)하게만 보여줌!
   if (isPeeking && !isFaceUp && !isRevealing) {
     return (
       <div onClick={onClick} className="relative group cursor-pointer">
-        <div className="opacity-55 transition-all duration-300 group-hover:opacity-90 group-hover:scale-105 shadow-[0_0_30px_rgba(6,182,212,0.85)] rounded-2xl">
+        <div className="opacity-55 transition-all duration-300 group-hover:opacity-90 group-hover:scale-105">
           {renderFrontView()}
         </div>
       </div>
     )
   }
 
-  // 카드가 뒤집히는 순간: 부드러운 스케일 페이드 (Scale & Fade) 전환
   if (isRevealing) {
     return (
       <div className={`relative ${cardSizeClass}`}>
-        {/* 뒷면 카드: 스케일 다운 + 페이드 아웃 */}
         <div className="absolute inset-0 z-0 animate-scale-fade-out pointer-events-none">
           {renderBackView()}
         </div>
-
-        {/* 앞면 카드: 스케일 핑퐁 바운스 + 페이드 인 */}
         <div className="absolute inset-0 z-10 animate-scale-fade-in">
           {renderFrontView()}
         </div>
@@ -584,11 +556,11 @@ const VictoryComboOverlay: React.FC<{ active: boolean; comboCount: number }> = (
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none animate-combo-text-fade select-none">
       <div className="flex flex-col items-center justify-center font-mono">
-        <h3 className="text-6xl sm:text-8xl font-black tracking-tighter bg-gradient-to-b from-amber-200 via-yellow-300 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(245,158,11,1)] whitespace-nowrap">
-          🔥 COMBO X{comboCount}!
+        <h3 className="text-6xl sm:text-8xl font-black tracking-tighter text-amber-100 whitespace-nowrap drop-shadow-md">
+          COMBO X{comboCount}!
         </h3>
-        <span className="text-sm sm:text-base font-black text-amber-300 tracking-wider drop-shadow-[0_0_15px_rgba(245,158,11,0.9)] mt-1">
-          ✨ NEXT ANTE {comboMultiplier}X BOOST! ✨
+        <span className="text-sm sm:text-base font-black text-amber-200/90 tracking-wider mt-1">
+          NEXT ANTE {comboMultiplier}X BOOST
         </span>
       </div>
     </div>
@@ -638,10 +610,23 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   userChipsMap,
   onUpdateChips,
   onClose,
+  onDefeatExit,
   initialRoomId = 'legend',
   customAnte,
+  practice = false,
+  practiceReplay = false,
+  onPracticeDone,
 }) => {
   const { t, locale } = useTranslation()
+  const practiceRef = useRef(practice)
+  practiceRef.current = practice
+  const onPracticeDoneRef = useRef(onPracticeDone)
+  onPracticeDoneRef.current = onPracticeDone
+  const [practiceItemStep, setPracticeItemStep] = useState<
+    'peek_card' | 'double_payout' | 'loss_shield' | 'play'
+  >('peek_card')
+  const practiceItemStepRef = useRef(practiceItemStep)
+  practiceItemStepRef.current = practiceItemStep
   const [dealerDialoguePlay, setDealerDialoguePlay] = useState<DealerDialoguePlay | null>(null)
   const roomConfigs = configs
   const [selectedRoomId, setSelectedRoomId] = useState<HighLowRoomId>(initialRoomId)
@@ -747,17 +732,26 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
     ])
   }
 
-  const handleExitGame = () => {
-    if (totalWinnings > 0) {
+  const handleExitGame = (forceOutside = false) => {
+    if (practiceRef.current) {
+      onPracticeDoneRef.current?.()
+      return
+    }
+    const bust = forceOutside || gameResult === 'LOSS'
+    if (!bust && totalWinnings > 0) {
       const updatedChips = currentChips + totalWinnings
       onUpdateChips(selectedRoomId, updatedChips)
       addLog(`💰 누적 당첨금 100% (+$${totalWinnings.toLocaleString()}) 수령 완료!`, 'win')
       setTotalWinnings(0)
       setConsecutiveWins(0)
     }
-    if (onClose) {
-      onClose()
+    if (bust) {
+      setTotalWinnings(0)
+      setConsecutiveWins(0)
+      ;(onDefeatExit ?? onClose)?.()
+      return
     }
+    onClose?.()
   }
 
   // 바로 카지노 게임 테이블 시작
@@ -785,25 +779,44 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
     const conf = roomConfigs[roomId]
     const currentBet = totalWinnings > 0 ? totalWinnings : (customAnte ?? conf.ante)
 
-    if (totalWinnings > 0) {
+    if (practiceRef.current) {
+      addLog(t('casino.tutorial.highlowLogStart'), 'info')
+    } else if (totalWinnings > 0) {
       addLog(`🔥 누적 당첨금 $${currentBet.toLocaleString()} 전액 배팅! 라운드가 시작됩니다.`, 'info')
     } else {
       addLog(`무료 기본 판돈 $${currentBet.toLocaleString()} (자산 차감 없음). 라운드가 시작됩니다.`, 'info')
     }
 
-    // 라운드 보상 아이템 가챠 세팅 (개별 아이템 등장 확률 적용, 스탭 소진 시 스탭 카드 제외)
-    const rewardItem = rollRewardItem(conf)
-    setCurrentRewardItem(rewardItem)
-    if (rewardItem) {
-      addLog(`🎁 이번 라운드 드롭 보상 아이템 [${rewardItem.name}] 등장! (승리 시 수령)`, 'info')
+    if (!practiceRef.current) {
+      const rewardItem = rollRewardItem(conf)
+      setCurrentRewardItem(rewardItem)
+      if (rewardItem) {
+        addLog(`🎁 이번 라운드 드롭 보상 아이템 [${rewardItem.name}] 등장! (승리 시 수령)`, 'info')
+      }
+    } else {
+      setCurrentRewardItem(null)
+      setPracticeItemStep('peek_card')
+      setActiveBuffs({ doublePayout: false, lossShield: false, peekCard: false })
+      setInventory([
+        { id: 'practice-peek', ...CASINO_ITEMS_INFO.peek_card },
+        { id: 'practice-double', ...CASINO_ITEMS_INFO.double_payout },
+        { id: 'practice-shield', ...CASINO_ITEMS_INFO.loss_shield },
+      ])
     }
 
     setPeekHintText(null)
 
-    // 카드 초기화 (딜러 카드 및 플레이어 카드 미리 준비)
-    const newDeck = createDeck()
-    const drawnDealer = newDeck.shift()!
-    const drawnPlayer = newDeck.shift()!
+    // 카드 초기화 (딜러 카드는 6~10만, 플레이어 카드는 나머지 덱)
+    const freshDeck = createDeck()
+    const { card: drawnDealer, rest: afterDealer } = drawDealerCard(freshDeck)
+    const drawnPlayer = practiceRef.current
+      ? {
+          id: 'practice-player',
+          suit: 'hearts' as const,
+          value: drawnDealer.value + 1,
+        }
+      : afterDealer[0]!
+    const newDeck = practiceRef.current ? afterDealer : afterDealer.slice(1)
 
     setDeck(newDeck)
     setDealerCard(drawnDealer)
@@ -843,6 +856,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   // 3. 유저의 HIGH / LOW / TIE 선택 -> 플레이어 대형 카드가 날라와 짠! 하고 등장
   const handleSelectChoice = (choice: 'HIGH' | 'LOW' | 'TIE') => {
     if (phase !== 'WAITING_CHOICE' || !dealerCard) return
+    if (practiceRef.current && (practiceItemStepRef.current !== 'play' || choice !== 'HIGH')) return
 
     playBetClickSound()
 
@@ -854,7 +868,12 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
     setUserChoice(choice)
     const payout = calculatePayout(dealerCard.value, choice, currentConfig.houseEdge)
-    addLog(`유저가 [${choice}] (배당률 ${payout}x) 를 선택했습니다.`, 'info')
+    if (practiceRef.current) {
+      const choiceLabel = t('casino.highlow.high')
+      addLog(t('casino.tutorial.highlowLogChoice', { choice: choiceLabel }), 'info')
+    } else {
+      addLog(`유저가 [${choice}] (배당률 ${payout}x) 를 선택했습니다.`, 'info')
+    }
 
     // 플레이어 카드가 혹시 없으면 드로
     if (!playerCard) {
@@ -874,27 +893,31 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
   // 아이템 타입별 클릭 사용 훅 (수량 기반 차감 시스템)
   const handleUseItemByType = (itemType: CasinoItemType) => {
-    // 인벤토리에서 해당 타입의 아이템 1개 찾기
+    if (practiceRef.current && itemType !== practiceItemStepRef.current) return
     const targetItem = inventory.find((i) => i.type === itemType)
     if (!targetItem) return
 
-    // 1. 버프형 아이템 한 턴 중복 사용 금지 체크
     if (itemType === 'peek_card' && activeBuffs.peekCard) {
-      addLog(`⚠️ 이미 이번 라운드에 [카드 엿보기] 센서가 가동 중입니다. (한 턴 중복 사용 불가)`, 'draw')
+      if (!practiceRef.current) {
+        addLog(`⚠️ 이미 이번 라운드에 [카드 엿보기] 센서가 가동 중입니다. (한 턴 중복 사용 불가)`, 'draw')
+      }
       return
     }
     if (itemType === 'double_payout' && activeBuffs.doublePayout) {
-      addLog(`⚠️ 이미 이번 라운드에 [배당 2배] 부스터가 적용 중입니다. (한 턴 중복 사용 불가)`, 'draw')
+      if (!practiceRef.current) {
+        addLog(`⚠️ 이미 이번 라운드에 [배당 2배] 부스터가 적용 중입니다. (한 턴 중복 사용 불가)`, 'draw')
+      }
       return
     }
     if (itemType === 'loss_shield' && activeBuffs.lossShield) {
-      addLog(`⚠️ 이미 이번 라운드에 [패배 쉴드]가 발동 중입니다. (한 턴 중복 사용 불가)`, 'draw')
+      if (!practiceRef.current) {
+        addLog(`⚠️ 이미 이번 라운드에 [패배 쉴드]가 발동 중입니다. (한 턴 중복 사용 불가)`, 'draw')
+      }
       return
     }
 
     playItemUseSound()
 
-    // 아이템 사용 시 인벤토리에서 즉시 1개 소모
     updateInventory((prev) => {
       const idx = prev.findIndex((i) => i.type === itemType)
       if (idx !== -1) {
@@ -911,15 +934,31 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         const pVal = playerCard.value
         const suitSym = SUIT_SYMBOLS[playerCard.suit]
         const displayV = getCardDisplayValue(pVal)
-        setPeekHintText(`👁️ X-RAY 엿보기 작동: [ ${displayV} ${suitSym} ] 카드 투시 중!`)
+        setPeekHintText(
+          practiceRef.current
+            ? t('casino.tutorial.highlowPeekHint', { card: `${displayV} ${suitSym}` })
+            : `👁️ X-RAY 엿보기 작동: [ ${displayV} ${suitSym} ] 카드 투시 중!`,
+        )
       }
-      addLog(`👁️ [카드 엿보기] 아이템 사용! 플레이어 카드가 엑스레이 투명 모드로 전환됩니다. (아이템 1개 소모)`, 'info')
+      if (!practiceRef.current) {
+        addLog(`👁️ [카드 엿보기] 아이템 사용! 플레이어 카드가 엑스레이 투명 모드로 전환됩니다. (아이템 1개 소모)`, 'info')
+      }
     } else if (itemType === 'double_payout') {
       setActiveBuffs((b) => ({ ...b, doublePayout: true }))
-      addLog(`⚡ [배당 2배] 사용! 승리 수령금 2배 증폭 적용! (아이템 1개 소모)`, 'info')
+      if (!practiceRef.current) {
+        addLog(`⚡ [배당 2배] 사용! 승리 수령금 2배 증폭 적용! (아이템 1개 소모)`, 'info')
+      }
     } else if (itemType === 'loss_shield') {
       setActiveBuffs((b) => ({ ...b, lossShield: true }))
-      addLog(`🛡️ [패배 쉴드] 사용! 패배해도 퇴장하지 않고 라운드를 이어갑니다. (아이템 1개 소모)`, 'info')
+      if (!practiceRef.current) {
+        addLog(`🛡️ [패배 쉴드] 사용! 패배해도 퇴장하지 않고 라운드를 이어갑니다. (아이템 1개 소모)`, 'info')
+      }
+    }
+
+    if (practiceRef.current) {
+      setPracticeItemStep(
+        itemType === 'peek_card' ? 'double_payout' : itemType === 'double_payout' ? 'loss_shield' : 'play',
+      )
     }
   }
 
@@ -963,6 +1002,18 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
       }
 
       setGameResult(outcome)
+
+      if (practiceRef.current) {
+        const currentBet = totalWinnings > 0 ? totalWinnings : (customAnte ?? currentConfig.ante)
+        const grossReward = Math.floor(currentBet * rawPayout)
+        setGameResult('WIN')
+        setRewardAmount(grossReward)
+        setTotalWinnings(0)
+        addLog(t('casino.tutorial.highlowLogWin'), 'win')
+        playHighLowWinSound(false)
+        setActiveBuffs({ doublePayout: false, lossShield: false, peekCard: false })
+        return
+      }
 
       const currentBet = totalWinnings > 0 ? totalWinnings : (customAnte ?? currentConfig.ante)
 
@@ -1038,20 +1089,16 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           playHighLowLossSound()
           unlockAchievement('casino_highlow_first_loss')
 
-          const takeHome = totalWinnings
-          setRewardAmount(takeHome)
+          const forfeited = totalWinnings
+          setRewardAmount(0)
+          setTotalWinnings(0)
 
-          if (takeHome > 0) {
-            addLog(
-              `💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 누적 당첨금 $${takeHome.toLocaleString()}을 수령하고 테이블에서 퇴장합니다.`,
-              'loss',
-            )
-          } else {
-            addLog(
-              `💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 당첨금 없이 테이블에서 퇴장합니다.`,
-              'loss',
-            )
-          }
+          addLog(
+            forfeited > 0
+              ? `💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 누적 당첨금 $${forfeited.toLocaleString()}을 잃고 빈손으로 퇴장합니다.`
+              : `💀 패배! 플레이어 [${getCardDisplayValue(pVal)}] vs 딜러 [${getCardDisplayValue(dVal)}] -> 당첨금 없이 퇴장합니다.`,
+            'loss',
+          )
 
           // 딜러 패배 비중복 셔플 대사 & 음성 재생 트리거
           const randIdx = getNextDialogueIndex('loss')
@@ -1192,12 +1239,16 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   /* -------------------------------------------------------------------------- */
   /*  RENDER: 2. GAME TABLE OVERLAY (FULL-WIDTH 3-COLUMN VIP CASINO TABLE 6.0)  */
   /* -------------------------------------------------------------------------- */
+  const hlStageStyle = {
+    ['--hl-felt' as string]: `url(${HIGH_LOW_UI_ASSETS.tableFelt})`,
+    ['--hl-bet-plinth' as string]: `url(${HIGH_LOW_UI_ASSETS.betPlinth})`,
+  } as React.CSSProperties
+
   return (
     <div
-      className={`relative w-full h-full min-h-0 flex-1 bg-slate-950 text-slate-100 flex flex-col justify-between p-3 sm:p-4 rounded-3xl border-2 ${
-        gameResult === 'LOSS'
-          ? 'border-rose-600 shadow-[0_0_100px_rgba(225,29,72,0.75)] animate-defeat-shake'
-          : 'border-amber-400/80 shadow-[0_0_90px_rgba(245,158,11,0.45)]'
+      style={hlStageStyle}
+      className={`hl-shell relative w-full h-full min-h-0 flex-1 bg-slate-950 text-slate-100 flex flex-col justify-between p-3 sm:p-4 rounded-3xl border ${
+        gameResult === 'LOSS' ? 'is-loss animate-defeat-shake' : ''
       } overflow-hidden font-sans select-none`}
     >
       <style>{CUSTOM_HIGH_LOW_STYLES}</style>
@@ -1205,26 +1256,21 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
       <VictoryComboOverlay key={`${gameResult}-${comboCount}`} active={gameResult === 'WIN'} comboCount={comboCount} />
       <DefeatParticles active={gameResult === 'LOSS'} />
 
-      {/* Red Defeat Flash & Ambient Crimson Overlay */}
       {gameResult === 'LOSS' && (
-        <div className="absolute inset-0 bg-gradient-to-b from-rose-950/60 via-rose-900/30 to-slate-950 pointer-events-none animate-defeat-flash z-20 border-4 border-rose-600/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-rose-950/45 via-rose-900/20 to-transparent pointer-events-none animate-defeat-flash z-20" />
       )}
 
-      {/* Whole Screen Golden Ambient Spotlight Glow & Rotating Rays */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-500/28 via-slate-950/95 to-slate-950 pointer-events-none" />
-      <div className="absolute inset-0 opacity-15 bg-[linear-gradient(to_right,#eab30825_1px,transparent_1px),linear-gradient(to_bottom,#eab30825_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none" />
-
-      {/* Top Header Bar (Single Exit Button Only) */}
-      <div className="relative z-10 flex shrink-0 items-center justify-between border-b border-amber-400/30 pb-2.5">
+      {/* Top Header */}
+      <div className="relative z-10 flex shrink-0 items-center justify-between border-b border-white/10 pb-2.5">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 flex items-center justify-center text-slate-950 text-lg sm:text-xl font-black shadow-lg shadow-amber-500/50">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-900 border border-white/15 flex items-center justify-center text-amber-200/90 text-lg sm:text-xl font-black">
             ♠
           </div>
           <div>
-            <span className="text-[10px] font-mono font-bold tracking-widest text-amber-400 uppercase">
+            <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
               {currentConfig.name}
             </span>
-            <h2 className="text-lg sm:text-2xl font-black tracking-wider bg-gradient-to-r from-yellow-100 via-amber-300 to-amber-200 bg-clip-text text-transparent drop-shadow">
+            <h2 className="text-lg sm:text-2xl font-black tracking-wider text-slate-100">
               {t('casino.highlow.title', { defaultValue: '하이로우 듀얼' })}
             </h2>
           </div>
@@ -1233,121 +1279,107 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         <div className="flex items-center gap-2.5 z-10" />
       </div>
 
-      {/* Full-Width Integrated Emerald Felt Casino Stage (화면 전체 100% 꽉 채우는 초록색 카지노 테이블 패널!) */}
-      <div className="relative z-10 flex-1 p-3 sm:p-4 rounded-2xl border-2 border-emerald-500/80 bg-gradient-to-b from-emerald-950 via-emerald-900/90 to-emerald-950 backdrop-blur-md shadow-[inset_0_0_90px_rgba(16,185,129,0.4),0_0_50px_rgba(16,185,129,0.3)] my-auto py-1 flex flex-col min-h-0 overflow-hidden">
+      {/* Felt stage */}
+      <div className="hl-felt-stage relative z-10 flex-1 p-3 sm:p-4 my-auto py-1 flex flex-col min-h-0">
         <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr_360px] gap-3 sm:gap-5 items-stretch flex-1 min-h-0 overflow-hidden">
-          {/* 1. LEFT COLUMN: Live Dealer Showcase & Round Item Drop Reward (까만 배경 완전 제거 & 펠트 카지노 테이블 투과!) */}
+          {/* LEFT: CCTV */}
           <div className="hidden lg:flex flex-col justify-between p-2 sm:p-3 font-mono text-xs overflow-hidden bg-transparent border-none shadow-none">
             <div className="space-y-2.5 flex-1 flex flex-col min-h-0">
-              <h4 className="text-xs font-black text-emerald-300 uppercase tracking-widest border-b border-emerald-500/40 pb-1.5 flex items-center justify-between shrink-0 font-mono">
+              <h4 className="text-xs font-black text-slate-300 uppercase tracking-widest border-b border-white/10 pb-1.5 flex items-center justify-between shrink-0 font-mono">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
-                  <span>📡 LIVE CCTV FEED [CAM-01]</span>
+                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse inline-block" />
+                  <span>LIVE CCTV [CAM-01]</span>
                 </span>
-                <span className="text-[10px] text-amber-400 font-bold">VIP SURVEILLANCE</span>
+                <span className="text-[10px] text-slate-400 font-bold">SURVEILLANCE</span>
               </h4>
 
-              {/* Live Dealer CCTV Media Box (High-Tech CCTV Monitor Viewfinder Frame) */}
-              <div className="relative w-full aspect-[3/4] flex-1 min-h-[220px] max-h-[360px] rounded-2xl overflow-hidden border-2 border-emerald-500/80 bg-slate-950 shadow-[0_0_35px_rgba(16,185,129,0.3)] group">
-                {/* CCTV CRT Scanline & Grain Noise Overlays */}
-                <div className="cctv-scanline" />
-                <div className="cctv-noise" />
+              <div className="hl-cctv-monitor group">
+                <div className="hl-cctv-feed">
+                  <div className="cctv-scanline hl-cctv-fx-scanline" />
+                  <div className="cctv-noise hl-cctv-fx-noise" />
 
-                {/* Viewfinder Reticle Corners (4개 모서리 조준 테두리) */}
-                <div className="pointer-events-none absolute inset-0 z-10 p-2.5 flex flex-col justify-between">
-                  <div className="flex justify-between">
-                    <span className="border-t-2 border-l-2 border-emerald-400/80 w-3.5 h-3.5 block" />
-                    <span className="border-t-2 border-r-2 border-emerald-400/80 w-3.5 h-3.5 block" />
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="border-b-2 border-l-2 border-emerald-400/80 w-3.5 h-3.5 block" />
-                    <span className="border-b-2 border-r-2 border-emerald-400/80 w-3.5 h-3.5 block" />
-                  </div>
-                </div>
-
-                {/* Top HUD: Blinking Red REC Badge */}
-                <div className="pointer-events-none absolute top-2 left-2 z-20 flex items-center font-mono">
-                  <div className="flex items-center gap-1 bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded border border-rose-500/60 shadow">
-                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                    <span className="text-[9px] font-black text-rose-400 tracking-wider">REC</span>
-                  </div>
-                </div>
-
-                {/* Dealer Media Video/Image Feed */}
-                {activeDealerMedia?.url ? (
-                  activeDealerMedia.type === 'video' ? (
-                    <video
-                      key={activeDealerMedia.url}
-                      src={resolveMediaSrc(activeDealerMedia.url)}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="w-full h-full object-cover filter contrast-[1.05] brightness-95 saturate-[0.95]"
-                    />
-                  ) : (
-                    <img
-                      key={activeDealerMedia.url}
-                      src={resolveMediaSrc(activeDealerMedia.url)}
-                      alt={currentConfig.dealerName}
-                      className="w-full h-full object-cover filter contrast-[1.05] brightness-95 saturate-[0.95]"
-                    />
-                  )
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-950 via-emerald-950/70 to-slate-950 text-emerald-200">
-                    <div className="w-16 h-16 rounded-full border-2 border-emerald-400/70 p-1 mb-1 bg-black flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                      <span className="text-3xl">🎩</span>
+                  <div className="pointer-events-none absolute top-2 left-2 z-20 flex items-center gap-1.5 font-mono">
+                    <div className="flex items-center gap-1 bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded border border-rose-500/60">
+                      <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                      <span className="text-[9px] font-black text-rose-400 tracking-wider">REC</span>
                     </div>
-                    <span className="text-xs font-black text-emerald-300 uppercase tracking-widest font-mono">
-                      {currentConfig.dealerName}
-                    </span>
-                    <span className="text-[9px] text-amber-400/90 font-bold font-mono">
-                      {currentConfig.dealerTitle}
-                    </span>
+                    <div className="bg-black/75 px-2 py-0.5 rounded text-[9px] text-slate-200/90 tracking-wider font-bold">
+                      CAM-01
+                    </div>
                   </div>
-                )}
+                  <div className="pointer-events-none absolute bottom-2 right-2 z-20 font-mono">
+                    <div className="bg-black/75 px-2 py-0.5 rounded text-[9px] text-slate-300/90 tracking-wider">
+                      HD · LIVE
+                    </div>
+                  </div>
 
-                {/* CCTV Bottom Info & Signal Bar */}
-                <div className="absolute inset-x-0 bottom-0 p-2.5 bg-slate-950/95 backdrop-blur-md border-t border-emerald-500/40 flex items-center justify-between font-mono z-20">
-                  <div>
-                    <h5 className="text-[11px] font-black text-slate-100 flex items-center gap-1">
-                      <span className="text-emerald-400">DEALER:</span> {currentConfig.dealerName}
-                    </h5>
-                    <span className="text-[9px] text-amber-400 font-bold">{currentConfig.dealerTitle}</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[9px] text-emerald-400 block font-bold">SIGNAL 100%</span>
-                    <span className="text-[8px] text-slate-400 block">30 FPS · HD</span>
-                  </div>
+                  {activeDealerMedia?.url ? (
+                    activeDealerMedia.type === 'video' ? (
+                      <video
+                        key={activeDealerMedia.url}
+                        src={resolveMediaSrc(activeDealerMedia.url)}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img
+                        key={activeDealerMedia.url}
+                        src={resolveMediaSrc(activeDealerMedia.url)}
+                        alt={currentConfig.dealerName}
+                        className="w-full h-full object-cover"
+                      />
+                    )
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-300">
+                      <div className="w-16 h-16 rounded-full border border-slate-500/70 p-1 mb-1 bg-black flex items-center justify-center">
+                        <span className="text-3xl">🎩</span>
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-widest font-mono">
+                        {currentConfig.dealerName}
+                      </span>
+                      <span className="text-[9px] text-slate-400 font-bold font-mono">
+                        {currentConfig.dealerTitle}
+                      </span>
+                    </div>
+                  )}
                 </div>
+
+                <img
+                  src={HIGH_LOW_UI_ASSETS.cctvBezel}
+                  alt=""
+                  draggable={false}
+                  className="hl-cctv-bezel"
+                />
               </div>
 
-              {/* THIS ROUND REWARD ITEM BOX */}
-              <div className="p-3.5 rounded-xl bg-emerald-950/50 border border-emerald-400/40 backdrop-blur-sm space-y-2 shadow-sm">
-                <div className="flex items-center justify-between border-b border-emerald-500/30 pb-1.5">
-                  <span className="text-xs font-black text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="hl-reward-box p-3.5 space-y-2">
+                <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+                  <span className="text-xs font-black text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
                     <span>🎁</span>
                     <span>{t('casino.highlow.thisRoundReward')}</span>
                   </span>
-                  <span className="text-[10px] font-bold text-amber-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-amber-400/30">
+                  <span className="text-[10px] font-bold text-slate-300 bg-black/40 px-2 py-0.5 rounded-full border border-white/10">
                     {t('casino.highlow.dropRate')}: {currentConfig.itemDropRate ?? 50}%
                   </span>
                 </div>
 
                 {currentRewardItem ? (
-                  <div className="p-3 rounded-xl bg-gradient-to-r from-amber-950/80 via-emerald-950/90 to-amber-950/80 border-2 border-yellow-400 shadow-[0_0_25px_rgba(245,158,11,0.6)] flex flex-col gap-1 animate-pop-in relative overflow-hidden">
+                  <div className="p-3 rounded-xl hl-glass-card border border-amber-200/25 flex flex-col gap-1 animate-pop-in relative overflow-hidden">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <span className="text-2xl shrink-0 animate-bounce">{currentRewardItem.icon}</span>
-                      <h6 className="text-sm font-black text-amber-200 tracking-wide">
+                      <span className="text-2xl shrink-0">{currentRewardItem.icon}</span>
+                      <h6 className="text-sm font-black text-amber-100 tracking-wide">
                         {t(`casino.highlow.items.${currentRewardItem.type}.name`, { defaultValue: currentRewardItem.name })}
                       </h6>
                     </div>
-                    <div className="text-[9px] font-bold text-amber-400/90 pl-8">
+                    <div className="text-[9px] font-bold text-slate-400 pl-8">
                       {t('casino.highlow.autoClaimHint')}
                     </div>
                   </div>
                 ) : (
-                  <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-center text-emerald-300/60 text-[11px] font-bold">
+                  <div className="p-2.5 rounded-xl border border-white/10 text-center text-slate-400/80 text-[11px] font-bold">
                     {t('casino.highlow.noRewardItem')}
                   </div>
                 )}
@@ -1355,38 +1387,37 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
             </div>
           </div>
 
-          {/* 2. CENTER COLUMN: Main Cards Duel Arena & Bet Deck */}
+          {/* CENTER: cards + bet */}
           <div className="flex flex-col items-center justify-between min-h-0 overflow-hidden">
-          {/* Dealer Card Section (흰색 라운드 처리 카지노 카드 슬롯!) */}
           <div className="flex flex-col items-center relative z-10">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-mono text-emerald-200 tracking-widest uppercase font-black bg-slate-950/90 px-3.5 py-1 rounded-full border border-emerald-400/50 shadow-md">
+              <span className="hl-card-label font-mono">
                 {t('casino.highlow.dealersCard')}
               </span>
               {gameResult === 'LOSS' && (
-                <span className="text-[10px] font-mono font-black text-slate-950 bg-gradient-to-r from-amber-400 to-yellow-300 px-2 py-0.5 rounded-full shadow-md animate-bounce">
+                <span className="text-[10px] font-mono font-black text-slate-950 bg-amber-200 px-2 py-0.5 rounded-full animate-bounce">
                   {t('casino.highlow.winner')}
                 </span>
               )}
               {gameResult === 'DRAW' && (
-                <span className="text-[10px] font-mono font-black text-cyan-950 bg-gradient-to-r from-cyan-400 to-sky-300 px-2 py-0.5 rounded-full shadow-md">
+                <span className="text-[10px] font-mono font-black text-slate-100 bg-slate-700 px-2 py-0.5 rounded-full border border-white/20">
                   {t('casino.highlow.draw')}
                 </span>
               )}
             </div>
 
-            {/* 흰색 라운드 카지노 카드 슬롯 매트 */}
-            <div className="p-2 sm:p-2.5 rounded-3xl border-2 border-dashed border-white/80 bg-white/10 backdrop-blur-sm shadow-[0_0_25px_rgba(255,255,255,0.35)] flex items-center justify-center">
+            <div className="hl-card-slot flex items-center justify-center">
               <div className={`relative ${isDealerFlyIn ? 'animate-fly-dealer' : ''}`}>
                 <CardView
                   card={dealerCard}
                   isFaceUp={isDealerFaceUp}
                   isRevealing={isDealerRevealing}
+                  isLarge
                   className={
                     gameResult === 'LOSS'
-                      ? 'ring-4 ring-amber-400 shadow-[0_0_50px_rgba(245,158,11,1)] scale-105 transition-all'
+                      ? 'scale-105 transition-all'
                       : gameResult === 'DRAW'
-                      ? 'ring-2 ring-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.7)]'
+                      ? 'outline outline-1 outline-slate-300/50'
                       : ''
                   }
                 />
@@ -1394,112 +1425,149 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
             </div>
           </div>
 
-          {/* Integrated Bet Choice & Non-Blocking Result Panel */}
           <div className="w-full max-w-xl my-2 z-20">
             {phase === 'WAITING_CHOICE' ? (
-              <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/95 border-2 border-amber-400/80 shadow-[0_0_50px_rgba(245,158,11,0.6)] flex flex-col items-center space-y-3 animate-pop-in">
+              <div className="hl-bet-panel p-4 sm:p-5 flex flex-col items-center space-y-3 animate-pop-in">
                 <div className="text-center flex flex-col items-center gap-1">
-                  <span className="px-4 py-1 rounded-full text-xs font-mono font-black uppercase tracking-widest text-slate-950 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 shadow-md">
+                  <span className="px-4 py-1 rounded-full text-xs font-mono font-black uppercase tracking-widest text-slate-100 border border-white/20 bg-black/40">
                     {t('casino.highlow.selectBet')}
                   </span>
                   {activeBuffs.doublePayout && (
-                    <span className="px-3 py-0.5 rounded-full text-[10px] font-mono font-black uppercase text-slate-950 bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 shadow-[0_0_15px_rgba(245,158,11,0.9)] animate-pulse">
+                    <span className="px-3 py-0.5 rounded-full text-[10px] font-mono font-black uppercase text-amber-100 border border-amber-200/40 bg-amber-950/50">
                       {t('casino.highlow.boosterActive')}
                     </span>
                   )}
                   {activeBuffs.lossShield && (
-                    <span className="px-3 py-0.5 rounded-full text-[10px] font-mono font-black uppercase text-white bg-gradient-to-r from-pink-600 to-rose-600 shadow-[0_0_15px_rgba(236,72,153,0.9)] animate-pulse">
+                    <span className="px-3 py-0.5 rounded-full text-[10px] font-mono font-black uppercase text-rose-100 border border-rose-300/40 bg-rose-950/50">
                       {t('casino.highlow.shieldActive')}
                     </span>
                   )}
                 </div>
 
+                {practice && practiceItemStep !== 'play' ? (
+                  <div className="flex w-full flex-col gap-2">
+                    {(['peek_card', 'double_payout', 'loss_shield'] as CasinoItemType[]).map((type) => {
+                      const info = CASINO_ITEMS_INFO[type]
+                      const current = practiceItemStep === type
+                      const used =
+                        (type === 'peek_card' && activeBuffs.peekCard) ||
+                        (type === 'double_payout' && activeBuffs.doublePayout) ||
+                        (type === 'loss_shield' && activeBuffs.lossShield)
+                      return (
+                        <button
+                          key={type}
+                          type="button"
+                          data-casino-coach={current ? `item-${type}` : undefined}
+                          disabled={!current}
+                          onClick={() => handleUseItemByType(type)}
+                          className={`flex w-full items-center justify-between rounded-xl border px-3 py-2.5 text-left ${
+                            used
+                              ? 'border-amber-200/50 bg-slate-800/70'
+                              : current
+                                ? 'border-amber-300/70 bg-black/40'
+                                : 'border-white/10 bg-black/20 opacity-40'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2 text-sm font-black text-slate-100">
+                            <span>{info.icon}</span>
+                            <span>{t(`casino.highlow.items.${type}.name`, { defaultValue: info.name })}</span>
+                          </span>
+                          <span className="text-[11px] font-bold text-amber-100">
+                            {used ? t('casino.highlow.inUse', { defaultValue: '사용중' }) : info.icon}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                ) : null}
+
                 <div className="flex flex-col gap-3 w-full pt-1">
                   <div className="grid grid-cols-2 gap-3.5 w-full">
-                    {/* Left: LOW Button */}
                     <button
                       onClick={() => handleSelectChoice('LOW')}
-                      className={`group relative flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-cyan-500 hover:from-cyan-300 hover:to-sky-300 text-slate-950 shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 font-mono ${
-                        activeBuffs.doublePayout ? 'ring-4 ring-yellow-300 shadow-[0_0_40px_rgba(234,179,8,0.8)]' : ''
-                      }`}
+                      disabled={practice}
+                      className={`group relative flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-xl hl-btn-low transition-all duration-200 hover:scale-[1.03] active:scale-95 font-mono ${
+                        activeBuffs.doublePayout ? 'hl-btn-boost' : ''
+                      } ${practice ? 'opacity-40' : ''}`}
                     >
-                      <span className="text-xl sm:text-2xl font-black tracking-widest text-slate-950 flex items-center gap-1.5">
+                      <span className="text-xl sm:text-2xl font-black tracking-widest flex items-center gap-1.5">
                         <span>▼</span>
                         <span>{t('casino.highlow.low')}</span>
                       </span>
-                      <span className="text-xs text-slate-950 font-black mt-0.5">
-                        +${lowWinVal.toLocaleString()} <span className="text-[10px] text-slate-900 font-bold">({lowPayout}x)</span>
+                      <span className="text-xs font-black mt-0.5 opacity-90">
+                        +${lowWinVal.toLocaleString()} <span className="text-[10px] font-bold">({lowPayout}x)</span>
                       </span>
                     </button>
 
-                    {/* Right: HIGH Button */}
                     <button
+                      data-casino-coach="high"
                       onClick={() => handleSelectChoice('HIGH')}
-                      className={`group relative flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 shadow-[0_0_30px_rgba(245,158,11,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 font-mono ${
-                        activeBuffs.doublePayout ? 'ring-4 ring-yellow-300 shadow-[0_0_40px_rgba(234,179,8,0.8)]' : ''
+                      disabled={practice && practiceItemStep !== 'play'}
+                      className={`group relative flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-xl hl-btn-high transition-all duration-200 hover:scale-[1.03] active:scale-95 font-mono ${
+                        activeBuffs.doublePayout ? 'hl-btn-boost' : ''
                       }`}
                     >
-                      <span className="text-xl sm:text-2xl font-black tracking-widest text-slate-950 flex items-center gap-1.5">
+                      <span className="text-xl sm:text-2xl font-black tracking-widest flex items-center gap-1.5">
                         <span>▲</span>
                         <span>{t('casino.highlow.high')}</span>
                       </span>
-                      <span className="text-xs text-slate-950 font-black mt-0.5">
-                        +${highWinVal.toLocaleString()} <span className="text-[10px] text-slate-900 font-bold">({highPayout}x)</span>
+                      <span className="text-xs font-black mt-0.5 opacity-90">
+                        +${highWinVal.toLocaleString()} <span className="text-[10px] font-bold">({highPayout}x)</span>
                       </span>
                     </button>
                   </div>
 
-                  {/* Bottom Full-Width: 50x TIE Button (Purple Luxury Neon) */}
+                  {practice ? null : (
                   <button
                     onClick={() => handleSelectChoice('TIE')}
-                    className={`group relative flex items-center justify-between px-5 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-fuchsia-500 to-purple-600 hover:from-purple-500 hover:to-fuchsia-400 text-white shadow-[0_0_30px_rgba(192,38,211,0.6)] border border-fuchsia-300/50 transition-all duration-300 hover:scale-[1.015] active:scale-95 font-mono ${
-                      activeBuffs.doublePayout ? 'ring-4 ring-yellow-300 shadow-[0_0_40px_rgba(234,179,8,0.8)]' : ''
+                    className={`group relative flex items-center justify-between px-5 py-3 rounded-xl hl-btn-tie transition-all duration-200 hover:scale-[1.01] active:scale-95 font-mono ${
+                      activeBuffs.doublePayout ? 'hl-btn-boost' : ''
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-base font-black text-amber-300">◆</span>
-                      <span className="text-xl sm:text-2xl font-black tracking-widest text-white">{t('casino.highlow.tie')}</span>
-                      <span className="text-[10px] font-black text-slate-950 bg-amber-300 px-2 py-0.5 rounded-full uppercase shadow">
+                      <span className="text-base font-black text-slate-200">◆</span>
+                      <span className="text-xl sm:text-2xl font-black tracking-widest">{t('casino.highlow.tie')}</span>
+                      <span className="text-[10px] font-black text-slate-900 bg-slate-200 px-2 py-0.5 rounded-full uppercase">
                         {activeBuffs.doublePayout ? t('casino.highlow.tieJackpotBooster') : t('casino.highlow.tieJackpot')}
                       </span>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-xs sm:text-sm font-black text-amber-300">
+                      <span className="text-xs sm:text-sm font-black text-slate-100">
                         +${tieWinVal.toLocaleString()}
                       </span>
-                      <span className="text-[10px] font-bold text-fuchsia-200 ml-1">
+                      <span className="text-[10px] font-bold text-slate-300 ml-1">
                         ({tiePayout}x)
                       </span>
                     </div>
                   </button>
+                  )}
                 </div>
               </div>
             ) : (
-              <div className="h-12 flex items-center justify-center font-mono text-xs text-amber-300/80 font-bold">
+              <div className="h-12 flex items-center justify-center font-mono text-xs text-slate-200/80 font-bold">
                 {phase === 'DEALING_DEALER' && t('casino.highlow.dealersTurn')}
                 {phase === 'DEALING_PLAYER' && t('casino.highlow.playersTurn')}
-                {phase === 'SHOWDOWN_RESULT' && '🎲 결과 확인 중...'}
+                {phase === 'SHOWDOWN_RESULT' && '결과 확인 중...'}
               </div>
             )}
           </div>
 
-          {/* Player Card Section (흰색 라운드 처리 카지노 카드 슬롯!) */}
           <div className="flex flex-col items-center relative z-10">
-            <span className="text-xs font-mono text-emerald-200 tracking-widest mb-2 uppercase font-black bg-slate-950/90 px-3.5 py-1 rounded-full border border-emerald-400/50 shadow-md">
+            <span className="hl-card-label font-mono mb-2">
               {t('casino.highlow.playersCard')} {userChoice ? `[BET: ${userChoice}]` : ''}
             </span>
 
-            {/* 흰색 라운드 카지노 카드 슬롯 매트 */}
-            <div className="p-2 sm:p-2.5 rounded-3xl border-2 border-dashed border-white/80 bg-white/10 backdrop-blur-sm shadow-[0_0_25px_rgba(255,255,255,0.35)] flex items-center justify-center">
+            <div className="hl-card-slot flex items-center justify-center" data-casino-coach="flip">
               <div className={isPlayerFlyIn ? 'animate-fly-player' : ''}>
                 <CardView
                   card={playerCard}
                   isFaceUp={isPlayerFaceUp}
                   isRevealing={isPlayerRevealing}
                   isPeeking={activeBuffs.peekCard}
+                  isLarge
                   className={
-                    gameResult === 'DRAW' ? 'ring-2 ring-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.7)]' : ''
+                    gameResult === 'DRAW' ? 'outline outline-1 outline-slate-300/50' : ''
                   }
                   onClick={
                     phase === 'DEALING_PLAYER'
@@ -1515,47 +1583,44 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Table Stats & Main In-Game Assets Board & MY INVENTORY */}
-        <div className="hidden lg:flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl border-2 border-amber-400/60 bg-gradient-to-b from-slate-900/90 via-slate-950/95 to-slate-950 backdrop-blur-md font-mono text-xs shadow-[0_0_35px_rgba(245,158,11,0.25)] relative overflow-hidden h-full min-h-0">
+        {/* RIGHT: glass stats / inventory */}
+        <div className="hl-glass-panel hidden lg:flex flex-col justify-between p-3.5 sm:p-4 font-mono text-xs relative overflow-hidden h-full min-h-0">
           <div className="space-y-2.5 flex-1 flex flex-col min-h-0 overflow-hidden">
-                {/* Header Title */}
-                <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest border-b border-amber-400/40 pb-2 flex items-center justify-between">
+                <h4 className="text-xs font-black text-slate-200 uppercase tracking-widest border-b border-white/10 pb-2 flex items-center justify-between">
                   <span>{t('casino.highlow.tableStats', { defaultValue: '테이블 통계' })}</span>
                 </h4>
 
                 <div className="space-y-3.5">
-                  {/* CURRENT ANTE BET Card */}
-                  <div className="relative p-3 rounded-xl bg-gradient-to-br from-slate-950 via-slate-900/80 to-slate-950 border border-amber-400/40 shadow-inner group">
+                  <div className="relative p-3 hl-glass-card group">
                     <div className="flex items-center justify-between">
-                      <p className="text-[10px] text-amber-400/80 font-bold uppercase tracking-wider">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                         {totalWinnings > 0
                           ? t('casino.highlow.currentRoundBet', { defaultValue: '현재 배팅금' })
                           : t('casino.highlow.currentAnte', { defaultValue: '기본 판돈 (ANTE)' })}
                       </p>
                     </div>
-                    <p className="text-xl font-black bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-400 bg-clip-text text-transparent mt-1">
+                    <p className="text-xl font-black text-amber-100/95 mt-1">
                       ${effectiveBet.toLocaleString()}
                     </p>
                   </div>
 
-                  {/* MY STATION ASSETS Card */}
-                  <div className="relative p-3.5 rounded-xl bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 border-2 border-amber-400/70 shadow-[0_0_25px_rgba(245,158,11,0.25)]">
+                  <div className="relative p-3.5 hl-glass-card border-amber-200/20">
                     {phase === 'SHOWDOWN_RESULT' && gameResult && (
                       <div className="absolute -top-3.5 right-3 z-30 pointer-events-none">
                         {gameResult === 'WIN' && (
-                          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-black text-slate-950 bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 shadow-[0_0_20px_rgba(245,158,11,1)] animate-gold-cash-burst">
+                          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-black text-slate-950 bg-amber-200 animate-gold-cash-burst">
                             +${rewardAmount.toLocaleString()} 💰
                           </span>
                         )}
                         {gameResult === 'LOSS' && (
-                          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-black text-white bg-gradient-to-r from-rose-600 to-pink-600 shadow-[0_0_20px_rgba(225,29,72,0.9)] animate-red-cash-drain">
+                          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-black text-white bg-rose-700 animate-red-cash-drain">
                             {totalWinnings > 0
                               ? `+$${totalWinnings.toLocaleString()} 퇴장`
                               : t('casino.highlow.exitGameBtn', { defaultValue: '퇴장' })}
                           </span>
                         )}
                         {gameResult === 'DRAW' && (
-                          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-black text-cyan-950 bg-gradient-to-r from-cyan-300 to-sky-300 shadow-[0_0_15px_rgba(6,182,212,0.9)] animate-pop-in">
+                          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-black text-slate-100 bg-slate-700 border border-white/20 animate-pop-in">
                             +${totalWinnings > 0 ? totalWinnings.toLocaleString() : effectiveAnte.toLocaleString()} (HOLD)
                           </span>
                         )}
@@ -1563,21 +1628,20 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     )}
 
                     <div className="flex items-center justify-between">
-                      <p className="text-[10px] text-amber-300 font-black uppercase tracking-widest flex items-center gap-1">
+                      <p className="text-[10px] text-slate-300 font-black uppercase tracking-widest flex items-center gap-1">
                         <span>🏆</span>
                         <span>{t('casino.highlow.myStationAssets', { defaultValue: '누적 당첨 금액' })}</span>
                       </p>
                     </div>
 
-                    <div className="text-2xl font-black text-amber-300 mt-1 drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]">
+                    <div className="text-2xl font-black text-amber-100 mt-1">
                       <AnimatedMoneyCounter value={totalWinnings} />
                     </div>
                   </div>
 
-                  {/* MY INVENTORY BOX */}
-                  <div className="p-3 sm:p-3.5 rounded-xl bg-slate-950/90 border border-amber-400/60 flex-1 min-h-0 flex flex-col overflow-hidden shadow-inner space-y-2">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 shrink-0">
-                      <span className="text-xs font-black text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <div className="p-3 sm:p-3.5 hl-glass-card flex-1 min-h-0 flex flex-col overflow-hidden space-y-2">
+                    <div className="flex items-center justify-between border-b border-white/10 pb-1.5 shrink-0">
+                      <span className="text-xs font-black text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
                         <span>🎒</span>
                         <span>
                           {t('casino.highlow.myInventory', { count: inventory.length, defaultValue: `내 인벤토리 (${inventory.length})` })}
@@ -1629,31 +1693,31 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                             key={type}
                             onClick={() => handleUseItemByType(type)}
                             disabled={!isAvailable}
-                            className={`w-full p-2.5 sm:p-3 rounded-xl border text-left transition-all duration-200 flex items-center justify-between group shadow-md shrink-0 ${
+                            className={`w-full p-2.5 sm:p-3 rounded-xl border text-left transition-all duration-200 flex items-center justify-between group shrink-0 ${
                               isAlreadyActive
-                                ? 'bg-cyan-950/40 border-cyan-400/60 text-cyan-200'
+                                ? 'bg-slate-800/50 border-slate-400/40 text-slate-200'
                                 : count > 0
-                                ? 'bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/40 hover:from-slate-850 hover:to-amber-900/60 border-amber-400/50 hover:border-amber-300 active:scale-[0.98]'
-                                : 'bg-slate-950/40 border-slate-900 opacity-40 cursor-not-allowed'
+                                ? 'bg-black/30 hover:bg-black/45 border-white/15 hover:border-white/30 active:scale-[0.98]'
+                                : 'bg-black/20 border-white/5 opacity-40 cursor-not-allowed'
                             }`}
                           >
                             <div className="flex items-center gap-2.5 min-w-0 flex-1">
                               <span className="text-xl sm:text-2xl shrink-0 group-hover:scale-110 transition-transform">{info.icon}</span>
-                              <span className="text-xs sm:text-sm font-black text-amber-200 group-hover:text-amber-300 tracking-wide">
+                              <span className="text-xs sm:text-sm font-black text-slate-100 tracking-wide">
                                 {t(`casino.highlow.items.${type}.name`, { defaultValue: info.name })}
                               </span>
                             </div>
 
                             <div className="flex items-center gap-2 shrink-0">
                               {isAlreadyActive ? (
-                                <span className="text-[10px] font-black text-slate-950 bg-cyan-400 px-2.5 py-0.5 rounded-full uppercase shadow animate-pulse">
+                                <span className="text-[10px] font-black text-slate-950 bg-slate-200 px-2.5 py-0.5 rounded-full uppercase">
                                   {t('casino.highlow.inUse', { defaultValue: '사용중' })}
                                 </span>
                               ) : (
                                 <span
-                                  className={`text-xs font-mono font-black px-2.5 py-0.5 rounded-lg border shadow-sm ${
+                                  className={`text-xs font-mono font-black px-2.5 py-0.5 rounded-lg border ${
                                     count > 0
-                                      ? 'text-slate-950 bg-gradient-to-r from-amber-400 to-yellow-300 border-amber-300'
+                                      ? 'text-slate-950 bg-amber-200/90 border-amber-100/50'
                                       : 'text-slate-500 bg-slate-900 border-slate-800'
                                   }`}
                                 >
@@ -1674,12 +1738,12 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
             {phase === 'SHOWDOWN_RESULT' && gameResult && (
               <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-pop-in select-none">
                 <div
-                  className={`w-full max-w-sm p-5 rounded-3xl bg-slate-950/95 border-2 ${
+                  className={`w-full max-w-sm p-5 rounded-3xl bg-slate-950/95 border ${
                     gameResult === 'WIN'
-                      ? 'border-amber-400 shadow-[0_0_60px_rgba(245,158,11,0.6)]'
+                      ? 'border-amber-300/50'
                       : gameResult === 'DRAW'
-                      ? 'border-cyan-400 shadow-[0_0_60px_rgba(6,182,212,0.6)]'
-                      : 'border-rose-600 shadow-[0_0_60px_rgba(225,29,72,0.6)]'
+                      ? 'border-slate-400/50'
+                      : 'border-rose-500/60'
                   } flex flex-col items-center space-y-4 font-sans text-center shadow-2xl relative overflow-hidden`}
                 >
                   {/* Top Result Badge & Amount */}
@@ -1706,10 +1770,10 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                     <div
                       className={`text-2xl sm:text-3xl font-black font-mono tracking-tight ${
                         gameResult === 'WIN'
-                          ? 'text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]'
+                          ? 'text-amber-200'
                           : gameResult === 'LOSS'
-                          ? 'text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]'
-                          : 'text-cyan-300'
+                          ? 'text-amber-200'
+                          : 'text-slate-200'
                       }`}
                     >
                       {gameResult === 'WIN'
@@ -1721,7 +1785,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                   </div>
 
                   {/* Clean 2-Line Explanation: 1. Cumulative Winnings, 2. Next Round Bet / Loss Notice */}
-                  {gameResult === 'WIN' && (
+                  {!practice && gameResult === 'WIN' && (
                     <div className="w-full space-y-2 py-3 px-4 rounded-2xl bg-slate-900/90 border border-amber-400/30 text-xs">
                       <div className="flex items-center justify-between font-bold text-amber-300">
                         <span className="text-slate-300 flex items-center gap-1.5">
@@ -1734,7 +1798,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
                       <div className="flex items-center justify-between font-bold text-amber-200/90 border-t border-slate-800 pt-2">
                         <span className="text-[11px] text-slate-400 flex items-center gap-1.5">
                           <span>🔥</span>
-                          <span>{t('casino.highlow.nextBetNotice', { defaultValue: '다음 배팅금 (패배 시 누적액 수령 후 퇴장)' })}:</span>
+                          <span>{t('casino.highlow.nextBetNotice')}</span>
                         </span>
                         <span className="font-mono text-sm text-amber-400 font-bold">${totalWinnings.toLocaleString()}</span>
                       </div>
@@ -1743,37 +1807,55 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
 
                   {gameResult === 'LOSS' && (
                     <div className="w-full p-3 rounded-2xl bg-rose-950/70 border border-rose-500/50 text-xs text-rose-100 text-center font-medium">
-                      {totalWinnings > 0
-                        ? t('casino.highlow.lossCollectNotice', {
-                            amount: totalWinnings.toLocaleString(),
-                            defaultValue: `누적 당첨금 $${totalWinnings.toLocaleString()}을 수령하고 퇴장합니다.`,
-                          })
-                        : t('casino.highlow.lossExitNotice', {
-                            defaultValue: '당첨금 없이 카지노에서 퇴장합니다.',
-                          })}
+                      {t('casino.highlow.lossExitNotice')}
                     </div>
                   )}
 
                   <div className="flex items-center gap-2.5 w-full pt-1">
-                    {gameResult !== 'LOSS' ? (
-                      <button
-                        onClick={() => startNewGameLoop()}
-                        className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:brightness-110 shadow-[0_0_20px_rgba(245,158,11,0.5)] border border-yellow-200/60 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
-                      >
-                        <span>▶</span>
-                        <span>{t('casino.highlow.nextRoundBtn', { defaultValue: '다음 라운드' })}</span>
-                      </button>
+                    {practice ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => onPracticeDoneRef.current?.()}
+                          className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-slate-950 bg-amber-200 hover:brightness-105 border border-amber-100/60 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+                        >
+                          <span>▶</span>
+                          <span>{t('casino.highlow.nextRoundBtn')}</span>
+                        </button>
+                        <button
+                          type="button"
+                          data-casino-coach="result"
+                          onClick={() => onPracticeDoneRef.current?.()}
+                          className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-slate-100 bg-slate-800 hover:brightness-110 border border-white/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+                        >
+                          <span>{t('casino.highlow.cashoutBtn')}</span>
+                        </button>
+                      </>
+                    ) : gameResult === 'WIN' || gameResult === 'DRAW' ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => startNewGameLoop()}
+                          className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-slate-950 bg-amber-200 hover:brightness-105 border border-amber-100/60 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+                        >
+                          <span>▶</span>
+                          <span>{t('casino.highlow.nextRoundBtn')}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleExitGame(false)}
+                          className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-slate-100 bg-slate-800 hover:brightness-110 border border-white/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+                        >
+                          <span>{t('casino.highlow.cashoutBtn')}</span>
+                        </button>
+                      </>
                     ) : (
                       <button
-                        onClick={handleExitGame}
-                        className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:brightness-110 border border-emerald-400/60 shadow-[0_0_20px_rgba(16,185,129,0.5)] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+                        type="button"
+                        onClick={() => handleExitGame(true)}
+                        className="flex-1 py-3 px-2.5 rounded-2xl font-black text-xs sm:text-sm text-white bg-slate-700 hover:brightness-110 border border-white/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
                       >
-                        <span>💰</span>
-                        <span>
-                          {totalWinnings > 0
-                            ? t('casino.highlow.collectExitBtn', { defaultValue: '당첨금 수령 & 퇴장' })
-                            : t('casino.highlow.exitGameBtn', { defaultValue: '퇴장' })}
-                        </span>
+                        <span>{t('casino.highlow.collectExitBtn')}</span>
                       </button>
                     )}
                   </div>
@@ -1783,8 +1865,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
       </div>
       </div>
 
-      {/* Footer Info */}
-      <div className="relative z-10 flex shrink-0 items-center justify-between text-xs font-mono text-amber-400/80 border-t border-amber-400/30 pt-3">
+      <div className="relative z-10 flex shrink-0 items-center justify-between text-xs font-mono text-slate-400 border-t border-white/10 pt-3">
         <span>{currentConfig.name}</span>
         <span>HIGH-LOW DUEL</span>
       </div>
@@ -1793,9 +1874,43 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         <HighLowDealerDialogue
           play={dealerDialoguePlay}
           locale={locale}
-          onClose={() => setDealerDialoguePlay(null)}
+          onClose={() => {
+            const wasLoss = Boolean(dealerDialoguePlay.isLoss)
+            setDealerDialoguePlay(null)
+            if (wasLoss) handleExitGame(true)
+          }}
         />
       )}
+      {practice && phase !== 'DEALING_DEALER' && phase !== 'LOBBY' ? (
+        <CasinoPracticeCoach
+          titleKey="casino.tutorial.highlowTitle"
+          bodyKey={
+            phase === 'DEALING_PLAYER'
+              ? 'casino.tutorial.highlowFlip'
+              : phase === 'SHOWDOWN_RESULT'
+                ? practiceReplay
+                  ? 'casino.tutorial.highlowResultReplay'
+                  : 'casino.tutorial.highlowResult'
+                : practiceItemStep === 'peek_card'
+                  ? 'casino.tutorial.highlowItemPeek'
+                  : practiceItemStep === 'double_payout'
+                    ? 'casino.tutorial.highlowItemDouble'
+                    : practiceItemStep === 'loss_shield'
+                      ? 'casino.tutorial.highlowItemShield'
+                      : 'casino.tutorial.highlowChoice'
+          }
+          selector={
+            phase === 'DEALING_PLAYER'
+              ? '[data-casino-coach="flip"]'
+              : phase === 'SHOWDOWN_RESULT'
+                ? '[data-casino-coach="result"]'
+                : practiceItemStep === 'play'
+                  ? '[data-casino-coach="high"]'
+                  : `[data-casino-coach="item-${practiceItemStep}"]`
+          }
+          onSkip={() => onPracticeDoneRef.current?.()}
+        />
+      ) : null}
     </div>
   )
 }

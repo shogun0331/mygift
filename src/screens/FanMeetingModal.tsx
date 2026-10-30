@@ -21,7 +21,15 @@ import type { StationGrade, VipVisitConfig } from '../game/stationGradeConfig'
 import { defaultAuditConfig, defaultVipConfig, type StationGradeConfig } from '../game/stationGradeConfig'
 import { playAuditJudgePleased, playFanCriticalSting, playFanOpeningSting, playFanTasteSting, playSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
-import { getGradeBadgeStyle } from './PromotionAuditModal'
+import { DECK_UI_ASSETS } from '../ui/deckAssets'
+import {
+  BoltGlyph,
+  GradePlate,
+  STAT_TYPE_CHIP_TONE,
+  STAT_TYPE_LABEL_KEY,
+  TypeStatIcon,
+} from '../ui/creatorMarks'
+import type { Grade } from '../game/characters'
 
 type FanMeetingModalProps = {
   config: VipVisitConfig
@@ -341,6 +349,14 @@ export function FanMeetingModal({
     }
   }, [opening])
   const [floatText, setFloatText] = useState('')
+  const [satGainPopup, setSatGainPopup] = useState<{
+    id: number
+    targetKey: string
+    value: number
+    critical: boolean
+    matched: boolean
+  } | null>(null)
+  const satGainSeq = useRef(0)
   const [auto, setAuto] = useState(false)
   autoRef.current = auto
   const [shiftKeys, setShiftKeys] = useState<string[]>([])
@@ -459,6 +475,7 @@ export function FanMeetingModal({
     }
     if (result.satisfied) {
       setFloatText('')
+      setSatGainPopup(null)
       if (!fixedLine) announcePay(result.meeting.center.pay)
       const next = fixedLine ? advanceFixedLine(result.meeting) : advanceFanLine(result.meeting, config, grade)
       meetingRef.current = next
@@ -520,7 +537,20 @@ export function FanMeetingModal({
     }
     meetingRef.current = result.meeting
     setMeeting(result.meeting)
-    setFloatText(`${result.gained > 0 ? `+${result.gained}` : '+0'}${result.damage > 0 ? ` / -${result.damage}` : ''}`)
+    setFloatText(result.damage > 0 ? `-${result.damage}` : '')
+    satGainSeq.current += 1
+    const gainId = satGainSeq.current
+    const gainTargetKey = current.center.key
+    setSatGainPopup({
+      id: gainId,
+      targetKey: gainTargetKey,
+      value: Math.max(0, Math.round(result.gained)),
+      critical: result.critical,
+      matched: result.typeMatched,
+    })
+    later(1400, () => {
+      setSatGainPopup((shown) => (shown?.id === gainId ? null : shown))
+    })
     const ratio = result.meeting.center.satisfaction / result.meeting.center.target
     const mediaKey = ratio >= 0.8 ? 'A' : ratio >= 0.3 ? 'B' : 'C'
     const strike = pickFanStrikeSlot(card.auditMedia, { critical: result.critical })
@@ -708,14 +738,32 @@ export function FanMeetingModal({
                                 <span>{CREATOR_TYPE_LABEL[live.demand].icon}</span>
                                 <span>{getCreatorTypeDisplayName(live.demand, t)}</span>
                               </span>
-                              {floatText ? <span className="text-xs font-black text-amber-200">{floatText}</span> : null}
+                              {floatText ? <span className="text-xs font-black text-rose-200">{floatText}</span> : null}
                             </span>
                           </div>
-                          <div className="h-3.5 overflow-hidden rounded-full border border-pink-200/70 bg-black/75 shadow-[0_0_18px_rgba(244,114,182,0.7)]">
-                            <div
-                              className="h-full bg-gradient-to-r from-fuchsia-500 via-pink-400 to-rose-200 transition-all"
-                              style={{ width: `${Math.min(100, Math.round((live.satisfaction / live.target) * 100))}%` }}
-                            />
+                          <div className="relative">
+                            {satGainPopup && satGainPopup.targetKey === live.key ? (
+                              <div
+                                key={satGainPopup.id}
+                                className={`sat-gain-float pointer-events-none absolute left-1/2 bottom-full z-30 mb-1 whitespace-nowrap rounded-xl border px-3 py-1.5 shadow-lg backdrop-blur-md ${
+                                  satGainPopup.critical
+                                    ? 'border-amber-300/70 bg-amber-950/90 text-amber-100'
+                                    : satGainPopup.matched
+                                      ? 'border-pink-300/70 bg-pink-950/90 text-pink-100'
+                                      : 'border-white/20 bg-slate-950/90 text-slate-100'
+                                }`}
+                              >
+                                <span className="text-lg font-black tabular-nums tracking-tight">
+                                  {t('audit.satisfactionGain', { value: satGainPopup.value })}
+                                </span>
+                              </div>
+                            ) : null}
+                            <div className="h-3.5 overflow-hidden rounded-full border border-pink-200/70 bg-black/75 shadow-[0_0_18px_rgba(244,114,182,0.7)]">
+                              <div
+                                className="h-full bg-gradient-to-r from-fuchsia-500 via-pink-400 to-rose-200 transition-all"
+                                style={{ width: `${Math.min(100, Math.round((live.satisfaction / live.target) * 100))}%` }}
+                              />
+                            </div>
                           </div>
                         </div>
                         {heartBurst > 0 ? (
@@ -789,14 +837,32 @@ export function FanMeetingModal({
                         <span>{CREATOR_TYPE_LABEL[meeting.center.demand].icon}</span>
                         <span>{getCreatorTypeDisplayName(meeting.center.demand, t)}</span>
                       </span>
-                      {floatText ? <span className="text-xs font-black text-amber-200">{floatText}</span> : null}
+                      {floatText ? <span className="text-xs font-black text-rose-200">{floatText}</span> : null}
                     </span>
                   </div>
-                  <div className="h-3.5 overflow-hidden rounded-full border border-pink-200/70 bg-black/75 shadow-[0_0_18px_rgba(244,114,182,0.7)]">
-                    <div
-                      className="h-full bg-gradient-to-r from-fuchsia-500 via-pink-400 to-rose-200 transition-all"
-                      style={{ width: `${Math.min(100, Math.round((meeting.center.satisfaction / meeting.center.target) * 100))}%` }}
-                    />
+                  <div className="relative">
+                    {satGainPopup && satGainPopup.targetKey === meeting.center.key ? (
+                      <div
+                        key={satGainPopup.id}
+                        className={`sat-gain-float pointer-events-none absolute left-1/2 bottom-full z-30 mb-1 whitespace-nowrap rounded-xl border px-3 py-1.5 shadow-lg backdrop-blur-md ${
+                          satGainPopup.critical
+                            ? 'border-amber-300/70 bg-amber-950/90 text-amber-100'
+                            : satGainPopup.matched
+                              ? 'border-pink-300/70 bg-pink-950/90 text-pink-100'
+                              : 'border-white/20 bg-slate-950/90 text-slate-100'
+                        }`}
+                      >
+                        <span className="text-lg font-black tabular-nums tracking-tight">
+                          {t('audit.satisfactionGain', { value: satGainPopup.value })}
+                        </span>
+                      </div>
+                    ) : null}
+                    <div className="h-3.5 overflow-hidden rounded-full border border-pink-200/70 bg-black/75 shadow-[0_0_18px_rgba(244,114,182,0.7)]">
+                      <div
+                        className="h-full bg-gradient-to-r from-fuchsia-500 via-pink-400 to-rose-200 transition-all"
+                        style={{ width: `${Math.min(100, Math.round((meeting.center.satisfaction / meeting.center.target) * 100))}%` }}
+                      />
+                    </div>
                   </div>
                   {fixedLine ? null : (
                     <p data-coach="reward" className="mt-1 text-center text-[11px] font-black text-amber-200 drop-shadow">
@@ -865,7 +931,6 @@ export function FanMeetingModal({
               const creatorType = typeForCreator(card.id, card.statType)
               const matched = creatorType === meeting.center.demand
               const dead = card.hp <= 0
-              const typeInfo = CREATOR_TYPE_LABEL[creatorType]
               const staminaPct = card.hpMax > 0 ? Math.min(100, Math.round((card.hp / card.hpMax) * 100)) : 0
               const waitingFan = !statsOn
               const performing = Boolean(flash?.url)
@@ -873,6 +938,10 @@ export function FanMeetingModal({
               const practiceTarget = focusId === card.id
               const practiceLocked = practiceStep != null && !practiceTarget
               const disabled = dead || meeting.over || opening || performing || practiceLocked
+              const grade = (['S', 'A', 'B', 'C'].includes(String(card.grade).toUpperCase())
+                ? String(card.grade).toUpperCase()
+                : 'B') as Grade
+              const typeLabel = t(STAT_TYPE_LABEL_KEY[creatorType])
               return (
                 <button
                   key={card.id}
@@ -880,6 +949,7 @@ export function FanMeetingModal({
                   disabled={disabled}
                   data-practice-target={practiceTarget ? '1' : undefined}
                   onClick={() => requestCard(card.id)}
+                  title={typeLabel}
                   className={`group relative flex aspect-[3/4] max-h-[210px] flex-col justify-between overflow-hidden rounded-xl text-left transition-all ${
                     dead
                       ? 'cursor-not-allowed border border-white/10 opacity-40 grayscale'
@@ -890,44 +960,67 @@ export function FanMeetingModal({
                         : waitingFan
                         ? 'cursor-pointer border border-white/10 brightness-[0.32] saturate-50'
                         : practiceTarget
-                          ? 'cursor-pointer border-2 border-amber-300 ring-4 ring-amber-300/70 shadow-[0_0_24px_rgba(251,191,36,0.65)] hover:scale-[1.03]'
+                          ? 'cursor-pointer border border-amber-300/80 outline outline-1 outline-amber-200/50 shadow-[0_0_16px_rgba(251,191,36,0.28)] hover:scale-[1.02]'
                         : matched
-                          ? 'cursor-pointer border-2 border-pink-400 ring-4 ring-pink-500/50 shadow-[0_0_24px_rgba(244,114,182,0.55)] hover:scale-[1.03]'
-                          : 'cursor-pointer border border-pink-400/30 hover:scale-[1.03] hover:border-pink-300'
+                          ? 'cursor-pointer border border-pink-400/70 outline outline-1 outline-pink-300/40 shadow-[0_0_14px_rgba(244,114,182,0.28)] hover:scale-[1.02]'
+                          : 'cursor-pointer border border-white/15 hover:scale-[1.02] hover:border-amber-200/40'
                   }`}
                 >
                   {card.profileImageUrl ? (
-                    <img src={resolveMediaSrc(card.profileImageUrl)} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                    <img
+                      src={resolveMediaSrc(card.profileImageUrl)}
+                      alt=""
+                      className="absolute inset-[4%] rounded-[14px] object-cover"
+                    />
                   ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-pink-950 via-slate-900 to-slate-950" />
+                    <div className="absolute inset-[4%] rounded-[14px] bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950" />
                   )}
-                  <div className="relative z-10 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent p-1.5">
-                    <span className={`rounded-md border px-1.5 py-0.5 text-[10px] font-black italic ${getGradeBadgeStyle(card.grade)}`}>
-                      {card.grade}
-                    </span>
-                    <span className="rounded bg-black/70 px-1 py-0.5 text-[9px] font-black text-cyan-200">
-                      {t('creator.statPerformance')} {card.statPerformance}
+                  <img
+                    src={DECK_UI_ASSETS.cardBezel}
+                    alt=""
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 z-[5] h-full w-full object-fill"
+                  />
+                  <div className="relative z-10 flex items-start justify-between gap-1 bg-gradient-to-b from-black/80 to-transparent p-1.5">
+                    <GradePlate grade={grade} size="sm" />
+                    <span className="rounded bg-black/70 px-1 py-0.5 text-[9px] font-black tabular-nums text-cyan-200">
+                      {card.statPerformance}
                     </span>
                   </div>
                   {matched && !dead ? (
                     <div className="relative z-10 px-1.5">
-                      <span className="rounded bg-pink-500/90 px-1.5 py-0.5 text-[9px] font-black text-white">{t('vip.fanTaste')}</span>
+                      <span className="rounded bg-pink-500/90 px-1.5 py-0.5 text-[9px] font-black text-white">
+                        {t('vip.fanTaste')}
+                      </span>
                     </div>
                   ) : null}
                   <div className="relative z-10 space-y-1 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent p-2 pt-6">
                     <div className="flex items-center justify-between gap-1">
-                      <p className="truncate text-xs font-black text-white">{characterDisplayName({ id: card.id, name: card.name }, locale)}</p>
-                      <span className={`shrink-0 rounded border px-1 py-0.5 text-[9px] font-black ${typeInfo.tone}`}>
-                        {typeInfo.icon}
+                      <p className="truncate text-xs font-black text-white">
+                        {characterDisplayName({ id: card.id, name: card.name }, locale)}
+                      </p>
+                      <span
+                        className={`inline-flex shrink-0 items-center rounded-md border p-0.5 ${STAT_TYPE_CHIP_TONE[creatorType]}`}
+                        aria-label={typeLabel}
+                      >
+                        <TypeStatIcon type={creatorType} className="h-4 w-4" />
                       </span>
                     </div>
-                    <div className="border-t border-white/10 pt-1">
-                      <div className="flex items-center justify-between text-[8px] font-black text-amber-300">
-                        <span>⚡ STAMINA</span>
-                        <span className="tabular-nums text-slate-200">{card.hp}/{card.hpMax}</span>
+                    <div
+                      className="border-t border-white/10 pt-1"
+                      title={`${t('creator.statStamina')} ${card.hp}/${card.hpMax}`}
+                    >
+                      <div className="flex items-center justify-between text-[8px] font-black text-slate-200">
+                        <BoltGlyph className="h-2.5 w-2.5 text-amber-300" />
+                        <span className="tabular-nums">
+                          {card.hp}/{card.hpMax}
+                        </span>
                       </div>
                       <div className="mt-0.5 h-1.5 overflow-hidden rounded-full border border-white/15 bg-slate-900">
-                        <div className="h-full bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-300" style={{ width: `${staminaPct}%` }} />
+                        <div
+                          className="h-full bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-300"
+                          style={{ width: `${staminaPct}%` }}
+                        />
                       </div>
                     </div>
                   </div>

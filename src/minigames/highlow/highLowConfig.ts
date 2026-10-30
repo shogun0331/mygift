@@ -1,5 +1,18 @@
 export type HighLowRoomId = 'local' | 'star' | 'legend'
 
+const HL_ASSET_BASE = '/casino/highlow'
+const HL_ASSET_VER = 'v1'
+/** Slot monitor bezel reused for High-Low CCTV */
+const HL_CCTV_BEZEL = `/casino/slot/cctv_monitor_bezel.webp?${HL_ASSET_VER}`
+
+export const HIGH_LOW_UI_ASSETS = {
+  tableFelt: `${HL_ASSET_BASE}/highlow_table_felt.webp?${HL_ASSET_VER}`,
+  cardBack: `${HL_ASSET_BASE}/highlow_card_back.webp?${HL_ASSET_VER}`,
+  cardFront: `${HL_ASSET_BASE}/highlow_card_front.webp?${HL_ASSET_VER}`,
+  betPlinth: `${HL_ASSET_BASE}/highlow_bet_plinth.webp?${HL_ASSET_VER}`,
+  cctvBezel: HL_CCTV_BEZEL,
+} as const
+
 export type Suit = 'spades' | 'hearts' | 'diams' | 'clubs'
 
 export type CasinoItemType = 'peek_card' | 'double_payout' | 'loss_shield' | 'staff_hire'
@@ -285,6 +298,10 @@ export function calculatePayout(
   return Math.round(clamped * 100) / 100
 }
 
+/** 딜러 공개 카드 허용 랭크 (6 ~ 10) */
+export const DEALER_CARD_MIN_VALUE = 6
+export const DEALER_CARD_MAX_VALUE = 10
+
 /** 52장 트럼프 덱 생성 (2 ~ 14 / A=14) */
 export function createDeck(): Card[] {
   const suits: Suit[] = ['spades', 'hearts', 'diams', 'clubs']
@@ -311,4 +328,39 @@ export function shuffleDeck(deck: Card[]): Card[] {
     ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
   return shuffled
+}
+
+/** 덱에서 딜러용 카드(6~10) 1장을 뽑아 반환. 없으면 랜덤 생성. */
+export function drawDealerCard(deck: Card[]): { card: Card; rest: Card[] } {
+  const eligibleIndexes: number[] = []
+  for (let i = 0; i < deck.length; i += 1) {
+    const value = deck[i]?.value
+    if (
+      value != null &&
+      value >= DEALER_CARD_MIN_VALUE &&
+      value <= DEALER_CARD_MAX_VALUE
+    ) {
+      eligibleIndexes.push(i)
+    }
+  }
+
+  if (eligibleIndexes.length === 0) {
+    const suits: Suit[] = ['spades', 'hearts', 'diams', 'clubs']
+    const value =
+      DEALER_CARD_MIN_VALUE +
+      Math.floor(Math.random() * (DEALER_CARD_MAX_VALUE - DEALER_CARD_MIN_VALUE + 1))
+    return {
+      card: {
+        id: `dealer-fallback-${Date.now()}`,
+        suit: suits[Math.floor(Math.random() * suits.length)]!,
+        value,
+      },
+      rest: deck,
+    }
+  }
+
+  const pick = eligibleIndexes[Math.floor(Math.random() * eligibleIndexes.length)]!
+  const card = deck[pick]!
+  const rest = deck.filter((_, index) => index !== pick)
+  return { card, rest }
 }

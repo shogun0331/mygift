@@ -25,30 +25,39 @@ export type SlotSymbolDef = {
 }
 
 const SLOT_ASSET_BASE = '/casino/slot'
-/** 이미지 여백 크롭 반영용 캐시 버스트 */
-const SLOT_ASSET_VER = 'v7'
+/** v4 화면패널 + 대형 스핀 캐시 버스트 */
+const SLOT_ASSET_VER = 'v12'
 
 export const SLOT_UI_ASSETS = {
-  cctvFrame: `${SLOT_ASSET_BASE}/cctv_frame.webp?${SLOT_ASSET_VER}`,
+  cctvFrame: `${SLOT_ASSET_BASE}/cctv_monitor_bezel.webp?${SLOT_ASSET_VER}`,
   topPanel: `${SLOT_ASSET_BASE}/slot_toppanel.webp?${SLOT_ASSET_VER}`,
   reelWindow: `${SLOT_ASSET_BASE}/slot_reel_window.webp?${SLOT_ASSET_VER}`,
   lever: `${SLOT_ASSET_BASE}/slot_lever.webp?${SLOT_ASSET_VER}`,
   cabinet: `${SLOT_ASSET_BASE}/slot_cabinet.webp?${SLOT_ASSET_VER}`,
+  stageBg: `${SLOT_ASSET_BASE}/slot_stage_bg.webp?${SLOT_ASSET_VER}`,
+  wintray: `${SLOT_ASSET_BASE}/slot_wintray.webp?${SLOT_ASSET_VER}`,
+  plinth: `${SLOT_ASSET_BASE}/slot_plinth.webp?${SLOT_ASSET_VER}`,
+  spotlight: `${SLOT_ASSET_BASE}/slot_spotlight.webp?${SLOT_ASSET_VER}`,
+  screenPanel: `${SLOT_ASSET_BASE}/slot_screen_panel.webp?${SLOT_ASSET_VER}`,
+  screenPanelPunch: `${SLOT_ASSET_BASE}/slot_screen_panel_punch.webp?${SLOT_ASSET_VER}`,
+  spinBtn: `${SLOT_ASSET_BASE}/slot_spin_btn.webp?${SLOT_ASSET_VER}`,
+  spinBtnPressed: `${SLOT_ASSET_BASE}/slot_spin_btn_pressed.webp?${SLOT_ASSET_VER}`,
   btnBezel: `${SLOT_ASSET_BASE}/btn_bezel.webp?${SLOT_ASSET_VER}`,
   btnCapNormal: `${SLOT_ASSET_BASE}/btn_cap_normal.webp?${SLOT_ASSET_VER}`,
   btnCapPressed: `${SLOT_ASSET_BASE}/btn_cap_pressed.webp?${SLOT_ASSET_VER}`,
+  btnCapGlow: `${SLOT_ASSET_BASE}/btn_cap_glow.webp?${SLOT_ASSET_VER}`,
 } as const
 
 export const DEFAULT_SLOT_SYMBOLS: Record<SlotSymbolId, SlotSymbolDef> = {
-  cherry: { id: 'cherry', name: '체리', icon: '🍒', iconSrc: `${SLOT_ASSET_BASE}/sym_cherry.webp`, multiplier: 2, weight: 28 },
-  lemon: { id: 'lemon', name: '레몬', icon: '🍋', iconSrc: `${SLOT_ASSET_BASE}/sym_lemon.webp`, multiplier: 3, weight: 24 },
-  grape: { id: 'grape', name: '포도', icon: '🍇', iconSrc: `${SLOT_ASSET_BASE}/sym_grape.webp`, multiplier: 4, weight: 20 },
-  bell: { id: 'bell', name: '벨', icon: '🔔', iconSrc: `${SLOT_ASSET_BASE}/sym_bell.webp`, multiplier: 5, weight: 16 },
-  star: { id: 'star', name: '별', icon: '⭐', iconSrc: `${SLOT_ASSET_BASE}/sym_star.webp`, multiplier: 8, weight: 12 },
-  diamond: { id: 'diamond', name: '다이아', icon: '💎', iconSrc: `${SLOT_ASSET_BASE}/sym_diamond.webp`, multiplier: 12, weight: 8 },
-  seven: { id: 'seven', name: '세븐', icon: '7️⃣', iconSrc: `${SLOT_ASSET_BASE}/sym_seven.webp`, multiplier: 20, weight: 5 },
-  scatter: { id: 'scatter', name: '스캐터', icon: '🎰', iconSrc: `${SLOT_ASSET_BASE}/sym_scatter.webp`, multiplier: 10, weight: 4, isScatter: true },
-  wild: { id: 'wild', name: '와일드', icon: '🃏', iconSrc: `${SLOT_ASSET_BASE}/sym_wild.webp`, multiplier: 15, weight: 3, isWild: true },
+  cherry: { id: 'cherry', name: '체리', icon: '🍒', iconSrc: `${SLOT_ASSET_BASE}/sym_cherry.webp?${SLOT_ASSET_VER}`, multiplier: 2, weight: 28 },
+  lemon: { id: 'lemon', name: '레몬', icon: '🍋', iconSrc: `${SLOT_ASSET_BASE}/sym_lemon.webp?${SLOT_ASSET_VER}`, multiplier: 3, weight: 24 },
+  grape: { id: 'grape', name: '포도', icon: '🍇', iconSrc: `${SLOT_ASSET_BASE}/sym_grape.webp?${SLOT_ASSET_VER}`, multiplier: 4, weight: 20 },
+  bell: { id: 'bell', name: '벨', icon: '🔔', iconSrc: `${SLOT_ASSET_BASE}/sym_bell.webp?${SLOT_ASSET_VER}`, multiplier: 5, weight: 16 },
+  star: { id: 'star', name: '별', icon: '⭐', iconSrc: `${SLOT_ASSET_BASE}/sym_star.webp?${SLOT_ASSET_VER}`, multiplier: 8, weight: 12 },
+  diamond: { id: 'diamond', name: '다이아', icon: '💎', iconSrc: `${SLOT_ASSET_BASE}/sym_diamond.webp?${SLOT_ASSET_VER}`, multiplier: 12, weight: 8 },
+  seven: { id: 'seven', name: '세븐', icon: '7️⃣', iconSrc: `${SLOT_ASSET_BASE}/sym_seven.webp?${SLOT_ASSET_VER}`, multiplier: 20, weight: 5 },
+  scatter: { id: 'scatter', name: '스캐터', icon: '🎰', iconSrc: `${SLOT_ASSET_BASE}/sym_scatter.webp?${SLOT_ASSET_VER}`, multiplier: 10, weight: 4, isScatter: true },
+  wild: { id: 'wild', name: '와일드', icon: '🃏', iconSrc: `${SLOT_ASSET_BASE}/sym_wild.webp?${SLOT_ASSET_VER}`, multiplier: 15, weight: 3, isWild: true },
 }
 
 export const SLOT_SYMBOLS = DEFAULT_SLOT_SYMBOLS

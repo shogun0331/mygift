@@ -317,52 +317,35 @@ export function SlotEditorPanel() {
       {/* FULLSCREEN POPUP SIMULATOR MODAL (createPortal via document.body) */}
       {showSimulator &&
         createPortal(
-          <div className="fixed inset-0 z-[99999] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in select-none">
-            <div className="w-full max-w-4xl h-[92vh] max-h-[92vh] rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.4)] border-2 border-amber-500/60 bg-slate-950 relative flex flex-col">
-              {/* Modal Debug Header */}
-              <div className="flex shrink-0 items-center justify-between px-5 py-3 bg-slate-900 border-b border-amber-500/30 text-xs font-mono">
-                <div className="flex items-center gap-3">
-                  <span className="text-base animate-pulse">🎰</span>
-                  <span className="text-amber-400 font-bold tracking-wide">
-                    CASINO SLOT MACHINE LIVE SIMULATOR
-                  </span>
+          <div className="fixed inset-0 z-[99999] bg-slate-950 animate-fade-in select-none">
+            <CasinoSlotMachine
+              stationGrade={activeStationGrade}
+              userAssets={simAssets}
+              onUpdateAssets={(newAssets) => setSimAssets(newAssets)}
+              onClose={() => setShowSimulator(false)}
+              headerExtras={
+                <>
                   <select
                     value={activeStationGrade}
                     onChange={(e) => setActiveStationGrade(e.target.value as StationGrade)}
-                    className="px-2 py-1 rounded-lg bg-slate-950 border border-slate-700 text-slate-200 font-bold text-xs"
+                    className="slot-shell-btn slot-shell-btn--ghost max-w-[9.5rem] truncate"
+                    aria-label="Station grade"
                   >
-                    <option value="sme">중소기업 ($2,000)</option>
-                    <option value="mid">중견기업 ($10,000)</option>
-                    <option value="large">대기업 ($50,000)</option>
-                    <option value="top">일등기업 ($200,000)</option>
+                    <option value="sme">중소기업</option>
+                    <option value="mid">중견기업</option>
+                    <option value="large">대기업</option>
+                    <option value="top">일등기업</option>
                   </select>
-                </div>
-                <div className="flex items-center gap-3">
                   <button
-                    onClick={() => setSimAssets((prev) => prev + 1000000)}
-                    className="px-3 py-1.5 rounded-lg bg-amber-950 border border-amber-500/50 text-amber-300 hover:bg-amber-900 transition-all text-xs font-bold cursor-pointer"
+                    type="button"
+                    onClick={() => setSimAssets((prev) => prev + 1_000_000)}
+                    className="slot-shell-btn slot-shell-btn--ghost"
                   >
-                    + $1,000,000 자산 충전
+                    +$1M
                   </button>
-                  <button
-                    onClick={() => setShowSimulator(false)}
-                    className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white transition-all text-xs font-bold shadow-md shadow-rose-600/30 cursor-pointer"
-                  >
-                    ✕ 시뮬레이터 닫기
-                  </button>
-                </div>
-              </div>
-
-              {/* Minigame Instance Container */}
-              <div className="flex-1 min-h-0 overflow-hidden p-2 flex items-center justify-center">
-                <CasinoSlotMachine
-                  stationGrade={activeStationGrade}
-                  userAssets={simAssets}
-                  onUpdateAssets={(newAssets) => setSimAssets(newAssets)}
-                  onClose={() => setShowSimulator(false)}
-                />
-              </div>
-            </div>
+                </>
+              }
+            />
           </div>,
           document.body,
         )}

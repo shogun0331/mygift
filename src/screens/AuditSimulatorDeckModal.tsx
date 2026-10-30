@@ -1,12 +1,20 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type DragEvent } from 'react'
 import { useTranslation } from '../locales/i18n'
-import type { RegisteredCharacter } from '../game/characters'
+import type { Grade, RegisteredCharacter } from '../game/characters'
 import { normalizeCreatorStatType } from '../game/characters'
 import { type StationTierId } from '../game/stationGradeConfig'
-import { CREATOR_TYPE_LABEL, getCreatorTypeDisplayName } from '../game/auditEngine'
+import { getCreatorTypeDisplayName } from '../game/auditEngine'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { characterDisplayName } from '../game/characterLocales'
 import { companyTierLabelKey } from '../game/ranking'
+import { DECK_UI_ASSETS } from '../ui/deckAssets'
+import {
+  BoltGlyph,
+  GradePlate,
+  STAT_TYPE_CHIP_TONE,
+  STAT_TYPE_LABEL_KEY,
+  TypeStatIcon,
+} from '../ui/creatorMarks'
 
 type Props = {
   tierKey: Exclude<StationTierId, 'black' | 'tiny'>
@@ -22,7 +30,7 @@ type Props = {
   onReplayTutorial?: () => void
 }
 
-/** 등급별(S, A, B, C) 프리미엄 네온 글로우 뱃지 스타일 헬퍼 */
+/** 등급별(S, A, B, C) 뱃지 스타일 — 타 화면 호환용 */
 export function getGradeBadgeStyle(grade: string = 'B') {
   const g = (grade || 'B').toUpperCase()
   switch (g) {
@@ -36,6 +44,143 @@ export function getGradeBadgeStyle(grade: string = 'B') {
     default:
       return 'border-slate-400 text-slate-200 bg-slate-900 shadow-[0_0_10px_rgba(148,163,184,0.5)]'
   }
+}
+
+function asGrade(raw: unknown): Grade {
+  const g = String(raw || 'B').toUpperCase()
+  if (g === 'S' || g === 'A' || g === 'B' || g === 'C') return g
+  return 'B'
+}
+
+function DeckCard({
+  character,
+  size,
+  showBezel,
+  t,
+  locale,
+  isDragging,
+  lowStamina,
+  staminaLabel,
+  onClick,
+  draggable,
+  onDragStart,
+  onDragEnd,
+}: {
+  character: RegisteredCharacter & { stamina?: number; profileImageUrl?: string }
+  size: 'lg' | 'sm'
+  showBezel: boolean
+  t: (key: string, vars?: Record<string, string | number>) => string
+  locale: string
+  isDragging?: boolean
+  lowStamina?: boolean
+  staminaLabel: string
+  onClick?: () => void
+  draggable?: boolean
+  onDragStart?: (e: DragEvent) => void
+  onDragEnd?: () => void
+}) {
+  const rawType =
+    (character as any).statType ||
+    (character as any).type ||
+    (character as any).primaryStat ||
+    'performance'
+  const cType = normalizeCreatorStatType(rawType)
+  const typeLabel = t(STAT_TYPE_LABEL_KEY[cType]) || getCreatorTypeDisplayName(cType, t)
+  const stamina = (character as any).stamina ?? 100
+  const name = characterDisplayName(character, locale)
+  const tall = size === 'lg'
+
+  return (
+    <div
+      draggable={draggable}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onClick={onClick}
+      title={typeLabel}
+      className={`group relative aspect-[3/4] flex flex-col justify-between overflow-hidden rounded-2xl transition-all ${
+        tall ? 'h-[210px] sm:h-[250px]' : 'h-[160px] sm:h-[190px]'
+      } ${
+        lowStamina
+          ? 'cursor-not-allowed border border-white/10 bg-slate-950/90 opacity-50 grayscale-[40%]'
+          : isDragging
+            ? 'scale-95 border border-dashed border-white/30 opacity-30'
+            : 'cursor-pointer border border-white/15 bg-slate-950 hover:border-amber-200/50 hover:shadow-[0_0_18px_rgba(251,191,36,0.18)]'
+      }`}
+    >
+      {lowStamina ? (
+        <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/90 p-1 text-center backdrop-blur-xs">
+          <span className="text-[10px] font-black uppercase tracking-wider leading-tight text-rose-300">
+            {t('audit.staminaDepleted')}
+          </span>
+          <span className="mt-0.5 text-[8.5px] font-semibold text-rose-200/80">
+            {t('audit.lowStaminaHint')}
+          </span>
+        </div>
+      ) : null}
+
+      {character.profileImageUrl ? (
+        <img
+          src={resolveMediaSrc(character.profileImageUrl)}
+          alt={name}
+          className={`absolute object-cover transition-transform duration-300 group-hover:scale-105 ${
+            showBezel ? 'inset-[4%] rounded-[18px]' : 'inset-0'
+          }`}
+        />
+      ) : (
+        <div
+          className={`absolute flex flex-col items-center justify-center bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 text-xs font-bold text-slate-400 ${
+            showBezel ? 'inset-[4%] rounded-[18px]' : 'inset-0'
+          }`}
+        >
+          <span>NO IMAGE</span>
+        </div>
+      )}
+
+      {showBezel ? (
+        <img
+          src={DECK_UI_ASSETS.cardBezel}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-[5] h-full w-full object-fill"
+        />
+      ) : null}
+
+      <div className="relative z-10 flex items-start justify-between gap-1 bg-gradient-to-b from-black/80 to-transparent p-1.5 sm:p-2">
+        <GradePlate grade={asGrade(character.grade)} size={tall ? 'md' : 'sm'} />
+        <span
+          className={`inline-flex items-center rounded-md border p-0.5 ${STAT_TYPE_CHIP_TONE[cType]}`}
+          aria-label={typeLabel}
+        >
+          <TypeStatIcon type={cType} className={tall ? 'h-5 w-5' : 'h-4 w-4'} />
+        </span>
+      </div>
+
+      <div className="relative z-10 space-y-1 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent p-1.5 pt-3 sm:p-2.5">
+        <h5
+          className={`truncate font-black text-white drop-shadow ${
+            tall ? 'text-sm sm:text-base' : 'text-center text-[11px]'
+          }`}
+        >
+          {name}
+        </h5>
+        <div
+          className="flex flex-col space-y-0.5 border-t border-white/10 pt-0.5"
+          title={`${staminaLabel} ${stamina}`}
+        >
+          <div className="flex items-center justify-between px-0.5 text-[9px] font-black text-slate-200">
+            <BoltGlyph className="h-2.5 w-2.5 text-amber-300" />
+            <span className="tabular-nums">{stamina}</span>
+          </div>
+          <div className="h-1 w-full overflow-hidden rounded-full border border-white/15 bg-slate-900">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-amber-400 to-emerald-400"
+              style={{ width: `${Math.min(100, Math.max(0, stamina))}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export function AuditSimulatorDeckModal({
@@ -57,13 +202,11 @@ export function AuditSimulatorDeckModal({
     replayRef.current?.()
   }, [forceTutorial])
   const { t, locale } = useTranslation()
-  // 시뮬레이터일 때만 S등급 보정, 인게임 정식 심사 덱 배치 시에는 보유 캐릭터의 실제 능력치 유지
   const boostedCharacters: any[] = registeredCharacters.map((c) => ({
     ...c,
     grade: isSimulator ? 'S' : c.grade || 'B',
   }))
 
-  // 4인 덱 고정 슬롯 위치 상태 (스테미나 > 30 보유 크리에이터만 초기 자동 픽업)
   const [deckSlots, setDeckSlots] = useState<(string | null)[]>(() => {
     const initial: (string | null)[] = [null, null, null, null]
     const validEligible = boostedCharacters.filter((c) => ((c as any).stamina ?? 100) > 30)
@@ -75,23 +218,20 @@ export function AuditSimulatorDeckModal({
 
   const [draggedId, setDraggedId] = useState<string | null>(null)
 
-  // 현재 배치된 캐릭터 ID 리스트
   const activeSelectedIds = deckSlots.filter(Boolean) as string[]
   const canField = boostedCharacters.some((character) => ((character as any).stamina ?? 100) > 30)
+  const staminaLabel = t('creator.statStamina')
 
-  // 하단 카드 클릭 시 덱 장착 / 해제 (빈 슬롯 탐색)
   const toggleSelect = (id: string) => {
     const char = boostedCharacters.find((c) => c.id === id)
-    if (char && ((char as any).stamina ?? 100) <= 30) return // 30 이하 출전 금지
+    if (char && ((char as any).stamina ?? 100) <= 30) return
 
     setDeckSlots((prev) => {
       const next = [...prev]
       const existingIdx = next.indexOf(id)
       if (existingIdx !== -1) {
-        // 이미 덱에 배치되어 있다면 해제
         next[existingIdx] = null
       } else {
-        // 비어있는 가장 첫 번째 슬롯 찾기
         const emptyIdx = next.indexOf(null)
         if (emptyIdx === -1) {
           return prev
@@ -102,14 +242,12 @@ export function AuditSimulatorDeckModal({
     })
   }
 
-  // 특정 슬롯 위치에 캐릭터 장착
   const assignToSlot = (slotIdx: number, charId: string) => {
     const char = boostedCharacters.find((c) => c.id === charId)
-    if (char && ((char as any).stamina ?? 100) <= 30) return // 30 이하 출전 금지
+    if (char && ((char as any).stamina ?? 100) <= 30) return
 
     setDeckSlots((prev) => {
       const next = [...prev]
-      // 만약 다른 슬롯에 이미 위치해 있다면 이전 위치를 null로 비움
       const existingIdx = next.indexOf(charId)
       if (existingIdx !== -1) {
         next[existingIdx] = null
@@ -119,7 +257,6 @@ export function AuditSimulatorDeckModal({
     })
   }
 
-  // 특정 슬롯 비우기
   const clearSlot = (slotIdx: number) => {
     setDeckSlots((prev) => {
       const next = [...prev]
@@ -139,7 +276,6 @@ export function AuditSimulatorDeckModal({
     onStartSimulation(selected)
   }
 
-  // 상단 4칸 슬롯 배열 객체 매핑
   const slots: (RegisteredCharacter | null)[] = [0, 1, 2, 3].map((slotIdx) => {
     const id = deckSlots[slotIdx]
     return id ? boostedCharacters.find((c) => c.id === id) || null : null
@@ -147,178 +283,137 @@ export function AuditSimulatorDeckModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/85 p-2 sm:p-4 backdrop-blur-md transition-all animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/88 p-2 sm:p-4 backdrop-blur-md transition-all animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
     >
-      <div className="game-panel relative flex flex-col w-[98vw] max-w-7xl max-h-[96vh] h-[93vh] overflow-hidden rounded-3xl border border-cyan-500/40 bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-900/95 p-4 sm:p-6 shadow-[0_0_80px_rgba(6,182,212,0.3)]">
-        {/* 상단 포인트 조명 네온 바 */}
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-500 via-teal-300 to-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
-
-        {/* 헤더 */}
-        <div className="flex shrink-0 items-center justify-between border-b border-cyan-500/20 pb-3 pt-1">
-          <div className="flex items-center gap-3">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-950/80 px-3.5 py-1 text-xs font-black text-cyan-300 uppercase tracking-wider shadow-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping" />
-              <span>{t(companyTierLabelKey(tierKey))} {t(titleKey)}</span>
-            </div>
-            <h3 className="text-base sm:text-lg font-extrabold text-slate-200">
+      <div className="game-panel relative flex h-[93vh] max-h-[96vh] w-[98vw] max-w-7xl flex-col overflow-hidden rounded-3xl border border-white/12 bg-slate-950/95 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.55)] sm:p-6">
+        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 pb-3">
+          <div className="min-w-0">
+            <p className="game-kicker">
+              {t(companyTierLabelKey(tierKey))} · {t(titleKey)}
+            </p>
+            <h3 className="truncate text-base font-semibold text-slate-100 sm:text-lg">
               {t('audit.deckModalSubtitle')}
             </h3>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {onClose ? (
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 text-slate-400 transition hover:border-slate-500 hover:bg-slate-700 hover:text-white active:scale-95"
-                aria-label="Close modal"
-              >
-                ✕
-              </button>
-            ) : null}
-          </div>
-        </div>
+          {onClose ? (
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-white/10 bg-black/30 text-slate-400 transition hover:border-white/25 hover:bg-white/5 hover:text-white active:scale-95"
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+          ) : null}
+        </header>
 
-        {/* 메인 덱 구성 컨텐츠 영역 */}
-        <div className="flex flex-1 flex-col overflow-hidden space-y-4 my-3 min-h-0">
-          {/* 1. 상단 덱 빈 공간 4칸 슬롯 */}
-          <div className="shrink-0 rounded-2xl border border-cyan-500/30 bg-gradient-to-b from-cyan-950/30 to-slate-950/50 p-4 backdrop-blur-md shadow-lg">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-xs sm:text-sm font-black tracking-wide text-cyan-300">
+        <div className="my-3 flex min-h-0 flex-1 flex-col space-y-4 overflow-hidden">
+          <section
+            className="relative shrink-0 overflow-hidden rounded-2xl border border-white/10 p-4 shadow-inner"
+            style={{
+              backgroundImage: `url('${DECK_UI_ASSETS.stage}')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center bottom',
+            }}
+          >
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-950/55 via-transparent to-slate-950/70" />
+            <div className="relative mb-3 flex items-center justify-between gap-2">
+              <span className="text-xs font-semibold tracking-wide text-slate-200 sm:text-sm">
                 {t('audit.deckModalSlotsHeader', { count: activeSelectedIds.length })}
               </span>
-              <span className="text-[11px] sm:text-xs font-medium text-slate-400">
+              <span className="text-[11px] font-medium text-slate-400 sm:text-xs">
                 {t('audit.deckModalSlotHint')}
               </span>
             </div>
 
-            <div className="grid grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto">
-              {slots.map((char, slotIdx) => {
-                return (
-                  <div
-                    key={slotIdx}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={() => {
-                      if (draggedId) {
-                        assignToSlot(slotIdx, draggedId)
-                        setDraggedId(null)
-                      }
-                    }}
-                    onClick={() => {
-                      if (char) {
-                        clearSlot(slotIdx)
-                      }
-                    }}
-                    className={`relative aspect-[3/4] h-[210px] sm:h-[250px] flex flex-col justify-between overflow-hidden rounded-2xl border transition-all ${
-                      char
-                        ? 'cursor-pointer border-cyan-300 ring-4 ring-cyan-400/30 shadow-[0_0_35px_rgba(6,182,212,0.4)] bg-slate-900 hover:scale-[1.02] hover:border-rose-400'
-                        : 'border-2 border-dashed border-cyan-500/30 bg-cyan-950/10 hover:border-cyan-400/60 hover:bg-cyan-950/30'
-                    }`}
-                  >
-                    {char ? (
-                      <>
-                        {/* 대형 3:4 카드 배경 이미지 */}
-                        {char.profileImageUrl ? (
-                          <img
-                            src={resolveMediaSrc(char.profileImageUrl)}
-                            alt={characterDisplayName(char, locale)}
-                            className="absolute inset-0 h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950 via-slate-900 to-indigo-950 text-xs font-bold text-cyan-300">
-                            <span>NO IMAGE</span>
-                          </div>
-                        )}
-
-                        {/* 상단 뱃지 */}
-                        <div className="relative z-10 flex items-center justify-between p-2 bg-gradient-to-b from-black/85 to-transparent">
-                          <span className={`rounded-lg border px-2.5 py-0.5 text-xs sm:text-sm font-black italic tracking-widest ${getGradeBadgeStyle(char.grade || 'S')}`}>
-                            {char.grade || 'S'}
-                          </span>
-                        </div>
-
-                        {/* 하단 프로필 및 타입 아이콘 & 스테미나 바 */}
-                        <div className="relative z-10 p-2.5 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent pt-4 space-y-1.5">
-                          {(() => {
-                            const rawType = char.statType || (char as any).type || (char as any).primaryStat || 'elegance'
-                            const cType = normalizeCreatorStatType(rawType)
-                            const typeInfo = CREATOR_TYPE_LABEL[cType]
-                            const stamina = (char as any).stamina ?? 100
-                            return (
-                              <>
-                                <div className="flex items-center justify-between gap-1">
-                                  <span className="truncate text-sm sm:text-base font-black text-white drop-shadow">
-                                    {characterDisplayName(char, locale)}
-                                  </span>
-                                  <span className={`rounded-md border px-2 py-0.5 text-xs font-black ${typeInfo.tone}`}>
-                                    {getCreatorTypeDisplayName(cType, t)}
-                                  </span>
-                                </div>
-
-                                {/* 스테미나 게이지 바 */}
-                                <div className="flex flex-col space-y-0.5 border-t border-white/15 pt-1">
-                                  <div className="flex items-center justify-between text-[9px] font-black text-amber-300">
-                                    <span>STAMINA</span>
-                                    <span className="tabular-nums font-bold text-slate-100">{stamina}</span>
-                                  </div>
-                                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-900 border border-white/20">
-                                    <div
-                                      className="h-full rounded-full bg-gradient-to-r from-amber-400 to-emerald-400"
-                                      style={{ width: `${Math.min(100, Math.max(0, stamina))}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              </>
-                            )
-                          })()}
-                        </div>
-                      </>
-                    ) : (
-                      /* 대형 빈 슬롯 뷰어 */
-                      <div className="flex h-full w-full flex-col items-center justify-center text-slate-500 p-2 text-center">
-                        <span className="text-3xl sm:text-4xl font-extralight text-cyan-400/60">+</span>
-                        <span className="mt-1.5 text-xs font-black text-cyan-200">{t('audit.slotFormat', { slot: slotIdx + 1 })}</span>
-                        <span className="text-[10px] font-medium text-slate-400 mt-0.5">{t('audit.emptySlot')}</span>
+            <div className="relative mx-auto grid max-w-4xl grid-cols-4 gap-3 sm:gap-4">
+              {slots.map((char, slotIdx) => (
+                <div
+                  key={slotIdx}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => {
+                    if (draggedId) {
+                      assignToSlot(slotIdx, draggedId)
+                      setDraggedId(null)
+                    }
+                  }}
+                  onClick={() => {
+                    if (char) clearSlot(slotIdx)
+                  }}
+                  className={
+                    char
+                      ? 'rounded-2xl outline outline-1 outline-amber-200/45 drop-shadow-[0_8px_18px_rgba(0,0,0,0.45)]'
+                      : undefined
+                  }
+                >
+                  {char ? (
+                    <DeckCard
+                      character={char as any}
+                      size="lg"
+                      showBezel
+                      t={t}
+                      locale={locale}
+                      staminaLabel={staminaLabel}
+                    />
+                  ) : (
+                    <div
+                      className="relative mx-auto aspect-[3/4] h-[210px] overflow-hidden rounded-2xl sm:h-[250px]"
+                      style={{
+                        backgroundImage: `url('${DECK_UI_ASSETS.slotEmpty}')`,
+                        backgroundSize: '100% 100%',
+                      }}
+                    >
+                      <div className="absolute inset-[5%_6%] flex flex-col items-center justify-center text-center text-slate-400/80">
+                        <span className="text-xs font-bold tracking-wide text-slate-300/70">
+                          {t('audit.slotFormat', { slot: slotIdx + 1 })}
+                        </span>
+                        <span className="mt-1 text-[10px] font-medium text-slate-500">
+                          {t('audit.emptySlot')}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                )
-              })}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          </div>
+          </section>
 
-          {/* 2. 하단 미배치 보유 캐릭터 카드 나열 덱 풀 리스트 */}
-          <div className="flex-1 min-h-0 shrink-0 flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50 p-3.5">
+          <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/25 p-3.5">
             {(() => {
               const availableCharacters = boostedCharacters.filter(
-                (c) => !activeSelectedIds.includes(c.id)
+                (c) => !activeSelectedIds.includes(c.id),
               )
               return (
                 <>
-                  <div className="mb-2 flex items-center justify-between shrink-0">
-                    <span className="text-xs sm:text-sm font-bold text-slate-300">
+                  <div className="mb-2 flex shrink-0 items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-300 sm:text-sm">
                       {t('audit.unplacedCreators', { count: availableCharacters.length })}
                     </span>
-                    <span className="text-[11px] sm:text-xs font-medium text-slate-400">
+                    <span className="text-[11px] font-medium text-slate-400 sm:text-xs">
                       {t('audit.unplacedHint')}
                     </span>
                   </div>
 
                   <div className="flex-1 overflow-y-auto pr-1">
                     {availableCharacters.length > 0 ? (
-                      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-1 sm:gap-1.5">
+                      <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-5 sm:gap-2 md:grid-cols-6 lg:grid-cols-7">
                         {availableCharacters.map((character) => {
-                          const rawType = character.statType || (character as any).type || (character as any).primaryStat || 'elegance'
-                          const cType = normalizeCreatorStatType(rawType)
-                          const typeInfo = CREATOR_TYPE_LABEL[cType]
-                          const isBeingDragged = draggedId === character.id
                           const stamina = (character as any).stamina ?? 100
                           const isLowStamina = stamina <= 30
-
+                          const isBeingDragged = draggedId === character.id
                           return (
-                            <div
+                            <DeckCard
                               key={character.id}
+                              character={character}
+                              size="sm"
+                              showBezel={false}
+                              t={t}
+                              locale={locale}
+                              staminaLabel={staminaLabel}
+                              lowStamina={isLowStamina}
+                              isDragging={isBeingDragged}
                               draggable={!isLowStamina}
                               onDragStart={(e) => {
                                 if (isLowStamina) {
@@ -333,72 +428,12 @@ export function AuditSimulatorDeckModal({
                                 if (isLowStamina) return
                                 toggleSelect(character.id)
                               }}
-                              className={`group relative aspect-[3/4] h-[175px] sm:h-[205px] flex flex-col justify-between overflow-hidden rounded-2xl border transition-all ${
-                                isLowStamina
-                                  ? 'cursor-not-allowed border-rose-950/80 bg-slate-950/90 opacity-50 grayscale-[40%]'
-                                  : isBeingDragged
-                                    ? 'opacity-30 border-cyan-400 border-dashed scale-95'
-                                    : 'border-purple-500/40 bg-slate-950 hover:border-cyan-400 hover:scale-[1.04] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer'
-                              }`}
-                            >
-                              {/* 스테미나 30 이하 참여 불가 오버레이 */}
-                              {isLowStamina ? (
-                                <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/90 p-1 text-center backdrop-blur-xs">
-                                  <span className="text-[10px] font-black text-rose-300 leading-tight uppercase tracking-wider">
-                                    {t('audit.staminaDepleted')}
-                                  </span>
-                                  <span className="mt-0.5 text-[8.5px] font-semibold text-rose-200/80">
-                                    {t('audit.lowStaminaHint')}
-                                  </span>
-                                </div>
-                              ) : null}
-                              {/* 배경 이미지 */}
-                              {character.profileImageUrl ? (
-                                <img
-                                  src={resolveMediaSrc(character.profileImageUrl)}
-                                  alt={characterDisplayName(character, locale)}
-                                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                />
-                              ) : (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 text-xs font-bold text-purple-300">
-                                  <span>NO IMAGE</span>
-                                </div>
-                              )}
-
-                              {/* 상단 오버레이 */}
-                              <div className="relative z-10 flex items-center justify-between p-1 bg-gradient-to-b from-black/80 to-transparent">
-                                <span className={`rounded-md border px-1.5 py-0.2 text-[10px] sm:text-xs font-black italic tracking-wider ${getGradeBadgeStyle(character.grade || 'S')}`}>
-                                  {character.grade || 'S'}
-                                </span>
-                                <span className={`rounded border px-1 py-0.2 text-[10px] font-black ${typeInfo.tone}`}>
-                                  {getCreatorTypeDisplayName(cType, t)}
-                                </span>
-                              </div>
-
-                              {/* 하단 프로필 이름 & 스테미나 게이지 바 */}
-                              <div className="relative z-10 p-1.5 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent pt-2.5 space-y-0.5">
-                                <h5 className="truncate text-[11px] font-black text-white text-center drop-shadow">
-                                  {characterDisplayName(character, locale)}
-                                </h5>
-                                <div className="flex flex-col space-y-0.5 border-t border-white/10 pt-0.5">
-                                  <div className="flex items-center justify-between text-[7.5px] font-black text-amber-300 px-0.5">
-                                    <span>STAMINA</span>
-                                    <span className="tabular-nums font-bold text-slate-200">{stamina}</span>
-                                  </div>
-                                  <div className="h-1 w-full overflow-hidden rounded-full bg-slate-900 border border-white/15">
-                                    <div
-                                      className="h-full rounded-full bg-gradient-to-r from-amber-400 to-emerald-400"
-                                      style={{ width: `${Math.min(100, Math.max(0, stamina))}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                            />
                           )
                         })}
                       </div>
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-slate-400 p-6 bg-slate-900/30 rounded-xl border border-slate-800/40">
+                      <div className="flex h-full w-full items-center justify-center rounded-xl border border-white/8 bg-black/20 p-6 text-xs font-semibold text-slate-400">
                         {t('audit.allCreatorsPlaced')}
                       </div>
                     )}
@@ -406,16 +441,15 @@ export function AuditSimulatorDeckModal({
                 </>
               )
             })()}
-          </div>
+          </section>
         </div>
 
-        {/* 푸터 버튼 */}
-        <div className="shrink-0 flex items-center justify-between gap-3 border-t border-cyan-500/20 pt-3">
+        <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-white/10 pt-3">
           {onReplayTutorial ? (
             <button
               type="button"
               onClick={onReplayTutorial}
-              className="cursor-pointer rounded-xl border border-amber-200 bg-amber-400 px-4 py-3 text-xs font-black text-slate-950 shadow-[0_0_18px_rgba(251,191,36,0.45)]"
+              className="game-btn cursor-pointer rounded-xl border border-amber-400/40 bg-amber-500/10 px-4 py-3 text-xs font-bold text-amber-100 transition hover:border-amber-300/60 hover:bg-amber-500/15"
             >
               {t('audit.replayTutorial')}
             </button>
@@ -427,7 +461,7 @@ export function AuditSimulatorDeckModal({
               <button
                 type="button"
                 onClick={onPass}
-                className="cursor-pointer rounded-xl border border-rose-300/50 bg-rose-500/15 px-5 py-3 text-sm font-black text-rose-100 transition hover:border-rose-200 hover:bg-rose-500/25"
+                className="cursor-pointer rounded-xl border border-rose-300/40 bg-rose-500/10 px-5 py-3 text-sm font-bold text-rose-100 transition hover:border-rose-200/60 hover:bg-rose-500/20"
               >
                 {t('audit.passFanMeeting')}
               </button>
@@ -436,15 +470,14 @@ export function AuditSimulatorDeckModal({
               type="button"
               onClick={handleStart}
               disabled={!canField}
-              className="shrink-0 cursor-pointer rounded-xl border border-cyan-400/50 bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-500 px-8 py-3 text-sm font-black text-slate-950 shadow-[0_0_25px_rgba(6,182,212,0.4)] transition-all hover:scale-105 hover:brightness-110 active:scale-95 flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+              className="game-btn game-btn-primary flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-8 py-3 text-sm font-bold transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <span>{t(startLabelKey, { count: activeSelectedIds.length })}</span>
               <span className="text-xs font-bold">➔</span>
             </button>
           </div>
-        </div>
+        </footer>
       </div>
     </div>
   )
 }
-

@@ -23,6 +23,8 @@ import {
 import { snsCommentText, type SnsComment } from '../game/snsComments'
 import { playSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
+import { SHELL_UI_ASSETS } from '../ui/shellAssets'
+import '../ui/shellFrames.css'
 import { RedDot } from './RedDot'
 import { SnsMediaLightbox, SnsMediaWithBlur } from './SnsMediaWithBlur'
 
@@ -173,15 +175,8 @@ export function SnsFeedModal({
 
   return createPortal(
     <div className="fixed inset-0 z-[92] flex items-center justify-center bg-black/72 p-4 backdrop-blur-[6px]">
-      <div
-        className="relative flex h-[min(92dvh,52rem)] w-[min(92vw,28rem)] flex-col rounded-[2.4rem] p-[0.72rem] shadow-[0_28px_80px_rgba(0,0,0,0.55)]"
-        style={{
-          background: 'linear-gradient(175deg, #171d2b 0%, #0d121c 30%, #070a12 100%)',
-          boxShadow:
-            '0 0 0 1px rgba(255,255,255,0.12) inset, 0 32px 90px -10px rgba(0,0,0,0.85), 0 0 40px rgba(99,102,241,0.12)',
-        }}
-      >
-        <div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[1.85rem] border border-white/10 bg-[#070b12]">
+      <div className="ui-phone">
+        <div className="ui-phone__screen">
           <div className="flex shrink-0 items-center justify-between border-b border-white/8 px-4 py-2">
             <span className="pl-1 text-[10px] font-semibold tracking-wide text-slate-400">SNS</span>
             <button
@@ -201,7 +196,7 @@ export function SnsFeedModal({
             </div>
           </header>
 
-          <div ref={feedScrollRef} className="min-h-0 flex-1 overflow-auto">
+          <div ref={feedScrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             <section className="relative">
               <div className="h-28 overflow-hidden bg-gradient-to-br from-indigo-700/40 via-slate-900 to-slate-950">
                 {bannerUrl ? (
@@ -360,28 +355,30 @@ export function SnsFeedModal({
             </div>
           </div>
 
-          <div className="shrink-0 border-t border-white/8 bg-[#080c16] px-3 py-2.5">
+          <div className="ui-phone__compose">
             <button
               type="button"
               data-tutorial="sns-post-btn"
               disabled={!canCompose}
               onClick={submitCompose}
-              className="game-btn game-btn-primary relative flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-[13px] font-bold disabled:cursor-not-allowed disabled:opacity-35"
+              className="game-btn game-btn-primary relative flex min-h-[2.85rem] w-full items-center justify-center gap-2 rounded-full px-3 py-2.5 text-[13px] font-bold leading-none text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               {canCompose ? <RedDot label={t('sns.composeAvailable')} /> : null}
-              <span>📷 {t('sns.compose')}</span>
-              <span className="tabular-nums text-amber-200">{formatMoney(postCost)}</span>
+              <span className="truncate">📷 {t('sns.compose')}</span>
+              <span className="shrink-0 text-[15px] tabular-nums text-amber-200">
+                {formatMoney(postCost)}
+              </span>
             </button>
             {pending ? (
-              <p className="mt-1.5 text-center text-[11px] font-semibold text-amber-300">
+              <p className="mt-1.5 text-center text-[11px] font-semibold leading-snug text-amber-300">
                 {t('sns.alreadyPosted')}
               </p>
             ) : !hasSnsComposeStock(posts, publishedIds) ? (
-              <p className="mt-1.5 text-center text-[11px] font-semibold text-rose-300">
+              <p className="mt-1.5 text-center text-[11px] font-semibold leading-snug text-rose-300">
                 {t('sns.noStock')}
               </p>
             ) : assets < postCost ? (
-              <p className="mt-1.5 text-center text-[11px] font-semibold text-rose-300">
+              <p className="mt-1.5 text-center text-[11px] font-semibold leading-snug text-rose-300">
                 {t('sns.needAssets')}
               </p>
             ) : null}
@@ -407,7 +404,14 @@ export function SnsFeedModal({
             </div>
           ) : null}
         </div>
+        <img
+          src={SHELL_UI_ASSETS.phoneBezel}
+          alt=""
+          draggable={false}
+          className="ui-phone__bezel"
+        />
       </div>
+
       {lightbox ? (
         <SnsMediaLightbox
           url={lightbox.url}

@@ -1,6 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import {
   characterHasOwnSkinLevel,
   findCharacterIconUrl,
@@ -36,6 +35,9 @@ import {
   translateUserChatLine,
 } from '../game/chatComments'
 import { creatorVisuals, type StudioSlot } from '../game/studioSlots'
+import { DASHBOARD_UI_ASSETS } from '../ui/dashboardAssets'
+import { SHELL_UI_ASSETS } from '../ui/shellAssets'
+import '../ui/shellFrames.css'
 import type { RegisteredStaff } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
 import { StaffSlotIcons } from './StaffManagerUi'
@@ -366,7 +368,7 @@ const STATUS_BADGE: Record<StudioSlot['status'], { labelKey: string; className: 
   },
   assigned: {
     labelKey: 'dashboard.ready',
-    className: 'border-pink-500/40 bg-pink-500/10 text-pink-300 neon-text-pink',
+    className: 'border-emerald-400/45 bg-emerald-500/15 text-emerald-300',
   },
 }
 
@@ -388,12 +390,16 @@ function formatSystemFeedText(
     locale,
   )
 
+  if (event.id.startsWith('casino-open') || event.text === 'casino-open') {
+    return t('guide.casinoOpened')
+  }
+
   if (event.type === 'viewers' && event.amount > 0) {
     const tmpl = t('feed.viewersGained') || '📈 {count} viewers gained! ({name})'
     return tmpl.replace('{count}', String(event.amount)).replace('{name}', name)
   }
 
-  if (event.id.startsWith('trend-evt-') || event.text.includes('주간 대세 트렌드') || event.text.includes('trend')) {
+  if (event.id.startsWith('trend-evt-') || event.text.includes('주간 대세 트렌드') || event.text.includes('Weekly trend') || event.text.includes('trend')) {
     let typeName = ''
     if (event.text.includes('섹시') || event.id.includes('sexy')) typeName = t('creator.typeSexy') || 'Sexy'
     else if (event.text.includes('멘탈') || event.id.includes('mental') || event.text.includes('기품') || event.id.includes('elegance')) typeName = t('creator.typeMental') || 'Mental'
@@ -533,10 +539,10 @@ function LiveChatFeed({
   const scrollerRef = useRef<HTMLDivElement>(null)
   const stickBottomRef = useRef(true)
   const prevNewestIdRef = useRef<string | null>(null)
-  const visible = liveEvents.slice(0, 12)
+  const visible = liveEvents.slice(0, 18)
   const newestId = visible[0]?.id ?? null
   const ordered = useMemo(
-    () => [...liveEvents.slice(0, 12)].reverse(),
+    () => [...liveEvents.slice(0, 18)].reverse(),
     [liveEvents],
   )
 
@@ -565,8 +571,7 @@ function LiveChatFeed({
       onScroll={onScroll}
       className="live-chat-scroller mt-2 min-h-0 flex-1 overflow-x-hidden overflow-y-auto pr-0.5"
     >
-      <ul className="live-chat-list flex min-h-full flex-col justify-end gap-1.5">
-        <AnimatePresence initial={false}>
+      <ul className="live-chat-list flex min-h-full flex-col justify-end gap-1">
           {ordered.map((event) => {
             const isDonation = event.type === 'donation' && event.amount > 0
             const isUserChat = Boolean(event.userId)
@@ -590,15 +595,8 @@ function LiveChatFeed({
               const donationText = formatChatDonationText(creatorName, event.amount, locale)
 
               return (
-                <motion.li
+                <li
                   key={event.id}
-                  initial={{ opacity: 0, y: 12, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{
-                    opacity: { duration: 0.16 },
-                    y: { duration: 0.16, ease: 'easeOut' },
-                  }}
                   className={`live-chat-row is-entering relative overflow-hidden rounded-xl text-xs shrink-0 ${tone.card}${
                     isSuper ? ' is-super' : ''
                   }`}
@@ -641,7 +639,7 @@ function LiveChatFeed({
                       {donationText}
                     </p>
                   </div>
-                </motion.li>
+                </li>
               )
             }
 
@@ -650,16 +648,9 @@ function LiveChatFeed({
               const userBadge = getChatUserBadge(event.userId || '')
               const chatText = translateUserChatLine(event.text, locale)
               return (
-                <motion.li
+                <li
                   key={event.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{
-                    opacity: { duration: 0.12 },
-                    y: { duration: 0.12, ease: 'easeOut' },
-                  }}
-                  className="live-chat-row is-entering flex shrink-0 items-start gap-1.5 rounded px-2 py-0.5 text-xs transition-colors hover:bg-white/[0.04]"
+                  className="live-chat-row is-entering flex shrink-0 items-start gap-1.5 rounded px-2 py-0.5 text-xs hover:bg-white/[0.04]"
                 >
                   {userBadge}
                   <span className={`shrink-0 text-[11px] ${userColorClass}`}>
@@ -667,33 +658,22 @@ function LiveChatFeed({
                     <span className="text-slate-500 font-normal ml-0.5">:</span>
                   </span>
                   <span className="break-all text-[11px] leading-relaxed text-slate-100">{chatText}</span>
-                </motion.li>
+                </li>
               )
             }
 
             const systemText = formatSystemFeedText(event, locale, t, ownedById)
             return (
-              <motion.li
+              <li
                 key={event.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  opacity: { duration: 0.12 },
-                  y: { duration: 0.12, ease: 'easeOut' },
-                }}
-                className="live-chat-row is-entering flex shrink-0 items-center gap-1.5 rounded-lg border border-cyan-500/20 bg-gradient-to-r from-slate-900/90 via-cyan-950/40 to-slate-900/90 px-2.5 py-1 text-xs text-cyan-200 shadow-sm"
+                className="live-chat-row is-entering flex shrink-0 items-center px-1 py-0"
               >
-                <span className="rounded bg-cyan-500/20 px-1 py-0.2 text-[9px] font-extrabold text-cyan-300 border border-cyan-400/30">
-                  SYSTEM
-                </span>
-                <span className="break-all text-[11px] font-medium leading-tight text-slate-200">
+                <span className="break-words text-[10px] font-medium leading-snug text-slate-500/80">
                   {systemText}
                 </span>
-              </motion.li>
+              </li>
             )
           })}
-        </AnimatePresence>
       </ul>
     </div>
   )
@@ -933,22 +913,27 @@ export const DashboardPanel = memo(function DashboardPanel({
       </section>
 
       <aside className="flex min-h-0 flex-col gap-2.5 lg:h-full lg:overflow-hidden">
-        <section className="game-panel flex min-h-[16rem] sm:min-h-[20rem] flex-col rounded-2xl p-3 lg:min-h-0 lg:flex-[1.6] overflow-hidden">
-          <div className="flex shrink-0 items-center justify-between gap-2 pb-1.5 border-b border-white/10">
+        <section className="dash-chat-panel game-panel flex min-h-[16rem] sm:min-h-[20rem] flex-col rounded-2xl lg:min-h-0 lg:flex-[1.6] overflow-hidden">
+          <div className="dash-chat-panel__head flex shrink-0 items-center justify-between gap-2">
             <h2 className="game-stat-label flex items-center gap-1.5 text-xs font-bold tracking-wider text-pink-400">
-              <span className="relative flex h-2 w-2 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
+              <span className="dash-live-chat-dot shrink-0" aria-hidden />
               {t('dashboard.recentEvents')}
             </h2>
             <span className="text-[10px] font-mono text-slate-400">MAX 18</span>
           </div>
-          {liveEvents.length === 0 ? (
-            <p className="mt-4 text-center text-xs text-slate-500">{t('dashboard.noEvents')}</p>
-          ) : (
-            <LiveChatFeed liveEvents={liveEvents} ownedById={ownedById} />
-          )}
+          <div className="dash-chat-panel__list">
+            {liveEvents.length === 0 ? (
+              <p className="mt-4 text-center text-xs text-slate-500">{t('dashboard.noEvents')}</p>
+            ) : (
+              <LiveChatFeed liveEvents={liveEvents} ownedById={ownedById} />
+            )}
+          </div>
+          <img
+            src={SHELL_UI_ASSETS.liveChatFrame}
+            alt=""
+            draggable={false}
+            className="dash-chat-panel__bezel"
+          />
         </section>
 
         <section className={`game-panel live-rank-panel flex min-h-[12rem] sm:min-h-[14rem] lg:min-h-0 lg:flex-[0.8] flex-col rounded-2xl p-3 ${isLive ? 'is-live' : ''}`}>
@@ -998,7 +983,7 @@ export const DashboardPanel = memo(function DashboardPanel({
             type="button"
             onClick={onStartPromotionAudit}
             disabled={startBroadcastLocked}
-            className="w-full shrink-0 rounded-2xl py-3 px-4 text-sm font-black tracking-wide border-2 border-yellow-200 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.65)] hover:scale-[1.02] active:scale-95 hover:brightness-110 animate-pulse transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+            className="dash-btn-promo-audit w-full shrink-0 rounded-2xl py-3 px-4 text-sm font-black tracking-wide transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 hover:scale-[1.02] active:scale-95"
           >
             {t('dashboard.promotionAudit')}
           </button>
@@ -1022,7 +1007,7 @@ export const DashboardPanel = memo(function DashboardPanel({
             className={
               showRest
                 ? 'mt-auto w-full shrink-0 rounded-2xl border border-sky-300/40 bg-sky-500/15 px-4 py-3 text-sm font-bold tracking-wide text-sky-100 disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer'
-                : 'game-btn-pink mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer'
+                : 'dash-btn-start-live mt-auto w-full shrink-0 rounded-2xl px-4 py-3 text-sm font-bold tracking-wide disabled:cursor-not-allowed disabled:opacity-40 sm:py-3.5 sm:text-[15px] transition-all cursor-pointer'
             }
           >
             {isLive
@@ -1126,7 +1111,7 @@ const StreamCard = memo(function StreamCard({
         : slot.status === 'assigned' && broadcastPhase === 'live'
           ? {
               labelKey: 'dashboard.live',
-              className: 'border-pink-500/50 bg-pink-500/15 text-pink-300 neon-text-pink',
+              className: 'border-rose-400/55 bg-rose-500/20 text-rose-200',
             }
           : STATUS_BADGE[slot.status]
   const staminaPct =
@@ -1287,22 +1272,27 @@ const StreamCard = memo(function StreamCard({
   const crashing = conditionCrashes.length > 0
   const staffing = staffActions.length > 0
 
+  const statusGlow =
+    gearBroken || blocked
+      ? ''
+      : isLive && !feedOff
+        ? 'is-live stream-on-air'
+        : 'is-ready'
+
   return (
     <article
-      className={`neon-glow-card relative flex flex-col overflow-hidden rounded-2xl bg-slate-950/40 transition-all duration-300 ${
-        isLive && !feedOff ? 'stream-on-air' : ''
-      } ${
+      className={`dash-stream-card neon-glow-card relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300 ${statusGlow} ${
         crashing ? 'condition-crash-slot' : ''
       } ${
         staffing ? 'staff-action-slot' : ''
       } ${
-        gearBroken ? 'is-gear-broken' : isLive && blocked ? 'is-cctv-rest-off' : blocked ? 'border-2 border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.35)]' : ''
+        gearBroken ? 'is-gear-broken' : isLive && blocked ? 'is-cctv-rest-off' : ''
       }`}
     >
-      <div
-        ref={videoWrapRef}
-        className={`relative aspect-[2/1] w-full shrink-0 overflow-hidden bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
-      >
+      <div ref={videoWrapRef} className="dash-stream-monitor">
+        <div
+          className={`dash-stream-feed bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
+        >
         {playableSrc ? (
           <video
             ref={videoRef}
@@ -1332,13 +1322,9 @@ const StreamCard = memo(function StreamCard({
         <div className="reticle-corner reticle-tr" />
         <div className="reticle-corner reticle-bl" />
         <div className="reticle-corner reticle-br" />
-        <div
-          className={`absolute inset-x-0 bottom-0 z-10 h-1/2 bg-gradient-to-t to-transparent ${
-            playVideoUrl ? 'from-slate-950/75' : 'from-slate-950'
-          }`}
-        />
+        <div className="absolute inset-x-0 bottom-0 z-10 h-[55%] bg-gradient-to-t from-black/90 via-black/45 to-transparent" />
 
-        <div className="absolute top-2.5 left-2.5 right-2.5 z-20 flex items-start justify-between gap-2">
+        <div className="absolute top-2 left-2 right-2 z-20 flex items-start justify-between gap-2">
           <span className="rounded-md border border-white/10 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-[0.14em] text-slate-200 backdrop-blur-sm">
             {slot.label}
           </span>
@@ -1349,15 +1335,15 @@ const StreamCard = memo(function StreamCard({
             <div className="flex items-center gap-1 rounded bg-black/50 border border-white/5 px-1.5 py-0.5">
                   <span
                     className={`h-1.5 w-1.5 rounded-full ${
-                      feedOff ? (gearBroken ? 'bg-amber-400' : 'bg-rose-400') : 'bg-pink-500 live-dot-static'
+                      feedOff ? (gearBroken ? 'bg-amber-400' : 'bg-rose-400') : isLive ? 'bg-rose-500 live-dot-static' : 'bg-emerald-400'
                     }`}
                   />
                   <span
                     className={`text-[8px] font-extrabold tracking-wider ${
-                      feedOff ? (gearBroken ? 'text-amber-300' : 'text-rose-300') : 'text-pink-400'
+                      feedOff ? (gearBroken ? 'text-amber-300' : 'text-rose-300') : isLive ? 'text-rose-300' : 'text-emerald-300'
                     }`}
                   >
-                    {feedOff ? t('dashboard.noSignal') : isLive ? t('dashboard.live') : t('dashboard.idle')}
+                    {feedOff ? t('dashboard.noSignal') : isLive ? t('dashboard.live') : t('dashboard.ready')}
                   </span>
                   {feedOff ? null : (
                     <div className="live-audio-wave ml-1" aria-hidden>
@@ -1433,9 +1419,16 @@ const StreamCard = memo(function StreamCard({
             onResolve={(success) => onToxicQteResolve(toxicQte.id, success)}
           />
         ) : null}
+        </div>
+        <img
+          src={DASHBOARD_UI_ASSETS.streamBezel}
+          alt=""
+          draggable={false}
+          className="dash-stream-bezel"
+        />
       </div>
 
-      <div className="relative shrink-0 space-y-2 p-3 pt-7 pb-3.5">
+      <div className="dash-stream-info relative shrink-0 space-y-2 p-3 pt-3 pb-3.5">
         {staffing ? (
           <StaffActionFx
             actions={staffActions}
@@ -1466,10 +1459,10 @@ const StreamCard = memo(function StreamCard({
                     {creator.grade}
                   </span>
                 ) : null}
-                <p className="truncate text-xs font-bold text-slate-100">
+                <p className="dash-creator-name truncate text-xs">
                   {creator?.name ?? '—'}
                   {creator?.concept ? (
-                    <span className="font-medium text-amber-400"> ({creator.concept})</span>
+                    <span className="dash-creator-job"> ({creator.concept})</span>
                   ) : null}
                 </p>
                 {creator && !isLive && onSelectSkin && (creator.skins?.length ?? 0) > 1 ? (
@@ -1585,9 +1578,9 @@ const StreamCard = memo(function StreamCard({
                   {shownConditionScore ?? creator.conditionScore}%
                 </span>
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-slate-900 border border-white/10 shadow-inner">
+              <div className="dash-bar-track h-2">
                 <div
-                  className={`h-full rounded-full transition-[width] duration-300 ease-out ${CONDITION_DOT_CLASS[shownCondition ?? creator.condition]} shadow-[0_0_8px_currentColor]`}
+                  className={`h-full rounded-[10px] transition-[width] duration-300 ease-out ${CONDITION_DOT_CLASS[shownCondition ?? creator.condition]}`}
                   style={{ width: `${shownConditionScore ?? creator.conditionScore}%` }}
                 />
               </div>
@@ -1597,22 +1590,18 @@ const StreamCard = memo(function StreamCard({
           {/* Stamina 게이지바 & 우측 스태프 아이콘 (한 줄로 통합 배치) */}
           <div className="flex items-center justify-between gap-3 pt-0.5">
             <div
-              className={`relative min-w-0 flex-1 overflow-hidden rounded-md bg-slate-900 shadow-inner border transition-all duration-300 ${
-                staminaTone.track
-              }`}
+              className={`dash-bar-track relative min-w-0 flex-1 transition-all duration-300 ${staminaTone.track}`}
             >
               <div
-                className={`h-6 rounded-sm transition-[width] duration-150 ease-linear ${
-                  staminaTone.fill
-                }`}
+                className={`h-6 transition-[width] duration-150 ease-linear ${staminaTone.fill}`}
                 style={{ width: `${staminaPct}%` }}
               />
               <div
-                className={`pointer-events-none absolute inset-0 flex items-center justify-between px-2 text-[10px] font-black tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.85)] ${
+                className={`pointer-events-none absolute inset-0 z-[3] flex items-center justify-between px-2.5 text-[10px] font-black tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.85)] ${
                   staminaTone.text
                 }`}
               >
-                <span>{blocked ? `🚨 ${t('creator.staminaDepleted')}` : 'Stamina'}</span>
+                <span>{blocked ? `🚨 ${t('creator.staminaDepleted')}` : '⚡'}</span>
                 <span className="tabular-nums">
                   {creator
                     ? `${Math.round(shownStamina ?? creator.stamina)}/${creator.staminaMax}`
@@ -1648,28 +1637,28 @@ const StreamCard = memo(function StreamCard({
 function staminaToneClass(pct: number, blocked: boolean) {
   if (blocked || pct <= 0) {
     return {
-      track: 'border-rose-500/80 shadow-[0_0_12px_rgba(244,63,94,0.6)] animate-pulse',
-      fill: 'bg-gradient-to-r from-rose-700 via-rose-500 to-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.8)]',
+      track: 'border-rose-500/60 animate-pulse',
+      fill: 'dash-bar-fill-stamina is-low',
       text: 'text-rose-50',
     }
   }
   if (pct < 30) {
     return {
-      track: 'border-rose-400/50',
-      fill: 'bg-gradient-to-r from-rose-600 to-orange-400 shadow-[0_0_10px_rgba(244,63,94,0.45)]',
+      track: 'border-rose-400/40',
+      fill: 'dash-bar-fill-stamina is-low',
       text: 'text-rose-50',
     }
   }
   if (pct < 60) {
     return {
-      track: 'border-amber-400/40',
-      fill: 'bg-gradient-to-r from-amber-500 to-yellow-300 shadow-[0_0_10px_rgba(251,191,36,0.4)]',
+      track: 'border-amber-400/35',
+      fill: 'dash-bar-fill-stamina',
       text: 'text-amber-50',
     }
   }
   return {
-    track: 'border-cyan-400/25',
-    fill: 'bg-gradient-to-r from-cyan-500 to-teal-300 shadow-[0_0_10px_rgba(34,211,238,0.45)]',
+    track: 'border-white/10',
+    fill: 'dash-bar-fill-stamina is-ok',
     text: 'text-white',
   }
 }

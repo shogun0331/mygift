@@ -10,6 +10,8 @@ import { pickVipDepartLine } from '../game/vipLines'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { getSeVolumePercent } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
+import { SHELL_UI_ASSETS } from '../ui/shellAssets'
+import '../ui/shellFrames.css'
 
 export type VipDepartPlay = {
   creator: OwnedCreator
@@ -118,38 +120,40 @@ export function VipDepartDialogue({ play, onClose }: Props) {
       <button
         type="button"
         onClick={requestClose}
-        className={`donation-thanks-card pointer-events-auto flex w-full max-w-xl items-start gap-3 rounded-2xl border border-violet-400/45 bg-slate-950/92 px-3.5 py-3 text-left shadow-[0_0_28px_rgba(167,139,250,0.28)] backdrop-blur-md sm:gap-4 sm:px-4 sm:py-3.5 ${
+        className={`vn-dialogue-strip donation-thanks-card pointer-events-auto w-full max-w-xl text-left ${
           visible ? 'is-visible' : ''
         }`}
       >
-        <div className="relative shrink-0">
+        <img
+          src={SHELL_UI_ASSETS.vnDialogueStrip}
+          alt=""
+          draggable={false}
+          className="vn-dialogue-strip__bezel"
+        />
+        <div className="vn-dialogue-strip__avatar">
           {iconSrc ? (
-            <img
-              src={iconSrc}
-              alt=""
-              className="h-14 w-14 rounded-xl border border-violet-300/50 object-cover shadow-md sm:h-16 sm:w-16"
-            />
+            <img src={iconSrc} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-violet-300/40 bg-violet-950/60 text-lg font-black text-violet-200 sm:h-16 sm:w-16">
+            <div className="flex h-full w-full items-center justify-center bg-violet-950/60 text-sm font-black text-violet-200">
               {name.slice(0, 1)}
             </div>
           )}
-          <span className="absolute -right-1 -top-1 rounded-full border border-violet-200/50 bg-violet-500/95 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-white shadow">
-            VIP
-          </span>
         </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="vn-nameplate donation-thanks-name inline-flex items-center gap-2 !border-l-violet-300">
-            <span>{name}</span>
+        <div className="vn-dialogue-strip__body">
+          <div className="vn-nameplate donation-thanks-name inline-flex max-w-full items-center gap-2 !border-l-violet-300 truncate">
+            <span className="truncate">{name}</span>
+            <span className="shrink-0 rounded-full border border-violet-200/50 bg-violet-500/95 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-white">
+              VIP
+            </span>
           </div>
-          <p className="mt-1.5 text-[12px] font-bold text-violet-200/95 sm:text-[13px]">
+          <p className="text-[11px] font-bold text-violet-200/95 sm:text-[12px]">
             {t('vip.departSubtitle')}
           </p>
-          <p className="vn-line donation-thanks-line mt-1.5 whitespace-pre-wrap text-[13px] font-semibold leading-relaxed text-white sm:text-sm">
+          <p className="vn-line donation-thanks-line whitespace-pre-wrap text-[12px] font-semibold leading-snug text-white sm:text-[13px]">
             {line || t('vip.departFallback')}
           </p>
-          <p className="mt-2 text-[10px] font-semibold text-white/40">{t('vip.departTap')}</p>
+          <p className="pt-0.5 text-[9px] font-semibold text-white/45">{t('vip.departTap')}</p>
         </div>
       </button>
     </div>,
