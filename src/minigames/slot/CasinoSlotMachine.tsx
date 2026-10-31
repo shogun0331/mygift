@@ -34,6 +34,26 @@ function SlotSymbolImg({
     />
   )
 }
+
+/** Isolated clock so 1Hz ticks don't re-render the whole slot tree. */
+function SlotCctvClock({ locale }: { locale: string }) {
+  const [clock, setClock] = useState(() => new Date())
+  useEffect(() => {
+    const id = window.setInterval(() => setClock(new Date()), 1000)
+    return () => window.clearInterval(id)
+  }, [])
+  const label = clock.toLocaleTimeString(locale === 'KO' ? 'ko-KR' : undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  })
+  return (
+    <div className="bg-black/75 px-2 py-0.5 rounded text-[9px] text-emerald-300/90 tracking-wider tabular-nums">
+      {label}
+    </div>
+  )
+}
 import {
   playSfx,
   stopSfx,
@@ -236,18 +256,6 @@ export function CasinoSlotMachine({
   // 현재 턴 수에 맞는 딜러 미디어 추출 (턴 1 -> 수위 1, 턴 2 -> 수위 2, 턴 3 -> 수위 3)
   const activeConsecutiveWins = (currentTurn - 1) * 3 // 턴 1: 0(수위1), 턴 2: 3(수위2), 턴 3: 6(수위3)
   const activeDealerMedia = getActiveDealerMedia(dealerConfig, activeConsecutiveWins)
-
-  const [cctvClock, setCctvClock] = useState(() => new Date())
-  useEffect(() => {
-    const id = window.setInterval(() => setCctvClock(new Date()), 1000)
-    return () => window.clearInterval(id)
-  }, [])
-  const cctvTimestamp = cctvClock.toLocaleTimeString(locale === 'KO' ? 'ko-KR' : undefined, {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  })
 
   // 레버 당기기 & 스핀 동작 (무료 3회 도전)
   const handleSpin = () => {
@@ -586,9 +594,7 @@ export function CasinoSlotMachine({
                   </div>
                 </div>
                 <div className="pointer-events-none absolute bottom-2 right-2 z-20 font-mono">
-                  <div className="bg-black/75 px-2 py-0.5 rounded text-[9px] text-emerald-300/90 tracking-wider tabular-nums">
-                    {cctvTimestamp}
-                  </div>
+                  <SlotCctvClock locale={locale} />
                 </div>
 
                 {activeDealerMedia?.url ? (
@@ -742,7 +748,7 @@ export function CasinoSlotMachine({
                     <div
                       key={p.id}
                       style={{ left: `${p.x}%`, bottom: '22%', animationDelay: `${p.delay}s` }}
-                      className="absolute text-2xl sm:text-3xl animate-coin-float filter drop-shadow-[0_0_10px_rgba(250,204,21,0.9)]"
+                      className="absolute text-2xl sm:text-3xl animate-coin-float"
                     >
                       {p.icon}
                     </div>

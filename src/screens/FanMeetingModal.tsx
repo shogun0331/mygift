@@ -14,6 +14,7 @@ import {
   type FanPortrait,
   type FanSubmitResult,
 } from '../game/fanMeeting'
+import { previewCardPlay } from '../game/fanMeetingCombat'
 import { characterDisplayName } from '../game/characterLocales'
 import { formatMoney } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
@@ -910,6 +911,9 @@ export function FanMeetingModal({
         </div>
 
         <div className="shrink-0 border-t border-pink-500/20 bg-slate-950/90 px-4 py-3">
+          <p className="mb-2 text-center text-[10px] font-bold tracking-wide text-slate-400">
+            {t('vip.combatTip')}
+          </p>
           {fixedLine || practice ? null : (
             <div className="mb-2 flex justify-end">
               <button
@@ -942,6 +946,19 @@ export function FanMeetingModal({
                 ? String(card.grade).toUpperCase()
                 : 'B') as Grade
               const typeLabel = t(STAT_TYPE_LABEL_KEY[creatorType])
+              const preview = previewCardPlay({
+                performance: card.statPerformance,
+                mental: card.statMental,
+                ironWall: meeting.center.ironWall,
+                pressure: meeting.center.pressure,
+                typeMatched: matched,
+                satisfaction: meeting.center.satisfaction,
+                target: meeting.center.target,
+              })
+              const scoreLabel =
+                preview.scoreMin === preview.scoreMax
+                  ? t('vip.previewScoreFlat', { value: preview.scoreMin })
+                  : t('vip.previewScore', { min: preview.scoreMin, max: preview.scoreMax })
               return (
                 <button
                   key={card.id}
@@ -949,7 +966,7 @@ export function FanMeetingModal({
                   disabled={disabled}
                   data-practice-target={practiceTarget ? '1' : undefined}
                   onClick={() => requestCard(card.id)}
-                  title={typeLabel}
+                  title={`${typeLabel} · ${scoreLabel} · ${t('vip.previewDamage', { value: preview.damage })}`}
                   className={`group relative flex aspect-[3/4] max-h-[210px] flex-col justify-between overflow-hidden rounded-xl text-left transition-all ${
                     dead
                       ? 'cursor-not-allowed border border-white/10 opacity-40 grayscale'
@@ -962,7 +979,7 @@ export function FanMeetingModal({
                         : practiceTarget
                           ? 'cursor-pointer border border-amber-300/80 outline outline-1 outline-amber-200/50 shadow-[0_0_16px_rgba(251,191,36,0.28)] hover:scale-[1.02]'
                         : matched
-                          ? 'cursor-pointer border border-pink-400/70 outline outline-1 outline-pink-300/40 shadow-[0_0_14px_rgba(244,114,182,0.28)] hover:scale-[1.02]'
+                          ? 'cursor-pointer border-2 border-pink-400/90 outline outline-2 outline-pink-300/50 shadow-[0_0_18px_rgba(244,114,182,0.4)] hover:scale-[1.02]'
                           : 'cursor-pointer border border-white/15 hover:scale-[1.02] hover:border-amber-200/40'
                   }`}
                 >
@@ -987,11 +1004,20 @@ export function FanMeetingModal({
                       {card.statPerformance}
                     </span>
                   </div>
-                  {matched && !dead ? (
-                    <div className="relative z-10 px-1.5">
-                      <span className="rounded bg-pink-500/90 px-1.5 py-0.5 text-[9px] font-black text-white">
-                        {t('vip.fanTaste')}
+                  {!dead ? (
+                    <div className="relative z-10 flex flex-wrap gap-1 px-1.5">
+                      <span
+                        className={`rounded px-1.5 py-0.5 text-[9px] font-black text-white ${
+                          matched ? 'bg-pink-500/90' : 'bg-slate-700/90'
+                        }`}
+                      >
+                        {matched ? t('vip.cardEffective') : t('vip.cardWeak')}
                       </span>
+                      {matched ? (
+                        <span className="rounded bg-pink-500/90 px-1.5 py-0.5 text-[9px] font-black text-white">
+                          {t('vip.fanTaste')}
+                        </span>
+                      ) : null}
                     </div>
                   ) : null}
                   <div className="relative z-10 space-y-1 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent p-2 pt-6">
@@ -1006,6 +1032,21 @@ export function FanMeetingModal({
                         <TypeStatIcon type={creatorType} className="h-4 w-4" />
                       </span>
                     </div>
+                    {!dead ? (
+                      <div className="flex items-center justify-between gap-1 text-[8px] font-black tabular-nums">
+                        <span className={`rounded px-1 py-0.5 ${matched ? 'bg-emerald-500/25 text-emerald-200' : 'bg-amber-500/20 text-amber-100'}`}>
+                          {scoreLabel}
+                        </span>
+                        <span
+                          className={`rounded px-1 py-0.5 ${
+                            preview.likelySatisfy ? 'bg-sky-500/25 text-sky-100' : 'bg-rose-500/25 text-rose-100'
+                          }`}
+                        >
+                          {t('vip.previewDamage', { value: preview.damage })}
+                          {preview.likelySatisfy ? t('vip.previewDamageHalfHint') : ''}
+                        </span>
+                      </div>
+                    ) : null}
                     <div
                       className="border-t border-white/10 pt-1"
                       title={`${t('creator.statStamina')} ${card.hp}/${card.hpMax}`}

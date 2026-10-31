@@ -11,6 +11,7 @@ import {
   type DisplayMode,
   type WindowResolution,
 } from '../game/displayMode'
+import { getShowFps, setShowFps, subscribeShowFps } from '../game/fpsHud'
 import { useEffect, useState } from 'react'
 import { AchievementsPanel } from './AchievementsPanel'
 
@@ -24,9 +25,11 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const [seVolume, setSeVolumeState] = useState(() => getSeVolumePercent())
   const [displayModeState, setDisplayModeState] = useState<DisplayMode>(() => getDisplayMode())
   const [resolution, setResolution] = useState<WindowResolution>(() => getWindowResolution())
+  const [showFpsHud, setShowFpsHud] = useState(() => getShowFps())
   const [showAchievements, setShowAchievements] = useState(false)
 
   useEffect(() => subscribeWindowResolution(setResolution), [])
+  useEffect(() => subscribeShowFps(setShowFpsHud), [])
 
   return (
     <div className="save-panel-slide-in relative z-20 flex flex-col h-[84vh] max-h-[720px] w-[clamp(440px,48vw,780px)] rounded-3xl border-2 border-indigo-500/40 bg-slate-950/95 backdrop-blur-2xl p-6 sm:p-7 shadow-[0_0_90px_rgba(79,70,229,0.35)] select-none">
@@ -234,6 +237,31 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
               />
             </div>
           </div>
+        </div>
+
+        {/* FPS HUD */}
+        <div className="rounded-2xl border border-slate-800/80 bg-slate-900/50 p-4 backdrop-blur-md">
+          <label className="flex items-center justify-between gap-4 cursor-pointer select-none">
+            <div>
+              <h3 className="text-xs sm:text-sm font-black text-slate-200 tracking-wide uppercase flex items-center gap-2 font-mono">
+                <span className="text-emerald-400">⏱</span> {t('settings.showFps') || '프레임레이트 표시'}
+              </h3>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                {t('settings.showFpsDesc') || '화면 왼쪽 위에 FPS 오버레이를 표시합니다.'}
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              checked={showFpsHud}
+              onChange={(e) => {
+                playSfx('ui-click')
+                const next = e.target.checked
+                setShowFpsHud(next)
+                setShowFps(next)
+              }}
+              className="h-5 w-5 accent-emerald-500 cursor-pointer shrink-0"
+            />
+          </label>
         </div>
 
         {/* Achievements Navigation Button */}

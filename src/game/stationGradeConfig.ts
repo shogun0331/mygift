@@ -645,7 +645,7 @@ export function defaultVipConfig(): VipVisitConfig {
       },
         large: {
         satisfactionMin: 48,
-        satisfactionMax: 74,
+        satisfactionMax: 70,
         ironWallMin: 30,
         ironWallMax: 42,
         pressureMin: 42,
@@ -656,7 +656,7 @@ export function defaultVipConfig(): VipVisitConfig {
       },
         top: {
         satisfactionMin: 64,
-        satisfactionMax: 94,
+        satisfactionMax: 80,
         ironWallMin: 38,
         ironWallMax: 52,
         pressureMin: 50,
@@ -915,8 +915,9 @@ export function defaultAuditConfig(): PromotionAuditConfig {
     stageSettings: {
       sme: auditStage('sme', 'B', 62, 78, 12, 20, 24, 36, 5, 1),
       mid: auditStage('mid', 'B', 72, 92, 16, 26, 24, 36, 20, 1.15),
-      large: auditStage('large', 'A', 100, 125, 20, 32, 30, 42, 25, 1.3),
-      top: auditStage('top', 'S', 138, 168, 28, 38, 36, 46, 30, 1.5),
+      // VIP large/top Max 하향(74→70, 94→80)과 동일 비율로 Max만 조정
+      large: auditStage('large', 'A', 100, 118, 20, 32, 30, 42, 25, 1.3),
+      top: auditStage('top', 'S', 138, 143, 28, 38, 36, 46, 30, 1.5),
     },
   }
 }

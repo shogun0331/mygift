@@ -1,12 +1,15 @@
 import type { BlurRegion } from '../events/types'
 import {
   ALL_CREATOR_TYPES,
-  mentalDefenseOf,
   rollAuditStrike,
   typeForCreator,
 } from './auditEngine'
 import type { CharacterAuditMedia, Grade } from './characters'
 import type { CharacterLocaleText } from './characterLocales'
+import {
+  applySatisfiedDamageFactor,
+  fanPressureDamage,
+} from './fanMeetingCombat'
 import { rollInt } from './stats'
 import {
   canonicalizeVipRewardText,
@@ -165,17 +168,6 @@ function cardsDead(cards: FanCardState[]): boolean {
   return cards.every((card) => card.hp <= 0)
 }
 
-/**
- * 승급심사·팬미팅 카드전의 압박.
- * 멘탈 방어(멘탈×0.35)를 뺀 뒤에도 압박의 35%는 남는다. 만족시킨 타격에도 들어간다.
- */
-function fanPressureDamage(pressure: number, mental: number): number {
-  const press = Math.max(0, Math.round(Number(pressure) || 0))
-  if (press <= 0) return 0
-  const kept = Math.max(1, Math.round(press * 0.35))
-  return Math.max(kept, press - mentalDefenseOf(mental))
-}
-
 export function submitFanCard(meeting: FanMeeting, cardId: string): FanSubmitResult {
   const card = meeting.cards.find((item) => item.id === cardId)
   if (!card || card.hp <= 0 || meeting.over) {
@@ -186,7 +178,8 @@ export function submitFanCard(meeting: FanMeeting, cardId: string): FanSubmitRes
   const strike = rollAuditStrike(card.statPerformance, meeting.center.ironWall, typeMatched)
   const satisfaction = Math.min(meeting.center.target, meeting.center.satisfaction + strike.scoreGained)
   const satisfied = satisfaction >= meeting.center.target
-  const damage = fanPressureDamage(meeting.center.pressure, card.statMental)
+  const rawDamage = fanPressureDamage(meeting.center.pressure, card.statMental)
+  const damage = applySatisfiedDamageFactor(rawDamage, satisfied)
   const cards = meeting.cards.map((item) =>
     item.id === card.id ? { ...item, hp: Math.max(0, item.hp - damage) } : item,
   )

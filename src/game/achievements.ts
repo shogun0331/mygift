@@ -10,7 +10,6 @@ export type CharacterAchievementAction =
   | 'date1'
   | 'date2'
   | 'h'
-  | 'vip'
   | 's_rank'
   | 'sns'
   | 'sns_heat3'
@@ -367,19 +366,6 @@ export function createCharacterAchievements(char: {
       characterProfileUrl: profileUrl,
     },
     {
-      id: `char_${char.id}_vip`,
-      category: 'creator',
-      titleKey: 'achievements.charVipTitle',
-      descKey: 'achievements.charVipDesc',
-      icon: '🥂',
-      rarity: 'gold',
-      characterId: char.id,
-      characterAction: 'vip',
-      characterNames: names,
-      characterNameFallback: char.name,
-      characterProfileUrl: profileUrl,
-    },
-    {
       id: `char_${char.id}_s_rank`,
       category: 'creator',
       titleKey: 'achievements.charSRankTitle',
@@ -505,12 +491,6 @@ const CHAR_ACTION_I18N: Record<
     descKey: 'achievements.charHDesc',
     titleFb: '{name} 비밀 밀회 H',
     descFb: '{name}과의 특별한 비밀 밀회 완료',
-  },
-  vip: {
-    titleKey: 'achievements.charVipTitle',
-    descKey: 'achievements.charVipDesc',
-    titleFb: '{name} VIP 시크릿',
-    descFb: '{name}의 VIP 프라이빗 이벤트 완료',
   },
   s_rank: {
     titleKey: 'achievements.charSRankTitle',

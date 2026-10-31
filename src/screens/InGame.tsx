@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { startTransition, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from '../locales/i18n'
 import { getBgmVolumePercent, setBgmVolumePercent, useGameBgm } from '../game/bgm'
 import { useAppSuspended } from '../game/appLifecycle'
@@ -14,6 +14,7 @@ import {
   type DisplayMode,
   type WindowResolution,
 } from '../game/displayMode'
+import { getShowFps, setShowFps, subscribeShowFps } from '../game/fpsHud'
 import { tierViewerCap, stationTierRank } from '../game/stationGradeConfig'
 import { getSeVolumePercent, playSfx, setSeVolumePercent } from '../game/uiSfx'
 import {
@@ -671,7 +672,6 @@ const VEGAS_SPARKLE_STYLES = `
   50% {
     opacity: 1;
     transform: scale(1.4) rotate(45deg);
-    filter: drop-shadow(0 0 16px currentColor);
   }
 }
 
@@ -693,7 +693,7 @@ const VEGAS_SPARKLE_STYLES = `
 
 function GoldenDustParticles() {
   const particles = useMemo(() => {
-    return Array.from({ length: 65 }).map((_, i) => ({
+    return Array.from({ length: 28 }).map((_, i) => ({
       id: i,
       top: `${(i * 11 + 3) % 96}%`,
       left: `${(i * 17 + 7) % 96}%`,
@@ -702,12 +702,15 @@ function GoldenDustParticles() {
       delay: (i % 9) * 0.15,
       animType: i % 2 === 0 ? 'fastSparkle' : 'floatUpGlow',
       color: ['#fbbf24', '#f59e0b', '#ffd700', '#ffffff', '#fef08a', '#ec4899', '#f59e0b'][i % 7],
-      char: ['✦', '✧', '★', '💎', '✨', '•', '✴'][i % 7],
+      char: ['✦', '✧', '★', '•', '✴'][i % 5],
     }))
   }, [])
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[2] select-none">
+    <div
+      className="absolute inset-0 pointer-events-none overflow-hidden z-[2] select-none"
+      style={{ contain: 'strict' }}
+    >
       <style>{VEGAS_SPARKLE_STYLES}</style>
       {particles.map((p) => (
         <span
@@ -721,6 +724,7 @@ function GoldenDustParticles() {
             animation: `${p.animType} ${p.duration}s ease-in-out infinite`,
             animationDelay: `${p.delay}s`,
             textShadow: `0 0 12px ${p.color}`,
+            willChange: 'transform, opacity',
           }}
         >
           {p.char}
@@ -884,12 +888,14 @@ export function InGame({
   const [seVolume, setSeVolume] = useState(() => getSeVolumePercent())
   const [displayModeState, setDisplayModeState] = useState<DisplayMode>(() => getDisplayMode())
   const [resolution, setResolution] = useState<WindowResolution>(() => getWindowResolution())
+  const [showFpsHud, setShowFpsHud] = useState(() => getShowFps())
 
   useEffect(() => {
     return subscribeDisplayMode((m) => setDisplayModeState(m))
   }, [])
 
   useEffect(() => subscribeWindowResolution(setResolution), [])
+  useEffect(() => subscribeShowFps(setShowFpsHud), [])
   const [scheduleStudioMode, setScheduleStudioMode] = useState<'creator' | 'staff' | undefined>(undefined)
   const [scheduleSelectedStaffId, setScheduleSelectedStaffId] = useState<string | null>(null)
 
@@ -903,6 +909,11 @@ export function InGame({
   const [broadcastPhase, setBroadcastPhase] = useState<BroadcastPhase>('prep')
   const [livePlayVideoByCreator, setLivePlayVideoByCreator] = useState<Record<string, string>>({})
   const livePlayVideoByCreatorRef = useRef(livePlayVideoByCreator)
+  /** 주 전환 직전 프리롤된 다음 클립 맵 (디코드 워머 없음 — URL만 미리 확정) */
+  const pendingLivePlayVideoByCreatorRef = useRef<Record<string, string> | null>(null)
+  const livePlayPrefetchDayKeyRef = useRef<string | null>(null)
+  const livePlayStaggerGenRef = useRef(0)
+  const livePlayStaggerRafRef = useRef(0)
   const [monthWeekIndex, setMonthWeekIndex] = useState(boot?.monthWeekIndex ?? 0)
   const assetLedgerRef = useRef(createAssetLedger(boot?.assets ?? INITIAL_ASSETS))
   const [assets, setAssets] = useState(() => readAssetLedger(assetLedgerRef.current))
@@ -1239,7 +1250,6 @@ export function InGame({
       }
   const [socialUi, setSocialUi] = useState<SocialUi | null>(null)
   const [showGameClear, setShowGameClear] = useState(false)
-  const [endingEventPlay, setEndingEventPlay] = useState<GameEvent | null>(null)
   const [proposalEndingVnEvent, setProposalEndingVnEvent] = useState<GameEvent | null>(null)
   const [affectionPopup, setAffectionPopup] = useState<AffectionGain | null>(null)
   const [affectionSummary, setAffectionSummary] = useState<AffectionGain[] | null>(null)
@@ -2226,7 +2236,20 @@ export function InGame({
 
   const handCards = ownedCreators.map(toStudioHandCard)
 
-  function rollLivePlayVideos(prev: Record<string, string> = {}) {
+  function abortLivePlayVideoStagger() {
+    livePlayStaggerGenRef.current += 1
+    if (livePlayStaggerRafRef.current) {
+      window.cancelAnimationFrame(livePlayStaggerRafRef.current)
+      livePlayStaggerRafRef.current = 0
+    }
+  }
+
+  function clearPendingLivePlayVideos() {
+    pendingLivePlayVideoByCreatorRef.current = null
+    livePlayPrefetchDayKeyRef.current = null
+  }
+
+  function buildLivePlayVideoMap(prev: Record<string, string> = {}): Record<string, string> {
     const next: Record<string, string> = {}
     for (const slot of studioSlotsRef.current) {
       if (slot.status !== 'assigned' || !slot.assignment) continue
@@ -2236,7 +2259,76 @@ export function InGame({
       const url = pickRandomBroadcastVideoUrl(owned, activeSkin, prev[owned.id])
       if (url) next[owned.id] = url
     }
-    setLivePlayVideoByCreator(next)
+    return next
+  }
+
+  /** 전 슬롯 동시 디코드 히치를 피하기 위해 rAF당 1 크리에이터씩 적용 */
+  function applyLivePlayVideoMapStaggered(next: Record<string, string>) {
+    abortLivePlayVideoStagger()
+    const gen = livePlayStaggerGenRef.current
+    const entries = Object.entries(next)
+    if (entries.length === 0) {
+      setLivePlayVideoByCreator({})
+      return
+    }
+    let index = 0
+    const step = () => {
+      if (gen !== livePlayStaggerGenRef.current) return
+      const [id, url] = entries[index]!
+      setLivePlayVideoByCreator((prev) => {
+        if (prev[id] === url) return prev
+        return { ...prev, [id]: url }
+      })
+      index += 1
+      if (index < entries.length) {
+        livePlayStaggerRafRef.current = window.requestAnimationFrame(step)
+      } else {
+        livePlayStaggerRafRef.current = 0
+        // Drop creators no longer in the next map (unassigned mid-stagger edge)
+        setLivePlayVideoByCreator((prev) => {
+          const keys = Object.keys(prev)
+          let changed = false
+          const cleaned: Record<string, string> = {}
+          for (const key of keys) {
+            if (next[key]) cleaned[key] = next[key]!
+            else changed = true
+          }
+          for (const key of Object.keys(next)) {
+            if (!cleaned[key]) {
+              cleaned[key] = next[key]!
+              changed = true
+            }
+          }
+          return changed ? cleaned : prev
+        })
+      }
+    }
+    livePlayStaggerRafRef.current = window.requestAnimationFrame(step)
+  }
+
+  function prefetchNextLivePlayVideos() {
+    const plan = dayPlanRef.current
+    if (!plan) return
+    if (livePlayPrefetchDayKeyRef.current === plan.dayKey) return
+    livePlayPrefetchDayKeyRef.current = plan.dayKey
+    // URL만 미리 확정. HTMLVideoElement 워머는 라이브 중 디코더를 늘려 FPS를 깎으므로 쓰지 않음.
+    pendingLivePlayVideoByCreatorRef.current = buildLivePlayVideoMap(livePlayVideoByCreatorRef.current)
+  }
+
+  function rollLivePlayVideos(prev: Record<string, string> = {}) {
+    clearPendingLivePlayVideos()
+    applyLivePlayVideoMapStaggered(buildLivePlayVideoMap(prev))
+  }
+
+  function applyPendingOrRollLivePlayVideos() {
+    const pending = pendingLivePlayVideoByCreatorRef.current
+    pendingLivePlayVideoByCreatorRef.current = null
+    livePlayPrefetchDayKeyRef.current = null
+    if (pending && Object.keys(pending).length > 0) {
+      applyLivePlayVideoMapStaggered(pending)
+      return
+    }
+    applyLivePlayVideoMapStaggered(buildLivePlayVideoMap(livePlayVideoByCreatorRef.current))
   }
 
   function handleUnlockStudioSlot() {
@@ -2422,11 +2514,16 @@ export function InGame({
       condDrainByCreatorId[creator.id] = care.equipped ? 0 : calcWeeklyBroadcastConditionCost(creator, 1)
     }
     liveStaminaDrainByCreatorIdRef.current = drainByCreatorId
-    setLiveStaminaDrainByCreatorId(drainByCreatorId)
     liveConditionDrainByCreatorIdRef.current = condDrainByCreatorId
-    setLiveConditionDrainByCreatorId(condDrainByCreatorId)
     broadcastBlockedSinceRef.current = {}
-    setLiveWeekClock({ origin: dayStartedAtRef.current, dayMs: weekMs })
+    const weekOrigin = dayStartedAtRef.current ?? performance.now()
+    const weekClock = { origin: weekOrigin, dayMs: weekMs }
+    // 드레인/진행바는 transition — 클립 setState(roll)와 한 틱에 몰리지 않게
+    startTransition(() => {
+      setLiveStaminaDrainByCreatorId(drainByCreatorId)
+      setLiveConditionDrainByCreatorId(condDrainByCreatorId)
+      setLiveWeekClock(weekClock)
+    })
     if (monthWeekIndexRef.current === 0) {
       spokenCreatorsThisBroadcastRef.current.clear()
     }
@@ -3290,22 +3387,6 @@ export function InGame({
       careRecoverCreatorIds,
     )
     ownedCreatorsRef.current = nextOwned
-    onOwnedCreatorsChangeRef.current(nextOwned)
-    if (crashes.length > 0) {
-      const crashEvents: DayEvent[] = crashes.map((crash) => ({
-        id: `crash-evt-${crash.creatorId}-${Math.round(performance.now())}`,
-        creatorId: crash.creatorId,
-        creatorName: crash.creatorName,
-        type: 'toxic',
-        amount: crash.drop,
-        text: t('feed.toxicAppear')
-          .replace('{name}', creatorNameOf(crash.creatorId, crash.creatorName))
-          .replace('{drop}', String(crash.drop)),
-        atMs: 0,
-        tone: 'bg-rose-500',
-      }))
-      setLiveEvents((prev) => [...crashEvents, ...prev].slice(0, MAX_RECENT_EVENTS))
-    }
     for (const creatorId of assignedSlotIds) {
       const slotId = findSlotIdForCreator(studioSlotsRef.current, creatorId)
       const creator = nextOwned.find((row) => row.id === creatorId)
@@ -3331,7 +3412,27 @@ export function InGame({
       { skipFailCreatorIds: broadcastedIds, failMulBySlotId },
     )
     slotGearByIdRef.current = nextGear
-    setSlotGearById(nextGear)
+
+    // 영상 교체보다 우선순위 낮은 UI 갱신 — 주 전환 메인 스레드 히치 완화
+    startTransition(() => {
+      onOwnedCreatorsChangeRef.current(nextOwned)
+      if (crashes.length > 0) {
+        const crashEvents: DayEvent[] = crashes.map((crash) => ({
+          id: `crash-evt-${crash.creatorId}-${Math.round(performance.now())}`,
+          creatorId: crash.creatorId,
+          creatorName: crash.creatorName,
+          type: 'toxic',
+          amount: crash.drop,
+          text: t('feed.toxicAppear')
+            .replace('{name}', creatorNameOf(crash.creatorId, crash.creatorName))
+            .replace('{drop}', String(crash.drop)),
+          atMs: 0,
+          tone: 'bg-rose-500',
+        }))
+        setLiveEvents((prev) => [...crashEvents, ...prev].slice(0, MAX_RECENT_EVENTS))
+      }
+      setSlotGearById(nextGear)
+    })
 
     const plansForLedger = plan.plans.map((row) => {
       if (isCreatorSlotBroken(studioSlotsRef.current, nextGear, row.creatorId)) {
@@ -3460,7 +3561,7 @@ export function InGame({
 
     monthWeekIndexRef.current = nextMonthWeek
     setMonthWeekIndex(nextMonthWeek)
-    rollLivePlayVideos(livePlayVideoByCreatorRef.current)
+    applyPendingOrRollLivePlayVideos()
     const weekMs = weekDurationMs(speedRef.current)
     beginDayPlan(`m${broadcastMonthNumberRef.current}-w${nextMonthWeek}`, weekMs)
   }
@@ -3468,6 +3569,8 @@ export function InGame({
   function recoverStuckLiveBroadcast() {
     if (broadcastPhaseRef.current !== 'live') return
     setBroadcastPhase('prep')
+    abortLivePlayVideoStagger()
+    clearPendingLivePlayVideos()
     setLivePlayVideoByCreator({})
     setLiveWeekClock(null)
     setLiveStaminaDrainByCreatorId({})
@@ -3903,7 +4006,9 @@ export function InGame({
     pendingStationReviewPayloadRef.current = null
     weekAccumRef.current = createWeekAccumulator(nextMonthNumber)
     setBroadcastPhase('prep')
-    setLivePlayVideoByCreator({})
+    // 명세서/종료 안내 동안 last live 프레임을 유지 — idle N개 동시 로드 히치 방지
+    abortLivePlayVideoStagger()
+    clearPendingLivePlayVideos()
     setLiveWeekClock(null)
     setLiveStaminaDrainByCreatorId({})
     dayPlanRef.current = null
@@ -5473,7 +5578,15 @@ export function InGame({
             : 'ingame',
   )
   const appSuspended = useAppSuspended()
-  const liveClockPaused = toxicQteActive || vnOverlayActive || appSuspended
+  const casinoSessionOpen =
+    showCasinoLobby || showCasinoModal || Boolean(activeCasinoRoomId)
+  const liveClockPaused =
+    toxicQteActive ||
+    vnOverlayActive ||
+    appSuspended ||
+    casinoSessionOpen ||
+    broadcastEndedNotice ||
+    Boolean(weeklyStatement)
   useEffect(() => {
     if (!liveClockPaused) return
     const pausedAt = performance.now()
@@ -5596,6 +5709,11 @@ export function InGame({
         ingestLiveFeedEvents(combinedEvents, plan, false)
       }
       runDueInspections(elapsed)
+
+      // 주 종료 전 다음 클립 프리롤 + 디코드 워밍 (주 전환 히치 완화)
+      if (plan.dayMs > 0 && elapsed / plan.dayMs >= 0.55) {
+        prefetchNextLivePlayVideos()
+      }
     }, 180)
     return () => window.clearInterval(id)
   }, [broadcastPhase, liveClockPaused, locale, t])
@@ -6261,6 +6379,7 @@ export function InGame({
             liveRevenueByCreator={liveRevenueByCreator}
             liveWeekClock={liveWeekClock}
             liveClockPaused={liveClockPaused}
+            freezeLiveFeeds={broadcastEndedNotice || Boolean(weeklyStatement)}
             liveStaminaDrainByCreatorId={liveStaminaDrainByCreatorId}
             liveConditionDrainByCreatorId={liveConditionDrainByCreatorId}
             weeklyTrendType={weeklyTrendType}
@@ -6585,18 +6704,27 @@ export function InGame({
                 </div>
               </div>
 
-              <div className="border-t border-white/5 pt-5 flex items-center justify-between">
+              <div className="border-t border-white/5 pt-5 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-xs font-bold text-slate-400 tracking-wider">
-                    {t('settings.devMode')}
+                    {t('settings.showFps')}
                   </h3>
                   <p className="text-[9px] text-slate-600 mt-1">
-                    {t('settings.devModeDesc')}
+                    {t('settings.showFpsDesc')}
                   </p>
                 </div>
-                <span className="text-[10px] text-slate-500 font-bold bg-slate-900 border border-indigo-500/25 px-2.5 py-1 rounded-lg">
-                  OFF
-                </span>
+                <input
+                  type="checkbox"
+                  checked={showFpsHud}
+                  onChange={(e) => {
+                    playSfx('ui-click')
+                    const next = e.target.checked
+                    setShowFpsHud(next)
+                    setShowFps(next)
+                  }}
+                  className="h-5 w-5 accent-emerald-500 cursor-pointer shrink-0"
+                  aria-label={t('settings.showFps')}
+                />
               </div>
 
               {/* Achievements Modal Open Button */}
@@ -6918,6 +7046,8 @@ export function InGame({
           creators={ownedCreators}
           onConfirm={() => {
             setWeeklyStatement(null)
+            abortLivePlayVideoStagger()
+            setLivePlayVideoByCreator({})
             finishWeeklyStatementFollowup()
           }}
         />
@@ -7226,38 +7356,9 @@ export function InGame({
           onConfirm={() => {
             const openScout = pendingScoutAfterRankRef.current
             setShowGameClear(false)
-            let endingEventToPlay: GameEvent | null = null
-            for (const creator of ownedCreatorsRef.current) {
-              const endingEventId = creator.eventLinks?.endingVn
-              if (endingEventId) {
-                const ev = events.find((e) => e.id === endingEventId)
-                if (ev) {
-                  endingEventToPlay = ev
-                  break
-                }
-              }
-            }
-            if (endingEventToPlay) {
-              setEndingEventPlay(endingEventToPlay)
-            } else {
-              continueAfterMonthModals(openScout)
-            }
-          }}
-        />
-      ) : null}
-
-      {endingEventPlay ? (
-        <GameEventSimulator
-          key={`ending-vn-${endingEventPlay.id}`}
-          event={endingEventPlay}
-          watchedEventIds={watchedEventIds}
-          onClose={() => {
-            onEventWatched?.(endingEventPlay.id)
-            setEndingEventPlay(null)
-            const openScout = pendingScoutAfterRankRef.current
+            // 엔딩 VN은 캐릭터 상세의 고백하기로만 연다
             continueAfterMonthModals(openScout)
           }}
-          registeredCharacters={registeredCharacters}
         />
       ) : null}
 

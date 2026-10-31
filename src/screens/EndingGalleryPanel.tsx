@@ -23,7 +23,6 @@ type GalleryTab = 'vn' | 'sns'
 const SLOT_LABEL_KEYS: Record<string, string> = {
   scout: 'gallery.slotScout',
   salary: 'gallery.slotSalary',
-  vip: 'gallery.slotVip',
   h: 'gallery.slotH',
   date1: 'gallery.slotDate1',
   date2: 'gallery.slotDate2',
@@ -182,6 +181,7 @@ export function EndingGalleryPanel({ onClose }: EndingGalleryPanelProps) {
     }> = []
 
     for (const slot of CHARACTER_EVENT_SLOTS) {
+      if (slot.key === 'vip') continue
       const evId = selectedChar.eventLinks[slot.key]
       if (!evId) continue
       const event = events.find((e) => e.id === evId)
@@ -282,6 +282,7 @@ export function EndingGalleryPanel({ onClose }: EndingGalleryPanelProps) {
                 let eventCount = 0
                 if (c.eventLinks) {
                   for (const slot of CHARACTER_EVENT_SLOTS) {
+                    if (slot.key === 'vip') continue
                     if (c.eventLinks[slot.key]) eventCount++
                   }
                 }

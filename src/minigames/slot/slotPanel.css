@@ -9,7 +9,8 @@
   min-height: 0;
   --reel-cell: 8.333%;
   --reel-spin-cycle: 25%;
-  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.55));
+  /* box-shadow instead of filter:drop-shadow so spinning children don't re-filter the panel */
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.55);
 }
 
 .slot-screen-panel-frame {
@@ -457,7 +458,3 @@
   opacity: 0.025;
 }
 
-.slot-cctv-feed video,
-.slot-cctv-feed img {
-  filter: contrast(1.02) brightness(1.02) saturate(0.95);
-}

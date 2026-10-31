@@ -34,6 +34,14 @@ body,
   margin: 0;
   padding: 0;
   overflow: hidden;
+  cursor: none;
+}
+
+/* Hide native cursor; GameCursor renders the lips pointer */
+*,
+*::before,
+*::after {
+  cursor: none !important;
 }
 
 body {
@@ -78,8 +86,45 @@ html[data-locale='ZH-TW'] {
 input,
 textarea,
 [contenteditable="true"] {
+  cursor: none !important;
   user-select: text !important;
   -webkit-user-select: text !important;
+}
+
+.game-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 64px;
+  height: 64px;
+  z-index: 2147483647;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+  transform: translate3d(-100px, -100px, 0);
+  contain: layout style;
+  backface-visibility: hidden;
+}
+
+.game-cursor.is-visible {
+  opacity: 1;
+}
+
+.game-cursor img {
+  display: block;
+  width: 64px;
+  height: 64px;
+  transform-origin: 10px 8px;
+  transform: scale(1);
+  transition: transform 90ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  user-select: none;
+  -webkit-user-drag: none;
+  image-rendering: auto;
+}
+
+.game-cursor.is-pressed img {
+  transform: scale(0.78);
+  transition-duration: 60ms;
 }
 
 button,
@@ -2380,17 +2425,26 @@ html.theme-on-air .neon-glow-card.is-cctv-rest-off {
   }
 }
 
-/* ?? ?? CCTV ??? ?? ??? ??? (6??? GPU ??? */
-html.theme-on-air .cctv-noise {
+/* On-air / casino minigames: kill expensive CCTV noise animation */
+html.theme-on-air .cctv-noise,
+.slot-shell .cctv-noise,
+.hl-shell .cctv-noise,
+.lobby .cctv-noise {
   animation: none;
   opacity: 0.03;
 }
 
-html.theme-on-air .cctv-scanline::before {
+html.theme-on-air .cctv-scanline::before,
+.slot-shell .cctv-scanline::before,
+.hl-shell .cctv-scanline::before,
+.lobby .cctv-scanline::before {
   animation: none;
 }
 
-html.theme-on-air [class*="backdrop-blur"] {
+html.theme-on-air [class*="backdrop-blur"],
+.slot-shell [class*="backdrop-blur"],
+.hl-shell [class*="backdrop-blur"],
+.lobby [class*="backdrop-blur"] {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -6866,14 +6920,23 @@ html.theme-on-air .live-rank-card-inner.is-first {
 
 .pachislot-reel-strip.is-spinning {
   animation: pachislot-reel-spin 0.16s linear infinite;
-  filter: blur(1.5px);
   will-change: transform;
+}
+
+/* Spinning: drop per-frame filter/blend cost on every symbol cell */
+.pachislot-reel-strip.is-spinning .slot-symbol-img {
+  filter: none !important;
+  mix-blend-mode: normal !important;
 }
 
 .pachislot-reel-strip.is-stopped {
   transform: translateY(var(--reel-land, 0px));
   animation: pachislot-reel-land 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   will-change: transform;
+}
+
+.pachislot-reel-strip.is-stopped .slot-symbol-img {
+  filter: none !important;
 }
 
 .pachislot-reel-cell {
@@ -7063,11 +7126,9 @@ html.theme-on-air .live-rank-card-inner.is-first {
 @keyframes pachislot-reel-land {
   0% {
     transform: translateY(calc(var(--reel-land, 0px) + var(--reel-cell, 70px)));
-    filter: blur(1px);
   }
   100% {
     transform: translateY(var(--reel-land, 0px));
-    filter: blur(0);
   }
 }
 
@@ -7598,15 +7659,17 @@ html.theme-on-air .live-rank-card-inner.is-first {
   object-position: center;
   pointer-events: none;
   z-index: 0;
-  filter: brightness(0.72) saturate(0.9);
 }
 
+/* Replaces runtime filter:brightness/saturate on .slot-stage-bg (cheaper than bitmap filter) */
 .slot-stage-dim {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(7, 11, 20, 0.35) 0%, rgba(7, 11, 20, 0.55) 55%, rgba(7, 11, 20, 0.72) 100%);
+  background:
+    linear-gradient(180deg, rgba(7, 11, 20, 0.42) 0%, rgba(7, 11, 20, 0.62) 55%, rgba(7, 11, 20, 0.78) 100%),
+    radial-gradient(ellipse at center, transparent 35%, rgba(7, 11, 20, 0.28) 100%);
 }
 
 .slot-stage-grid {

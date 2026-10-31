@@ -20,21 +20,27 @@ function useCountTo(target: number, delayMs: number, durationMs = 720) {
       return
     }
     setValue(0)
-    let raf = 0
     let startedAt: number | null = null
+    let intervalId = 0
+    const TICK_MS = 50
     const wait = window.setTimeout(() => {
-      const tick = (now: number) => {
-        if (startedAt == null) startedAt = now
-        const t = Math.min(1, (now - startedAt) / durationMs)
+      startedAt = performance.now()
+      const tick = () => {
+        if (startedAt == null) return
+        const t = Math.min(1, (performance.now() - startedAt) / durationMs)
         const eased = 1 - (1 - t) ** 3
         setValue(Math.round(target * eased))
-        if (t < 1) raf = requestAnimationFrame(tick)
+        if (t >= 1 && intervalId) {
+          window.clearInterval(intervalId)
+          intervalId = 0
+        }
       }
-      raf = requestAnimationFrame(tick)
+      tick()
+      intervalId = window.setInterval(tick, TICK_MS)
     }, delayMs)
     return () => {
       window.clearTimeout(wait)
-      cancelAnimationFrame(raf)
+      if (intervalId) window.clearInterval(intervalId)
     }
   }, [target, delayMs, durationMs])
   return value
@@ -110,7 +116,7 @@ export function WeeklySettlementModal({
 
   return (
     <div
-      className="statement-overlay fixed inset-0 z-[80] flex bg-black/78 p-3 backdrop-blur-[4px] sm:p-5"
+      className="statement-overlay fixed inset-0 z-[80] flex bg-black/85 p-3 sm:p-5"
       role="dialog"
       aria-modal="true"
       aria-labelledby="weekly-settlement-title"

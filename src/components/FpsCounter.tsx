@@ -1,31 +1,38 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { getShowFps, subscribeShowFps } from '../game/fpsHud'
 
 export function FpsCounter() {
-  const [fps, setFps] = useState<number>(60)
-  const [frameTime, setFrameTime] = useState<number>(16.7)
-  const [minFps, setMinFps] = useState<number>(60)
+  const [enabled, setEnabled] = useState(() => getShowFps())
+  const [fps, setFps] = useState(60)
+  const [frameTime, setFrameTime] = useState(16.7)
+  const [minFps, setMinFps] = useState(60)
+  const minRef = useRef(60)
+
+  useEffect(() => subscribeShowFps(setEnabled), [])
 
   useEffect(() => {
+    if (!enabled) return
+
     let frameCount = 0
     let lastTime = performance.now()
-    let animationFrameId: number
+    let animationFrameId = 0
+    minRef.current = 60
+    setMinFps(60)
 
     const loop = (now: number) => {
-      frameCount++
+      frameCount += 1
       const delta = now - lastTime
 
       if (delta >= 500) {
         const rawFps = Math.round((frameCount * 1000) / delta)
         const avgFrameTime = Number((delta / frameCount).toFixed(1))
-
-        // 60 FPS 목표 게임 환경: 58 FPS 이상(고주사율 모니터 100/144Hz 포함)은 60 FPS로 표기 안정화하고,
-        // 실제 57 FPS 이하로 성능 저하 시 하락된 수치를 즉시 반영
+        // 58+ → 60 표기 안정화, 실제 저하(≤57)는 즉시 반영
         const stabilizedFps = rawFps >= 58 ? 60 : rawFps
-
+        if (rawFps < minRef.current) minRef.current = rawFps
         setFps(stabilizedFps)
         setFrameTime(avgFrameTime)
-        setMinFps((prevMin) => Math.min(prevMin, rawFps))
-
+        setMinFps(minRef.current)
         frameCount = 0
         lastTime = now
       }
@@ -35,26 +42,36 @@ export function FpsCounter() {
 
     animationFrameId = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(animationFrameId)
-  }, [])
+  }, [enabled])
+
+  if (!enabled) return null
 
   const toneClass =
     fps >= 55
-      ? 'border-emerald-500/40 bg-emerald-950/70 text-emerald-300 shadow-emerald-500/10'
+      ? 'border-emerald-500/50 bg-emerald-950/90 text-emerald-200'
       : fps >= 30
-      ? 'border-amber-500/40 bg-amber-950/70 text-amber-300 shadow-amber-500/10'
-      : 'border-rose-500/40 bg-rose-950/70 text-rose-300 shadow-rose-500/10'
+        ? 'border-amber-500/50 bg-amber-950/90 text-amber-200'
+        : 'border-rose-500/50 bg-rose-950/90 text-rose-200'
 
-  const dotColor =
-    fps >= 55 ? 'bg-emerald-400' : fps >= 30 ? 'bg-amber-400' : 'bg-rose-400'
+  const dotColor = fps >= 55 ? 'bg-emerald-400' : fps >= 30 ? 'bg-amber-400' : 'bg-rose-400'
 
-  return (
-    <div
-      className={`pointer-events-auto inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] font-bold tracking-tight shadow-sm backdrop-blur-md transition-colors duration-300 select-none ${toneClass}`}
-      title={`FPS: ${fps} | Frame time: ${frameTime}ms | Min FPS: ${minFps}`}
+  const resetMin = () => {
+    minRef.current = 60
+    setMinFps(60)
+  }
+
+  return createPortal(
+    <button
+      type="button"
+      onClick={resetMin}
+      className={`game-fps-hud pointer-events-auto fixed left-3 top-3 z-[2147483646] inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] font-bold tracking-tight shadow-lg select-none ${toneClass}`}
+      title={`클릭하면 Min FPS 리셋 · now ${fps} · ${frameTime}ms · min ${minFps}`}
     >
-      <span className={`h-1.5 w-1.5 rounded-full animate-pulse ${dotColor}`} />
+      <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
       <span>{fps} FPS</span>
-      <span className="text-[9px] opacity-60">({frameTime}ms)</span>
-    </div>
+      <span className="text-[9px] opacity-70">{frameTime}ms</span>
+      <span className="text-[9px] opacity-55">min {minFps}</span>
+    </button>,
+    document.body,
   )
 }

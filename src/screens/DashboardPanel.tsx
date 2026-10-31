@@ -25,6 +25,7 @@ import {
 import type { DayEvent } from '../game/economy'
 import { formatMoney, formatMoneyCompact } from '../game/money'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import { SmoothVideoSwap } from '../components/SmoothVideoSwap'
 import {
   characterDisplayJob,
   characterDisplayName,
@@ -87,6 +88,8 @@ type DashboardPanelProps = {
   /** 이번 주 시작 시각(performance.now)과 주 길이 — 카드 내부에서만 진행도 갱신 */
   liveWeekClock?: { origin: number; dayMs: number } | null
   liveClockPaused?: boolean
+  /** 턴 종료/명세서 중 last live URL 유지 (idle 일괄 리로드 지연) */
+  freezeLiveFeeds?: boolean
   /** 이번 주 종료 시 깎일 스테미나 (크리에이터 id) */
   liveStaminaDrainByCreatorId?: Record<string, number>
   /** 이번 주 종료 시 깎일 컨디션 (크리에이터 id) */
@@ -158,6 +161,7 @@ function toBroadcastSlot(
   livePlayUrl?: string | null,
   weeklyDrain = 0,
   weeklyConditionDrain = 0,
+  freezeLiveFeeds = false,
 ): BroadcastSlotView {
   const streamLabel = `STREAM ${String(slot.index).padStart(2, '0')}`
   if (slot.status !== 'assigned' || !slot.assignment) {
@@ -183,10 +187,11 @@ function toBroadcastSlot(
     (owned ? findLevelIdleVideoUrl(owned, activeSkin) : null) ||
     slot.assignment.idleVideoUrl ||
     null
-  const playVideoUrl =
-    broadcastPhase === 'live' && owned
-      ? livePlayUrl || idleVideoUrl
-      : idleVideoUrl
+  const useLiveFeed =
+    owned &&
+    Boolean(livePlayUrl) &&
+    (broadcastPhase === 'live' || freezeLiveFeeds)
+  const playVideoUrl = useLiveFeed ? livePlayUrl || idleVideoUrl : idleVideoUrl
   const mediaRevision =
     owned?.mediaRevision ?? slot.assignment.mediaRevision ?? playVideoUrl ?? undefined
   const iconUrl =
@@ -690,6 +695,7 @@ export const DashboardPanel = memo(function DashboardPanel({
   liveRevenueByCreator = {},
   liveWeekClock = null,
   liveClockPaused = false,
+  freezeLiveFeeds = false,
   liveStaminaDrainByCreatorId = {},
   liveConditionDrainByCreatorId = {},
   assets = 0,
@@ -774,6 +780,7 @@ export const DashboardPanel = memo(function DashboardPanel({
         creatorId ? livePlayVideoByCreator[creatorId] : undefined,
         creatorId ? liveStaminaDrainByCreatorId[creatorId] ?? 0 : 0,
         creatorId ? liveConditionDrainByCreatorId[creatorId] ?? 0 : 0,
+        freezeLiveFeeds,
       )
     })
   }, [
@@ -784,6 +791,7 @@ export const DashboardPanel = memo(function DashboardPanel({
     livePlayVideoByCreator,
     liveStaminaDrainByCreatorId,
     liveConditionDrainByCreatorId,
+    freezeLiveFeeds,
   ])
 
   const burstsByCreatorId = useMemo(() => {
@@ -1127,9 +1135,11 @@ const StreamCard = memo(function StreamCard({
   const shownCondition =
     shownConditionScore != null ? conditionFromScore(shownConditionScore) : creator?.condition
   const [careSpendFlash, setCareSpendFlash] = useState<string | null>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
   const videoWrapRef = useRef<HTMLDivElement>(null)
   const videoInViewRef = useRef(true)
+  const [streamShouldPlay, setStreamShouldPlay] = useState(
+    () => Boolean(playableSrc) && !feedOff && !liveClockPaused && !document.hidden,
+  )
 
   useEffect(() => {
     if (!careSpendFlash) return
@@ -1138,35 +1148,36 @@ const StreamCard = memo(function StreamCard({
   }, [careSpendFlash])
 
   useEffect(() => {
-    const wrap = videoWrapRef.current
-    if (!wrap) return
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        videoInViewRef.current = Boolean(entry?.isIntersecting)
-        const video = videoRef.current
-        if (!video) return
-        const shouldPlay = !feedOff && !document.hidden && videoInViewRef.current
-        if (shouldPlay) void video.play().catch(() => {})
-        else video.pause()
-      },
-      { threshold: 0.08 },
-    )
-    io.observe(wrap)
-    return () => io.disconnect()
-  }, [feedOff, slot.status, playableSrc])
-
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
-    const sync = () => {
-      const shouldPlay = !feedOff && !document.hidden && videoInViewRef.current
-      if (shouldPlay) void video.play().catch(() => {})
-      else video.pause()
+    const syncPlay = () => {
+      const next =
+        Boolean(playableSrc) &&
+        !feedOff &&
+        !liveClockPaused &&
+        !document.hidden &&
+        videoInViewRef.current
+      setStreamShouldPlay((prev) => (prev === next ? prev : next))
     }
-    sync()
-    document.addEventListener('visibilitychange', sync)
-    return () => document.removeEventListener('visibilitychange', sync)
-  }, [feedOff, playableSrc])
+
+    const wrap = videoWrapRef.current
+    let io: IntersectionObserver | null = null
+    if (wrap) {
+      io = new IntersectionObserver(
+        ([entry]) => {
+          videoInViewRef.current = Boolean(entry?.isIntersecting)
+          syncPlay()
+        },
+        { threshold: 0.08 },
+      )
+      io.observe(wrap)
+    }
+
+    syncPlay()
+    document.addEventListener('visibilitychange', syncPlay)
+    return () => {
+      io?.disconnect()
+      document.removeEventListener('visibilitychange', syncPlay)
+    }
+  }, [feedOff, liveClockPaused, playableSrc, slot.status])
 
   if (slot.status === 'locked') {
     return (
@@ -1293,19 +1304,11 @@ const StreamCard = memo(function StreamCard({
         <div
           className={`dash-stream-feed bg-gradient-to-br ${creator?.preview ?? 'from-slate-700/40 via-slate-900 to-slate-950'}`}
         >
-        {playableSrc ? (
-          <video
-            ref={videoRef}
-            key={playableSrc}
-            src={playableSrc}
-            className={`absolute inset-0 z-0 h-full w-full object-cover${feedOff ? ' cctv-feed-dead' : ''}`}
-            autoPlay={false}
-            loop
-            muted
-            playsInline
-            preload="metadata"
-          />
-        ) : null}
+        <SmoothVideoSwap
+          src={playableSrc}
+          playing={streamShouldPlay}
+          className={feedOff ? 'cctv-feed-dead' : ''}
+        />
 
         <div
           className={`cctv-scanline${feedOff ? ' is-gear-broken' : ''}`}

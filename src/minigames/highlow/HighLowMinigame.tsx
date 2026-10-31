@@ -64,6 +64,17 @@ interface LogEntry {
 /* -------------------------------------------------------------------------- */
 /*  CSS Keyframe Animations: 부드러운 스케일 핑퐁 & 페이드 (Scale & Fade)      */
 /* -------------------------------------------------------------------------- */
+const HIGH_LOW_STYLE_ID = 'highlow-custom-keyframes'
+
+function ensureHighLowStyles() {
+  if (typeof document === 'undefined') return
+  if (document.getElementById(HIGH_LOW_STYLE_ID)) return
+  const style = document.createElement('style')
+  style.id = HIGH_LOW_STYLE_ID
+  style.textContent = CUSTOM_HIGH_LOW_STYLES
+  document.head.appendChild(style)
+}
+
 const CUSTOM_HIGH_LOW_STYLES = `
 @keyframes cardFlyInDealer {
   0% {
@@ -143,11 +154,9 @@ const CUSTOM_HIGH_LOW_STYLES = `
 @keyframes goldenCardPulse {
   0%, 100% {
     transform: scale(1) translateY(0);
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
   }
   50% {
     transform: scale(1.04) translateY(-4px);
-    filter: drop-shadow(0 12px 22px rgba(180, 140, 60, 0.35));
   }
 }
 
@@ -425,7 +434,7 @@ const VictoryParticles: React.FC<{ active: boolean }> = ({ active }) => {
     const height = (canvas.height = canvas.parentElement?.clientHeight || 700)
 
     const colors = ['#ec4899', '#06b6d4', '#eab308', '#38bdf8', '#f43f5e', '#ffffff']
-    const particles = Array.from({ length: 110 }, () => ({
+    const particles = Array.from({ length: 36 }, () => ({
       x: width / 2 + (Math.random() - 0.5) * 80,
       y: height / 2 + (Math.random() - 0.5) * 80,
       vx: (Math.random() - 0.5) * 18,
@@ -440,8 +449,10 @@ const VictoryParticles: React.FC<{ active: boolean }> = ({ active }) => {
 
     const render = () => {
       ctx.clearRect(0, 0, width, height)
+      let alive = false
 
-      particles.forEach((p) => {
+      for (let i = 0; i < particles.length; i += 1) {
+        const p = particles[i]!
         p.x += p.vx
         p.y += p.vy
         p.vy += 0.25
@@ -449,19 +460,19 @@ const VictoryParticles: React.FC<{ active: boolean }> = ({ active }) => {
         p.rotation += p.vRot
 
         if (p.alpha > 0) {
-          ctx.save()
+          alive = true
           ctx.globalAlpha = Math.max(0, p.alpha)
+          ctx.fillStyle = p.color
+          ctx.save()
           ctx.translate(p.x, p.y)
           ctx.rotate(p.rotation)
-          ctx.fillStyle = p.color
-          ctx.shadowBlur = 10
-          ctx.shadowColor = p.color
           ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size)
           ctx.restore()
         }
-      })
+      }
+      ctx.globalAlpha = 1
 
-      if (particles.some((p) => p.alpha > 0)) {
+      if (alive) {
         animationFrameId = requestAnimationFrame(render)
       }
     }
@@ -571,35 +582,40 @@ const VictoryComboOverlay: React.FC<{ active: boolean; comboCount: number }> = (
 /*  돈 카운팅 애니메이션 컴포넌트 (AnimatedMoneyCounter)                     */
 /* -------------------------------------------------------------------------- */
 const AnimatedMoneyCounter: React.FC<{ value: number }> = ({ value }) => {
-  const [displayVal, setDisplayVal] = useState(value)
+  const spanRef = useRef<HTMLSpanElement | null>(null)
   const prevValueRef = useRef(value)
+  const rafRef = useRef(0)
 
   useEffect(() => {
+    const el = spanRef.current
+    if (!el) return
     const startVal = prevValueRef.current
     const endVal = value
-    if (startVal === endVal) return
+    if (startVal === endVal) {
+      el.textContent = `$${endVal.toLocaleString()}`
+      return
+    }
 
     const duration = 600
     const startTime = performance.now()
+    cancelAnimationFrame(rafRef.current)
 
     const updateCounter = (now: number) => {
-      const elapsed = now - startTime
-      const progress = Math.min(1, elapsed / duration)
+      const progress = Math.min(1, (now - startTime) / duration)
       const current = Math.floor(startVal + (endVal - startVal) * progress)
-      setDisplayVal(current)
-
+      el.textContent = `$${current.toLocaleString()}`
       if (progress < 1) {
-        requestAnimationFrame(updateCounter)
+        rafRef.current = requestAnimationFrame(updateCounter)
       } else {
-        setDisplayVal(endVal)
         prevValueRef.current = endVal
       }
     }
 
-    requestAnimationFrame(updateCounter)
+    rafRef.current = requestAnimationFrame(updateCounter)
+    return () => cancelAnimationFrame(rafRef.current)
   }, [value])
 
-  return <span>${displayVal.toLocaleString()}</span>
+  return <span ref={spanRef}>{`$${value.toLocaleString()}`}</span>
 }
 
 /* -------------------------------------------------------------------------- */
@@ -618,6 +634,9 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   onPracticeDone,
 }) => {
   const { t, locale } = useTranslation()
+  useEffect(() => {
+    ensureHighLowStyles()
+  }, [])
   const practiceRef = useRef(practice)
   practiceRef.current = practice
   const onPracticeDoneRef = useRef(onPracticeDone)
@@ -1140,8 +1159,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
   if (phase === 'LOBBY') {
     return (
       <div className="relative w-full h-full min-h-0 flex-1 bg-slate-950 text-slate-100 flex flex-col justify-between p-4 sm:p-5 rounded-2xl border border-pink-500/20 shadow-2xl overflow-hidden font-sans select-none">
-        <style>{CUSTOM_HIGH_LOW_STYLES}</style>
-
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-pink-950/30 via-slate-950 to-slate-950 pointer-events-none" />
 
         <div className="relative z-10 flex items-center justify-between border-b border-pink-500/20 pb-4">
@@ -1251,7 +1268,6 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
         gameResult === 'LOSS' ? 'is-loss animate-defeat-shake' : ''
       } overflow-hidden font-sans select-none`}
     >
-      <style>{CUSTOM_HIGH_LOW_STYLES}</style>
       <VictoryParticles active={gameResult === 'WIN'} />
       <VictoryComboOverlay key={`${gameResult}-${comboCount}`} active={gameResult === 'WIN'} comboCount={comboCount} />
       <DefeatParticles active={gameResult === 'LOSS'} />

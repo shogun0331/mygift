@@ -1,5 +1,9 @@
 import type { Grade } from './characters'
 import {
+  mentalDefenseOf as mentalDefenseFromCombat,
+  rollCardStrike,
+} from './fanMeetingCombat'
+import {
   defaultAuditConfig,
   type AuditJudgeConfig,
   type CreatorType,
@@ -136,34 +140,24 @@ function clampStat(value: unknown): number {
 
 /** 멘탈 방어 = round(멘탈 × 0.35) */
 export function mentalDefenseOf(mental: number): number {
-  return Math.round(clampStat(mental) * 0.35)
+  return mentalDefenseFromCombat(mental)
 }
 
-/** 일반 90%: 퍼포먼스 90~100% − 철벽. 타입 일치·크리티컬은 철벽 무시 */
+/**
+ * 타격 롤 (카드전·턴제 공용).
+ * 일반: perf × 0.9~1.0 × (K/(ironWall+K)). 타입 일치·크리티컬은 철벽 무시.
+ * 크리: 일치 15%/×1.5, 불일치 10%/×1.3
+ */
 export function rollAuditStrike(
   performance: number,
   ironWall: number,
-  ignoreWall = false,
+  typeMatched = false,
 ): {
   scoreGained: number
   isCritical: boolean
   criticalMultiplier: number
 } {
-  const perf = clampStat(performance)
-  const wall = ignoreWall ? 0 : Math.max(0, Math.round(Number(ironWall) || 0))
-  if (Math.random() < 0.1) {
-    return {
-      scoreGained: Math.round(perf * 1.5),
-      isCritical: true,
-      criticalMultiplier: 1.5,
-    }
-  }
-  const roll = 0.9 + Math.random() * 0.1
-  return {
-    scoreGained: Math.max(0, Math.round(perf * roll) - wall),
-    isCritical: false,
-    criticalMultiplier: 1,
-  }
+  return rollCardStrike(performance, ironWall, typeMatched)
 }
 
 /** 턴제 심사·VIP 방문의 압박. 카드전(승급심사/팬미팅)은 fanPressureDamage를 쓴다. */

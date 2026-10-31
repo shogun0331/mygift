@@ -78,6 +78,8 @@ import { InGame } from './screens/InGame'
 import { MainMenu } from './screens/MainMenu'
 import { CompanyLogoSplash } from './screens/CompanyLogoSplash'
 import { AchievementToastOverlay } from './components/AchievementToastOverlay'
+import { FpsCounter } from './components/FpsCounter'
+import { GameCursor } from './components/GameCursor'
 import { hydrateOwnedCreator, type GameSave } from './game/save'
 import {
   captureCurrentSave,
@@ -1565,9 +1567,6 @@ export default function App() {
       if (char.eventLinks.h && char.eventLinks.h === eventId) {
         unlockAchievement(`char_${char.id}_h`)
       }
-      if (char.eventLinks.vip && char.eventLinks.vip === eventId) {
-        unlockAchievement(`char_${char.id}_vip`)
-      }
     }
   }
 
@@ -1826,6 +1825,8 @@ export default function App() {
     <>
       {screenTree}
       <AchievementToastOverlay />
+      <FpsCounter />
+      <GameCursor />
     </>
   )
 }

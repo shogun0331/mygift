@@ -19,6 +19,7 @@
     "pack:assets": "node scripts/pack-public.cjs",
     "start": "electron .",
     "lint": "oxlint",
+    "test:combat": "node scripts/check-fan-meeting-combat.mjs",
     "preview": "vite preview"
   },
   "build": {
