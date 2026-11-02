@@ -303,9 +303,11 @@ export function SchedulePanel({
 
         <div className="relative flex shrink-0 items-center justify-between gap-3 border-b border-indigo-400/15 bg-black/25 px-3 py-2">
           <div className="min-w-0">
-            <p className="game-kicker">{staffMode ? 'Staff Bay' : 'Placement Bay'}</p>
+            <p className="game-kicker">
+              {staffMode ? t('studio.staffBayKicker') : t('studio.placementBayKicker')}
+            </p>
             <h2 className="truncate text-sm font-semibold tracking-wide text-slate-100">
-              {staffMode ? t('studio.staffBayTitle') : 'Studio Slots'}
+              {staffMode ? t('studio.staffBayTitle') : t('studio.slotsTitle')}
               <span className="ml-2 text-[11px] font-medium text-slate-500">
                 {placementLocked
                   ? t('studio.placementLockedHint')

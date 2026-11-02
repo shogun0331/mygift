@@ -22,7 +22,7 @@
     "confirmExitNo": "취소",
     "devOnly": "개발자 전용",
     "finalVer": "FINAL VER.",
-    "kicker": "Tonight's Broadcast",
+    "kicker": "오늘의 방송",
     "desc": "경영 시뮬레이션 게임",
     "savedData": "저장된 데이터",
     "ariaMainMenu": "메인 메뉴",
@@ -67,9 +67,9 @@
     "exitEventConfirm": "종료하기"
   },
   "dashboard": {
-    "recentEvents": "LIVE CHAT",
+    "recentEvents": "라이브 채팅",
     "noEvents": "아직 발생한 이벤트가 없습니다.",
-    "liveRank": "Live Broadcast Rank",
+    "liveRank": "라이브 방송 순위",
     "noLiveBroadcast": "스튜디오에서 배정된 방송이 없습니다.",
     "startBroadcast": "▶ 방송시작",
     "fanMeeting": "▶ 팬미팅",
@@ -219,6 +219,7 @@
   },
   "creator": {
     "scout": "스카우트",
+    "scoutCap": "스카우트 ({current}/{max}명)",
     "scoutDesc": "보유하지 않은 크리에이터 중 한 명을 스카우트합니다.",
     "scoutHire": "영입",
     "scoutPass": "패스",
@@ -347,10 +348,11 @@
     "noRegistered": "등록된 캐릭터가 없습니다.",
     "noRegisteredDesc": "에디터에서 캐릭터를 추가하면 스카우트 후보로 등장합니다.",
     "staffPass": "거절 (새 후보 대기)",
-    "skinUnlockTitle": "NEW SKIN UNLOCKED!",
+    "skinUnlockTitle": "새 스킨 해금!",
     "skinUnlockBadge": "{grade} GRADE 달성!",
     "skinUnlockName": "SKIN{skin} 수위 의상 오픈",
-    "skinUnlockDesc": "새로운 스킨 의상이 해금되었습니다! 크리에이터 프로필에서 스킨을 바로 착용해보세요."
+    "skinUnlockDesc": "새로운 스킨 의상이 해금되었습니다! 크리에이터 프로필에서 스킨을 바로 착용해보세요.",
+    "profileKicker": "CREATOR PROFILE"
   },
   "sns": {
     "action": "SNS",
@@ -456,7 +458,7 @@
     "unlockNeedAssets": "자산이 부족합니다",
     "staffManage": "스태프 관리",
     "creatorPlace": "크리에이터 배치",
-    "staffBayTitle": "Staff Slots",
+    "staffBayTitle": "스태프 슬롯",
     "staffBayHint": "매니저 카드를 선택해 슬롯에 장착",
     "managerHandTitle": "배치할 매니저",
     "managerHandDesc": "카드를 선택해 해금된 슬롯에 장착",
@@ -478,13 +480,16 @@
     "managerEquipped": "장착 중",
     "managerHire": "고용",
     "managerFx": {
-      "security": "배치 시 진상 사건을 막습니다",
-      "repair": "배치 시 장비 고장을 막습니다",
-      "care": "스테미나 소모 ×0.85 · 컨디션 90 미만이면 90으로 회복",
-      "production": "수익 ×1.25 · SNS 구독자의 2% 시청자 보너스"
+      "security": "진상 사건을 막아 줍니다",
+      "repair": "방송 장비 고장을 막아 줍니다",
+      "care": "컨디션을 유지하고 스테미나 소모를 줄입니다",
+      "production": "방송 수익을 올려 줍니다"
     },
     "dragHint": "드래그로 슬롯 이동 · 대시보드와 연동",
-    "gradeRequired": "등급 필요"
+    "gradeRequired": "등급 필요",
+    "staffBayKicker": "STAFF BAY",
+    "placementBayKicker": "PLACEMENT BAY",
+    "slotsTitle": "스튜디오 슬롯"
   },
   "staff": {
     "kindSecurity": "보안",
@@ -494,20 +499,20 @@
     "genderMale": "남",
     "genderFemale": "여",
     "dutySecurityTitle": "보안 (Security)",
-    "dutySecurityBonus": "배치 시 진상 사건 차단",
-    "dutySecurityDesc": "악플 등 방송 중 발생할 수 있는 위협 요소들로부터 크리에이터를 보호하고 방송의 부정적인 이벤트를 효과적으로 차단합니다.",
-    "dutyRepairTitle": "보수 (Repair)",
-    "dutyRepairBonus": "배치 시 장비 고장 차단",
-    "dutyRepairDesc": "방송 기계 장비의 결함이나 마모를 미연에 방지하여 장비 보수 비용을 아끼고 원활한 실시간 스트리밍 환경을 제공합니다.",
+    "dutySecurityBonus": "진상 사건을 막아 줍니다",
+    "dutySecurityDesc": "방송 중 진상 사건을 막아 줍니다.",
+    "dutyRepairTitle": "수리 (Repair)",
+    "dutyRepairBonus": "방송 장비 고장을 막아 줍니다",
+    "dutyRepairDesc": "방송 중 장비 고장을 막아 줍니다.",
     "dutyCareTitle": "케어 (Care)",
-    "dutyCareBonus": "스테미나 소모 ×0.85, 컨디션 90 미만이면 90까지 회복",
-    "dutyCareDesc": "크리에이터들의 컨디션과 피로를 집중 관리하여 라이브 방송 중 스태미나 소모량을 줄이고 지속 방송을 지원합니다.",
-    "dutyProductionTitle": "기획 (Production)",
-    "dutyProductionBonus": "수익 ×1.25, SNS 구독자의 2%만큼 시청자 보너스",
-    "dutyProductionDesc": "스트리머가 진행하는 라이브 방송의 연출과 구성 기획에 참여하여, 시청자 수 확대 및 도네이션 수익을 크게 극대화시킵니다.",
+    "dutyCareBonus": "컨디션을 유지하고 스테미나 소모를 줄입니다",
+    "dutyCareDesc": "컨디션을 유지하고 스테미나 소모를 줄입니다.",
+    "dutyProductionTitle": "프로덕션 (Production)",
+    "dutyProductionBonus": "방송 수익을 올려 줍니다",
+    "dutyProductionDesc": "방송 수익을 올려 줍니다.",
     "roleMenu": "역할",
-    "roleCost": "비용은 역할과 같습니다. 지금 회사 등급에서 영입비는 {hire}이고 한 번만 냅니다. 연봉 {salary}는 매달 {monthly}씩 나갑니다. 제안마다 약 5% 달라집니다.",
-    "roleCostHired": "이 스태프의 연봉은 {salary}이고, 매달 {monthly}씩 나갑니다. 영입비는 고용할 때 그때 회사 등급으로 한 번 냈습니다."
+    "roleCost": "영입비 {hire}(1회) · 연봉 {salary}(월 {monthly})",
+    "roleCostHired": "연봉 {salary} · 월 {monthly}"
   },
   "settlement": {
     "title": "월간 정산 명세서",
@@ -802,6 +807,12 @@
     "clearTitle": "GAME CLEAR",
     "clearBody": "스타라이트 방송국이 리그 1위에 올랐습니다. 호감도 100인 캐릭터 상세에서 고백하기를 누르면 엔딩을 볼 수 있습니다. 이후에도 방송을 이어갈 수 있습니다.",
     "clearConfirm": "계속하기",
+    "rankOneEndingKicker": "ENDING UNLOCKED",
+    "rankOneEndingTitle": "축하해요. 드디어 1위예요.",
+    "rankOneEndingLine1": "방송국이 리그 1위에 올랐어요. 정말 수고했어요.",
+    "rankOneEndingLine2": "이제 엔딩 컨텐츠를 감상할 수 있어요.",
+    "rankOneEndingLine3": "호감도 100을 달성한 캐릭터는 상세 보기에서 「고백하기」로 엔딩을 볼 수 있어요.",
+    "rankOneEndingConfirm": "확인",
     "stockLabel": "현재 시청자",
     "currentRankLabel": "현재 랭크",
     "currentMarker": "현재",
@@ -1154,7 +1165,8 @@
       "highlowLogStart": "연습 라운드입니다. 자산은 변하지 않습니다.",
       "highlowLogChoice": "{choice}를 골랐습니다.",
       "highlowLogWin": "연습 승리입니다. 자산에는 반영되지 않습니다."
-    }
+    },
+    "openBadge": "OPEN"
   },
   "audit": {
     "deckModalTitle": "승급심사 덱 세팅",
@@ -1465,7 +1477,7 @@
     "relH": "다음: 밀회. 끝나면 VIP가 열립니다. 2개월 뒤 80%.",
     "relDone": "데이트 완료. VIP 제안은 2개월마다 75%. 수락하면 스테미나가 0이 됩니다. 거절하면 컨디션이 줄어듭니다 (C 5~6, B 6~7, A 7~9, S 8~10).",
     "casinoAce": "에이스는 킹보다 높은 최상위 카드입니다. 딜러가 에이스면 HIGH는 이길 수 없습니다. 첫 판돈은 무료라 자산이 줄지 않습니다.",
-    "casinoOpenCycle": "{turns}턴마다 열립니다. 일등기업은 항상 열립니다. 그 외에는 카지노를 닫으면 카운트가 초기화됩니다.",
+    "casinoOpenCycle": "{turns}턴마다 열립니다. 카지노를 닫으면 카운트가 초기화됩니다.",
     "casinoNeedSme": "중소기업 필요",
     "slotUnlockAlert": "신규 방송 슬롯 해금 가능",
     "auditDocPassed": "1단계 · 서류 통과",
@@ -1510,5 +1522,13 @@
     "hlLogDrop": "이번 보상 [{name}]. 승리 시 수령.",
     "hlPeek": "엿보기: {card}",
     "hlResolving": "결과 확인 중"
+  },
+  "economy": {
+    "bankruptcyKicker": "BANKRUPT",
+    "bankruptcyTitle": "…또야?",
+    "bankruptcyLine1": "한심하네. 방송국 사장씩이나 돼서 통장이 마이너스라니.",
+    "bankruptcyLine2": "그래서 내가 또 와 줘야 해? 정말… 한숨만 나온다.",
+    "bankruptcyLine3": "이번만이야. {amount} 넣어 줄게. 또 이러면 진짜 가만 안 둬.",
+    "bankruptcyConfirm": "지원금 받기"
   }
 }

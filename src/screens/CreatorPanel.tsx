@@ -66,7 +66,7 @@ import {
 import type { RegisteredStaff, StaffKind } from '../game/staff'
 import { STAFF_KINDS, staffDisplayName, staffIconUrl, staffCardUrl, STAFF_KIND_LABEL_KEY } from '../game/staff'
 import type { SlotManagerState } from '../game/slotManagers'
-import { findSlotIdForStaff, staffOfferBase } from '../game/slotManagers'
+import { findSlotIdForStaff } from '../game/slotManagers'
 import { KIND_TONE, StaffKindIcon } from './StaffManagerUi'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import type { ScoutedStaffCandidate } from '../game/characters'
@@ -340,19 +340,8 @@ const STAFF_ROLE_EFFECT_KEY: Record<StaffKind, string> = {
   production: 'staff.dutyProductionBonus',
 }
 
-function staffRoleTooltip(
-  t: (key: string) => string,
-  kind: StaffKind,
-  grade: string,
-  salary?: number,
-) {
-  const base = staffOfferBase(grade)
-  const annual = salary ?? base.salary
-  const cost = t(salary != null ? 'staff.roleCostHired' : 'staff.roleCost')
-    .replace('{hire}', formatMoney(base.hire))
-    .replace('{salary}', formatMoney(annual))
-    .replace('{monthly}', formatMoney(Math.round(annual / 12)))
-  return `${t(STAFF_ROLE_EFFECT_KEY[kind])} ${cost}`
+function staffRoleTooltip(t: (key: string) => string, kind: StaffKind) {
+  return t(STAFF_ROLE_EFFECT_KEY[kind])
 }
 
 function HoverTip({ text, children }: { text: string; children: ReactNode }) {
@@ -360,7 +349,8 @@ function HoverTip({ text, children }: { text: string; children: ReactNode }) {
 
   const place = (el: HTMLElement) => {
     const rect = el.getBoundingClientRect()
-    const below = window.innerHeight - rect.bottom > 128
+    // Prefer above so the custom cursor doesn't cover the tip
+    const below = rect.top < 72
     const left = Math.min(Math.max(8, rect.left), window.innerWidth - 296)
     setPos({
       top: below ? rect.bottom + 6 : rect.top - 6,
@@ -746,7 +736,11 @@ export function CreatorPanel({
                 disabled
                 className="game-btn rounded-lg px-3 py-1 text-xs opacity-50 cursor-not-allowed border border-white/10 text-slate-400 font-semibold"
               >
-                🔒 {t('creator.scout')} ({sortedBySalary.length}/{maxScout}명)
+                🔒{' '}
+                {t('creator.scoutCap', {
+                  current: sortedBySalary.length,
+                  max: maxScout,
+                })}
               </button>
             ) : (
               <button
@@ -1095,7 +1089,7 @@ export function CreatorPanel({
                     key={kind}
                     kind={kind}
                     label={t(STAFF_KIND_LABEL_KEY[kind])}
-                    hint={staffRoleTooltip(t, kind, stationGrade)}
+                    hint={staffRoleTooltip(t, kind)}
                   />
                 ))}
               </div>
@@ -1161,7 +1155,7 @@ export function CreatorPanel({
                             <StaffRoleChip
                               kind={staff.kind}
                               label={t(STAFF_KIND_LABEL_KEY[staff.kind])}
-                              hint={staffRoleTooltip(t, staff.kind, stationGrade, salary)}
+                              hint={staffRoleTooltip(t, staff.kind)}
                             />
                           </td>
                           <td className="px-3 py-2.5 font-semibold text-slate-300">
@@ -1279,7 +1273,7 @@ function ScoutView({
           </button>
         )}
         <div className="min-w-0 flex-1">
-          <p className="game-kicker">SCOUT</p>
+          <p className="game-kicker">{t('creator.scout')}</p>
           <h2 className="truncate text-base font-semibold text-slate-100">{t('creator.scout')}</h2>
           <p className="mt-0.5 text-xs text-slate-500">{t('creator.scoutDesc')}</p>
         </div>
@@ -1571,7 +1565,7 @@ function CreatorDetailView({
           </button>
         )}
         <div className="min-w-0 flex-1">
-          <p className="game-kicker">CREATOR PROFILE</p>
+          <p className="game-kicker">{t('creator.profileKicker')}</p>
           <h2 className="flex items-center gap-2 truncate text-base font-semibold text-slate-100 flex-wrap">
             <span>{displayName}</span>
             <GradePlate grade={creator.grade} size="sm" />
@@ -2154,13 +2148,14 @@ function PersonalityStatBars({
 }
 
 function StatHint({ text }: { text: string }) {
-  const [below, setBelow] = useState(true)
+  const [below, setBelow] = useState(false)
   return (
     <span
       className="group/hint relative inline-flex"
       onMouseEnter={(event) => {
         const rect = event.currentTarget.getBoundingClientRect()
-        setBelow(window.innerHeight - rect.bottom > 96)
+        // Prefer above so the custom cursor doesn't cover the tip
+        setBelow(rect.top < 96)
       }}
     >
       <button
@@ -2265,7 +2260,7 @@ function StaffScoutView({
           {t('common.back')}
         </button>
         <div className="min-w-0 flex-1">
-          <p className="game-kicker">STAFF SCOUT</p>
+          <p className="game-kicker">{t('creator.staffScoutTitle')}</p>
           <h2 className="truncate text-base font-semibold text-slate-100">{t('creator.staffScoutTitle')}</h2>
           <p className="mt-0.5 text-xs text-slate-500">{t('creator.staffScoutDesc')}</p>
         </div>

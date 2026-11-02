@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from '../locales/i18n'
 import type { AffectionGain } from '../game/affection'
@@ -25,27 +25,49 @@ function useAutoClose(onClose: () => void, ms: number, key: string) {
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
   const closedRef = useRef(false)
+  const leaveTimerRef = useRef(0)
+  const doneTimerRef = useRef(0)
   const [leaving, setLeaving] = useState(false)
-  useEffect(() => {
-    closedRef.current = false
-    setLeaving(false)
-    const hide = window.setTimeout(() => setLeaving(true), Math.max(0, ms - 400))
-    const done = window.setTimeout(() => {
-      if (closedRef.current) return
-      closedRef.current = true
-      onCloseRef.current()
-    }, ms)
-    return () => {
-      window.clearTimeout(hide)
-      window.clearTimeout(done)
-    }
-  }, [ms, key])
-  const dismiss = () => {
+
+  const finish = () => {
     if (closedRef.current) return
     closedRef.current = true
     onCloseRef.current()
   }
+
+  useEffect(() => {
+    closedRef.current = false
+    setLeaving(false)
+    leaveTimerRef.current = window.setTimeout(() => setLeaving(true), Math.max(0, ms - 400))
+    doneTimerRef.current = window.setTimeout(finish, ms)
+    return () => {
+      window.clearTimeout(leaveTimerRef.current)
+      window.clearTimeout(doneTimerRef.current)
+    }
+  }, [ms, key])
+
+  /**
+   * 클릭으로 바로 unmount하면 같은 좌표의 하위 UI로 클릭이 새어
+   * (설정 뒤로가기 등) 탭이 바뀔 수 있다. 페이드만 시작하고 onClose는
+   * 다음 맥으로 미뤄 제스처와 분리한다. 월말 체인·데이트 제안은 onClose가 담당.
+   */
+  const dismiss = () => {
+    if (closedRef.current) return
+    setLeaving(true)
+    window.clearTimeout(leaveTimerRef.current)
+    window.clearTimeout(doneTimerRef.current)
+    doneTimerRef.current = window.setTimeout(finish, 0)
+  }
+
   return { leaving, dismiss }
+}
+
+function bindDismiss(dismiss: () => void) {
+  return (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+    dismiss()
+  }
 }
 
 export function AffectionGainPopup({
@@ -61,7 +83,7 @@ export function AffectionGainPopup({
     <button
       type="button"
       data-no-ui-click
-      onClick={dismiss}
+      onClick={bindDismiss(dismiss)}
       className={`pointer-events-auto fixed right-5 top-20 z-[240] w-[min(88vw,20rem)] cursor-pointer border-0 bg-transparent p-0 text-left transition-all duration-300 ${
         leaving ? 'translate-y-2 opacity-0' : 'translate-y-0 opacity-100'
       }`}
@@ -118,7 +140,7 @@ export function AffectionBroadcastPopup({
     <button
       type="button"
       data-no-ui-click
-      onClick={dismiss}
+      onClick={bindDismiss(dismiss)}
       className={`pointer-events-auto fixed right-5 top-20 z-[240] w-[min(88vw,22rem)] cursor-pointer border-0 bg-transparent p-0 text-left transition-all duration-300 ${
         leaving ? 'translate-y-2 opacity-0' : 'translate-y-0 opacity-100'
       }`}

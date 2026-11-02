@@ -1104,12 +1104,18 @@ const StreamCard = memo(function StreamCard({
     ? resolveMediaSrc(playVideoUrl, mediaRevision ?? playVideoUrl)
     : null
   const isLive = Boolean(creator?.live)
-  const feedOff = gearBroken || (isLive && blocked)
-  const badge =
-    gearBroken
+  // 고장·진상은 해당 슬롯만 피드 정지. 전역 liveClockPaused(VN 등)와 분리.
+  const slotIncidentOff = gearBroken || Boolean(toxicQte)
+  const feedOff = slotIncidentOff || (isLive && blocked)
+  const badge = gearBroken
+    ? {
+        labelKey: 'dashboard.noSignal',
+        className: 'border-amber-400/70 bg-amber-500/20 text-amber-200',
+      }
+    : toxicQte
       ? {
           labelKey: 'dashboard.noSignal',
-          className: 'border-amber-400/70 bg-amber-500/20 text-amber-200',
+          className: 'border-rose-400/70 bg-rose-500/20 text-rose-200',
         }
       : blocked
         ? {
@@ -1422,6 +1428,53 @@ const StreamCard = memo(function StreamCard({
             onResolve={(success) => onToxicQteResolve(toxicQte.id, success)}
           />
         ) : null}
+
+        {creator && !isLive && onSelectSkin && (creator.skins?.length ?? 0) > 1 ? (
+          <div className="absolute bottom-1.5 right-1.5 z-30 flex items-center gap-1 rounded-lg border border-fuchsia-300/45 bg-black/70 px-1 py-0.5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06),0_0_12px_rgba(232,121,249,0.22)] backdrop-blur-sm">
+            <span className="px-0.5 text-[7px] font-black uppercase tracking-[0.12em] text-fuchsia-200/90">
+              Skin
+            </span>
+            {creator.skins!.map((skin) => {
+              const selected = (creator.selectedSkin ?? 1) === skin.skin
+              const imageSrc = skin.imageUrl
+                ? resolveMediaSrc(skin.imageUrl, creator.mediaRevision)
+                : null
+              const videoSrc = skin.videoUrl
+                ? resolveMediaSrc(skin.videoUrl, creator.mediaRevision ?? skin.videoUrl)
+                : null
+              return (
+                <button
+                  key={skin.skin}
+                  type="button"
+                  title={`SKIN ${skin.skin}`}
+                  data-no-ui-click
+                  onClick={() => onSelectSkin(creator.id, skin.skin)}
+                  className={`relative h-7 w-5 origin-bottom-right overflow-hidden rounded border bg-slate-950 transition-transform duration-150 ease-out hover:z-10 hover:scale-[1.65] ${
+                    selected
+                      ? 'border-white/90 ring-1 ring-fuchsia-300/50'
+                      : 'border-white/20 opacity-85 hover:border-white/55 hover:opacity-100'
+                  }`}
+                >
+                  {imageSrc ? (
+                    <img src={imageSrc} alt="" className="h-full w-full object-cover object-top" />
+                  ) : videoSrc ? (
+                    <video
+                      src={videoSrc}
+                      muted
+                      playsInline
+                      preload="metadata"
+                      className="h-full w-full object-cover object-top"
+                    />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-[8px] font-black text-slate-400">
+                      {skin.skin}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        ) : null}
         </div>
         <img
           src={DASHBOARD_UI_ASSETS.streamBezel}
@@ -1468,51 +1521,6 @@ const StreamCard = memo(function StreamCard({
                     <span className="dash-creator-job"> ({creator.concept})</span>
                   ) : null}
                 </p>
-                {creator && !isLive && onSelectSkin && (creator.skins?.length ?? 0) > 1 ? (
-                  <span className="ml-0.5 flex shrink-0 items-center gap-1.5 rounded-xl border border-fuchsia-300/40 bg-fuchsia-950/45 px-1.5 py-1 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06),0_0_14px_rgba(232,121,249,0.18)]">
-                    <span className="text-[8px] font-black uppercase tracking-[0.12em] text-fuchsia-200/90">
-                      Skin
-                    </span>
-                    {creator.skins!.map((skin) => {
-                      const selected = (creator.selectedSkin ?? 1) === skin.skin
-                      const imageSrc = skin.imageUrl
-                        ? resolveMediaSrc(skin.imageUrl, creator.mediaRevision)
-                        : null
-                      const videoSrc = skin.videoUrl
-                        ? resolveMediaSrc(skin.videoUrl, creator.mediaRevision ?? skin.videoUrl)
-                        : null
-                      return (
-                        <button
-                          key={skin.skin}
-                          type="button"
-                          title={`SKIN ${skin.skin}`}
-                          onClick={() => onSelectSkin(creator.id, skin.skin)}
-                          className={`relative h-8 w-6 origin-center overflow-hidden rounded-md border bg-slate-950 transition-transform duration-150 ease-out hover:z-10 hover:scale-[1.7] ${
-                            selected
-                              ? 'border-white/90 ring-1 ring-fuchsia-300/50'
-                              : 'border-white/20 opacity-85 hover:border-white/55 hover:opacity-100'
-                          }`}
-                        >
-                          {imageSrc ? (
-                            <img src={imageSrc} alt="" className="h-full w-full object-cover object-top" />
-                          ) : videoSrc ? (
-                            <video
-                              src={videoSrc}
-                              muted
-                              playsInline
-                              preload="metadata"
-                              className="h-full w-full object-cover object-top"
-                            />
-                          ) : (
-                            <span className="flex h-full w-full items-center justify-center text-[9px] font-black text-slate-400">
-                              {skin.skin}
-                            </span>
-                          )}
-                        </button>
-                      )
-                    })}
-                  </span>
-                ) : null}
                 {creator?.tag ? (
                   <span
                     className={`rounded-md border px-1.5 py-0.5 text-[9px] font-semibold ${TAG_STYLE[creator.tag.tone]}`}

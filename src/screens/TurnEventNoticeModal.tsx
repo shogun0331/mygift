@@ -103,31 +103,31 @@ export function TurnEventNoticeModal({ flags, onConfirm }: TurnEventNoticeModalP
         {t('turnEventNotice.badge')}
       </div>
 
-      <h2 id="turn-event-notice-title" className="mt-3 text-xl font-black tracking-tight text-slate-100">
+      <h2 id="turn-event-notice-title" className="text-xl font-black tracking-tight text-slate-100">
         {t('turnEventNotice.title')}
       </h2>
-      <p className="mt-1 text-xs leading-relaxed text-slate-400">{t('turnEventNotice.body')}</p>
+      <p className="text-xs leading-relaxed text-slate-400">{t('turnEventNotice.body')}</p>
 
-      <ul className="mt-4 space-y-2.5">
+      <ul className="space-y-2.5">
         {items.map((item) => (
           <li
             key={item.key}
-            className={`flex items-start gap-3 rounded-xl border px-3.5 py-3 ${item.tone}`}
+            className={`flex items-start gap-3 rounded-xl border px-4 py-3.5 ${item.tone}`}
           >
             <span
               className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${item.iconTone}`}
             >
               <item.Icon />
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-black">{item.title}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-slate-300/90">{item.body}</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-300/90">{item.body}</p>
             </div>
           </li>
         ))}
       </ul>
 
-      <div className="mt-6 flex justify-center">
+      <div className="mt-2 flex justify-center pb-1">
         <UiDialogBtn onClick={onConfirm} className="w-full max-w-[220px]">
           {t('turnEventNotice.confirm')}
         </UiDialogBtn>

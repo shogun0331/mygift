@@ -109,7 +109,11 @@ export function stationGradeMinViewers(
 
 /**
  * 현재 등급 순위 구간에서 시청자 진행도에 따른 결정적 순위.
- * 시청자 0% → 구간 최하위(black 300위), 필수 시청자 100% → 구간 최상위(black 151위).
+ * 시청자 0% → 구간 최하위(black 300위 / 승급 직후 해당 등급 worst),
+ * 다음 등급 필수 시청자 100% → 구간 최상위(black 151위 등).
+ *
+ * base = 현재 등급 입성 시청자, target = 다음 등급 입성 시청자.
+ * (예전엔 base=0이라 중소기업 입성 직후 5천명인데도 이미 ~91위로 올라가 순위·시청자가 어긋났음)
  */
 export function stationRankForGrade(
   grade: StationGrade,
@@ -125,6 +129,9 @@ export function stationRankForGrade(
   let baseViewers = 0
 
   if (next) {
+    // 현재 등급 입성 조건 = 진행도 0%(구간 worst). black은 입성 조건이 없어 0.
+    baseViewers =
+      grade === 'black' ? 0 : (cfg.promotions[grade]?.requiredViewers ?? 0)
     requiredViewers = cfg.promotions[next].requiredViewers
   } else {
     // 최고 등급(top, 일등기업)일 경우:
@@ -139,7 +146,11 @@ export function stationRankForGrade(
   const denominator = requiredViewers - baseViewers
   const currentDiff = viewers - baseViewers
   const progress = denominator <= 0 ? 1 : Math.max(0, Math.min(1, currentDiff / denominator))
-  const rank = Math.round(band.worst - progress * (band.worst - band.best))
+  // Math.round면 목표 시청자(예: 50만) 전에 구간 최상위(1위)로 올라가 버린다.
+  // 구간 칸 수는 floor로 채워서, 100%(requiredViewers)에 도달해야 best 랭크가 되게 한다.
+  const span = band.worst - band.best
+  const advanced = Math.floor(progress * span + 1e-9)
+  const rank = band.worst - advanced
   return Math.max(band.best, Math.min(band.worst, rank))
 }
 

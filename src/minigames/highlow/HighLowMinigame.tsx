@@ -1897,7 +1897,7 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
           }}
         />
       )}
-      {practice && phase !== 'DEALING_DEALER' && phase !== 'LOBBY' ? (
+      {practice && phase !== 'DEALING_DEALER' ? (
         <CasinoPracticeCoach
           titleKey="casino.tutorial.highlowTitle"
           bodyKey={

@@ -250,7 +250,11 @@ import {
 import { SnsResultModal } from './SnsResultModal'
 import { SalaryNegotiateModal } from './SalaryNegotiateModal'
 import { SchedulePanel } from './SchedulePanel'
-import { GameClearModal } from './GameClearModal'
+import { RankOneEndingModal } from './RankOneEndingModal'
+import {
+  BANKRUPTCY_BAILOUT_AMOUNT,
+  BankruptcyBailoutModal,
+} from './BankruptcyBailoutModal'
 import {
   STAT_TUTORIAL_STEPS,
   TutorialGuideOverlay,
@@ -630,16 +634,6 @@ function IconHudAssets() {
   )
 }
 
-function IconHudNextGoal() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.7" />
-      <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.7" />
-      <circle cx="12" cy="12" r="1.4" fill="currentColor" />
-    </svg>
-  )
-}
-
 function formatHudGoalCount(
   current: number,
   required: number,
@@ -752,12 +746,12 @@ function GoldenVegasLoungeBackground() {
   )
 }
 
-const TABS: { id: GameTab; label: string; icon: ReactNode }[] = [
-  { id: 'dashboard', label: 'DASHBOARD', icon: <IconDashboard /> },
-  { id: 'creator', label: 'CREATOR', icon: <IconCreator /> },
-  { id: 'schedule', label: 'STUDIO', icon: <IconSchedule /> },
-  { id: 'ranking', label: 'RANKING', icon: <IconRanking /> },
-  { id: 'casino', label: 'CASINO', icon: <IconCasino /> },
+const TABS: { id: GameTab; labelKey: string; icon: ReactNode }[] = [
+  { id: 'dashboard', labelKey: 'menu.dashboard', icon: <IconDashboard /> },
+  { id: 'creator', labelKey: 'menu.creator', icon: <IconCreator /> },
+  { id: 'schedule', labelKey: 'menu.studio', icon: <IconSchedule /> },
+  { id: 'ranking', labelKey: 'menu.ranking', icon: <IconRanking /> },
+  { id: 'casino', labelKey: 'menu.casino', icon: <IconCasino /> },
 ]
 
 type InGameProps = {
@@ -987,7 +981,7 @@ export function InGame({
   }, [ownedCreators, stationGrade, gameMonth])
 
   const getCasinoRequiredTurns = (grade: StationGrade): number => {
-    if (grade === 'top') return 1 // 일등기업: 항상 열림
+    if (grade === 'top') return 1 // 일등기업: 매 턴 1회
     if (grade === 'large') return 2 // 대기업: 2턴에 1번
     return 3 // 중소기업, 중견기업: 3턴에 1번
   }
@@ -996,7 +990,7 @@ export function InGame({
     return stationTierRank(stationGrade) >= stationTierRank('sme')
   }, [stationGrade])
   const isCasinoAvailable =
-    isCasinoGradeUnlocked && (stationGrade === 'top' || casinoTurnCount >= getCasinoRequiredTurns(stationGrade))
+    isCasinoGradeUnlocked && casinoTurnCount >= getCasinoRequiredTurns(stationGrade)
 
   useEffect(() => {
     if (!isCasinoAvailable || monthMarksRef.current.casino) return
@@ -1250,6 +1244,10 @@ export function InGame({
       }
   const [socialUi, setSocialUi] = useState<SocialUi | null>(null)
   const [showGameClear, setShowGameClear] = useState(false)
+  const [showBankruptcyBailout, setShowBankruptcyBailout] = useState(false)
+  const [rankOneEndingNoticeSeen, setRankOneEndingNoticeSeen] = useState(
+    Boolean(boot?.rankOneEndingNoticeSeen),
+  )
   const [proposalEndingVnEvent, setProposalEndingVnEvent] = useState<GameEvent | null>(null)
   const [affectionPopup, setAffectionPopup] = useState<AffectionGain | null>(null)
   const [affectionSummary, setAffectionSummary] = useState<AffectionGain[] | null>(null)
@@ -1952,6 +1950,12 @@ export function InGame({
   }
   const fanMeetingTutorialSeenRef = useRef(fanMeetingTutorialSeen)
   fanMeetingTutorialSeenRef.current = fanMeetingTutorialSeen
+  const rankOneEndingNoticeSeenRef = useRef(rankOneEndingNoticeSeen)
+  rankOneEndingNoticeSeenRef.current = rankOneEndingNoticeSeen
+  const pendingRankOneEndingRef = useRef(false)
+  const showBankruptcyBailoutRef = useRef(showBankruptcyBailout)
+  showBankruptcyBailoutRef.current = showBankruptcyBailout
+  const bankruptcyBailoutOpeningRef = useRef(false)
   const examTutorialSeenRef = useRef(examTutorialSeen)
   examTutorialSeenRef.current = examTutorialSeen
   const slotTutorialSeenRef = useRef(slotTutorialSeen)
@@ -2041,10 +2045,8 @@ export function InGame({
     setShowCasinoLobby(false)
     setShowCasinoModal(false)
     setActiveCasinoRoomId(null)
-    if (stationGradeRef.current !== 'top') {
-      casinoTurnCountRef.current = 0
-      setCasinoTurnCount(0)
-    }
+    casinoTurnCountRef.current = 0
+    setCasinoTurnCount(0)
     flushAutoSave()
     if (resumeMonthEndAfterCasinoRef.current) {
       resumeMonthEndAfterCasinoRef.current = false
@@ -2115,11 +2117,32 @@ export function InGame({
     return value
   }
 
+  function openBankruptcyBailout() {
+    if (showBankruptcyBailoutRef.current || bankruptcyBailoutOpeningRef.current) return
+    bankruptcyBailoutOpeningRef.current = true
+    showBankruptcyBailoutRef.current = true
+    setShowBankruptcyBailout(true)
+  }
+
+  function confirmBankruptcyBailout() {
+    bankruptcyBailoutOpeningRef.current = false
+    showBankruptcyBailoutRef.current = false
+    setShowBankruptcyBailout(false)
+    // 부채를 정리한 뒤 비상 지원금 $1,000,000
+    commitAssets(BANKRUPTCY_BAILOUT_AMOUNT)
+    playSfx('live-donation')
+    flushAutoSave()
+  }
+
   function commitAssets(next: number) {
+    const prev = assetsRef.current
     const value = writeAssetLedger(assetLedgerRef.current, next)
     assetsRef.current = value
     setAssets(value)
     scheduleAutoSave()
+    if (prev >= 0 && value < 0) {
+      openBankruptcyBailout()
+    }
     return value
   }
 
@@ -2208,6 +2231,7 @@ export function InGame({
       examTutorialSeen: examTutorialSeenRef.current,
       slotTutorialSeen: slotTutorialSeenRef.current,
       highLowTutorialSeen: highLowTutorialSeenRef.current,
+      rankOneEndingNoticeSeen: rankOneEndingNoticeSeenRef.current,
       affectionVnQueue: affectionVnQueueRef.current,
       tutorialDone: tutorialDoneRef.current,
     }
@@ -2555,6 +2579,10 @@ export function InGame({
 
   function isCreatorDonationBlocked(creatorId: string, atMs?: number) {
     if (isCreatorSlotBroken(studioSlotsRef.current, slotGearByIdRef.current, creatorId)) {
+      return true
+    }
+    // 진상 QTE 진행 중 — 해당 캐릭터만 후원/수익 정지
+    if (toxicQteQueueRef.current.some((row) => row.creatorId === creatorId)) {
       return true
     }
     const blockProgress = broadcastBlockedSinceRef.current[creatorId]
@@ -3592,7 +3620,7 @@ export function InGame({
     const leavingReq = getCasinoRequiredTurns(leavingGrade)
     const leavingCasino =
       stationTierRank(leavingGrade) >= stationTierRank('sme') &&
-      (leavingGrade === 'top' || casinoTurnCountRef.current >= leavingReq)
+      casinoTurnCountRef.current >= leavingReq
     const leavingEvents = {
       fanMeeting: monthMarksRef.current.fanMeeting || fanMeetingDueRef.current,
       casino: monthMarksRef.current.casino || leavingCasino,
@@ -3779,6 +3807,7 @@ export function InGame({
 
     const rankAfter = leagueRef.current.currentRank
     const rankChange = rankBefore - rankAfter
+    queueRankOneEndingNotice(rankBefore, rankAfter)
 
     const statementDraft = buildWeeklyStatement({
       week: {
@@ -3972,9 +4001,9 @@ export function InGame({
 
     const reqCasinoTurns = getCasinoRequiredTurns(stationGradeRef.current)
     const isUnlocked = isCasinoGradeUnlocked
-    const wasCasinoOpen = isUnlocked && (stationGradeRef.current === 'top' || casinoTurnCountRef.current >= reqCasinoTurns)
+    const wasCasinoOpen = isUnlocked && casinoTurnCountRef.current >= reqCasinoTurns
     const nextCasinoTurns = Math.min(reqCasinoTurns, casinoTurnCountRef.current + 1)
-    const willCasinoOpen = isUnlocked && (stationGradeRef.current === 'top' || nextCasinoTurns >= reqCasinoTurns)
+    const willCasinoOpen = isUnlocked && nextCasinoTurns >= reqCasinoTurns
 
     casinoTurnCountRef.current = nextCasinoTurns
     setCasinoTurnCount(nextCasinoTurns)
@@ -4240,6 +4269,7 @@ export function InGame({
   }
 
   function releaseMonthEndLock(openScout: boolean) {
+    if (tryOpenRankOneEndingNotice(openScout)) return
     pendingScoutAfterRankRef.current = false
     setStartBroadcastLocked(false)
     if (openScout && scoutSystemRef.current.activeOffer && ownedCreatorsRef.current.length === 0) {
@@ -4248,16 +4278,41 @@ export function InGame({
     }
   }
 
+  /** 일등기업에서 리그 1위에 처음 올랐을 때 Reiko 엔딩 안내를 예약 */
+  function queueRankOneEndingNotice(prevRank: number, nextRank: number) {
+    if (rankOneEndingNoticeSeenRef.current) return
+    if (stationGradeRef.current !== 'top') return
+    if (!(prevRank > 1 && nextRank === 1)) return
+    pendingRankOneEndingRef.current = true
+  }
+
+  function tryOpenRankOneEndingNotice(openScout: boolean): boolean {
+    if (rankOneEndingNoticeSeenRef.current) {
+      pendingRankOneEndingRef.current = false
+      return false
+    }
+    if (!pendingRankOneEndingRef.current && !pendingGameClearRef.current) return false
+    pendingRankOneEndingRef.current = false
+    pendingGameClearRef.current = false
+    pendingScoutAfterRankRef.current = openScout
+    setStartBroadcastLocked(true)
+    setShowGameClear(true)
+    return true
+  }
+
+  function confirmRankOneEndingNotice() {
+    rankOneEndingNoticeSeenRef.current = true
+    setRankOneEndingNoticeSeen(true)
+    const openScout = pendingScoutAfterRankRef.current
+    setShowGameClear(false)
+    flushAutoSave()
+    continueAfterMonthModals(openScout)
+  }
+
   /** 정산/심사 이후 월말 모달 체인을 이어간다 (게임 클리어 확인 포함) */
   function continueMonthEndFlow() {
     const openScout = pendingScoutAfterRankRef.current
-    const cleared = pendingGameClearRef.current
-    pendingGameClearRef.current = false
-    if (cleared) {
-      pendingScoutAfterRankRef.current = openScout
-      setShowGameClear(true)
-      return
-    }
+    if (tryOpenRankOneEndingNotice(openScout)) return
     continueAfterMonthModals(openScout)
   }
 
@@ -4271,9 +4326,13 @@ export function InGame({
       toRankCreators(ownedCreatorsRef.current),
       promo.nextGrade,
     )
+    const prevRank = leagueRef.current.currentRank
     leagueRef.current = nextLeague
     setLeague(nextLeague)
-    if (nextLeague.gameCleared) pendingGameClearRef.current = true
+    queueRankOneEndingNotice(prevRank, nextLeague.currentRank)
+    if (nextLeague.gameCleared && !rankOneEndingNoticeSeenRef.current) {
+      pendingGameClearRef.current = true
+    }
     flushAutoSave()
   }
 
@@ -4399,7 +4458,7 @@ export function InGame({
     const next = affectionPopupQueueRef.current.shift() ?? null
     affectionPopupRef.current = next
     setAffectionPopup(next)
-    if (!next) offerMidGameDate()
+    // 데이트 제안은 scheduleMidGameDate 타이머가 담당. 클릭 닫기로 즉시 이어지지 않게 한다.
   }
 
   function flushPendingSnsAffection() {
@@ -4574,7 +4633,7 @@ export function InGame({
       fanMeetingDueRef.current = true
       setFanMeetingDue(true)
       setStartBroadcastLocked(false)
-      setTab('dashboard')
+      // 호감도 알림 등을 닫을 때 현재 탭(크리에이터 등)을 유지한다. 팬미팅 버튼은 대시보드에 남아 있다.
       flushAutoSave()
       return
     }
@@ -4620,7 +4679,7 @@ export function InGame({
       setStartBroadcastLocked(true)
       return
     }
-    // 명세서 직후: 스태프 연봉 → 일정 알림 → 호감도 → 크리에이터 승급 안내 → 소셜
+    // 명세서 직후: 스태프 연봉 → 일정 알림 → 호감도 → 1위 엔딩 안내 → 크리에이터 승급 안내 → 소셜
     if (checkStaffSalaryRaise(openScout)) {
       return
     }
@@ -4641,6 +4700,7 @@ export function InGame({
         if (openMonthAffectionVn()) return
       }
     }
+    if (tryOpenRankOneEndingNotice(openScout)) return
     if (checkPromotionExamNotices(openScout)) {
       return
     }
@@ -5552,7 +5612,8 @@ export function InGame({
     setLiveWeekClock({ origin: dayStartedAtRef.current, dayMs: nextWeekMs })
   }, [speed, broadcastPhase])
 
-  // 진상 QTE·VN 오버레이 중 방송 시계 일시정지
+  // VN·카지노 등 전체 오버레이만 방송 시계 일시정지.
+  // 진상 QTE는 해당 슬롯만 영상/수익 정지 — 전역 pause에 넣으면 다른 방송까지 멈춤.
   const toxicQteActive = toxicQteQueue.length > 0
   const vnOverlayActive = Boolean(
     scoutEventState ||
@@ -5581,7 +5642,6 @@ export function InGame({
   const casinoSessionOpen =
     showCasinoLobby || showCasinoModal || Boolean(activeCasinoRoomId)
   const liveClockPaused =
-    toxicQteActive ||
     vnOverlayActive ||
     appSuspended ||
     casinoSessionOpen ||
@@ -5752,6 +5812,7 @@ export function InGame({
         turnEventNotice ||
         promotionFx ||
         showGameClear ||
+        showBankruptcyBailout ||
         vipOffer || vipVisit ||
         vipResult ||
         vipDepartPlay ||
@@ -5780,6 +5841,7 @@ export function InGame({
     turnEventNotice,
     promotionFx,
     showGameClear,
+    showBankruptcyBailout,
     vipOffer,
     vipVisit,
     vipResult,
@@ -6261,9 +6323,8 @@ export function InGame({
                     fanMeetingWait === 1,
                   casino:
                     stationTierRank(stationGrade) >= stationTierRank('sme') &&
-                    (stationGrade === 'top' ||
-                      (!isCasinoAvailable &&
-                        casinoTurnCount + 1 >= getCasinoRequiredTurns(stationGrade))),
+                    !isCasinoAvailable &&
+                    casinoTurnCount + 1 >= getCasinoRequiredTurns(stationGrade),
                 }}
               />
             </div>
@@ -6813,7 +6874,7 @@ export function InGame({
                     ? t('creator.staffScoutNewArrival')
                     : t('menu.creator')
                 : item.id === 'schedule' && alert
-                  ? '신규 방송 슬롯 해금 가능!'
+                  ? t('guide.slotUnlockAlert')
                   : undefined
 
             const isCasinoOpen = isCasino && isCasinoAvailable
@@ -6870,16 +6931,16 @@ export function InGame({
                   item.icon
                 )}
                 <span className={isCasinoOpen ? 'font-black tracking-wider text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.9)] scale-105' : ''}>
-                  {item.label}
+                  {t(item.labelKey)}
                 </span>
                 {isCasino && !isCasinoGradeUnlocked ? (
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-slate-900 border border-slate-700 text-slate-400 rounded-full shadow">
-                    중소기업 필요
+                    {t('guide.casinoNeedSme')}
                   </span>
                 ) : isCasino && isCasinoAvailable ? (
                   <span className="absolute -top-2.5 -right-2.5 px-2 py-0.5 text-[10px] font-black font-mono bg-gradient-to-r from-amber-400 via-pink-500 to-rose-600 text-white rounded-full animate-bounce shadow-[0_0_14px_rgba(244,63,94,0.95)] border border-amber-200 flex items-center gap-1 z-10">
                     <span className="h-1.5 w-1.5 rounded-full bg-yellow-200 animate-ping" />
-                    OPEN
+                    {t('casino.openBadge')}
                   </span>
                 ) : isCasino && !isCasinoAvailable ? (
                   <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-slate-900 border border-amber-400/60 text-amber-400 rounded-full shadow">
@@ -7061,11 +7122,8 @@ export function InGame({
             const openScout = pendingScoutAfterRankRef.current
             setRankSettlement(null)
             pendingStationReviewRef.current = false
-            if (cleared) {
-              pendingScoutAfterRankRef.current = openScout
-              setShowGameClear(true)
-              return
-            }
+            if (cleared) pendingGameClearRef.current = true
+            if (tryOpenRankOneEndingNotice(openScout)) return
             continueAfterMonthModals(openScout)
           }}
         />
@@ -7351,15 +7409,10 @@ export function InGame({
         />
       ) : null}
 
-      {showGameClear ? (
-        <GameClearModal
-          onConfirm={() => {
-            const openScout = pendingScoutAfterRankRef.current
-            setShowGameClear(false)
-            // 엔딩 VN은 캐릭터 상세의 고백하기로만 연다
-            continueAfterMonthModals(openScout)
-          }}
-        />
+      {showGameClear ? <RankOneEndingModal onConfirm={confirmRankOneEndingNotice} /> : null}
+
+      {showBankruptcyBailout ? (
+        <BankruptcyBailoutModal onConfirm={confirmBankruptcyBailout} />
       ) : null}
 
       {introEventPlay ? (
@@ -7747,7 +7800,7 @@ export function InGame({
           gains={snsAffectionSummary}
           onClose={() => {
             setSnsAffectionSummary(null)
-            offerMidGameDate()
+            // 데이트 제안은 scheduleMidGameDate가 담당
           }}
         />
       ) : null}

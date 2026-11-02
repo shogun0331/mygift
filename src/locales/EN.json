@@ -218,7 +218,8 @@
     "exitToMenu": "Exit"
   },
   "creator": {
-    "scout": "SCOUT",
+    "scout": "Scout",
+    "scoutCap": "Scout ({current}/{max})",
     "scoutDesc": "Scout a random creator you do not own yet.",
     "scoutHire": "HIRE",
     "scoutPass": "PASS",
@@ -350,7 +351,8 @@
     "skinUnlockTitle": "NEW SKIN UNLOCKED!",
     "skinUnlockBadge": "Reached {grade} Grade!",
     "skinUnlockName": "SKIN{skin} Costume Unlocked",
-    "skinUnlockDesc": "A new costume has been unlocked! You can now equip it in the Creator Profile."
+    "skinUnlockDesc": "A new costume has been unlocked! You can now equip it in the Creator Profile.",
+    "profileKicker": "CREATOR PROFILE"
   },
   "sns": {
     "action": "SNS",
@@ -477,14 +479,17 @@
     "managerEquipped": "Equipped",
     "managerHire": "Hire",
     "managerFx": {
-      "security": "Blocks toxic incidents while equipped",
-      "repair": "Blocks equipment failures while equipped",
-      "care": "Stamina drain ×0.85 · condition below 90 is restored to 90",
-      "production": "Revenue ×1.25 · viewers +2% of SNS subscribers"
+      "security": "Blocks toxic incidents",
+      "repair": "Prevents broadcast equipment failures",
+      "care": "Keeps condition steady and lowers stamina drain",
+      "production": "Boosts broadcast revenue"
     },
     "dragHint": "Drag to move slots · synced with dashboard",
     "gradeRequired": "Grade required",
-    "slotUnlockAvailable": "Slot Unlock Available!"
+    "slotUnlockAvailable": "Slot Unlock Available!",
+    "staffBayKicker": "STAFF BAY",
+    "placementBayKicker": "PLACEMENT BAY",
+    "slotsTitle": "Studio Slots"
   },
   "staff": {
     "kindSecurity": "Security",
@@ -494,20 +499,20 @@
     "genderMale": "Male",
     "genderFemale": "Female",
     "dutySecurityTitle": "Security",
-    "dutySecurityBonus": "Blocks toxic incidents while equipped",
-    "dutySecurityDesc": "Protects creators from threats that may occur during a broadcast and effectively blocks negative events.",
+    "dutySecurityBonus": "Blocks toxic incidents",
+    "dutySecurityDesc": "Blocks toxic incidents during broadcasts.",
     "dutyRepairTitle": "Repair",
-    "dutyRepairBonus": "Blocks equipment failures while equipped",
-    "dutyRepairDesc": "Prevents defects or wear in broadcast equipment to save on repair costs and provide a smooth live streaming environment.",
+    "dutyRepairBonus": "Prevents broadcast equipment failures",
+    "dutyRepairDesc": "Prevents equipment failures during broadcasts.",
     "dutyCareTitle": "Care",
-    "dutyCareBonus": "Stamina drain ×0.85. Condition below 90 is restored to 90.",
-    "dutyCareDesc": "Manages creators’ condition and fatigue, reducing stamina drain during live broadcasts to support sustained streaming.",
+    "dutyCareBonus": "Keeps condition steady and lowers stamina drain",
+    "dutyCareDesc": "Keeps condition steady and lowers stamina drain.",
     "dutyProductionTitle": "Production",
-    "dutyProductionBonus": "Revenue ×1.25, plus viewers equal to 2% of SNS subscribers.",
-    "dutyProductionDesc": "Participates in directing and planning live broadcasts to maximize viewership and donation revenue.",
+    "dutyProductionBonus": "Boosts broadcast revenue",
+    "dutyProductionDesc": "Boosts broadcast revenue.",
     "roleMenu": "Roles",
-    "roleCost": "Cost is the same for every role. At your current company grade, hiring costs {hire} once. The {salary} salary is paid monthly as {monthly}. Offers vary by about 5%.",
-    "roleCostHired": "This staff member's salary is {salary}, paid monthly as {monthly}. The hiring fee was paid once, based on the company grade at that time."
+    "roleCost": "Hire {hire} (once) · Salary {salary} ({monthly}/mo)",
+    "roleCostHired": "Salary {salary} · {monthly}/mo"
   },
   "settlement": {
     "title": "Monthly Settlement",
@@ -802,6 +807,12 @@
     "clearTitle": "GAME CLEAR",
     "clearBody": "Starlight Station has taken 1st place. Open a character with 100 affection and press Confess to see their ending. You can keep broadcasting.",
     "clearConfirm": "Continue",
+    "rankOneEndingKicker": "ENDING UNLOCKED",
+    "rankOneEndingTitle": "Congratulations — you're finally #1.",
+    "rankOneEndingLine1": "Your station took 1st place in the league. You did it.",
+    "rankOneEndingLine2": "Ending content is now available.",
+    "rankOneEndingLine3": "For creators at 100 affection, open their profile and use Confess to watch the ending.",
+    "rankOneEndingConfirm": "OK",
     "stockLabel": "Current viewers",
     "currentRankLabel": "Current rank",
     "currentMarker": "NOW",
@@ -1154,7 +1165,8 @@
       "highlowLogStart": "Practice round. Your assets do not change.",
       "highlowLogChoice": "You chose {choice}.",
       "highlowLogWin": "Practice win. It is not applied to your assets."
-    }
+    },
+    "openBadge": "OPEN"
   },
   "audit": {
     "deckModalTitle": "Promotion Exam Deck Setting",
@@ -1465,7 +1477,7 @@
     "relH": "Next: private scene. Completing it unlocks VIP. After 2 months (80%).",
     "relDone": "Dates complete. VIP offers every 2 months (75%). Accepting sets stamina to 0. Declining drops condition by grade (C 5–6, B 6–7, A 7–9, S 8–10).",
     "casinoAce": "Ace is the highest card, above King. If the dealer shows an Ace, HIGH cannot win. The opening stake is free and does not spend your funds.",
-    "casinoOpenCycle": "Opens every {turns} turns. A top company is always open. Otherwise, closing the casino resets the counter.",
+    "casinoOpenCycle": "Opens every {turns} turns. Closing the casino resets the counter.",
     "casinoNeedSme": "Small company required",
     "slotUnlockAlert": "A new broadcast slot can be unlocked",
     "auditDocPassed": "Stage 1 · documents passed",
@@ -1510,5 +1522,13 @@
     "hlLogDrop": "This round’s reward [{name}]. Collect it if you win.",
     "hlPeek": "Peek: {card}",
     "hlResolving": "Checking the result"
+  },
+  "economy": {
+    "bankruptcyKicker": "BANKRUPT",
+    "bankruptcyTitle": "…Again?",
+    "bankruptcyLine1": "Pathetic. A station head with a negative balance?",
+    "bankruptcyLine2": "So I have to come bail you out again? What a joke.",
+    "bankruptcyLine3": "Just this once. I'm putting in {amount}. Don't make me regret it.",
+    "bankruptcyConfirm": "Accept funds"
   }
 }

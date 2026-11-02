@@ -247,15 +247,18 @@
     "managerEquipped": "裝備中",
     "managerHire": "僱傭",
     "managerFx": {
-      "security": "配置後阻止鬧事事件",
-      "repair": "配置後阻止設備故障",
-      "care": "體力消耗 ×0.85 · 狀態低於90時恢復到90",
-      "production": "收益 ×1.25 · 觀眾獎勵為SNS訂閱的2%"
+      "security": "阻止鬧事事件",
+      "repair": "防止直播設備故障",
+      "care": "維持狀態並減少體力消耗",
+      "production": "提升直播收益"
     },
-    "staffBayTitle": "職員位",
+    "staffBayTitle": "職員欄位",
     "dragHint": "拖拽移動格位 · 與儀表盤聯動",
     "gradeRequired": "需要等級",
-    "slotUnlockAvailable": "可解鎖欄位！"
+    "slotUnlockAvailable": "可解鎖欄位！",
+    "staffBayKicker": "STAFF BAY",
+    "placementBayKicker": "PLACEMENT BAY",
+    "slotsTitle": "演播室欄位"
   },
   "staff": {
     "kindSecurity": "安保",
@@ -265,20 +268,20 @@
     "genderMale": "男",
     "genderFemale": "女",
     "dutySecurityTitle": "安保 (Security)",
-    "dutySecurityBonus": "配置後阻止鬧事",
-    "dutySecurityDesc": "保護創作者免受直播中可能出現的威脅（如惡意評論），並有效攔截負面事件。",
+    "dutySecurityBonus": "阻止鬧事事件",
+    "dutySecurityDesc": "阻止直播中的鬧事事件。",
     "dutyRepairTitle": "修理 (Repair)",
-    "dutyRepairBonus": "配置後阻止設備故障",
-    "dutyRepairDesc": "預防直播設備的缺陷和磨損，節省維修費用，提供流暢的直播環境。",
+    "dutyRepairBonus": "防止直播設備故障",
+    "dutyRepairDesc": "防止直播中的設備故障。",
     "dutyCareTitle": "護理 (Care)",
-    "dutyCareBonus": "體力消耗 ×0.85。狀態低於90時恢復到90。",
-    "dutyCareDesc": "集中管理創作者的狀態與疲勞，減少直播中的體力消耗，支持持續直播。",
+    "dutyCareBonus": "維持狀態並減少體力消耗",
+    "dutyCareDesc": "維持狀態並減少體力消耗。",
     "dutyProductionTitle": "製作 (Production)",
-    "dutyProductionBonus": "收益 ×1.25，另加SNS訂閱人數2%的觀眾。",
-    "dutyProductionDesc": "參與直播的編導與企劃，最大化觀眾數量與打賞收益。",
+    "dutyProductionBonus": "提升直播收益",
+    "dutyProductionDesc": "提升直播收益。",
     "roleMenu": "職責",
-    "roleCost": "費用與職責無關，各職責相同。以目前公司等級，聘用費為{hire}，只付一次。年薪{salary}按每月{monthly}發放。每次提案大約有5%浮動。",
-    "roleCostHired": "這名職員的年薪是{salary}，每月發放{monthly}。聘用費已在僱用時按當時的公司等級支付一次。"
+    "roleCost": "聘用費 {hire}（一次）· 年薪 {salary}（月 {monthly}）",
+    "roleCostHired": "年薪 {salary} · 月 {monthly}"
   },
   "condition": {
     "title": "狀態",
@@ -290,6 +293,7 @@
   },
   "creator": {
     "scout": "星探",
+    "scoutCap": "星探 ({current}/{max}名)",
     "scoutDesc": "挖角1名未簽約的創作者。",
     "scoutHire": "簽約",
     "scoutPass": "跳過",
@@ -421,7 +425,8 @@
     "skinUnlockTitle": "NEW SKIN UNLOCKED!",
     "skinUnlockBadge": "達成 {grade} 級別！",
     "skinUnlockName": "SKIN{skin} 專屬服裝解鎖",
-    "skinUnlockDesc": "全新專屬服裝已解鎖！可在創作者個人資料中立即換裝。"
+    "skinUnlockDesc": "全新專屬服裝已解鎖！可在創作者個人資料中立即換裝。",
+    "profileKicker": "CREATOR PROFILE"
   },
   "sns": {
     "action": "SNS",
@@ -823,7 +828,13 @@
       "creators": "{grade}+級 {n}人",
       "none": "無條件",
       "snsSubscribers": "SNS粉絲 {n}"
-    }
+    },
+    "rankOneEndingKicker": "ENDING UNLOCKED",
+    "rankOneEndingTitle": "恭喜，終於拿到第1名了。",
+    "rankOneEndingLine1": "你們的電視台登上了聯盟第1。辛苦了。",
+    "rankOneEndingLine2": "現在可以欣賞結局內容了。",
+    "rankOneEndingLine3": "好感度達到100的角色，可在詳情裡用「告白」觀看結局。",
+    "rankOneEndingConfirm": "確認"
   },
   "common": {
     "search": "搜索",
@@ -960,7 +971,11 @@
     "previewSlot": "▶ 播放此頁",
     "simulatorBadge": "短片 VN 模擬器",
     "simulatorHint": "點擊畫面進入下一段。",
-    "close": "關閉 ✕"
+    "close": "關閉 ✕",
+    "addFromVnNodes": "從VN節點新增",
+    "vnNodePickerTitle": "選擇短片用VN節點",
+    "vnNodePickerHint": "請從已連結VN中選擇舞台(背景+角色)節點",
+    "changeVnNode": "選擇/更換VN節點"
   },
   "proposal": {
     "kicker": "特別告白活動",
@@ -1150,7 +1165,8 @@
       "highlowLogStart": "練習局。資產不會變化。",
       "highlowLogChoice": "你選擇了{choice}。",
       "highlowLogWin": "練習獲勝。不會記入資產。"
-    }
+    },
+    "openBadge": "OPEN"
   },
   "audit": {
     "deckModalTitle": "晉升審查卡組設置",
@@ -1461,7 +1477,7 @@
     "relH": "下一步：私會。完成後解鎖VIP。2個月後80%。",
     "relDone": "約會已完成。VIP每2個月出現，機率75%。接受後體力變為0。拒絕會按等級降低狀態 (C 5~6, B 6~7, A 7~9, S 8~10)。",
     "casinoAce": "A是比K更高的最大牌。莊家是A時，HIGH無法獲勝。開局注免費，不會扣除資產。",
-    "casinoOpenCycle": "每 {turns} 回合開放。頂級公司始終開放。其他等級關閉賭場後計數會重置。",
+    "casinoOpenCycle": "每 {turns} 回合開放。關閉賭場後計數會重置。",
     "casinoNeedSme": "需要中小企業",
     "slotUnlockAlert": "可以解鎖新的直播欄位",
     "auditDocPassed": "第1階段 · 文件通過",
@@ -1506,5 +1522,13 @@
     "hlLogDrop": "本局獎勵 [{name}]。獲勝後領取。",
     "hlPeek": "看牌：{card}",
     "hlResolving": "正在確認結果"
+  },
+  "economy": {
+    "bankruptcyKicker": "BANKRUPT",
+    "bankruptcyTitle": "……又來？",
+    "bankruptcyLine1": "真丟臉。電視台社長帳戶居然是負數。",
+    "bankruptcyLine2": "所以又得我來收拾？真讓人嘆氣。",
+    "bankruptcyLine3": "就這一次。給你打入{amount}。別再讓我看到這場面。",
+    "bankruptcyConfirm": "領取支援金"
   }
 }

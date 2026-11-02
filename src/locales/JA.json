@@ -247,15 +247,18 @@
     "managerEquipped": "装備中",
     "managerHire": "雇用",
     "managerFx": {
-      "security": "配置中は迷惑トラブルを防ぎます",
-      "repair": "配置中は機材故障を防ぎます",
-      "care": "スタミナ消費 ×0.85 · コンディション90未満は90まで回復",
-      "production": "収益 ×1.25 · SNS登録者の2%が視聴者ボーナス"
+      "security": "迷惑トラブルを防ぎます",
+      "repair": "配信機材の故障を防ぎます",
+      "care": "コンディションを保ち、スタミナ消費を抑えます",
+      "production": "配信収益を上げます"
     },
-    "staffBayTitle": "スタッフ枠",
+    "staffBayTitle": "スタッフスロット",
     "dragHint": "ドラッグでスロット移動 · ダッシュボード連動",
     "gradeRequired": "ランク必要",
-    "slotUnlockAvailable": "スロット開放可能！"
+    "slotUnlockAvailable": "スロット開放可能！",
+    "staffBayKicker": "STAFF BAY",
+    "placementBayKicker": "PLACEMENT BAY",
+    "slotsTitle": "スタジオスロット"
   },
   "staff": {
     "kindSecurity": "警備",
@@ -265,20 +268,20 @@
     "genderMale": "男",
     "genderFemale": "女",
     "dutySecurityTitle": "警備 (Security)",
-    "dutySecurityBonus": "配置中は迷惑トラブルを遮断",
-    "dutySecurityDesc": "悪質コメントなど放送中に起こりうる脅威からクリエイターを守り、放送のネガティブイベントを効果的にブロックします。",
+    "dutySecurityBonus": "迷惑トラブルを防ぎます",
+    "dutySecurityDesc": "配信中の迷惑トラブルを防ぎます。",
     "dutyRepairTitle": "修理 (Repair)",
-    "dutyRepairBonus": "配置中は機材故障を遮断",
-    "dutyRepairDesc": "放送機材の欠陥や摩耗を未然に防ぎ、修理費を抑え、スムーズなライブ配信環境を提供します。",
+    "dutyRepairBonus": "配信機材の故障を防ぎます",
+    "dutyRepairDesc": "配信中の機材故障を防ぎます。",
     "dutyCareTitle": "ケア (Care)",
-    "dutyCareBonus": "スタミナ消費 ×0.85。90未満のコンディションは90まで回復。",
-    "dutyCareDesc": "クリエイターのコンディションと疲労を集中的に管理し、ライブ中のスタミナ消費を抑えて継続放送を支援します。",
+    "dutyCareBonus": "コンディションを保ち、スタミナ消費を抑えます",
+    "dutyCareDesc": "コンディションを保ち、スタミナ消費を抑えます。",
     "dutyProductionTitle": "制作 (Production)",
-    "dutyProductionBonus": "収益 ×1.25。SNS登録者の2%分の視聴者ボーナス。",
-    "dutyProductionDesc": "ライブ放送の演出と構成企画に参加し、視聴者数の拡大と投げ銭収益を大幅に最大化します。",
+    "dutyProductionBonus": "配信収益を上げます",
+    "dutyProductionDesc": "配信収益を上げます。",
     "roleMenu": "役割",
-    "roleCost": "費用は役割に関係なく同じです。今の会社ランクでは契約金が{hire}で、一度だけ支払います。年俸{salary}は毎月{monthly}ずつ支払います。提示額は約5%前後します。",
-    "roleCostHired": "このスタッフの年俸は{salary}で、毎月{monthly}ずつ支払います。契約金は雇用時の会社ランクで一度だけ支払いました。"
+    "roleCost": "契約金 {hire}（1回）・年俸 {salary}（月 {monthly}）",
+    "roleCostHired": "年俸 {salary}・月 {monthly}"
   },
   "condition": {
     "title": "コンディション",
@@ -290,6 +293,7 @@
   },
   "creator": {
     "scout": "スカウト",
+    "scoutCap": "スカウト ({current}/{max}人)",
     "scoutDesc": "未所属のクリエイターの1人をスカウトします。",
     "scoutHire": "入社",
     "scoutPass": "パス",
@@ -421,7 +425,8 @@
     "skinUnlockTitle": "NEW SKIN UNLOCKED!",
     "skinUnlockBadge": "{grade}ランク達成！",
     "skinUnlockName": "SKIN{skin} 衣装アンロック",
-    "skinUnlockDesc": "新しいスキン衣装が解放されました！クリエイタープロフィールで今すぐ着用できます。"
+    "skinUnlockDesc": "新しいスキン衣装が解放されました！クリエイタープロフィールで今すぐ着用できます。",
+    "profileKicker": "CREATOR PROFILE"
   },
   "sns": {
     "action": "SNS",
@@ -825,7 +830,13 @@
       "creators": "{grade}+ランク {n}人",
       "none": "条件なし",
       "snsSubscribers": "SNSフォロワー {n}"
-    }
+    },
+    "rankOneEndingKicker": "ENDING UNLOCKED",
+    "rankOneEndingTitle": "おめでとう。ついに1位よ。",
+    "rankOneEndingLine1": "放送局がリーグ1位になったわ。本当にお疲れさま。",
+    "rankOneEndingLine2": "これでエンディングコンテンツを見られるようになったわ。",
+    "rankOneEndingLine3": "好感度100のキャラは詳細画面の「告白する」からエンディングを見られるわよ。",
+    "rankOneEndingConfirm": "確認"
   },
   "common": {
     "search": "検索",
@@ -1117,7 +1128,8 @@
       "highlowLogStart": "練習ラウンドです。資産は変わりません。",
       "highlowLogChoice": "{choice}を選びました。",
       "highlowLogWin": "練習の勝利です。資産には反映されません。"
-    }
+    },
+    "openBadge": "OPEN"
   },
   "audit": {
     "deckModalTitle": "昇格審査デッキ設定",
@@ -1439,7 +1451,11 @@
     "previewSlot": "▶ このタブを再生",
     "simulatorBadge": "ショートVNシミュレーター",
     "simulatorHint": "映像エリアをクリックすると次のビートへ進みます。",
-    "close": "閉じる ✕"
+    "close": "閉じる ✕",
+    "addFromVnNodes": "VNノードから追加",
+    "vnNodePickerTitle": "ショート用VNノード選択",
+    "vnNodePickerHint": "リンク済みVNのステージ(背景+キャラ)ノードを選んでください",
+    "changeVnNode": "VNノードを選択/変更"
   },
   "guide": {
     "statSexy": "視聴者流入。高いほど視聴者が集まりやすく、離脱が減り、SNS登録者が配信視聴者になりやすくなります。",
@@ -1463,7 +1479,7 @@
     "relH": "次: 密会。終わるとVIPが開きます。2か月後に80%。",
     "relDone": "デート完了。VIP提案は2か月ごとに75%。受けるとスタミナが0になります。断ると等級に応じてコンディションが下がります (C 5〜6, B 6〜7, A 7〜9, S 8〜10)。",
     "casinoAce": "エースはキングより高い最上のカードです。ディーラーがエースなら HIGH は勝てません。最初の掛け金は無料で資産は減りません。",
-    "casinoOpenCycle": "{turns} ターンごとに開きます。トップ企業は常時開放。それ以外はカジノを閉じるとカウントがリセットされます。",
+    "casinoOpenCycle": "{turns} ターンごとに開きます。カジノを閉じるとカウントがリセットされます。",
     "casinoNeedSme": "中小企業が必要",
     "slotUnlockAlert": "新しい配信スロットを解放できます",
     "auditDocPassed": "第1段階 · 書類通過",
@@ -1508,5 +1524,13 @@
     "hlLogDrop": "今回の報酬 [{name}]。勝利で受け取り。",
     "hlPeek": "透視: {card}",
     "hlResolving": "結果を確認中"
+  },
+  "economy": {
+    "bankruptcyKicker": "BANKRUPT",
+    "bankruptcyTitle": "…また？",
+    "bankruptcyLine1": "情けないわね。放送局の社長が口座マイナスだなんて。",
+    "bankruptcyLine2": "また私が助けに来なきゃいけないの？本当、ため息しか出ない。",
+    "bankruptcyLine3": "今度だけよ。{amount}入れてあげる。次はないわ。",
+    "bankruptcyConfirm": "支援金を受け取る"
   }
 }

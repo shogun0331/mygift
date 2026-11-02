@@ -5,6 +5,7 @@ import {
   getAchievementDesc,
   registerCharacterAchievements,
   loadUnlockedAchievements,
+  isAchievementIconPath,
   type AchievementCategory,
 } from '../game/achievements'
 import { fetchPublicJson } from '../game/publicJson'
@@ -207,10 +208,24 @@ export function AchievementsPanel({ onClose }: AchievementsPanelProps) {
                         alt=""
                         className={`h-full w-full object-cover ${!isUnlocked ? 'grayscale blur-[0.5px]' : ''}`}
                       />
-                      <span className="absolute bottom-0 right-0 bg-slate-950/85 border-t border-l border-white/15 rounded-tl px-1 text-[10px] leading-tight">
-                        {isUnlocked ? item.icon : '🔒'}
+                      <span className="absolute bottom-0 right-0 flex h-5 w-5 items-center justify-center overflow-hidden rounded-tl bg-slate-950/85 border-t border-l border-white/15">
+                        {isUnlocked ? (
+                          isAchievementIconPath(item.icon) ? (
+                            <img src={item.icon} alt="" className="h-full w-full object-contain" />
+                          ) : (
+                            <span className="text-[10px] leading-none">{item.icon}</span>
+                          )
+                        ) : (
+                          <span className="text-[10px] leading-none">🔒</span>
+                        )}
                       </span>
                     </>
+                  ) : isUnlocked && isAchievementIconPath(item.icon) ? (
+                    <img
+                      src={item.icon}
+                      alt=""
+                      className="h-full w-full object-contain p-0.5"
+                    />
                   ) : (
                     <span className="text-2xl">{isUnlocked ? item.icon : '🔒'}</span>
                   )}

@@ -110,6 +110,8 @@ export type GameSave = {
   slotTutorialSeen?: boolean
   /** 하이로우 연습 튜토리얼을 한 번 봤는지 */
   highLowTutorialSeen?: boolean
+  /** 리그 1위 달성 시 Reiko 엔딩/고백 안내를 한 번 봤는지 */
+  rankOneEndingNoticeSeen?: boolean
   /** 호감도 데이트 대기열. 한 턴에 맨 앞 한 명만 재생한다 */
   affectionVnQueue?: string[]
   /** 첫 튜토리얼 완료 여부 */

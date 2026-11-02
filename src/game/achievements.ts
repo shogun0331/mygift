@@ -35,14 +35,33 @@ export interface UnlockedAchievementRecord {
   unlockedAt: number // timestamp
 }
 
+const ICON_BASE = '/ui/achievements'
+const achIcon = (name: string) => `${ICON_BASE}/${name}.png`
+
+/** True when `icon` is an image path (not emoji). */
+export function isAchievementIconPath(icon: string): boolean {
+  return icon.startsWith('/') || icon.startsWith('http') || /\.(png|webp|jpg|jpeg|svg)$/i.test(icon)
+}
+
+const CREATOR_ACTION_ART: Record<CharacterAchievementAction, string> = {
+  date1: achIcon('ach_creator_date1'),
+  date2: achIcon('ach_creator_date2'),
+  h: achIcon('ach_creator_h'),
+  s_rank: achIcon('ach_creator_srank'),
+  sns: achIcon('ach_creator_sns'),
+  sns_heat3: achIcon('ach_creator_sns_heat'),
+  vacation: achIcon('ach_creator_vacation'),
+  first_broadcast: achIcon('ach_creator_first'),
+}
+
 export const BASE_ACHIEVEMENTS: AchievementDef[] = [
-  // 🏢 방송국 등급 승급
+  // 방송국 등급 승급
   {
     id: 'station_grade_tiny',
     category: 'station',
     titleKey: 'achievements.stationTinyTitle',
     descKey: 'achievements.stationTinyDesc',
-    icon: '🌱',
+    icon: achIcon('ach_station_tiny'),
     rarity: 'bronze',
   },
   {
@@ -50,7 +69,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'station',
     titleKey: 'achievements.stationSmeTitle',
     descKey: 'achievements.stationSmeDesc',
-    icon: '🏢',
+    icon: achIcon('ach_station_sme'),
     rarity: 'silver',
   },
   {
@@ -58,7 +77,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'station',
     titleKey: 'achievements.stationMidTitle',
     descKey: 'achievements.stationMidDesc',
-    icon: '🏙️',
+    icon: achIcon('ach_station_mid'),
     rarity: 'gold',
   },
   {
@@ -66,7 +85,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'station',
     titleKey: 'achievements.stationLargeTitle',
     descKey: 'achievements.stationLargeDesc',
-    icon: '💎',
+    icon: achIcon('ach_station_large'),
     rarity: 'gold',
   },
   {
@@ -74,17 +93,17 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'station',
     titleKey: 'achievements.stationTopTitle',
     descKey: 'achievements.stationTopDesc',
-    icon: '👑',
+    icon: achIcon('ach_station_top'),
     rarity: 'platinum',
   },
 
-  // 🎙️ 방송 횟수 / 턴수
+  // 방송 횟수 / 턴수
   {
     id: 'broadcast_turns_1',
     category: 'broadcast',
     titleKey: 'achievements.broadcast1Title',
     descKey: 'achievements.broadcast1Desc',
-    icon: '🎙️',
+    icon: achIcon('ach_broadcast_1'),
     rarity: 'bronze',
   },
   {
@@ -92,7 +111,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'broadcast',
     titleKey: 'achievements.broadcast10Title',
     descKey: 'achievements.broadcast10Desc',
-    icon: '📻',
+    icon: achIcon('ach_broadcast_10'),
     rarity: 'bronze',
   },
   {
@@ -100,7 +119,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'broadcast',
     titleKey: 'achievements.broadcast20Title',
     descKey: 'achievements.broadcast20Desc',
-    icon: '📺',
+    icon: achIcon('ach_broadcast_20'),
     rarity: 'silver',
   },
   {
@@ -108,7 +127,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'broadcast',
     titleKey: 'achievements.broadcast30Title',
     descKey: 'achievements.broadcast30Desc',
-    icon: '📡',
+    icon: achIcon('ach_broadcast_30'),
     rarity: 'silver',
   },
   {
@@ -116,7 +135,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'broadcast',
     titleKey: 'achievements.broadcast40Title',
     descKey: 'achievements.broadcast40Desc',
-    icon: '🎬',
+    icon: achIcon('ach_broadcast_40'),
     rarity: 'gold',
   },
   {
@@ -124,17 +143,17 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'broadcast',
     titleKey: 'achievements.broadcast50Title',
     descKey: 'achievements.broadcast50Desc',
-    icon: '🌟',
+    icon: achIcon('ach_broadcast_50'),
     rarity: 'platinum',
   },
 
-  // 🎰 카지노 (슬롯 & 하이로우)
+  // 카지노 (슬롯 & 하이로우)
   {
     id: 'casino_slot_777',
     category: 'casino',
     titleKey: 'achievements.casinoSlot777Title',
     descKey: 'achievements.casinoSlot777Desc',
-    icon: '🎰',
+    icon: achIcon('ach_casino_777'),
     rarity: 'platinum',
   },
   {
@@ -142,7 +161,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'casino',
     titleKey: 'achievements.casinoHighLowLossTitle',
     descKey: 'achievements.casinoHighLowLossDesc',
-    icon: '🃏',
+    icon: achIcon('ach_casino_loss'),
     rarity: 'bronze',
   },
   {
@@ -150,7 +169,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'casino',
     titleKey: 'achievements.casinoHighLow3Title',
     descKey: 'achievements.casinoHighLow3Desc',
-    icon: '🔥',
+    icon: achIcon('ach_casino_streak_3'),
     rarity: 'bronze',
   },
   {
@@ -158,7 +177,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'casino',
     titleKey: 'achievements.casinoHighLow6Title',
     descKey: 'achievements.casinoHighLow6Desc',
-    icon: '⚡',
+    icon: achIcon('ach_casino_streak_6'),
     rarity: 'silver',
   },
   {
@@ -166,7 +185,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'casino',
     titleKey: 'achievements.casinoHighLow9Title',
     descKey: 'achievements.casinoHighLow9Desc',
-    icon: '💥',
+    icon: achIcon('ach_casino_streak_9'),
     rarity: 'gold',
   },
   {
@@ -174,7 +193,7 @@ export const BASE_ACHIEVEMENTS: AchievementDef[] = [
     category: 'casino',
     titleKey: 'achievements.casinoHighLow12Title',
     descKey: 'achievements.casinoHighLow12Desc',
-    icon: '🐉',
+    icon: achIcon('ach_casino_streak_12'),
     rarity: 'platinum',
   },
 ]
@@ -331,7 +350,7 @@ export function createCharacterAchievements(char: {
       category: 'creator',
       titleKey: 'achievements.charDate1Title',
       descKey: 'achievements.charDate1Desc',
-      icon: '☕',
+      icon: CREATOR_ACTION_ART.date1,
       rarity: 'bronze',
       characterId: char.id,
       characterAction: 'date1',
@@ -344,7 +363,7 @@ export function createCharacterAchievements(char: {
       category: 'creator',
       titleKey: 'achievements.charDate2Title',
       descKey: 'achievements.charDate2Desc',
-      icon: '🍷',
+      icon: CREATOR_ACTION_ART.date2,
       rarity: 'silver',
       characterId: char.id,
       characterAction: 'date2',
@@ -357,7 +376,7 @@ export function createCharacterAchievements(char: {
       category: 'creator',
       titleKey: 'achievements.charHTitle',
       descKey: 'achievements.charHDesc',
-      icon: '💋',
+      icon: CREATOR_ACTION_ART.h,
       rarity: 'gold',
       characterId: char.id,
       characterAction: 'h',
@@ -370,7 +389,7 @@ export function createCharacterAchievements(char: {
       category: 'creator',
       titleKey: 'achievements.charSRankTitle',
       descKey: 'achievements.charSRankDesc',
-      icon: '⭐',
+      icon: CREATOR_ACTION_ART.s_rank,
       rarity: 'platinum',
       characterId: char.id,
       characterAction: 's_rank',
@@ -383,7 +402,7 @@ export function createCharacterAchievements(char: {
       category: 'creator',
       titleKey: 'achievements.charSnsTitle',
       descKey: 'achievements.charSnsDesc',
-      icon: '📱',
+      icon: CREATOR_ACTION_ART.sns,
       rarity: 'bronze',
       characterId: char.id,
       characterAction: 'sns',
@@ -396,7 +415,7 @@ export function createCharacterAchievements(char: {
       category: 'creator',
       titleKey: 'achievements.charSnsHeat3Title',
       descKey: 'achievements.charSnsHeat3Desc',
-      icon: '🔥',
+      icon: CREATOR_ACTION_ART.sns_heat3,
       rarity: 'gold',
       characterId: char.id,
       characterAction: 'sns_heat3',
@@ -409,7 +428,7 @@ export function createCharacterAchievements(char: {
       category: 'creator',
       titleKey: 'achievements.charVacationTitle',
       descKey: 'achievements.charVacationDesc',
-      icon: '🌴',
+      icon: CREATOR_ACTION_ART.vacation,
       rarity: 'silver',
       characterId: char.id,
       characterAction: 'vacation',
@@ -422,7 +441,7 @@ export function createCharacterAchievements(char: {
       category: 'creator',
       titleKey: 'achievements.charFirstBroadcastTitle',
       descKey: 'achievements.charFirstBroadcastDesc',
-      icon: '🎙️',
+      icon: CREATOR_ACTION_ART.first_broadcast,
       rarity: 'bronze',
       characterId: char.id,
       characterAction: 'first_broadcast',

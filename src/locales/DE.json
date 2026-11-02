@@ -247,15 +247,18 @@
     "managerEquipped": "Eingesetzt",
     "managerHire": "Einstellen",
     "managerFx": {
-      "security": "Ausgerüstet: blockiert Störfälle",
-      "repair": "Ausgerüstet: blockiert Geräteausfälle",
-      "care": "Ausdauerverbrauch ×0.85 · Zustand unter 90 wird auf 90 gehoben",
-      "production": "Einnahmen ×1.25 · Zuschauer +2% der SNS-Abonnenten"
+      "security": "Blockiert Störfälle",
+      "repair": "Verhindert Geräteausfälle beim Broadcast",
+      "care": "Hält den Zustand und senkt den Ausdauerverbrauch",
+      "production": "Steigert die Broadcast-Einnahmen"
     },
-    "staffBayTitle": "Personal-Plätze",
+    "staffBayTitle": "Personal-Slots",
     "dragHint": "Ziehen zum Verschieben · mit Dashboard verknüpft",
     "gradeRequired": "Rang erforderlich",
-    "slotUnlockAvailable": "Slot-Freischaltung verfügbar!"
+    "slotUnlockAvailable": "Slot-Freischaltung verfügbar!",
+    "staffBayKicker": "STAFF BAY",
+    "placementBayKicker": "PLACEMENT BAY",
+    "slotsTitle": "Studio-Slots"
   },
   "staff": {
     "kindSecurity": "Sicherheit",
@@ -265,20 +268,20 @@
     "genderMale": "M",
     "genderFemale": "W",
     "dutySecurityTitle": "Sicherheit (Security)",
-    "dutySecurityBonus": "Blockiert Störfälle, solange ausgerüstet",
-    "dutySecurityDesc": "Schützt Creators vor Bedrohungen während der Sendung (Hate usw.) und blockt negative Ereignisse.",
+    "dutySecurityBonus": "Blockiert Störfälle",
+    "dutySecurityDesc": "Blockiert Störfälle während des Broadcasts.",
     "dutyRepairTitle": "Reparatur (Repair)",
-    "dutyRepairBonus": "Blockiert Geräteausfälle, solange ausgerüstet",
-    "dutyRepairDesc": "Verhindert Defekte und Abnutzung der Ausrüstung, spart Reparaturkosten und sichert flüssige Streams.",
+    "dutyRepairBonus": "Verhindert Geräteausfälle beim Broadcast",
+    "dutyRepairDesc": "Verhindert Geräteausfälle während des Broadcasts.",
     "dutyCareTitle": "Pflege (Care)",
-    "dutyCareBonus": "Ausdauerverbrauch ×0.85. Zustand unter 90 wird auf 90 gehoben.",
-    "dutyCareDesc": "Managt Zustand und Müdigkeit der Creators, senkt den Ausdauerverbrauch und unterstützt lange Sendungen.",
+    "dutyCareBonus": "Hält den Zustand und senkt den Ausdauerverbrauch",
+    "dutyCareDesc": "Hält den Zustand und senkt den Ausdauerverbrauch.",
     "dutyProductionTitle": "Produktion (Production)",
-    "dutyProductionBonus": "Einnahmen ×1.25 plus Zuschauer in Höhe von 2% der SNS-Abonnenten.",
-    "dutyProductionDesc": "Beteiligt sich an Regie und Planung der Sendungen, um Zuschauer und Spenden zu maximieren.",
+    "dutyProductionBonus": "Steigert die Broadcast-Einnahmen",
+    "dutyProductionDesc": "Steigert die Broadcast-Einnahmen.",
     "roleMenu": "Rollen",
-    "roleCost": "Die Kosten sind für jede Rolle gleich. Auf dem aktuellen Firmenrang kostet die Einstellung einmalig {hire}. Das Gehalt von {salary} wird monatlich als {monthly} gezahlt. Angebote schwanken um etwa 5%.",
-    "roleCostHired": "Das Gehalt dieser Person beträgt {salary} und wird monatlich als {monthly} gezahlt. Die Einstellungsgebühr wurde einmalig nach dem damaligen Firmenrang gezahlt."
+    "roleCost": "Einstellung {hire} (einmal) · Gehalt {salary} ({monthly}/Mon.)",
+    "roleCostHired": "Gehalt {salary} · {monthly}/Mon."
   },
   "condition": {
     "title": "Zustand",
@@ -290,6 +293,7 @@
   },
   "creator": {
     "scout": "Scout",
+    "scoutCap": "Scout ({current}/{max})",
     "scoutDesc": "Scoutet einen nicht verpflichteten Creator.",
     "scoutHire": "Verpflichten",
     "scoutPass": "Weiter",
@@ -421,7 +425,8 @@
     "skinUnlockTitle": "NEW SKIN UNLOCKED!",
     "skinUnlockBadge": "{grade}-Rang erreicht!",
     "skinUnlockName": "SKIN{skin} Kostüm freigeschaltet",
-    "skinUnlockDesc": "Ein neues Kostüm wurde freigeschaltet! Rüste es jetzt im Profil aus."
+    "skinUnlockDesc": "Ein neues Kostüm wurde freigeschaltet! Rüste es jetzt im Profil aus.",
+    "profileKicker": "CREATOR PROFILE"
   },
   "sns": {
     "action": "SNS",
@@ -823,7 +828,13 @@
       "creators": "Rang {grade}+ ×{n}",
       "none": "Keine Bedingungen",
       "snsSubscribers": "SNS-Abonnenten {n}"
-    }
+    },
+    "rankOneEndingKicker": "ENDING UNLOCKED",
+    "rankOneEndingTitle": "Glückwunsch — endlich Platz 1.",
+    "rankOneEndingLine1": "Eure Station ist Ligaspitze. Gut gemacht.",
+    "rankOneEndingLine2": "Ending-Inhalte sind jetzt freigeschaltet.",
+    "rankOneEndingLine3": "Bei Charakteren mit Zuneigung 100 könnt ihr im Profil „Gestehen“ nutzen, um das Ending zu sehen.",
+    "rankOneEndingConfirm": "OK"
   },
   "common": {
     "search": "Suchen",
@@ -960,7 +971,11 @@
     "previewSlot": "▶ Tab abspielen",
     "simulatorBadge": "Shorts-VN-Simulator",
     "simulatorHint": "Klick auf das Medium für weiter.",
-    "close": "Schließen ✕"
+    "close": "Schließen ✕",
+    "addFromVnNodes": "Aus VN-Knoten hinzufügen",
+    "vnNodePickerTitle": "VN-Knoten für Short wählen",
+    "vnNodePickerHint": "Wähle einen Bühnenknoten (Hintergrund+Charakter) aus dem verknüpften VN",
+    "changeVnNode": "VN-Knoten wählen/ändern"
   },
   "proposal": {
     "kicker": "Besonderes Geständnis",
@@ -1150,7 +1165,8 @@
       "highlowLogStart": "Übungsrunde. Dein Vermögen ändert sich nicht.",
       "highlowLogChoice": "Du hast {choice} gewählt.",
       "highlowLogWin": "Übungsgewinn. Er wird nicht auf dein Vermögen angewendet."
-    }
+    },
+    "openBadge": "OPEN"
   },
   "audit": {
     "deckModalTitle": "Aufstiegsprüfung Deck-Einstellung",
@@ -1461,7 +1477,7 @@
     "relH": "Als Nächstes: private Szene. Danach ist VIP frei. Nach 2 Monaten (80%).",
     "relDone": "Dates abgeschlossen. VIP alle 2 Monate (75%). Annehmen setzt die Ausdauer auf 0. Ablehnen senkt den Zustand nach Rang (C 5–6, B 6–7, A 7–9, S 8–10).",
     "casinoAce": "Das Ass ist die höchste Karte, über dem König. Zeigt der Dealer ein Ass, kann HIGH nicht gewinnen. Der Ersteinsatz ist gratis und kostet kein Geld.",
-    "casinoOpenCycle": "Öffnet alle {turns} Züge. Ein Top-Unternehmen ist immer offen. Sonst setzt Schließen den Zähler zurück.",
+    "casinoOpenCycle": "Öffnet alle {turns} Züge. Schließen des Kasinos setzt den Zähler zurück.",
     "casinoNeedSme": "Kleines Unternehmen nötig",
     "slotUnlockAlert": "Ein neuer Sendeplatz kann geöffnet werden",
     "auditDocPassed": "Stufe 1 · Unterlagen bestanden",
@@ -1506,5 +1522,13 @@
     "hlLogDrop": "Belohnung dieser Runde [{name}]. Bei Sieg eingesammelt.",
     "hlPeek": "Blick: {card}",
     "hlResolving": "Ergebnis wird geprüft"
+  },
+  "economy": {
+    "bankruptcyKicker": "BANKRUPT",
+    "bankruptcyTitle": "…Schon wieder?",
+    "bankruptcyLine1": "Erbärmlich. Ein Stationschef mit Minus auf dem Konto?",
+    "bankruptcyLine2": "Also muss ich dich wieder retten? Was für ein Witz.",
+    "bankruptcyLine3": "Nur dieses eine Mal. Ich gebe {amount}. Enttäusche mich nicht noch einmal.",
+    "bankruptcyConfirm": "Hilfe annehmen"
   }
 }

@@ -247,15 +247,18 @@
     "managerEquipped": "Asignado",
     "managerHire": "Contratar",
     "managerFx": {
-      "security": "Equipado: bloquea incidentes tóxicos",
-      "repair": "Equipado: bloquea fallos del equipo",
-      "care": "Gasto de energía ×0.85 · si la condición baja de 90, vuelve a 90",
-      "production": "Ingresos ×1.25 · espectadores +2% de suscriptores SNS"
+      "security": "Bloquea incidentes tóxicos",
+      "repair": "Evita fallos del equipo de emisión",
+      "care": "Mantiene la condición y reduce el gasto de energía",
+      "production": "Aumenta los ingresos del directo"
     },
     "staffBayTitle": "Ranuras de personal",
     "dragHint": "Arrastra para mover · sincronizado con el panel",
     "gradeRequired": "Se requiere grado",
-    "slotUnlockAvailable": "¡Desbloqueo de casilla disponible!"
+    "slotUnlockAvailable": "¡Desbloqueo de casilla disponible!",
+    "staffBayKicker": "STAFF BAY",
+    "placementBayKicker": "PLACEMENT BAY",
+    "slotsTitle": "Ranuras de estudio"
   },
   "staff": {
     "kindSecurity": "Seguridad",
@@ -265,20 +268,20 @@
     "genderMale": "Hombre",
     "genderFemale": "Mujer",
     "dutySecurityTitle": "Seguridad",
-    "dutySecurityBonus": "Bloquea incidentes tóxicos al equiparlo",
-    "dutySecurityDesc": "Protege a los creadores de amenazas durante la emisión (hate, etc.) y bloquea eventos negativos.",
-    "dutyRepairTitle": "Reparación",
-    "dutyRepairBonus": "Bloquea fallos del equipo al equiparlo",
-    "dutyRepairDesc": "Previene defectos y desgaste del equipo, ahorrando costes y garantizando un streaming fluido.",
+    "dutySecurityBonus": "Bloquea incidentes tóxicos",
+    "dutySecurityDesc": "Bloquea incidentes tóxicos durante el directo.",
+    "dutyRepairTitle": "Reparación (Repair)",
+    "dutyRepairBonus": "Evita fallos del equipo de emisión",
+    "dutyRepairDesc": "Evita fallos del equipo durante el directo.",
     "dutyCareTitle": "Cuidado",
-    "dutyCareBonus": "Gasto de energía ×0.85. Si la condición baja de 90, vuelve a 90.",
-    "dutyCareDesc": "Gestiona el estado y la fatiga de los creadores, reduciendo el consumo de energía durante las emisiones.",
+    "dutyCareBonus": "Mantiene la condición y reduce el gasto de energía",
+    "dutyCareDesc": "Mantiene la condición y reduce el gasto de energía.",
     "dutyProductionTitle": "Producción",
-    "dutyProductionBonus": "Ingresos ×1.25 y espectadores iguales al 2% de suscriptores SNS.",
-    "dutyProductionDesc": "Participa en la dirección y planificación de las emisiones para maximizar espectadores y donaciones.",
+    "dutyProductionBonus": "Aumenta los ingresos del directo",
+    "dutyProductionDesc": "Aumenta los ingresos del directo.",
     "roleMenu": "Roles",
-    "roleCost": "El coste es el mismo para todos los roles. Con el grado actual de la empresa, la contratación cuesta {hire} una sola vez. El salario de {salary} se paga cada mes como {monthly}. Las ofertas varían cerca de un 5%.",
-    "roleCostHired": "El salario de este empleado es {salary} y se paga cada mes como {monthly}. La cuota de contratación se pagó una vez, según el grado de la empresa en ese momento."
+    "roleCost": "Contratación {hire} (una vez) · Salario {salary} ({monthly}/mes)",
+    "roleCostHired": "Salario {salary} · {monthly}/mes"
   },
   "condition": {
     "title": "Estado",
@@ -290,6 +293,7 @@
   },
   "creator": {
     "scout": "Cazatalentos",
+    "scoutCap": "Cazatalentos ({current}/{max})",
     "scoutDesc": "Recluta a un creador no contratado.",
     "scoutHire": "Fichar",
     "scoutPass": "Pasar",
@@ -421,7 +425,8 @@
     "skinUnlockTitle": "NEW SKIN UNLOCKED!",
     "skinUnlockBadge": "¡Rango {grade} alcanzado!",
     "skinUnlockName": "Traje SKIN{skin} desbloqueado",
-    "skinUnlockDesc": "¡Se ha desbloqueado un nuevo traje! Puedes equiparlo en el perfil de la creadora."
+    "skinUnlockDesc": "¡Se ha desbloqueado un nuevo traje! Puedes equiparlo en el perfil de la creadora.",
+    "profileKicker": "CREATOR PROFILE"
   },
   "sns": {
     "action": "SNS",
@@ -823,7 +828,13 @@
       "creators": "Rango {grade}+ ×{n}",
       "none": "Sin condiciones",
       "snsSubscribers": "Seguidores en SNS {n}"
-    }
+    },
+    "rankOneEndingKicker": "ENDING UNLOCKED",
+    "rankOneEndingTitle": "Felicidades: por fin sois nº 1.",
+    "rankOneEndingLine1": "Vuestra emisora alcanzó el 1.er puesto. Buen trabajo.",
+    "rankOneEndingLine2": "Ya podéis ver el contenido de final.",
+    "rankOneEndingLine3": "Con cariño 100, abrid el perfil del creador y usad Confesar para ver el final.",
+    "rankOneEndingConfirm": "OK"
   },
   "common": {
     "search": "Buscar",
@@ -960,7 +971,11 @@
     "previewSlot": "▶ Reproducir pestaña",
     "simulatorBadge": "Simulador Shorts VN",
     "simulatorHint": "Clic en el media para avanzar.",
-    "close": "Cerrar ✕"
+    "close": "Cerrar ✕",
+    "addFromVnNodes": "Añadir desde nodos VN",
+    "vnNodePickerTitle": "Elegir nodo VN para short",
+    "vnNodePickerHint": "Elige un nodo de escenario (fondo+personaje) del VN vinculado",
+    "changeVnNode": "Elegir/cambiar nodo VN"
   },
   "proposal": {
     "kicker": "Evento especial de confesión",
@@ -1150,7 +1165,8 @@
       "highlowLogStart": "Ronda de práctica. Tus activos no cambian.",
       "highlowLogChoice": "Elegiste {choice}.",
       "highlowLogWin": "Victoria de práctica. No se aplica a tus activos."
-    }
+    },
+    "openBadge": "OPEN"
   },
   "audit": {
     "deckModalTitle": "Configuración de Mazo de Examen de Ascenso",
@@ -1461,7 +1477,7 @@
     "relH": "Siguiente: escena privada. Al completarla se abre VIP. A los 2 meses (80%).",
     "relDone": "Citas completas. VIP cada 2 meses (75%). Aceptar pone la energía a 0. Rechazar baja la condición según el grado (C 5–6, B 6–7, A 7–9, S 8–10).",
     "casinoAce": "El as es la carta más alta, por encima del rey. Si el crupier muestra un as, HIGH no puede ganar. La apuesta inicial es gratis y no gasta fondos.",
-    "casinoOpenCycle": "Abre cada {turns} turnos. Una empresa top está siempre abierta. Si no, cerrar el casino reinicia el contador.",
+    "casinoOpenCycle": "Abre cada {turns} turnos. Cerrar el casino reinicia el contador.",
     "casinoNeedSme": "Hace falta una empresa pequeña",
     "slotUnlockAlert": "Se puede abrir un nuevo espacio de emisión",
     "auditDocPassed": "Fase 1 · documentos aprobados",
@@ -1506,5 +1522,13 @@
     "hlLogDrop": "Premio de esta ronda [{name}]. Se cobra si ganas.",
     "hlPeek": "Vista: {card}",
     "hlResolving": "Comprobando el resultado"
+  },
+  "economy": {
+    "bankruptcyKicker": "BANKRUPT",
+    "bankruptcyTitle": "…¿Otra vez?",
+    "bankruptcyLine1": "Patético. ¿Un jefe de emisora con saldo negativo?",
+    "bankruptcyLine2": "¿Así que tengo que venir a salvarte otra vez? Qué vergüenza.",
+    "bankruptcyLine3": "Solo esta vez. Te meto {amount}. No me hagas arrepentirme.",
+    "bankruptcyConfirm": "Aceptar fondos"
   }
 }
