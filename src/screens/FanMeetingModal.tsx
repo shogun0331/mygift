@@ -7,6 +7,7 @@ import {
   advanceFixedLine,
   createExamMeeting,
   createFanMeeting,
+  examLineCleared,
   submitFanCard,
   rollDemand,
   type FanCardState,
@@ -40,7 +41,13 @@ type FanMeetingModalProps = {
   fixedLine?: boolean
   title?: string
   showSpeech?: boolean
-  onFinish: (result: { earned: number; satisfiedCount: number; lastRewardText: string; staminaById: Record<string, number> }) => void
+  onFinish: (result: {
+    earned: number
+    satisfiedCount: number
+    lastRewardText: string
+    staminaById: Record<string, number>
+    lineSize: number
+  }) => void
   onAbort?: () => void
   onPayout?: (amount: number) => void
   practice?: boolean
@@ -402,7 +409,7 @@ export function FanMeetingModal({
     if (finishedRef.current) return
     finishedRef.current = true
     if (practice) {
-      onFinish({ earned: 0, satisfiedCount: 0, lastRewardText: '', staminaById: {} })
+      onFinish({ earned: 0, satisfiedCount: 0, lastRewardText: '', staminaById: {}, lineSize: 0 })
       return
     }
     onFinish({
@@ -410,6 +417,7 @@ export function FanMeetingModal({
       satisfiedCount: current.satisfiedCount,
       lastRewardText: current.lastRewardText,
       staminaById: staminaMap(current),
+      lineSize: current.lineSize,
     })
   }
 
@@ -429,7 +437,7 @@ export function FanMeetingModal({
   useEffect(() => {
     if (meeting || finishedRef.current) return
     finishedRef.current = true
-    onFinish({ earned: 0, satisfiedCount: 0, lastRewardText: '', staminaById: {} })
+    onFinish({ earned: 0, satisfiedCount: 0, lastRewardText: '', staminaById: {}, lineSize: 0 })
   }, [meeting, onFinish])
 
   function later(ms: number, action: () => void) {
@@ -447,7 +455,7 @@ export function FanMeetingModal({
     if (next.over) {
       releaseBusy()
       if (fixedLine) {
-        setVerdict(next.satisfiedCount >= 4 ? 'pass' : 'fail')
+        setVerdict(examLineCleared(next.satisfiedCount, next.lineSize) ? 'pass' : 'fail')
         later(1500, () => finish(next))
         return
       }
@@ -670,11 +678,6 @@ export function FanMeetingModal({
                 </p>
               </div>
             )}
-            {onAbort ? (
-              <button type="button" onClick={onAbort} className="text-xs font-bold text-slate-400 hover:text-white">
-                닫기 ✕
-              </button>
-            ) : null}
           </div>
         </div>
 

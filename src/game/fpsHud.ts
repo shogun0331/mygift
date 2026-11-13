@@ -7,10 +7,11 @@ const listeners = new Set<Listener>()
 function loadShowFps(): boolean {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw == null) return true
+    // 기본값 OFF — 설정에서 켠 경우만 표시
+    if (raw == null) return false
     return raw === '1' || raw === 'true'
   } catch {
-    return true
+    return false
   }
 }
 

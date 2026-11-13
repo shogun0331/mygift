@@ -360,6 +360,20 @@ html.theme-on-air .game-kicker {
   transform: translateY(-1px);
 }
 
+.game-hud-menu-btn {
+  width: auto;
+  gap: 0.3rem;
+  padding: 0 0.55rem;
+}
+
+.game-hud-menu-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .game-hud-bar {
   display: flex;
   align-items: center;

@@ -209,14 +209,9 @@ import {
   type ScoutSystemState,
 } from '../game/scout'
 import {
-  getCasinoHighLowMinGrade,
-  getCasinoSlotMinGrade,
-  getHighLowEntryFeeForGrade,
-  getSlotEntryFeeForGrade,
   meetsSlotUnlockByRank,
   meetsSlotUnlockGrade,
   slotUnlockPriceOf,
-  STATION_TIER_LABEL,
 } from '../game/stationGradeConfig'
 
 import {
@@ -291,7 +286,7 @@ import {
 import { FanMeetingModal } from './FanMeetingModal'
 import { MonthEventStrip, emptyMonthEvents, type MonthEventFlags } from './MonthEventStrip'
 import { HUD_UI_ASSETS } from '../ui/hudAssets'
-import type { FanCardState } from '../game/fanMeeting'
+import { examLineCleared, type FanCardState } from '../game/fanMeeting'
 import {
   createSocialSpawnState,
   dateArcAfter,
@@ -484,21 +479,22 @@ function formatAssets(value: number) {
   return formatMoney(value)
 }
 
-function IconBack() {
+function IconMainMenu() {
   return (
     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
-        d="M14.5 6.5 9 12l5.5 5.5"
+        d="M4.5 11.2 12 4.8l7.5 6.4"
         stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M9 12h10"
+        d="M7.2 10.4V19h9.6v-8.6"
         stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )
@@ -6138,9 +6134,10 @@ export function InGame({
               onClick={onBack}
               title={t('hud.back')}
               aria-label={t('hud.back')}
-              className="game-hud-icon-btn"
+              className="game-hud-icon-btn game-hud-menu-btn"
             >
-              <IconBack />
+              <IconMainMenu />
+              <span className="game-hud-menu-label">{t('hud.back')}</span>
             </button>
             {import.meta.env.DEV && onOpenEditor ? (
               <button
@@ -6896,10 +6893,6 @@ export function InGame({
                 disabled={isDisabledCasino}
                 onClick={() => {
                   if (isCasino) {
-                    if (!isCasinoGradeUnlocked) {
-                      window.alert(t('alert.casinoGradeRequired'))
-                      return
-                    }
                     // 월말 모달 체인(호감도→연봉 등) 중에는 카지노 진입 금지
                     if (startBroadcastLocked) return
                     if (isCasinoAvailable) {
@@ -6977,27 +6970,6 @@ export function InGame({
             onTutorialSlot={() => openCasinoGame('slot', true)}
             onTutorialHighLow={() => openCasinoGame('highlow', true)}
             onExit={closeCasinoSession}
-            onBlocked={(reason, game) => {
-              const minGrade =
-                game === 'slot'
-                  ? getCasinoSlotMinGrade(stationGradeConfig)
-                  : getCasinoHighLowMinGrade(stationGradeConfig)
-              const gradeKey = companyTierLabelKey(minGrade)
-              const gradeLabelRaw = t(gradeKey)
-              const gradeLabel =
-                gradeLabelRaw === gradeKey ? STATION_TIER_LABEL[minGrade] : gradeLabelRaw
-              if (reason === 'grade') {
-                window.alert(t('casino.alertGradeRequired', { grade: gradeLabel }))
-                return
-              }
-              const feeValue =
-                game === 'slot'
-                  ? getSlotEntryFeeForGrade(stationGradeConfig, stationGrade)
-                  : getHighLowEntryFeeForGrade(stationGradeConfig, stationGrade)
-              window.alert(
-                t('casino.alertNotEnoughAssets', { fee: feeValue.toLocaleString() }),
-              )
-            }}
           />
         </div>
       )}
@@ -7232,7 +7204,7 @@ export function InGame({
           }}
           onFinish={(result) => {
             setExamResult({
-              success: result.satisfiedCount >= 4,
+              success: examLineCleared(result.satisfiedCount, result.lineSize),
               count: result.satisfiedCount,
               staminaById: result.staminaById,
             })

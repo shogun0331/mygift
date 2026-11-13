@@ -19,6 +19,7 @@ import {
   type HighLowRoomConfig,
 } from '../highlow/highLowConfig'
 import { loadHighLowConfig, loadHighLowConfigFromDisk } from '../highlow/highLowStore'
+import { UiDialogBtn, UiDialogShell } from '../../ui/UiDialogShell'
 import './casinoLobby.css'
 
 export type CasinoLobbyGame = 'slot' | 'highlow'
@@ -80,6 +81,8 @@ export function CasinoLobby({
 }: CasinoLobbyProps) {
   const { t, locale } = useTranslation()
   const [opening, setOpening] = useState(Boolean(playOpening))
+  /** window.alert 대신 인게임 안내 — 전체화면 blur→최소화 방지 */
+  const [notice, setNotice] = useState<string | null>(null)
 
   const [dealerConfig, setDealerConfig] = useState<HighLowRoomConfig>(() =>
     pickDealerConfig(loadHighLowConfig()),
@@ -129,10 +132,13 @@ export function CasinoLobby({
     const fee = game === 'slot' ? slotFee : highLowFee
     const assetsOk = assets >= fee
     if (!gradeOk) {
+      const minGrade = game === 'slot' ? slotMin : highLowMin
+      setNotice(t('casino.alertGradeRequired', { grade: gradeName(minGrade) }))
       onBlocked?.('grade', game)
       return
     }
     if (!assetsOk) {
+      setNotice(t('casino.alertNotEnoughAssets', { fee: fee.toLocaleString() }))
       onBlocked?.('assets', game)
       return
     }
@@ -302,6 +308,29 @@ export function CasinoLobby({
             {t('casino.openingTitle')}
           </p>
         </div>
+      ) : null}
+
+      {notice ? (
+        <UiDialogShell
+          tone="amber"
+          size="sm"
+          zClassName="z-[60]"
+          labelledBy="casino-lobby-notice-title"
+          onBackdropClick={() => setNotice(null)}
+        >
+          <h2
+            id="casino-lobby-notice-title"
+            className="text-center text-lg font-black tracking-tight text-slate-100"
+          >
+            {t('casino.lobbyTitle')}
+          </h2>
+          <p className="mt-3 text-center text-sm leading-relaxed text-slate-300">{notice}</p>
+          <div className="mt-5 flex justify-center">
+            <UiDialogBtn onClick={() => setNotice(null)} className="min-w-[140px]">
+              {t('casino.noticeOk')}
+            </UiDialogBtn>
+          </div>
+        </UiDialogShell>
       ) : null}
     </div>
   )

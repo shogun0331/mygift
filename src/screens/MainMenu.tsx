@@ -214,10 +214,10 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
 
   return (
     <main className="game-stage relative flex h-full w-full items-stretch justify-between overflow-hidden px-[clamp(1.5rem,4vw,5rem)] py-8 select-none">
-      {/* Background Animated Ambient Lights */}
+      {/* Background Ambient Lights */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-[20%] -left-[10%] h-[70vw] w-[70vw] rounded-full bg-gradient-to-br from-indigo-600/15 via-purple-600/10 to-transparent blur-[120px] animate-pulse duration-1000" />
-        <div className="absolute -bottom-[20%] -right-[10%] h-[60vw] w-[60vw] rounded-full bg-gradient-to-tl from-pink-600/15 via-amber-600/10 to-transparent blur-[140px] animate-pulse duration-700" />
+        <div className="absolute -top-[20%] -left-[10%] h-[70vw] w-[70vw] rounded-full bg-gradient-to-br from-indigo-600/15 via-purple-600/10 to-transparent blur-[120px]" />
+        <div className="absolute -bottom-[20%] -right-[10%] h-[60vw] w-[60vw] rounded-full bg-gradient-to-tl from-pink-600/15 via-amber-600/10 to-transparent blur-[140px]" />
       </div>
 
       {/* Atmospheric Background Scene Slideshow (Scout / Date 1 / Date 2) */}
@@ -270,7 +270,7 @@ export function MainMenu({ onNewGame, onLoadGame, onOpenEditor }: MainMenuProps)
         {/* Title Header */}
         <header className="flex flex-col items-end overflow-visible pt-1 text-right">
           {/* Live Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-pink-500/40 bg-pink-950/40 backdrop-blur-md mb-2 shadow-[0_0_15px_rgba(236,72,153,0.3)]">
+          <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-pink-500/40 bg-pink-950/40 px-3 py-1 shadow-[0_0_15px_rgba(236,72,153,0.3)] backdrop-blur-md">
             <span className="h-2 w-2 rounded-full bg-pink-500 animate-ping" />
             <span className="text-[10px] font-black tracking-widest text-pink-300 uppercase">
               {t('menu.kicker') || "TONIGHT'S BROADCAST"}

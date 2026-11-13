@@ -1,12 +1,13 @@
-const SHELL_BASE = '/ui/shell'
-const SHELL_VER = 'v3'
+import { uiAsset } from '../game/mediaUrl'
+
+const VER = 'v3'
 
 export const SHELL_UI_ASSETS = {
-  dialogFrame: `${SHELL_BASE}/ui_dialog_frame.webp?${SHELL_VER}`,
-  dialogBtn: `${SHELL_BASE}/ui_dialog_btn_primary.webp?${SHELL_VER}`,
-  dialogBtnPressed: `${SHELL_BASE}/ui_dialog_btn_primary_pressed.webp?${SHELL_VER}`,
-  liveChatFrame: `${SHELL_BASE}/dash_live_chat_frame.webp?${SHELL_VER}`,
-  vnDialogueStrip: `${SHELL_BASE}/ui_vn_dialogue_strip.webp?${SHELL_VER}`,
-  phoneBezel: `${SHELL_BASE}/ui_phone_bezel.webp?${SHELL_VER}`,
-  toastFrame: `${SHELL_BASE}/ui_toast_frame.webp?${SHELL_VER}`,
+  dialogFrame: uiAsset('ui/shell/ui_dialog_frame.webp', VER),
+  dialogBtn: uiAsset('ui/shell/ui_dialog_btn_primary.webp', VER),
+  dialogBtnPressed: uiAsset('ui/shell/ui_dialog_btn_primary_pressed.webp', VER),
+  liveChatFrame: uiAsset('ui/shell/dash_live_chat_frame.webp', VER),
+  vnDialogueStrip: uiAsset('ui/shell/ui_vn_dialogue_strip.webp', VER),
+  phoneBezel: uiAsset('ui/shell/ui_phone_bezel.webp', VER),
+  toastFrame: uiAsset('ui/shell/ui_toast_frame.webp', VER),
 } as const

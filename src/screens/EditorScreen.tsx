@@ -8,6 +8,7 @@ import { CharacterSnsEditor } from './CharacterSnsEditor'
 import { CharacterSpecialVacationEditor } from './CharacterSpecialVacationEditor'
 import { CharacterAuditEditorModal } from './CharacterAuditEditorModal'
 import { AuditSimulatorDeckModal } from './AuditSimulatorDeckModal'
+import { examLineCleared } from '../game/fanMeeting'
 import { ExamMeetingModal } from './FanMeetingModal'
 import { FanMeetingStatement } from './FanMeetingStatement'
 import { ShortsVnEditorPanel } from './ShortsVnEditorPanel'
@@ -750,7 +751,7 @@ export function EditorScreen({
           creators={simulatorCreators as never[]}
           config={stationGradeConfig}
           onFinish={(result) => {
-            setAuditSimResult({ success: result.satisfiedCount >= 4, count: result.satisfiedCount })
+            setAuditSimResult({ success: examLineCleared(result.satisfiedCount, result.lineSize), count: result.satisfiedCount })
           }}
           onAbort={() => {
             setIsAuditSimulatorActive(false)

@@ -8,7 +8,9 @@ import { initUiClickSounds } from './game/uiSfx'
 import { initDisplayMode } from './game/displayMode'
 import { initAppLifecycle } from './game/appLifecycle'
 import { seedReviewBuildProgress } from './game/reviewSeed'
+import { applyPackagedUiCssVars } from './game/mediaUrl'
 
+applyPackagedUiCssVars()
 seedReviewBuildProgress()
 if (import.meta.env.DEV && import.meta.env.VITE_REVIEW_BUILD !== 'true') {
   const { seedDevSRankTopSave } = await import('./game/devSaveSeed')

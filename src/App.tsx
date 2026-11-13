@@ -107,8 +107,10 @@ import {
   emptyOpeningVideoConfig,
   normalizeOpeningVideoConfig,
   openingVideoFileNames,
+  openingVideoMediaPath,
   type OpeningVideoConfig,
 } from './game/openingVideos'
+import { preloadOpeningVideo } from './game/openingVideoPreload'
 
 const STAFF_STORAGE_KEY = 'broadcast-staff-json'
 
@@ -867,6 +869,8 @@ export default function App() {
   const [showLoadGame, setShowLoadGame] = useState(false)
   /** 부팅 시 QWAPPY 로고 스플래시 (메인 메뉴 직전 1회) */
   const [bootSplashDone, setBootSplashDone] = useState(false)
+  /** 로고 동안 오프닝 영상 워밍업 완료 여부 — 완료 후 메뉴 진입 */
+  const [bootAssetsReady, setBootAssetsReady] = useState(false)
   const deviceLockOkRef = useRef(!window.electronAPI?.getDeviceLockStatus)
 
   useEffect(() => {
@@ -988,7 +992,8 @@ export default function App() {
 
     loadOpeningVideoConfig()
       .then((config) => {
-        setOpeningConfig(normalizeOpeningVideoConfig(config))
+        const normalized = normalizeOpeningVideoConfig(config)
+        setOpeningConfig(normalized)
         setIsOpeningConfigLoaded(true)
       })
       .catch((err) => {
@@ -1010,6 +1015,28 @@ export default function App() {
         setIsStaffLoaded(true)
       })
   }, [])
+
+  // 로고 스플래시와 동시에 오프닝 영상 프리로드 — 준비되면 메뉴로
+  useEffect(() => {
+    if (bootSplashDone) return
+    if (!isOpeningConfigLoaded) return
+
+    let cancelled = false
+    const fileName = openingVideoFileNames(openingConfig)[0]
+    if (!fileName) {
+      setBootAssetsReady(true)
+      return
+    }
+
+    const url = resolveMediaSrc(openingVideoMediaPath(fileName))
+    void preloadOpeningVideo(url, 12000).finally(() => {
+      if (!cancelled) setBootAssetsReady(true)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [bootSplashDone, isOpeningConfigLoaded, openingConfig.videos])
 
   useEffect(() => {
     if (!isCommonEventLinksLoaded) return
@@ -1785,7 +1812,11 @@ export default function App() {
         />
       </>
     ) : !bootSplashDone ? (
-      <CompanyLogoSplash onDone={() => setBootSplashDone(true)} />
+      <CompanyLogoSplash
+        onDone={() => setBootSplashDone(true)}
+        durationMs={3000}
+        assetsReady={bootAssetsReady}
+      />
     ) : (
     <>
       <MainMenu

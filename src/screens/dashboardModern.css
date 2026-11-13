@@ -1,12 +1,9 @@
 /* Dashboard control-room polish — assets + glass/neon/bars */
 
 .game-stage {
-  --dash-btn-start-live: url('/ui/dashboard/dash_btn_start_live.webp?v1');
-  --dash-btn-start-live-pressed: url('/ui/dashboard/dash_btn_start_live_pressed.webp?v1');
-  --dash-btn-promo-audit: url('/ui/dashboard/dash_btn_promo_audit.webp?v1');
-  --dash-hud-quest-frame: url('/ui/dashboard/dash_hud_quest_frame.webp?v1');
+  /* URL은 applyPackagedUiCssVars()가 documentElement에 주입 (Electron file:// 호환) */
   background:
-    url('/ui/dashboard/dash_stage_bg.webp?v1') center / cover no-repeat,
+    var(--dash-stage-bg, none) center / cover no-repeat,
     #05080f;
 }
 

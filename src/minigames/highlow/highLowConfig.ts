@@ -1,16 +1,17 @@
+import { uiAsset } from '../../game/mediaUrl'
+
 export type HighLowRoomId = 'local' | 'star' | 'legend'
 
-const HL_ASSET_BASE = '/casino/highlow'
 const HL_ASSET_VER = 'v1'
-/** Slot monitor bezel reused for High-Low CCTV */
-const HL_CCTV_BEZEL = `/casino/slot/cctv_monitor_bezel.webp?${HL_ASSET_VER}`
+const hlAsset = (name: string) => uiAsset(`casino/highlow/${name}`, HL_ASSET_VER)
 
 export const HIGH_LOW_UI_ASSETS = {
-  tableFelt: `${HL_ASSET_BASE}/highlow_table_felt.webp?${HL_ASSET_VER}`,
-  cardBack: `${HL_ASSET_BASE}/highlow_card_back.webp?${HL_ASSET_VER}`,
-  cardFront: `${HL_ASSET_BASE}/highlow_card_front.webp?${HL_ASSET_VER}`,
-  betPlinth: `${HL_ASSET_BASE}/highlow_bet_plinth.webp?${HL_ASSET_VER}`,
-  cctvBezel: HL_CCTV_BEZEL,
+  tableFelt: hlAsset('highlow_table_felt.webp'),
+  cardBack: hlAsset('highlow_card_back.webp'),
+  cardFront: hlAsset('highlow_card_front.webp'),
+  betPlinth: hlAsset('highlow_bet_plinth.webp'),
+  /** Slot monitor bezel reused for High-Low CCTV */
+  cctvBezel: uiAsset('casino/slot/cctv_monitor_bezel.webp', HL_ASSET_VER),
 } as const
 
 export type Suit = 'spades' | 'hearts' | 'diams' | 'clubs'

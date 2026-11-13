@@ -271,37 +271,37 @@ export const AUDIT_DOC_PASS_NOTICE: Record<
 > = {
   ko: (tierName) => ({
     title: `${tierName} 승급 서류 통과`,
-    body: `1차 자격 심사를 성공적으로 통과하였습니다.\n출전할 4명의 크리에이터 덱을 설정하고 심사에 도전하세요.`,
+    body: `1차 자격 심사를 성공적으로 통과하였습니다.\n1명부터 출전할 수 있습니다. 최대 4명까지 덱을 짜고 심사에 도전하세요.`,
     button: `출전 덱 세팅 및 심사 시작`,
   }),
   en: (tierName) => ({
     title: `${tierName} Document Review Passed`,
-    body: `Stage 1 qualification review completed.\nConfigure your 4 creator deck cards to begin the audit.`,
+    body: `Stage 1 qualification review completed.\nOne creator is enough. Field up to 4 and start the exam.`,
     button: `Set Up Deck & Start Audit`,
   }),
   ja: (tierName) => ({
     title: `${tierName} 昇格書類審査 通過`,
-    body: `第1次資格審査を通過しました。\n出陣する4人のクリエイターデッキを設定して挑戦してください。`,
+    body: `第1次資格審査を通過しました。\n1人から出場できます。最大4人までデッキを組んで挑戦してください。`,
     button: `デッキ設定＆審査開始`,
   }),
   zh: (tierName) => ({
     title: `${tierName} 材料审核通过`,
-    body: `第一轮资格审核已顺利完成。\n请配置出战 Stack 的4位创作者卡牌以开始审查。`,
+    body: `第一轮资格审核已顺利完成。\n1人即可出战，最多配置4位创作者后开始审查。`,
     button: `配置卡组并开始`,
   }),
   es: (tierName) => ({
     title: `Documentos Aprobados para ${tierName}`,
-    body: `Revisión de calificación de Etapa 1 completada.\nConfigure sus 4 cartas de creadores para comenzar.`,
+    body: `Revisión de calificación de Etapa 1 completada.\nCon 1 creador basta. Forma un equipo de hasta 4 y empieza.`,
     button: `Configurar Mazo y Comenzar`,
   }),
   th: (tierName) => ({
     title: `ผ่านการพิจารณาเอกสาร ${tierName}`,
-    body: `ผ่านการพิจารณาคุณสมบัติขั้นแรกเรียบร้อยแล้ว\nโปรดจัดเด็คครีเอเตอร์ 4 คนเพื่อเริ่มการประเมิน`,
+    body: `ผ่านการพิจารณาคุณสมบัติขั้นแรกเรียบร้อยแล้ว\nมีครีเอเตอร์ 1 คนก็ออกสนามได้ สูงสุด 4 คน`,
     button: `ตั้งค่าเด็ค & เริ่มการประเมิน`,
   }),
   vi: (tierName) => ({
     title: `Thông Qua Hồ Sơ Thăng Hạng ${tierName}`,
-    body: `Đã hoàn thành xét duyệt hồ sơ giai đoạn 1.\nVui lòng sắp xếp 4 thẻ creator để bắt đầu đánh giá.`,
+    body: `Đã hoàn thành xét duyệt hồ sơ giai đoạn 1.\nCó 1 creator là đủ. Tối đa 4 người trước khi bắt đầu.`,
     button: `Cấu Hình Thẻ & Bắt Đầu`,
   }),
 }

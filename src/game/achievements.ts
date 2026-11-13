@@ -35,12 +35,16 @@ export interface UnlockedAchievementRecord {
   unlockedAt: number // timestamp
 }
 
-const ICON_BASE = '/ui/achievements'
-const achIcon = (name: string) => `${ICON_BASE}/${name}.png`
+const achIcon = (name: string) => `media://ui/achievements/${name}.png`
 
 /** True when `icon` is an image path (not emoji). */
 export function isAchievementIconPath(icon: string): boolean {
-  return icon.startsWith('/') || icon.startsWith('http') || /\.(png|webp|jpg|jpeg|svg)$/i.test(icon)
+  return (
+    icon.startsWith('/') ||
+    icon.startsWith('media://') ||
+    icon.startsWith('http') ||
+    /\.(png|webp|jpg|jpeg|svg)$/i.test(icon)
+  )
 }
 
 const CREATOR_ACTION_ART: Record<CharacterAchievementAction, string> = {

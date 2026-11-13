@@ -99,7 +99,7 @@
 .ui-dialog-btn {
   border: 0 !important;
   background-color: transparent !important;
-  background-image: url('/ui/shell/ui_dialog_btn_primary.webp?v3');
+  background-image: var(--ui-dialog-btn, none);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
@@ -116,7 +116,7 @@
 }
 
 .ui-dialog-btn:active:not(:disabled) {
-  background-image: url('/ui/shell/ui_dialog_btn_primary_pressed.webp?v3');
+  background-image: var(--ui-dialog-btn-pressed, none);
   transform: translateY(1px);
   filter: brightness(0.95);
 }

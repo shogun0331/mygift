@@ -4,75 +4,90 @@ import { fetchPublicJson } from '../game/publicJson'
 import type { RegisteredCharacter } from '../game/characters'
 import { resolveMediaSrc } from '../game/mediaUrl'
 import { openingVideoFileNames, openingVideoMediaPath } from '../game/openingVideos'
+import { takePreloadedOpeningVideo } from '../game/openingVideoPreload'
 
 function OpeningRecHud() {
   return (
     <div className="pointer-events-none absolute inset-y-[5%] left-[2%] z-20 w-[60vw] max-w-[1040px]">
-        <span className="absolute left-0 top-0 h-6 w-6 border-l-2 border-t-2 border-white/85" />
-        <span className="absolute right-0 top-0 h-6 w-6 border-r-2 border-t-2 border-white/70" />
-        <span className="absolute bottom-0 left-0 h-6 w-6 border-b-2 border-l-2 border-white/85" />
-        <span className="absolute bottom-0 right-0 h-6 w-6 border-b-2 border-r-2 border-white/70" />
-        <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 bg-white/45" />
-        <span className="absolute bottom-0 left-1/2 h-3 w-px -translate-x-1/2 bg-white/45" />
-        <span className="absolute left-0 top-1/2 h-px w-3 -translate-y-1/2 bg-white/45" />
-        <span className="absolute right-0 top-1/2 h-px w-3 -translate-y-1/2 bg-white/45" />
+      <span className="absolute left-0 top-0 h-6 w-6 border-l-2 border-t-2 border-white/85" />
+      <span className="absolute right-0 top-0 h-6 w-6 border-r-2 border-t-2 border-white/70" />
+      <span className="absolute bottom-0 left-0 h-6 w-6 border-b-2 border-l-2 border-white/85" />
+      <span className="absolute bottom-0 right-0 h-6 w-6 border-b-2 border-r-2 border-white/70" />
+      <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 bg-white/45" />
+      <span className="absolute bottom-0 left-1/2 h-3 w-px -translate-x-1/2 bg-white/45" />
+      <span className="absolute left-0 top-1/2 h-px w-3 -translate-y-1/2 bg-white/45" />
+      <span className="absolute right-0 top-1/2 h-px w-3 -translate-y-1/2 bg-white/45" />
 
-        <div className="absolute left-9 top-9 flex items-center gap-2 rounded-full border border-white/15 bg-black/50 px-3 py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.35)] backdrop-blur-sm">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-70" />
-            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.95)]" />
-          </span>
-          <span className="animate-pulse text-[12px] font-bold tracking-[0.28em] text-red-400">REC</span>
-        </div>
+      <div className="absolute left-9 top-9 flex items-center gap-2 rounded-full border border-white/15 bg-black/50 px-3 py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.35)] backdrop-blur-sm">
+        <span className="relative flex h-2.5 w-2.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-70" />
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.95)]" />
+        </span>
+        <span className="animate-pulse text-[12px] font-bold tracking-[0.28em] text-red-400">REC</span>
+      </div>
 
-        <p className="absolute bottom-9 left-9 font-mono text-[10px] tracking-[0.22em] text-white/75">
-          CAM 01 · 1080 · 24FPS
-        </p>
+      <p className="absolute bottom-9 left-9 font-mono text-[10px] tracking-[0.22em] text-white/75">
+        CAM 01 · 1080 · 24FPS
+      </p>
     </div>
   )
 }
 
+const VIDEO_CLASS =
+  'absolute inset-0 z-[1] h-full w-full object-cover object-center'
+
 function OpeningVideoStage({ url }: { url: string }) {
-  const ref = useRef<HTMLVideoElement>(null)
+  const hostRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const node = ref.current
-    if (!node) return
-    node.muted = true
-    node.defaultMuted = true
-    node.loop = true
-    node.playsInline = true
-    node.preload = 'auto'
-    node.src = url
-    const play = () => {
-      void node.play().catch(() => {})
+    const host = hostRef.current
+    if (!host) return
+
+    const preloaded = takePreloadedOpeningVideo(url)
+    const video = preloaded ?? document.createElement('video')
+
+    video.muted = true
+    video.defaultMuted = true
+    video.playsInline = true
+    video.loop = true
+    video.preload = 'auto'
+    video.className = VIDEO_CLASS
+    video.setAttribute('playsinline', '')
+    video.setAttribute('muted', '')
+
+    if (!preloaded) {
+      video.src = url
     }
-    if (node.readyState >= 2) play()
-    else node.addEventListener('canplay', play, { once: true })
+
+    host.appendChild(video)
+
+    const play = () => {
+      void video.play().catch(() => {})
+    }
+
+    if (video.readyState >= 2) play()
+    else video.addEventListener('canplay', play, { once: true })
+
     return () => {
-      node.removeEventListener('canplay', play)
-      node.pause()
+      video.removeEventListener('canplay', play)
+      video.pause()
+      if (video.parentElement === host) host.removeChild(video)
+      // 프리로드에서 가져온 노드는 메뉴 unmount 시 폐기 (재진입 시 다시 로드)
+      if (!preloaded) {
+        video.removeAttribute('src')
+        video.load()
+      }
     }
   }, [url])
 
-  return (
-    <video
-      ref={ref}
-      muted
-      loop
-      playsInline
-      autoPlay
-      preload="auto"
-      className="absolute inset-0 z-[1] h-full w-full object-cover object-center"
-    />
-  )
+  return <div ref={hostRef} className="absolute inset-0 z-[1]" />
 }
 
 export function MainMenuBackgroundSlideshow() {
   const [images, setImages] = useState<string[]>([])
   const [displayedImg, setDisplayedImg] = useState<string | null>(null)
   const [isVisible, setIsVisible] = useState(false)
-  const [openingUrls, setOpeningUrls] = useState<string[]>([])
+  const [openingUrls, setOpeningUrls] = useState<string[] | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -92,8 +107,11 @@ export function MainMenuBackgroundSlideshow() {
     }
   }, [])
 
-  // Load events & characters to extract first scene images of scout, date1, date2
+  // 오프닝 영상이 있으면 이미지 슬라이드쇼 I/O 스킵
   useEffect(() => {
+    if (openingUrls == null) return
+    if (openingUrls.length > 0) return
+
     let cancelled = false
 
     async function loadSlideshowImages() {
@@ -108,7 +126,9 @@ export function MainMenuBackgroundSlideshow() {
           }
         }
         if (charList.length === 0) {
-          const fromPub = await fetchPublicJson<RegisteredCharacter[]>('/characters/characters.json').catch(() => null)
+          const fromPub = await fetchPublicJson<RegisteredCharacter[]>('/characters/characters.json').catch(
+            () => null,
+          )
           if (Array.isArray(fromPub) && fromPub.length > 0) {
             charList = fromPub
           }
@@ -127,14 +147,12 @@ export function MainMenuBackgroundSlideshow() {
             const ev = eventMap.get(evId)
             if (!ev) continue
 
-            // 1. Check event media for image
             const imgMedia = ev.media?.find((m) => m.kind === 'image')
             if (imgMedia?.url) {
               collected.push(resolveMediaSrc(imgMedia.url))
               continue
             }
 
-            // 2. Check nodes for first image
             if (Array.isArray(ev.nodes)) {
               let foundNodeImg = false
               for (const node of ev.nodes) {
@@ -153,7 +171,6 @@ export function MainMenuBackgroundSlideshow() {
               if (foundNodeImg) continue
             }
 
-            // 3. Fallback to character illustration/image
             if (char.images && char.images.length > 0) {
               collected.push(resolveMediaSrc(char.images[0].url))
             } else if (char.profileImageUrl) {
@@ -162,9 +179,7 @@ export function MainMenuBackgroundSlideshow() {
           }
         }
 
-        // Deduplicate and filter valid
         const unique = Array.from(new Set(collected.filter(Boolean)))
-        // Shuffle randomly on load for varied feel
         for (let i = unique.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1))
           ;[unique[i], unique[j]] = [unique[j], unique[i]]
@@ -173,8 +188,7 @@ export function MainMenuBackgroundSlideshow() {
         if (!cancelled && unique.length > 0) {
           setImages(unique)
           setDisplayedImg(unique[0])
-          // Initial smooth fade-in
-          setTimeout(() => {
+          window.setTimeout(() => {
             if (!cancelled) setIsVisible(true)
           }, 150)
         }
@@ -187,33 +201,23 @@ export function MainMenuBackgroundSlideshow() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [openingUrls])
 
-  // Smooth Fade-In -> Display -> Fade-Out -> Next Image Cycle
   useEffect(() => {
     if (images.length <= 1) return
 
     let active = true
-    let cycleTimer: NodeJS.Timeout
+    let cycleTimer: ReturnType<typeof setTimeout>
     let nextIndex = 0
 
     const scheduleNext = () => {
-      // 1. Display for 10 seconds while visible
       cycleTimer = setTimeout(() => {
         if (!active) return
-
-        // 2. Start Fade Out (opacity 90% -> 0% over 2.2s)
         setIsVisible(false)
-
-        // 3. After fade-out finishes (2.3s):
         cycleTimer = setTimeout(() => {
           if (!active) return
-
-          // Change image while completely hidden
           nextIndex = (nextIndex + 1) % images.length
           setDisplayedImg(images[nextIndex])
-
-          // 4. Start Fade In (opacity 0% -> 90% over 2.2s)
           cycleTimer = setTimeout(() => {
             if (!active) return
             setIsVisible(true)
@@ -231,41 +235,38 @@ export function MainMenuBackgroundSlideshow() {
     }
   }, [images])
 
-  if (openingUrls.length === 0 && !displayedImg) return null
+  const hasOpening = Boolean(openingUrls && openingUrls.length > 0)
+  if (openingUrls == null) return null
+  if (!hasOpening && !displayedImg) return null
 
   return (
     <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-      {/* ── LEFT-ALIGNED CINEMATIC STAGE (Centers character on left half of screen) ── */}
       <div className="relative h-full w-[64vw] max-w-[1080px] overflow-hidden [mask-image:linear-gradient(to_right,black_0%,black_45%,rgba(0,0,0,0.85)_60%,rgba(0,0,0,0.5)_75%,rgba(0,0,0,0.15)_88%,transparent_100%)]">
-        {openingUrls.length > 0 ? (
-          <OpeningVideoStage url={openingUrls[0]} />
+        {hasOpening ? (
+          <OpeningVideoStage url={openingUrls![0]!} />
         ) : (
           <img
             src={displayedImg ?? ''}
             alt=""
+            decoding="async"
             className={`h-full w-full object-cover object-center transition-all duration-[2200ms] ease-in-out ${
               isVisible
-                ? 'opacity-90 scale-105 filter brightness-85 contrast-105'
-                : 'opacity-0 scale-100 filter brightness-50 contrast-100'
+                ? 'scale-105 opacity-90 brightness-[0.85] contrast-[1.05]'
+                : 'scale-100 opacity-0 brightness-50 contrast-100'
             }`}
           />
         )}
 
-        {/* Ambient Shading to dissolve right edge into main menu darkness */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-r from-transparent via-transparent 40%, via-slate-950/40 65%, via-slate-950/80 85%, to-slate-950 100%" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-transparent via-transparent from-40% via-slate-950/40 via-65% via-slate-950/80 via-85% to-slate-950" />
 
-        {/* Top & Bottom Cinematic Soft Vignette */}
         <div className="absolute inset-x-0 top-0 z-10 h-32 bg-gradient-to-b from-slate-950/80 via-slate-950/30 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 z-10 h-36 bg-gradient-to-t from-slate-950/80 via-slate-950/40 to-transparent" />
         <div className="absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-slate-950/50 to-transparent" />
 
-        {/* Subtle Cyber Color Harmony Layer */}
         <div className="absolute inset-0 z-10 bg-gradient-to-tr from-slate-950/40 via-indigo-950/15 to-purple-950/15 mix-blend-multiply" />
         <div className="absolute inset-0 z-10 bg-indigo-950/10 mix-blend-overlay" />
 
-        {/* Fine Scanlines */}
         <div className="absolute inset-0 z-10 bg-[linear-gradient(rgba(0,0,0,0.2)_1px,transparent_1px)] bg-[size:100%_4px] opacity-25" />
-
       </div>
       <OpeningRecHud />
     </div>

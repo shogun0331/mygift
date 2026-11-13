@@ -211,7 +211,11 @@ export function AchievementsPanel({ onClose }: AchievementsPanelProps) {
                       <span className="absolute bottom-0 right-0 flex h-5 w-5 items-center justify-center overflow-hidden rounded-tl bg-slate-950/85 border-t border-l border-white/15">
                         {isUnlocked ? (
                           isAchievementIconPath(item.icon) ? (
-                            <img src={item.icon} alt="" className="h-full w-full object-contain" />
+                            <img
+                              src={resolveMediaSrc(item.icon)}
+                              alt=""
+                              className="h-full w-full object-contain"
+                            />
                           ) : (
                             <span className="text-[10px] leading-none">{item.icon}</span>
                           )
@@ -222,7 +226,7 @@ export function AchievementsPanel({ onClose }: AchievementsPanelProps) {
                     </>
                   ) : isUnlocked && isAchievementIconPath(item.icon) ? (
                     <img
-                      src={item.icon}
+                      src={resolveMediaSrc(item.icon)}
                       alt=""
                       className="h-full w-full object-contain p-0.5"
                     />

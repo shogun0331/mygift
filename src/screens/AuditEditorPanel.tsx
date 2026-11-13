@@ -4,6 +4,7 @@ import { resolveMediaSrc } from '../game/mediaUrl'
 import { BlurRegionEditor, BlurRegionOverlay } from '../events/BlurRegionEditor'
 import { AuditLineupEditor } from './AuditLineupEditor'
 import { AuditSimulatorDeckModal } from './AuditSimulatorDeckModal'
+import { examLineCleared } from '../game/fanMeeting'
 import { ExamMeetingModal } from './FanMeetingModal'
 import { FanMeetingStatement } from './FanMeetingStatement'
 import type { RegisteredCharacter } from '../game/characters'
@@ -82,7 +83,7 @@ export function AuditEditorPanel({
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
           <h2 className="text-lg font-bold text-slate-100">승급심사</h2>
-          <p className="mt-1 text-sm text-slate-400">등급마다 배경과 입장 영상, 심사위원 4명의 대기·중앙·만족 이미지를 넣습니다. 카드 퍼포먼스는 팬미팅과 같은 이미지를 씁니다.</p>
+          <p className="mt-1 text-sm text-slate-400">등급마다 배경과 입장 영상을 넣습니다. 심사위원은 최대 4명이고, 이미지가 있는 사람이 1명만 있어도 심사가 열립니다. 카드 퍼포먼스는 팬미팅과 같은 이미지를 씁니다.</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -159,7 +160,7 @@ export function AuditEditorPanel({
           )}
           onAbort={closeSim}
           onFinish={(result) => {
-            setSimResult({ success: result.satisfiedCount >= 4, count: result.satisfiedCount })
+            setSimResult({ success: examLineCleared(result.satisfiedCount, result.lineSize), count: result.satisfiedCount })
           }}
         />,
         document.body,

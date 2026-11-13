@@ -220,6 +220,7 @@ export function AuditSimulatorDeckModal({
 
   const activeSelectedIds = deckSlots.filter(Boolean) as string[]
   const canField = boostedCharacters.some((character) => ((character as any).stamina ?? 100) > 30)
+  const canStart = canField && activeSelectedIds.length >= 1
   const staminaLabel = t('creator.statStamina')
 
   const toggleSelect = (id: string) => {
@@ -469,7 +470,7 @@ export function AuditSimulatorDeckModal({
             <button
               type="button"
               onClick={handleStart}
-              disabled={!canField}
+              disabled={!canStart}
               className="game-btn game-btn-primary flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-8 py-3 text-sm font-bold transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <span>{t(startLabelKey, { count: activeSelectedIds.length })}</span>

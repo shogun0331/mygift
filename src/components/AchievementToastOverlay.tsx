@@ -131,14 +131,22 @@ export function AchievementToastOverlay() {
                 />
                 <span className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center overflow-hidden rounded-tl bg-slate-950/85">
                   {isAchievementIconPath(current.icon) ? (
-                    <img src={current.icon} alt="" className="h-full w-full object-contain" />
+                    <img
+                      src={resolveMediaSrc(current.icon)}
+                      alt=""
+                      className="h-full w-full object-contain"
+                    />
                   ) : (
                     <span className="text-[11px] leading-none">{current.icon}</span>
                   )}
                 </span>
               </>
             ) : isAchievementIconPath(current.icon) ? (
-              <img src={current.icon} alt="" className="h-full w-full object-contain p-0.5" />
+              <img
+                src={resolveMediaSrc(current.icon)}
+                alt=""
+                className="h-full w-full object-contain p-0.5"
+              />
             ) : (
               <span className="text-3xl">{current.icon}</span>
             )}

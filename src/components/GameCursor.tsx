@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { resolveMediaSrc } from '../game/mediaUrl'
 
-const CURSOR_SRC = '/ui/cursor/cursor_lips.png'
+/** media:// 로 두어 패키징본(file://)에서도 game.dat/public 경로로 해석되게 함 */
+const CURSOR_SRC = 'media://ui/cursor/cursor_lips.png'
 /** Hotspot inside the 64×64 asset (spike tip on upper-left lip). */
 const HOTSPOT_X = 10
 const HOTSPOT_Y = 8

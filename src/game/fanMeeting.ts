@@ -67,6 +67,13 @@ export type FanMeeting = {
   satisfiedCount: number
   lastRewardText: string
   over: boolean
+  /** 승급심사 합격에 필요한 심사위원 수. 팬미팅은 0 */
+  lineSize: number
+}
+
+/** 출전한 심사위원을 모두 만족하면 합격. 인원은 1명부터 */
+export function examLineCleared(satisfiedCount: number, lineSize: number): boolean {
+  return lineSize > 0 && satisfiedCount >= lineSize
 }
 
 export type FanSubmitResult = {
@@ -161,6 +168,7 @@ export function createFanMeeting(config: VipVisitConfig, grade: StationGrade, ca
     satisfiedCount: 0,
     lastRewardText: '',
     over: false,
+    lineSize: 0,
   }
 }
 
@@ -264,12 +272,12 @@ export function createExamMeeting(
   const living = cards.filter((card) => card.hp > 0)
   if (living.length === 0) return null
   const stage = config.stageSettings[grade]
-  const members = stage?.members ?? []
-  if (members.length < 4) return null
+  if (!stage) return null
+  const members = stage.members ?? []
   const roster: ActiveFan[] = []
   for (const member of members.slice(0, 4)) {
     const images = memberImages(member)
-    if (!images) return null
+    if (!images) continue
     const target = Math.max(1, rollInt(Math.min(stage.satisfactionMin, stage.satisfactionMax), Math.max(stage.satisfactionMin, stage.satisfactionMax)))
     const ironWall = rollInt(Math.min(stage.ironWallMin, stage.ironWallMax), Math.max(stage.ironWallMin, stage.ironWallMax))
     const pressure = rollInt(Math.min(stage.pressureMin, stage.pressureMax), Math.max(stage.pressureMin, stage.pressureMax))
@@ -288,6 +296,7 @@ export function createExamMeeting(
       rewardText: '',
     })
   }
+  if (roster.length === 0) return null
   const [center, ...waiting] = roster
   if (!center) return null
   return {
@@ -298,5 +307,6 @@ export function createExamMeeting(
     satisfiedCount: 0,
     lastRewardText: '',
     over: false,
+    lineSize: roster.length,
   }
 }
