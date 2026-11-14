@@ -1,7 +1,23 @@
 import { useEffect, useRef } from 'react'
 
 const READY_TIMEOUT_MS = 700
-const HOLD_MAX_EDGE = 480
+const HOLD_MAX_EDGE = 1280
+
+/** 모니터에 보이는 크기 × 화면 배율. 긴 변은 1280, 원본 영상보다 키우지 않는다. */
+function holdFrameSize(video: HTMLVideoElement, hold: HTMLCanvasElement): { w: number; h: number } {
+  const vw = video.videoWidth
+  const vh = video.videoHeight
+  const srcLong = Math.max(vw, vh)
+  const rect = hold.getBoundingClientRect()
+  const dpr = window.devicePixelRatio || 1
+  const displayLong = Math.max(rect.width, rect.height) * dpr
+  const targetLong = Math.max(1, Math.min(HOLD_MAX_EDGE, srcLong, displayLong || srcLong))
+  const scale = targetLong / srcLong
+  return {
+    w: Math.max(1, Math.round(vw * scale)),
+    h: Math.max(1, Math.round(vh * scale)),
+  }
+}
 
 type SmoothVideoSwapProps = {
   src: string | null
@@ -10,8 +26,8 @@ type SmoothVideoSwapProps = {
 }
 
 /**
- * Single-decoder stream feed. On src change, freezes a downscaled last frame
- * on a canvas until the next clip can play.
+ * Single-decoder stream feed. On src change, freezes the last frame
+ * at the monitor's pixel size until the next clip can play.
  */
 export function SmoothVideoSwap({ src, playing, className = '' }: SmoothVideoSwapProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -53,13 +69,9 @@ export function SmoothVideoSwap({ src, playing, className = '' }: SmoothVideoSwa
 
     const gen = ++swapGenRef.current
 
-    // Freeze last frame (downscaled) so the monitor doesn't go black while loading
+    // Freeze last frame at the monitor's pixel size so the swap does not go black.
     if (hold && video.getAttribute('src') && video.readyState >= 2 && video.videoWidth > 0) {
-      const vw = video.videoWidth
-      const vh = video.videoHeight
-      const scale = Math.min(1, HOLD_MAX_EDGE / Math.max(vw, vh))
-      const w = Math.max(1, Math.round(vw * scale))
-      const h = Math.max(1, Math.round(vh * scale))
+      const { w, h } = holdFrameSize(video, hold)
       if (hold.width !== w || hold.height !== h) {
         hold.width = w
         hold.height = h
@@ -67,6 +79,8 @@ export function SmoothVideoSwap({ src, playing, className = '' }: SmoothVideoSwa
       try {
         const ctx = hold.getContext('2d')
         if (ctx) {
+          ctx.imageSmoothingEnabled = true
+          ctx.imageSmoothingQuality = 'high'
           ctx.drawImage(video, 0, 0, w, h)
           hold.style.opacity = '1'
         }

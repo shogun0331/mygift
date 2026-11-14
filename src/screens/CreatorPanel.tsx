@@ -1285,9 +1285,9 @@ function ScoutView({
         </div>
       ) : null}
 
-      <section className="game-panel flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-2xl p-4 sm:p-6">
+      <section className="game-panel flex min-h-0 flex-1 overflow-auto rounded-2xl p-4 sm:p-5">
         {!offer || !stats ? (
-          <div className="flex max-w-md flex-col items-center gap-2 text-center">
+          <div className="m-auto flex max-w-md flex-col items-center gap-2 text-center">
             {registeredCount === 0 ? (
               <>
                 <p className="text-sm text-slate-300">{t('creator.noRegistered')}</p>
@@ -1303,13 +1303,13 @@ function ScoutView({
             )}
           </div>
         ) : (
-          <article className="grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
-            <div className="game-card relative aspect-[3/4] overflow-hidden sm:aspect-auto sm:min-h-[22rem]">
+          <article className="grid h-full min-h-0 w-full grid-cols-1 gap-4 sm:grid-cols-[minmax(16rem,28rem)_minmax(0,1fr)] sm:gap-5">
+            <div className="game-card relative aspect-[3/4] overflow-hidden sm:aspect-auto sm:h-full sm:min-h-[26rem]">
               {offer.template.profileImageUrl ? (
                 <img
                   src={offer.template.profileImageUrl}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="absolute inset-0 h-full w-full object-cover object-top"
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-slate-700 to-slate-950">
@@ -1321,7 +1321,7 @@ function ScoutView({
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-              <div className="absolute top-2 left-2 flex flex-wrap items-center gap-1">
+              <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1">
                 <GradePlate grade={offer.grade} size="md" />
                 <StatTypeIcon
                   type={normalizeCreatorStatType(offer.template.statType)}
@@ -1332,11 +1332,11 @@ function ScoutView({
                   size="sm"
                 />
               </div>
-              <div className="absolute inset-x-0 bottom-0 p-3">
-                <h3 className="text-lg font-bold text-slate-50">
+              <div className="absolute inset-x-0 bottom-0 p-4">
+                <h3 className="text-xl font-bold text-slate-50 sm:text-2xl">
                   {characterDisplayName(offer.template, locale)}
                 </h3>
-                <p className="text-xs text-slate-300">
+                <p className="mt-0.5 text-sm text-slate-300">
                   {characterDisplayJob(offer.template, locale)}
                   {offer.template.age
                     ? ` · ${t('creator.ageFormat').replace('{age}', String(offer.template.age))}`
@@ -1345,46 +1345,46 @@ function ScoutView({
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 rounded-2xl border border-white/8 bg-black/25 p-4">
+            <div className="flex min-h-0 flex-col gap-4 rounded-2xl border border-white/8 bg-black/25 p-5 sm:p-6">
               <div className="flex items-end justify-between gap-2">
                 <div>
                   <p className="text-[10px] font-semibold tracking-wide text-slate-500">{t('creator.proposedSalary')}</p>
                   {mustHire ? (
                     <div>
-                      <p className="text-xl font-black text-emerald-300">{t('creator.scoutFirstHireFree')}</p>
-                      <p className="text-[11px] font-semibold tabular-nums text-slate-500 line-through">
+                      <p className="text-2xl font-black text-emerald-300 sm:text-3xl">{t('creator.scoutFirstHireFree')}</p>
+                      <p className="text-xs font-semibold tabular-nums text-slate-500 line-through">
                         {formatSalary(offer.salary)}
                       </p>
                     </div>
                   ) : (
-                    <p className="text-xl font-black tabular-nums text-amber-400">
+                    <p className="text-2xl font-black tabular-nums text-amber-400 sm:text-3xl">
                       {formatSalary(offer.salary)}
                     </p>
                   )}
                 </div>
-                <p className="text-xs font-semibold text-slate-400">
+                <p className="text-sm font-semibold text-slate-400">
                   {t('creator.statCommunication')} {stats.statCommunication}
                 </p>
               </div>
 
-              <div className="space-y-2.5">
+              <div className="min-h-0 flex-1 space-y-3 overflow-auto">
                 <PersonalityStatBars stats={stats} t={t} />
               </div>
 
               {hireCheck && !hireCheck.ok ? (
-                <p className="text-center text-[11px] font-semibold text-rose-300">
+                <p className="text-center text-xs font-semibold text-rose-300">
                   {t('creator.scoutHireBlockedAssets')}
                 </p>
               ) : null}
 
               <div
-                className={`mt-auto grid gap-2 pt-2 ${mustHire ? 'grid-cols-1' : 'grid-cols-2'}`}
+                className={`mt-auto grid gap-3 pt-1 ${mustHire ? 'grid-cols-1' : 'grid-cols-2'}`}
               >
                 {mustHire ? null : (
                   <button
                     type="button"
                     onClick={onPass}
-                    className="game-btn rounded-xl px-4 py-3 text-sm font-semibold"
+                    className="game-btn rounded-xl px-4 py-3.5 text-sm font-semibold sm:py-4 sm:text-base"
                   >
                     {t('creator.scoutPass')}
                   </button>
@@ -1394,7 +1394,7 @@ function ScoutView({
                   data-tutorial="scout-hire-btn"
                   disabled={!hireCheck?.ok}
                   onClick={() => onHire(offer)}
-                  className="game-btn-pink rounded-xl px-4 py-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
+                  className="game-btn-pink rounded-xl px-4 py-3.5 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40 sm:py-4 sm:text-base"
                 >
                   {t('creator.scoutHire')}
                 </button>
@@ -2270,14 +2270,14 @@ function StaffScoutView({
         {t('creator.staffScoutNewArrival')}
       </div>
 
-      <section className="game-panel flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-2xl p-4 sm:p-6">
-        <article className="grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
-          <div className="game-card relative aspect-[3/4] overflow-hidden sm:aspect-auto sm:min-h-[22rem]">
+      <section className="game-panel flex min-h-0 flex-1 overflow-auto rounded-2xl p-4 sm:p-5">
+        <article className="grid h-full min-h-0 w-full grid-cols-1 gap-4 sm:grid-cols-[minmax(16rem,28rem)_minmax(0,1fr)] sm:gap-5">
+          <div className="game-card relative aspect-[3/4] overflow-hidden sm:aspect-auto sm:h-full sm:min-h-[26rem]">
             {cardUrl ? (
               <img
                 src={resolveMediaSrc(cardUrl, candidate.mediaRevision)}
                 alt=""
-                className="absolute inset-0 h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-cover object-top"
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-slate-700 to-slate-950">
@@ -2287,7 +2287,7 @@ function StaffScoutView({
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-            <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+            <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1">
               <span className="rounded border border-indigo-400/40 bg-indigo-500/15 text-indigo-300 px-2 py-0.5 text-xs font-bold">
                 {t(STAFF_KIND_LABEL_KEY[candidate.kind])}
               </span>
@@ -2295,9 +2295,9 @@ function StaffScoutView({
                 {genderLabel}
               </span>
             </div>
-            <div className="absolute inset-x-0 bottom-0 p-3">
-              <h3 className="text-lg font-bold text-slate-50">{displayName}</h3>
-              <p className="text-xs text-slate-300">
+            <div className="absolute inset-x-0 bottom-0 p-4">
+              <h3 className="text-xl font-bold text-slate-50 sm:text-2xl">{displayName}</h3>
+              <p className="mt-0.5 text-sm text-slate-300">
                 {t('creator.staffKindFormat').replace(
                   '{kind}',
                   t(STAFF_KIND_LABEL_KEY[candidate.kind]),
@@ -2307,53 +2307,53 @@ function StaffScoutView({
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 rounded-2xl border border-white/8 bg-black/25 p-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-white/8 bg-black/20 p-3">
+          <div className="flex min-h-0 flex-col gap-4 rounded-2xl border border-white/8 bg-black/25 p-5 sm:p-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="rounded-xl border border-white/8 bg-black/20 p-4">
                 <p className="text-[10px] font-semibold tracking-wide text-slate-500">{t('creator.hireCost')}</p>
-                <p className="mt-0.5 text-lg font-black tabular-nums text-amber-400">
+                <p className="mt-1 text-2xl font-black tabular-nums text-amber-400 sm:text-3xl">
                   ${candidate.proposedHireCost.toLocaleString()}
                 </p>
               </div>
-              <div className="rounded-xl border border-white/8 bg-black/20 p-3">
+              <div className="rounded-xl border border-white/8 bg-black/20 p-4">
                 <p className="text-[10px] font-semibold tracking-wide text-slate-500">{t('creator.requiredSalary')}</p>
-                <p className="mt-0.5 text-lg font-black tabular-nums text-amber-400">
+                <p className="mt-1 text-2xl font-black tabular-nums text-amber-400 sm:text-3xl">
                   ${candidate.proposedSalary.toLocaleString()}/yr
                 </p>
               </div>
             </div>
 
-            <div className="flex-1 rounded-xl bg-black/30 p-4 border border-white/5 space-y-2">
-              <p className="text-[11px] font-bold text-indigo-300 uppercase tracking-widest">
+            <div className="min-h-0 flex-1 space-y-2 overflow-auto rounded-xl border border-white/5 bg-black/30 p-5">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-300">
                 {t('creator.staffDutyTitle')}
               </p>
-              <h4 className="text-sm font-black text-slate-100">{t(kindInfo.title)}</h4>
-              <p className="text-xs text-slate-300 font-semibold text-emerald-400">
+              <h4 className="text-base font-black text-slate-100 sm:text-lg">{t(kindInfo.title)}</h4>
+              <p className="text-sm font-semibold text-emerald-400">
                 ★ {t(kindInfo.bonus)}
               </p>
-              <p className="text-[11px] leading-5 text-slate-400 pt-1">
+              <p className="pt-1 text-sm leading-6 text-slate-400">
                 {t(kindInfo.desc)}
               </p>
             </div>
 
             {!canAfford ? (
-              <p className="text-center text-[11px] font-semibold text-rose-300">
+              <p className="text-center text-xs font-semibold text-rose-300">
                 {t('creator.hireBlockedAssets')}
               </p>
             ) : null}
 
-            <div className="mt-auto grid grid-cols-3 gap-2 pt-2">
+            <div className="mt-auto grid grid-cols-3 gap-3 pt-1">
               <button
                 type="button"
                 onClick={onBack}
-                className="game-btn rounded-xl px-3 py-3 text-sm font-semibold"
+                className="game-btn rounded-xl px-3 py-3.5 text-sm font-semibold sm:py-4 sm:text-base"
               >
                 {t('creator.staffHold')}
               </button>
               <button
                 type="button"
                 onClick={onPass}
-                className="game-btn rounded-xl px-3 py-3 text-sm font-semibold"
+                className="game-btn rounded-xl px-3 py-3.5 text-sm font-semibold sm:py-4 sm:text-base"
               >
                 {t('creator.staffPass')}
               </button>
@@ -2362,7 +2362,7 @@ function StaffScoutView({
                 data-tutorial="staff-hire-btn"
                 disabled={!canAfford}
                 onClick={() => onHire(candidate.id, candidate.proposedHireCost, candidate.proposedSalary)}
-                className="game-btn-pink rounded-xl px-3 py-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
+                className="game-btn-pink rounded-xl px-3 py-3.5 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40 sm:py-4 sm:text-base"
               >
                 {t('creator.staffHire')}
               </button>

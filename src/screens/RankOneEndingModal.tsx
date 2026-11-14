@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, type CSSProperties } from 'react'
 import { resolveMediaSrc } from '../game/mediaUrl'
+import { playSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
-import { UiDialogBtn, UiDialogShell } from '../ui/UiDialogShell'
 
 /** VN 캐릭터 Reiko — 2026-10-19_00005 스탠딩 */
 export const REIKO_VN_CHARACTER_ID = '1792369110889-p0l69g7'
@@ -13,6 +13,37 @@ type RankOneEndingModalProps = {
   onConfirm: () => void
 }
 
+const SPARK_COLORS = ['#fbbf24', '#fde68a', '#fb923c', '#f472b6', '#a5f3fc', '#fef08a', '#ffffff']
+const CONFETTI_COLORS = ['#fbbf24', '#f59e0b', '#f472b6', '#38bdf8', '#a3e635', '#e879f9', '#fde68a']
+
+function sparkStyle(index: number): CSSProperties {
+  const angle = (index / 24) * 360
+  const dist = 140 + (index % 6) * 38
+  return {
+    '--sa': `${angle}deg`,
+    '--dist': `${dist}px`,
+    '--sd': `${(index % 8) * 0.06}s`,
+    '--c': SPARK_COLORS[index % SPARK_COLORS.length]!,
+  } as CSSProperties
+}
+
+function confettiStyle(index: number): CSSProperties {
+  const left = ((index * 37) % 100) + (index % 3) * 0.4
+  const delay = (index % 12) * 0.12
+  const duration = 2.4 + (index % 5) * 0.35
+  const size = 6 + (index % 5) * 2
+  const rot = (index * 47) % 360
+  return {
+    left: `${left}%`,
+    width: `${size}px`,
+    height: `${size * (index % 2 === 0 ? 1.6 : 1)}px`,
+    background: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
+    animationDelay: `${delay}s`,
+    animationDuration: `${duration}s`,
+    '--cr': `${rot}deg`,
+  } as CSSProperties
+}
+
 /** 리그 1위 달성 시 1회 — Reiko가 엔딩/고백하기 해금 안내 */
 export function RankOneEndingModal({ onConfirm }: RankOneEndingModalProps) {
   const { t } = useTranslation()
@@ -21,43 +52,65 @@ export function RankOneEndingModal({ onConfirm }: RankOneEndingModalProps) {
     [],
   )
 
+  useEffect(() => {
+    playSfx('rank-up')
+  }, [])
+
   return (
-    <UiDialogShell labelledBy="rank-one-ending-title" describedBy="rank-one-ending-body" tone="amber" size="md">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-4">
-        <div className="mx-auto h-36 w-28 shrink-0 overflow-hidden rounded-2xl border border-amber-300/40 bg-slate-900 shadow-[0_0_24px_rgba(251,191,36,0.25)] sm:mx-0 sm:h-44 sm:w-32">
-          {portraitSrc ? (
-            <img src={portraitSrc} alt="" className="h-full w-full object-cover object-top" draggable={false} />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-amber-950 text-2xl font-black text-amber-200">
-              R
+    <div
+      className="rank-one-ending-fx"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="rank-one-ending-title"
+      aria-describedby="rank-one-ending-body"
+    >
+      <div className="rank-one-ending-glow" aria-hidden />
+      <div className="rank-one-ending-sparks" aria-hidden>
+        {Array.from({ length: 24 }, (_, i) => (
+          <span key={`spark-${i}`} style={sparkStyle(i)} />
+        ))}
+      </div>
+      <div className="rank-one-ending-confetti" aria-hidden>
+        {Array.from({ length: 36 }, (_, i) => (
+          <span key={`bit-${i}`} className="rank-one-ending-confetti-bit" style={confettiStyle(i)} />
+        ))}
+      </div>
+
+      <div className="rank-one-ending-card">
+        <div className="rank-one-ending-crown" aria-hidden>
+          ♛
+        </div>
+        <p className="rank-one-ending-kicker">{t('ranking.rankOneEndingKicker')}</p>
+        <p className="rank-one-ending-rankbadge">#1</p>
+
+        <div className="rank-one-ending-layout">
+          <div className="rank-one-ending-portrait">
+            {portraitSrc ? (
+              <img src={portraitSrc} alt="" className="h-full w-full object-cover object-top" draggable={false} />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-amber-950 text-4xl font-black text-amber-200">
+                R
+              </div>
+            )}
+            <span className="rank-one-ending-namechip">Reiko</span>
+          </div>
+
+          <div className="rank-one-ending-copy">
+            <h2 id="rank-one-ending-title" className="rank-one-ending-title">
+              {t('ranking.rankOneEndingTitle')}
+            </h2>
+            <div id="rank-one-ending-body" className="rank-one-ending-body">
+              <p>{t('ranking.rankOneEndingLine1')}</p>
+              <p>{t('ranking.rankOneEndingLine2')}</p>
+              <p className="is-accent">{t('ranking.rankOneEndingLine3')}</p>
             </div>
-          )}
-        </div>
-
-        <div className="min-w-0 flex-1 space-y-2.5 text-left">
-          <p className="game-kicker text-amber-300">{t('ranking.rankOneEndingKicker')}</p>
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/45 bg-amber-500/15 px-2.5 py-0.5">
-            <span className="text-[11px] font-black tracking-wide text-amber-100">Reiko</span>
-          </div>
-          <h2 id="rank-one-ending-title" className="text-lg font-black tracking-wide text-amber-50 sm:text-xl">
-            {t('ranking.rankOneEndingTitle')}
-          </h2>
-          <div id="rank-one-ending-body" className="space-y-2 text-[13px] font-semibold leading-relaxed text-slate-200">
-            <p>{t('ranking.rankOneEndingLine1')}</p>
-            <p>{t('ranking.rankOneEndingLine2')}</p>
-            <p className="text-amber-100/95">{t('ranking.rankOneEndingLine3')}</p>
           </div>
         </div>
-      </div>
 
-      <div className="mt-4 flex justify-center sm:justify-end">
-        <UiDialogBtn
-          onClick={onConfirm}
-          className="min-w-[9rem] border border-amber-300/50 bg-amber-400 text-slate-950 hover:bg-amber-300"
-        >
+        <button type="button" onClick={onConfirm} className="rank-one-ending-btn">
           {t('ranking.rankOneEndingConfirm')}
-        </UiDialogBtn>
+        </button>
       </div>
-    </UiDialogShell>
+    </div>
   )
 }

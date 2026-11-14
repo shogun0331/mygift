@@ -479,27 +479,6 @@ function formatAssets(value: number) {
   return formatMoney(value)
 }
 
-function IconMainMenu() {
-  return (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M4.5 11.2 12 4.8l7.5 6.4"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M7.2 10.4V19h9.6v-8.6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 function IconDashboard() {
   return (
     <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -1357,7 +1336,7 @@ export function InGame({
     setTab('schedule')
     setRecruitFlyCard({
       id: creator.id,
-      name: creator.name,
+      name: characterDisplayName(creator, locale),
       grade: creator.grade,
       profileImageUrl: creator.profileImageUrl || null,
     })
@@ -4134,6 +4113,27 @@ export function InGame({
     pendingRankResultRef.current = null
     if (pendingRank) {
       pendingScoutAfterRankRef.current = openScout
+      const meaningfulRankModal =
+        pendingRank.rankChange !== 0 ||
+        pendingRank.newMilestones.length > 0 ||
+        pendingRank.gameCleared ||
+        pendingRank.heldByGate ||
+        pendingRank.rewards.isGameClear ||
+        pendingRank.rewards.subscribersBonus > 0 ||
+        pendingRank.rewards.revenueBonusPercent > 0 ||
+        pendingRank.rewards.specialEventUnlock
+      if (meaningfulRankModal) {
+        if (pendingRank.gameCleared || pendingRank.currentRank === 1) {
+          queueRankOneEndingNotice(
+            pendingRank.previousRank,
+            pendingRank.currentRank,
+          )
+          if (pendingRank.gameCleared) pendingGameClearRef.current = true
+        }
+        setStartBroadcastLocked(true)
+        setRankSettlement(pendingRank)
+        return
+      }
       continueAfterMonthModals(openScout)
       return
     }
@@ -4274,20 +4274,30 @@ export function InGame({
     }
   }
 
-  /** 일등기업에서 리그 1위에 처음 올랐을 때 Reiko 엔딩 안내를 예약 */
-  function queueRankOneEndingNotice(prevRank: number, nextRank: number) {
+  /** 일등기업에서 리그 1위일 때 Reiko 엔딩 안내를 예약 */
+  function queueRankOneEndingNotice(_prevRank: number, nextRank: number) {
     if (rankOneEndingNoticeSeenRef.current) return
     if (stationGradeRef.current !== 'top') return
-    if (!(prevRank > 1 && nextRank === 1)) return
+    // 1위 진입뿐 아니라, 이미 1위인 채 일등기업이 된 경우도 예약
+    if (nextRank !== 1) return
     pendingRankOneEndingRef.current = true
+  }
+
+  function shouldShowRankOneEndingNotice(): boolean {
+    if (rankOneEndingNoticeSeenRef.current) return false
+    if (pendingRankOneEndingRef.current || pendingGameClearRef.current) return true
+    // 팝업을 놓친 세이브/월말 체인 복구: 일등기업 + 1위(또는 클리어)면 다시 안내
+    if (stationGradeRef.current !== 'top') return false
+    return leagueRef.current.currentRank === 1 || Boolean(leagueRef.current.gameCleared)
   }
 
   function tryOpenRankOneEndingNotice(openScout: boolean): boolean {
     if (rankOneEndingNoticeSeenRef.current) {
       pendingRankOneEndingRef.current = false
+      pendingGameClearRef.current = false
       return false
     }
-    if (!pendingRankOneEndingRef.current && !pendingGameClearRef.current) return false
+    if (!shouldShowRankOneEndingNotice()) return false
     pendingRankOneEndingRef.current = false
     pendingGameClearRef.current = false
     pendingScoutAfterRankRef.current = openScout
@@ -4582,9 +4592,8 @@ export function InGame({
   }
 
   function closeAffectionSummary() {
+    // 월말 체인은 토스트와 병렬로 이미 진행됨. 토스트 닫힘은 UI만 정리.
     setAffectionSummary(null)
-    if (openMonthAffectionVn()) return
-    continueAfterMonthModals(pendingScoutAfterRankRef.current)
   }
 
   function handleConfess(creatorId: string) {
@@ -4688,10 +4697,9 @@ export function InGame({
       if (tutorialDoneRef.current) {
         const gains = pendingBroadcastAffectionRef.current
         pendingBroadcastAffectionRef.current = []
+        // 호감도 합산은 코너 토스트(최대 ~5s) — 방송시작/카지노를 붙잡지 않고 체인만 이어간다.
         if (gains.length > 0) {
-          setStartBroadcastLocked(true)
           setAffectionSummary(gains)
-          return
         }
         if (openMonthAffectionVn()) return
       }
@@ -5819,8 +5827,6 @@ export function InGame({
         promotionExam ||
         promotionExamNotice ||
         staffSalaryRaiseRequest ||
-        affectionSummary ||
-        snsAffectionSummary ||
         snsResultQueue.length > 0,
     )
     if (!monthEndUiOpen) {
@@ -5849,9 +5855,72 @@ export function InGame({
     promotionExam,
     promotionExamNotice,
     staffSalaryRaiseRequest,
-    affectionSummary,
-    snsAffectionSummary,
     snsResultQueue.length,
+  ])
+
+  // 1위 엔딩 안내를 월말 체인에서 놓친 경우(세이브 로드·이미 1위 등) prep에서 복구
+  useEffect(() => {
+    if (broadcastPhase !== 'prep') return
+    if (rankOneEndingNoticeSeen || showGameClear) return
+    if (startBroadcastLocked) return
+    if (
+      weeklyStatement ||
+      broadcastEndedNotice ||
+      rankSettlement ||
+      rankBubblePlay ||
+      stationReview ||
+      turnEventNotice ||
+      promotionFx ||
+      showBankruptcyBailout ||
+      vipOffer ||
+      vipVisit ||
+      vipResult ||
+      vipDepartPlay ||
+      vipEventPlay ||
+      socialUi ||
+      salaryEventPlay ||
+      scoutEventState ||
+      promotionExam ||
+      promotionExamNotice ||
+      staffSalaryRaiseRequest ||
+      snsResultQueue.length > 0 ||
+      showCasinoLobby ||
+      showCasinoModal
+    ) {
+      return
+    }
+    if (!shouldShowRankOneEndingNotice()) return
+    tryOpenRankOneEndingNotice(false)
+  }, [
+    broadcastPhase,
+    rankOneEndingNoticeSeen,
+    showGameClear,
+    startBroadcastLocked,
+    weeklyStatement,
+    broadcastEndedNotice,
+    rankSettlement,
+    rankBubblePlay,
+    stationReview,
+    turnEventNotice,
+    promotionFx,
+    showBankruptcyBailout,
+    vipOffer,
+    vipVisit,
+    vipResult,
+    vipDepartPlay,
+    vipEventPlay,
+    socialUi,
+    salaryEventPlay,
+    scoutEventState,
+    promotionExam,
+    promotionExamNotice,
+    staffSalaryRaiseRequest,
+    snsResultQueue.length,
+    showCasinoLobby,
+    showCasinoModal,
+    stationGrade,
+    league.currentRank,
+    league.gameCleared,
   ])
 
   const broadcastWeekCurrent = monthWeekIndex + 1
@@ -6128,18 +6197,8 @@ export function InGame({
     >
       <header className="game-hud relative z-40 flex shrink-0 items-center justify-between gap-4 px-6 pt-6 pb-3">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex shrink-0 items-center gap-1.5">
-            <button
-              type="button"
-              onClick={onBack}
-              title={t('hud.back')}
-              aria-label={t('hud.back')}
-              className="game-hud-icon-btn game-hud-menu-btn"
-            >
-              <IconMainMenu />
-              <span className="game-hud-menu-label">{t('hud.back')}</span>
-            </button>
-            {import.meta.env.DEV && onOpenEditor ? (
+          {import.meta.env.DEV && onOpenEditor ? (
+            <div className="flex shrink-0 items-center gap-1.5">
               <button
                 type="button"
                 onClick={onOpenEditor}
@@ -6149,8 +6208,8 @@ export function InGame({
               >
                 <IconEdit />
               </button>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
           <div className="min-w-0">
             <p className="game-kicker">STAR BROADCASTING CO.</p>
             <h1
@@ -7217,8 +7276,14 @@ export function InGame({
           pay={0}
           rewardText=""
           hideIncome
+          kicker={t('audit.examOpeningTitle')}
           title={examResult.success ? t('audit.examPass') : t('audit.examFail')}
           bodyText={t('audit.examBody').replace('{count}', String(examResult.count))}
+          note={
+            examResult.success
+              ? `${t('audit.promotedGradeHeader')}: ${t(companyTierLabelKey(stationAuditTarget.nextTier))}`
+              : undefined
+          }
           confirmLabel={t('vip.confirm')}
           onConfirm={() => {
             const staminaById = examResult.staminaById
@@ -7710,6 +7775,9 @@ export function InGame({
           creator={
             ownedCreators.find((c) => c.id === promotionExam.creatorId) ||
             registeredCharacters.find((c) => c.id === promotionExam.creatorId)
+          }
+          registeredCharacter={
+            registeredCharacters.find((c) => c.id === promotionExam.creatorId) ?? null
           }
           result={promotionExam.result}
           onConfirm={confirmPromotionExam}

@@ -767,10 +767,9 @@ export const HighLowMinigame: React.FC<HighLowMinigameProps> = ({
     if (bust) {
       setTotalWinnings(0)
       setConsecutiveWins(0)
-      ;(onDefeatExit ?? onClose)?.()
-      return
     }
-    onClose?.()
+    // 승리 현금화·패배 모두 카지노 세션 종료 (로비로 되돌리지 않음)
+    ;(onDefeatExit ?? onClose)?.()
   }
 
   // 바로 카지노 게임 테이블 시작

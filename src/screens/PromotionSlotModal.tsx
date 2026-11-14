@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  findCharacterLevelThumbnailUrl,
+  findOwnSkinPreview,
   type CreatorStatType,
   type OwnedCreator,
   type RegisteredCharacter,
@@ -13,6 +13,24 @@ import { playSfx, stopSfx } from '../game/uiSfx'
 import { useTranslation } from '../locales/i18n'
 import { getPromotionDialogueText, getPromotionVoiceUrl } from '../game/promotionLines'
 import { getGradeBadgeStyle } from './DashboardPanel'
+
+function mergeCreatorSkinMedia(
+  creator: OwnedCreator | RegisteredCharacter,
+  registered?: RegisteredCharacter | null,
+) {
+  const reg = registered && registered.id === creator.id ? registered : null
+  const images =
+    creator.images && creator.images.length > 0 ? creator.images : (reg?.images ?? [])
+  const videos =
+    creator.videos && creator.videos.length > 0 ? creator.videos : (reg?.videos ?? [])
+  return {
+    ...creator,
+    levelThumbnailImageIds: creator.levelThumbnailImageIds || reg?.levelThumbnailImageIds,
+    images,
+    videos,
+    mediaRevision: creator.mediaRevision ?? reg?.mediaRevision,
+  }
+}
 
 const REEL_META: Record<CreatorStatType, { labelKey: string; tone: string }> = {
   sexy: { labelKey: 'creator.statSexy', tone: 'sexy' },
@@ -28,6 +46,8 @@ type PromotionSlotModalProps = {
   creatorName: string
   profileImageUrl?: string | null
   creator?: OwnedCreator | RegisteredCharacter | null
+  /** 세이브 보유 캐릭터에 images가 비어 있을 때 등록 캐릭터 미디어로 스킨 썸네일 보강 */
+  registeredCharacter?: RegisteredCharacter | null
   result: PromotionExamResult
   onConfirm: () => void
 }
@@ -36,6 +56,7 @@ export function PromotionSlotModal({
   creatorName,
   profileImageUrl,
   creator,
+  registeredCharacter = null,
   result,
   onConfirm,
 }: PromotionSlotModalProps) {
@@ -57,8 +78,14 @@ export function PromotionSlotModal({
 
   const unlockedSkinThumbUrl = useMemo(() => {
     if (!unlockedSkin || !creator) return null
-    return findCharacterLevelThumbnailUrl(creator, unlockedSkin)
-  }, [unlockedSkin, creator])
+    // 다른 스킨/프로필로 폴백하지 않음 — S 해금인데 SKIN2가 보이던 원인
+    const merged = mergeCreatorSkinMedia(creator, registeredCharacter)
+    const preview = findOwnSkinPreview(merged, unlockedSkin)
+    return preview.imageUrl
+  }, [unlockedSkin, creator, registeredCharacter])
+
+  const heroImageUrl = unlockedSkinThumbUrl || profileImageUrl || null
+  const heroMediaRevision = creator?.mediaRevision ?? registeredCharacter?.mediaRevision
 
   useEffect(() => {
     playSfx('training-roll', { loop: true })
@@ -200,9 +227,9 @@ export function PromotionSlotModal({
                   <div className="relative flex flex-col items-center z-20 transition-all duration-700 transform hover:scale-105">
                     {/* Elevated Card Image Box */}
                     <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl p-1 bg-gradient-to-tr from-amber-500 via-yellow-300 to-amber-600 border-2 border-yellow-200 shadow-[0_0_40px_rgba(250,204,21,0.8)] overflow-hidden animate-pop-in">
-                      {profileImageUrl ? (
+                      {heroImageUrl ? (
                         <img
-                          src={profileImageUrl}
+                          src={resolveMediaSrc(heroImageUrl, heroMediaRevision)}
                           alt={creatorName}
                           className="w-full h-full object-cover object-top rounded-xl"
                         />

@@ -7,6 +7,7 @@ type FanMeetingStatementProps = {
   fanCount: number
   pay: number
   rewardText: string
+  kicker?: string
   title?: string
   bodyText?: string
   hideIncome?: boolean
@@ -52,6 +53,7 @@ export function FanMeetingStatement({
   fanCount,
   pay,
   rewardText,
+  kicker,
   title,
   bodyText,
   hideIncome = false,
@@ -74,7 +76,7 @@ export function FanMeetingStatement({
       <div className="statement-sheet w-full max-w-xl overflow-hidden rounded-2xl">
         <div className="statement-inner px-5 py-5 sm:px-7 sm:py-6">
           <header className="statement-header border-b border-white/8 pb-4">
-            <p className="statement-gold-label">{t('vip.visitResultKicker')}</p>
+            <p className="statement-gold-label">{kicker ?? t('vip.visitResultKicker')}</p>
             <h2
               id="fan-meeting-statement-title"
               className="mt-1.5 text-xl font-bold tracking-tight text-slate-100 sm:text-2xl"

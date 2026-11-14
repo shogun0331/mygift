@@ -1,4 +1,4 @@
-import { useEffect, useState, type DragEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type DragEvent } from 'react'
 import { useTranslation, type Locale } from '../locales/i18n'
 import {
   normalizeCreatorStatType,
@@ -28,7 +28,6 @@ import {
   STAFF_KIND_LABEL_KEY,
   staffCardUrl,
   staffDisplayName,
-  staffIconUrl,
   type RegisteredStaff,
 } from '../game/staff'
 import {
@@ -109,6 +108,30 @@ function parseSlotDragPayload(raw: string) {
   return raw.slice('slot:'.length) || null
 }
 
+/** 3×2 · 각 칸 3:4 그리드를 정수 픽셀로 맞춘다 (소수 픽셀 축소 시 계단 현상 완화). */
+function fitStudioSlotGrid(availW: number, availH: number, gap: number) {
+  const aw = Math.max(0, Math.floor(availW))
+  const ah = Math.max(0, Math.floor(availH))
+  if (aw < 3 || ah < 2) return { width: 0, height: 0, gap, cellW: 0, cellH: 0 }
+
+  const widthFromHeight = Math.floor(((ah - gap) * 9) / 8 + 2 * gap)
+  let width = Math.min(aw, widthFromHeight)
+  // 칸 가로가 정수: (width - 2*gap) % 3 === 0
+  let cellW = Math.floor((width - 2 * gap) / 3)
+  width = cellW * 3 + 2 * gap
+  const cellH = Math.round((cellW * 4) / 3)
+  const height = cellH * 2 + gap
+  if (height > ah) {
+    const cellHFit = Math.floor((ah - gap) / 2)
+    const cellWFit = Math.floor((cellHFit * 3) / 4)
+    cellW = Math.max(1, cellWFit)
+    width = cellW * 3 + 2 * gap
+    const cellH2 = Math.round((cellW * 4) / 3)
+    return { width, height: cellH2 * 2 + gap, gap, cellW, cellH: cellH2 }
+  }
+  return { width, height, gap, cellW, cellH }
+}
+
 interface SchedulePanelProps {
   slots: StudioSlot[]
   handCards: StudioHandCard[]
@@ -172,6 +195,43 @@ export function SchedulePanel({
   const [draggingSlotId, setDraggingSlotId] = useState<string | null>(null)
   const [draggingStaffId, setDraggingStaffId] = useState<string | null>(null)
   const [unlockConfirmOpen, setUnlockConfirmOpen] = useState(false)
+  const slotGridHostRef = useRef<HTMLDivElement>(null)
+  const [slotGridSize, setSlotGridSize] = useState({
+    width: 0,
+    height: 0,
+    gap: 8,
+    cellW: 0,
+    cellH: 0,
+  })
+
+  useLayoutEffect(() => {
+    const host = slotGridHostRef.current
+    if (!host || typeof ResizeObserver === 'undefined') return
+
+    const measure = () => {
+      const gap = window.matchMedia('(min-width: 640px)').matches ? 8 : 6
+      const next = fitStudioSlotGrid(host.clientWidth, host.clientHeight, gap)
+      setSlotGridSize((prev) =>
+        prev.width === next.width &&
+        prev.height === next.height &&
+        prev.gap === next.gap &&
+        prev.cellW === next.cellW &&
+        prev.cellH === next.cellH
+          ? prev
+          : next,
+      )
+    }
+
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(host)
+    const mq = window.matchMedia('(min-width: 640px)')
+    mq.addEventListener?.('change', measure)
+    return () => {
+      ro.disconnect()
+      mq.removeEventListener?.('change', measure)
+    }
+  }, [])
 
   // 슬롯 해금은 랭킹 기업 등급으로 SchedulePanel에서 직접 판정 (부모 props와 어긋나도 안전)
   const unlockedSlotCount = countUnlockedSlots(slots)
@@ -337,17 +397,23 @@ export function SchedulePanel({
         </div>
 
         <div className="relative min-h-0 flex-1 overflow-hidden p-2 sm:p-2.5">
-          {/* size 컨테이너: 가용 영역에 맞춰 3×2 카드 그리드가 스크롤 없이 스케일 */}
+          {/* 정수 픽셀 3×2(3:4) 그리드 — 소수 폭 축소 시 계단(앨리어싱) 완화 */}
           <div
+            ref={slotGridHostRef}
             className="flex h-full w-full items-center justify-center"
-            style={{ containerType: 'size' }}
           >
             <div
-              className="grid grid-cols-3 grid-rows-2 gap-1.5 sm:gap-2"
-              style={{
-                width: 'min(100cqw, calc(100cqh * 9 / 8))',
-                aspectRatio: '9 / 8',
-              }}
+              className="studio-slot-grid grid grid-cols-3"
+              style={
+                slotGridSize.width > 0
+                  ? {
+                      width: slotGridSize.width,
+                      height: slotGridSize.height,
+                      gap: slotGridSize.gap,
+                      gridTemplateRows: `${slotGridSize.cellH}px ${slotGridSize.cellH}px`,
+                    }
+                  : undefined
+              }
             >
             {slots.map((slot, index) => {
               const locked = slot.status === 'locked'
@@ -387,7 +453,7 @@ export function SchedulePanel({
               return (
                 <div
                   key={slot.id}
-                  className={`relative min-h-0 min-w-0 rounded-lg border p-0.5 transition sm:rounded-xl sm:p-1 ${
+                  className={`relative h-full min-h-0 min-w-0 overflow-hidden rounded-lg border p-0.5 transition sm:rounded-xl sm:p-1 ${
                     placementLocked
                       ? filled
                         ? needsRemove
@@ -583,7 +649,7 @@ export function SchedulePanel({
                               src={slot.assignment.profileImageUrl}
                               alt=""
                               draggable={false}
-                              className={`pointer-events-none absolute inset-0 h-full w-full ${
+                              className={`studio-slot-photo pointer-events-none absolute inset-0 h-full w-full ${
                                 needsRemove ? 'brightness-75 saturate-50' : ''
                               }`}
                             />
@@ -728,7 +794,7 @@ export function SchedulePanel({
                     </div>
                   </button>
                     {staffMode || locked || !managerState ? null : (
-                      <div className="absolute inset-x-1 bottom-1 z-20 flex items-center justify-center rounded-md bg-black/55 px-1 py-0.5 backdrop-blur-sm">
+                      <div className="absolute inset-x-1 bottom-1 z-20 flex items-center justify-center rounded-md bg-black/70 px-1 py-0.5">
                         <StaffSlotIcons
                           slotId={slot.id}
                           managerState={managerState}
@@ -869,7 +935,7 @@ export function SchedulePanel({
                             src={card.profileImageUrl}
                             alt=""
                             draggable={false}
-                            className="pointer-events-none absolute inset-0 h-full w-full"
+                            className="studio-slot-photo pointer-events-none absolute inset-0 h-full w-full"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
                         </>
@@ -1053,9 +1119,8 @@ function StaffSlotFace({
           const staff = equippedId
             ? registeredStaff.find((row) => row.id === equippedId) ?? null
             : null
-          const icon = staffIconUrl(staff)
           const card = staffCardUrl(staff)
-          const image = icon || card
+          const image = card
           const canReceive = Boolean(selectedStaff && selectedStaff.kind === kind)
           const displayName = staffDisplayName(staff, locale)
           return (
@@ -1085,7 +1150,7 @@ function StaffSlotFace({
                   src={resolveMediaSrc(image, staff?.mediaRevision)}
                   alt=""
                   draggable={false}
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="studio-slot-photo pointer-events-none absolute inset-0 h-full w-full"
                 />
               ) : null}
               <div
@@ -1203,7 +1268,7 @@ function StaffHandCard({
               src={resolveMediaSrc(card, staff.mediaRevision)}
               alt=""
               draggable={false}
-              className={`pointer-events-none absolute inset-0 h-full w-full ${
+              className={`studio-slot-photo pointer-events-none absolute inset-0 h-full w-full ${
                 assignedSlotLabel ? 'brightness-[0.55] saturate-[0.7]' : ''
               }`}
             />

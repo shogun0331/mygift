@@ -1443,13 +1443,13 @@ const StreamCard = memo(function StreamCard({
                 ? resolveMediaSrc(skin.videoUrl, creator.mediaRevision ?? skin.videoUrl)
                 : null
               return (
+                <span key={skin.skin} className="relative h-7 w-5 shrink-0 hover:z-10">
                 <button
-                  key={skin.skin}
                   type="button"
                   title={`SKIN ${skin.skin}`}
                   data-no-ui-click
                   onClick={() => onSelectSkin(creator.id, skin.skin)}
-                  className={`relative h-7 w-5 origin-bottom-right overflow-hidden rounded border bg-slate-950 transition-transform duration-150 ease-out hover:z-10 hover:scale-[1.65] ${
+                  className={`absolute bottom-0 right-0 h-[46.667px] w-[33.333px] origin-bottom-right scale-[0.6] overflow-hidden rounded border bg-slate-950 transition-transform duration-150 ease-out hover:scale-100 ${
                     selected
                       ? 'border-white/90 ring-1 ring-fuchsia-300/50'
                       : 'border-white/20 opacity-85 hover:border-white/55 hover:opacity-100'
@@ -1471,6 +1471,7 @@ const StreamCard = memo(function StreamCard({
                     </span>
                   )}
                 </button>
+                </span>
               )
             })}
           </div>
